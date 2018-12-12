@@ -2,7 +2,6 @@ package ui;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.components.ConfirmationDialog;
@@ -16,7 +15,6 @@ import utils.TestDataProvider;
 import utils.enums.SMPMessages;
 import utils.rest.SMPRestClient;
 
-import javax.security.auth.login.Configuration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,18 +105,20 @@ public class UsersPgTest extends BaseTest {
 
 		popup.fillDetailsForm("tst", validPass, validPass);
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(2)");
-		soft.assertEquals(popup.getUsernameValidationEror(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(2)");
+		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(2)");
 		popup.fillDetailsForm("#$^&*^%&$#@%@$#%$", validPass, validPass);
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(3)");
-		soft.assertEquals(popup.getUsernameValidationEror(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(3)");
+		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(3)");
+		//noinspection SpellCheckingInspection
 		popup.fillDetailsForm("QWERQWERQWERQWERQWERQWERQWERQWE33", validPass, validPass);
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(4)");
-		soft.assertEquals(popup.getUsernameValidationEror(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(4)");
+		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(4)");
 
 
 		soft.assertAll();
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@Test(description = "USR-30")
 	public void passwordValidation(){
 
@@ -145,7 +145,7 @@ public class UsersPgTest extends BaseTest {
 
 			popup.fillDetailsForm("test11", pass, pass);
 			soft.assertTrue(!popup.isOKButtonActive(), String.format("OK button should be disabled until valid data is filled in the popup - %s ", pass));
-			soft.assertEquals(popup.getPassValidationEror(), SMPMessages.PASS_POLICY_MESSAGE, String.format("Pass policy message is displayed - %s", pass));
+			soft.assertEquals(popup.getPassValidationError(), SMPMessages.PASS_POLICY_MESSAGE, String.format("Pass policy message is displayed - %s", pass));
 		}
 
 		soft.assertAll();
@@ -371,7 +371,7 @@ public class UsersPgTest extends BaseTest {
 		SMPRestClient.createUser(username, "SERVICE_GROUP_ADMIN");
 		SMPRestClient.createServiceGroup(pi, ps,
 				new ArrayList<>(Arrays.asList(username)),
-				new ArrayList<>(Arrays.asList("domainNoble", "domainEPREL"))
+				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
 		SoftAssert soft = new SoftAssert();
@@ -386,6 +386,9 @@ public class UsersPgTest extends BaseTest {
 		AlertMessage message = page.alertArea.getAlertMessage();
 		soft.assertTrue(message.isError(), "Page shows error message when deleting user with SG");
 		soft.assertTrue(message.getMessage().equalsIgnoreCase(expectedErrorMess), "Desired message appears");
+
+		SMPRestClient.deleteSG(pi);
+		SMPRestClient.deleteUser(username);
 
 		soft.assertAll();
 	}
@@ -418,6 +421,9 @@ public class UsersPgTest extends BaseTest {
 		AlertMessage message = page.alertArea.getAlertMessage();
 		soft.assertTrue(message.isError(), "Page shows error message when deleting user with SG");
 		soft.assertTrue(message.getMessage().equalsIgnoreCase(expectedErrorMess), "Desired message appears");
+
+		SMPRestClient.deleteSG(pi);
+		SMPRestClient.deleteUser(username);
 
 		soft.assertAll();
 	}

@@ -1,5 +1,6 @@
 package utils;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class PROPERTIES {
 
 	public static final String UI_BASE_URL = System.getProperty("UI_BASE_URL");

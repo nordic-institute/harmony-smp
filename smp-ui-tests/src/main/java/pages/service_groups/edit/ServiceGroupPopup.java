@@ -1,6 +1,5 @@
 package pages.service_groups.edit;
 
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -17,21 +16,21 @@ public class ServiceGroupPopup extends PageComponent {
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 
 		try {
-			ownersPanel = new AcordionSection(driver, ownersPanelContainer);
+			ownersPanel = new AccordionSection(driver, ownersPanelContainer);
 		} catch (Exception e) {
 
 		}
-		domainsPanel = new AcordionSection(driver, domainsPanelContainer);
+		domainsPanel = new AccordionSection(driver, domainsPanelContainer);
 
 	}
 
 	@FindBy(css = "#owner_expansion_panel_id")
 	private WebElement ownersPanelContainer;
-	public AcordionSection ownersPanel;
+	public AccordionSection ownersPanel;
 
 	@FindBy(css = "#domain_expansion_panel_id")
 	private WebElement domainsPanelContainer;
-	public AcordionSection domainsPanel;
+	public AccordionSection domainsPanel;
 
 	@FindBy(css = "mat-dialog-actions > div > button:nth-child(1)")
 	private WebElement okButton;
@@ -96,7 +95,10 @@ public class ServiceGroupPopup extends PageComponent {
 		waitForElementToBeGone(okButton);
 	}
 
-	public void clickCancel(){waitForElementToBeClickable(cancelButton).click();}
+	public void clickCancel(){
+		waitForElementToBeClickable(cancelButton).click();
+		waitForElementToBeGone(okButton);
+	}
 
 	public void fillForm(String identifier, String scheme, List<String> owners, List<String> domains, String extension){
 		waitForElementToBeVisible(participantIdentifierInput);
@@ -130,7 +132,7 @@ public class ServiceGroupPopup extends PageComponent {
 		return errorContainer.getText().trim();
 	}
 
-	public String getExtansionAreaContent(){
+	public String getExtensionAreaContent(){
 		return extensionTextArea.getAttribute("value").trim();
 	}
 
@@ -139,11 +141,11 @@ public class ServiceGroupPopup extends PageComponent {
 		extensionTextArea.sendKeys(text);
 	}
 
-	public void fillParticipanIdentifier(String participantIdentifier){
+	public void fillParticipantIdentifier(String participantIdentifier){
 		clearAndFillInput(participantIdentifierInput, participantIdentifier);
 	}
-	public void fillParticipanScheme(String participanScheme){
-		clearAndFillInput(participantSchemeInput, participanScheme);
+	public void fillParticipantScheme(String participantScheme){
+		clearAndFillInput(participantSchemeInput, participantScheme);
 	}
 	public void chooseFirstOwner(){
 		if(!ownersPanel.isExpanded()){ ownersPanel.expandSection();}

@@ -40,6 +40,7 @@ public class PaginationControls extends PageComponent {
 	WebElement prevPageLnk;
 	
 	
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "pagesize_id")
 	WebElement pageSizeSelectContainer;
 	public GenericSelect pageSizeSelect;
@@ -85,14 +86,20 @@ public class PaginationControls extends PageComponent {
 	
 	public boolean isPaginationPresent(){
 		log.info("checking if pagination is present on page");
-		return (activePageLnk.isDisplayed());
+		try {
+			return (activePageLnk.isDisplayed());
+		} catch (Exception e) {
+
+		}
+		return false;
 	}
 	
 //	if pagination is not present we return 1 by default
 	public Integer getActivePage(){
 		
 		log.info("getting active page number");
-		
+		if(!isPaginationPresent()){return -1;}
+
 		if(!activePageLnk.isDisplayed()){return 1;}
 		return Integer.valueOf(activePageLnk.getText().trim());
 	}
@@ -100,7 +107,8 @@ public class PaginationControls extends PageComponent {
 	public void goToPage(int pgNo){
 		
 		log.info("going to page .. " + pgNo);
-		
+		if(!isPaginationPresent()){return;}
+
 		for (WebElement pgLink : pgLinks) {
 			if(Integer.valueOf(pgLink.getText().trim()) == pgNo){
 				pgLink.click();
@@ -113,12 +121,20 @@ public class PaginationControls extends PageComponent {
 	
 	public void skipToFirstPage(){
 		log.info("skip to FIRST page of results");
-		waitForElementToBeClickable(skipFirstLnk).click();
-		PageFactory.initElements(driver, this);
+		if(!isPaginationPresent()){return;}
+		try {
+			waitForElementToBeClickable(skipFirstLnk).click();
+			PageFactory.initElements(driver, this);
+		} catch (Exception e) {
+
+		}
 	}
 	
 	public void skipToLastPage(){
 		log.info("skip to last page of results");
+
+		if(!isPaginationPresent()){return;}
+
 		waitForElementToBeClickable(skipLastLnk);
 		skipLastLnk.click();
 		PageFactory.initElements(driver, this);
@@ -126,12 +142,18 @@ public class PaginationControls extends PageComponent {
 	
 	public void goToNextPage(){
 		log.info("going to next page");
+
+		if(!isPaginationPresent()){return;}
+
 		nextPageLnk.click();
 		PageFactory.initElements(driver, this);
 	}
 	
 	public void goToPrevPage(){
 		log.info("going to prev page");
+
+		if(!isPaginationPresent()){return;}
+
 		prevPageLnk.click();
 		PageFactory.initElements(driver, this);
 	}

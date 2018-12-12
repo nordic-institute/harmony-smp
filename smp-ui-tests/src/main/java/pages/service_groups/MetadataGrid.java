@@ -16,6 +16,7 @@ public class MetadataGrid  extends PageComponent{
 	}
 
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(css = "ngx-datatable.inner-table.virtualized datatable-row-wrapper")
 	List<WebElement> rowContainers;
 

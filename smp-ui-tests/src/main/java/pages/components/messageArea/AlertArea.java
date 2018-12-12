@@ -15,6 +15,7 @@ public class AlertArea  extends PageComponent {
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "alertmessage_id")
 	private WebElement alertMessage;
 
@@ -31,7 +32,7 @@ public class AlertArea  extends PageComponent {
 		String closeChr = closeAlertSpan.getText();
 		String messageTxt = rawMessTxt.replaceAll(closeChr, "").trim();
 
-		log.info("Getting alert messsage ...");
+		log.info("Getting alert message ...");
 		return new AlertMessage(messageTxt, alertMessage.getAttribute("class").contains("error"));
 	}
 

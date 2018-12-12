@@ -25,7 +25,7 @@ public class ServiceMetadataPopup extends PageComponent {
 	private WebElement cancelButton;
 
 	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(1)")
-	private WebElement clearButon;
+	private WebElement clearButton;
 	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(2)")
 	private WebElement generateXMLButton;
 	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(3)")
@@ -35,7 +35,7 @@ public class ServiceMetadataPopup extends PageComponent {
 	private WebElement metadataTextArea;
 
 	@FindBy(css = "#participanSchema_id")
-	private WebElement participanSchemaInput;
+	private WebElement participantSchemaInput;
 
 	@FindBy(css = "#participantIdentifier_id")
 	private WebElement participantIdentifierInput;
@@ -64,19 +64,19 @@ public class ServiceMetadataPopup extends PageComponent {
 
 	}
 
-	public String getParticipantSchemeValue(){return participanSchemaInput.getAttribute("value").trim();}
+	public String getParticipantSchemeValue(){return participantSchemaInput.getAttribute("value").trim();}
 	public String getParticipantIdentifierValue(){return participantIdentifierInput.getAttribute("value").trim();}
 	public String getDocumentIdentifierValue(){return documentIdentifierInput.getAttribute("value").trim();}
 	public String getDocumentSchemeValue(){return documentSchemeInput.getAttribute("value").trim();}
 
-	public boolean isParticipantSchemeEnabled(){return null == participanSchemaInput.getAttribute("disabled");}
+	public boolean isParticipantSchemeEnabled(){return null == participantSchemaInput.getAttribute("disabled");}
 	public boolean isParticipantIdentifierEnabled(){return null == participantIdentifierInput.getAttribute("disabled");}
 	public boolean isDocumentIdentifierEnabled(){return null == documentIdentifierInput.getAttribute("disabled");}
 	public boolean isDocumentSchemeEnabled(){return null == documentSchemeInput.getAttribute("disabled");}
 
 
 
-	public String getlistedDomain(){return domainSelect.getSelectedValue().trim();}
+	public String getListedDomain(){return domainSelect.getSelectedValue().trim();}
 
 
 

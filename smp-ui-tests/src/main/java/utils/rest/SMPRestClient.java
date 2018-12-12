@@ -14,6 +14,7 @@ import utils.TestDataProvider;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +124,32 @@ public class SMPRestClient {
 		return null;
 	}
 
+	public static List<String> getKeyStoreEntries(){
+		Cookie jssesionID = login("SYS_ADMIN");
+
+		try {
+			String responseRaw = resource.path(SMPPaths.KEYSTORE)
+					.accept(MediaType.APPLICATION_JSON_TYPE)
+					.type(MediaType.APPLICATION_JSON_TYPE)
+					.cookie(jssesionID)
+					.get(String.class);
+			JSONArray entries = new JSONObject(responseRaw).getJSONArray("serviceEntities");
+
+			List<String> entryList = new ArrayList<>();
+
+			for (int i = 0; i < entries.length(); i++) {
+				String id = entries.getJSONObject(i).getString("certificateId");
+				String alias = entries.getJSONObject(i).getString("alias");
+				entryList.add(String.format("%s (%s)", alias, id));
+			}
+			return entryList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
 	public static boolean createDomain(String domainCode){
 		Cookie jssesionID = login("SYS_ADMIN");
 		String template = "[{\"domainCode\":\"%s\",\"smlSubdomain\":\"%s\",\"smlSmpId\":\"%s\",\"smlClientKeyAlias\":\"%s\",\"signatureKeyAlias\":\"%s\",\"status\":2,\"smlClientCertHeader\":\"%s\"}]";
@@ -194,6 +221,8 @@ public class SMPRestClient {
 
 	public static String getMetadataString(String url){
 		try {
+			System.out.println("url = " + url);
+//			------------------------------
 			return client.resource(url).accept(MediaType.APPLICATION_XML).get(String.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -247,6 +276,80 @@ public class SMPRestClient {
 			e.printStackTrace();		}
 		return null;
 	}
+
+	private static JSONObject getSGforPI(String pi){
+		Cookie jssesionID = login("SYS_ADMIN");
+		try {
+			String responseRaw = resource.path(SMPPaths.SERVICE_GROUP)
+					.queryParam("page", "-1")
+					.queryParam("pageSize", "-1")
+					.accept(MediaType.APPLICATION_JSON_TYPE)
+					.type(MediaType.APPLICATION_JSON_TYPE)
+					.cookie(jssesionID)
+					.get(String.class);
+			JSONArray sgs = new JSONObject(responseRaw).getJSONArray("serviceEntities");
+			for (int i = 0; i < sgs.length(); i++) {
+				JSONObject sg = sgs.getJSONObject(i);
+				if(pi.equalsIgnoreCase(sg.getString("participantIdentifier"))){
+					return sg;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();		}
+		return null;
+	}
+
+	public static boolean deleteDomain(String domainCode){
+		Cookie jssesionID = login("SYS_ADMIN");
+		try {
+			String domainPostStr = "[" + getDomainForName(domainCode).put("status", 3).toString() + "]";
+			ClientResponse getResponse = resource.path(SMPPaths.REST_POST_DOMAIN)
+					.accept(MediaType.APPLICATION_JSON_TYPE)
+					.type(MediaType.APPLICATION_JSON_TYPE)
+					.cookie(jssesionID)
+					.put(ClientResponse.class, domainPostStr);
+
+			return getResponse.getStatus() == 200;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static boolean deleteUser(String username){
+		Cookie jssesionID = login("SYS_ADMIN");
+		try {
+			String putStr = "[" + getUserForName(username).put("status", 3).toString() + "]";
+			ClientResponse getResponse = resource.path(SMPPaths.USER_LIST)
+					.accept(MediaType.APPLICATION_JSON_TYPE)
+					.type(MediaType.APPLICATION_JSON_TYPE)
+					.cookie(jssesionID)
+					.put(ClientResponse.class, putStr);
+
+			return getResponse.getStatus() == 200;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static boolean deleteSG(String pi){
+		Cookie jssesionID = login("SG_ADMIN");
+		try {
+			String putStr = "[" + getSGforPI(pi).put("status", 3).toString() + "]";
+			ClientResponse getResponse = resource.path(SMPPaths.SERVICE_GROUP)
+					.accept(MediaType.APPLICATION_JSON_TYPE)
+					.type(MediaType.APPLICATION_JSON_TYPE)
+					.cookie(jssesionID)
+					.put(ClientResponse.class, putStr);
+
+			return getResponse.getStatus() == 200;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 
 	private static JSONObject transformUserForSGPost(JSONObject user){
 		try {

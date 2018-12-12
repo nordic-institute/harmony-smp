@@ -49,9 +49,7 @@ public class UsersPage extends SMPPage {
 		if(!newBtn.isDisplayed()){return false;}
 		if(!newBtn.isEnabled()){return false;}
 		if(!editBtn.isDisplayed()){return false;}
-		if(!deleteBtn.isDisplayed()){return false;}
-		
-		return true;
+		return deleteBtn.isDisplayed();
 	}
 	
 	public boolean isCancelButtonEnabled(){

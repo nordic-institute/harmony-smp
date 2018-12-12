@@ -105,7 +105,7 @@ public class EditPage extends SMPPage {
 	}
 
 
-	public void addNewSerivceGroup(String identifier, String scheme, List<String> owners, List<String> domains, String extension) {
+	public void addNewServiceGroup(String identifier, String scheme, List<String> owners, List<String> domains, String extension) {
 		waitForElementToBeClickable(newButton).click();
 
 		ServiceGroupPopup popup = new ServiceGroupPopup(driver);

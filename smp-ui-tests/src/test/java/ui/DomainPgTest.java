@@ -1,6 +1,5 @@
 package ui;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -12,7 +11,6 @@ import pages.domain.DomainGrid;
 import pages.domain.DomainPage;
 import pages.domain.DomainPopup;
 import pages.domain.DomainRow;
-import pages.users.UsersPage;
 import utils.Generator;
 import utils.enums.SMPMessages;
 import utils.rest.SMPRestClient;
@@ -36,7 +34,7 @@ public class DomainPgTest extends BaseTest {
 	
 	
 	@BeforeMethod
-	public void loginAndGoToUsersPage(){
+	public void loginAndGoToDomainPage(){
 		
 		SMPPage page = new SMPPage(driver);
 		
@@ -53,7 +51,7 @@ public class DomainPgTest extends BaseTest {
 	public void openDomainPage(){
 		SoftAssert soft = new SoftAssert();
 		DomainPage page = new DomainPage(driver);
-		
+
 		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
 		DomainGrid grid = page.grid();
 		DomainRow row0 = grid.getRowsInfo().get(0);
@@ -77,6 +75,7 @@ public class DomainPgTest extends BaseTest {
 
 	@Test(description = "DMN-10")
 	public void editDomain(){
+
 		SoftAssert soft = new SoftAssert();
 		DomainPage page = new DomainPage(driver);
 
@@ -134,13 +133,13 @@ public class DomainPgTest extends BaseTest {
 		String rndString = Generator.randomAlphaNumeric(10);
 
 
-		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString,rndString, rndString);
+		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
 		popup.clickCancel();
 
 		soft.assertTrue(!page.isSaveButtonEnabled(), "Save button is NOT enabled");
 
 		popup = page.clickNew();
-		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString,rndString, rndString);
+		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
 		popup.clickOK();
 
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
@@ -185,7 +184,7 @@ public class DomainPgTest extends BaseTest {
 		String rndString = Generator.randomAlphaNumeric(10);
 
 
-		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString,rndString, rndString);
+		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
 		popup.clickOK();
 
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
@@ -224,6 +223,7 @@ public class DomainPgTest extends BaseTest {
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
 		int index = scrollToDomain(rndStr);
+
 		page.grid().selectRow(index);
 
 		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row selected");
@@ -273,6 +273,9 @@ public class DomainPgTest extends BaseTest {
 		AlertMessage message = page.alertArea.getAlertMessage();
 		soft.assertTrue(message.isError(), "Page shows error message when deleting domain with SG");
 		soft.assertTrue(message.getMessage().equalsIgnoreCase(expectedErrorMess), "Desired message appears");
+
+		SMPRestClient.deleteSG(pi);
+		SMPRestClient.deleteDomain(domainName);
 
 		soft.assertAll();
 	}

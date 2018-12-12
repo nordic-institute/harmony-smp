@@ -16,9 +16,11 @@ public class ConfirmationDialog extends PageComponent {
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "yesbuttondialog_id")
 	private WebElement yesBtn;
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "nobuttondialog_id")
 	private WebElement noBtn;
 
