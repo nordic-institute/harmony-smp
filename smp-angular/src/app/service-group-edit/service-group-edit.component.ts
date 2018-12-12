@@ -36,7 +36,7 @@ export class ServiceGroupEditComponent implements OnInit {
               private changeDetector: ChangeDetectorRef) {
 
     // if smp admin it needs to have update user list for detail dialog!
-    if (this.securityService.isCurrentUserSMPAdmin()) {
+    if (this.securityService.isCurrentUserSMPAdmin() || this.securityService.isCurrentUserServiceGroupAdmin()) {
       this.lookups.refreshUserLookup();
     }
   }
@@ -178,5 +178,13 @@ export class ServiceGroupEditComponent implements OnInit {
   // for dirty guard...
   isDirty (): boolean {
     return this.searchTable.isDirty();
+  }
+
+  createServiceGroupURL(row: any){
+    return encodeURIComponent((!row.participantScheme? '' : row.participantScheme)+'::'+row.participantIdentifier);
+  }
+
+  createServiceMetadataURL(row: any, rowSMD: any){
+    return encodeURIComponent((!row.participantScheme? '': row.participantScheme)+'::'+row.participantIdentifier)+'/services/'+ encodeURIComponent((!rowSMD.documentIdentifierScheme?'':rowSMD.documentIdentifierScheme)+'::'+rowSMD.documentIdentifier);
   }
 }

@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: eu.europa.ec.edelivery.smp.smlintegration.SmlConnectorTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.04 sec - in eu.europa.ec.edelivery.smp.smlintegration.SmlConnectorTest

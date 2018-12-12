@@ -27,6 +27,9 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   static readonly NEW_MODE = 'New ServiceGroup';
   static readonly EDIT_MODE = 'ServiceGroup Edit';
 
+
+  readonly participantSchemePattern ='^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$';
+
   @ViewChild('domainSelector') domainSelector: any;
 
   editMode: boolean;
@@ -41,14 +44,21 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   isExtensionValid: boolean = true;
   userList: UserRo[];
 
-
-
   minSelectedListCount(min: number) {
     return (c: AbstractControl): { [key: string]: any } => {
       if (c.value && c.value.length >= min)
         return null;
 
       return {'minSelectedListCount': {valid: false}};
+    }
+  }
+
+  multiDomainOn(multidomainOn: boolean) {
+    return (c: AbstractControl): { [key: string]: any } => {
+      if (c.value && c.value.length < 2 || multidomainOn )
+        return null;
+
+      return {'multiDomainError': {valid: false}};
     }
   }
 
@@ -86,10 +96,12 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
           value: '',
           disabled: this.current.status !== SearchTableEntityStatus.NEW
         },
-        this.current.status !== SearchTableEntityStatus.NEW ? Validators.required : null),
+        this.current.status === SearchTableEntityStatus.NEW ? Validators.required : null),
       'participantScheme': new FormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
-        this.current.status !== SearchTableEntityStatus.NEW ? Validators.required : null),
-      'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1)]),
+        this.current.status === SearchTableEntityStatus.NEW ?
+          [Validators.required, Validators.pattern(this.participantSchemePattern)] : null),
+      'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1),
+        this.multiDomainOn(this.lookups.cachedApplicationInfo.smlParticipantMultiDomainOn)]),
       'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
       'extension': new FormControl({value: ''}, []),
 
@@ -101,7 +113,6 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.dialogForm.controls['serviceGroupDomains'].setValue(this.current.serviceGroupDomains);
     this.dialogForm.controls['users'].setValue(this.current.users)
     this.dialogForm.controls['extension'].setValue(this.current.extension)
-
   }
 
   ngOnInit() {
@@ -119,6 +130,15 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     // 'aria-selected: false'. Current value: 'aria-selected: true'
     //
     this.changeDetector.detectChanges()
+  }
+
+  isDomainProperlyConfigured(domain: DomainRo){
+    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
+      return domain.smlSmpId && (domain.smlClientKeyAlias || domain.smlClientCertHeader);
+    } else {
+      return true;
+    }
+
   }
 
 
@@ -226,6 +246,14 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       }
     });
     return this.current;
+  }
+
+  dataChanged(){
+    if (this.current.status === SearchTableEntityStatus.NEW){
+      return true;
+    }
+    return this.current.users !== this.dialogForm.value['users'];
+           this.current.extension !== this.dialogForm.value['extension'];
   }
 
   onExtensionDelete() {

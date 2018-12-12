@@ -22,8 +22,8 @@ public class DBRevisionLog {
 
 
     @Id
+    @SequenceGenerator(name="revision_generator", sequenceName = "SMP_REVISION_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "revision_generator")
-    @SequenceGenerator(name="revision_generator", sequenceName = "SMP_REVISION_SEQ", allocationSize = 1, initialValue = 1)
     @RevisionNumber
     private long id;
 

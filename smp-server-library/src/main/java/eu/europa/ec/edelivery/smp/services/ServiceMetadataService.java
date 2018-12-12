@@ -75,9 +75,9 @@ public class ServiceMetadataService {
         }
         DBServiceMetadata smd = osmd.get();
 
-
         Document signedServiceMetadata = toSignedServiceMetadatadaDocument(smd.getXmlContent());
         String sigCertAlias = smd.getServiceGroupDomain().getDomain().getSignatureKeyAlias();
+
         signer.sign(signedServiceMetadata, sigCertAlias);
         return signedServiceMetadata;
     }

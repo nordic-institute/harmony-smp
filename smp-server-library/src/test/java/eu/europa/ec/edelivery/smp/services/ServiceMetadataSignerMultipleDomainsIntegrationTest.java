@@ -13,7 +13,9 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.PropertiesMultipleDomainTestConfig;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +33,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {PropertiesMultipleDomainTestConfig.class,
-        ServiceMetadataSigner.class})
+        ServiceMetadataSigner.class,  UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class})
 public class ServiceMetadataSignerMultipleDomainsIntegrationTest {
 
     @Autowired
@@ -49,6 +51,6 @@ public class ServiceMetadataSignerMultipleDomainsIntegrationTest {
 
         // then
         SignatureUtil.validateSignature(smpSigPointer);
-        assertEquals("CN=second domain common name,OU=eDelivery,O=European Commission,C=PL", signingCertSubject);
+        assertEquals("CN=Secodn domain,OU=SMP,O=CEF Digital,C=BE", signingCertSubject);
     }
 }

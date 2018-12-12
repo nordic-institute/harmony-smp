@@ -48,7 +48,7 @@ public class ServiceMetadataDao extends BaseDao<DBServiceMetadata> {
             query.setParameter("partcId", participantId);
             query.setParameter("partcSch", participantSchema);
             query.setParameter("docId", documentId);
-            query.setParameter("docSch", documentSchema==null?"":documentSchema);
+            query.setParameter("docSch", documentSchema);
             DBServiceMetadata res = query.getSingleResult();
             return Optional.of(res);
         } catch (NoResultException e) {

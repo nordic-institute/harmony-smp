@@ -21,6 +21,9 @@
         <input matInput placeholder="Email address" name="emailAddress" [formControl]="userForm.controls['emailAddress']"
                id="emailAddress_id" maxlength="255">
       </mat-form-field>
+      <div *ngIf="userForm.controls['emailAddress'].hasError('pattern') && userForm.controls['emailAddress'].touched"
+           class="has-error">Email is invalid!
+      </div>
 
     </mat-card-content>
   </mat-card>

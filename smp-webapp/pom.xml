@@ -3,7 +3,7 @@
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.0-RC2-SNAPSHOT</version>
+        <version>4.1.1-SNAPSHOT</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp</artifactId>
@@ -75,6 +75,13 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.3</version>
+        </dependency>
+
         <dependency>
             <groupId>org.xmlunit</groupId>
             <artifactId>xmlunit-core</artifactId>
@@ -99,6 +106,11 @@
             <scope>test</scope>
         </dependency>
         <!--dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>RELEASE</version>
@@ -150,13 +162,6 @@
                 <version>2.0.2</version>
                 <configuration>
                     <warName>${project.artifactId}</warName>
-                    <webResources>
-                        <resource>
-                            <directory>${basedir}/src/main/webapp/static_resources</directory>
-                            <targetPath>static_resources</targetPath>
-                            <filtering>true</filtering>
-                        </resource>
-                    </webResources>
                     <archive>
                         <manifestEntries>
                             <WebLogic-Application-Version>v${project.version}</WebLogic-Application-Version>

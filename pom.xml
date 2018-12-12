@@ -12,13 +12,14 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec</groupId>
     <artifactId>smp-modules</artifactId>
     <packaging>pom</packaging>
     <name>SMP</name>
-    <version>4.1.0-RC2-SNAPSHOT</version>
+    <version>4.1.1-SNAPSHOT</version>
 
     <modules>
         <module>smp-parent-pom</module>
@@ -32,10 +33,10 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <project.scm.id>edelivery-scm</project.scm.id>
         <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
-        <sonar.exclusions>**/smp/data/model/*,**/smp/data/ui/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
+        <sonar.exclusions>**/smp/data/model/*,**/smp/data/ui/*, **/smp/ui/exception/*,**/smp/services/ui/filters/*,
+            **/smp/exceptions/*, **/smp/data/ui/enums/*, **/to_be_removed/*
+        </sonar.exclusions>
         <sonar.language>java</sonar.language>
-        <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
-
         <!-- jacoco remote agent settings start -->
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
@@ -44,7 +45,8 @@
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage</sonar.jacoco.codeCoveragePath>
         <sonar.jacoco.reportPath>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.reportPath>
-        <!-- jacoco, sonar code coverage settings end -->
+        <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
 
         <!-- default value for deploy under Weblogic, etc -->
         <deployWarFolder>/home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/</deployWarFolder>
@@ -52,8 +54,8 @@
 
     <scm>
         <developerConnection>scm:git:https://ec.europa.eu/cefdigital/code/scm/edelivery/smp.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
 
     <pluginRepositories>
@@ -82,7 +84,9 @@
                             <outputFolder>${sonar.jacoco.codeCoveragePath}/surefire-reports</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
-                            <settingsFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/soapui-settings.xml</settingsFile>
+                            <settingsFile>
+                                ${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/soapui-settings.xml
+                            </settingsFile>
                             <soapuiProperties>
                                 <property>
                                     <name>soapui.scripting.library</name>
@@ -98,14 +102,16 @@
                                 </property>
                             </soapuiProperties>
                             <testFailIgnore>true</testFailIgnore>
-                            <projectFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
-							<testSuite>PASSING_AUTO_BAMBOO</testSuite>
-							<!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	
-							<projectProperties>
+                            <projectFile>
+                                ${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/SMP4.0-Generic-soapui-project.xml
+                            </projectFile>
+                            <testSuite>PASSING_AUTO_BAMBOO</testSuite>
+                            <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
+                            <projectProperties>
                                 <value>url=${url}</value>
                                 <value>SMPAdminUser=${SMPAdminUser}</value>
                                 <value>SMPAdminPassword=${SMPAdminPassword}</value>
-							</projectProperties>
+                            </projectProperties>
                         </configuration>
 
                         <executions>
@@ -123,7 +129,6 @@
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>${jacoco.maven.plugin.version}</version>
-
                         <executions>
                             <execution>
                                 <phase>post-integration-test</phase>
@@ -212,8 +217,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <!-- latest version compatible with SonarQube 5.6 -->
-                <version>3.3.0.603</version>
+                <version>${sonar.maven.plugin.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>

@@ -16,22 +16,18 @@ import java.util.Objects;
 @Entity
 @Audited
 @Table(name = "SMP_SERVICE_GROUP_DOMAIN")
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "DBServiceGroupDomain.getServiceGroupDomain", query = "SELECT sgd.* FROM SMP_DOMAIN dmn  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.FK_DOMAIN_ID = dmn.id " +
+                " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID " +
+                " where sg.PARTICIPANT_IDENTIFIER = :participantIdentifier AND sg.PARTICIPANT_SCHEME=:participantScheme and dmn.DOMAIN_CODE =:domainCode", resultClass=DBServiceGroupDomain.class)
+})
 public class DBServiceGroupDomain extends BaseEntity {
 
-    /*
-    initially try with embeded id
-    @EmbeddedId
-    private DBServiceGroupDomainId i
-    initially try with embeded id
-    But then envers generated FK constraints:
-    alter table SMP_SERVICE_METADATA_AUD add constraint FKbay.. foreign key (FK_DOMAIN_ID) references SMP_DOMAIN (ID);
-    alter table SMP_SERVICE_METADATA_AUD add constraint FKn250.. foreign key (FK_SG_ID) references SMP_SERVICE_GROUP (ID);
-    Tried to use  @ForeignKey(name="beda", value = ConstraintMode.NO_CONSTRAINT)) but did not helped....
-    */
+
 
     @Id
+    @SequenceGenerator(name = "sgd_generator", sequenceName = "SMP_SERVICE_GROUP_DOMAIN_SEQ",allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgd_generator")
-    @SequenceGenerator(name = "sgd_generator", sequenceName = "SMP_SERVICE_GROUP_DOMAIN_SEQ")
     @Column(name = "ID")
     Long id;
 
@@ -56,7 +52,7 @@ public class DBServiceGroupDomain extends BaseEntity {
     private List<DBServiceMetadata> serviceMetadata = new ArrayList<>();
 
 
-    @Column(name = "SML_REGISTRED", nullable = false)
+    @Column(name = "SML_REGISTERED", nullable = false)
     private boolean smlRegistered = false;
 
     @Column(name = "CREATED_ON" , nullable = false)

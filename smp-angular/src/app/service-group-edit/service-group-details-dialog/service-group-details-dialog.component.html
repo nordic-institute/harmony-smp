@@ -11,11 +11,11 @@
           <mat-form-field style="width:100%">
             <input matInput placeholder="Participant identifier" name="participantIdentifier"
                    id="participantIdentifier_id"
-                   [formControl]="dialogForm.controls['participantIdentifier']" maxlength="255" required>
+                   [formControl]="dialogForm.controls['participantIdentifier']" maxlength="50" required>
             <div
               *ngIf="(!editMode && dialogForm.controls['participantIdentifier'].touched || editMode) &&  dialogForm.controls['participantIdentifier'].hasError('required')"
               style="color:red; font-size: 70%">
-              Participant identifier must not be empty.
+              Participant identifier must not be empty and must be up to 50 characters long.
             </div>
             <div
               *ngIf="(!editMode &&  dialogForm.controls['participantIdentifier'].hasError('dbExist'))"
@@ -28,11 +28,17 @@
             <input matInput placeholder="Participant scheme" name="participantScheme"
                    id="participantScheme_id"
                    [formControl]="dialogForm.controls['participantScheme']"
-                   maxlength="255" required>
+                   maxlength="25" required>
             <div
               *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&  dialogForm.controls['participantScheme'].hasError('required')"
               style="color:red; font-size: 70%">
               Participant scheme must not be empty.
+            </div>
+            <div
+              *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&
+               dialogForm.controls['participantScheme'].hasError('pattern')"
+              style="color:red; font-size: 70%">
+              Participant scheme must be up to 25 characters long. The Scheme Identifier MUST take the form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9]+-[a-z0-9]+-[a-z0-9]+.
             </div>
           </mat-form-field>
           </div>
@@ -62,7 +68,8 @@
                                   [formControl]="dialogForm.controls['users']"
                                   style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
                 <!--                  // if username is null then there must be an cerificate id! -->
-                <mat-list-option *ngFor="let user of lookups.cachedServiceGroupOwnerList" [value]='user'>
+                <mat-list-option  *ngFor="let user of lookups.cachedServiceGroupOwnerList" [value]='user'
+                                  style="max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;">
                   {{user.username?user.username:user.certificate?.certificateId}}
                 </mat-list-option>
               </mat-selection-list>
@@ -80,6 +87,14 @@
                       style="color:red; font-size: 70%">
                       At least one domain must be selected!
                     </div>
+                    <div
+                      *ngIf="(!editMode && dialogForm.controls['serviceGroupDomains'].touched || editMode)
+                      &&  dialogForm.controls['serviceGroupDomains'].hasError('multiDomainError')"
+                      style="color:red; font-size: 70%">
+                      SMP is in participant single domain mode! Only one domain must be selected.
+                    </div>
+
+
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
@@ -89,7 +104,8 @@
                                    [formControl]="dialogForm.controls['serviceGroupDomains']"
                                    (selectionChange)="onDomainSelectionChanged($event)"
                                    style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
-                <mat-list-option *ngFor="let domain of lookups.cachedDomainList" [value]='domain'>
+                <mat-list-option *ngFor="let domain of lookups.cachedDomainList" [value]='domain'
+                                 style="max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;" [disabled]="!isDomainProperlyConfigured(domain)">
                   {{domain.domainCode}} ({{domain.smlSubdomain}})
                 </mat-list-option>
               </mat-selection-list>
