@@ -1,18 +1,19 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
-<mat-dialog-content>
+<mat-dialog-content style="height:600px;width:1000px">
   <form [formGroup]="domainForm">
     <mat-card>
       <mat-card-title>Domain properties</mat-card-title>
-      <mat-card-content>
+      <mat-card-content >
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
-            <input matInput placeholder="Domain Code (For WS API integration: the Domain property.)" name="domainCode"
+            <input matInput placeholder="Domain Code" name="domainCode"
                    id="domainCode_id"
-                   [formControl]="domainForm.controls['domainCode']" maxlength="255" required>
+                   [formControl]="domainForm.controls['domainCode']" maxlength="63" required>
+            <mat-hint align="end">For WS API integration: the Domain property</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              Domain code must contain only chars and numbers.
+              Domain code must contain only chars and numbers and must be less than 63 chars long.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('notInList')"
@@ -21,24 +22,38 @@
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
-            <input matInput placeholder="SML domain (Part of DNS Zone: ex.eHealth: 'ehealth', peppol: '', ..)"
+            <input matInput placeholder="SML domain"
                    name="smlSubdomain" id="smldomain_id"
-                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="255">
+                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="63" >
+            <mat-hint align="end">Part of DNS Zone (e.g. for eHealth: 'ehealth', for peppol: '', ..</mat-hint>
             <div
-              *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
+              *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
+              &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              SML domain must be valid DNS part (AlphaNumeric with optional char - or must be empty for peppol).
+              SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit nor a hyphen and should not end with a hyphen.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')"
               style="color:red; font-size: 70%">
               The SML subdomain is already defined!
             </div>
+            <div
+              *ngIf="(!editMode &&  domainForm.controls['smlSubdomain'].hasError('blankDomainError'))"
+              style="color:red; font-size: 70%">
+              Domain with empty sml subdomain already exists!
+            </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
-            <input matInput placeholder="Response signature Certificate" name="signatureKeyAlias"
-                   id="signatureKeyAlias_id"
-                   [formControl]="domainForm.controls['signatureKeyAlias']" maxlength="255">
+            <mat-select placeholder="Response signature Certificate"
+                        [formControl]="domainForm.controls['signatureKeyAlias']" name="cert"
+                        id="signatureKeyAlias_id">
+              <mat-option [value]="''">Choose certificate for signing soap response</mat-option>
+              <mat-option *ngFor="let cert of lookups.cachedCertificateList" [value]="cert.alias">
+                {{cert.alias}} ({{cert.certificateId}})
+              </mat-option>
+            </mat-select>
+            <mat-hint align="end">Empty value will cause that ServiceMetadata response will not be signed by SMP!</mat-hint>
           </mat-form-field>
         </fieldset>
       </mat-card-content>
@@ -48,12 +63,14 @@
       <mat-card-content>
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
-            <input matInput placeholder="SML SMP identifier (SMP ID used for SML )" name="smlSmpId" id="smlSMPId_id"
-                   [formControl]="domainForm.controls['smlSmpId']" maxlength="255" required>
+            <input matInput placeholder="SML SMP identifier" name="smlSmpId" id="smlSMPId_id"
+                   [formControl]="domainForm.controls['smlSmpId']" maxlength="63">
+            <mat-hint align="end">SMP ID used for SML</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              SML SMP ID must be valid DNS part (AlphaNumeric with optional char -)!
+              SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit nor a hyphen and should not end with a hyphen.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('notInList')"
@@ -61,31 +78,37 @@
               SML SMP ID already exists!
             </div>
           </mat-form-field>
+
+          <mat-form-field style="width:100%">
+            <mat-select [(value)]="selectedSMLCert"
+                        placeholder="ClientCert Alias"
+                        [formControl]="domainForm.controls['smlClientKeyCertificate']"
+                        name="cert"
+                        id="smlClientKeyAlias_id">
+              <mat-option [value]="''">Choose certificate for SML integration</mat-option>
+              <mat-option *ngFor="let cert of lookups.cachedCertificateList" [value]="cert">
+                {{cert.alias}} ({{cert.certificateId}})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
           <mat-form-field style="width:100%">
             <input matInput placeholder="ClientCert Header" name="Client certificate" id="smlClientHeader_id"
-                   [formControl]="domainForm.controls['smlClientCertHeader']" maxlength="2000">
+                   [value]="selectedSMLCert?.blueCoatHeader" maxlength="2000" readonly="true">
           </mat-form-field>
-          <label class="custom-file-upload">
-            <input #fileInput type="file" style="display: inline-block;cursor: pointer; display: none;"
-                   id="certificate-file-upload" accept=".cer,.crt,.pem,.der"
-                   (change)="uploadCertificate($event)">
-            <button mat-flat-button color="primary"
-                    (click)="fileInput.click()"
-            >Generate 'ClientCert Header' from certificate
-            </button>
-          </label>
-          <mat-form-field style="width:100%">
-            <input matInput placeholder="ClientCert Alias" name="Client certificate" id="smlClientKeyAlias_id"
-                   [formControl]="domainForm.controls['smlClientKeyAlias']" maxlength="255">
-          </mat-form-field>
+
+          <mat-slide-toggle style="width:100%"
+                            mat-no-ink class="mat-primary" [formControl]="domainForm.controls['smlBlueCoatAuth']"
+                            id="smlBlueCoatAuth_id">
+            Use blueCoat http header authentication.
+          </mat-slide-toggle>
+
         </fieldset>
-        <!-- label class="custom-file-upload">
-          <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" >
-          <span class="custom-file-upload-inner">Import</span>
-        </label-->
+
       </mat-card-content>
     </mat-card>
   </form>
+
 </mat-dialog-content>
 
 <table class="buttonsRow">

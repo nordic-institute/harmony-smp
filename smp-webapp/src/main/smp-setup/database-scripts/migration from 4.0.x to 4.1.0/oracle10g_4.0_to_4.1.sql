@@ -13,10 +13,10 @@ alter table SMP_USER rename to SMP_USER_BCK;
 -- --------------------------------------------------------------------------------------------------------- 
 create sequence SMP_DOMAIN_SEQ start with 1 increment by  1;
 create sequence SMP_REVISION_SEQ start with 1 increment by  1;
-create sequence SMP_SERVICE_GROUP_DOMAIN_SEQ start with 1 increment by  50;
-create sequence SMP_SERVICE_GROUP_SEQ start with 1 increment by  50;
-create sequence SMP_SERVICE_METADATA_SEQ start with 1 increment by  50;
-create sequence SMP_USER_SEQ start with 1 increment by  50;
+create sequence SMP_SERVICE_GROUP_DOMAIN_SEQ start with 1 increment by  1;
+create sequence SMP_SERVICE_GROUP_SEQ start with 1 increment by  1;
+create sequence SMP_SERVICE_METADATA_SEQ start with 1 increment by  1;
+create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     create table SMP_CERTIFICATE (
        ID number(19,0) not null,
@@ -57,6 +57,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         SML_PARTC_IDENT_REGEXP varchar2(4000 char),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
+        SML_REGISTERED number(1,0),
+        SML_BLUE_COAT_AUTH number(1,0),
         primary key (ID)
     );
 
@@ -73,7 +75,18 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         SML_PARTC_IDENT_REGEXP varchar2(4000 char),
         SML_SMP_ID varchar2(256 char),
         SML_SUBDOMAIN varchar2(256 char),
+        SML_REGISTERED number(1,0),
+        SML_BLUE_COAT_AUTH number(1,0),
         primary key (ID, REV)
+    );
+
+    create table SMP_CONFIGURATION (
+       PROPERTY varchar2(512 char) not null,
+        CREATED_ON timestamp not null,
+        DESCRIPTION varchar2(4000 char),
+        LAST_UPDATED_ON timestamp not null,
+        VALUE varchar2(4000 char),
+        primary key (PROPERTY)
     );
 
     create table SMP_OWNERSHIP (
@@ -122,7 +135,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
-        SML_REGISTRED number(1,0) not null,
+        SML_REGISTERED number(1,0) not null,
         FK_DOMAIN_ID number(19,0),
         FK_SG_ID number(19,0),
         primary key (ID)
@@ -134,7 +147,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         REVTYPE number(3,0),
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
-        SML_REGISTRED number(1,0),
+        SML_REGISTERED number(1,0),
         FK_DOMAIN_ID number(19,0),
         FK_SG_ID number(19,0),
         primary key (ID, REV)
@@ -340,8 +353,8 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
 
 -- migrate domains
-INSERT INTO SMP_DOMAIN (ID, DOMAIN_CODE, SIGNATURE_KEY_ALIAS,SML_CLIENT_CERT_HEADER, SML_PARTC_IDENT_REGEXP, SML_SMP_ID, SML_SUBDOMAIN, LAST_UPDATED_ON, CREATED_ON )
-   SELECT SMP_DOMAIN_SEQ.nextval, DOMAINID, SIGNATURECERTALIAS, BDMSLCLIENTCERTHEADER, '', BDMSLSMPID,'', sysdate, sysdate
+INSERT INTO SMP_DOMAIN (ID,SML_BLUE_COAT_AUTH,SML_REGISTERED, DOMAIN_CODE, SIGNATURE_KEY_ALIAS,SML_CLIENT_CERT_HEADER, SML_PARTC_IDENT_REGEXP, SML_SMP_ID, SML_SUBDOMAIN, LAST_UPDATED_ON, CREATED_ON )
+   SELECT SMP_DOMAIN_SEQ.nextval,0,0, DOMAINID, SIGNATURECERTALIAS, BDMSLCLIENTCERTHEADER, '', BDMSLSMPID,'', sysdate, sysdate
       FROM SMP_DOMAIN_BCK;
 
 -- migrate users
@@ -362,7 +375,7 @@ INSERT INTO SMP_SG_EXTENSION (ID, CREATED_ON, LAST_UPDATED_ON, EXTENSION)
         and sg.PARTICIPANT_SCHEME= sgb.BUSINESSIDENTIFIERSCHEME and sgb.extension is not null;
 
 -- insert service group domains 
-INSERT INTO SMP_SERVICE_GROUP_DOMAIN (ID, CREATED_ON, LAST_UPDATED_ON, SML_REGISTRED, FK_DOMAIN_ID, FK_SG_ID )
+INSERT INTO SMP_SERVICE_GROUP_DOMAIN (ID, CREATED_ON, LAST_UPDATED_ON, SML_REGISTERED, FK_DOMAIN_ID, FK_SG_ID )
     select SMP_SERVICE_GROUP_DOMAIN_SEQ.nextval, sysdate, sysdate, 0, D.ID, SG.ID from SMP_SERVICE_GROUP_BCK SGB, SMP_SERVICE_GROUP SG, SMP_DOMAIN D WHERE
         SGB.BUSINESSIDENTIFIER = SG.PARTICIPANT_IDENTIFIER
         and SGB.BUSINESSIDENTIFIERSCHEME = SG.PARTICIPANT_SCHEME

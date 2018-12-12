@@ -3,10 +3,13 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 /**
  * @author Sebastian-Ion TINCU
@@ -24,7 +27,7 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         target.setUsername(source.getUsername());
         target.setRole(source.getRole());
         target.setPassword(source.getPassword());
-        target.setPasswordChanged(source.getPasswordChanged());
+        target.setPasswordExpired(isPasswordExpired(source));
         target.setActive(source.isActive());
         target.setId(source.getId());
         if (source.getCertificate() != null) {
@@ -32,5 +35,18 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
             target.setCertificate(certificateRO);
         }
         return target;
+    }
+
+    private boolean isPasswordExpired(DBUser source) {
+        return StringUtils.isNotEmpty(source.getPassword())
+                && (isPasswordRecentlyReset(source) || isPasswordChangedLongerThanThreeMonthsAgo(source));
+    }
+
+    private boolean isPasswordRecentlyReset(DBUser source) {
+        return source.getPasswordChanged() == null;
+    }
+
+    private boolean isPasswordChangedLongerThanThreeMonthsAgo(DBUser source) {
+        return LocalDateTime.now().minusMonths(3).isAfter(source.getPasswordChanged());
     }
 }

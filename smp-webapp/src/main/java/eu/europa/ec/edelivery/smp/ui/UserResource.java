@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,7 +74,8 @@ public class UserResource {
     public UserRO updateCurrentUser(@PathVariable("id") Long id, @RequestBody UserRO user) {
         LOG.info("Update current user: {}", user);
 
-        uiUserService.updateUserList(Arrays.asList(user));
+        // Update the user and mark the password as changed at this very instant of time
+        uiUserService.updateUserList(Arrays.asList(user), LocalDateTime.now());
 
         DBUser updatedUser = uiUserService.findUser(id);
         UserRO userRO = uiUserService.convertToRo(updatedUser);
@@ -85,13 +87,16 @@ public class UserResource {
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public void updateUserList(@RequestBody UserRO[] updateEntities ){
         LOG.info("Update user list, count: {}", updateEntities.length);
-        uiUserService.updateUserList(Arrays.asList(updateEntities));
+        // Pass the users and mark the passwords of the ones being updated as expired by passing the passwordChange as null
+        uiUserService.updateUserList(Arrays.asList(updateEntities), null);
     }
 
-    @PostMapping("/{id}/certdata")
+    @PostMapping(value = "/{id}/certdata" ,produces = {"application/json"},consumes = {"application/octet-stream"})
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
     public CertificateRO uploadFile(@PathVariable("id") Long id, @RequestBody byte[] data) {
-        LOG.info("Got certificate data: " + data.length);
+        LOG.info("Got certificate data size: {}", data.length);
+
+
         try {
             return uiUserService.getCertificateData(data);
         } catch (IOException | CertificateException e) {

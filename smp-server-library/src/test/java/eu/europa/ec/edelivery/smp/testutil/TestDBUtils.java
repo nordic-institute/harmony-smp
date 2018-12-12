@@ -17,6 +17,7 @@ public class TestDBUtils {
         domain.setSmlClientCertHeader(UUID.randomUUID().toString());
         domain.setSmlClientKeyAlias(UUID.randomUUID().toString());
         domain.setSmlSubdomain(UUID.randomUUID().toString());
+        domain.setSmlSmpId(UUID.randomUUID().toString());
         domain.setSmlParticipantIdentifierRegExp(UUID.randomUUID().toString());
         return domain;
     }
@@ -41,7 +42,7 @@ public class TestDBUtils {
         DBServiceMetadata grp = new DBServiceMetadata();
         grp.setDocumentIdentifier(docId);
         grp.setDocumentIdentifierScheme(docSch);
-        grp.setXmlContent(generateDocumentSample(partcSch, partcId,docSch, docId, desc));
+        grp.setXmlContent(generateDocumentSample(partcId, partcSch,docId, docSch, desc));
         return grp;
     }
 
@@ -54,6 +55,10 @@ public class TestDBUtils {
 
     public static DBServiceGroup createDBServiceGroup(String id, String sch) {
         return createDBServiceGroup(id, sch, true);
+    }
+
+    public static DBServiceGroup createDBServiceGroupRandom() {
+        return createDBServiceGroup(UUID.randomUUID().toString(), UUID.randomUUID().toString(), true);
     }
 
     public static DBServiceGroup createDBServiceGroup(String id, String sch, boolean withExtension) {
