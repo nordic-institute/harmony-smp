@@ -278,7 +278,7 @@ public class SMPRestClient {
 	}
 
 	private static JSONObject getSGforPI(String pi){
-		Cookie jssesionID = login("SYS_ADMIN");
+		Cookie jssesionID = login("SMP_ADMIN");
 		try {
 			String responseRaw = resource.path(SMPPaths.SERVICE_GROUP)
 					.queryParam("page", "-1")
@@ -334,7 +334,7 @@ public class SMPRestClient {
 	}
 
 	public static boolean deleteSG(String pi){
-		Cookie jssesionID = login("SG_ADMIN");
+		Cookie jssesionID = login("SMP_ADMIN");
 		try {
 			String putStr = "[" + getSGforPI(pi).put("status", 3).toString() + "]";
 			ClientResponse getResponse = resource.path(SMPPaths.SERVICE_GROUP)
