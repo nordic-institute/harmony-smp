@@ -256,7 +256,7 @@ public class EditPgTest extends BaseTest{
 		popup.domainsPanel.expandSection();
 
 		List<String> listedOptions = popup.domainsPanel.getOptions();
-		List<String> domains = SMPRestClient.getDomainAndSubdomain();
+		List<String> domains = SMPRestClient.getDomainAndSubdomains();
 
 		for (String domain : domains) {
 			boolean found = false;
@@ -277,7 +277,8 @@ public class EditPgTest extends BaseTest{
 	@Test(description = "EDT-90")
 	public void extensionValidatedOnOK(){
 		String identifier = Generator.randomAlphaNumeric(7);
-		String scheme = Generator.randomAlphaNumeric(7);
+		String tmpSchemeRoot = Generator.randomAlphaNumeric(3).toLowerCase();
+		String scheme = String.format("%s-%s-%s", tmpSchemeRoot, tmpSchemeRoot, tmpSchemeRoot);
 
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
@@ -292,6 +293,7 @@ public class EditPgTest extends BaseTest{
 
 		soft.assertTrue(!popup.getErrorMessage().isEmpty(), "Error message displayed when entering invalid xml in extension area");
 
+		popup.clickClear();
 		popup.generateRndExtension();
 		popup.clickOK();
 
@@ -308,8 +310,10 @@ public class EditPgTest extends BaseTest{
 				, "Service group was saved and is visible in search");
 
 
+		SMPRestClient.deleteSG(identifier);
+
 		identifier = Generator.randomAlphaNumeric(10);
-		scheme = Generator.randomAlphaNumeric(10);
+//		scheme = Generator.randomAlphaNumeric(10);
 
 		popup = page.clickNew();
 		popup.fillParticipantIdentifier(identifier);

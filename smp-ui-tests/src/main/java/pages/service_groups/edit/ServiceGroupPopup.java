@@ -95,6 +95,11 @@ public class ServiceGroupPopup extends PageComponent {
 		waitForElementToBeGone(okButton);
 	}
 
+	public void clickClear(){
+		waitForElementToBeClickable(clearExtensionButton).click();
+		waitForXMillis(100);
+	}
+
 	public void clickCancel(){
 		waitForElementToBeClickable(cancelButton).click();
 		waitForElementToBeGone(okButton);
@@ -161,10 +166,8 @@ public class ServiceGroupPopup extends PageComponent {
 	}
 
 	public void generateRndExtension(){
-		clearAndFillInput(extensionTextArea, " ");
-		participantIdentifierInput.click();
 		extensionWizardButton.click();
-		new MetadataWizardPopup(driver).fillWithRndStrings();
+		new SGExtensionWizzard(driver).fillWithRndStrings();
 
 	}
 
