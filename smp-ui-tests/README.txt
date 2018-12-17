@@ -16,6 +16,11 @@ After unzipping the path to the executable need to be updated in the pom.xml fil
 under "/project/profiles/profile/build/plugins/plugin/configuration/systemPropertyVariables".
 
 In the same set of variables please update the URL for the SMP home page.
+Maven parameters
+ - url - Sets the SMP url without ui context. Ex.: http://localhost:7001/smp
+ - gecko.driver.path - set the path to gecko driver. Ex.:  /opt/drivers/geckodriver
+ - chrome.driver.path - set the path to gecko driver. Ex.:  drivers/chromedriver.exe
+
 
 * Run:
 
@@ -27,6 +32,9 @@ To run on Linux command line you need to install "Xvfb" and of course Firefox or
 (There is a crash when starting Chromium so it is better to run using Firefox until the crash is resolved)
 
 sudo xvfb-run --server-args="-screen 0 1920x1080x24" mvn test -P<profileName>
+example
+mvn clean install  -Pubuntu -Durl=http://localhost:7001/smp -Dgecko.driver.path=drivers/geckodriver
+
 
 * Reports
 
