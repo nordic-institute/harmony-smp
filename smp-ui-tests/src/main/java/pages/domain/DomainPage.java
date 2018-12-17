@@ -80,6 +80,7 @@ public class DomainPage extends SMPPage {
 	
 	public void clickDelete(){
 		waitForElementToBeClickable(deleteBtn).click();
+		waitForElementToBeEnabled(saveBtn);
 	}
 	public DomainPopup clickNew(){
 		waitForElementToBeClickable(newBtn).click();

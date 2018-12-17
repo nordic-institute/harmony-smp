@@ -9,8 +9,8 @@ import pages.components.baseComponents.PageComponent;
 import utils.Generator;
 import utils.PROPERTIES;
 
-public class MetadataWizardPopup extends PageComponent {
-	public MetadataWizardPopup(WebDriver driver) {
+public class SGExtensionWizzard extends PageComponent {
+	public SGExtensionWizzard(WebDriver driver) {
 		super(driver);
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 	}

@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import pages.service_groups.search.pojo.ServiceGroup;
+import utils.Generator;
 import utils.PROPERTIES;
 import utils.TestDataProvider;
 
@@ -40,7 +41,7 @@ public class SMPRestClient {
 	}
 
 
-	public static List<String> getDomainAndSubdomain(){
+	public static List<String> getDomainAndSubdomains(){
 		List<String> domainList = new ArrayList<>();
 		try {
 			String responseRaw = resource.path(SMPPaths.REST_DOMAIN_LIST)
@@ -64,25 +65,14 @@ public class SMPRestClient {
 		return domainList;
 	}
 
-	public static List<String> getDomainCodes(){
-
-		List<String> domainList = new ArrayList<>();
-		try {
-			String responseRaw = resource.path(SMPPaths.REST_DOMAIN_LIST)
-					.queryParam("page", "-1")
-					.queryParam("pageSize", "-1")
-					.accept(MediaType.APPLICATION_JSON_TYPE)
-					.type(MediaType.APPLICATION_JSON_TYPE)
-					.get(String.class);
-			JSONArray restDomains = new JSONObject(responseRaw).getJSONArray("serviceEntities");
-
-			for (int i = 0; i < restDomains.length(); i++) {
-				JSONObject currentDomain = restDomains.getJSONObject(i);
-				String currentDomainStr = currentDomain.getString("domainCode").trim();
-				domainList.add(currentDomainStr);
+	public static String getDomainSubDomainCombo(String domainCode){
+		List<String> allDomains = getDomainAndSubdomains();
+		for (String allDomain : allDomains) {
+			if(allDomain.startsWith(domainCode + " ")){
+				return allDomain;
 			}
-		} catch (Exception e) { }
-		return domainList;
+		}
+		return domainCode;
 	}
 
 	public static Cookie login(String role){
@@ -219,6 +209,42 @@ public class SMPRestClient {
 		return false;
 	}
 
+	public static boolean createMetadata(String pi){
+		String template = "{\"documentIdentifier\":\"%s\",\"documentIdentifierScheme\":\"%s\",\"smlSubdomain\":\"%s\",\"domainCode\":\"%s\",\"domainId\":%s,\"status\":2,\"xmlContentStatus\":2}";
+		String xmlTemplate = "<ServiceMetadata xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"> <ServiceInformation> <ParticipantIdentifier scheme=\"%s\">%s</ParticipantIdentifier> <DocumentIdentifier scheme=\"%s\">%s</DocumentIdentifier> <ProcessList> <Process> <ProcessIdentifier scheme=\"[enterProcessType]\">[enterProcessName]</ProcessIdentifier> <ServiceEndpointList> <Endpoint transportProfile=\"bdxr-transport-ebms3-as4-v1p0\"> <EndpointURI>https://mypage.eu</EndpointURI> <Certificate>UGFzdGUgYmFzZTY0IGVuY29kZWQgY2VydGlmaWNhdGUgb2YgQVA=</Certificate> <ServiceDescription>Service description for partners</ServiceDescription> <TechnicalContactUrl>www.best-page.eu</TechnicalContactUrl> </Endpoint> </ServiceEndpointList> </Process> </ProcessList> </ServiceInformation> </ServiceMetadata>";
+
+		try {
+
+			JSONObject sg = getSGforPI(pi);
+			JSONObject domain = sg.getJSONArray("serviceGroupDomains").getJSONObject(0);
+			String domainCode = domain.getString("domainCode");
+			String subdomain = domain.getString("smlSubdomain");
+			String domainId = domain.getString("domainId");
+			String docID = Generator.randomAlphaNumeric(5);
+			String docscheme = Generator.randomAlphaNumeric(5);
+
+			String xmlContent = String.format(xmlTemplate, sg.getString("participantScheme"), pi, docscheme, docID);
+
+			String postMeta = String.format(template, docID, docscheme, subdomain, domainCode, domainId);
+
+			sg.getJSONArray("serviceMetadata").put(new JSONObject(postMeta).put("xmlContent", xmlContent));
+			sg.put("status", 1);
+
+
+			Cookie jssesionID = login("SMP_ADMIN");
+			ClientResponse getResponse = resource.path(SMPPaths.SERVICE_GROUP)
+					.accept(MediaType.APPLICATION_JSON_TYPE)
+					.type(MediaType.APPLICATION_JSON_TYPE)
+					.cookie(jssesionID)
+					.put(ClientResponse.class, new JSONArray().put(sg).toString());
+
+			return getResponse.getStatus() == 200;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	public static String getMetadataString(String url){
 		try {
 			System.out.println("url = " + url);
@@ -283,6 +309,7 @@ public class SMPRestClient {
 			String responseRaw = resource.path(SMPPaths.SERVICE_GROUP)
 					.queryParam("page", "-1")
 					.queryParam("pageSize", "-1")
+					.queryParam("participantIdentifier", pi)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
 					.cookie(jssesionID)

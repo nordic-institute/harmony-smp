@@ -2,10 +2,7 @@ package pages.components.baseComponents;
 
 
 import org.apache.log4j.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -43,7 +40,7 @@ public class PageComponent {
 	public WebElement waitForElementToBeVisible(WebElement element) {
 		return webDriverWait.until(ExpectedConditions.visibilityOf(element));
 	}
-	
+
 	public void waitForElementToBeEnabled(WebElement element) {
 		int maxTimeout = PROPERTIES.TIMEOUT * 1000;
 		int waitedSoFar = 0;
@@ -72,28 +69,10 @@ public class PageComponent {
 	}
 
 	public void clickVoidSpace(){
-		WebElement topLogoText = driver.findElement(By.id("topLogo"));
-		By overlayLocator = By.cssSelector("[class*=\"overlay-backdrop\"]");
-		Point logoPoint = topLogoText.getLocation();
-		int x = logoPoint.x;
-		int y = logoPoint.y;
-
 		try {
-			webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(overlayLocator));
-			new Actions(driver).moveByOffset(x, y).click().build().perform();
-		} catch (Exception e) {
-
-		}
-		try {
-			int c=0;
-			while(c<30){
-				if(null != driver.findElement(overlayLocator)){
-					new Actions(driver).moveByOffset(x, y).click().build().perform();
-					waitForXMillis(500);
-				}
-				c++;
-			}
-
+			waitForXMillis(500);
+			((JavascriptExecutor)driver).executeScript("document.querySelector('[class*=\"overlay-backdrop\"]').click()");
+			waitForXMillis(500);
 		} catch (Exception e) {	}
 		waitForXMillis(500);
 	}

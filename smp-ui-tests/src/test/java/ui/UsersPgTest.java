@@ -123,7 +123,7 @@ public class UsersPgTest extends BaseTest {
 	public void passwordValidation(){
 
 		ArrayList<String> passToValidate = new ArrayList<>(Arrays.asList("qwqw",
-//				"QWERQWERQWERQWERQWERQWERQWERQWE33",
+				"QWERQWERQWERQWERQWERQWERQWERQWE33",
 //				"QWERTYUIOP",
 //				"qwertyuiop",
 //				"321654987",
@@ -136,9 +136,9 @@ public class UsersPgTest extends BaseTest {
 		UsersPage usersPage = new UsersPage(driver);
 
 		for (String pass : passToValidate) {
-			usersPage.refreshPage();
-//			usersPage.clickVoidSpace();
-//			usersPage.waitForXMillis(5000);
+//			usersPage.refreshPage();
+			usersPage.clickVoidSpace();
+
 			UserPopup popup = usersPage.clickNew();
 			popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
 			popup.clickUserDetailsToggle();
@@ -405,7 +405,7 @@ public class UsersPgTest extends BaseTest {
 		SMPRestClient.createUser(username, "SMP_ADMIN");
 		SMPRestClient.createServiceGroup(pi, ps,
 				new ArrayList<>(Arrays.asList(username)),
-				new ArrayList<>(Arrays.asList("domainNoble", "domainEPREL"))
+				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
 		SoftAssert soft = new SoftAssert();
