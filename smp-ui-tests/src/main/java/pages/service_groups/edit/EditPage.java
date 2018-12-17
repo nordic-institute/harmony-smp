@@ -100,6 +100,7 @@ public class EditPage extends SMPPage {
 
 
 	public ServiceGroupGrid getGrid(){
+		waitForElementToBeVisible(searchTable);
 		ServiceGroupGrid grid = new ServiceGroupGrid(driver, searchTable);
 		return grid;
 	}
