@@ -219,6 +219,8 @@ public class DomainPgTest extends BaseTest {
 		SoftAssert soft = new SoftAssert();
 		DomainPage page = new DomainPage(driver);
 
+		page.refreshPage();
+
 		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 

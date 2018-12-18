@@ -24,7 +24,10 @@ public class SearchPgTest extends BaseTest {
 
 	@AfterMethod
 	public void resetFilters(){
-		new SMPPage(driver).refreshPage();
+		SMPPage page  = new SMPPage(driver);
+		page.refreshPage();
+		page.waitForXMillis(500);
+
 	}
 
 	@Test(description = "SRCH-0")
