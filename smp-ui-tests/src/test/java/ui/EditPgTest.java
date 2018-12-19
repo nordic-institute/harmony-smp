@@ -7,6 +7,7 @@ import org.testng.asserts.SoftAssert;
 import pages.components.ConfirmationDialog;
 import pages.components.baseComponents.SMPPage;
 import pages.service_groups.ServiceGroupGrid;
+import pages.service_groups.ServiceGroupRow;
 import pages.service_groups.edit.EditPage;
 import pages.service_groups.edit.ServiceGroupPopup;
 import pages.service_groups.edit.ServiceGroupRowE;
@@ -36,6 +37,11 @@ public class EditPgTest extends BaseTest{
 	public void loginAndGoToEditPage(){
 
 		SMPPage page = new SMPPage(driver);
+
+		if(page.pageHeader.sandwichMenu.isLoggedIn()){
+			logger.info("Logout!!");
+			page.pageHeader.sandwichMenu.logout();
+		}
 
 		if(!page.pageHeader.sandwichMenu.isLoggedIn()){
 			logger.info("Login!!");
@@ -88,10 +94,11 @@ public class EditPgTest extends BaseTest{
 		Integer index = 0;
 
 		ServiceGroupRowE row0 = grid.getRowsAs(ServiceGroupRowE.class).get(index);
+		String pi = row0.getParticipantIdentifier();
 		grid.doubleClickRow(index);
 		ServiceGroupPopup popup = new ServiceGroupPopup(driver);
 
-		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for appropriate service group");
+		soft.assertTrue(pi.equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for appropriate service group");
 		soft.assertTrue(popup.isExtensionAreaEditable(), "extension area is editable");
 
 		popup.enterDataInExtensionTextArea("kjsfdfjfhskdjfhkjdhfksdjhfjksdhfjksd");
@@ -101,7 +108,9 @@ public class EditPgTest extends BaseTest{
 		popup.enterDataInExtensionTextArea(extensionData);
 		popup.clickOK();
 
-		page.saveChanges();
+		page.saveChangesAndConfirm();
+
+		index = scrollToSG(pi);
 
 		page.getGrid().doubleClickRow(index);
 		ServiceGroupPopup popup2 = new ServiceGroupPopup(driver);
@@ -109,10 +118,12 @@ public class EditPgTest extends BaseTest{
 
 		popup2.enterDataInExtensionTextArea("");
 		popup2.clickCancel();
-//TODO: refactor this assert bellow
-//		page.getGrid().doubleClickRow(0);
-//		ServiceGroupPopup popup3 = new ServiceGroupPopup(driver);
-//		soft.assertTrue(!popup3.getExtensionAreaContent().isEmpty(), "Extension data is NOT saved empty as expected");
+
+		index = scrollToSG(pi);
+
+		page.getGrid().doubleClickRow(index);
+		ServiceGroupPopup popup3 = new ServiceGroupPopup(driver);
+		soft.assertTrue(!popup3.getExtensionAreaContent().isEmpty(), "Extension data is NOT saved empty as expected");
 
 
 		soft.assertAll();
@@ -380,6 +391,29 @@ public class EditPgTest extends BaseTest{
 
 		soft.assertAll();
 
+	}
+
+	private int scrollToSG(String pi){
+		EditPage page = new EditPage(driver);
+		page.pagination.skipToFirstPage();
+
+		boolean end = false;
+		while (!end) {
+			page = new EditPage(driver);
+
+			List<ServiceGroupRow> rows = page.getGrid().getRows();
+			for (int i = 0; i < rows.size(); i++) {
+				if(rows.get(i).getParticipantIdentifier().equalsIgnoreCase(pi)){
+					return i;
+				}
+			}
+
+			if(page.pagination.hasNextPage()){
+				page.pagination.goToNextPage();
+			}else{end = true;}
+		}
+
+		return -1;
 	}
 
 }
