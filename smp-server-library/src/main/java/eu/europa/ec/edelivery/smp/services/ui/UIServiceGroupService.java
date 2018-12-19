@@ -125,9 +125,19 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         ex.setParticipantScheme(dbServiceGroup.getParticipantScheme());
 
         if (dbServiceGroup.getExtension() != null) {
-            ex.setExtension(new String(dbServiceGroup.getExtension()));
+            ex.setExtension(getConvertExtensionToString(serviceGroupId, dbServiceGroup.getExtension()));
         }
         return ex;
+    }
+
+    private String getConvertExtensionToString(Long id,  byte[] extension){
+        try {
+            return new String(extension, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            LOG.error("Error converting the extension to String for id:" + id, e);
+            return null;
+        }
+
     }
 
     @Transactional
