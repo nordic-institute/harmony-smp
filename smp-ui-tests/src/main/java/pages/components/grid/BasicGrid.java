@@ -20,12 +20,24 @@ public class BasicGrid extends PageComponent {
 		super(driver);
 		
 		log.info("Loading basic grid");
+		waitToLoad();
 		PageFactory.initElements( new DefaultElementLocatorFactory(container) , this);
 
 		for (int i = 0; i < gridHeaders.size(); i++) {
 			headerTxt.add(gridHeaders.get(i).getText().trim());
 		}
 
+	}
+
+	private By loadingBar = By.className("mat-ripple-element");
+
+	private void waitToLoad(){
+		try {
+			waitForXMillis(500);
+			waitForElementToBeGone(driver.findElement(loadingBar));
+		} catch (Exception e) {
+
+		}
 	}
 
 	@FindBy(css = "datatable-header div.datatable-row-center datatable-header-cell")

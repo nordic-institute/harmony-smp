@@ -15,6 +15,7 @@ import utils.PROPERTIES;
 public class DomainPage extends SMPPage {
 	public DomainPage(WebDriver driver) {
 		super(driver);
+		this.pageHeader.waitForTitleToBe("Domain");
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 	}
 	

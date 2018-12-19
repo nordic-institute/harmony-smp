@@ -15,7 +15,8 @@ public class SearchPage extends SMPPage {
 		super(driver);
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 
-		waitForElementToBeVisible(searchGridContainer);
+		this.pageHeader.waitForTitleToBe("Search");
+
 		serviceGroupGrid = new ServiceGroupGrid(driver, searchGridContainer);
 
 	}

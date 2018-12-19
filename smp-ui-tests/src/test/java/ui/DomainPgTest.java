@@ -266,6 +266,7 @@ public class DomainPgTest extends BaseTest {
 		SoftAssert soft = new SoftAssert();
 
 		DomainPage page = new DomainPage(driver);
+		page.refreshPage();
 
 		int index = scrollToDomain(domainName);
 		page.grid().selectRow(index);

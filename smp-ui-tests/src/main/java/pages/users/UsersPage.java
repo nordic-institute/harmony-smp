@@ -17,6 +17,7 @@ import java.util.List;
 public class UsersPage extends SMPPage {
 	public UsersPage(WebDriver driver) {
 		super(driver);
+		this.pageHeader.waitForTitleToBe("Users");
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 	}
 
@@ -61,16 +62,10 @@ public class UsersPage extends SMPPage {
 		return saveBtn.isEnabled();
 	}
 	public boolean isDeleteButtonEnabled(){
-		waitForElementToBeEnabled(deleteBtn);
+		waitForXMillis(200);
 		return deleteBtn.isEnabled();
 	}
-	public boolean isEditButtonEnabled(){
-		return editBtn.isEnabled();
-	}
-	public boolean isNewButtonEnabled(){
-		return newBtn.isEnabled();
-	}
-	
+
 	public ConfirmationDialog clickCancel(){
 		waitForElementToBeClickable(cancelBtn).click();
 		return new ConfirmationDialog(driver);
