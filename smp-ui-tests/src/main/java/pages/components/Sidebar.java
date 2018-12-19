@@ -57,6 +57,7 @@ public class Sidebar extends PageComponent {
 				break;
 		}
 
+		waitForXMillis(500);
 		return PageFactory.initElements(driver, expect);
 	}
 
