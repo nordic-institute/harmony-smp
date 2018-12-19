@@ -61,8 +61,18 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
         serviceMetadataRO.setId(dbServiceMetadata.getId());
         serviceMetadataRO.setDocumentIdentifier(dbServiceMetadata.getDocumentIdentifier());
         serviceMetadataRO.setDocumentIdentifierScheme(dbServiceMetadata.getDocumentIdentifierScheme());
-        serviceMetadataRO.setXmlContent(new String(dbServiceMetadata.getXmlContent()));
+        serviceMetadataRO.setXmlContent(getConvertServiceMetadataToString( serviceMetadataId, dbServiceMetadata.getXmlContent()));
         return serviceMetadataRO;
+    }
+
+    private String getConvertServiceMetadataToString(Long id,  byte[] extension){
+        try {
+            return new String(extension, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            LOG.error("Error converting the servicemetadata to utf-8 String for id:" + id, e);
+            return null;
+        }
+
     }
 
     /**
