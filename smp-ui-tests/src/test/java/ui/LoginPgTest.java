@@ -19,7 +19,7 @@ public class LoginPgTest extends BaseTest {
 	@AfterMethod
 	public void logoutAndReset(){
 
-		SearchPage page = new SearchPage(driver);
+		SMPPage page = new SMPPage(driver);
 		page.refreshPage();
 
 		if(page.pageHeader.sandwichMenu.isLoggedIn()){
@@ -123,7 +123,7 @@ public class LoginPgTest extends BaseTest {
 
 		LoginPage loginPage = new LoginPage(driver);
 
-		loginPage.login("invalidUsername", "nonexistentPassword");
+		loginPage.invalidLogin("invalidUsername", "nonexistentPassword");
 
 		AlertMessage message = loginPage.alertArea.getAlertMessage();
 		soft.assertTrue(message.isError(), "Check message is error message");

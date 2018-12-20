@@ -18,4 +18,5 @@
 
 
 .idea/**
+.target/**
 .\src\main\java\Main.java
