@@ -5,7 +5,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import pages.service_groups.ServiceGroupRow;
 
-public class ServiceGroupRowE extends pages.service_groups.ServiceGroupRow {
+public class ServiceGroupRowE extends ServiceGroupRow {
 	public ServiceGroupRowE(WebDriver driver, WebElement container) {
 		super(driver, container);
 	}

@@ -93,6 +93,13 @@ public class LoginPage extends SMPPage {
 		return new SearchPage(driver);
 	}
 
+	public void invalidLogin(String user, String pass){
+		clearAndFillInput(username, user);
+		clearAndFillInput(password, pass);
+
+		loginBtn.click();
+	}
+
 	public SearchPage login(String role){
 		log.info("Login started!!");
 

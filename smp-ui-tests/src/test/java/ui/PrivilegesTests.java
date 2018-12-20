@@ -61,7 +61,7 @@ public class PrivilegesTests extends BaseTest {
 		String ps = Generator.randomAlphaNumeric(10);
 
 		SMPRestClient.createServiceGroup(pi, ps,
-				new ArrayList<>(Arrays.asList(createdUsers.get(0))),
+				new ArrayList<>(Arrays.asList("user")),
 				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
