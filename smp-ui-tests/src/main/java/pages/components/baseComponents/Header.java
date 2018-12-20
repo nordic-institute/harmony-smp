@@ -19,7 +19,7 @@ public class Header extends PageComponent{
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 	}
 
-	@FindBy(css = "page-header > h1")
+	@FindBy(id = "_header_id")
 	private WebElement pageTitle;
 
 	@FindBy(css = ".helpMenu")
@@ -35,5 +35,10 @@ public class Header extends PageComponent{
 		return new LoginPage(driver);
 	}
 
+
+	public void waitForTitleToBe(String title){
+		waitForXMillis(500);
+		webDriverWait.until(ExpectedConditions.textToBePresentInElement(pageTitle, title));
+	}
 
 }

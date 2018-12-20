@@ -1,15 +1,14 @@
 package ui;
 
+import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.components.baseComponents.SMPPage;
-import pages.login.LoginPage;
 import pages.service_groups.MetadataGrid;
 import pages.service_groups.MetadataRow;
 import pages.service_groups.ServiceGroupRow;
-import pages.service_groups.edit.EditPage;
 import pages.service_groups.search.SearchPage;
 import pages.service_groups.search.pojo.ServiceGroup;
 import utils.Generator;
@@ -25,7 +24,10 @@ public class SearchPgTest extends BaseTest {
 
 	@AfterMethod
 	public void resetFilters(){
-		new SMPPage(driver).refreshPage();
+		SMPPage page  = new SMPPage(driver);
+		page.refreshPage();
+		page.waitForXMillis(500);
+
 	}
 
 	@Test(description = "SRCH-0")
@@ -48,7 +50,7 @@ public class SearchPgTest extends BaseTest {
 		soft.assertTrue(page.isLoaded());
 
 		List<String> uiDomains = page.filters.domainSelect.getOptionTexts();
-		List<String> restDomains = SMPRestClient.getDomainAndSubdomain();
+		List<String> restDomains = SMPRestClient.getDomainAndSubdomains();
 
 		for (String restDomain : restDomains) {
 			boolean found = false;
@@ -198,7 +200,23 @@ public class SearchPgTest extends BaseTest {
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
 
-		ServiceGroupRow row0 = page.serviceGroupGrid.getRows().get(0);
+		ServiceGroupRow row0 = null;
+		List<ServiceGroupRow> rows = page.serviceGroupGrid.getRows();
+		for (int i = 0; i < rows.size(); i++) {
+			if(rows.get(i).getMetadataSize() >0 ){
+				row0 = rows.get(i);
+			}
+		}
+
+		if(null == row0){
+			row0 = rows.get(0);
+			SMPRestClient.createMetadata(row0.getParticipantIdentifier());
+			page.refreshPage();
+			logger.info("Created Metadata for row 0");
+			row0 = page.serviceGroupGrid.getRows().get(0);
+		}
+
+
 
 		soft.assertTrue(row0.getExpandButtonText().contains("+"), "Initially the row has + on it");
 		row0.expandMetadata();
@@ -219,7 +237,22 @@ public class SearchPgTest extends BaseTest {
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
 
-		ServiceGroupRow row0 = page.serviceGroupGrid.getRows().get(0);
+		ServiceGroupRow row0 = null;
+		List<ServiceGroupRow> rows = page.serviceGroupGrid.getRows();
+		for (int i = 0; i < rows.size(); i++) {
+			if(rows.get(i).getMetadataSize() >0 ){
+				row0 = rows.get(i);
+			}
+		}
+
+		if(null == row0){
+			row0 = rows.get(0);
+			SMPRestClient.createMetadata(row0.getParticipantIdentifier());
+			page.refreshPage();
+			logger.info("Created Metadata for row 0");
+			row0 = page.serviceGroupGrid.getRows().get(0);
+		}
+
 		String listedURL = row0.getServiceGroupURL();
 		String pScheme = row0.getParticipantScheme();
 		String pIdentifier = row0.getParticipantIdentifier();
@@ -266,29 +299,20 @@ public class SearchPgTest extends BaseTest {
 	@Test(description = "SRCH-80")
 	public void filterByDifferentDomains(){
 		SoftAssert soft = new SoftAssert();
-		SearchPage page = new SearchPage(driver);
-
-		page.pageHeader.goToLogin();
-		LoginPage loginPage = new LoginPage(driver);
-		loginPage.login("SMP_ADMIN");
-		EditPage editPage = loginPage.sidebar.goToPage(EditPage.class);
 
 		String participantID = Generator.randomAlphaNumeric(5);
-		String participantScheme = Generator.randomAlphaNumeric(5);
+		String tmp = Generator.randomAlphaNumeric(3).toLowerCase();
+		String participantScheme = String.format("%s-%s-%s", tmp, tmp, tmp);
 
-		List<String> domains = Arrays.asList("domain1 (peppol)", "domain (subdomain)");
-		List<String> owners = Arrays.asList("smp");
+		List<String> domains = Arrays.asList(createdDomains.get(0), createdDomains.get(1));
+		List<String> owners = Arrays.asList(createdUsers.get(0));
 
 		logger.info("Creating service group with participant id: " + participantID);
-		editPage.addNewServiceGroup(participantID,
-				participantScheme,
-				owners,	domains, "");
+		SMPRestClient.createServiceGroup(participantID, participantScheme, owners, domains);
 
-		editPage.saveChanges();
+		SearchPage searchPage = new SearchPage(driver);
 
-		SearchPage searchPage = editPage.sidebar.goToPage(SearchPage.class);
-
-		searchPage.filters.filter(participantID, participantScheme, "domain (subdomain)");
+		searchPage.filters.filter(participantID, participantScheme, SMPRestClient.getDomainSubDomainCombo(createdDomains.get(0)));
 		List<ServiceGroupRow> results = searchPage.serviceGroupGrid.getRows();
 
 		soft.assertTrue(results.size() == 1, "Results size is 1 (first search)");
@@ -296,7 +320,7 @@ public class SearchPgTest extends BaseTest {
 				"First and only result is the one we entered and is found when filtering by first domain");
 
 
-		searchPage.filters.filter(participantID, participantScheme, "domain1 (peppol)");
+		searchPage.filters.filter(participantID, participantScheme, SMPRestClient.getDomainSubDomainCombo(createdDomains.get(1)));
 		results = searchPage.serviceGroupGrid.getRows();
 
 		soft.assertTrue(results.size() == 1, "Results size is 1 (second search)");
@@ -304,8 +328,8 @@ public class SearchPgTest extends BaseTest {
 				"First and only result is the one we entered and is found when filtering by second domain");
 
 
+		SMPRestClient.deleteSG(participantID);
 
-		editPage.waitForXMillis(2000);
 		soft.assertAll();
 	}
 

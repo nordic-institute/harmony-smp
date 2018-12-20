@@ -38,9 +38,9 @@ public class BaseTest {
 		createUsers();
 		createSGs();
 
-		logger.info("Starting this puppy!!!!");
-		driver = DriverManager.getDriver();
-		driver.get(PROPERTIES.UI_BASE_URL);
+//		logger.info("Starting this puppy!!!!");
+//		driver = DriverManager.getDriver();
+//		driver.get(PROPERTIES.UI_BASE_URL);
 	}
 
 
@@ -61,16 +61,25 @@ public class BaseTest {
 	}
 
 	@AfterClass(alwaysRun = true)
-	public void logoutAndReset(){
-		driver.get(PROPERTIES.UI_BASE_URL);
-		SMPPage page = new SMPPage(driver);
-		page.refreshPage();
-
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
+	public void afterClass(){
+		driver.quit();
+//		driver.get(PROPERTIES.UI_BASE_URL);
+//		SMPPage page = new SMPPage(driver);
+//		page.refreshPage();
+//
+//		if(page.pageHeader.sandwichMenu.isLoggedIn()){
+//			logger.info("Logout!!");
+//			page.pageHeader.sandwichMenu.logout();
+//		}
 	}
+
+	@BeforeClass(alwaysRun = true)
+	public void beforeClass(){
+		driver = DriverManager.getDriver();
+		driver.get(PROPERTIES.UI_BASE_URL);
+	}
+
+
 
 	private void createDomains(){
 		for (int i = 0; i < 5; i++) {

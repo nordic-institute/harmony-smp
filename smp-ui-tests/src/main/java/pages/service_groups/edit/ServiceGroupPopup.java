@@ -5,6 +5,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.components.baseComponents.PageComponent;
 import utils.PROPERTIES;
 
@@ -95,6 +96,11 @@ public class ServiceGroupPopup extends PageComponent {
 		waitForElementToBeGone(okButton);
 	}
 
+	public void clickClear(){
+		waitForElementToBeClickable(clearExtensionButton).click();
+		waitForXMillis(100);
+	}
+
 	public void clickCancel(){
 		waitForElementToBeClickable(cancelButton).click();
 		waitForElementToBeGone(okButton);
@@ -133,6 +139,8 @@ public class ServiceGroupPopup extends PageComponent {
 	}
 
 	public String getExtensionAreaContent(){
+		waitForElementToBeVisible(extensionTextArea);
+		waitForXMillis(500);
 		return extensionTextArea.getAttribute("value").trim();
 	}
 
@@ -161,10 +169,8 @@ public class ServiceGroupPopup extends PageComponent {
 	}
 
 	public void generateRndExtension(){
-		clearAndFillInput(extensionTextArea, " ");
-		participantIdentifierInput.click();
 		extensionWizardButton.click();
-		new MetadataWizardPopup(driver).fillWithRndStrings();
+		new SGExtensionWizzard(driver).fillWithRndStrings();
 
 	}
 

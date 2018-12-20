@@ -7,6 +7,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import pages.components.ConfirmationDialog;
+import pages.components.baseComponents.PaginationControls;
 import pages.components.baseComponents.SMPPage;
 import pages.service_groups.FilterArea;
 import pages.service_groups.ServiceGroupGrid;
@@ -17,6 +18,7 @@ import java.util.List;
 public class EditPage extends SMPPage {
 	public EditPage(WebDriver driver) {
 		super(driver);
+		this.pageHeader.waitForTitleToBe("Edit");
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 		filterArea = new FilterArea(driver);
 	}
@@ -41,6 +43,8 @@ public class EditPage extends SMPPage {
 
 	@FindBy(id = "deleteButton")
 	private WebElement deleteButton;
+
+	public PaginationControls pagination = new PaginationControls(driver);
 
 	public boolean isCancelButtonEnabled(){
 		return cancelButton.isEnabled();
@@ -100,6 +104,7 @@ public class EditPage extends SMPPage {
 
 
 	public ServiceGroupGrid getGrid(){
+		waitForElementToBeVisible(searchTable);
 		ServiceGroupGrid grid = new ServiceGroupGrid(driver, searchTable);
 		return grid;
 	}
@@ -114,10 +119,9 @@ public class EditPage extends SMPPage {
 
 	}
 
-	public void saveChanges(){
+	public void saveChangesAndConfirm(){
 		waitForElementToBeClickable(saveButton).click();
 		new ConfirmationDialog(driver).confirm();
-
 	}
 
 }
