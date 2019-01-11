@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.Objects;
 @Entity
 @Audited
 @Table(name = "SMP_SG_EXTENSION")
+@org.hibernate.annotations.Table(appliesTo = "SMP_SG_EXTENSION", comment = "Service group extension blob")
 @NamedQueries({
         @NamedQuery(name = "DBServiceGroupExtension.deleteById", query = "DELETE FROM DBServiceGroupExtension d WHERE d.id = :id"),
 
@@ -23,10 +25,12 @@ import java.util.Objects;
 public class DBServiceGroupExtension extends BaseEntity {
 
     @Id
+    @ColumnDescription(comment = "Shared primary key with master table SMP_SERVICE_GROUP")
     private Long id;
 
     @Lob
     @Column(name = "EXTENSION")
+    @ColumnDescription(comment = "XML extension(s) for servicegroup ")
     byte[] extension;
 
     @OneToOne
