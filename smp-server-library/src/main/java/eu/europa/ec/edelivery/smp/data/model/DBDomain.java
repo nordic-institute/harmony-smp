@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -44,27 +45,36 @@ import java.time.LocalDateTime;
                         @ColumnResult(name = "smlSubdomain", type = String.class),
                         @ColumnResult(name = "useCount", type = Integer.class)})
 })
+@org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
     @Id
     @SequenceGenerator(name = "domain_generator", sequenceName = "SMP_DOMAIN_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "domain_generator")
     @Column(name = "ID")
+    @ColumnDescription(comment = "Unique domain id")
     Long id;
 
     @Column(name = "DOMAIN_CODE", length = CommonColumnsLengths.MAX_DOMAIN_CODE_LENGTH, nullable = false, unique = true)
+    @ColumnDescription(comment = "Domain code used as http parameter in rest webservices")
     String domainCode;
     @Column(name = "SML_SUBDOMAIN", length = CommonColumnsLengths.MAX_SML_SUBDOMAIN_LENGTH, unique = true)
+    @ColumnDescription(comment = "SML subdomain")
     String smlSubdomain;
     @Column(name = "SML_SMP_ID", length = CommonColumnsLengths.MAX_SML_SMP_ID_LENGTH)
+    @ColumnDescription(comment = "SMP ID used for SML integration")
     String smlSmpId;
     @Column(name = "SML_PARTC_IDENT_REGEXP", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
+    @ColumnDescription(comment = "Reqular expresion for participant ids")
     String smlParticipantIdentifierRegExp;
     @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
+    @ColumnDescription(comment = "Client-Cert header used behind RP - BlueCoat for SML integration")
     String smlClientCertHeader;
     @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
+    @ColumnDescription(comment = "Client key alias used for SML integration")
     String smlClientKeyAlias;
     @Column(name = "SIGNATURE_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
+    @ColumnDescription(comment = "Signature key alias used for SML integration")
     String signatureKeyAlias;
 
     @Column(name = "CREATED_ON", nullable = false)
@@ -73,9 +83,11 @@ public class DBDomain extends BaseEntity {
     LocalDateTime lastUpdatedOn;
 
     @Column(name = "SML_REGISTERED", nullable = false)
+    @ColumnDescription(comment = "Flag for: Is domain registered in SML")
     private boolean smlRegistered = false;
 
     @Column(name = "SML_BLUE_COAT_AUTH", nullable = false)
+    @ColumnDescription(comment = "Flag for SML authentication type - use CLientCert header or  HTTPS ClientCertificate (key)")
     private boolean smlBlueCoatAuth = false;
 
     public DBDomain() {
