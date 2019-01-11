@@ -4,17 +4,17 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.boot.spi.MetadataImplementor;
+import org.hibernate.mapping.Column;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * Class generates DDL script for SMP. Purpose of script is to manually run SQL script to create database. And to
@@ -80,8 +80,16 @@ public class SMPSchemaGenerator {
                 metadata.addAnnotatedClass(clazz);
             }
         }
-
+        // build metadata implementor
         MetadataImplementor metadataImplementor = (MetadataImplementor) metadata.buildMetadata();
+
+        // add column description
+        metadata.getAnnotatedClasses().forEach(clzz-> {
+            for(Field fld: clzz.getDeclaredFields()){
+                updateColumnComment(clzz.getName(), fld, metadataImplementor);
+            }
+        });
+
         // create schema exporter
         SchemaExport export = new SchemaExport();
         File file = new File(exportFolder, filename);
@@ -95,9 +103,19 @@ public class SMPSchemaGenerator {
         //can change the output here
         EnumSet<TargetType> enumSet = EnumSet.of(TargetType.SCRIPT);
         export.execute(enumSet, SchemaExport.Action.CREATE, metadataImplementor);
-
-
     }
+
+
+    private void updateColumnComment(String entityName,  Field field, MetadataImplementor metadataImplementor){
+        javax.persistence.Column column = field.getAnnotation(javax.persistence.Column.class);
+        ColumnDescription columnDesc = field.getAnnotation(ColumnDescription.class);
+        if (column!=null && columnDesc!=null){
+            Column c = metadataImplementor.getEntityBinding(entityName).getTable().getColumn(Identifier.toIdentifier( column.name(), false ));
+            c.setComment(columnDesc.comment());
+        }
+    }
+
+
 
     /**
      * Method creates filename based on dialect and version
