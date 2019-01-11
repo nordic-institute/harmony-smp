@@ -12,6 +12,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.model;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
@@ -22,6 +23,7 @@ import java.util.Objects;
 @Entity
 @Audited
 @Table(name = "SMP_USER")
+@org.hibernate.annotations.Table(appliesTo = "SMP_USER", comment = "SMP can handle multiple domains. This table contains domain specific data")
 @NamedQueries({
         // case insesitive search
         @NamedQuery(name = "DBUser.getUserByUsernameInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.username) = lower(:username)"),
@@ -51,22 +53,29 @@ public class DBUser extends BaseEntity {
     @SequenceGenerator(name = "usr_generator", sequenceName = "SMP_USER_SEQ",allocationSize = 1 )
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usr_generator" )
     @Column(name = "ID")
+    @ColumnDescription(comment = "Unique user id")
     Long id;
 
     @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
+    @ColumnDescription(comment = "Login username")
     private String username;
     @Column(name = "PASSWORD", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
+    @ColumnDescription(comment = "BCrypted password for username/password login")
     private String password;
     @Column(name = "EMAIL", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
+    @ColumnDescription(comment = "User email")
     private String emailAddress;
 
     @Column(name = "PASSWORD_CHANGED")
+    @ColumnDescription(comment = "Last date when password was changed")
     LocalDateTime passwordChanged;
 
     @Column(name = "ACTIVE", nullable = false)
+    @ColumnDescription(comment = "Is user active")
     private boolean active = true;
     // user can have only one of the role smp_admin, servicegroup_admin, system_admin
     @Column(name = "ROLE", length = CommonColumnsLengths.MAX_USER_ROLE_LENGTH)
+    @ColumnDescription(comment = "User role")
     private String role;
 
     @OneToOne(mappedBy = "dbUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true,
