@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -27,6 +28,7 @@ import java.util.Objects;
                 @Index(name = "SMP_SMD_DOC_ID_IDX", columnList = "DOCUMENT_IDENTIFIER", unique = false),
                 @Index(name = "SMP_SMD_DOC_SCH_IDX", columnList = "DOCUMENT_SCHEME", unique = false)
         })
+@org.hibernate.annotations.Table(appliesTo = "SMP_SERVICE_METADATA", comment = "Service metadata")
 @NamedQueries({
         @NamedQuery(name = "DBServiceMetadata.deleteById", query = "DELETE FROM DBServiceMetadata d WHERE d.id = :id"),
 })
@@ -45,6 +47,7 @@ public class DBServiceMetadata extends BaseEntity {
     @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ",allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgmd_generator")
     @Column(name = "ID")
+    @ColumnDescription(comment = "Shared primary key with master table SMP_SERVICE_METADATA")
     Long id;
 
     @ManyToOne (fetch = FetchType.LAZY)
