@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -28,22 +29,28 @@ import java.util.Objects;
 @NamedQueries({
         @NamedQuery(name = "DBConfiguration.getAll", query = "SELECT d FROM DBConfiguration d"),
 })
+@org.hibernate.annotations.Table(appliesTo = "SMP_CONFIGURATION", comment = "SMP user certificates")
 public class DBConfiguration implements Serializable {
     private static final long serialVersionUID = 1905122041950251201L;
 
     @Id
     @Column(name = "PROPERTY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512, nullable = false, unique = true)
+    @ColumnDescription(comment = "Property name/key")
     String property;
     @Column(name = "VALUE", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
+    @ColumnDescription(comment = "Property value")
     String value;
 
     @Column(name = "DESCRIPTION", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
+    @ColumnDescription(comment = "Property description")
     String description;
 
 
     @Column(name = "CREATED_ON", nullable = false)
+    @ColumnDescription(comment = "Row inserted on date")
     LocalDateTime createdOn;
     @Column(name = "LAST_UPDATED_ON", nullable = false)
+    @ColumnDescription(comment = "Row modified on date")
     LocalDateTime lastUpdatedOn;
 
 

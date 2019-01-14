@@ -12,6 +12,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.model;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -28,24 +29,33 @@ import java.util.Objects;
 @Entity
 @Audited
 @Table(name = "SMP_CERTIFICATE")
+@org.hibernate.annotations.Table(appliesTo = "SMP_CERTIFICATE", comment = "SMP user certificates")
 public class DBCertificate extends BaseEntity {
 
     @Id
     @Column(name = "ID")
+    @ColumnDescription(comment = "Shared primary key with master table SMP_USER")
     Long id;
     @Column(name = "CERTIFICATE_ID", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH, unique = true)
+    @ColumnDescription(comment = "Formatted Certificate id using tags: cn, o, c:serialNumber")
     private String certificateId;
     @Column(name = "VALID_FROM")
+    @ColumnDescription(comment = "Certificate valid from date.")
     private LocalDateTime validFrom;
     @Column(name = "VALID_TO")
+    @ColumnDescription(comment = "Certificate valid to date.")
     private LocalDateTime validTo;
 
     @Column(name = "SUBJECT", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
+    @ColumnDescription(comment = "Certificate subject (canonical form)" )
     private String  subject;
     @Column(name = "ISSUER", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
+    @ColumnDescription(comment = "Certificate issuer (canonical form)" )
     private String  issuer;
     @Column(name = "SERIALNUMBER", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
+    @ColumnDescription(comment = "Certificate serial number" )
     private String  serialNumber;
+
 
 
     @Column(name = "CREATED_ON" , nullable = false)

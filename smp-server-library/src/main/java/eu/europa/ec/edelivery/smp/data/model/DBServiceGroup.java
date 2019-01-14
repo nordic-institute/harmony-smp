@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
@@ -28,6 +29,7 @@ import java.util.*;
                 @Index(name = "SMP_SG_PART_ID_IDX", columnList = "PARTICIPANT_IDENTIFIER", unique = false),
                 @Index(name = "SMP_SG_PART_SCH_IDX", columnList = "PARTICIPANT_SCHEME", unique = false)
         })
+@org.hibernate.annotations.Table(appliesTo = "SMP_SERVICE_GROUP", comment = "Service group data - Identifier and scheme")
 @NamedQueries({
         @NamedQuery(name = "DBServiceGroup.getServiceGroupByID", query = "SELECT d FROM DBServiceGroup d WHERE d.id = :id"),
         @NamedQuery(name = "DBServiceGroup.getServiceGroup", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier and d.participantScheme = :participantScheme"),
@@ -44,6 +46,7 @@ public class DBServiceGroup extends BaseEntity {
     @SequenceGenerator(name = "sg_generator", sequenceName = "SMP_SERVICE_GROUP_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sg_generator" )
     @Column(name = "ID")
+    @ColumnDescription(comment = "Unique Servicegroup id")
     Long id;
 
 
