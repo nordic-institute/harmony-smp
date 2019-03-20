@@ -2,6 +2,8 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
@@ -33,14 +35,26 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         String username = auth.getName();
         String password = auth.getCredentials().toString();
 
-        Optional<DBUser> oUsr = mUserDao.findUserByIdentifier(username);
-        if (!oUsr.isPresent()){
-            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, username);
-            //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
-            // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
-            throw new BadCredentialsException("Login failed; Invalid userID or password");
+        DBUser user;
+        try {
+            Optional<DBUser> oUsr = mUserDao.findUserByIdentifier(username);
+
+            if (!oUsr.isPresent()) {
+                LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, username);
+                //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
+                // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
+                throw new BadCredentialsException("Login failed; Invalid userID or password");
+            }
+
+            user = oUsr.get();
+        } catch (AuthenticationException ex) {
+            throw ex;
+
+        } catch (RuntimeException ex) {
+            LOG.error("Database connection error", ex);
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Internal server error", ex.getMessage());
+
         }
-        DBUser user = oUsr.get();
         String role = user.getRole();
         try {
             if (!BCrypt.checkpw(password, user.getPassword())) {
