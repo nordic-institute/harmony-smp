@@ -2,13 +2,12 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -52,7 +51,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
         } catch (RuntimeException ex) {
             LOG.error("Database connection error", ex);
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Internal server error", ex.getMessage());
+            throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
 
         }
         String role = user.getRole();
@@ -62,13 +61,13 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
 
-        }catch (java.lang.IllegalArgumentException ex){
+        } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed;
-            LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD,ex, username);
+            LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, username);
             throw new BadCredentialsException("Login failed; Invalid userID or password");
         }
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, username, role);
-        return new SMPAuthenticationToken(username, password,Collections.singletonList(new SMPAuthority(role)), user);
+        return new SMPAuthenticationToken(username, password, Collections.singletonList(new SMPAuthority(role)), user);
     }
 
     @Override
