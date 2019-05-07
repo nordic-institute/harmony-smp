@@ -76,7 +76,8 @@ public class DBUserToUserROConverterTest {
     }
 
     private void givenAnExistingUserHavingAPasswordThatChangedNoLongerThanThreeMonthsAgo() {
-        givenAnExistingUser("password", LocalDateTime.now().minusMonths(2).minusDays(29), null);
+        // some month has less than 29 days -therefore -28
+        givenAnExistingUser("password", LocalDateTime.now().minusMonths(2).minusDays(28), null);
     }
 
     private void givenAnExistingUserHavingAPasswordThatChangedMoreThanThreeMonthsAgo() {
