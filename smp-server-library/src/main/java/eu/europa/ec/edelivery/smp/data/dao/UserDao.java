@@ -51,8 +51,8 @@ public class UserDao extends BaseDao<DBUser> {
         if (!StringUtils.isBlank(user.getUsername())){
             user.setUsername(user.getUsername().toLowerCase());
         }
-        // if certificate id is null then do not store certificate object to database
-        // because of unique constraint  and null value in mysql is also subject to the constraint!
+        // if certificate id is null/empty then do not store certificate object to database
+        // because of unique constraint  and empty value in mysql is also subject to the constraint!
         if (user.getCertificate() != null &&  StringUtils.isBlank(user.getCertificate().getCertificateId() )) {
             user.setCertificate(null);
         }
