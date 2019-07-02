@@ -70,6 +70,26 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
         assertEquals(u.getUsername(), ou.get().getUsername());
     }
 
+
+    @Test
+    public void persistUserWithUsernameAndEmptyCertificateID() {
+        // if certificate id is null then do not store certificate object to database
+        // because of unique constraint  and null value in mysql is also subject to the constraint!
+        DBUser u = TestDBUtils.createDBUser(TestConstants.USERNAME_1, null);
+        assertNotNull(u.getCertificate());
+        assertNull(u.getCertificate().getCertificateId());
+
+        // execute
+        testInstance.persistFlushDetach(u);
+
+        //test
+        Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
+        assertTrue(u != ou.get());
+        assertEquals(u, ou.get());
+        assertEquals(u.getUsername(), ou.get().getUsername());
+        assertNull(u.getCertificate());
+    }
+
     @Test
     public void persistUserWithCertificate() {
         // set
