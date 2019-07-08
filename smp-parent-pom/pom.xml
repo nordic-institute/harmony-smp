@@ -50,7 +50,7 @@
 
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <spring.version>5.1.8.RELEASE</spring.version>
         <spring.security.version>5.1.5.RELEASE</spring.security.version>
         <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
@@ -61,7 +61,7 @@
         <build.helper.maven.version>1.9.1</build.helper.maven.version>
         <ehcache.version>2.10.6</ehcache.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <bouncycastle.version>1.52</bouncycastle.version>
+        <bouncycastle.version>1.58</bouncycastle.version>
         <dnsjava.version>2.1.7</dnsjava.version>
         <h2.version>1.4.187</h2.version>
         <jstl.version>1.2</jstl.version>
