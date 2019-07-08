@@ -62,7 +62,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getPassword(), ou.get().getPassword());
@@ -84,7 +84,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getUsername(), ou.get().getUsername());
         assertNull(u.getCertificate());
@@ -100,7 +100,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByCertificateId(TestConstants.USER_CERT_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getCertificate().getCertificateId(), ou.get().getCertificate().getCertificateId());
@@ -118,7 +118,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USER_CERT_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getCertificate().getCertificateId(), ou.get().getCertificate().getCertificateId());
@@ -137,7 +137,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USERNAME_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
     }
