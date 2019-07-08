@@ -62,12 +62,32 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getPassword(), ou.get().getPassword());
         assertEquals(u.getRole(), ou.get().getRole());
         assertEquals(u.getUsername(), ou.get().getUsername());
+    }
+
+
+    @Test
+    public void persistUserWithUsernameAndEmptyCertificateID() {
+        // if certificate id is null then do not store certificate object to database
+        // because of unique constraint  and null value in mysql is also subject to the constraint!
+        DBUser u = TestDBUtils.createDBUser(TestConstants.USERNAME_1, null);
+        assertNotNull(u.getCertificate());
+        assertNull(u.getCertificate().getCertificateId());
+
+        // execute
+        testInstance.persistFlushDetach(u);
+
+        //test
+        Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
+        assertNotSame(u , ou.get());
+        assertEquals(u, ou.get());
+        assertEquals(u.getUsername(), ou.get().getUsername());
+        assertNull(u.getCertificate());
     }
 
     @Test
@@ -80,7 +100,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByCertificateId(TestConstants.USER_CERT_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getCertificate().getCertificateId(), ou.get().getCertificate().getCertificateId());
@@ -98,7 +118,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USER_CERT_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getCertificate().getCertificateId(), ou.get().getCertificate().getCertificateId());
@@ -117,7 +137,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USERNAME_1);
-        assertTrue(u != ou.get());
+        assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
     }
