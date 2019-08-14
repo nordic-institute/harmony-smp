@@ -50,10 +50,11 @@
     </authentication-manager>
 
     <!-- user detail service is used only in preAhtProviders for cert authentication that is why search is only on cert table-->
+    <!-- database Cert ID search must be case insensitive  -->
     <jdbc-user-service id="smpJdbcUserDetailsService"
                        data-source-ref="dataSource"
-                       users-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, 'dummy' AS PASWORD, u.ACTIVE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE c.CERTIFICATE_ID = ?"
-                       authorities-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, u.ROLE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE c.CERTIFICATE_ID = ?"/>
+                       users-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, 'dummy' AS PASWORD, u.ACTIVE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE lower(c.CERTIFICATE_ID) = lower(?)"
+                       authorities-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, u.ROLE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE lower(c.CERTIFICATE_ID) = lower(?)"/>
 
     <b:bean id="preauthAuthProvider"
             class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
