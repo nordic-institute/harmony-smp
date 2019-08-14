@@ -13,12 +13,14 @@
 
 package eu.europa.ec.cipa.smp.server.security;
 
+import eu.europa.ec.edelivery.exception.BlueCoatParseException;
 import eu.europa.ec.edelivery.smp.config.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -112,7 +114,7 @@ public class SecurityConfigurationTest {
     }
 
 
-    @Test
+    @Test(expected = BlueCoatParseException.class)
     public void malformedBlueCoatHeaderNotAuthorizedTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", "malformed header value");
