@@ -14,6 +14,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.junit.Assert;
@@ -28,11 +29,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.createDBDomain;
+import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.*;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -75,26 +77,15 @@ public class AuditIntegrationTest {
         alterVal.put("smlClientKeyAlias", UUID.randomUUID().toString());
         alterVal.put("smlSubdomain", UUID.randomUUID().toString());
 
+
         testAuditEntity(domain,alterVal );
     }
 
-  /*  @Test
-    public void testAuditDBServiceGroup() {
-
-        DBServiceGroup grp = createDBServiceGroup();
-
-        EntityManager em = emf.createEntityManager();
-        persist(em, grp.getDomain());
-        Map<String, Object> alterVal = new HashMap<>();
-        alterVal.put("extension", UUID.randomUUID().toString());
-
-        testAuditSubEntity(grp, grp.getServiceGroupExtension(),alterVal );
-    }
 
     @Test
     public void testAuditDBUser() {
 
-        DBUser dbuser = createDBUser();
+        DBUser dbuser = createDBUser(UUID.randomUUID().toString());
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("password", UUID.randomUUID().toString());
         alterVal.put("role", UUID.randomUUID().toString());
@@ -103,10 +94,11 @@ public class AuditIntegrationTest {
         testAuditEntity(dbuser,alterVal );
 
     }
+
     @Test
     public void testAuditDBUserWithCertificate() {
 
-        DBUser dbuser = createDBUser();
+        DBUser dbuser = createDBUser(UUID.randomUUID().toString());
         DBCertificate cert = createDBCertificate();
         dbuser.setCertificate(cert);
         Map<String, Object> alterValCert = new HashMap<>();
@@ -118,24 +110,43 @@ public class AuditIntegrationTest {
         testAuditSubEntity(dbuser,dbuser.getCertificate(), alterValCert );
     }
 
-/*
+       @Test
+    public void testAuditDBServiceGroup() {
+
+        DBServiceGroup grp = createDBServiceGroup();
+
+        EntityManager em = emf.createEntityManager();
+        Map<String, Object> alterVal = new HashMap<>();
+        alterVal.put("extension", UUID.randomUUID().toString().getBytes());
+        testAuditSubEntity(grp, grp.getServiceGroupExtension(),alterVal );
+    }
+
+
     @Test
     public void testAuditDBMetaData() {
 
-        DBServiceMetadata md = createDBServiceMetadata();
-        EntityManager em = emf.createEntityManager();
-        persist(em, md.getServiceGroup().getDomain());
-        persist(em, md.getServiceGroup());
-        Map<String, Object> alterVal = new HashMap<>();
-        alterVal.put("XmlContent", UUID.randomUUID().toString());
+        DBServiceMetadata md = createDBServiceMetadata(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        DBDomain domain = createDBDomain();
+        DBServiceGroup grp = createDBServiceGroup();
+        DBServiceGroupDomain serviceGroupDomain =  new DBServiceGroupDomain();
 
-        testAuditEntity(DBServiceMetadata.class, md.getId(),md,alterVal );
+        EntityManager em = emf.createEntityManager();
+        persist(em, domain);
+        persist(em, grp);
+        serviceGroupDomain.setDomain(domain);
+        serviceGroupDomain.setServiceGroup(grp);
+        persist(em, serviceGroupDomain);
+        md.setServiceGroupDomain(serviceGroupDomain);
+
+        Map<String, Object> alterVal = new HashMap<>();
+        alterVal.put("XmlContent", UUID.randomUUID().toString().getBytes());
+
+        testAuditSubEntity(md, md.getServiceMetadataXml(),alterVal );
     }
 
-*/
 
     /**
-     * Method updates value in Map, then checks if revision increased. Last testi in removing the entity.
+     * Method updates value in Map, then checks if revision increased. Last test in removing the entity.
      * @param entity
      * @param alterValues
      */

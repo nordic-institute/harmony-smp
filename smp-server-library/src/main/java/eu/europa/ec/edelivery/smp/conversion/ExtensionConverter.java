@@ -52,8 +52,10 @@ public class ExtensionConverter {
      */
     @XmlRootElement(name = "ExtensionsWrapper")
     private static class ExtensionsWrapper {
-        @XmlElement(name = "Extension")
-        List<ExtensionType> extensions;
+
+        @XmlElement(name = "Extension", namespace = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05")
+        public List<ExtensionType> extensions;
+
     }
 
     /**
