@@ -56,6 +56,15 @@ public class DBCertificate extends BaseEntity {
     @ColumnDescription(comment = "Certificate serial number" )
     private String  serialNumber;
 
+    @Column(name = "pem_encoding")
+    @ColumnDescription(comment = "PEM encoding for the certificate")
+    @Lob
+    private String pemEncoding;
+
+    @Column(name = "crl_url", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
+    @ColumnDescription(comment = "URL to the certificate revocation list (CRL)")
+    private String crlUrl;
+
 
 
     @Column(name = "CREATED_ON" , nullable = false)
@@ -135,6 +144,22 @@ public class DBCertificate extends BaseEntity {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+
+    public String getPemEncoding() {
+        return pemEncoding;
+    }
+
+    public void setPemEncoding(String pemEncoding) {
+        this.pemEncoding = pemEncoding;
+    }
+
+    public String getCrlUrl() {
+        return crlUrl;
+    }
+
+    public void setCrlUrl(String crlUrl) {
+        this.crlUrl = crlUrl;
     }
 
     @Override
