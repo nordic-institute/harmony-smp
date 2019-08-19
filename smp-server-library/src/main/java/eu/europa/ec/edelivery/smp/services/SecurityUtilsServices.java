@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.*;
@@ -102,9 +103,9 @@ public class SecurityUtilsServices {
             byte[] decrypted = cipher.doFinal(decodedEncryptedPassword);
             return new String(decrypted);
         } catch (BadPaddingException | IllegalBlockSizeException ibse) {
-            throw new SMPRuntimeException(INTERNAL_ERROR,ibse,  "Either private key or encrypted password might not be correct. Please check both.",ibse.getMessage());
+            throw new SMPRuntimeException(INTERNAL_ERROR,ibse,  "Either private key '"+keyPath.getAbsolutePath()+"' or encrypted password might not be correct. Please check both.  Root cause: " + ExceptionUtils.getRootCauseMessage(ibse),ibse.getMessage());
         } catch (Exception exc) {
-            throw new SMPRuntimeException(INTERNAL_ERROR,exc,  "Error occurred while decrypting the password",  exc.getMessage());
+            throw new SMPRuntimeException(INTERNAL_ERROR,exc,  "Error occurred while decrypting the password with the key: '"+keyPath.getAbsolutePath()+"'! Root cause: " + ExceptionUtils.getRootCauseMessage(exc),  exc.getMessage());
         }
     }
 }
