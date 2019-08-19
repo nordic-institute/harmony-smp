@@ -34,7 +34,7 @@ public class UIKeystoreService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIKeystoreService.class);
 
     @Autowired
-    SecurityUtilsServices securityUtilsServices;
+    private SecurityUtilsServices securityUtilsServices;
 
     @Autowired
     private ConversionService conversionService;
@@ -56,7 +56,7 @@ public class UIKeystoreService {
 
     private Map<String, Key> keystoreKeys;
     private Map<String, X509Certificate> keystoreCertificates;
-    List<CertificateRO> certificateROList = new ArrayList<>();
+    private List<CertificateRO> certificateROList = new ArrayList<>();
 
     private KeyManager[] keyManagers;
 
@@ -124,53 +124,61 @@ public class UIKeystoreService {
         }
 
         // load keystore
-        File keystoreFile  = getKeyStoreFile();
+        File keystoreFile = getKeyStoreFile();
         KeyStore keyStore = loadKeystore(keystoreFile);
         if (keyStore == null) {
-            LOG.error("Keystore: '"+keystoreFile.getAbsolutePath()+"' is not loaded! Check the keystore and the configuration!");
+            LOG.error("Keystore: '" + keystoreFile.getAbsolutePath() + "' is not loaded! Check the keystore and the configuration!");
             return;
         }
         // init key managers for TLS
+        KeyManager[] keyManagersTemp;
         try {
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
             kmf.init(keyStore, smpKeyStorePasswordDecrypted.toCharArray());
-            keyManagers = kmf.getKeyManagers();
+            keyManagersTemp = kmf.getKeyManagers();
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException exception) {
             LOG.error("Error occurred while initialize  keyManagers : " + keystoreFile.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
         }
 
         // load keys for signature
+        Map<String, Key> hmKeys = new HashMap<>();
+        Map<String, X509Certificate> hmCertificates = new HashMap<>();
         try {
 
-            Map<String, Key> hmKeys = new HashMap<>();
-            Map<String, X509Certificate> hmCertificates = new HashMap<>();
 
-            List<String> aliases= list(keyStore.aliases());
+            List<String> aliases = list(keyStore.aliases());
             for (String alias : aliases) {
-                loadKeyAndCert(keyStore, alias, hmKeys,hmCertificates );
+                loadKeyAndCert(keyStore, alias, hmKeys, hmCertificates);
             }
-            // setup new values
-            keystoreKeys.clear();
-            keystoreCertificates.clear();
 
-
-            keystoreKeys.putAll(hmKeys);
-            keystoreCertificates.putAll(hmCertificates);
 
         } catch (Exception exception) {
             LOG.error("Could not load signing certificate amd private keys Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
         }
+
+
+        // if got all data from keystore - update data
+        keyManagers = keyManagersTemp;
+
+        keystoreKeys.clear();
+        keystoreCertificates.clear();
+
+        keystoreKeys.putAll(hmKeys);
+        keystoreCertificates.putAll(hmCertificates);
+        // add last file date
         lastUpdateKeystoreFileTime = keystoreFile.lastModified();
         lastUpdateKeystoreFile = keystoreFile;
+        // clear list to reload RO when required
         certificateROList.clear();
+
     }
 
 
     boolean isKeyStoreChanged() {
-        File  file = getKeyStoreFile();
-        return  !Objects.equals(lastUpdateKeystoreFile, file ) ||  file.lastModified() != lastUpdateKeystoreFileTime;
+        File file = getKeyStoreFile();
+        return !Objects.equals(lastUpdateKeystoreFile, file) || file.lastModified() != lastUpdateKeystoreFileTime;
     }
 
 
@@ -215,7 +223,7 @@ public class UIKeystoreService {
         }
         // add to cache
         hmKeys.put(alias, key);
-        hmCertificates.put(alias, (X509Certificate) certificate);;
+        hmCertificates.put(alias, (X509Certificate) certificate);
     }
 
 
@@ -226,8 +234,8 @@ public class UIKeystoreService {
             // refresh also the list
             certificateROList.clear();
         }
-        if (certificateROList.isEmpty() && !keystoreCertificates.isEmpty()){
-            keystoreCertificates.forEach( (alias, cert)-> {
+        if (certificateROList.isEmpty() && !keystoreCertificates.isEmpty()) {
+            keystoreCertificates.forEach((alias, cert) -> {
                 CertificateRO certificateRO = convertToRo(cert);
                 certificateRO.setAlias(alias);
                 certificateROList.add(certificateRO);
