@@ -210,10 +210,7 @@ export class UserDetailsDialogComponent {
 
   uploadCertificate(event) {
     const file = event.target.files[0];
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.certificateService.uploadCertificate$(reader.result).subscribe((res: CertificateRo) => {
+      this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
             if (res && res.certificateId){
               this.userForm.patchValue({
                 'subject': res.subject,
@@ -231,12 +228,7 @@ export class UserDetailsDialogComponent {
             this.alertService.exception('Error uploading certificate file ' + file.name, err);
           }
         );
-    };
-    reader.onerror = (err) => {
-      this.alertService.exception('Error reading certificate file ' + file.name, err);
-    };
 
-    reader.readAsBinaryString(file);
   }
 
   onCertificateToggleChanged({checked}: MatSlideToggleChange) {
