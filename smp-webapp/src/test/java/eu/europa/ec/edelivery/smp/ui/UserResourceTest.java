@@ -89,7 +89,7 @@ public class UserResourceTest {
 
 
         assertNotNull(res);
-        assertEquals(9, res.getServiceEntities().size());
+        assertEquals(10, res.getServiceEntities().size());
         res.getServiceEntities().forEach(sgMap-> {
             UserRO  sgro = mapper.convertValue(sgMap, UserRO.class);
             assertNotNull(sgro.getId());
