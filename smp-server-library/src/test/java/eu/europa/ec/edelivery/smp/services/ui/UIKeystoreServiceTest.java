@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.net.ssl.KeyManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,9 +26,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {UIKeystoreService.class, SecurityUtilsServices.class, ConversionTestConfig.class, PropertiesKeystoreTestConfig.class})
@@ -200,6 +199,35 @@ public class UIKeystoreServiceTest {
             keyStore.load(keystoreInputStream, password.toCharArray());
         }
         return keyStore;
+    }
+
+    @Test
+    public void testDetectKeystoreChangeForEntryList() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+        // given
+        testInstance.importKeys(loadKeystore("test-import.jks","NewPassword1234", "JKS" ), "NewPassword1234");
+        assertEquals(3,testInstance.getKeystoreEntriesList().size());
+
+        // when
+        propertiesKeystoreTestConfig.resetKeystore();
+        // then
+        assertEquals(1, testInstance.getKeystoreEntriesList().size());
+
+    }
+
+    @Test
+    public void testDetectKeystoreChangeForKeyManagers() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+        // given
+        KeyManager km = testInstance.getKeyManagers()[0];
+        testInstance.importKeys(loadKeystore("test-import.jks","NewPassword1234", "JKS" ), "NewPassword1234");
+
+        // keymanager is updated
+        assertNotEquals(km, testInstance.getKeyManagers()[0]);
+        km = testInstance.getKeyManagers()[0];
+
+        // when just changing the file
+        propertiesKeystoreTestConfig.resetKeystore();
+        // then 
+        assertNotEquals(km, testInstance.getKeyManagers()[0]);
     }
 
 
