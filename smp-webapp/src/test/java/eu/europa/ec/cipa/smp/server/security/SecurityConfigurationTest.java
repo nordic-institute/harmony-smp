@@ -56,8 +56,16 @@ public class SecurityConfigurationTest {
     public static final String TEST_USERNAME_HASHED_PASS = "test_user_hashed_pass";
     public static final String PASSWORD = "test123";
 
-    public static final String BLUE_COAT_VALID_HEADER = "sno=66&subject=C=BE,O=org,CN=comon name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
-    public static final String TEST_USERNAME_BLUE_COAT = "CN=comon name,O=org,C=BE:0000000000000066";
+    public static final String BLUE_COAT_VALID_HEADER = "sno=bb66&subject=C=BE,O=org,CN=comon name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String BLUE_COAT_VALID_HEADER_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=comon name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String TEST_USERNAME_BLUE_COAT = "CN=comon name,O=org,C=BE:000000000000bb66";
+
+    public static final String BLUE_COAT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=comon name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+
+
+    public static final String TEST_USERNAME_BLUE_COAT__DB_UPPER_SN = "CN=comon name UPPER database SN,O=org,C=BE:000000000000BB66";
+
+
 
     @Autowired
     private WebApplicationContext context;
@@ -141,6 +149,40 @@ public class SecurityConfigurationTest {
                 .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
+    }
+
+    @Test
+    public void validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTestUpper() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_UPPER_SN);
+        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
+                .headers(headers)
+                .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
+    }
+
+
+    @Test
+    public void validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTestDBUpperSN() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_DB_UPPER_SN);
+        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
+                .headers(headers)
+                .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(TEST_USERNAME_BLUE_COAT__DB_UPPER_SN));
+    }
+
+    @Test
+    public void validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTestUpperDBUpperSN() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_DB_UPPER_SN);
+        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
+                .headers(headers)
+                .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(TEST_USERNAME_BLUE_COAT__DB_UPPER_SN));
     }
 
 
