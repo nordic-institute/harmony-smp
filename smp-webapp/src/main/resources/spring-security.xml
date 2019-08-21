@@ -38,25 +38,9 @@
 
     <authentication-manager alias="smpAuthenticationManager">
         <authentication-provider ref="smpAuthProvider"/>
-        <authentication-provider ref="preauthAuthProvider"/>
-
     </authentication-manager>
 
-    <!-- user detail service is used only in preAhtProviders for cert authentication that is why search is only on cert table-->
-    <jdbc-user-service id="smpJdbcUserDetailsService"
-                       data-source-ref="dataSource"
-                       users-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, 'dummy' AS PASWORD, u.ACTIVE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE c.CERTIFICATE_ID = ?"
-                       authorities-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, u.ROLE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE c.CERTIFICATE_ID = ?"/>
-
-    <b:bean id="preauthAuthProvider"
-            class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
-        <b:property name="preAuthenticatedUserDetailsService">
-            <b:bean id="userDetailsServiceWrapper"
-                    class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
-                <b:property name="userDetailsService" ref="smpJdbcUserDetailsService"/>
-            </b:bean>
-        </b:property>
-    </b:bean>
+    <b:bean id="smpAuthProvider" class="eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider" />
 
     <b:bean id="blueCoatReverseProxyAuthFilter"
             class="eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter">
@@ -69,13 +53,11 @@
         <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
     </b:bean>
 
-    <!-- Slashes in participant or document identifiers are disallowed by default -->
+    <!-- encoded Slashes are disallowed by default but SMP is using
+    them in participant or document identifiers  -->
     <http-firewall ref="httpFirewall"/>
     <b:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
         <b:property name="allowUrlEncodedSlash" value="${encodedSlashesAllowedInUrl}"/>
-    </b:bean>
-
-    <b:bean id="smpAuthProvider" class="eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider">
     </b:bean>
 
 
