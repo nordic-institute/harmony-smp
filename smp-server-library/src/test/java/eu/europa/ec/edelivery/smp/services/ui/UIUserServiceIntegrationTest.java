@@ -338,6 +338,24 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     }
 
     @Test
+    public void testGetCertificateDataSMime() throws IOException, CertificateException {
+        // given
+        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/certificates/cert-smime.pem"));
+
+        // when
+        CertificateRO cer = testInstance.getCertificateData(buff);
+
+        //then
+        assertEquals("CN=edelivery_sml,O=European Commission,C=BE:3cfe6b37e4702512c01e71f9b9175464", cer.getCertificateId());
+        assertEquals("C=BE,O=OpenPEPPOL AISBL,OU=FOR TEST ONLY,CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA - G2", cer.getIssuer());
+        assertEquals("CN=edelivery_sml,OU=PEPPOL TEST SMP,O=European Commission,C=BE", cer.getSubject());
+        assertEquals("3cfe6b37e4702512c01e71f9b9175464", cer.getSerialNumber());
+        assertNotNull(cer.getValidFrom());
+        assertNotNull(cer.getValidTo());
+        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
+    }
+
+    @Test
     public void testGetCertificateDataDER() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/NewPeppolAP.crt"));
