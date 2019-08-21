@@ -29,29 +29,21 @@ import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.ProxyServerType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
-import java.io.FileInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -59,7 +51,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * Factory creating CXF client that access BDMSL via SOAP interface.
  * Produced client has already configured all transport and authentication parameters like URL, keystore, proxy etc...
- *
+ * <p>
  * Created by gutowpa on 14/12/2017.
  */
 @Component
@@ -75,9 +67,6 @@ public class SmlClientFactory {
     @Autowired
     UIKeystoreService keystoreService;
 
-
-
-
     @Value("${bdmsl.integration.proxy.server:}")
     private String proxyServer;
 
@@ -89,8 +78,6 @@ public class SmlClientFactory {
 
     @Value("${bdmsl.integration.proxy.password:}")
     private String proxyPassword;
-
-
 
     @Bean
     @Scope("prototype")
@@ -107,7 +94,6 @@ public class SmlClientFactory {
             throw new IllegalStateException("Could not create participant URL: " + smlUrl.toString(), e);
         }
 
-
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
         Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlParticipantIdentifier.toString());
@@ -116,8 +102,8 @@ public class SmlClientFactory {
         configureProxy(httpConduit);
         configurePayloadLogging(client);
         configureClientAuthentication(httpConduit, requestContext,
-                blueCoatAuthentication?null:clientKeyAlias,
-                blueCoatAuthentication?clientCertHttpHeader:null);
+                blueCoatAuthentication ? null : clientKeyAlias,
+                blueCoatAuthentication ? clientCertHttpHeader : null);
 
         return smlPort;
     }
@@ -146,8 +132,8 @@ public class SmlClientFactory {
         configureProxy(httpConduit);
         configurePayloadLogging(client);
         configureClientAuthentication(httpConduit, requestContext,
-                blueCoatAuthentication?null:clientKeyAlias,
-                blueCoatAuthentication?clientCertHttpHeader:null);
+                blueCoatAuthentication ? null : clientKeyAlias,
+                blueCoatAuthentication ? clientCertHttpHeader : null);
         return smlPort;
     }
 
@@ -167,7 +153,7 @@ public class SmlClientFactory {
             Map<String, List<String>> customHeaders = new HashMap<>();
             customHeaders.put(CLIENT_CERT_HEADER_KEY, asList(smlClientCertHttpHeader));
             requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
-        } else{
+        } else {
             throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
     }
@@ -188,7 +174,7 @@ public class SmlClientFactory {
             return;
         }
 
-        LOG.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer,proxyPort.isPresent()? proxyPort.get():"");
+        LOG.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer, proxyPort.isPresent() ? proxyPort.get() : "");
         httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);
         httpConduit.getClient().setProxyServer(proxyServer);
         if (proxyPort.isPresent()) {
