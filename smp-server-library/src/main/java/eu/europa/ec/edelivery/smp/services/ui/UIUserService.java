@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
@@ -15,6 +14,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -36,9 +36,9 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIUserService.class);
 
-    private static final byte[] S_PEM_START_TAG = "-----BEGIN CERTIFICATE-----\n".getBytes();
+    private static final byte[] S_PEM_START_TAG = "-----BEGIN CERTIFICATE-----".getBytes();
 
-    private static final byte[] S_PEM_END_TAG = "\n-----END CERTIFICATE-----".getBytes();
+    private static final byte[] S_PEM_END_TAG = "-----END CERTIFICATE-----".getBytes();
 
     private static final String S_BLUECOAT_DATEFORMAT ="MMM dd HH:mm:ss yyyy";
 
@@ -160,7 +160,9 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             // try to encode
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             bos.write(S_PEM_START_TAG);
+            bos.write('\n');
             bos.write(Base64.getMimeEncoder().encode(certData));
+            bos.write('\n');
             bos.write(S_PEM_END_TAG);
             is = new ByteArrayInputStream(bos.toByteArray());
         }
