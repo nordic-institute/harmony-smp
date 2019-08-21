@@ -39,7 +39,6 @@ public class UIKeystoreService {
     @Autowired
     private ConversionService conversionService;
 
-
     @Value("${smp.keystore.password}")
     private String smpKeyStorePasswordEncrypted;
 
@@ -108,7 +107,6 @@ public class UIKeystoreService {
         }
         // decrypt password
         smpKeyStorePasswordDecrypted = securityUtilsServices.decrypt(file, smpKeyStorePasswordEncrypted);
-
     }
 
     /**
@@ -145,19 +143,14 @@ public class UIKeystoreService {
         Map<String, Key> hmKeys = new HashMap<>();
         Map<String, X509Certificate> hmCertificates = new HashMap<>();
         try {
-
-
             List<String> aliases = list(keyStore.aliases());
             for (String alias : aliases) {
                 loadKeyAndCert(keyStore, alias, hmKeys, hmCertificates);
             }
-
-
         } catch (Exception exception) {
             LOG.error("Could not load signing certificate amd private keys Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
         }
-
 
         // if got all data from keystore - update data
         keyManagers = keyManagersTemp;
@@ -172,15 +165,12 @@ public class UIKeystoreService {
         lastUpdateKeystoreFile = keystoreFile;
         // clear list to reload RO when required
         certificateROList.clear();
-
     }
-
 
     boolean isKeyStoreChanged() {
         File file = getKeyStoreFile();
         return !Objects.equals(lastUpdateKeystoreFile, file) || file.lastModified() != lastUpdateKeystoreFileTime;
     }
-
 
     public File getKeyStoreFile() {
         return new File(configurationDir + File.separator + smpKeyStoreFilename);
@@ -193,7 +183,6 @@ public class UIKeystoreService {
         }
         return keyManagers;
     }
-
 
     private KeyStore loadKeystore(File keyStoreFile) {
         // Load the KeyStore.
@@ -226,7 +215,6 @@ public class UIKeystoreService {
         hmCertificates.put(alias, (X509Certificate) certificate);
     }
 
-
     public List<CertificateRO> getKeystoreEntriesList() {
 
         if (isKeyStoreChanged()) {
@@ -244,7 +232,6 @@ public class UIKeystoreService {
 
         return certificateROList;
     }
-
 
     public CertificateRO convertToRo(X509Certificate d) {
         return conversionService.convert(d, CertificateRO.class);
