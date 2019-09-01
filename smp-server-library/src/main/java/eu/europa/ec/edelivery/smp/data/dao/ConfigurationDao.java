@@ -104,12 +104,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     @Transactional
     public void refreshProperties() {
         // get update
-        Calendar lastUpdateFromDB = getLastUpdate();
-        if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.after(lastUpdate)) {
+        LocalDateTime lastUpdateFromDB = getLastUpdate();
+        if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
             reloadPropertiesFromDatabase();
         } else {
             LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed:"
-                    + SimpleDateFormat.getDateTimeInstance().format(lastUpdateFromDB.getTime()) + ".");
+                    + lastUpdateFromDB + ".");
         }
 
     }
@@ -143,8 +143,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
 
-    public Calendar getLastUpdate() {
-        TypedQuery<Calendar> query = memEManager.createNamedQuery("DBConfiguration.maxUpdateDate", Calendar.class);
+    public LocalDateTime getLastUpdate() {
+        TypedQuery<LocalDateTime> query = memEManager.createNamedQuery("DBConfiguration.maxUpdateDate", LocalDateTime.class);
         return query.getSingleResult();
     }
 

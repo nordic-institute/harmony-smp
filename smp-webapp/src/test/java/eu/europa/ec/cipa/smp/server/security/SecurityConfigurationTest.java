@@ -14,15 +14,20 @@
 package eu.europa.ec.cipa.smp.server.security;
 
 import eu.europa.ec.edelivery.exception.BlueCoatParseException;
-import eu.europa.ec.edelivery.smp.config.*;
+import eu.europa.ec.edelivery.smp.config.DatabaseConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
+import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig;
+import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,7 +35,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -45,7 +49,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         DatabaseConfig.class,
         SpringSecurityConfig.class,
-        SpringSecurityTestConfig.class
+        SpringSecurityTestConfig.class,
+        ConfigurationService.class,
+        CRLVerifierService.class,
+        SecurityUtilsServices.class,
+        UITruststoreService.class
+
 })
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")
@@ -66,7 +75,6 @@ public class SecurityConfigurationTest {
 
 
     public static final String TEST_USERNAME_BLUE_COAT__DB_UPPER_SN = "CN=comon name UPPER database SN,O=org,C=BE:000000000000bb66";
-
 
 
     @Autowired
@@ -94,6 +102,7 @@ public class SecurityConfigurationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("anonymousUser"));
     }
+
     @Test
     public void notAuthenticatedUserCannotCallPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH))

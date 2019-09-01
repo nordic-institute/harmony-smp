@@ -28,6 +28,8 @@ import java.util.Objects;
 @Table(name = "SMP_CONFIGURATION")
 @NamedQueries({
         @NamedQuery(name = "DBConfiguration.getAll", query = "SELECT d FROM DBConfiguration d"),
+        @NamedQuery(name = "DBConfiguration.maxUpdateDate",
+                query = "SELECT max(config.lastUpdatedOn) from DBConfiguration config"),
 })
 @org.hibernate.annotations.Table(appliesTo = "SMP_CONFIGURATION", comment = "SMP user certificates")
 public class DBConfiguration  extends BaseEntity  {

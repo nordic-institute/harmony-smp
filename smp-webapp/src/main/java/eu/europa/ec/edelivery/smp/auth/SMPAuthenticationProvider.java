@@ -8,6 +8,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
+import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +36,18 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
     /**
      * thread safe validator
      */
-    private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial( () -> {
-        return  new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US);
-    } );
+    private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> {
+        return new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US);
+    });
 
     @Autowired
     UserDao mUserDao;
 
     @Autowired
     CRLVerifierService crlVerifierService;
+
+    @Autowired
+    UITruststoreService truststoreService;
 
     @Override
     public Authentication authenticate(Authentication authenticationToken)
@@ -59,17 +63,17 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             } else {
                 LOG.warn("Unknown or null PreAuthenticatedAuthenticationToken principal type: " + principal);
             }
-        } else  if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
-            authentication = authenticateByUsernameToken((UsernamePasswordAuthenticationToken)authenticationToken);
+        } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
+            authentication = authenticateByUsernameToken((UsernamePasswordAuthenticationToken) authenticationToken);
         }
 
 
-       // set anonymous token
-       if (authentication == null) {
-           authentication = new AnonymousAuthenticationToken(authenticationToken.toString(), authenticationToken.getPrincipal(),
-                   Collections.singleton(SMPAuthority.S_AUTHORITY_ANONYMOUS));
-           authentication.setAuthenticated(false);
-       }
+        // set anonymous token
+        if (authentication == null) {
+            authentication = new AnonymousAuthenticationToken(authenticationToken.toString(), authenticationToken.getPrincipal(),
+                    Collections.singleton(SMPAuthority.S_AUTHORITY_ANONYMOUS));
+            authentication.setAuthenticated(false);
+        }
 
         return authentication;
     }
@@ -77,6 +81,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
     /**
      * Authenticate by certificate token got by BlueCoat or X509Certificate authentication)
+     *
      * @param principal - certificate principal
      * @return authentication value.
      */
@@ -105,7 +110,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
 
         }
-        DBCertificate certificate= user.getCertificate();
+        DBCertificate certificate = user.getCertificate();
 
         // check if certificate is valid
         Date currentDate = Calendar.getInstance().getTime();
@@ -116,6 +121,10 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             throw new AuthenticationServiceException("Invalid certificate:  NotAfter: " + dateFormatLocal.get().format(principal.getNotAfter()));
         }
         // check if we trust issuer
+        String issuerDn = principal.getIssuerDN();
+        if (!truststoreService.isOnTrustedSubject(issuerDn)) {
+            throw new AuthenticationServiceException("Issuer: " + issuerDn + " is not trusted!");
+        }
 
         // Check crl list
         String url = certificate.getCrlUrl();
