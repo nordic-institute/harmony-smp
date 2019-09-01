@@ -30,8 +30,7 @@ import java.util.Objects;
         @NamedQuery(name = "DBConfiguration.getAll", query = "SELECT d FROM DBConfiguration d"),
 })
 @org.hibernate.annotations.Table(appliesTo = "SMP_CONFIGURATION", comment = "SMP user certificates")
-public class DBConfiguration implements Serializable {
-    private static final long serialVersionUID = 1905122041950251201L;
+public class DBConfiguration  extends BaseEntity  {
 
     @Id
     @Column(name = "PROPERTY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512, nullable = false, unique = true)
@@ -57,6 +56,11 @@ public class DBConfiguration implements Serializable {
 
     public DBConfiguration() {
 
+    }
+
+    @Override
+    public Object getId() {
+        return property;
     }
 
     public String getProperty() {
