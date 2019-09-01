@@ -2,10 +2,14 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
+import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -13,6 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
+import java.security.cert.CertificateRevokedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,6 +41,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     UserDao mUserDao;
+
+    @Autowired
+    CRLVerifierService crlVerifierService;
 
     @Override
     public Authentication authenticate(Authentication authenticationToken)
@@ -62,25 +70,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                    Collections.singleton(SMPAuthority.S_AUTHORITY_ANONYMOUS));
            authentication.setAuthenticated(false);
        }
-           /*
-
-            if (principal instanceof PreAuthenticatedCertificatePrincipal) {
-                // get principal
-                LOG.info("Authenticate: PreAuthenticatedCertificatePrincipal");
-                authentication = authenticateCertificate((PreAuthenticatedCertificatePrincipal) principal);
-            } else if (principal instanceof PreAuthenticatedTokenPrincipal) {
-                authentication = authenticateSecurityToken((PreAuthenticatedTokenPrincipal) principal);
-
-            } else if (principal instanceof PreAuthenticatedAnonymousPrincipal) {
-                authentication = new UnsecureAuthentication();
-                authentication.setAuthenticated(configurationBusiness.isUnsecureLoginEnabled());
-            }
-            else {
-                // unknown principal type
-                authentication = new UnsecureAuthentication();
-                authentication.setAuthenticated(false);
-            }*/
-
 
         return authentication;
     }
@@ -98,7 +87,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         String userToken = principal.getName();
         try {
 
-            Optional<DBUser> oUsr = mUserDao.findUserByCertificateId(userToken);
+            Optional<DBUser> oUsr = mUserDao.findUserByCertificateId(userToken, true);
             if (!oUsr.isPresent()) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, userToken);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
@@ -116,6 +105,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
 
         }
+        DBCertificate certificate= user.getCertificate();
+
         // check if certificate is valid
         Date currentDate = Calendar.getInstance().getTime();
         // validate  dates
@@ -124,12 +115,20 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         } else if (principal.getNotAfter().before(currentDate)) {
             throw new AuthenticationServiceException("Invalid certificate:  NotAfter: " + dateFormatLocal.get().format(principal.getNotAfter()));
         }
-        // check if issuer is on trust list.
+        // check if we trust issuer
 
         // Check crl list
-        String url = user.getCertificate().getCrlUrl();
-        if (url!= null) {
-
+        String url = certificate.getCrlUrl();
+        if (!StringUtils.isBlank(url)) {
+            try {
+                crlVerifierService.verifyCertificateCRLs(certificate.getSerialNumber(), url);
+            } catch (CertificateRevokedException ex) {
+                throw new AuthenticationServiceException("Revoked certificate!");
+            } catch (Throwable th) {
+                String msg = "Error occurred while validating CRL for certificate!";
+                LOG.error(SMPLogger.SECURITY_MARKER, msg + "Err: " + ExceptionUtils.getRootCauseMessage(th), th);
+                throw new AuthenticationServiceException(msg);
+            }
         }
 
 

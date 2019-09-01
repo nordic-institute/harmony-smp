@@ -5,10 +5,7 @@ import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
-import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
@@ -38,8 +35,9 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 @ContextConfiguration(classes = {H2JPATestConfig.class,PropertiesSingleDomainTestConfig.class,
         CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
-        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class,
-        UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class, SMLIntegrationService.class})
+        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class,
+        UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class, SMLIntegrationService.class,
+        CRLVerifierService.class, ConfigurationService.class})
 @Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
         (transactionMode = SqlConfig.TransactionMode.ISOLATED,
                 transactionManager = "transactionManager",

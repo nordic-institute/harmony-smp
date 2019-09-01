@@ -62,10 +62,10 @@ public class SecurityConfigurationTest {
     public static final String BLUE_COAT_VALID_HEADER_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=comon name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
     public static final String TEST_USERNAME_BLUE_COAT = "CN=comon name,O=org,C=BE:000000000000bb66";
 
-    public static final String BLUE_COAT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=comon name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String BLUE_COAT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=CN=comon name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
 
 
-    public static final String TEST_USERNAME_BLUE_COAT__DB_UPPER_SN = "CN=comon name UPPER database SN,O=org,C=BE:000000000000BB66";
+    public static final String TEST_USERNAME_BLUE_COAT__DB_UPPER_SN = "CN=comon name UPPER database SN,O=org,C=BE:000000000000bb66";
 
 
 

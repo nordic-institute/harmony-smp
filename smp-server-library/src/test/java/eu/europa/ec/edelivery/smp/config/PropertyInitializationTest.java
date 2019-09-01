@@ -1,18 +1,12 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.h2.engine.DbSettings;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.persistence.EntityManager;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,11 +26,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
-public class PropertiesConfigTest {
+public class PropertyInitializationTest {
 
     SecurityUtilsServices  securityUtilsServices = new SecurityUtilsServices();
 
-    PropertiesConfig testInstance = new PropertiesConfig();
+    PropertyInitialization testInstance = new PropertyInitialization();
 
 
     @Test
