@@ -51,6 +51,7 @@ public class UIKeystoreService {
     @Value("${encryption.key.filename}")
     private String encryptionFilename;
 
+
     private String smpKeyStorePasswordDecrypted;
 
     private Map<String, Key> keystoreKeys;
@@ -317,7 +318,7 @@ public class UIKeystoreService {
      * @throws KeyStoreException
      */
     private void storeKeystore(KeyStore keyStore) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        File keystoreFilePath = new File(configurationDir + File.separator + smpKeyStoreFilename);
+        File keystoreFilePath =getKeyStoreFile();
         try (FileOutputStream fos = new FileOutputStream(keystoreFilePath)) {
             keyStore.store(fos, smpKeyStorePasswordDecrypted.toCharArray());
         }

@@ -81,7 +81,6 @@ public class CRLVerifierService {
         LOG.info("Download CRL " + crlDistributionPointURL);
         X509CRL crl = getCRLByURL(crlDistributionPointURL);
 
-
         if (crl == null) {
             throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not verify CRL '" + crlDistributionPointURL
                     + "' for certificate of serial number : " + serial);
@@ -169,9 +168,9 @@ public class CRLVerifierService {
                 if (useProxy() && !doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())
                 ) {
                     LOG.debug("Using proxy for downloading URL " + crlURL);
-                    String decryptedPassword = configurationService.getDecryptedHttpPassword();
+                    String decryptedPassword = configurationService.getProxyCredentialToken();
                     inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(), configurationService.getHttpProxyPort(),
-                            configurationService.getHttpUsername(), decryptedPassword);
+                            configurationService.getProxyUsername(), decryptedPassword);
                 } else {
                     inputStream = downloadURLDirect(crlURL);
                 }

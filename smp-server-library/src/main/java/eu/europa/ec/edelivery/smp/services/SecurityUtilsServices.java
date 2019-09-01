@@ -25,7 +25,8 @@ public class SecurityUtilsServices {
 
 
     /**
-     * Inser keys/certificates from sourceKeystore to targetKeystore. If certificicate with alias alredy exists alias is appended with _%03d as example
+     * Insert keys/certificates from sourceKeystore to target Keystore. If certificate with alias already exists alias is
+     * appended with _%03d as example
      * _001
      * @param targetKeystore
      * @param targetPassword
