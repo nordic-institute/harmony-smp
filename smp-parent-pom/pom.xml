@@ -56,8 +56,10 @@
         <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
         <!-- bdmsl.client.version>3.0.0</bdmsl.client.version -->
         <bdmsl.api.version>4.0.0</bdmsl.api.version>
+
         <cxf.version>3.2.7</cxf.version>
         <cxf-xjc-runtime.version>3.2.0</cxf-xjc-runtime.version>
+        <httpclient.version>4.5.9</httpclient.version>
         <build.helper.maven.version>1.9.1</build.helper.maven.version>
         <ehcache.version>2.10.6</ehcache.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
@@ -67,6 +69,7 @@
         <jstl.version>1.2</jstl.version>
         <javaee-api.version>7.0</javaee-api.version>
         <commons-lang3.version>3.4</commons-lang3.version>
+        <commons-validator.version>1.6</commons-validator.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.23.4</mockito.version>
         <log4j.version>1.2.17</log4j.version>
@@ -226,6 +229,13 @@
                 <artifactId>cxf-rt-features-logging</artifactId>
                 <version>${cxf.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>eu.europa.ec.cipa</groupId>
                 <artifactId>cipa-edelivery-common</artifactId>
@@ -488,6 +498,12 @@
                 <artifactId>commons-net</artifactId>
                 <version>${commons-net.version}</version>
             </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${commons-validator.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>

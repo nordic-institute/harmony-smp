@@ -15,32 +15,25 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
+import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
 @Service
 public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIUserService.class);
-
-    private static final byte[] S_PEM_START_TAG = "-----BEGIN CERTIFICATE-----".getBytes();
-
-    private static final byte[] S_PEM_END_TAG = "-----END CERTIFICATE-----".getBytes();
-
-    private static final String S_BLUECOAT_DATEFORMAT ="MMM dd HH:mm:ss yyyy";
 
     @Autowired
     private UserDao userDao;
@@ -85,10 +78,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 dbUser.setRole(userRO.getRole());
                 dbUser.setActive(userRO.isActive());
                 dbUser.setUsername(userRO.getUsername());
-                if (StringUtils.isBlank(userRO.getUsername()) ){
+                if (StringUtils.isBlank(userRO.getUsername())) {
                     // if username is empty than clear the password
                     dbUser.setPassword("");
-                }else if (!StringUtils.isBlank(userRO.getPassword())) {
+                } else if (!StringUtils.isBlank(userRO.getPassword())) {
                     // check for new password
                     dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
                     dbUser.setPasswordChanged(passwordChange);
@@ -100,10 +93,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                     CertificateRO certificateRO = userRO.getCertificate();
                     DBCertificate dbCertificate = dbUser.getCertificate() != null ? dbUser.getCertificate() : new DBCertificate();
                     dbUser.setCertificate(dbCertificate);
-                    if (certificateRO.getValidFrom()!=null) {
+                    if (certificateRO.getValidFrom() != null) {
                         dbCertificate.setValidFrom(LocalDateTime.ofInstant(certificateRO.getValidFrom().toInstant(), ZoneId.systemDefault()));
                     }
-                    if (certificateRO.getValidTo()!=null) {
+                    if (certificateRO.getValidTo() != null) {
                         dbCertificate.setValidTo(LocalDateTime.ofInstant(certificateRO.getValidTo().toInstant(), ZoneId.systemDefault()));
                     }
                     dbCertificate.setCertificateId(certificateRO.getCertificateId());
@@ -132,78 +125,11 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     public CertificateRO getCertificateData(byte[] buff) throws CertificateException, IOException {
-        // get pem encoding -
-        InputStream isCert = createPEMFormat(buff);
 
-        CertificateFactory fact = CertificateFactory.getInstance("X.509");
-        X509Certificate cert = (X509Certificate) fact.generateCertificate(isCert);
+        X509Certificate cert = X509CertificateUtils.getX509Certificate(buff);
 
         CertificateRO cro = convertToRo(cert);
         return cro;
-    }
-
-
-
-    /**
-     * Method tests if certificate is in PEM  format. If not it creates pem format else returns original data.
-     *
-     * @param certData - certificate data
-     * @return
-     * @throws IOException
-     */
-    public ByteArrayInputStream createPEMFormat(byte[] certData) throws IOException {
-        ByteArrayInputStream is;
-        byte[] pemBuff = getPemEncodedString(certData);
-        if (pemBuff!=null) {
-            is = new ByteArrayInputStream(pemBuff);
-        } else {
-            // try to encode
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bos.write(S_PEM_START_TAG);
-            bos.write('\n');
-            bos.write(Base64.getMimeEncoder().encode(certData));
-            bos.write('\n');
-            bos.write(S_PEM_END_TAG);
-            is = new ByteArrayInputStream(bos.toByteArray());
-        }
-        return is;
-    }
-
-    /**
-     * pem encoded certificate can have header_?? this code finds the certificate part and return the part
-     * @param buff
-     * @return
-     */
-    private byte[] getPemEncodedString(byte[] buff){
-        int iStart = indexOf(buff, S_PEM_START_TAG, 0);
-        if (iStart < 0){
-            return null;
-        }
-        int iEnd = indexOf(buff, S_PEM_END_TAG, iStart);
-        if (iEnd<=iStart){
-            return null;
-        }
-        return Arrays.copyOfRange(buff, iStart, iEnd + S_PEM_END_TAG.length);
-    }
-
-    /**
-     * Check if file contains bytearraz
-     * @param outerArray
-     * @param smallerArray
-     * @return
-     */
-    public int indexOf(byte[] outerArray, byte[] smallerArray, int iStart) {
-        for(int i = iStart; i < outerArray.length - smallerArray.length+1; ++i) {
-            boolean found = true;
-            for(int j = 0; j < smallerArray.length; ++j) {
-                if (outerArray[i+j] != smallerArray[j]) {
-                    found = false;
-                    break;
-                }
-            }
-            if (found) return i;
-        }
-        return -1;
     }
 
     @Override
@@ -216,18 +142,18 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
 
-    public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev){
-        List<DBUserDeleteValidation>  lstMessages = userDao.validateUsersForDelete(dev.getListIds());
+    public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
+        List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(dev.getListIds());
         dev.setValidOperation(lstMessages.isEmpty());
         StringWriter sw = new StringWriter();
         sw.write("Could not delete user with ownerships! ");
-        lstMessages.forEach(msg ->{
+        lstMessages.forEach(msg -> {
             dev.getListDeleteNotPermitedIds().add(msg.getId());
             sw.write("User: ");
-            sw.write(StringUtils.isBlank(msg.getUsername())?msg.getCertificateId(): msg.getUsername());
+            sw.write(StringUtils.isBlank(msg.getUsername()) ? msg.getCertificateId() : msg.getUsername());
             sw.write(" owns SG count: ");
-            sw.write( msg.getCount().toString());
-            sw.write( ". ");
+            sw.write(msg.getCount().toString());
+            sw.write(". ");
         });
         dev.setStringMessage(sw.toString());
         return dev;
