@@ -12,12 +12,11 @@ import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -104,197 +103,66 @@ public class ConfigurationService {
     }
 
 
-    public String getHttpUsername() {
+    public String getProxyUsername() {
         return getAndTestForDeprecatedProperty(HTTP_PROXY_USER, SML_PROXY_USER);
     }
 
 
-    public String getHttpPassword() {
+    public String getProxyPassword() {
         return getAndTestForDeprecatedProperty(HTTP_PROXY_PASSWORD, SML_PROXY_PASSWORD);
     }
 
-    public String getDecryptedHttpPassword() {
-        String valEnc =  getHttpPassword();
+    public String getProxyCredentialToken() {
+        String valEnc =  getProxyPassword();
         if(!StringUtils.isBlank(valEnc)){
             return decryptString(HTTP_PROXY_PASSWORD, valEnc);
         }
         return null;
     }
 
-
-
     public boolean isProxyEnabled(){
-        String proxhHost = configurationDAO.getProperty(HTTP_PROXY_HOST);
-        return StringUtils.isBlank(proxhHost);
-    }
-/*
-
-
- 
-    public DBConfiguration getPropertyFromDatabase(SMPPropertyEnum key)  {
-        Optional<DBConfiguration> property = configurationDAO.getPropertyFromDatabase(key);
-        return handlePropertyResult(key, property);
+        String proxyHost = configurationDAO.getProperty(HTTP_PROXY_HOST);
+        return !StringUtils.isBlank(proxyHost);
     }
 
-/*
-    public ConfigurationBO deletePropertyFromDatabase(SMLPropertyEnum key) throws TechnicalException {
-        Optional<ConfigurationBO> property = configurationDAO.deletePropertyFromDatabase(key);
-        return handlePropertyResult(key, property);
-    }
 
-    protected ConfigurationBO handlePropertyResult(SMLPropertyEnum key, Optional<ConfigurationBO> property) throws TechnicalException {
-        if (!property.isPresent()) {
-            throw new BadRequestException("Property: " + key.getProperty() + " not exists in database!");
-        }
-        ConfigurationBO result = property.get();
-        if (key.isEncrypted()) {
-            result.setValue("*******");
-        }
-        return result;
-    }
-   
-    public String getMonitorPassword() {
-        return configurationDAO.getProperty(ADMIN_PASSWORD);
-    }
-
-    public boolean isBlueCoatEnable() {
-        return Boolean.parseBoolean(configurationDAO.getProperty(BLUE_COAT_ENABLED));
-    }
-
-    public String getSMPCertRegularExpresion() {
-        return configurationDAO.getProperty(AUTH_SMP_CERT_REGEXP);
-    }
-
-    public String getCertificateChangeCron() {
-        return configurationDAO.getProperty(CERT_CHANGE_CRON);
-    }
-   
-    public String getConfigurationFolder() {
-        return configurationDAO.getProperty(CONFIGURATION_DIR);
-    }
-   
-    public String getInconsistencyReportCron() {
-        return configurationDAO.getProperty(DIA_CRON);
-    }
-
-    public String getInconsistencyReportMailTo() {
-        return configurationDAO.getProperty(DIA_MAIL_TO);
-    }
-   
-    public String getInconsistencyReportMailFrom() {
-        return configurationDAO.getProperty(DIA_MAIL_FROM);
-    }
-
-    public String getInconsistencyReportGenerateByInstance() {
-        return configurationDAO.getProperty(DIA_GENERATE_SERVER);
-    }
-
-    public String getMailSMPTHost() {
-        return configurationDAO.getProperty(MAIL_SERVER_HOST);
-    }
-
-    public int getMailSMPTPort() {
-        return Integer.parseInt(configurationDAO.getProperty(MAIL_SERVER_PORT));
-    }
-
-    public boolean isDNSSig0Enabled() {
-        return Boolean.parseBoolean(configurationDAO.getProperty(DNS_SIG0_ENABLED));
-    }
-
-    public String getDNSSig0KeyFilename() {
-        return configurationDAO.getProperty(DNS_SIG0_KEY_FILENAME);
-    }
-   
-    public String getDNSSig0KeyName() {
-        return configurationDAO.getProperty(DNS_SIG0_PKEY_NAME);
-    }
-   
-    public boolean isDNSEnabled() {
-        return Boolean.parseBoolean(configurationDAO.getProperty(DNS_ENABLED));
-    }
-
-   
-    public String getDNSServer() {
-        return configurationDAO.getProperty(DNS_SERVER);
-    }
-
-   
-    public String getDNSPublisherPrefix() {
-        return configurationDAO.getProperty(DNS_PUBLISHER_PREFIX);
-    }
-
-   
     public String getEncryptionFilename() {
         return configurationDAO.getProperty(ENCRYPTION_FILENAME);
     }
 
-   
-    public boolean isProxyEnabled() {
-        return Boolean.parseBoolean(configurationDAO.getProperty(PROXY_ENABLED));
+    public String getConfigurationFolder() {
+        String path = configurationDAO.getProperty(CONFIGURATION_DIR);
+        if(StringUtils.isBlank(path)) {
+            path="";
+        } else if (!path.endsWith(File.separator)) {
+            // do not add this if path is blank!
+            path+=File.separator;
+        }
+        return path;
     }
 
-   
-    public String getHttpProxyHost() {
-        return configurationDAO.getProperty(HTTP_PROXY_HOST);
+
+    public String getTruststoreFilename() {
+        return configurationDAO.getProperty(TRUSTSTORE_FILENAME);
     }
 
-   
-    public String getHttpNoProxyHosts() {
-        return configurationDAO.getProperty(HTTP_NO_PROXY_HOSTS);
-    }
-
-   
-    public int getHttpProxyPort() {
-        return Integer.parseInt(configurationDAO.getProperty(HTTP_PROXY_PORT));
-    }
-
-   
-    public String getHttpUsername() {
-        return configurationDAO.getProperty(HTTP_PROXY_USER);
-    }
-
-   
-    public String getHttpPassword() {
-        return configurationDAO.getProperty(HTTP_PROXY_PASSWORD);
-    }
-
-   
-    public boolean isSignResponseEnabled() {
-        return Boolean.parseBoolean(configurationDAO.getProperty(SING_RESPONSE));
-    }
-
-   
-    public String getSignAlias() {
-        return configurationDAO.getProperty(SIGNATURE_ALIAS);
-    }
-
-   
     public String getKeystoreFilename() {
-        return configurationDAO.getProperty(KEYSTORE_FILENAME);
+        return configurationDAO.getProperty(TRUSTSTORE_FILENAME);
     }
 
-   
-    public String getKeystorePassword() {
-        return configurationDAO.getProperty(KEYSTORE_PASSWORD);
+    public String getTruststoreCredentialToken() {
+        String valEnc = configurationDAO.getProperty(TRUSTSTORE_PASSWORD);
+        if(!StringUtils.isBlank(valEnc)){
+            return decryptString(TRUSTSTORE_PASSWORD, valEnc);
+        }
+        return null;
     }
-
-   
-    public int getListPageSize() {
-        return Integer.parseInt(configurationDAO.getProperty(PAGE_SIZE));
-    }
-
-   
-    public boolean isUnsecureLoginEnabled() {
-        return Boolean.parseBoolean(configurationDAO.getProperty(UNSEC_LOGIN));
-    }
-*/
-
-    public String getEncryptionFilename() {
-        return configurationDAO.getProperty(ENCRYPTION_FILENAME);
-    }
-
-    public String getConfigurationFolder() {
-        return configurationDAO.getProperty(CONFIGURATION_DIR);
+    public String getKeystoreCredentialToken() {
+        String valEnc = configurationDAO.getProperty(KEYSTORE_PASSWORD);
+        if(!StringUtils.isBlank(valEnc)){
+            return decryptString(KEYSTORE_PASSWORD, valEnc);
+        }
+        return null;
     }
 
     protected String decryptString(SMPPropertyEnum key, String value)  {
