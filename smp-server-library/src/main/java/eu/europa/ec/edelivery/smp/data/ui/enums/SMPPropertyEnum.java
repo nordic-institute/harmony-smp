@@ -22,7 +22,7 @@ public enum SMPPropertyEnum {
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address","0.0.0.0","Physical SMP endpoint which will be registered on SML when registering new domain.", false, false , SMPPropertyTypeEnum.STRING),
 
     HTTP_PROXY_HOST("smp.proxy.host", "", "The http proxy host", false,false, SMPPropertyTypeEnum.STRING),
-    HTTP_NO_PROXY_HOSTS("smp.noproxy.host", "localhost|127.0.0.1", "list of nor proxy hosts. Ex.: localhost|127.0.0.1", false,false, SMPPropertyTypeEnum.STRING),
+    HTTP_NO_PROXY_HOSTS("smp.noproxy.hosts", "localhost|127.0.0.1", "list of nor proxy hosts. Ex.: localhost|127.0.0.1", false,false, SMPPropertyTypeEnum.STRING),
     HTTP_PROXY_PASSWORD("smp.proxy.password", "", "Base64 encrypted password for Proxy.", false, true,SMPPropertyTypeEnum.STRING),
     HTTP_PROXY_PORT("smp.http.port", "8012", "The http proxy port", false, true, SMPPropertyTypeEnum.INTEGER),
     HTTP_PROXY_USER("smp.http.user", "user", "The proxy user", false, true, SMPPropertyTypeEnum.STRING),
@@ -32,21 +32,21 @@ public enum SMPPropertyEnum {
     KEYSTORE_FILENAME("smp.keystore.filename","smp-keystore.jks","Keystore filename ", false, false , SMPPropertyTypeEnum.FILENAME),
     TRUSTSTORE_PASSWORD("smp.truststore.password","","Encrypted truststore password ", false, true, SMPPropertyTypeEnum.STRING),
     TRUSTSTORE_FILENAME("smp.truststore.filename","","Truststore filename ", false, false , SMPPropertyTypeEnum.FILENAME),
+    CERTIFICATE_CRL_FORCE("smp.certificate.crl.force","false","If false then if CRL is not reachable ignore CRL validation", false, false , SMPPropertyTypeEnum.BOOLEAN),
+
 
     CONFIGURATION_DIR("configuration.dir","","Path to the folder containing all the configuration files (keystore and encryption key)", false, false , SMPPropertyTypeEnum.PATH),
     ENCRYPTION_FILENAME("encryption.key.filename","encryptionPrivateKey.private","Key filename to encrypt passwords", false, false , SMPPropertyTypeEnum.FILENAME),
     KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted","","Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false , SMPPropertyTypeEnum.STRING),
 
-    SML_KEYSTORE_PASSWORD("bdmsl.integration.keystore.password","","Deprecated ", false, false , SMPPropertyTypeEnum.STRING),
-    SML_KEYSTORE_PATH("bdmsl.integration.keystore.path","","Deprecated ", false, false , SMPPropertyTypeEnum.STRING),
-    SIGNATURE_KEYSTORE_PASSWORD("xmldsig.keystore.password","","Deprecated ", false, false , SMPPropertyTypeEnum.STRING),
-    SIGNATURE_KEYSTORE_PATH("xmldsig.keystore.classpath","","Deprecated ", false, false , SMPPropertyTypeEnum.STRING),
+    SML_KEYSTORE_PASSWORD("bdmsl.integration.keystore.password","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
+    SML_KEYSTORE_PATH("bdmsl.integration.keystore.path","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
+    SIGNATURE_KEYSTORE_PASSWORD("xmldsig.keystore.password","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
+    SIGNATURE_KEYSTORE_PATH("xmldsig.keystore.classpath","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
     SML_PROXY_HOST("bdmsl.integration.proxy.server","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
-    SML_PROXY_PORT("bdmsl.integration.proxy.port","","Deprecated ", false, false , SMPPropertyTypeEnum.INTEGER),
-    SML_PROXY_USER("bdmsl.integration.proxy.user","","Deprecated ", false, false , SMPPropertyTypeEnum.STRING),
-    SML_PROXY_PASSWORD("bdmsl.integration.proxy.password","","Deprecated ", false, true , SMPPropertyTypeEnum.STRING);
-
-
+    SML_PROXY_PORT("bdmsl.integration.proxy.port","","Deprecated", false, false , SMPPropertyTypeEnum.INTEGER),
+    SML_PROXY_USER("bdmsl.integration.proxy.user","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
+    SML_PROXY_PASSWORD("bdmsl.integration.proxy.password","","Deprecated", false, true , SMPPropertyTypeEnum.STRING);
 
     String property;
     String defValue;

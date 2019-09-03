@@ -124,21 +124,9 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
     }
 
-    public CertificateRO getCertificateData(byte[] buff) throws CertificateException, IOException {
-
-        X509Certificate cert = X509CertificateUtils.getX509Certificate(buff);
-
-        CertificateRO cro = convertToRo(cert);
-        return cro;
-    }
-
     @Override
     public UserRO convertToRo(DBUser d) {
         return conversionService.convert(d, UserRO.class);
-    }
-
-    public CertificateRO convertToRo(X509Certificate d) {
-        return conversionService.convert(d, CertificateRO.class);
     }
 
 

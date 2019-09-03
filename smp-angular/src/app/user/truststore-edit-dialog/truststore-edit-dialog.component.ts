@@ -5,74 +5,60 @@ import {AlertService} from "../../alert/alert.service";
 import {GlobalLookups} from "../../common/global-lookups";
 import {HttpClient} from "@angular/common/http";
 import {SecurityService} from "../../security/security.service";
+import {TruststoreService} from "../truststore.service";
 import {CertificateDialogComponent} from "../../common/certificate-dialog/certificate-dialog.component";
 import {ConfirmationDialogComponent} from "../../common/confirmation-dialog/confirmation-dialog.component";
-import {KeystoreImportDialogComponent} from "../keystore-import-dialog/keystore-import-dialog.component";
 import {InformationDialogComponent} from "../../common/information-dialog/information-dialog.component";
-import {KeystoreService} from "../keystore.service";
-import {KeystoreResult} from "../keystore-result.model";
+import {TruststoreResult} from "../truststore-result.model";
+import {CertificateRo} from "../certificate-ro.model";
+
 
 @Component({
-  selector: 'keystore-edit-dialog',
-  templateUrl: './keystore-edit-dialog.component.html'
+  selector: 'truststore-edit-dialog',
+  templateUrl: './truststore-edit-dialog.component.html'
 })
-export class KeystoreEditDialogComponent {
+export class TruststoreEditDialogComponent {
   formTitle: string;
 
   displayedColumns = ['alias', 'certificateId'];
 
 
-  constructor(private keystoreService: KeystoreService,
+  constructor(private truststoreService: TruststoreService,
               private securityService: SecurityService,
               private http: HttpClient,
               public lookups: GlobalLookups,
               public dialog: MatDialog,
-              private dialogRef: MatDialogRef<KeystoreEditDialogComponent>,
+              private dialogRef: MatDialogRef<TruststoreEditDialogComponent>,
               private alertService: AlertService,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
-    this.formTitle = "Keystore edit dialog";
+    this.formTitle = "Truststore edit dialog";
   }
 
 
   onDeleteCertificateRowActionClicked(row) {
 
-    let listDomains = this.lookups.cachedDomainList.filter(domain => domain.smlClientKeyAlias === row.alias || domain.signatureKeyAlias === row.alias);
-    let listSignatureKeys = listDomains.map(domain => domain.domainCode);
-
-    if (listSignatureKeys.length > 0) {
-      this.dialog.open(InformationDialogComponent, {
-        data: {
-          title: "Delete key/certificate " + row.alias + " from keystore!",
-          description: "Key/certificate is in use by domains: " + listSignatureKeys + ". First replace/remove certificate from domains!"
-        }
-      }).afterClosed().subscribe(result => {
-        if (result) {
-          //
-        }
-      })
-    } else {
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
-          title: "Delete key/certificate " + row.alias + " from keystore!",
-          description: "Action will permanently delete key/certifcate from keystore! Do you wish to continue?"
+          title: "Delete certificate " + row.alias + " from truststore!",
+          description: "Action will permanently delete certificate from truststore! Do you wish to continue?"
         }
       }).afterClosed().subscribe(result => {
         if (result) {
-          this.deleteCertificateFromKeystore(row.alias);
+          this.deleteCertificateFromTruststore(row.alias);
         }
       })
-    }
+
   }
 
-  deleteCertificateFromKeystore(alias: string) {
-    this.keystoreService.deleteCertificateFromKeystore$(alias).subscribe((res: KeystoreResult) => {
+  deleteCertificateFromTruststore(alias: string) {
+    this.truststoreService.deleteCertificateFromKeystore$(alias).subscribe((res: TruststoreResult) => {
         if (res) {
           if (res.errorMessage) {
             this.alertService.exception("Error occurred while deleting certificate:" + alias, res.errorMessage, false);
           } else {
             this.alertService.success("Certificate " + alias + " deleted!");
-            this.lookups.refreshCertificateLookup();
+            this.lookups.refreshTrustedCertificateLookup();
 
           }
         } else {
@@ -86,15 +72,30 @@ export class KeystoreEditDialogComponent {
 
   }
 
-  openImportKeystoreDialog() {
-    const formRef: MatDialogRef<any> = this.dialog.open(KeystoreImportDialogComponent);
-    formRef.afterClosed().subscribe(result => {
-      if (result) {
-        // import
+  uploadCertificate(event) {
+    const file = event.target.files[0];
+    this.truststoreService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
+        if (res && res.certificateId) {
+          this.lookups.refreshTrustedCertificateLookup();
+        } else {
+          this.alertService.exception("Error occurred while uploading certificate.", "Check if uploaded file has valid certificate type.", false);
+        }
+      },
+      err => {
+        this.alertService.exception('Error uploading certificate file ' + file.name, err);
       }
-    });
+    );
   }
 
+  /* openImportKeystoreDialog() {
+     const formRef: MatDialogRef<any> = this.dialog.open(KeystoreImportDialogComponent);
+     formRef.afterClosed().subscribe(result => {
+       if (result) {
+         // import
+       }
+     });
+   }
+*/
   onActivate(event) {
     if ("dblclick" === event.type) {
       this.onShowCertificateDataRow(event.row);

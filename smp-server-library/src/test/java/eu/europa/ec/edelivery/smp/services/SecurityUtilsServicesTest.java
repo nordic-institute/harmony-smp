@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Security;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -34,28 +35,31 @@ public class SecurityUtilsServicesTest {
         Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
-
     @Test
-    public void generatePrivateSymmetricKey() throws IOException {
-        String tempPrivateKey = "enckey_"+ System.currentTimeMillis() + ".private";
-        Path resourceDirectory = Paths.get("target", tempPrivateKey);
+    public void testGenerateMasterKeyWitIV() throws Exception {
+        String tempPrivateKey = System.currentTimeMillis() + ".private";
+        Path resourcePath = Paths.get("target", tempPrivateKey);
 
-        testInstance.generatePrivateSymmetricKey(resourceDirectory.toFile());
+        testInstance.generatePrivateSymmetricKey(resourcePath.toFile());
 
-        SecretKey privateKey = new SecretKeySpec(Files.readAllBytes(Paths.get(resourceDirectory.toAbsolutePath().toString())), "AES");
+        byte[] buff = Files.readAllBytes(resourcePath);
+        Assert.assertTrue(buff.length > SecurityUtilsServices.IV_GCM_SIZE);
+        // start tag
+        Assert.assertEquals('#', buff[0]);
+        // end IV tag
+        Assert.assertEquals('#', buff[SecurityUtilsServices.IV_GCM_SIZE + 1]);
+        byte[] keyBytes = Arrays.copyOfRange(buff, SecurityUtilsServices.IV_GCM_SIZE + 2, buff.length);
+
+
+        SecretKey privateKey = new SecretKeySpec(keyBytes, "AES");
         Assert.assertNotNull(privateKey);
         Assert.assertTrue(privateKey instanceof SecretKey);
-        File file = new File(resourceDirectory.toAbsolutePath().toString());
 
-        assertTrue(file.exists());
-        assertTrue(file.length() > 0);
-
-
-        file.delete();
     }
 
+
     @Test
-    public void encrypt() throws IOException {
+    public void encryptDefault() throws IOException {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!."+System.currentTimeMillis();
@@ -66,22 +70,40 @@ public class SecurityUtilsServicesTest {
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
     }
+
     @Test
-    public void encryptWithSetupKey() {
+    public void encryptWithSetupKeyWithoutIV() {
         // given
-        File f = new File("src/test/resources/keystores/encryptionKey.key");
+        Path resourceFile = Paths.get("src", "test", "resources", "keystores","encryptionKey.key");
         String password = "test123";
 
         // when
-        String encPassword = testInstance.encrypt(f, password);
+        String encPassword = testInstance.encrypt(resourceFile.toFile(), password);
+        String decPassword = testInstance.decrypt(resourceFile.toFile(), encPassword);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
+        assertEquals(password, decPassword);
+    }
+
+    @Test
+    public void encryptWithSetupKeyWitIV() {
+        // given
+        Path resourceFile = Paths.get("src", "test", "resources", "keystores","masterKeyWithIV.key");
+        String password = "test123";
+
+        // when
+        String encPassword = testInstance.encrypt(resourceFile.toFile(), password);
+        String decPassword = testInstance.decrypt(resourceFile.toFile(), encPassword);
+        //then
+        assertNotNull(encPassword);
+        assertNotEquals(password, encPassword);
+        assertEquals(password, decPassword);
     }
 
 
     @Test
-    public void decrypt() throws IOException {
+    public void decryptDefault() throws IOException {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
