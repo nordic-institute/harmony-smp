@@ -161,10 +161,6 @@ public class SignatureValidatorTest {
         Document docUnwrapped = SignatureUtil.buildDocWithGivenRoot(smNode);
         Element adminSignature = SignatureUtil.findServiceInfoSig(docUnwrapped);
 
-        //Default Signature
-        //Signer signer = new Signer(SignatureUtil.loadPrivateKey(), (X509Certificate) SignatureUtil.loadCertificate());
-        //signer.signXML(response.getDocumentElement());
-
         //Then
         //Check signed document
         //Admin signature validation

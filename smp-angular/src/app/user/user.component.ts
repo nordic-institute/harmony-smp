@@ -7,6 +7,8 @@ import {HttpClient} from '@angular/common/http';
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {SecurityService} from "../security/security.service";
 import {GlobalLookups} from "../common/global-lookups";
+import {KeystoreEditDialogComponent} from "../domain/keystore-edit-dialog/keystore-edit-dialog.component";
+import {TruststoreEditDialogComponent} from "./truststore-edit-dialog/truststore-edit-dialog.component";
 
 @Component({
   templateUrl:'./user.component.html',
@@ -54,6 +56,11 @@ export class UserComponent implements OnInit {
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
       return ['Username', 'Certificate', 'Role'].indexOf(col.name) != -1
     });
+
+    // if system admin refresh trust certificate list!
+    if (this.securityService.isCurrentUserSystemAdmin()) {
+      this.lookups.refreshTrustedCertificateLookup();
+    }
   }
 
   details(row: any) {
@@ -63,5 +70,15 @@ export class UserComponent implements OnInit {
   // for dirty guard...
   isDirty (): boolean {
     return this.searchTable.isDirty();
+  }
+
+
+  openEditTruststoreDialog() {
+    const formRef: MatDialogRef<any> = this.dialog.open(TruststoreEditDialogComponent);
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        // close
+      }
+    });
   }
 }

@@ -110,7 +110,7 @@ public class X509CertificateUtilsTest {
         //given
         List<String> urlList = clrLists == null ? Collections.emptyList() : Arrays.asList(clrLists.split(","));
         // when
-        String url = X509CertificateUtils.extractHttpCrlDistributionPoints(urlList);
+        String url = X509CertificateUtils.extractHttpCrlDistributionPoint(urlList);
         // then
         assertEquals(value, url);
     }

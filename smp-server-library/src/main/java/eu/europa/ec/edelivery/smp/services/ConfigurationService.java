@@ -125,6 +125,15 @@ public class ConfigurationService {
         return !StringUtils.isBlank(proxyHost);
     }
 
+    public boolean forceCRLValidation(){
+        String value = configurationDAO.getProperty(CERTIFICATE_CRL_FORCE);
+        // by default is not forcec
+        return !StringUtils.isBlank(value) &&
+                value.trim().equalsIgnoreCase("true");
+
+
+    }
+
 
     public String getEncryptionFilename() {
         return configurationDAO.getProperty(ENCRYPTION_FILENAME);

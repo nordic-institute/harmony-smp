@@ -99,8 +99,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
-
-
             user = oUsr.get();
         } catch (AuthenticationException ex) {
             throw ex;
@@ -120,10 +118,11 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         } else if (principal.getNotAfter().before(currentDate)) {
             throw new AuthenticationServiceException("Invalid certificate:  NotAfter: " + dateFormatLocal.get().format(principal.getNotAfter()));
         }
-        // check if we trust issuer
-        String issuerDn = principal.getIssuerDN();
-        if (!truststoreService.isOnTrustedSubject(issuerDn)) {
-            throw new AuthenticationServiceException("Issuer: " + issuerDn + " is not trusted!");
+        // check if issuer or subject are in trusted list
+        if (!(truststoreService.isSubjectOnTrustedList(principal.getSubjectOriginalDN())
+         || truststoreService.isSubjectOnTrustedList(principal.getIssuerDN()) )) {
+            throw new AuthenticationServiceException("Non of the Certificate: '" + principal.getSubjectOriginalDN() + "'" +
+                    " or issuer: '"+principal.getIssuerDN()+"' are trusted!");
         }
 
         // Check crl list
@@ -157,8 +156,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         // get user
         // test credentials
         // get and return  user roles.
-
-
         String username = auth.getName();
         String password = auth.getCredentials().toString();
 

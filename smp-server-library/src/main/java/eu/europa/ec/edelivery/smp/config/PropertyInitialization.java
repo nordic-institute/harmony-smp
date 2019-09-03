@@ -21,6 +21,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -37,6 +38,7 @@ import java.io.*;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,6 +60,9 @@ public class PropertyInitialization {
     private static final String PROP_BUILD_NAME="smp.artifact.name";
     private static final String PROP_BUILD_VERSION="smp.artifact.version";
     private static final String PROP_BUILD_TIME="smp.artifact.build.time";
+
+    private static final String VALID_PW_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
+    private static final int DEFAULT_PASSWORD_LENGTH = 16;
 
     SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyInitialization.class);
 
@@ -131,11 +136,14 @@ public class PropertyInitialization {
                 case KEYSTORE_PASSWORD:
                 case ENCRYPTION_FILENAME:
                 case KEYSTORE_PASSWORD_DECRYPTED:
-                    // skip value
+                    // skip values because they are aready created in initNewValues method
                     break;
                 default:
-                    dbConf = createDBEntry(val.getProperty(), fileProperties.getProperty(val.getProperty(), val.getDefValue()),
-                            val.getDesc());
+                    // insert only non deprecated values
+                    if (val.getDesc() ==null || !val.getDesc().trim().equalsIgnoreCase("deprecated")) {
+                        dbConf = createDBEntry(val.getProperty(), fileProperties.getProperty(val.getProperty(), val.getDefValue()),
+                                val.getDesc());
+                    }
             }
             if (dbConf != null) {
                 initProperties.setProperty(dbConf.getProperty(), dbConf.getValue());
@@ -178,7 +186,18 @@ public class PropertyInitialization {
         // add configuration path
         storeDBEntry(em, CONFIGURATION_DIR, settingsFolder.getPath());
         initProperties.setProperty(CONFIGURATION_DIR.getProperty(), settingsFolder.getPath());
-        String newKeyPassword = RandomStringUtils.random(16, true, true);
+        String newKeyPassword = null;
+        try {
+            newKeyPassword = RandomStringUtils.random(DEFAULT_PASSWORD_LENGTH, 0, VALID_PW_CHARS.length(),
+                    false, false,
+                    VALID_PW_CHARS.toCharArray(), SecureRandom.getInstanceStrong());
+        } catch (NoSuchAlgorithmException e) {
+            String msg = "Error occurred while generation test password: No strong random algorithm. Error:"
+                    + ExceptionUtils.getRootCauseMessage(e);
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, msg, e.getMessage());
+        }
+
+
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
 
 

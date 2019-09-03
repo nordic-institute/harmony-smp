@@ -20,11 +20,14 @@ export class GlobalLookups implements OnInit {
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
   certificateObserver: Observable<SearchTableResult>
+  trustedCertificateObserver: Observable<SearchTableResult>
+
   cachedDomainList: Array<any> = [];
   cachedServiceGroupOwnerList: Array<any> = [];
   cachedCertificateList: Array<any> = [];
   cachedCertificateAliasList: Array<String> = [];
   cachedApplicationInfo: SmpInfo;
+  cachedTrustedCertificateList: Array<any> = [];
 
 
 
@@ -33,6 +36,7 @@ export class GlobalLookups implements OnInit {
     this.refreshUserLookup();
     this.refreshCertificateLookup();
     this.refreshApplicationInfo();
+    this.refreshTrustedCertificateLookup();
 
   }
 
@@ -107,7 +111,6 @@ export class GlobalLookups implements OnInit {
       this.certificateObserver.subscribe((certs: SearchTableResult) => {
         this.cachedCertificateList = certs.serviceEntities.map(serviceEntity => {
           return {...serviceEntity}
-
         });
         //update alias list
         this.cachedCertificateAliasList =this.cachedCertificateList.map(cert => cert.alias);
@@ -120,6 +123,24 @@ export class GlobalLookups implements OnInit {
   }
 
 
+  public refreshTrustedCertificateLookup() {
+    // call only for authenticated users.
+    if ( this.securityService.isCurrentUserSystemAdmin() ) {
+
+      // init users
+      this.trustedCertificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_TRUSTSTORE );
+      this.trustedCertificateObserver.subscribe((certs: SearchTableResult) => {
+        this.cachedTrustedCertificateList = certs.serviceEntities.map(serviceEntity => {
+          return {...serviceEntity}
+
+        });
+      },(error:any) => {
+        // check if unauthorized
+        // just console try latter
+        console.log("Error occurred while loading trusted certifcates lookup [" + error + "]");
+      });
+    }
+  }
 
 
 }
