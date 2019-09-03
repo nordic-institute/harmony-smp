@@ -67,6 +67,8 @@ public class X509CertificateUtils {
                     if (genName.getTagNo() == GeneralName.uniformResourceIdentifier) {
                         String url = DERIA5String.getInstance(
                                 genName.getName()).getString();
+
+
                         crlUrls.add(url);
                     }
                 }
@@ -82,7 +84,7 @@ public class X509CertificateUtils {
      * @param urlList
      * @return
      */
-    public static String extractHttpCrlDistributionPoints(List<String> urlList) {
+    public static String extractHttpCrlDistributionPoint(List<String> urlList) {
         String httpsUrl = null;
         String httpUrl = null;
         for (String url : urlList) {
@@ -96,6 +98,7 @@ public class X509CertificateUtils {
         }
         return httpsUrl == null ? httpUrl : httpsUrl;
     }
+
 
 
     public static PreAuthenticatedCertificatePrincipal extractPrincipalFromCertificate(X509Certificate cert) {

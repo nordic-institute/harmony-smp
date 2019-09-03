@@ -24,6 +24,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.helpers.IOUtils;
@@ -40,6 +41,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -55,49 +57,44 @@ public class CRLVerifierService {
 
     Map<String, X509CRL> crlCacheMap = new HashMap<>();
     Map<String, Long> crlCacheNextRefreshMap = new HashMap<>();
-    public static long REFRESH_CRL_INTERVAL = 1000 * 60 * 60 * 24;
+    public static long REFRESH_CRL_INTERVAL = 1000 * 60 * 60;
     public static Long NULL_LONG = new Long(-1);
 
+    private static X500Principal NULL_ISSUER = new X500Principal("");
+    private static CRLReason NULL_CRL_REASON = CRLReason.UNSPECIFIED;
 
     @Autowired
     ConfigurationService configurationService;
 
 
-    public void verifyCertificateCRLs(String certificateId, String serial, List<String> crlDistPoints) throws CertificateRevokedException {
+    public void verifyCertificateCRLs(X509Certificate cert) throws CertificateRevokedException {
 
+        List<String> crlDistPoints = X509CertificateUtils.getCrlDistributionPoints(cert);
         if (crlDistPoints.isEmpty()) {
-            LOG.warn("The certificate: [" + certificateId + "] has no CRL Lists");
+            LOG.warn("The certificate: [" + cert.getSubjectX500Principal() + "] has no CRL Lists");
             return;
         }
+        String crlUrl = X509CertificateUtils.extractHttpCrlDistributionPoint(crlDistPoints);
+        BigInteger serNumber = cert.getSerialNumber();
+        verifyCertificateCRLs(serNumber, crlUrl);
+    }
 
-        for (String crlDP : crlDistPoints) {
-            verifyCertificateCRLs(serial, crlDP);
-        }
-
+    public void verifyCertificateCRLs(String serial, String crlDistributionPointURL) throws CertificateRevokedException {
+        // remove
+        String cleanSerial = serial.trim().replaceAll("\\s", "");
+        BigInteger biSerial = new BigInteger(cleanSerial, 16);
+        verifyCertificateCRLs(biSerial, crlDistributionPointURL);
     }
 
 
-    public void verifyCertificateCRLs(String serial, String crlDistributionPointURL) throws CertificateRevokedException {
+    public void verifyCertificateCRLs(BigInteger serial, String crlDistributionPointURL) throws CertificateRevokedException {
         LOG.info("Download CRL " + crlDistributionPointURL);
         X509CRL crl = getCRLByURL(crlDistributionPointURL);
 
-        if (crl == null) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not verify CRL '" + crlDistributionPointURL
-                    + "' for certificate of serial number : " + serial);
-        }
-        LOG.info("GOT  CRL " + crlDistributionPointURL + " CRL " + crl);
+        LOG.debug("GOT  CRL " + crlDistributionPointURL + " CRL " + crl);
 
-        if (crl.getRevokedCertificates() != null) {
-            BigInteger bi = new BigInteger(serial.trim().replaceAll("\\s", ""), 16);
-
-            X509CRLEntry entry = crl.getRevokedCertificate(bi);
-            if (entry != null) {
-                Map<String, Extension> map = new HashMap<>();
-                throw new CertificateRevokedException(entry.getRevocationDate(), entry.getRevocationReason(), entry.getCertificateIssuer(), map);
-
-            } else {
-                LOG.debug("The CRL '" + crlDistributionPointURL + "' is null/empty for the given certificate");
-            }
+        if (crl != null && crl.getRevokedCertificates() != null) {
+            validateCertificeCRL(crl, serial);
         }
     }
 
@@ -117,8 +114,31 @@ public class CRLVerifierService {
             }
         }
         if (x509CRL == null) {
-            x509CRL = getCRLByURL(crlURL);
-            Long nextRefresh = x509CRL.getNextUpdate() != null ? x509CRL.getNextUpdate().getTime()
+
+            SMPRuntimeException exception = null;
+            try {
+                x509CRL = downloadCRL(crlURL);
+            } catch (IOException e) {
+                exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL
+                        , ExceptionUtils.getRootCauseMessage(e), e);
+            } catch (CertificateException e) {
+                exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL
+                        , ExceptionUtils.getRootCauseMessage(e), e);
+            } catch (CRLException e) {
+                exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL
+                        , ExceptionUtils.getRootCauseMessage(e), e);
+            }
+
+            if (exception != null) {
+                boolean force = configurationService.forceCRLValidation();
+                if (force) {
+                    throw exception;
+                } else {
+                    LOG.warn(SMPLogger.SECURITY_MARKER, exception.getMessage(), exception);
+                }
+
+            }
+            Long nextRefresh = x509CRL != null && x509CRL.getNextUpdate() != null ? x509CRL.getNextUpdate().getTime()
                     : currentDate.getTime() + REFRESH_CRL_INTERVAL;
 
             crlCacheMap.put(crlURL, x509CRL);
@@ -135,24 +155,14 @@ public class CRLVerifierService {
     public X509CRL downloadCRL(String crlURL) throws IOException,
             CertificateException, CRLException {
 
-        InputStream crlStream;
-        try {
-            crlStream = downloadURL(crlURL);
-        } catch (SMPRuntimeException e) {
-            LOG.warn("Can not download CRL from certificate "
-                    + "distribution point: " + crlURL, e);
-            return null;
-        }
+        InputStream crlStream = downloadURL(crlURL);
 
-        if (crlStream == null) {
-            LOG.warn("Can not download CRL from certificate "
-                    + "distribution point: " + crlURL);
-            return null;
+        X509CRL crl = null;
+        if (crlStream != null) {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            crl = (X509CRL) cf.generateCRL(crlStream);
+            crlStream.close();
         }
-
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        X509CRL crl = (X509CRL) cf.generateCRL(crlStream);
-        crlStream.close();
         return crl;
     }
 
@@ -177,7 +187,7 @@ public class CRLVerifierService {
             }
             return inputStream;
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Error occurred while downloading CRL:'" + crlURL + "'. Error " + ExceptionUtils.getRootCauseMessage(exc));
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL, ExceptionUtils.getRootCauseMessage(exc));
         }
     }
 
@@ -266,5 +276,16 @@ public class CRLVerifierService {
         return false;
     }
 
+    private void validateCertificeCRL(X509CRL x509CRL, BigInteger bi) throws CertificateRevokedException {
+        X509CRLEntry entry = x509CRL.getRevokedCertificate(bi);
+        if (entry != null) {
+            Map<String, Extension> map = new HashMap<>();
+
+            throw new CertificateRevokedException(entry.getRevocationDate(),
+                    entry.getRevocationReason() == null ? NULL_CRL_REASON : entry.getRevocationReason(),
+                    entry.getCertificateIssuer() == null ? NULL_ISSUER : entry.getCertificateIssuer(), map);
+
+        }
+    }
 
 }

@@ -10,6 +10,7 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.UserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class UserResource {
 
     @Autowired
     private UIUserService uiUserService;
+
+    @Autowired
+    private UITruststoreService uiTruststoreService;
 
     @Autowired
     protected SMPAuthorizationService authorizationService;
@@ -98,7 +102,7 @@ public class UserResource {
 
 
         try {
-            return uiUserService.getCertificateData(data);
+            return uiTruststoreService.getCertificateData(data, true);
         } catch (IOException | CertificateException e) {
             LOG.error("Error occurred while parsing certificate.", e);
         }

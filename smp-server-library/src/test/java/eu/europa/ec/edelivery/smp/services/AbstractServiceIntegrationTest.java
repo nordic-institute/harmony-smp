@@ -11,6 +11,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import eu.europa.ec.edelivery.smp.testutil.DBAssertion;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
@@ -36,7 +37,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
         CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
         ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class,
-        UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class, SMLIntegrationService.class,
+        UITruststoreService.class, UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class, SMLIntegrationService.class,
         CRLVerifierService.class, ConfigurationService.class})
 @Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
         (transactionMode = SqlConfig.TransactionMode.ISOLATED,
