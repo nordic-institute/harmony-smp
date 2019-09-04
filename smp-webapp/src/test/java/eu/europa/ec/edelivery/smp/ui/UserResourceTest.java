@@ -9,6 +9,7 @@ import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import java.security.cert.X509Certificate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -119,7 +122,26 @@ public class UserResourceTest {
         assertEquals("3", res.getSerialNumber());
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
         assertEquals("sno=3&subject=C%3DBE%2CO%3DDIGIT%2CCN%3DSMP+test%2CE%3Dsmp%40test.com&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=C%3DBE%2CO%3DDIGIT%2CCN%3DIntermediate+CA", res.getBlueCoatHeader());
+    }
 
+    @Test
+    public void uploadCertificateIdWithEmailSerialNumberInSubjectCertIdTest() throws Exception {
+        String subject = "CN=common name,emailAddress=CEF-EDELIVERY-SUPPORT@ec.europa.eu,serialNumber=1,O=org,ST=My town,postalCode=2151, L=GreatTown,street=My Street. 20, C=BE";
+        String serialNumber = "1234321";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(serialNumber, subject);
+        byte[] buff = certificate.getEncoded();
+        // given when
+        MvcResult result = mvc.perform(post(PATH+"/1098765430/certdata")
+                .with(SYSTEM_CREDENTIALS)
+                .content(buff))
+                .andExpect(status().isOk()).andReturn();
+
+        //them
+        ObjectMapper mapper = new ObjectMapper();
+        CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
+
+
+        assertEquals("CN=common name,O=org,C=BE:0000000001234321", res.getCertificateId());
     }
 
     @Test
