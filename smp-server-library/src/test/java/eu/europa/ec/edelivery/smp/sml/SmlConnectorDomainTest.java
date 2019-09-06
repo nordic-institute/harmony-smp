@@ -18,12 +18,10 @@ package eu.europa.ec.edelivery.smp.sml;
         import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
         import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
         import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-        import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
-        import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
         import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
         import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-        import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
-        import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+        import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+        import eu.europa.ec.edelivery.smp.services.ConfigurationService;
         import org.junit.Before;
         import org.junit.Rule;
         import org.junit.Test;
@@ -34,6 +32,7 @@ package eu.europa.ec.edelivery.smp.sml;
         import org.springframework.test.context.ContextConfiguration;
         import org.springframework.test.context.TestPropertySource;
         import org.springframework.test.context.junit4.SpringRunner;
+        import org.springframework.test.util.ReflectionTestUtils;
 
         import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
         import static org.junit.Assert.*;
@@ -45,15 +44,14 @@ package eu.europa.ec.edelivery.smp.sml;
  * since 4.1.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class,
-        SecurityUtilsServices.class, UIKeystoreService.class,
-        ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
-@TestPropertySource(properties = {
-        "bdmsl.integration.enabled=true"})
-public class SmlConnectorDomainTest {
+@ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class})
+public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
+
+    @Autowired
+    protected ConfigurationService configurationService;
 
     @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     protected SmlConnector smlConnector;
@@ -62,6 +60,12 @@ public class SmlConnectorDomainTest {
 
     @Before
     public void setup() {
+
+        configurationService = Mockito.spy(configurationService);
+        ReflectionTestUtils.setField(smlConnector,"configurationService",configurationService);
+
+        Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
+
         mockSml.reset();
     }
 
@@ -98,8 +102,8 @@ public class SmlConnectorDomainTest {
         String message = "something unexpected";
         Exception ex = new Exception(message);
         mockSml.setThrowException(ex);
-        expectedExeption.expectMessage(message);
-        expectedExeption.expect(SMPRuntimeException.class);
+        expectedException.expectMessage(message);
+        expectedException.expect(SMPRuntimeException.class);
 
         smlConnector.registerDomain(DEFAULT_DOMAIN);
     }
@@ -147,8 +151,8 @@ public class SmlConnectorDomainTest {
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
         mockSml.setThrowException(ex);
-        expectedExeption.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedExeption.expect(SMPRuntimeException.class);
+        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
+        expectedException.expect(SMPRuntimeException.class);
 
         smlConnector.unregisterDomain(DEFAULT_DOMAIN);
     }
@@ -159,8 +163,8 @@ public class SmlConnectorDomainTest {
         String message = "something unexpected";
         Exception ex = new Exception(message);
         mockSml.setThrowException(ex);
-        expectedExeption.expectMessage(message);
-        expectedExeption.expect(SMPRuntimeException.class);
+        expectedException.expectMessage(message);
+        expectedException.expect(SMPRuntimeException.class);
 
         smlConnector.unregisterDomain(DEFAULT_DOMAIN);
     }

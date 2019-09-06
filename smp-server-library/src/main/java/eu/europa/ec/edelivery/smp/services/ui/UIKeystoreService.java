@@ -1,17 +1,15 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
-import org.apache.commons.lang3.StringUtils;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
@@ -34,25 +32,11 @@ public class UIKeystoreService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIKeystoreService.class);
 
     @Autowired
-    private SecurityUtilsServices securityUtilsServices;
-
-    @Autowired
     private ConversionService conversionService;
 
-    @Value("${smp.keystore.password}")
-    private String smpKeyStorePasswordEncrypted;
 
-    @Value("${smp.keystore.filename}")
-    private String smpKeyStoreFilename;
-
-    @Value("${configuration.dir}")
-    private String configurationDir;
-
-    @Value("${encryption.key.filename}")
-    private String encryptionFilename;
-
-
-    private String smpKeyStorePasswordDecrypted;
+    @Autowired
+    private ConfigurationService configurationService;
 
     private Map<String, Key> keystoreKeys;
     private Map<String, X509Certificate> keystoreCertificates;
@@ -78,53 +62,23 @@ public class UIKeystoreService {
         }
     }
 
-    public void validateConfigurationData() {
-
-        // validate configuration data
-        if (StringUtils.isBlank(configurationDir)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "SMP keystore folder is not set or is empty value! Set the following property in database: '" + SMPPropertyEnum.CONFIGURATION_DIR.getProperty() + "'.");
-        }
-
-        if (StringUtils.isBlank(encryptionFilename)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Encryption filename is not set or is empty value! Set the following property in database: '" + SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty() + "'.");
-        }
-
-        if (StringUtils.isBlank(smpKeyStoreFilename)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "SMP keystore filename is not set or is empty value! Set the following property in database: '" + SMPPropertyEnum.KEYSTORE_FILENAME.getProperty() + "'.");
-        }
-
-        if (StringUtils.isBlank(smpKeyStorePasswordEncrypted)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Encrypted keystore password not exists in database : '" + SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty() + "'.");
-        }
-
-        File file = new File(configurationDir + File.separator + encryptionFilename);
-        if (!file.exists()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Encryption key file: '" + file.getAbsolutePath() + "' does not exists!");
-        }
-
-        File keystoreFile = getKeyStoreFile();
-        if (!keystoreFile.exists()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Keystore file: '" + keystoreFile.getAbsolutePath() + "' does not exists!");
-        }
-        // decrypt password
-        smpKeyStorePasswordDecrypted = securityUtilsServices.decrypt(file, smpKeyStorePasswordEncrypted);
-    }
 
     /**
      * Method  validates the configuration properties and refresh the
      * cached data
      */
     public void refreshData() {
-        try {
-            validateConfigurationData();
-        } catch (SMPRuntimeException ex) {
-            LOG.error("Keystore was not (re)loaded. Invalid configuration: " + ex.getMessage());
+
+        String keystoreSecToken = configurationService.getKeystoreCredentialToken();
+
+        // load keystore
+        File keystoreFile =  configurationService.getKeystoreFile();
+        if (keystoreFile == null) {
+            LOG.error("KeystoreFile: is null! Check the keystore and the configuration!");
             return;
         }
 
-        // load keystore
-        File keystoreFile = getKeyStoreFile();
-        KeyStore keyStore = loadKeystore(keystoreFile);
+        KeyStore keyStore = loadKeystore(keystoreFile, keystoreSecToken);
         if (keyStore == null) {
             LOG.error("Keystore: '" + keystoreFile.getAbsolutePath() + "' is not loaded! Check the keystore and the configuration!");
             return;
@@ -133,7 +87,7 @@ public class UIKeystoreService {
         KeyManager[] keyManagersTemp;
         try {
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, smpKeyStorePasswordDecrypted.toCharArray());
+            kmf.init(keyStore, keystoreSecToken.toCharArray());
             keyManagersTemp = kmf.getKeyManagers();
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException exception) {
             LOG.error("Error occurred while initialize  keyManagers : " + keystoreFile.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
@@ -146,7 +100,7 @@ public class UIKeystoreService {
         try {
             List<String> aliases = list(keyStore.aliases());
             for (String alias : aliases) {
-                loadKeyAndCert(keyStore, alias, hmKeys, hmCertificates);
+                loadKeyAndCert(keyStore, alias, keystoreSecToken, hmKeys, hmCertificates);
             }
         } catch (Exception exception) {
             LOG.error("Could not load signing certificate amd private keys Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
@@ -169,13 +123,10 @@ public class UIKeystoreService {
     }
 
     boolean isKeyStoreChanged() {
-        File file = getKeyStoreFile();
+        File file = configurationService.getKeystoreFile();
         return !Objects.equals(lastUpdateKeystoreFile, file) || file.lastModified() != lastUpdateKeystoreFileTime;
     }
 
-    public File getKeyStoreFile() {
-        return new File(configurationDir + File.separator + smpKeyStoreFilename);
-    }
 
     public KeyManager[] getKeyManagers() {
         // check if keystore is changes
@@ -185,17 +136,18 @@ public class UIKeystoreService {
         return keyManagers;
     }
 
-    private KeyStore loadKeystore(File keyStoreFile) {
+    private KeyStore loadKeystore(File keyStoreFile, String keystoreSecToken) {
         // Load the KeyStore.
-        if (!keyStoreFile.exists()) {
+        if (keyStoreFile!=null && !keyStoreFile.exists()) {
             LOG.error("Keystore file '{}' does not exists!", keyStoreFile.getAbsolutePath());
             return null;
         }
 
+
         KeyStore keyStore = null;
         try (InputStream keystoreInputStream = new FileInputStream(keyStoreFile)) {
             keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(keystoreInputStream, smpKeyStorePasswordDecrypted.toCharArray());
+            keyStore.load(keystoreInputStream, keystoreSecToken.toCharArray());
         } catch (Exception exception) {
             LOG.error("Could not load signing certificate with private key from keystore file:"
                     + keyStoreFile + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
@@ -203,8 +155,8 @@ public class UIKeystoreService {
         return keyStore;
     }
 
-    private void loadKeyAndCert(KeyStore keyStore, String alias, Map<String, Key> hmKeys, Map<String, X509Certificate> hmCertificates) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-        Key key = keyStore.getKey(alias, smpKeyStorePasswordDecrypted.toCharArray());
+    private void loadKeyAndCert(KeyStore keyStore, String alias, String keySecurityToken, Map<String, Key> hmKeys, Map<String, X509Certificate> hmCertificates) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        Key key = keyStore.getKey(alias, keySecurityToken.toCharArray());
         Certificate certificate = keyStore.getCertificate(alias);
         if (key == null || certificate == null || !(certificate instanceof X509Certificate)) {
             LOG.warn("Wrong entry type found in keystore, only certificates with keypair are accepted, entry alias: "
@@ -239,6 +191,11 @@ public class UIKeystoreService {
     }
 
     public Key getKey(String keyAlias) {
+
+        if (isKeyStoreChanged()) {
+            refreshData();
+        }
+
         if (keystoreKeys.size() == 1) {
             // for backward compatibility...
             // don't care about configured alias in single-domain setup
@@ -281,10 +238,10 @@ public class UIKeystoreService {
      */
     public void importKeys(KeyStore newKeystore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
-
-        KeyStore keyStore = loadKeystore(getKeyStoreFile());
+        String keystoreSecToken = configurationService.getKeystoreCredentialToken();
+        KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
         if (keyStore != null) {
-            securityUtilsServices.mergeKeystore(keyStore, smpKeyStorePasswordDecrypted, newKeystore, password);
+            SecurityUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
             // store keystore
             storeKeystore(keyStore);
             // refresh
@@ -298,8 +255,8 @@ public class UIKeystoreService {
      * @param alias
      */
     public void deleteKey(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-
-        KeyStore keyStore = loadKeystore(getKeyStoreFile());
+        String keystoreSecToken = configurationService.getKeystoreCredentialToken();
+        KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
         if (keyStore != null) {
             keyStore.deleteEntry(alias);
             // store keystore
@@ -318,9 +275,10 @@ public class UIKeystoreService {
      * @throws KeyStoreException
      */
     private void storeKeystore(KeyStore keyStore) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        File keystoreFilePath =getKeyStoreFile();
+        File keystoreFilePath = configurationService.getKeystoreFile();
+        String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         try (FileOutputStream fos = new FileOutputStream(keystoreFilePath)) {
-            keyStore.store(fos, smpKeyStorePasswordDecrypted.toCharArray());
+            keyStore.store(fos, keystoreSecToken.toCharArray());
         }
     }
 }

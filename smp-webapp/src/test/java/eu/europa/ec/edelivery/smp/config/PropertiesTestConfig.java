@@ -40,14 +40,11 @@ public class PropertiesTestConfig {
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() throws IOException {
+        // update keystore
         Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
         Path targetDirectory = Paths.get("target", "keystores");
 
         FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
-
-        String path = targetDirectory.toFile().getAbsolutePath();
-
-
 
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
@@ -60,10 +57,6 @@ public class PropertiesTestConfig {
         localProps.setProperty("spring.jpa.generate-ddl", "true");
         localProps.setProperty("spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
 
-        localProps.setProperty("configuration.dir", path);
-        localProps.setProperty("encryption.key.filename", "encryptionKey.key");
-        localProps.setProperty("smp.keystore.password", "FarFJE2WUfY39SVRTFOqSg==");
-        localProps.setProperty("smp.keystore.filename", "smp-keystore_multiple_domains.jks");
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
 
