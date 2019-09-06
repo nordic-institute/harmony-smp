@@ -54,15 +54,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpWebAppConfig.class,
         SpringSecurityConfig.class})
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
 @SqlConfig(encoding = "UTF-8")
-@TestPropertySource(properties = {
-        "smp.artifact.name=TestApplicationSmpName",
-        "smp.artifact.version=TestApplicationVersion",
-        "smp.artifact.build.time=2018-11-27 00:00:00",
-        "bdmsl.integration.enabled=true"})
-
+@Sql(scripts = {"classpath:cleanup-database.sql",
+        "classpath:webapp_integration_test_data.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class KeystoreResourceTest {
     private static final String PATH = "/ui/rest/keystore";
 

@@ -18,12 +18,10 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -32,7 +30,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
 import javax.sql.DataSource;
 import java.io.*;
 import java.security.KeyStore;
@@ -41,7 +38,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
@@ -65,9 +61,6 @@ public class PropertyInitialization {
     private static final int DEFAULT_PASSWORD_LENGTH = 16;
 
     SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyInitialization.class);
-
-    // create own instance because at this time SecurityUtilsServices is not ready to instantiate
-    SecurityUtilsServices securityUtilsServices = new SecurityUtilsServices();
 
 
     public void logBuildProperties(){
@@ -205,12 +198,12 @@ public class PropertyInitialization {
 
         File fEncryption = new File(settingsFolder, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
         LOG.info( "Generate new encryption key: " + fEncryption.getName());
-        securityUtilsServices.generatePrivateSymmetricKey(fEncryption);
+        SecurityUtils.generatePrivateSymmetricKey(fEncryption);
         storeDBEntry(em, SMPPropertyEnum.ENCRYPTION_FILENAME, fEncryption.getName());
         initProperties.setProperty(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
 
         // store keystore password  filename
-        String encPasswd = securityUtilsServices.encrypt(fEncryption, newKeyPassword);
+        String encPasswd = SecurityUtils.encrypt(fEncryption, newKeyPassword);
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD, encPasswd);
         initProperties.setProperty(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty(), encPasswd);
 
@@ -234,7 +227,7 @@ public class PropertyInitialization {
                 try (FileInputStream fis = new FileInputStream(sigKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
                     sourceKeystore.load(fis, keypasswd.toCharArray());
-                    securityUtilsServices.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
+                    SecurityUtils.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
                 }
             }
 
@@ -245,7 +238,7 @@ public class PropertyInitialization {
                 try (FileInputStream fis = new FileInputStream(smlKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
                     sourceKeystore.load(fis, keypasswd.toCharArray());
-                    securityUtilsServices.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
+                    SecurityUtils.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
                 }
             }
             newKeystore.store(out, newKeyPassword.toCharArray());
@@ -280,10 +273,12 @@ public class PropertyInitialization {
 
         if (!databaseProperties.containsKey(CONFIGURATION_DIR.getProperty())){
             String folder = (new File("./")).getAbsolutePath();
-            LOG.warn("Missing property: {} set value: {}", CONFIGURATION_DIR.getProperty(), folder );
+            LOG.warn("Missing property: {} set new walue: {}", CONFIGURATION_DIR.getProperty(), folder );
             storeDBEntry(em,CONFIGURATION_DIR, folder);
             databaseProperties.setProperty(CONFIGURATION_DIR.getProperty(), folder);
         }
+
+
         String configurationDir = databaseProperties.getProperty(CONFIGURATION_DIR.getProperty());
         String encryptionFilename = databaseProperties.getProperty(ENCRYPTION_FILENAME.getProperty());
         String keystoreFilePath = databaseProperties.getProperty(KEYSTORE_FILENAME.getProperty());
@@ -296,6 +291,9 @@ public class PropertyInitialization {
             LOG.error("Encryption key file '{}' does not exists!", file.getAbsolutePath());
             return;
         }
+
+        //
+        // if there is only one certificate - and there is empty alias
         //initializeProperties();
 
         em.getTransaction().commit();

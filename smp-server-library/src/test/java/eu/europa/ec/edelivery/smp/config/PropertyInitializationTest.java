@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,7 +28,6 @@ import static org.mockito.Mockito.times;
 
 public class PropertyInitializationTest {
 
-    SecurityUtilsServices  securityUtilsServices = new SecurityUtilsServices();
 
     PropertyInitialization testInstance = new PropertyInitialization();
 
@@ -96,7 +95,7 @@ public class PropertyInitializationTest {
         assertTrue(encFile.exists());
         assertTrue(keystoreFile.exists());
 
-        String passwd = securityUtilsServices.decrypt(encFile, passEnc);
+        String passwd = SecurityUtils.decrypt(encFile, passEnc);
         assertNotNull(passwd);
         // load keystore
         KeyStore keyStore = null;

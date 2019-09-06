@@ -14,10 +14,12 @@
 package eu.europa.ec.edelivery.smp.validation;
 
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,9 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class ServiceGroupValidator {
 
     private Pattern schemaPattern;
+
+    @Autowired
+    ConfigurationService configurationService;
 
     @Value("${identifiersBehaviour.ParticipantIdentifierScheme.validationRegex}")
     public void setRegexPattern(String regex) {
