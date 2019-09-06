@@ -11,31 +11,31 @@ public enum SMPPropertyEnum {
             "without properly configured reverse-proxy and active blue coat.", false, false , SMPPropertyTypeEnum.BOOLEAN),
 
     OUTPUT_CONTEXT_PATH ("contextPath.output","true","This property controls pattern of URLs produced by SMP in GET ServiceGroup responses." , true, false , SMPPropertyTypeEnum.BOOLEAN),
+
     PARTC_SCH_REGEXP ("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex","^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)","Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false , SMPPropertyTypeEnum.REGEXP),
     CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes","casesensitive-participant-scheme1|casesensitive-participant-scheme2","Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.STRING),
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes","casesensitive-doc-scheme1|casesensitive-doc-scheme2","Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.STRING),
+
     SML_ENABLED("bdmsl.integration.enabled","false","BDMSL (SML) integration ON/OFF switch", false, false , SMPPropertyTypeEnum.BOOLEAN),
     SML_PARTICIPANT_MULTIDOMAIN("bdmsl.participant.multidomain.enabled","false","Set to true if SML support participant on multidomain", false, false , SMPPropertyTypeEnum.BOOLEAN),
-
-    SML_URL("bdmsl.integration.url","http://localhost:8080/edelivery-sml/","BDMSL (SML) endpoint", false, false , SMPPropertyTypeEnum.STRING),
-    SML_LOGICAL_ADDRESS("bdmsl.integration.logical.address","http://localhost:8080/smp/","Logical SMP endpoint which will be registered on SML when registering new domain", false, false , SMPPropertyTypeEnum.STRING),
+    SML_URL("bdmsl.integration.url","http://localhost:8080/edelivery-sml","BDMSL (SML) endpoint", false, false , SMPPropertyTypeEnum.URL),
+    SML_LOGICAL_ADDRESS("bdmsl.integration.logical.address","http://localhost:8080/smp/","Logical SMP endpoint which will be registered on SML when registering new domain", false, false , SMPPropertyTypeEnum.URL),
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address","0.0.0.0","Physical SMP endpoint which will be registered on SML when registering new domain.", false, false , SMPPropertyTypeEnum.STRING),
 
     HTTP_PROXY_HOST("smp.proxy.host", "", "The http proxy host", false,false, SMPPropertyTypeEnum.STRING),
     HTTP_NO_PROXY_HOSTS("smp.noproxy.hosts", "localhost|127.0.0.1", "list of nor proxy hosts. Ex.: localhost|127.0.0.1", false,false, SMPPropertyTypeEnum.STRING),
     HTTP_PROXY_PASSWORD("smp.proxy.password", "", "Base64 encrypted password for Proxy.", false, true,SMPPropertyTypeEnum.STRING),
-    HTTP_PROXY_PORT("smp.http.port", "8012", "The http proxy port", false, true, SMPPropertyTypeEnum.INTEGER),
-    HTTP_PROXY_USER("smp.http.user", "user", "The proxy user", false, true, SMPPropertyTypeEnum.STRING),
+    HTTP_PROXY_PORT("smp.http.port", "80", "The http proxy port", false, false, SMPPropertyTypeEnum.INTEGER),
+    HTTP_PROXY_USER("smp.http.user", "", "The proxy user", false, false, SMPPropertyTypeEnum.STRING),
 
 
     KEYSTORE_PASSWORD("smp.keystore.password","","Encrypted keystore (and keys) password ", false, true, SMPPropertyTypeEnum.STRING),
-    KEYSTORE_FILENAME("smp.keystore.filename","smp-keystore.jks","Keystore filename ", false, false , SMPPropertyTypeEnum.FILENAME),
+    KEYSTORE_FILENAME("smp.keystore.filename","smp-keystore.jks","Keystore filename ", true, false , SMPPropertyTypeEnum.FILENAME),
     TRUSTSTORE_PASSWORD("smp.truststore.password","","Encrypted truststore password ", false, true, SMPPropertyTypeEnum.STRING),
     TRUSTSTORE_FILENAME("smp.truststore.filename","","Truststore filename ", false, false , SMPPropertyTypeEnum.FILENAME),
     CERTIFICATE_CRL_FORCE("smp.certificate.crl.force","false","If false then if CRL is not reachable ignore CRL validation", false, false , SMPPropertyTypeEnum.BOOLEAN),
 
-
-    CONFIGURATION_DIR("configuration.dir","","Path to the folder containing all the configuration files (keystore and encryption key)", false, false , SMPPropertyTypeEnum.PATH),
+    CONFIGURATION_DIR("configuration.dir","./","Path to the folder containing all the configuration files (keystore and encryption key)", true, false , SMPPropertyTypeEnum.PATH),
     ENCRYPTION_FILENAME("encryption.key.filename","encryptionPrivateKey.private","Key filename to encrypt passwords", false, false , SMPPropertyTypeEnum.FILENAME),
     KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted","","Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false , SMPPropertyTypeEnum.STRING),
 

@@ -24,6 +24,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -175,11 +176,13 @@ public class CRLVerifierService {
 
                 URL targetUrl = new URL(crlURL);
 
-                if (useProxy() && !doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())
+                if (useProxy() && !HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())
                 ) {
                     LOG.debug("Using proxy for downloading URL " + crlURL);
                     String decryptedPassword = configurationService.getProxyCredentialToken();
-                    inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(), configurationService.getHttpProxyPort(),
+                    Optional<Integer> proxyPort = configurationService.getHttpProxyPort();
+                    inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(),
+                            proxyPort.isPresent()?proxyPort.get():80,
                             configurationService.getProxyUsername(), decryptedPassword);
                 } else {
                     inputStream = downloadURLDirect(crlURL);
@@ -248,33 +251,7 @@ public class CRLVerifierService {
         return true;
     }
 
-    /**
-     * Method validates if host match non proxy list
-     *
-     * @param uriHost          target host
-     * @param nonProxyHostList non proxy ist
-     * @return true if host match nonProxy list else return false.
-     */
-    public boolean doesTargetMatchNonProxy(String uriHost, String nonProxyHostList) {
-        String[] nonProxyHosts = StringUtils.isBlank(nonProxyHostList) ? null : nonProxyHostList.split("\\|");
 
-        int nphLength = nonProxyHosts != null ? nonProxyHosts.length : 0;
-        if (nonProxyHosts == null || nphLength < 1) {
-            LOG.debug("host:'" + uriHost + "' : DEFAULT (0 non proxy host)");
-            return false;
-        }
-
-
-        for (String nonProxyHost : nonProxyHosts) {
-            String mathcRegExp = (nonProxyHost.startsWith("*") ? "." : "") + nonProxyHost;
-            if (uriHost.matches(mathcRegExp)) {
-                LOG.debug(" host:'" + uriHost + "' matches nonProxyHost '" + mathcRegExp + "' : NO PROXY");
-                return true;
-            }
-        }
-        LOG.debug(" host:'" + uriHost + "' : DEFAULT  (no match of " + Arrays.toString(nonProxyHosts) + " non proxy host)");
-        return false;
-    }
 
     private void validateCertificeCRL(X509CRL x509CRL, BigInteger bi) throws CertificateRevokedException {
         X509CRLEntry entry = x509CRL.getRevokedCertificate(bi);

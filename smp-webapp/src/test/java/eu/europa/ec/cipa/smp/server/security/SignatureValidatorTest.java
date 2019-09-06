@@ -19,6 +19,8 @@ import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +55,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 
 import static java.lang.String.format;
@@ -71,9 +75,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SpringSecurityConfig.class
 })
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
+@Sql(scripts = {"classpath:cleanup-database.sql",
+        "classpath:webapp_integration_test_data.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class SignatureValidatorTest {
+
+    protected Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+    protected Path targetDirectory = Paths.get("target","keystores");
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
@@ -82,15 +90,19 @@ public class SignatureValidatorTest {
     @Autowired
     private WebApplicationContext webAppContext;
 
+
     private MockMvc mvc;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
 
         initServletContext();
+
+        FileUtils.deleteDirectory(targetDirectory.toFile());
+        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
     }
 
     private void initServletContext() {

@@ -14,6 +14,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.SMLAction;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
@@ -166,7 +167,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
      * @param lstRecords
      */
     public void processSMLRecords( List<ParticipantSMLRecord> lstRecords){
-        if (!smlIntegrationService.isSmlIntegrationEnabled()){
+        if (!smlIntegrationService.isSMLIntegrationEnabled()){
             return;
         }
         for (ParticipantSMLRecord record: lstRecords){

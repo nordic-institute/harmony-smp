@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.services;
+package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -20,8 +20,7 @@ import java.util.Enumeration;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
-@Component
-public class SecurityUtilsServices {
+public class SecurityUtils {
 
     public static final String ALGORITHM_KEY = "AES";
     public static final String ALGORITHM_ENCRYPTION = "AES/GCM/NoPadding";
@@ -47,7 +46,7 @@ public class SecurityUtilsServices {
      * @throws UnrecoverableKeyException
      * @throws NoSuchAlgorithmException
      */
-    public void mergeKeystore(KeyStore targetKeystore, String targetPassword, KeyStore sourceKeystore, String sourcePassword) throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
+    public static void mergeKeystore(KeyStore targetKeystore, String targetPassword, KeyStore sourceKeystore, String sourcePassword) throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
         // Get all aliases in the old keystore
         Enumeration<String> enumeration = sourceKeystore.aliases();
         while (enumeration.hasMoreElements()) {
@@ -62,7 +61,7 @@ public class SecurityUtilsServices {
         }
     }
 
-    private String getNewImportAlias(KeyStore target, String alias) throws KeyStoreException {
+    private static String getNewImportAlias(KeyStore target, String alias) throws KeyStoreException {
         String newAlias = alias;
         int i = 1;
         while (target.containsAlias(newAlias)) {
@@ -100,7 +99,7 @@ public class SecurityUtilsServices {
         }
     }
 
-    public String encrypt(File path, String plainTextPassword) {
+    public static String encrypt(File path, String plainTextPassword) {
         try {
             byte[] buff = Files.readAllBytes(path.toPath());
             AlgorithmParameterSpec iv = getSaltParameter(buff);

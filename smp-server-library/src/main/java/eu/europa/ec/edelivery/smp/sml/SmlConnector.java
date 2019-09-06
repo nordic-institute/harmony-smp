@@ -22,12 +22,14 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -48,6 +50,10 @@ public class SmlConnector implements ApplicationContextAware {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmlConnector.class);
 
+
+    @Autowired
+    ConfigurationService configurationService;
+    /*
     @Value("${bdmsl.integration.enabled:false}")
     private boolean smlIntegrationEnabled;
 
@@ -60,12 +66,14 @@ public class SmlConnector implements ApplicationContextAware {
 
     @Value("${bdmsl.integration.physical.address:0.0.0.0}")
     private String smpPhysicalAddress;
+*/
+
 
     private ApplicationContext ctx;
 
     public boolean registerInDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
 
-        if (!smlIntegrationEnabled) {
+        if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
         LOG.info("Registering new Participant in BDMSL: " + asString(normalizedParticipantId));
@@ -124,9 +132,11 @@ public class SmlConnector implements ApplicationContextAware {
      */
     public boolean registerDomain(DBDomain domain) {
 
-        if (!smlIntegrationEnabled) {
+        if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
+        String smpLogicalAddress = configurationService.getSMLIntegrationSMPLogicalAddress();
+        String smpPhysicalAddress = configurationService.getSMLIntegrationSMPPhysicalAddress();
         LOG.info("Registering new Domain  toSML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), domain.getSmlSmpId());
         try {
             ServiceMetadataPublisherServiceType smlSmpRequest = new ServiceMetadataPublisherServiceType();
@@ -181,7 +191,7 @@ public class SmlConnector implements ApplicationContextAware {
 
 
     public boolean unregisterFromDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
-        if (!smlIntegrationEnabled) {
+        if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
         LOG.info("Removing Participant from BDMSL: {} ", asString(normalizedParticipantId));
@@ -200,7 +210,7 @@ public class SmlConnector implements ApplicationContextAware {
     }
 
     public boolean unregisterDomain(DBDomain domain) {
-        if (!smlIntegrationEnabled) {
+        if (!configurationService.isSMLIntegrationEnabled()) {
             return true;
         }
         LOG.info("Removing SMP id (Domain) from BDMSL: {} ", domain.getDomainCode());
@@ -235,10 +245,4 @@ public class SmlConnector implements ApplicationContextAware {
         ctx = applicationContext;
     }
 
-    public boolean isSmlIntegrationEnabled() {
-        return smlIntegrationEnabled;
-    }
-    public boolean isSmlMultidomainEnabled() {
-        return smlParticipantMultidomainEnabled;
-    }
 }
