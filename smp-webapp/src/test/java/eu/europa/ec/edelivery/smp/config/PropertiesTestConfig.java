@@ -26,6 +26,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
+
 /**
  * Created by gutowpa on 11/01/2018.
  */
@@ -49,7 +51,7 @@ public class PropertiesTestConfig {
         localProps.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         localProps.setProperty("spring.jpa.generate-ddl", "true");
         localProps.setProperty("spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
-
+        localProps.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
 
