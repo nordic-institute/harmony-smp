@@ -20,14 +20,13 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.TypedQuery;
 import java.io.File;
 import java.time.LocalDateTime;
@@ -40,22 +39,18 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
 @Repository
 public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
-    public static final String DECRYPTED_TOKEN_PREFIX="{DEC}{";
+    public static final String DECRYPTED_TOKEN_PREFIX = "{DEC}{";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
 
 
     boolean isRefreshProcess = false;
-    Properties applicationProperties = new Properties();
+    Properties cachedProperties = new Properties();
 
     Map<String, Object> cachedPropertyValues = new HashMap();
 
     LocalDateTime lastUpdate = null;
 
-    @PostConstruct
-    public void init() {
-        refreshProperties();
-    }
 
     /**
      * Searches for a configuration entity by its  key and returns it if found. Returns an empty {@code Optional} if missing.
@@ -110,10 +105,18 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     public String getCachedProperty(SMPPropertyEnum key) {
-        return applicationProperties.getProperty(key.getProperty(), key.getDefValue());
+        if (lastUpdate == null) {
+            // init properties
+            refreshProperties();
+        }
+        return cachedProperties.getProperty(key.getProperty(), key.getDefValue());
     }
 
     public Object getCachedPropertyValue(SMPPropertyEnum key) {
+        if (lastUpdate == null) {
+            // init properties
+            refreshProperties();
+        }
         return cachedPropertyValues.get(key.getProperty());
     }
 
@@ -123,6 +126,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         LocalDateTime lastUpdateFromDB = getLastUpdate();
         if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
             reloadPropertiesFromDatabase();
+            // check and update non encrypted tokens
+            updateCurrentEncryptedValues();
         } else {
             LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed:"
                     + lastUpdateFromDB + ".");
@@ -133,6 +138,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         if (!isRefreshProcess) {
             isRefreshProcess = true;
             DatabaseProperties newProperties = new DatabaseProperties(memEManager);
+            // first update deprecated values
+            updateDeprecatedValues(newProperties);
             Map<String, Object> resultProperties = null;
             try {
                 resultProperties = validateConfiguration(newProperties);
@@ -143,10 +150,10 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
                 return;
             }
             try {
-                synchronized (applicationProperties) {
-                    applicationProperties.clear();
+                synchronized (cachedProperties) {
+                    cachedProperties.clear();
                     cachedPropertyValues.clear();
-                    applicationProperties.putAll(newProperties);
+                    cachedProperties.putAll(newProperties);
                     cachedPropertyValues.putAll(resultProperties);
                     // setup last update
                     lastUpdate = newProperties.getLastUpdate();
@@ -166,13 +173,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return query.getSingleResult();
     }
 
-    public Map<String, Object> validateConfiguration(Properties props) {
-
+    public Map<String, Object> validateConfiguration(Properties properties) {
 
         // test if all mandatory properties exists
         List<String> lstMissingProperties = new ArrayList<>();
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
-            if (prop.isMandatory() && StringUtils.isEmpty(getProperty(props, prop))) {
+            if (prop.isMandatory() && StringUtils.isEmpty(getProperty(properties, prop))) {
                 lstMissingProperties.add(prop.getProperty());
             }
         }
@@ -182,7 +188,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
                     String.join(",", lstMissingProperties)));
         }
 
-        Map<String, Object> propertyValues = parseProperties(props);
+        Map<String, Object> propertyValues = parseProperties(properties);
 
         // property validation
         File encFile = (File) propertyValues.get(ENCRYPTION_FILENAME.getProperty());
@@ -204,19 +210,20 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
 
     @Transactional
-    public void updateEncryptedValues(Properties properties, File encryptionKey){
+    public void updateCurrentEncryptedValues() {
+        File encryptionKey = (File) cachedPropertyValues.get(ENCRYPTION_FILENAME.getProperty());
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
-            String value = getProperty(properties, prop);
-            if (prop.isEncrypted() && StringUtils.isBlank(value) && value.startsWith(DECRYPTED_TOKEN_PREFIX)) {
-                String valToEncrypt=getNonEncryptedValue(value);
-                String encVal = encryptString(prop, value, encryptionKey);
+            String value = getProperty(cachedProperties, prop);
+            if (prop.isEncrypted() && !StringUtils.isBlank(value) && value.startsWith(DECRYPTED_TOKEN_PREFIX)) {
+                String valToEncrypt = getNonEncryptedValue(value);
+                String encVal = encryptString(prop, valToEncrypt, encryptionKey);
                 setPropertyToDatabase(prop, encVal, prop.getDesc());
             }
         }
     }
 
-    private String getNonEncryptedValue(String value){
-        return value.substring(DECRYPTED_TOKEN_PREFIX.length(),value.lastIndexOf("}"));
+    protected String getNonEncryptedValue(String value) {
+        return value.substring(DECRYPTED_TOKEN_PREFIX.length(), value.lastIndexOf("}"));
     }
 
 
@@ -262,8 +269,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             if (prop.isEncrypted()) {
                 // try to decrypt it.
                 if (StringUtils.isBlank(value)) {
-                    parsedProperty=null;
-                } else if (value.startsWith(DECRYPTED_TOKEN_PREFIX)){
+                    parsedProperty = null;
+                } else if (value.startsWith(DECRYPTED_TOKEN_PREFIX)) {
                     parsedProperty = getNonEncryptedValue(value);
                 } else {
                     parsedProperty = decryptString(prop, value, encryptionKeyFile);
@@ -279,7 +286,6 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     private static void validateIfExists(Map<String, Object> propertyValues, SMPPropertyEnum key) {
         Object value = propertyValues.get(key.getProperty());
-
         if (value == null) {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Missing property %s.", key.getProperty()));
         }
@@ -320,4 +326,17 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
     }
 
+    public void updateDeprecatedValues(Properties properties) {
+        // update deprecated properties from 4.1.1
+        updateDeprecatedProperty(properties, HTTP_PROXY_HOST, SML_PROXY_HOST);
+        updateDeprecatedProperty(properties, HTTP_PROXY_PORT, SML_PROXY_PORT);
+        updateDeprecatedProperty(properties, HTTP_PROXY_USER, SML_PROXY_USER);
+        updateDeprecatedProperty(properties, HTTP_PROXY_PASSWORD, SML_PROXY_PASSWORD);
+    }
+
+    public void updateDeprecatedProperty(Properties properties, SMPPropertyEnum newProperty, SMPPropertyEnum deprecatedProperty) {
+        if (!properties.containsKey(newProperty.getProperty()) && properties.containsKey(deprecatedProperty.getProperty())) {
+            properties.setProperty(newProperty.getProperty(), properties.getProperty(deprecatedProperty.getProperty()));
+        }
+    }
 }

@@ -31,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,7 +62,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class KeystoreResourceTest {
     private static final String PATH = "/ui/rest/keystore";
 
-    Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
+    Path keystore = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
+    protected Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+    protected Path targetDirectory = Paths.get("target","keystores");
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -73,13 +76,17 @@ public class KeystoreResourceTest {
     private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        FileUtils.deleteDirectory(targetDirectory.toFile());
+        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
+
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
 
 
         initServletContext();
+        uiKeystoreService.refreshData();
     }
 
     private void initServletContext() {
@@ -133,7 +140,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/NewPassword1234")
                 .with(SYSTEM_CREDENTIALS)
-                .content(Files.readAllBytes(resourceDirectory)) )
+                .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 
         //them
@@ -151,7 +158,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/test123")
                 .with(SYSTEM_CREDENTIALS)
-                .content(Files.readAllBytes(resourceDirectory)) )
+                .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 
         //them
@@ -170,7 +177,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(delete(PATH+"/3/delete/second_domain_alias")
                 .with(SYSTEM_CREDENTIALS)
-                .content(Files.readAllBytes(resourceDirectory)) )
+                .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 
         //them

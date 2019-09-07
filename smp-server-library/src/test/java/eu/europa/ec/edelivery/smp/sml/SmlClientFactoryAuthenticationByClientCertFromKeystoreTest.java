@@ -173,7 +173,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
 
     @Test(expected = IllegalStateException.class)
     public void configureClientAuthenticationDoesNotAcceptBothAuthentication() {
-        smlClientFactory.configureClientAuthentication(null, null, "any_domain_alias", "any_header_value");
+        smlClientFactory.configureClientAuthentication(null, null, null, true);
     }
 
 }

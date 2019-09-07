@@ -19,6 +19,7 @@ package eu.europa.ec.edelivery.smp.sml;
         import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
         import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
         import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
+        import eu.europa.ec.edelivery.smp.data.model.DBDomain;
         import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
         import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
         import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -33,6 +34,8 @@ package eu.europa.ec.edelivery.smp.sml;
         import org.springframework.test.context.TestPropertySource;
         import org.springframework.test.context.junit4.SpringRunner;
         import org.springframework.test.util.ReflectionTestUtils;
+
+        import java.util.UUID;
 
         import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
         import static org.junit.Assert.*;
@@ -193,4 +196,29 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
 
         assertFalse(suc);
     }
+
+    @Test
+    public void testGetSmlClientKeyAliasForDomain() {
+
+        DBDomain domain  = new DBDomain();
+        domain.setSmlClientKeyAlias(UUID.randomUUID().toString());
+        domain.setSmlBlueCoatAuth(false);
+
+        String alias = smlConnector.getSmlClientKeyAliasForDomain(domain);
+
+        assertEquals(domain.getSmlClientKeyAlias(), alias);
+    }
+
+    @Test
+    public void testGetSmlClientKeyAliasForDomainNulForSingleKey() {
+
+        DBDomain domain  = new DBDomain();
+        domain.setSmlClientKeyAlias(null);
+        domain.setSmlBlueCoatAuth(false);
+
+        String alias = smlConnector.getSmlClientKeyAliasForDomain(domain);
+
+        assertEquals("single_domain_key", alias);
+    }
+
 }

@@ -126,11 +126,11 @@ public class ConfigurationService {
 
 
     public File getTruststoreFile() {
-        return (File)configurationDAO.getCachedPropertyValue(TRUSTSTORE_FILENAME);
+        return (File) configurationDAO.getCachedPropertyValue(TRUSTSTORE_FILENAME);
     }
 
     public File getKeystoreFile() {
-        return (File)configurationDAO.getCachedPropertyValue(KEYSTORE_FILENAME);
+        return (File) configurationDAO.getCachedPropertyValue(KEYSTORE_FILENAME);
     }
 
     public String getTruststoreCredentialToken() {

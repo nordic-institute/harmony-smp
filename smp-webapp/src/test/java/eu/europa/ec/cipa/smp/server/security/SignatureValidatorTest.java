@@ -95,14 +95,15 @@ public class SignatureValidatorTest {
 
     @Before
     public void setup() throws IOException {
+        FileUtils.deleteDirectory(targetDirectory.toFile());
+        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
+
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
 
         initServletContext();
 
-        FileUtils.deleteDirectory(targetDirectory.toFile());
-        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
     }
 
     private void initServletContext() {
