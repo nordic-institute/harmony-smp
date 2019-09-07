@@ -46,7 +46,9 @@ public enum SMPPropertyEnum {
     SML_PROXY_HOST("bdmsl.integration.proxy.server","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
     SML_PROXY_PORT("bdmsl.integration.proxy.port","","Deprecated", false, false , SMPPropertyTypeEnum.INTEGER),
     SML_PROXY_USER("bdmsl.integration.proxy.user","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
-    SML_PROXY_PASSWORD("bdmsl.integration.proxy.password","","Deprecated", false, false , SMPPropertyTypeEnum.STRING);
+    SML_PROXY_PASSWORD("bdmsl.integration.proxy.password","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
+    SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression","0 48 */1 * * *","Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!", false, false , SMPPropertyTypeEnum.STRING);
+
 
     String property;
     String defValue;
