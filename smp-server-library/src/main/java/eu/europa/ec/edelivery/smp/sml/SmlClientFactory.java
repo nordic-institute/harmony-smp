@@ -49,6 +49,7 @@ import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SML_URL;
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -60,6 +61,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Component
 public class SmlClientFactory {
 
+    private static final String SERVICE_METADATA_CONTEXT="manageservicemetadata";
+    private static final String PARTICIPANT_IDENTIFIER_CONTEXT="manageparticipantidentifier";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmlClientFactory.class);
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
@@ -77,7 +80,7 @@ public class SmlClientFactory {
         ManageBusinessIdentifierService smlService = new ManageBusinessIdentifierService((URL) null);
         IManageParticipantIdentifierWS smlPort = smlService.getManageBusinessIdentifierServicePort();
 
-        submitRequest("manageparticipantidentifier", smlPort, clientKeyAlias, clientCertHttpHeader, blueCoatAuthentication);
+        submitRequest(PARTICIPANT_IDENTIFIER_CONTEXT, smlPort, clientKeyAlias, clientCertHttpHeader, blueCoatAuthentication);
 
         return smlPort;
     }
@@ -89,7 +92,7 @@ public class SmlClientFactory {
 
         ManageServiceMetadataService smlService = new ManageServiceMetadataService((URL) null);
         IManageServiceMetadataWS smlPort = smlService.getManageServiceMetadataServicePort();
-        submitRequest("manageservicemetadata", smlPort, clientKeyAlias, clientCertHttpHeader, blueCoatAuthentication);
+        submitRequest(SERVICE_METADATA_CONTEXT, smlPort, clientKeyAlias, clientCertHttpHeader, blueCoatAuthentication);
 
         return smlPort;
     }
@@ -118,28 +121,26 @@ public class SmlClientFactory {
         configureProxy(httpConduit, urlSMPManagment);
         configurePayloadLogging(client);
         configureClientAuthentication(httpConduit, requestContext,
-                blueCoatAuthentication ? null : clientKeyAlias,
-                blueCoatAuthentication ? clientCertHttpHeader : null);
+                blueCoatAuthentication ? clientCertHttpHeader : clientKeyAlias,
+                blueCoatAuthentication);
     }
 
 
-    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientKeyAlias, String smlClientCertHttpHeader) {
-        LOG.info("Connect to SML (alias: {} http-header: {})", smlClientKeyAlias, smlClientCertHttpHeader);
-        if (isNotBlank(smlClientKeyAlias) && isNotBlank(smlClientCertHttpHeader)) {
-            throw new IllegalStateException("SML integration is wrongly configured, cannot use both authentication ways at the same time: 2-way-SSL and Client-Cert header");
+    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientAuthentication, boolean blueCoatAuthentication) {
+        LOG.info("Connect to SML (smlClientAuthentication: {} useClientCert: {})", smlClientAuthentication, blueCoatAuthentication);
+        if (isBlank(smlClientAuthentication) ) {
+            throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
 
-        if (isNotBlank(smlClientKeyAlias)) {
+        if (!blueCoatAuthentication) {
             TLSClientParameters tlsParams = new TLSClientParameters();
-            tlsParams.setCertAlias(smlClientKeyAlias);
+            tlsParams.setCertAlias(smlClientAuthentication);
             tlsParams.setKeyManagers(keystoreService.getKeyManagers());
             httpConduit.setTlsClientParameters(tlsParams);
-        } else if (isNotBlank(smlClientCertHttpHeader)) {
+        } else  {
             Map<String, List<String>> customHeaders = new HashMap<>();
-            customHeaders.put(CLIENT_CERT_HEADER_KEY, asList(smlClientCertHttpHeader));
+            customHeaders.put(CLIENT_CERT_HEADER_KEY, asList(smlClientAuthentication));
             requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
-        } else {
-            throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
     }
 

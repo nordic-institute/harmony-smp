@@ -36,16 +36,9 @@ import java.util.Properties;
 })
 public class PropertiesTestConfig {
 
-    private final static String SIGNING_KEYSTORE_PATH = Thread.currentThread().getContextClassLoader().getResource("service_integration_signatures_single_domain.jks").getFile();
-
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() throws IOException {
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()  {
         // update keystore
-        Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
-        Path targetDirectory = Paths.get("target", "keystores");
-
-        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
-
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties localProps = new Properties();

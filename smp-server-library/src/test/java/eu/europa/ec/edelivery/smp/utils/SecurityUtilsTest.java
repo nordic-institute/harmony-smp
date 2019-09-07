@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.services;
+package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.junit.Assert;
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class SecurityUtilsServicesTest {
+public class SecurityUtilsTest {
     ;
 
     @Before
@@ -111,7 +111,7 @@ public class SecurityUtilsServicesTest {
     }
 
 
-    private File generateRandomPrivateKey() throws IOException{
+    public static File generateRandomPrivateKey() throws IOException{
         File resource = File.createTempFile( "test-key", ".key");
         resource.deleteOnExit();
 
