@@ -124,7 +124,8 @@ public class UIKeystoreService {
 
     boolean isKeyStoreChanged() {
         File file = configurationService.getKeystoreFile();
-        return !Objects.equals(lastUpdateKeystoreFile, file) || file.lastModified() != lastUpdateKeystoreFileTime;
+
+        return file!=null && (!Objects.equals(lastUpdateKeystoreFile, file) || file.lastModified() != lastUpdateKeystoreFileTime);
     }
 
 
@@ -195,6 +196,11 @@ public class UIKeystoreService {
         if (isKeyStoreChanged()) {
             refreshData();
         }
+
+        if (keystoreKeys.isEmpty()) {
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: " + keyAlias +" from empty keystore!" + configurationService.getKeystoreFile() );
+        }
+
 
         if (keystoreKeys.size() == 1) {
             // for backward compatibility...

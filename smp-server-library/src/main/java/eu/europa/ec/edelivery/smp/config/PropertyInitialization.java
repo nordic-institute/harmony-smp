@@ -30,6 +30,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.sql.DataSource;
 import java.io.*;
 import java.security.KeyStore;
@@ -165,9 +166,8 @@ public class PropertyInitialization {
         return settingsFolder;
     }
 
-
     /**
-     * Method initialize new values for configuration dir, ecryption filename, keystore password, and keystore filename.
+     * Method initialize new values for configuration dir, encryption filename, keystore password, and keystore filename.
      * @param em
      * @param fileProperties
      */
@@ -195,7 +195,6 @@ public class PropertyInitialization {
 
 
         // store encryption filename
-
         File fEncryption = new File(settingsFolder, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
         LOG.info( "Generate new encryption key: " + fEncryption.getName());
         SecurityUtils.generatePrivateSymmetricKey(fEncryption);
@@ -228,6 +227,14 @@ public class PropertyInitialization {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
                     sourceKeystore.load(fis, keypasswd.toCharArray());
                     SecurityUtils.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
+                    // if there is only one certificate - update null signature aliases
+                    if (sourceKeystore.size()==1) {
+                        String alias = sourceKeystore.aliases().nextElement();
+                        updateAlias(em, "DBDomain.updateNullSignAlias",alias );
+                        if (StringUtils.equalsIgnoreCase(smlKeystorePath, sigKeystorePath)){
+                            updateAlias(em, "DBDomain.updateNullSMLAlias",alias );
+                        }
+                    }
                 }
             }
 
@@ -238,7 +245,12 @@ public class PropertyInitialization {
                 try (FileInputStream fis = new FileInputStream(smlKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
                     sourceKeystore.load(fis, keypasswd.toCharArray());
+
                     SecurityUtils.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
+                    // if there is only one cetificate - update null signature aliases
+                    if (sourceKeystore.size()==1) {
+                        updateAlias(em, "DBDomain.updateNullSMLAlias",sourceKeystore.aliases().nextElement() );
+                    }
                 }
             }
             newKeystore.store(out, newKeyPassword.toCharArray());
@@ -254,7 +266,6 @@ public class PropertyInitialization {
             throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating keystore", e.getMessage());
         }
     }
-
 
     /**
      * Method do the next tasks
@@ -357,6 +368,12 @@ public class PropertyInitialization {
     protected void storeDBEntry(EntityManager em, SMPPropertyEnum prop, String value) {
         DBConfiguration cnt = createDBEntry(prop.getProperty(), value, prop.getDesc());
         em.persist(cnt);
+    }
+
+    protected void updateAlias(EntityManager em,String namedQuery, String alias) {
+        Query query = em.createNamedQuery(namedQuery);
+        query.setParameter("alias", alias);
+        query.executeUpdate();
     }
 
     /**
