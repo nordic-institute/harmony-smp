@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.context.annotation.*;
@@ -46,6 +47,10 @@ public class PropertiesConfig extends PropertyInitialization {
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties prop = getDatabaseProperties();
+        // set default value
+        if (!prop.containsKey(SMP_PROPERTY_REFRESH_CRON.getProperty())){
+            prop.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
+        }
         // log application properties
         logBuildProperties();
         propertiesConfig.setProperties(prop);

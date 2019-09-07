@@ -14,9 +14,14 @@
 <b:beans xmlns="http://www.springframework.org/schema/security"
          xmlns:b="http://www.springframework.org/schema/beans"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:task="http://www.springframework.org/schema/task"
 
-         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+         xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/security
+         http://www.springframework.org/schema/security/spring-security.xsd
+         http://www.springframework.org/schema/task
+	     http://www.springframework.org/schema/task/spring-task.xsd">
 
     <b:bean id="securityExceptionHandler" class="eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler"/>
 
@@ -60,6 +65,12 @@
         <b:property name="allowUrlEncodedSlash" value="${encodedSlashesAllowedInUrl}"/>
     </b:bean>
 
+    <task:scheduler id="scheduler" pool-size="1"/>
 
+    <task:scheduled-tasks scheduler="scheduler">
+        <task:scheduled ref="configurationDao" method="refreshProperties"
+                        cron="${smp.property.refresh.cronJobExpression}"/>
+
+    </task:scheduled-tasks>
 
 </b:beans>

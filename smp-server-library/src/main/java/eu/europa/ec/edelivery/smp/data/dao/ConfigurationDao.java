@@ -36,7 +36,7 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
 
 
-@Repository
+@Repository(value = "configurationDao")
 public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     public static final String DECRYPTED_TOKEN_PREFIX = "{DEC}{";
