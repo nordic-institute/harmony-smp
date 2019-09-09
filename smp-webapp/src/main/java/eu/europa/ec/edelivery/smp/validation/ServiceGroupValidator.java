@@ -36,19 +36,8 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Component
 public class ServiceGroupValidator {
 
-    private Pattern schemaPattern;
-
     @Autowired
     ConfigurationService configurationService;
-
-    @Value("${identifiersBehaviour.ParticipantIdentifierScheme.validationRegex}")
-    public void setRegexPattern(String regex) {
-        try {
-            schemaPattern = Pattern.compile(regex);
-        } catch (PatternSyntaxException | NullPointerException e) {
-            throw new IllegalStateException("Contact Administrator. ServiceGroup schema pattern is wrongly configured: " + regex);
-        }
-    }
 
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {
 
@@ -59,6 +48,7 @@ public class ServiceGroupValidator {
         }
 
         String scheme = serviceGroup.getParticipantIdentifier().getScheme();
+        Pattern schemaPattern = configurationService.getParticipantIdentifierSchemeRexExp();
         if (!schemaPattern.matcher(scheme).matches()) {
             throw new BadRequestException(WRONG_FIELD, "Service Group scheme does not match allowed pattern: " + schemaPattern.pattern());
         }

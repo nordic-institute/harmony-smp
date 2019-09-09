@@ -14,12 +14,17 @@
 package eu.europa.ec.edelivery.smp.validation;
 
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.regex.Pattern;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
 import static java.util.Arrays.asList;
@@ -36,7 +41,9 @@ public class ServiceGroupValidatorTest {
     @Before
     public void init() {
         validator = new ServiceGroupValidator();
-        validator.setRegexPattern(ALLOWED_SCHEME_REGEXP);
+        ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+        ReflectionTestUtils.setField(validator, "configurationService",configurationService );
+        Mockito.doReturn(Pattern.compile(ALLOWED_SCHEME_REGEXP)).when(configurationService).getParticipantIdentifierSchemeRexExp();
     }
 
     @Test

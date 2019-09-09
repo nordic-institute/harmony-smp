@@ -8,6 +8,7 @@ import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,8 +64,7 @@ public class KeystoreResourceTest {
     private static final String PATH = "/ui/rest/keystore";
 
     Path keystore = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
-    protected Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
-    protected Path targetDirectory = Paths.get("target","keystores");
+
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -77,8 +77,7 @@ public class KeystoreResourceTest {
 
     @Before
     public void setup() throws IOException {
-        FileUtils.deleteDirectory(targetDirectory.toFile());
-        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
+        X509CertificateTestUtils.reloadKeystores();
 
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())

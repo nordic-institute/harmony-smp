@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.DatabaseProperties;
+import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -39,10 +40,13 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
 @Repository(value = "configurationDao")
 public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
+
     public static final String DECRYPTED_TOKEN_PREFIX = "{DEC}{";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
 
+
+    List<PropertyUpdateListener> updateListenerList = new ArrayList<>();
 
     boolean isRefreshProcess = false;
     Properties cachedProperties = new Properties();
@@ -128,6 +132,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             reloadPropertiesFromDatabase();
             // check and update non encrypted tokens
             updateCurrentEncryptedValues();
+
         } else {
             LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed:"
                     + lastUpdateFromDB + ".");
@@ -162,11 +167,19 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
                 isRefreshProcess = false;
             }
 
+            // update all listeners
+            updateListenerList.forEach(propertyUpdateListener -> propertyUpdateListener.propertiesUpdate());
         } else {
             LOG.warn("Refreshing of database properties is already in process!");
         }
     }
 
+    public void addPropertyUpdateListener(PropertyUpdateListener listener){
+        updateListenerList.add(listener);
+    }
+    public boolean removePropertyUpdateListener(PropertyUpdateListener listener){
+        return updateListenerList.remove(listener);
+    }
 
     public LocalDateTime getLastUpdate() {
         TypedQuery<LocalDateTime> query = memEManager.createNamedQuery("DBConfiguration.maxUpdateDate", LocalDateTime.class);

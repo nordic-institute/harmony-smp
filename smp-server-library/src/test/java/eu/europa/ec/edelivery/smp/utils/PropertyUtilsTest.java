@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
@@ -45,8 +46,8 @@ public class PropertyUtilsTest {
                 {BLUE_COAT_ENABLED, "true", Boolean.class},
                 {OUTPUT_CONTEXT_PATH, "true", Boolean.class},
                 {PARTC_SCH_REGEXP, ".*", Pattern.class},
-                {CS_PARTICIPANTS, "casesensitive-participant-scheme1|casesensitive-participant-scheme2", String.class},
-                {CS_DOCUMENTS, "casesensitive-doc-scheme1|casesensitive-doc-scheme2", String.class},
+                {CS_PARTICIPANTS, "casesensitive-participant-scheme1|casesensitive-participant-scheme2", List.class},
+                {CS_DOCUMENTS, "casesensitive-doc-scheme1|casesensitive-doc-scheme2", List.class},
                 {SML_ENABLED, "true", Boolean.class},
                 {SML_PARTICIPANT_MULTIDOMAIN, "true", Boolean.class},
                 {SML_URL, "http://localhost:8080/sml", java.net.URL.class},
@@ -69,7 +70,6 @@ public class PropertyUtilsTest {
     }
 
 
-
     @Test
     @Parameters(method = "testParsePropertiesToType")
     public void testParsePropertiesToType(SMPPropertyEnum property, String value, Class cls) {
@@ -77,7 +77,7 @@ public class PropertyUtilsTest {
         File folder = new File("./target");
         //when then
         Object obj = PropertyUtils.parseProperty(property, value, folder);
-        Assert.assertEquals(cls, obj.getClass());
+        Assert.assertTrue(cls.isInstance(obj));
 
     }
 
@@ -129,7 +129,6 @@ public class PropertyUtilsTest {
     }
 
 
-
     public static void assertType(SMPPropertyEnum prop, Object value) {
         if (value == null) {
             if (prop.isMandatory()) {
@@ -149,6 +148,9 @@ public class PropertyUtilsTest {
                 break;
             case INTEGER:
                 Assert.assertEquals(Integer.class, value.getClass());
+                break;
+            case LIST_STRING:
+                Assert.assertTrue(List.class.isInstance(value));
                 break;
             case PATH:
             case FILENAME:

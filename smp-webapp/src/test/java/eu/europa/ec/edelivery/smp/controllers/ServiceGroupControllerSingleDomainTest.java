@@ -13,11 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.AbstractTest;
 import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import java.io.IOException;
 
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.*;
 import static java.lang.String.format;
@@ -60,9 +64,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         UIKeystoreService.class
 })
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data_one_domain.sql")
-@SqlConfig(encoding = "UTF-8")
+@Sql(scripts = {"classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data_one_domain.sql"}
+)
 public class ServiceGroupControllerSingleDomainTest {
 
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
@@ -89,7 +93,9 @@ public class ServiceGroupControllerSingleDomainTest {
     private MockMvc mvc;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
+
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
