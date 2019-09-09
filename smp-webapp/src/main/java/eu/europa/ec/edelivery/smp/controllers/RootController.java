@@ -78,4 +78,6 @@ public class RootController {
         String host = httpReq.getHeader("X-Forwarded-For");
         return StringUtils.isBlank(host)?httpReq.getRemoteHost():host;
     }
+
+
 }
