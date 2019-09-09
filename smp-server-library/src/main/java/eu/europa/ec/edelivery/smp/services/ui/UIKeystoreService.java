@@ -7,6 +7,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
+import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,17 +52,9 @@ public class UIKeystoreService {
     public void init() {
         keystoreKeys = new HashMap();
         keystoreCertificates = new HashMap();
-        setupJCEProvider();
+        X509CertificateUtils.setupJCEProvider();
         refreshData();
     }
-
-    private void setupJCEProvider() {
-        Provider[] providerList = Security.getProviders();
-        if (providerList == null || providerList.length <= 0 || !(providerList[0] instanceof BouncyCastleProvider)) {
-            Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
-        }
-    }
-
 
     /**
      * Method  validates the configuration properties and refresh the

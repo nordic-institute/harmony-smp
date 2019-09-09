@@ -11,6 +11,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -73,6 +74,7 @@ public class PropertyUtils {
             // nothing to validate
             case URL:
                 return urlValidator.isValid(value);
+            case LIST_STRING:
             case FILENAME:
             case STRING:
                 return true;
@@ -102,6 +104,9 @@ public class PropertyUtils {
                 } catch (NumberFormatException exception) {
                     throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid integer: " + value);
                 }
+            case LIST_STRING: {
+                return Arrays.asList(value.split("\\|"));
+            }
             case PATH: {
                 return new File(value);
             }

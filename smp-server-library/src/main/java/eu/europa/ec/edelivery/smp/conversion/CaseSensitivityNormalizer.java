@@ -13,12 +13,14 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -31,23 +33,15 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
 @Component
 public class CaseSensitivityNormalizer {
 
-    private List<String> caseSensitiveParticipantSchemes;
-    private List<String> caseSensitiveDocumentSchemes;
 
-    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('\\|')}")
-    public void setCaseSensitiveDocumentSchemes(List<String> caseSensitiveDocumentSchemes) {
-        this.caseSensitiveDocumentSchemes = caseSensitiveDocumentSchemes;
-        toLowerCaseStringList(this.caseSensitiveDocumentSchemes);
-    }
+    @Autowired
+    ConfigurationService configurationService;
 
-    @Value("#{'${identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes}'.split('\\|')}")
-    public void setCaseSensitiveParticipantSchemes(List<String> caseSensitiveParticipantSchemes) {
-        this.caseSensitiveParticipantSchemes = caseSensitiveParticipantSchemes;
-        toLowerCaseStringList(this.caseSensitiveParticipantSchemes);
-    }
+
 
     public ParticipantIdentifierType normalizeParticipantIdentifier(String scheme, String value) {
-        if (!caseSensitiveParticipantSchemes.contains(StringUtils.lowerCase(scheme))) {
+        List<String> caseSensitiveParticipantSchemes = configurationService.getCaseSensitiveParticipantScheme();
+        if (caseSensitiveParticipantSchemes == null || !caseSensitiveParticipantSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
             scheme = StringUtils.lowerCase(scheme);
             value = StringUtils.lowerCase(value);
         }
@@ -66,8 +60,9 @@ public class CaseSensitivityNormalizer {
         return normalizeDocumentIdentifier(scheme, value);
     }
 
-    public DocumentIdentifier normalizeDocumentIdentifier( String scheme, String value) {
-        if (!caseSensitiveDocumentSchemes.contains(StringUtils.lowerCase(scheme) )) {
+    public DocumentIdentifier normalizeDocumentIdentifier(String scheme, String value) {
+        List<String> caseSensitiveDocumentSchemes = configurationService.getCaseSensitiveDocumentScheme();
+        if (caseSensitiveDocumentSchemes == null || !caseSensitiveDocumentSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
             scheme = StringUtils.lowerCase(scheme);
             value = StringUtils.lowerCase(value);
         }

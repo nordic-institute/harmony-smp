@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.smp.config.DatabaseConfig;
+import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
@@ -12,6 +14,7 @@ import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -28,10 +31,11 @@ import java.util.Optional;
 
 import static java.util.Locale.US;
 
+
+@Import({SmpAppConfig.class})
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationProvider.class);
-
 
     /**
      * thread safe validator

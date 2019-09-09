@@ -13,9 +13,16 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter;
+import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 /**
  * Created by gutowpa on 12/07/2017.
@@ -25,4 +32,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @ImportResource("classpath:spring-security.xml")
 @ComponentScan("eu.europa.ec.edelivery.smp.auth")
 public class SpringSecurityConfig {
+
+
 }

@@ -19,6 +19,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
+import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -33,6 +34,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.sql.DataSource;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -40,6 +43,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.Properties;
+import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
@@ -70,22 +74,25 @@ public class PropertyInitialization {
             Properties applProp = new Properties();
             try {
                 applProp.load(is);
-
+                LOG.info("*****************************************************************************************");
                 LOG.info("Start application: name: {}, version: {}, build time: {}.",applProp.getProperty(PROP_BUILD_NAME)
                         ,applProp.getProperty(PROP_BUILD_VERSION)
                         ,applProp.getProperty(PROP_BUILD_TIME));
+                LOG.info("*****************************************************************************************");
             } catch (IOException e) {
                 LOG.error( "Error occurred  while reading application properties. Is file /application.properties included in war!", e);
             }
         } else {
             LOG.error( "Not found application build properties: /application.properties!");
         }
-
     }
 
-    protected Properties getDatabaseProperties() {
+    public Properties getFileProperties(){
+        return FileProperty.getFileProperties();
+    }
 
-        Properties fileProperties = getFileProperties();
+    protected Properties getDatabaseProperties(Properties fileProperties) {
+
         // get datasource
         DataSource dataSource = getDatasource(fileProperties);
         EntityManager em = null;
@@ -106,6 +113,12 @@ public class PropertyInitialization {
         return prop;
     }
 
+
+    protected Properties getDatabaseProperties() {
+        Properties fileProperties = FileProperty.getFileProperties();
+        return getDatabaseProperties(fileProperties);
+    }
+
     /**
      * Method do the next tasks
      * // copy SMPProperties
@@ -120,7 +133,7 @@ public class PropertyInitialization {
      */
     protected void initializeProperties(EntityManager em, Properties fileProperties, Properties initProperties) {
         em.getTransaction().begin();
-        LOG.info( "Database configuration table is empty! initialize new values from property file!");
+        LOG.warn( "Database configuration table is empty! Initialize new values!");
         initNewValues(em, fileProperties, initProperties);
         for (SMPPropertyEnum val : SMPPropertyEnum.values()) {
             DBConfiguration dbConf = null;
@@ -174,11 +187,13 @@ public class PropertyInitialization {
     protected void initNewValues(EntityManager em, Properties fileProperties, Properties initProperties) {
 
         File settingsFolder = calculateSettingsPath(fileProperties);
-        LOG.info( "Generate new keystore to folder: " + settingsFolder.getAbsolutePath());
+        // set absolute path
+        String absolutePath = settingsFolder.getAbsolutePath();
+        LOG.info( "Generate new keystore to folder: " + absolutePath);
 
         // add configuration path
-        storeDBEntry(em, CONFIGURATION_DIR, settingsFolder.getPath());
-        initProperties.setProperty(CONFIGURATION_DIR.getProperty(), settingsFolder.getPath());
+        storeDBEntry(em, CONFIGURATION_DIR, absolutePath);
+        initProperties.setProperty(CONFIGURATION_DIR.getProperty(), absolutePath);
         String newKeyPassword = null;
         try {
             newKeyPassword = RandomStringUtils.random(DEFAULT_PASSWORD_LENGTH, 0, VALID_PW_CHARS.length(),
@@ -193,10 +208,10 @@ public class PropertyInitialization {
 
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
 
-
         // store encryption filename
-        File fEncryption = new File(settingsFolder, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
-        LOG.info( "Generate new encryption key: " + fEncryption.getName());
+        File fEncryption =getNewFile(absolutePath, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
+
+        LOG.info( "Generate new encryption key: " + fEncryption.getName()+ " settings folder: " + absolutePath);
         SecurityUtils.generatePrivateSymmetricKey(fEncryption);
         storeDBEntry(em, SMPPropertyEnum.ENCRYPTION_FILENAME, fEncryption.getName());
         initProperties.setProperty(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
@@ -207,7 +222,7 @@ public class PropertyInitialization {
         initProperties.setProperty(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty(), encPasswd);
 
         //store new keystore
-        File keystore = new File(settingsFolder, SMPPropertyEnum.KEYSTORE_FILENAME.getDefValue());
+        File keystore = getNewFile(absolutePath, SMPPropertyEnum.KEYSTORE_FILENAME.getDefValue());
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_FILENAME, keystore.getName());
         initProperties.setProperty(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty(), keystore.getName());
 
@@ -253,6 +268,10 @@ public class PropertyInitialization {
                     }
                 }
             }
+            // check if keystore is empty then generate cert for user
+            if (newKeystore.size()==0) {
+                X509CertificateUtils.createAndAddTextCertificate("CN=SMP_TEST-"+ UUID.randomUUID().toString()+", OU=eDelivery, O=DIGITAL, C=BE", newKeystore, newKeyPassword);
+            }
             newKeystore.store(out, newKeyPassword.toCharArray());
         } catch (IOException e) {
             throw new SMPRuntimeException(INTERNAL_ERROR, e, "IOException occurred while creating keystore", e.getMessage());
@@ -265,6 +284,25 @@ public class PropertyInitialization {
         } catch (Exception e) {
             throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating keystore", e.getMessage());
         }
+    }
+
+    public File getNewFile(String folder, String fileName){
+        File file = new File(folder, fileName);
+        if (file.exists()){
+            int index = 0;
+            File f= null;
+            // search for new file
+            while((f= new File(folder, fileName+"."+ (++index))).exists()){
+
+            }
+            try {
+                Files.move(file.toPath(), f.toPath());
+            } catch (IOException e) {
+                throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while renaming file:" + fileName , e.getMessage());
+            }
+        }
+        return file;
+
     }
 
     /**
@@ -309,47 +347,7 @@ public class PropertyInitialization {
 
         em.getTransaction().commit();
     }
-    /*
-    protected void testKeystore(String configurationDir,
-                                String encryptionFilename,
-                                String smpKeyStoreFilename,
-                                String smpKeyStorePasswordDecrypted
-                                ){
 
-
-            LOG.info("initialize from configuration folder:{}, enc file: {}, keystore {}" , configurationDir, encryptionFilename, smpKeyStoreFilename);
-            if (configurationDir == null || encryptionFilename == null) {
-                LOG.warn("Configuration folder and/or encryption filename are not set in database!");
-                return;
-            }
-
-            File file = new File(configurationDir + File.separator + encryptionFilename);
-            File keystoreFilePath = new File(configurationDir + File.separator + smpKeyStoreFilename);
-            if (!file.exists()) {
-                LOG.error("Encryption key file '{}' does not exists!", file.getAbsolutePath());
-                return;
-            }
-            if (!keystoreFilePath.exists()) {
-                LOG.error("Keystore file '{}' does not exists!", keystoreFilePath.getAbsolutePath());
-                return;
-            }
-
-            try {
-                smpKeyStorePasswordDecrypted = securityUtilsServices.decrypt(file, smpKeyStorePasswordEncrypted);
-            } catch (SMPRuntimeException exception) {
-                LOG.error("Error occurred while using encryption key: " + file.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
-                return;
-            }
-            // load keystore
-            KeyStore keyStore = loadKeystore();
-            if (keyStore == null) {
-                return;
-            }
-
-            updateData(keyStore);
-        }
-    }
-*/
 
     protected DBConfiguration createDBEntry(String key, String value, String desc) {
         DBConfiguration dcnew = new DBConfiguration();
@@ -412,22 +410,6 @@ public class PropertyInitialization {
         return datasource;
     }
 
-    protected Properties getFileProperties() {
-        LOG.info( "Start read file properties from '/smp.config.properties'");
-        InputStream is = PropertyInitialization.class.getResourceAsStream("/smp.config.properties");
-        if (is == null) {
-            LOG.info( "File '/smp.config.properties' not found in classpath, read '/config.properties'");
-            is = PropertyInitialization.class.getResourceAsStream("/config.properties");
-        }
-        Properties connectionProp = new Properties();
-        try {
-            connectionProp.load(is);
-        } catch (IOException e) {
-            LOG.error( "IOException occurred while reading properties", e);
-            throw new SMPRuntimeException(INTERNAL_ERROR, e, "Error occurred  while reading properties.", e.getMessage());
-        }
-        return connectionProp;
-    }
 
     /**
      * Create entity manager just for property updates to handle date columns for different databases.
