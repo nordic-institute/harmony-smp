@@ -21,6 +21,7 @@ import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
@@ -41,6 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.ws.http.HTTPException;
 
+import java.io.IOException;
+
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,9 +57,7 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SmlIntegrationConfiguration.class,
-        SmlConnector.class, DomainService.class, SMLIntegrationService.class,
-        H2JPATestConfig.class})
-@TestPropertySource(properties = {"bdmsl.integration.enabled=true"})
+        SmlConnector.class, DomainService.class})
 public class DomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Rule
@@ -70,8 +71,13 @@ public class DomainServiceIntegrationTest extends AbstractServiceIntegrationTest
     protected DomainService testInstance;
 
     @Before
-    @Transactional
-    public void prepareDatabase() {
+    public void prepareDatabase() throws IOException {
+        resetKeystore();
+        setDatabaseProperty(SMPPropertyEnum.SML_PHYSICAL_ADDRESS, "0.0.0.0");
+        setDatabaseProperty(SMPPropertyEnum.SML_LOGICAL_ADDRESS, "http://localhost/smp");
+        setDatabaseProperty(SMPPropertyEnum.SML_URL, "http://localhost/edelivery-sml");
+        setDatabaseProperty(SMPPropertyEnum.SML_ENABLED, "true");
+
         integrationMock.reset();
         prepareDatabaseForSignleDomainEnv();
     }

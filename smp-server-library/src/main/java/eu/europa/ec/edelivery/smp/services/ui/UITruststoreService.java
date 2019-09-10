@@ -10,7 +10,6 @@ import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.xml.security.keys.content.x509.XMLX509Certificate;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -23,8 +22,8 @@ import javax.naming.ldap.Rdn;
 import java.io.*;
 import java.nio.file.Paths;
 import java.security.*;
-import java.security.cert.*;
 import java.security.cert.Certificate;
+import java.security.cert.*;
 import java.util.*;
 
 import static java.util.Collections.list;
@@ -34,10 +33,8 @@ public class UITruststoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
-
     @Autowired
     private ConfigurationService configurationService;
-
 
     @Autowired
     CRLVerifierService crlVerifierService;
@@ -47,7 +44,7 @@ public class UITruststoreService {
 
     private List<String> normalizedTrustedList = new ArrayList<>();
 
-    private Map<String, X509Certificate> truststoreCertificates  = new HashMap();
+    private Map<String, X509Certificate> truststoreCertificates = new HashMap();
     private List<CertificateRO> certificateROList = new ArrayList<>();
 
 
@@ -68,8 +65,8 @@ public class UITruststoreService {
     }
 
     private boolean useTrustStore() {
-        String truststoreFilename = configurationService.getTruststoreFilename();
-        return !StringUtils.isBlank(truststoreFilename);
+        File truststoreFile = configurationService.getTruststoreFile();
+        return truststoreFile != null;
     }
 
 
@@ -78,12 +75,10 @@ public class UITruststoreService {
      * cached data
      */
     public void refreshData() {
-        String truststoreFilename = configurationService.getTruststoreFilename();
         if (!useTrustStore()) {
             LOG.warn("Truststore filename is not set! Certificates will not be validated by trusted issuers!");
             return;
         }
-
 
         // load keystore
         File truststoreFile = getTruststoreFile();
@@ -93,9 +88,6 @@ public class UITruststoreService {
                     " and the configuration!");
             return;
         }
-        // init key managers for TLS
-
-
         // load keys for signature
         List<String> tmpList = new ArrayList<>();
         Map<String, X509Certificate> hmCertificates = new HashMap<>();
@@ -115,7 +107,7 @@ public class UITruststoreService {
                     hmCertificates.put(alias, x509Certificate);
                     try {
                         x509Certificate.checkValidity();
-                    } catch(CertificateExpiredException | CertificateNotYetValidException ex) {
+                    } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
                         LOG.warn("Certificate: '{}' from truststore is not valid anymore!");
                     }
                 }
@@ -137,9 +129,11 @@ public class UITruststoreService {
         // clear list to reload RO when required
         certificateROList.clear();
     }
+
     public CertificateRO getCertificateData(byte[] buff) throws CertificateException, IOException {
-        return getCertificateData(buff,  false);
+        return getCertificateData(buff, false);
     }
+
     public CertificateRO getCertificateData(byte[] buff, boolean validate) throws CertificateException, IOException {
         X509Certificate cert = X509CertificateUtils.getX509Certificate(buff);
         CertificateRO cro = convertToRo(cert);
@@ -148,27 +142,27 @@ public class UITruststoreService {
             try {
                 checkFullCertificateValidity(cert);
                 cro.setInvalid(false);
-            }catch (CertificateExpiredException ex) {
+            } catch (CertificateExpiredException ex) {
                 cro.setInvalidReason("Certificate is expired!");
-            }catch (CertificateNotYetValidException ex) {
+            } catch (CertificateNotYetValidException ex) {
                 cro.setInvalidReason("Certificate is not yet valid!");
             } catch (CertificateRevokedException ex) {
                 cro.setInvalidReason("Certificate is revoked!");
-            }catch (CertificateNotTrustedException ex) {
+            } catch (CertificateNotTrustedException ex) {
                 cro.setInvalidReason("Certificate is not trusted!");
             }
         }
         return cro;
     }
 
-    public void checkFullCertificateValidity( X509Certificate cert) throws CertificateException,  CertificateExpiredException,
+    public void checkFullCertificateValidity(X509Certificate cert) throws CertificateException, CertificateExpiredException,
             CertificateNotYetValidException, CertificateRevokedException {
         // test if certificate is valid
         cert.checkValidity();
         // check if certificate or its issuer is on trusted list
         // check only issuer because using bluecoat Client-cert we do not have whole chain.
-        if (! (isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
-                        || isSubjectOnTrustedList(cert.getIssuerDN().getName())  )  ){
+        if (!(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
+                || isSubjectOnTrustedList(cert.getIssuerDN().getName()))) {
 
             throw new CertificateNotTrustedException("Certificate is not trusted!");
         }
@@ -182,7 +176,7 @@ public class UITruststoreService {
     }
 
     public File getTruststoreFile() {
-        return Paths.get(configurationService.getConfigurationFolder(), configurationService.getTruststoreFilename()).toFile();
+        return configurationService.getTruststoreFile();
     }
 
     private KeyStore loadTruststore(File truststoreFile) {
@@ -252,14 +246,14 @@ public class UITruststoreService {
         KeyStore truststore = loadTruststore(getTruststoreFile());
 
         if (truststore != null) {
-            String aliasPrivate = StringUtils.isBlank(alias)?createAliasFromCert(certificate, truststore): alias.trim();
+            String aliasPrivate = StringUtils.isBlank(alias) ? createAliasFromCert(certificate, truststore) : alias.trim();
 
-            if (truststore.containsAlias(aliasPrivate)){
-                int i=1;
-                while (truststore.containsAlias(aliasPrivate+"_"+i)){
+            if (truststore.containsAlias(aliasPrivate)) {
+                int i = 1;
+                while (truststore.containsAlias(aliasPrivate + "_" + i)) {
                     i++;
                 }
-                aliasPrivate= aliasPrivate+"_"+i;
+                aliasPrivate = aliasPrivate + "_" + i;
             }
 
             truststore.setCertificateEntry(aliasPrivate, certificate);
@@ -271,21 +265,21 @@ public class UITruststoreService {
         return null;
     }
 
-    public String createAliasFromCert(X509Certificate x509cert,  KeyStore truststore ){
+    public String createAliasFromCert(X509Certificate x509cert, KeyStore truststore) {
 
 
         String dn = x509cert.getSubjectX500Principal().getName();
         try {
             String alias = null;
             LdapName ldapDN = new LdapName(dn);
-            for(Rdn rdn: ldapDN.getRdns()) {
-                if (Objects.equals("CN", rdn.getType())){
+            for (Rdn rdn : ldapDN.getRdns()) {
+                if (Objects.equals("CN", rdn.getType())) {
                     alias = rdn.getValue().toString().trim();
                     break;
                 }
             }
             return alias;
-        } catch (InvalidNameException  e) {
+        } catch (InvalidNameException e) {
             LOG.error("Can not parse certificate subject: " + dn);
         }
         return UUID.randomUUID().toString();

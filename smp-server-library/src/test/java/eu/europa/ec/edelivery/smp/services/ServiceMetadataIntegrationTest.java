@@ -19,23 +19,29 @@ import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +73,17 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Autowired
     ServiceMetadataService testInstance;
 
+    Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+
+    @Autowired
+    UIKeystoreService uiKeystoreService;
+
+    @Autowired
+    private ServiceMetadataSigner signer;
+
+
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
@@ -74,6 +91,18 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Before
     @Transactional
     public void prepareDatabase() {
+        configurationService = Mockito.spy(configurationService);
+        ReflectionTestUtils.setField(uiKeystoreService,"configurationService",configurationService);
+        ReflectionTestUtils.setField(signer,"uiKeystoreService",uiKeystoreService);
+        ReflectionTestUtils.setField(testInstance,"signer",signer);
+
+        // set keystore properties
+        File keystoreFile = new File(resourceDirectory.toFile(), "smp-keystore.jks");
+        Mockito.doReturn( keystoreFile).when(configurationService).getKeystoreFile();
+        Mockito.doReturn( resourceDirectory.toFile()).when(configurationService).getConfigurationFolder();
+        Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
+        uiKeystoreService.refreshData();
+
         prepareDatabaseForSignleDomainEnv();
         DBServiceGroup sg = new DBServiceGroup();
         sg.setParticipantIdentifier(TEST_SG_ID_PL2.toLowerCase());

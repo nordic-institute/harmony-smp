@@ -28,6 +28,7 @@ public enum ErrorCode {
     USER_IS_NOT_OWNER(400,"SMP:124",ErrorBusinessCode.UNAUTHORIZED,"User %s is not owner of service group (part. id: %s, part. sch.: '%s')!"), // OWASP recommendation
     INVALID_CERTIFICATE_MESSAGE_DIGEST(500, "SMP:125", ErrorBusinessCode.TECHNICAL, "Could not initialize MessageDigest"),
     INVALID_CERTIFICATE_ENCODING(500, "SMP:126", ErrorBusinessCode.TECHNICAL, "Could not encode certificate"),
+    INVALID_OWNER(500, "SMP:127", ErrorBusinessCode.TECHNICAL, "Invalid owner id: %s"),
 
     // service group error
     ILLEGAL_STATE_SG_MULTIPLE_ENTRY (500,"SMP:130",ErrorBusinessCode.TECHNICAL,"More than one service group ( part. id: %s, part. sch.: '%s') is defined in database!"),

@@ -36,6 +36,9 @@ public class SMLIntegrationService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMLIntegrationService.class);
 
     @Autowired
+    private ConfigurationService configurationService;
+
+    @Autowired
     private SmlConnector smlConnector;
 
     @Autowired
@@ -56,7 +59,7 @@ public class SMLIntegrationService {
      */
     @Transactional
     public void registerDomain(DBDomain domain) {
-        if (!smlConnector.isSmlIntegrationEnabled()) {
+        if (!isSMLIntegrationEnabled()) {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, "SML integration is not enabled!");
         }
         domain.setSmlRegistered(true);
@@ -73,7 +76,7 @@ public class SMLIntegrationService {
      */
     @Transactional
     public void unRegisterDomain(DBDomain domain) {
-        if (!smlConnector.isSmlIntegrationEnabled()) {
+        if (!isSMLIntegrationEnabled()) {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, "SML integration is not enabled!");
         }
 
@@ -95,7 +98,7 @@ public class SMLIntegrationService {
     @Transactional
     public void registerParticipant(String participantId, String participantSchema, String domainCode) {
         LOG.businessDebug(BUS_SML_REGISTER_SERVICE_GROUP, participantId, participantSchema, domainCode);
-        if (!smlConnector.isSmlIntegrationEnabled()) {
+        if (!isSMLIntegrationEnabled()) {
             String msg = "SML integration is not enabled!";
             LOG.businessError(BUS_SML_REGISTER_SERVICE_GROUP_FAILED, participantId, participantSchema, domainCode, msg);
             throw new SMPRuntimeException(CONFIGURATION_ERROR, msg);
@@ -136,7 +139,7 @@ public class SMLIntegrationService {
     @Transactional
     public void unregisterParticipant(String participantId, String participantSchema, String domainCode) {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, participantId, participantSchema, domainCode);
-        if (!smlConnector.isSmlIntegrationEnabled()) {
+        if (!isSMLIntegrationEnabled()) {
             String msg = "SML integration is not enabled!";
             LOG.businessError(BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED, participantId, participantSchema, domainCode, msg);
             throw new SMPRuntimeException(CONFIGURATION_ERROR, msg);
@@ -215,7 +218,7 @@ public class SMLIntegrationService {
         return optionalServiceGroupDomain.get();
     }
 
-    public boolean isSmlIntegrationEnabled() {
-        return smlConnector.isSmlIntegrationEnabled();
+    public boolean isSMLIntegrationEnabled() {
+        return configurationService.isSMLIntegrationEnabled();
     }
 }
