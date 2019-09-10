@@ -40,15 +40,13 @@ public enum SMPMessageCode implements MessageCode {
     BUS_SML_UNREGISTER_SERVICE_GROUP_ALREADY_REGISTERED("BUS-022", "Participant:  part. Id: {} part. scheme {} to domain {} marked as already unregistered to SML"),
     BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED("BUS-023", "Participant unregistration:  part. Id: {} part. scheme {} to domain {} failed due to error: {}"),
 
-
     BUS_INVALID_XML("BUS-030", "Invalid XML for {}. Error: [{}]"),
-
 
     SEC_UNSECURED_LOGIN_ALLOWED("SEC-001", "Unsecure login is allowed, no authentication will be performed"),
     SEC_USER_AUTHENTICATED("SEC-002", "User {} is authenticated with role {}."),
     SEC_USER_NOT_EXISTS("SEC-003", "User {} not exists."),
     SEC_INVALID_PASSWORD("SEC-004", "User {} has invalid password."),
-
+    SEC_USER_CERT_NOT_EXISTS("SEC-005", "User certificate {} not exists."),
     ;
 
     String code;

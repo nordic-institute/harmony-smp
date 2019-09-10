@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Import;
         "eu.europa.ec.edelivery.smp.services",
         "eu.europa.ec.edelivery.smp.sml",
         "eu.europa.ec.edelivery.smp.conversion"})
-@Import({DatabaseConfig.class})
+@Import(DatabaseConfig.class)
 public class SmpAppConfig {
 
 }

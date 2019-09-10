@@ -15,19 +15,22 @@ package eu.europa.ec.edelivery.smp.sml;
 
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
-import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
-import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
-import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.message.Message;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -38,20 +41,28 @@ import static org.junit.Assert.assertNotNull;
  * Created by gutowpa on 08/01/2018.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmlClientFactory.class,
-        SecurityUtilsServices.class, UIKeystoreService.class,
-        ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
-public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
+@ContextConfiguration(classes = {SmlClientFactory.class})
+public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest extends AbstractServiceIntegrationTest {
 
     public static final String CLIENT_CERT_HTTP_HEADER = "value_of_ClientCert_HTTP_header";
 
     @Autowired
     private SmlClientFactory smlClientFactory;
 
+    @Autowired
+    private ConfigurationService configurationService;
+
+    @Before
+    public void setup() throws MalformedURLException {
+        configurationService = Mockito.spy(configurationService);
+        ReflectionTestUtils.setField(smlClientFactory,"configurationService",configurationService);
+        Mockito.doReturn(new URL("https://sml.someUrl.local/sml/")).when(configurationService).getSMLIntegrationUrl();
+    }
+
     @Test
     public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenHttpHeader() {
         //when
-        IManageParticipantIdentifierWS client = smlClientFactory.create(null, CLIENT_CERT_HTTP_HEADER, true);
+         IManageParticipantIdentifierWS client = smlClientFactory.create(null, CLIENT_CERT_HTTP_HEADER, true);
 
         //then
         assertNotNull(client);
@@ -61,11 +72,11 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
         List clientCerts = (List) httpHeaders.get("Client-Cert");
         assertEquals(1, clientCerts.size());
         assertEquals(CLIENT_CERT_HTTP_HEADER, clientCerts.get(0));
-        assertEquals("https://sml.url.pl/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://sml.someUrl.local/sml/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
     @Test
-    public void factoryProducesPreconfiguredCxfCSMPlientThatAuthenticatesItselfWithGivenHttpHeader() {
+    public void factoryProducesPreconfiguredCxfCSMPlientThatAuthenticatesItselfWithGivenHttpHeader() throws MalformedURLException {
         //when
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, CLIENT_CERT_HTTP_HEADER, true);
 
@@ -77,7 +88,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
         List clientCerts = (List) httpHeaders.get("Client-Cert");
         assertEquals(1, clientCerts.size());
         assertEquals(CLIENT_CERT_HTTP_HEADER, clientCerts.get(0));
-        assertEquals("https://sml.url.pl/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://sml.someUrl.local/sml/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
 }
