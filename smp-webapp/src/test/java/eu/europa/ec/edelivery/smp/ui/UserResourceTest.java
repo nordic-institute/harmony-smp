@@ -111,17 +111,16 @@ public class UserResourceTest {
                 .content(buff))
                 .andExpect(status().isOk()).andReturn();
 
-        //them
+        //then
         ObjectMapper mapper = new ObjectMapper();
         CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
 
-
         assertNotNull(res);
-        assertEquals("C=BE,O=DIGIT,CN=Intermediate CA", res.getIssuer());
-        assertEquals("C=BE,O=DIGIT,CN=SMP test,E=smp@test.com", res.getSubject());
+        assertEquals("CN=Intermediate CA,O=DIGIT,C=BE", res.getIssuer());
+        assertEquals("1.2.840.113549.1.9.1=#160c736d7040746573742e636f6d,CN=SMP test,O=DIGIT,C=BE", res.getSubject());
         assertEquals("3", res.getSerialNumber());
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
-        assertEquals("sno=3&subject=C%3DBE%2CO%3DDIGIT%2CCN%3DSMP+test%2CE%3Dsmp%40test.com&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=C%3DBE%2CO%3DDIGIT%2CCN%3DIntermediate+CA", res.getBlueCoatHeader());
+        assertEquals("sno=3&subject=1.2.840.113549.1.9.1%3D%23160c736d7040746573742e636f6d%2CCN%3DSMP+test%2CO%3DDIGIT%2CC%3DBE&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=CN%3DIntermediate+CA%2CO%3DDIGIT%2CC%3DBE", res.getBlueCoatHeader());
     }
 
     @Test
