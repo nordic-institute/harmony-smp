@@ -26,6 +26,8 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
+import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,8 +103,19 @@ public class ServiceGroupService {
         ParticipantIdentifierType normalizedParticipantId = caseSensitivityNormalizer.normalize(serviceGroup.getParticipantIdentifier());
         LOG.businessDebug(SMPMessageCode.BUS_SAVE_SERVICE_GROUP,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme()  );
 
+        // normalize service group owner
+
+
         String newOwnerName = defineGroupOwner(serviceGroupOwner, authenticatedUser);
         Optional<DBUser> newOwner = userDao.findUserByIdentifier(newOwnerName);
+        if (!newOwner.isPresent()
+                && !StringUtils.isBlank(serviceGroupOwner) && serviceGroupOwner.contains(":")) {
+            // try harder
+            String[] val = splitSerialFromSubject(newOwnerName);
+            newOwnerName = DistinguishedNamesCodingUtil.normalizeDN(val[0]) + ':' + val[1];
+            newOwner = userDao.findUserByIdentifier(newOwnerName);
+        }
+
         if (!newOwner.isPresent()) {
             SMPRuntimeException ex = new SMPRuntimeException(USER_NOT_EXISTS);
             LOG.businessError(SMPMessageCode.BUS_SAVE_SERVICE_GROUP_FAILED,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme(), ex.getMessage()  );
@@ -173,6 +186,17 @@ public class ServiceGroupService {
             throw new SMPRuntimeException(INVALID_ENCODING, serviceGroupOwner, "Unsupported or invalid encoding: " + ex.getMessage());
 
         }
+
+    }
+
+    public static String[] splitSerialFromSubject(String certificateId)  {
+
+
+        int idx = certificateId.lastIndexOf(":");
+        if (idx <= 0) {
+            throw new SMPRuntimeException(INVALID_OWNER,  certificateId);
+        }
+        return new String[]{certificateId.substring(0, idx), certificateId.substring(idx+1)};
 
     }
 

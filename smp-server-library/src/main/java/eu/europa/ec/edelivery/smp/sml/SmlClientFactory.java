@@ -21,7 +21,10 @@ import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
 import eu.europa.ec.bdmsl.ws.soap.ManageServiceMetadataService;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.utils.HttpUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.configuration.security.ProxyAuthorizationPolicy;
 import org.apache.cxf.endpoint.Client;
@@ -29,8 +32,8 @@ import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.ProxyServerType;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -44,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SML_URL;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -57,27 +61,17 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Component
 public class SmlClientFactory {
 
+    private static final String SERVICE_METADATA_CONTEXT="manageservicemetadata";
+    private static final String PARTICIPANT_IDENTIFIER_CONTEXT="manageparticipantidentifier";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmlClientFactory.class);
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
-    @Value("${bdmsl.integration.url:}")
-    private URL smlUrl;
+    @Autowired
+    ConfigurationService configurationService;
 
     @Autowired
     UIKeystoreService keystoreService;
-
-    @Value("${bdmsl.integration.proxy.server:}")
-    private String proxyServer;
-
-    @Value("${bdmsl.integration.proxy.port:}")
-    private Optional<Integer> proxyPort;
-
-    @Value("${bdmsl.integration.proxy.user:}")
-    private String proxyUser;
-
-    @Value("${bdmsl.integration.proxy.password:}")
-    private String proxyPassword;
 
     @Bean
     @Scope("prototype")
@@ -85,25 +79,8 @@ public class SmlClientFactory {
         LOG.info("create IManageParticipantIdentifierWS with alias {} http-header {}", clientKeyAlias, clientCertHttpHeader);
         ManageBusinessIdentifierService smlService = new ManageBusinessIdentifierService((URL) null);
         IManageParticipantIdentifierWS smlPort = smlService.getManageBusinessIdentifierServicePort();
-        Client client = ClientProxy.getClient(smlPort);
 
-        URL urlParticipantIdentifier;
-        try {
-            urlParticipantIdentifier = new URL(smlUrl.getProtocol(), smlUrl.getHost(), smlUrl.getPort(), smlUrl.getFile() + "/manageparticipantidentifier", null);
-        } catch (MalformedURLException e) {
-            throw new IllegalStateException("Could not create participant URL: " + smlUrl.toString(), e);
-        }
-
-        HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
-        Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
-        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlParticipantIdentifier.toString());
-
-        configureFaultHandling(requestContext);
-        configureProxy(httpConduit);
-        configurePayloadLogging(client);
-        configureClientAuthentication(httpConduit, requestContext,
-                blueCoatAuthentication ? null : clientKeyAlias,
-                blueCoatAuthentication ? clientCertHttpHeader : null);
+        submitRequest(PARTICIPANT_IDENTIFIER_CONTEXT, smlPort, clientKeyAlias, clientCertHttpHeader, blueCoatAuthentication);
 
         return smlPort;
     }
@@ -115,13 +92,25 @@ public class SmlClientFactory {
 
         ManageServiceMetadataService smlService = new ManageServiceMetadataService((URL) null);
         IManageServiceMetadataWS smlPort = smlService.getManageServiceMetadataServicePort();
+        submitRequest(SERVICE_METADATA_CONTEXT, smlPort, clientKeyAlias, clientCertHttpHeader, blueCoatAuthentication);
+
+        return smlPort;
+    }
+
+    public void submitRequest(String serviceEndpoint, Object smlPort, String clientKeyAlias, String clientCertHttpHeader, boolean blueCoatAuthentication) {
+
         Client client = ClientProxy.getClient(smlPort);
 
+        URL url = configurationService.getSMLIntegrationUrl();
+        if (url ==null) {
+            throw new IllegalStateException("Empty or null SML url. Check the configuration and set property: " + SML_URL.getProperty());
+        }
         URL urlSMPManagment;
         try {
-            urlSMPManagment = new URL(smlUrl.getProtocol(), smlUrl.getHost(), smlUrl.getPort(), smlUrl.getFile() + "/manageservicemetadata", null);
+            urlSMPManagment = new URL(StringUtils.appendIfMissing(url.toString(),"/")+serviceEndpoint);
+
         } catch (MalformedURLException e) {
-            throw new IllegalStateException("Could not create participant URL: " + smlUrl.toString(), e);
+            throw new IllegalStateException("Malformed SML URL: " + url, e);
         }
 
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
@@ -129,32 +118,29 @@ public class SmlClientFactory {
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlSMPManagment.toString());
 
         configureFaultHandling(requestContext);
-        configureProxy(httpConduit);
+        configureProxy(httpConduit, urlSMPManagment);
         configurePayloadLogging(client);
         configureClientAuthentication(httpConduit, requestContext,
-                blueCoatAuthentication ? null : clientKeyAlias,
-                blueCoatAuthentication ? clientCertHttpHeader : null);
-        return smlPort;
+                blueCoatAuthentication ? clientCertHttpHeader : clientKeyAlias,
+                blueCoatAuthentication);
     }
 
 
-    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientKeyAlias, String smlClientCertHttpHeader) {
-        LOG.info("Connect to SML (alias: {} http-header: {})", smlClientKeyAlias, smlClientCertHttpHeader);
-        if (isNotBlank(smlClientKeyAlias) && isNotBlank(smlClientCertHttpHeader)) {
-            throw new IllegalStateException("SML integration is wrongly configured, cannot use both authentication ways at the same time: 2-way-SSL and Client-Cert header");
+    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientAuthentication, boolean blueCoatAuthentication) {
+        LOG.info("Connect to SML (smlClientAuthentication: {} useClientCert: {})", smlClientAuthentication, blueCoatAuthentication);
+        if (isBlank(smlClientAuthentication) ) {
+            throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
 
-        if (isNotBlank(smlClientKeyAlias)) {
+        if (!blueCoatAuthentication) {
             TLSClientParameters tlsParams = new TLSClientParameters();
-            tlsParams.setCertAlias(smlClientKeyAlias);
+            tlsParams.setCertAlias(smlClientAuthentication);
             tlsParams.setKeyManagers(keystoreService.getKeyManagers());
             httpConduit.setTlsClientParameters(tlsParams);
-        } else if (isNotBlank(smlClientCertHttpHeader)) {
+        } else  {
             Map<String, List<String>> customHeaders = new HashMap<>();
-            customHeaders.put(CLIENT_CERT_HEADER_KEY, asList(smlClientCertHttpHeader));
+            customHeaders.put(CLIENT_CERT_HEADER_KEY, asList(smlClientAuthentication));
             requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
-        } else {
-            throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
     }
 
@@ -169,10 +155,18 @@ public class SmlClientFactory {
         client.getBus().setFeatures(asList(new LoggingFeature()));
     }
 
-    private void configureProxy(HTTPConduit httpConduit) {
-        if (isBlank(proxyServer)) {
+    private void configureProxy(HTTPConduit httpConduit, URL targetUrl) {
+
+        String proxyNoHosts = configurationService.getHttpNoProxyHosts();
+        if (configurationService.isProxyEnabled() &&
+                !HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())) {
             return;
         }
+        String proxyServer = configurationService.getHttpProxyHost();
+        Optional<Integer> proxyPort = configurationService.getHttpProxyPort();
+        String proxyUser = configurationService.getProxyUsername();
+        String proxyPassword = configurationService.getProxyCredentialToken();
+
 
         LOG.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer, proxyPort.isPresent() ? proxyPort.get() : "");
         httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);

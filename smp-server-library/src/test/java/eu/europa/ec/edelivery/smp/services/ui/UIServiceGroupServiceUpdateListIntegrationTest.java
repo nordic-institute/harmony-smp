@@ -11,7 +11,10 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMLAction;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
@@ -19,11 +22,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -40,27 +46,33 @@ import static org.junit.Assert.assertFalse;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@ContextConfiguration(classes = {UIServiceGroupService.class, UIServiceMetadataService.class, SmlIntegrationConfiguration.class})
-@TestPropertySource(properties = {"bdmsl.integration.enabled=true"})
+@ContextConfiguration(classes = {UIServiceGroupService.class, UIServiceMetadataService.class,
+        SmlIntegrationConfiguration.class})
 public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
-    protected UIServiceGroupService testInstance;
+    UIServiceGroupService testInstance;
 
     @Autowired
-    protected UIServiceMetadataService uiServiceMetadataService;
-
-    @Before
-    public void setup() {
-        integrationMock.reset();
-        prepareDatabaseForMultipeDomainEnv();
-    }
+    UIServiceMetadataService uiServiceMetadataService;
 
     @Autowired
     SmlIntegrationConfiguration integrationMock;
+
+    @Before
+    public void setup() throws IOException {
+        resetKeystore();
+        setDatabaseProperty(SMPPropertyEnum.SML_PHYSICAL_ADDRESS, "0.0.0.0");
+        setDatabaseProperty(SMPPropertyEnum.SML_LOGICAL_ADDRESS, "http://localhost/smp");
+        setDatabaseProperty(SMPPropertyEnum.SML_URL, "http://localhost/edelivery-sml");
+        setDatabaseProperty(SMPPropertyEnum.SML_ENABLED, "true");
+        prepareDatabaseForMultipeDomainEnv();
+        integrationMock.reset();
+    }
+
 
     protected void insertDataObjectsForOwner(int size, DBUser owner) {
         for (int i = 0; i < size; i++) {
@@ -170,6 +182,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
 
     @Test
     @Transactional
+  //  @Sql( statements={"update SMP_CONFIGURATION set value='true' where property='bdmsl.integration.enabled'; "})
     public void updateListSMLRecordsAddDomain() {
 
         // given

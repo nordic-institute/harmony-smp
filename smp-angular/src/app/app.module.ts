@@ -81,9 +81,11 @@ import { ExpiredPasswordDialogComponent } from './common/expired-password-dialog
 import { DialogComponent } from './common/dialog/dialog.component';
 import {KeystoreImportDialogComponent} from "./domain/keystore-import-dialog/keystore-import-dialog.component";
 import {KeystoreEditDialogComponent} from "./domain/keystore-edit-dialog/keystore-edit-dialog.component";
-import {KeystoreCertificateDialogComponent} from "./domain/keystore-certificate-dialog/keystore-certificate-dialog.component";
+import {CertificateDialogComponent} from "./common/certificate-dialog/certificate-dialog.component";
+import {TruststoreEditDialogComponent} from "./user/truststore-edit-dialog/truststore-edit-dialog.component";
 import {InformationDialogComponent} from "./common/information-dialog/information-dialog.component";
 import {KeystoreService} from "./domain/keystore.service";
+import {TruststoreService} from "./user/truststore.service";
 import {SmlIntegrationService} from "./domain/sml-integration.service";
 
 @NgModule({
@@ -124,7 +126,8 @@ import {SmlIntegrationService} from "./domain/sml-integration.service";
     DialogComponent,
     KeystoreImportDialogComponent,
     KeystoreEditDialogComponent,
-    KeystoreCertificateDialogComponent,
+    CertificateDialogComponent,
+    TruststoreEditDialogComponent,
   ],
   entryComponents: [
     AppComponent,
@@ -142,7 +145,8 @@ import {SmlIntegrationService} from "./domain/sml-integration.service";
     ExpiredPasswordDialogComponent,
     KeystoreImportDialogComponent,
     KeystoreEditDialogComponent,
-    KeystoreCertificateDialogComponent,
+    CertificateDialogComponent,
+    TruststoreEditDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -184,6 +188,7 @@ import {SmlIntegrationService} from "./domain/sml-integration.service";
     DownloadService,
     CertificateService,
     KeystoreService,
+    TruststoreService,
     SmlIntegrationService,
     GlobalLookups,
     DatePipe,

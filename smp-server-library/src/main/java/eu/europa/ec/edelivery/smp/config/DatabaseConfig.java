@@ -14,10 +14,12 @@
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jndi.JndiObjectFactoryBean;
@@ -38,60 +40,57 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 /**
  * Created by Flavio Santos
  */
-
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"eu.europa.ec.edelivery.smp.data.dao"})
 public class DatabaseConfig {
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DatabaseConfig.class);
 
-    @Value("${jdbc.driver}")
+
+    @Value("${" + FileProperty.PROPERTY_DB_DRIVER + ":}")
     private String driver;
 
-    @Value("${jdbc.user}")
+    @Value("${" + FileProperty.PROPERTY_DB_USER + ":}")
     private String username;
 
-    @Value("${jdbc.password}")
+    @Value("${" + FileProperty.PROPERTY_DB_PASSWORD + ":}")
     private String password;
 
-    @Value("${jdbc.url}")
+    @Value("${" + FileProperty.PROPERTY_DB_URL + ":}")
     private String url;
-
-    @Value("${datasource.jndi:jdbc/smpDatasource}")
+    // set default jdbc
+    @Value("${" + FileProperty.PROPERTY_DB_JNDI + ":jdbc/smpDatasource}")
     private String jndiDatasourceName;
 
-    /**
-     * Create datasource from file property configuration. If URL is null than try to get datasource from JNDI.
-     *
-     * @return
-     */
-    @Bean(name = "dataSource")
-    @Conditional(value = JNDIDatasourceCondition.class)
-    public DataSource jndiDataSource() {
-        JndiObjectFactoryBean dataSource = new JndiObjectFactoryBean();
-        dataSource.setJndiName(jndiDatasourceName);
-        try {
-            dataSource.afterPropertiesSet();
-        } catch (IllegalArgumentException | NamingException e) {
-            // rethrow
-            throw new SMPRuntimeException(INTERNAL_ERROR, e, "while retrieving datasource: " + jndiDatasourceName, e.getMessage());
-        }
-        return (DataSource) dataSource.getObject();
-    }
+    @Value("${" + FileProperty.PROPERTY_DB_DIALECT + ":}")
+    private String hibernateDialect;
 
-    /**
-     * Create datasource from file property configuration. If URL is null than try to get datasource from JNDI.
-     *
-     * @return
-     */
+
     @Bean(name = "dataSource")
-    @Conditional(value = PropertyDatasourceCondition.class)
-    public DataSource propertyDataSource() {
-        DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
-        driverManagerDataSource.setDriverClassName(driver);
-        driverManagerDataSource.setUrl(url);
-        driverManagerDataSource.setUsername(username);
-        driverManagerDataSource.setPassword(password);
-        return driverManagerDataSource;
+    public DataSource getDataSource() {
+
+        DataSource dataSource = null;
+        if (!StringUtils.isBlank(url)) {
+            LOG.info("create datasource with URL: " + url);
+            DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+            driverManagerDataSource.setDriverClassName(driver);
+            driverManagerDataSource.setUrl(url);
+            driverManagerDataSource.setUsername(username);
+            driverManagerDataSource.setPassword(password);
+            dataSource = driverManagerDataSource;
+        } else {
+            LOG.info("Retrieve datasource with JNDI: " + jndiDatasourceName);
+            JndiObjectFactoryBean jndiDataSource = new JndiObjectFactoryBean();
+            jndiDataSource.setJndiName(jndiDatasourceName);
+            try {
+                jndiDataSource.afterPropertiesSet();
+            } catch (IllegalArgumentException | NamingException e) {
+                // rethrow
+                throw new SMPRuntimeException(INTERNAL_ERROR, e, "while retrieving datasource: " + jndiDatasourceName, e.getMessage());
+            }
+            dataSource = (DataSource) jndiDataSource.getObject();
+        }
+        return dataSource;
     }
 
     @Bean
@@ -116,6 +115,9 @@ public class DatabaseConfig {
     @Bean
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
+        if (!StringUtils.isBlank(hibernateDialect)) {
+            hibernateJpaVendorAdapter.setDatabasePlatform(hibernateDialect);
+        }
         hibernateJpaVendorAdapter.setGenerateDdl(true);
         return hibernateJpaVendorAdapter;
     }

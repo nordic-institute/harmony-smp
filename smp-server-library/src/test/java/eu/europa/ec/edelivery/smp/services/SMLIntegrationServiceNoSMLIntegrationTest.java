@@ -88,9 +88,5 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
         testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1);
     }
 
-    @Test
-    public void isSmlIntegrationEnabled(){
-        assertFalse(testInstance.isSmlIntegrationEnabled());
-    }
 
 }

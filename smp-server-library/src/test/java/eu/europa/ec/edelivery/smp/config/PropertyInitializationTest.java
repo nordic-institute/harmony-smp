@@ -1,19 +1,14 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.h2.engine.DbSettings;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,13 +25,12 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
-public class PropertiesConfigTest {
+public class PropertyInitializationTest {
 
-    SecurityUtilsServices  securityUtilsServices = new SecurityUtilsServices();
 
-    PropertiesConfig testInstance = new PropertiesConfig();
+    PropertyInitialization testInstance = new PropertyInitialization();
 
 
     @Test
@@ -80,6 +74,8 @@ public class PropertiesConfigTest {
         FileUtils.copyFile(sourceFile.toFile(), targetFile.toFile());
 
         EntityManager em = Mockito.mock(EntityManager.class);
+        doReturn( Mockito.mock(Query.class)).when(em).createNamedQuery(any());
+
         Properties fileSettings = new Properties();
         fileSettings.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty(), targetFile.toFile().getAbsolutePath());
         fileSettings.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PASSWORD.getProperty(),"test123");
@@ -88,6 +84,11 @@ public class PropertiesConfigTest {
 
         assertEquals(4, dbSettings.size());
         Mockito.verify(em, times(5)).persist(any()); // five times - save also non encrypted message
+        // more that one certificate in keystore
+        Mockito.verify(em, times(0)).createNamedQuery("DBDomain.updateNullSignAlias"); // five times - save also non encrypted message
+        // SML truststore is not set
+        Mockito.verify(em, times(0)).createNamedQuery("DBDomain.updateNullSMLAlias"); // five times - save also non encrypted message
+
 
         assertTrue( dbSettings.containsKey(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty()));
         assertTrue( dbSettings.containsKey(SMPPropertyEnum.CONFIGURATION_DIR.getProperty()));
@@ -102,7 +103,7 @@ public class PropertiesConfigTest {
         assertTrue(encFile.exists());
         assertTrue(keystoreFile.exists());
 
-        String passwd = securityUtilsServices.decrypt(encFile, passEnc);
+        String passwd = SecurityUtils.decrypt(encFile, passEnc);
         assertNotNull(passwd);
         // load keystore
         KeyStore keyStore = null;
@@ -111,6 +112,29 @@ public class PropertiesConfigTest {
             keyStore.load(keystoreInputStream, passwd.toCharArray());
         }
         assertTrue(keyStore.size()>0);
+    }
+
+    @Test
+    public void testSignAliasUpdate() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        // copy folder
+        Path sourceFile = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
+        Path targetFile = Paths.get("target","keystores","test-init-prop.jks");
+        FileUtils.copyFile(sourceFile.toFile(), targetFile.toFile());
+
+        EntityManager em = Mockito.mock(EntityManager.class);
+        doReturn( Mockito.mock(Query.class)).when(em).createNamedQuery(any());
+
+        Properties fileSettings = new Properties();
+        fileSettings.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty(), targetFile.toFile().getAbsolutePath());
+        fileSettings.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PASSWORD.getProperty(),"test123");
+        fileSettings.setProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty(), targetFile.toFile().getAbsolutePath());
+        fileSettings.setProperty(SMPPropertyEnum.SML_KEYSTORE_PASSWORD.getProperty(),"test123");
+        Properties dbSettings = new Properties();
+        testInstance.initNewValues(em, fileSettings, dbSettings);
+
+        Mockito.verify(em, times(1)).createNamedQuery("DBDomain.updateNullSignAlias"); // five times - save also non encrypted message
+        Mockito.verify(em, times(1)).createNamedQuery("DBDomain.updateNullSMLAlias"); // five times - save also non encrypted message
+
     }
 
     @Test
