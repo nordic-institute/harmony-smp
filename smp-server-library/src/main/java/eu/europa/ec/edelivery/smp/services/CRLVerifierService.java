@@ -56,6 +56,8 @@ public class CRLVerifierService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CRLVerifierService.class);
 
+    public static final int DEF_PROXY_PORT=80;
+
     Map<String, X509CRL> crlCacheMap = new HashMap<>();
     Map<String, Long> crlCacheNextRefreshMap = new HashMap<>();
     public static long REFRESH_CRL_INTERVAL = 1000 * 60 * 60;
@@ -95,7 +97,7 @@ public class CRLVerifierService {
         LOG.debug("GOT  CRL " + crlDistributionPointURL + " CRL " + crl);
 
         if (crl != null && crl.getRevokedCertificates() != null) {
-            validateCertificeCRL(crl, serial);
+            validateCertificateCRL(crl, serial);
         }
     }
 
@@ -182,7 +184,7 @@ public class CRLVerifierService {
                     String decryptedPassword = configurationService.getProxyCredentialToken();
                     Optional<Integer> proxyPort = configurationService.getHttpProxyPort();
                     inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(),
-                            proxyPort.isPresent()?proxyPort.get():80,
+                            proxyPort.isPresent()?proxyPort.get():DEF_PROXY_PORT,
                             configurationService.getProxyUsername(), decryptedPassword);
                 } else {
                     inputStream = downloadURLDirect(crlURL);
@@ -251,9 +253,7 @@ public class CRLVerifierService {
         return true;
     }
 
-
-
-    private void validateCertificeCRL(X509CRL x509CRL, BigInteger bi) throws CertificateRevokedException {
+    private void validateCertificateCRL(X509CRL x509CRL, BigInteger bi) throws CertificateRevokedException {
         X509CRLEntry entry = x509CRL.getRevokedCertificate(bi);
         if (entry != null) {
             Map<String, Extension> map = new HashMap<>();
