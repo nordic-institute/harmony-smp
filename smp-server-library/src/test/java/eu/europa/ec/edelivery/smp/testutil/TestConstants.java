@@ -41,9 +41,9 @@ public class TestConstants {
     public static final String USERNAME_2 = "test-user_002";
     public static final String USERNAME_3 = "test-user_003";
 
-    public static final String USER_CERT_1="CN=utest comon name 01,O=org,C=BE:0000000000000066";
-    public static final String USER_CERT_2="CN=utest comon name 02,O=org,C=BE:0000000000000077";
-    public static final String USER_CERT_3="CN=utest comon name 03,O=org,C=BE:0000000000000077";
+    public static final String USER_CERT_1="CN=utest common name 01,O=org,C=BE:0000000000000066";
+    public static final String USER_CERT_2="CN=utest common name 02,O=org,C=BE:0000000000000077";
+    public static final String USER_CERT_3="CN=utest common name 03,O=org,C=BE:0000000000000077";
 
 
     public static final String SERVICE_GROUP_POLAND_XML_PATH = "/examples/services/ServiceGroupPoland.xml";
@@ -54,8 +54,8 @@ public class TestConstants {
     public static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:eu:ncpb");
 
     public static final String ADMIN_USERNAME = "test_admin";
-    public static final String CERT_USER="CN=comon name,O=org,C=BE:0000000000000066";
-    public static final String CERT_USER_ENCODED="CN%3Dcomon%20name%2CO%3Dorg%2CC%3DBE%3A0000000000000066";
+    public static final String CERT_USER="CN=common name,O=org,C=BE:0000000000000066";
+    public static final String CERT_USER_ENCODED="CN%3Dcommon%20name%2CO%3Dorg%2CC%3DBE%3A0000000000000066";
 
     // parameter: custom string as conntent
     public static final String SIMPLE_EXTENSION_XML ="<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension: %s</ex:dummynode></Extension>";

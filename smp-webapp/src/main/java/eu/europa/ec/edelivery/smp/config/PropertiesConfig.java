@@ -13,38 +13,16 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jndi.JndiObjectFactoryBean;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
-import javax.sql.DataSource;
-import java.io.*;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Properties;
-
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * Created by Flavio Santos
@@ -58,25 +36,35 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 @ComponentScan(basePackages = {
         "eu.europa.ec"})
 @PropertySources({
-        @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
-        @PropertySource(value = "classpath:smp.config.properties", ignoreResourceNotFound = true),
         @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
-public class PropertiesConfig extends PropertyInitialization {
+public class PropertiesConfig {
 
-
-    SMPLogger LOG = SMPLoggerFactory.getLogger(PropertiesConfig.class);
+    private static PropertyInitialization PROP_INIT_TOOLS = new PropertyInitialization();
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertiesConfig.class);
 
     @Bean
-    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
-        Properties prop = getDatabaseProperties();
+        Properties fileProperties = FileProperty.getFileProperties();
+        Properties prop = PROP_INIT_TOOLS.getDatabaseProperties(fileProperties);
+        // set default value
+        if (!prop.containsKey(SMP_PROPERTY_REFRESH_CRON.getProperty())){
+            prop.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
+        }
+        prop.putAll(fileProperties);
         // log application properties
-        logBuildProperties();
+        PROP_INIT_TOOLS.logBuildProperties();
+        // update log configuration
+        FileProperty.updateLog4jConfiguration(fileProperties.getProperty(FileProperty.PROPERTY_LOG_FOLDER),
+                fileProperties.getProperty(FileProperty.PROPERTY_LOG_PROPERTIES),prop.getProperty(CONFIGURATION_DIR.getProperty())
+                );
+
         propertiesConfig.setProperties(prop);
         propertiesConfig.setLocalOverride(true);
         LOG.debug("Properties are initialized");
+
 
         return propertiesConfig;
     }

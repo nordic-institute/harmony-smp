@@ -1,12 +1,10 @@
-package eu.europa.ec.edelivery.smp.services;
+package eu.europa.ec.edelivery.smp.utils;
 
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
@@ -23,12 +21,8 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SecurityUtilsServices.class})
-public class SecurityUtilsServicesTest {
-
-
-    @Autowired
-    protected SecurityUtilsServices testInstance;
+public class SecurityUtilsTest {
+    ;
 
     @Before
     public void setup(){
@@ -40,15 +34,15 @@ public class SecurityUtilsServicesTest {
         String tempPrivateKey = System.currentTimeMillis() + ".private";
         Path resourcePath = Paths.get("target", tempPrivateKey);
 
-        testInstance.generatePrivateSymmetricKey(resourcePath.toFile());
+        SecurityUtils.generatePrivateSymmetricKey(resourcePath.toFile());
 
         byte[] buff = Files.readAllBytes(resourcePath);
-        Assert.assertTrue(buff.length > SecurityUtilsServices.IV_GCM_SIZE);
+        Assert.assertTrue(buff.length > SecurityUtils.IV_GCM_SIZE);
         // start tag
         Assert.assertEquals('#', buff[0]);
         // end IV tag
-        Assert.assertEquals('#', buff[SecurityUtilsServices.IV_GCM_SIZE + 1]);
-        byte[] keyBytes = Arrays.copyOfRange(buff, SecurityUtilsServices.IV_GCM_SIZE + 2, buff.length);
+        Assert.assertEquals('#', buff[SecurityUtils.IV_GCM_SIZE + 1]);
+        byte[] keyBytes = Arrays.copyOfRange(buff, SecurityUtils.IV_GCM_SIZE + 2, buff.length);
 
 
         SecretKey privateKey = new SecretKeySpec(keyBytes, "AES");
@@ -65,7 +59,7 @@ public class SecurityUtilsServicesTest {
         String password = "TEST11002password1@!."+System.currentTimeMillis();
 
         // when
-        String encPassword = testInstance.encrypt(f, password);
+        String encPassword = SecurityUtils.encrypt(f, password);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
@@ -78,8 +72,8 @@ public class SecurityUtilsServicesTest {
         String password = "test123";
 
         // when
-        String encPassword = testInstance.encrypt(resourceFile.toFile(), password);
-        String decPassword = testInstance.decrypt(resourceFile.toFile(), encPassword);
+        String encPassword = SecurityUtils.encrypt(resourceFile.toFile(), password);
+        String decPassword = SecurityUtils.decrypt(resourceFile.toFile(), encPassword);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
@@ -93,8 +87,8 @@ public class SecurityUtilsServicesTest {
         String password = "test123";
 
         // when
-        String encPassword = testInstance.encrypt(resourceFile.toFile(), password);
-        String decPassword = testInstance.decrypt(resourceFile.toFile(), encPassword);
+        String encPassword = SecurityUtils.encrypt(resourceFile.toFile(), password);
+        String decPassword = SecurityUtils.decrypt(resourceFile.toFile(), encPassword);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
@@ -107,21 +101,21 @@ public class SecurityUtilsServicesTest {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
-        String encPassword = testInstance.encrypt(f, password);
+        String encPassword = SecurityUtils.encrypt(f, password);
 
         // when
-        String decPassword = testInstance.decrypt(f, encPassword);
+        String decPassword = SecurityUtils.decrypt(f, encPassword);
         //then
         assertNotNull(decPassword);
         assertEquals(password, decPassword);
     }
 
 
-    private File generateRandomPrivateKey() throws IOException{
+    public static File generateRandomPrivateKey() throws IOException{
         File resource = File.createTempFile( "test-key", ".key");
         resource.deleteOnExit();
 
-        testInstance.generatePrivateSymmetricKey(resource);
+        SecurityUtils.generatePrivateSymmetricKey(resource);
         return resource;
 
     }

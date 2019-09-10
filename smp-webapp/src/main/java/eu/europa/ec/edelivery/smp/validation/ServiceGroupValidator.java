@@ -14,10 +14,12 @@
 package eu.europa.ec.edelivery.smp.validation;
 
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -34,16 +36,8 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Component
 public class ServiceGroupValidator {
 
-    private Pattern schemaPattern;
-
-    @Value("${identifiersBehaviour.ParticipantIdentifierScheme.validationRegex}")
-    public void setRegexPattern(String regex) {
-        try {
-            schemaPattern = Pattern.compile(regex);
-        } catch (PatternSyntaxException | NullPointerException e) {
-            throw new IllegalStateException("Contact Administrator. ServiceGroup schema pattern is wrongly configured: " + regex);
-        }
-    }
+    @Autowired
+    ConfigurationService configurationService;
 
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {
 
@@ -54,6 +48,7 @@ public class ServiceGroupValidator {
         }
 
         String scheme = serviceGroup.getParticipantIdentifier().getScheme();
+        Pattern schemaPattern = configurationService.getParticipantIdentifierSchemeRexExp();
         if (!schemaPattern.matcher(scheme).matches()) {
             throw new BadRequestException(WRONG_FIELD, "Service Group scheme does not match allowed pattern: " + schemaPattern.pattern());
         }

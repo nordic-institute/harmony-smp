@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
@@ -45,7 +46,7 @@ import static org.junit.Assert.*;
 public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     protected ServiceGroupService testInstance;
@@ -53,7 +54,9 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
 
     @Before
     public void prepareDatabase() {
+
         super.prepareDatabaseForMultipeDomainEnv();
+        setDatabaseProperty(SMPPropertyEnum.SML_ENABLED,"false");
     }
 
     @Test
@@ -132,8 +135,8 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
         DBUser u3 = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_3);
         userDao.persistFlushDetach(u3);
 
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(USER_IS_NOT_OWNER.getMessage(USER_CERT_3, TEST_SG_ID_2, TEST_SG_SCHEMA_2));
+        expectedException.expect(SMPRuntimeException.class);
+        expectedException.expectMessage(USER_IS_NOT_OWNER.getMessage(USER_CERT_3, TEST_SG_ID_2, TEST_SG_SCHEMA_2));
 
         //when-then
         testInstance.saveServiceGroup(newServiceGroup, TEST_DOMAIN_CODE_2, TestConstants.USER_CERT_3, TestConstants.USER_CERT_3);

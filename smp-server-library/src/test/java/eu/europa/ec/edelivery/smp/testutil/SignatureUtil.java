@@ -13,12 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.testutil;
 
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import sun.misc.IOUtils;
+
 
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.*;
@@ -116,7 +117,7 @@ public class SignatureUtil {
         for (int j = 0; i.hasNext(); j++) {
             InputStream is = ((Reference) i.next()).getDigestInputStream();
             // Display the data.
-            byte[] a = IOUtils.readFully(is, 0, true);
+            byte[] a = IOUtils.toByteArray(is);
             System.out.println(new String(a));
         }
 

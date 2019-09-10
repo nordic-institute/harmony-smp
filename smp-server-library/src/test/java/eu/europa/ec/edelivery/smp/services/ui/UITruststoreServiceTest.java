@@ -65,9 +65,11 @@ public class UITruststoreServiceTest  extends AbstractServiceIntegrationTest {
         ReflectionTestUtils.setField(testInstance,"crlVerifierService",crlVerifierService);
 
         ReflectionTestUtils.setField(testInstance,"configurationService",configurationService);
+
+        File truststoreFile = new File(targetDirectory.toFile(), "smp-truststore.jks");
         Mockito.doReturn("test123").when(configurationService).getTruststoreCredentialToken();
-        Mockito.doReturn("smp-truststore.jks").when(configurationService).getTruststoreFilename();
-        Mockito.doReturn(targetDirectory.toFile().getAbsolutePath()+File.separator).when(configurationService).getConfigurationFolder();
+        Mockito.doReturn(truststoreFile).when(configurationService).getTruststoreFile();
+        Mockito.doReturn(targetDirectory.toFile()).when(configurationService).getConfigurationFolder();
         resetKeystore();
 
         testInstance.refreshData();
@@ -164,8 +166,8 @@ public class UITruststoreServiceTest  extends AbstractServiceIntegrationTest {
 
         //then
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", cer.getCertificateId());
-        assertEquals("C=BE,O=DIGIT,CN=Intermediate CA", cer.getIssuer());
-        assertEquals("C=BE,O=DIGIT,CN=SMP test,E=smp@test.com", cer.getSubject());
+        assertEquals("CN=Intermediate CA,O=DIGIT,C=BE", cer.getIssuer());
+        assertEquals("1.2.840.113549.1.9.1=#160c736d7040746573742e636f6d,CN=SMP test,O=DIGIT,C=BE", cer.getSubject());
         assertEquals("3", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
@@ -182,8 +184,8 @@ public class UITruststoreServiceTest  extends AbstractServiceIntegrationTest {
 
         //then
         assertEquals("CN=alice,O=www.freelan.org,C=FR:0000000000000001", cer.getCertificateId());
-        assertEquals("C=FR,ST=Alsace,L=Strasbourg,O=www.freelan.org,OU=freelan,CN=Freelan Sample Certificate Authority,E=contact@freelan.org", cer.getIssuer());
-        assertEquals("C=FR,ST=Alsace,O=www.freelan.org,OU=freelan,CN=alice,E=contact@freelan.org", cer.getSubject());
+        assertEquals("1.2.840.113549.1.9.1=#1613636f6e7461637440667265656c616e2e6f7267,CN=Freelan Sample Certificate Authority,OU=freelan,O=www.freelan.org,L=Strasbourg,ST=Alsace,C=FR", cer.getIssuer());
+        assertEquals("1.2.840.113549.1.9.1=#1613636f6e7461637440667265656c616e2e6f7267,CN=alice,OU=freelan,O=www.freelan.org,ST=Alsace,C=FR", cer.getSubject());
         assertEquals("1", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
@@ -200,8 +202,8 @@ public class UITruststoreServiceTest  extends AbstractServiceIntegrationTest {
 
         //then
         assertEquals("CN=edelivery_sml,O=European Commission,C=BE:3cfe6b37e4702512c01e71f9b9175464", cer.getCertificateId());
-        assertEquals("C=BE,O=OpenPEPPOL AISBL,OU=FOR TEST ONLY,CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA - G2", cer.getIssuer());
-        assertEquals("CN=edelivery_sml,OU=PEPPOL TEST SMP,O=European Commission,C=BE", cer.getSubject());
+        assertEquals("CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA - G2,OU=FOR TEST ONLY,O=OpenPEPPOL AISBL,C=BE", cer.getIssuer());
+        assertEquals("C=BE,O=European Commission,OU=PEPPOL TEST SMP,CN=edelivery_sml", cer.getSubject());
         assertEquals("3cfe6b37e4702512c01e71f9b9175464", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
@@ -218,8 +220,8 @@ public class UITruststoreServiceTest  extends AbstractServiceIntegrationTest {
 
         //then
         assertEquals("CN=POP000004,O=European Commission,C=BE:474980c51478cf62761667461aef5e8e", cer.getCertificateId());
-        assertEquals("C=BE,O=OpenPEPPOL AISBL,OU=FOR TEST ONLY,CN=PEPPOL ACCESS POINT TEST CA - G2", cer.getIssuer());
-        assertEquals("CN=POP000004,OU=PEPPOL TEST AP,O=European Commission,C=BE", cer.getSubject());
+        assertEquals("CN=PEPPOL ACCESS POINT TEST CA - G2,OU=FOR TEST ONLY,O=OpenPEPPOL AISBL,C=BE", cer.getIssuer());
+        assertEquals("C=BE,O=European Commission,OU=PEPPOL TEST AP,CN=POP000004", cer.getSubject());
         assertEquals("474980c51478cf62761667461aef5e8e", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());

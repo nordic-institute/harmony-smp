@@ -24,6 +24,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -54,6 +55,8 @@ import java.util.*;
 public class CRLVerifierService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CRLVerifierService.class);
+
+    public static final int DEF_PROXY_PORT=80;
 
     Map<String, X509CRL> crlCacheMap = new HashMap<>();
     Map<String, Long> crlCacheNextRefreshMap = new HashMap<>();
@@ -91,7 +94,7 @@ public class CRLVerifierService {
         LOG.info("Download CRL {}." ,crlDistributionPointURL);
         X509CRL crl = getCRLByURL(crlDistributionPointURL);
         if (crl != null && crl.getRevokedCertificates() != null) {
-            validateCertificeCRL(crl, serial);
+            validateCertificateCRL(crl, serial);
         }
     }
 
@@ -171,11 +174,13 @@ public class CRLVerifierService {
 
                 URL targetUrl = new URL(crlURL);
 
-                if (useProxy() && !doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())
+                if (useProxy() && !HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())
                 ) {
                     LOG.debug("Using proxy for downloading URL: {}.", crlURL);
                     String decryptedPassword = configurationService.getProxyCredentialToken();
-                    inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(), configurationService.getHttpProxyPort(),
+                    Optional<Integer> proxyPort = configurationService.getHttpProxyPort();
+                    inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(),
+                            proxyPort.isPresent()?proxyPort.get():DEF_PROXY_PORT,
                             configurationService.getProxyUsername(), decryptedPassword);
                 } else {
                     inputStream = downloadURLDirect(crlURL);
@@ -244,35 +249,7 @@ public class CRLVerifierService {
         return true;
     }
 
-    /**
-     * Method validates if host match non proxy list
-     *
-     * @param uriHost          target host
-     * @param nonProxyHostList non proxy ist
-     * @return true if host match nonProxy list else return false.
-     */
-    public boolean doesTargetMatchNonProxy(String uriHost, String nonProxyHostList) {
-        String[] nonProxyHosts = StringUtils.isBlank(nonProxyHostList) ? null : nonProxyHostList.split("\\|");
-
-        int nphLength = nonProxyHosts != null ? nonProxyHosts.length : 0;
-        if (nonProxyHosts == null || nphLength < 1) {
-            LOG.debug("host:'{}' : DEFAULT (0 non proxy host)",uriHost );
-            return false;
-        }
-
-
-        for (String nonProxyHost : nonProxyHosts) {
-            String mathcRegExp = (nonProxyHost.startsWith("*") ? "." : "") + nonProxyHost;
-            if (uriHost.matches(mathcRegExp)) {
-                LOG.debug(" host:'{}' matches nonProxyHost '{}'", uriHost, mathcRegExp);
-                return true;
-            }
-        }
-        LOG.debug(" host:'{}' : DEFAULT  (no match of [{}] non proxy host)",   uriHost,  Arrays.toString(nonProxyHosts));
-        return false;
-    }
-
-    private void validateCertificeCRL(X509CRL x509CRL, BigInteger bi) throws CertificateRevokedException {
+    private void validateCertificateCRL(X509CRL x509CRL, BigInteger bi) throws CertificateRevokedException {
         X509CRLEntry entry = x509CRL.getRevokedCertificate(bi);
         if (entry != null) {
             Map<String, Extension> map = new HashMap<>();

@@ -8,6 +8,19 @@
 -- Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('configuration.dir','./target/keystores/',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('encryption.key.filename','encryptionKey.key',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('smp.keystore.password', 'FarFJE2WUfY39SVRTFOqSg==',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('smp.keystore.filename', 'smp-keystore_multiple_domains.jks',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('contextPath.output', 'true',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('cbdmsl.integration.physical.address', '0.0.0.0',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('bdmsl.integration.logical.address', 'http://localhost/smp',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('bdmsl.integration.url', 'http://localhost/edelivery-sml',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('bdmsl.integration.enabled', 'false',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+
+
 insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (1, 'smp_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW', 'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (2, 'sg_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW', 'SERVICE_GROUP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (3, 'sys_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW', 'SYSTEM_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
@@ -15,7 +28,7 @@ insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPD
 insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (4, 'test_user_hashed_pass',                     '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW', 'SERVICE_GROUP_ADMIN',1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (5, 'test_user_clear_pass',                      'test123',                                                     'SERVICE_GROUP_ADMIN',1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (6, 'cert1', '',                                                             'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
-insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (6, 'CN=comon name,O=org,C=BE:000000000000bb66', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (6, 'CN=common name,O=org,C=BE:000000000000bb66', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 
 insert into SMP_USER(ID, USERNAME, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (7, 'cert2', 'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (7, 'CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
@@ -27,7 +40,19 @@ insert into SMP_USER(ID, USERNAME, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) va
 insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (9, 'CN=EHEALTH_SMP_EC,O=European Commission,C=BEf71ee8b11cb3b787', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 
 insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (10, 'cert5', '',                                                             'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
-insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (10, 'CN=comon name UPPER database SN,O=org,C=BE:000000000000BB66', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (10, 'CN=common name UPPER database SN,O=org,C=BE:000000000000BB66', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+
+insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (11, 'cert6', '',                                                             'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (11, 'CN=ncp.fi.ehealth.testa.eu,O=Kansanelakelaitos,C=FI:f71ee8b11cb3b787', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+
+insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (12, 'cert7', '',                                                             'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (12, 'CN=Internal Business CA 2,O=T-Systems International GmbH,C=DE:f71ee8b11cb3b787', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+
+insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (13, 'cert8', '',                                                             'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (13, 'CN=GRP:test_proxy_01,O=European Commission,C=BE:0000000000001234', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+
+insert into SMP_USER(ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (14, 'cert9', '',                                                             'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (14, 'CN=GRP:TEST_\+\,& \=eau!,O=European Commission,C=BE:0000000000001234', null,null,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 
 
 -- set the ids to higher values - tests are using sequnce which stars from 1

@@ -50,6 +50,7 @@ public final class ServiceMetadataSigner {
 
     private static final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
+
     @Autowired
     UIKeystoreService uiKeystoreService;
 
@@ -65,7 +66,7 @@ public final class ServiceMetadataSigner {
         LOG.info("Sing document with alias {}", keyAlias);
         try {
             if (StringUtils.isBlank(keyAlias) && uiKeystoreService.getKeystoreEntriesList().size() >1) {
-                LOG.warn("Undefined certificate for signing service metadata reposes! ");
+                LOG.warn("Undefined certificate for signing service metadata reposes! Define key in configuration!");
                 return;
             }
             XMLSignatureFactory domSigFactory = getDomSigFactory();

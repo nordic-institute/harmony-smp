@@ -17,7 +17,6 @@ import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
 import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -30,8 +29,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
@@ -49,9 +48,7 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes= {SmlIntegrationConfiguration.class,
-        SmlConnector.class,SMLIntegrationService.class,
-        H2JPATestConfig.class} )
-@TestPropertySource(properties = {"bdmsl.integration.enabled=true"})
+        SMLIntegrationService.class} )
 public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Rule
@@ -60,13 +57,26 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
     @Autowired
     SmlIntegrationConfiguration integrationMock;
 
+    @Autowired
+    protected SmlConnector smlConnector;
 
     @Autowired
     protected SMLIntegrationService testInstance;
 
+    @Autowired
+    ConfigurationService configurationService;
+
     @Before
     @Transactional
     public void prepareDatabase() {
+        configurationService = Mockito.spy(configurationService);
+
+        ReflectionTestUtils.setField(testInstance,"configurationService",configurationService);
+        ReflectionTestUtils.setField(smlConnector,"configurationService",configurationService);
+        ReflectionTestUtils.setField(testInstance,"smlConnector",smlConnector);
+
+        Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
+
         integrationMock.reset();
         prepareDatabaseForSignleDomainEnv();
     }
@@ -161,10 +171,7 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
         testInstance.registerParticipant(TEST_SG_ID_1,TEST_SG_SCHEMA_1,TEST_DOMAIN_CODE_2 );
     }
 
-    @Test
-    public void isSmlIntegrationEnabled(){
-        assertTrue(testInstance.isSmlIntegrationEnabled());
-    }
+
 
     @Test
     public void registerParticipantToSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
