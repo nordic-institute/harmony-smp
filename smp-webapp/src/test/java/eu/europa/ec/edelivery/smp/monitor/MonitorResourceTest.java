@@ -6,6 +6,7 @@ import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.monitor.MonitorResource;
+import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +28,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -63,7 +66,8 @@ public class MonitorResourceTest {
     private MockMvc mvc;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();

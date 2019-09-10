@@ -8,23 +8,53 @@ import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.List;
 
 public class X509CertificateUtils {
 
+    public static void setupJCEProvider() {
+        Provider[] providerList = Security.getProviders();
+        if (providerList == null || providerList.length <= 0 || !(providerList[0] instanceof BouncyCastleProvider)) {
+            Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
+        }
+    }
 
+    public static void createAndAddTextCertificate(String subject, KeyStore keystore, String secToken) throws Exception {
+        setupJCEProvider();
+        Calendar from = Calendar.getInstance();
+        from.add(Calendar.DAY_OF_MONTH, -1);
+        Calendar to = Calendar.getInstance();
+        to.add(Calendar.YEAR, 5);
+
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        keyGen.initialize(2048);
+        KeyPair key = keyGen.generateKeyPair();
+        X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(new X500Name(subject),BigInteger.ONE, from.getTime(), to.getTime(), new X500Name(subject), SubjectPublicKeyInfo.getInstance(key.getPublic().getEncoded()));
+
+        ContentSigner sigGen = new JcaContentSignerBuilder("SHA1WithRSAEncryption").setProvider("BC").build(key.getPrivate());
+        X509Certificate cert =  new JcaX509CertificateConverter().setProvider("BC").getCertificate(certBuilder.build(sigGen));
+        keystore.setKeyEntry("sample_key", key.getPrivate(), secToken.toCharArray(), new X509Certificate[]{cert});
+    }
     /**
      * Extracts all CRL distribution point URLs from the
      * "CRL Distribution Point" extension in a X.509 certificate. If CRL

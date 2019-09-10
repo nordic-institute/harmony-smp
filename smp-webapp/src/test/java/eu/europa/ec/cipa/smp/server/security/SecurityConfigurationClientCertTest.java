@@ -55,8 +55,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SpringSecurityTestConfig.class,
 })
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
+@Sql(scripts = {"classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data.sql"},
+        statements = "insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('authentication.blueCoat.enabled', 'true',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());")
 public class SecurityConfigurationClientCertTest {
 
     //Jul++9+23:59:00+2019+GMT"

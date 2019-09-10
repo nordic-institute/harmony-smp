@@ -33,10 +33,8 @@ public class UITruststoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
-
     @Autowired
     private ConfigurationService configurationService;
-
 
     @Autowired
     CRLVerifierService crlVerifierService;

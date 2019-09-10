@@ -62,14 +62,14 @@
     them in participant or document identifiers  -->
     <http-firewall ref="httpFirewall"/>
     <b:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
-        <b:property name="allowUrlEncodedSlash" value="${encodedSlashesAllowedInUrl}"/>
+        <b:property name="allowUrlEncodedSlash" value="${encodedSlashesAllowedInUrl:true}"/>
     </b:bean>
 
     <task:scheduler id="scheduler" pool-size="1"/>
 
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="configurationDao" method="refreshProperties"
-                        cron="${smp.property.refresh.cronJobExpression}"/>
+                        cron="${smp.property.refresh.cronJobExpression:0 48 */1 * * *}"/>
 
     </task:scheduled-tasks>
 
