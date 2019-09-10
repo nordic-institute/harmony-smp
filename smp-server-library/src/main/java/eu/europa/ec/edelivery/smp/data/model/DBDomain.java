@@ -37,6 +37,11 @@ import java.time.LocalDateTime;
                         "   from SMP_DOMAIN D  INNER JOIN SMP_SERVICE_GROUP_DOMAIN SGD ON (D.ID =SGD.FK_DOMAIN_ID) " +
                         "   WHERE D.ID IN (:domainIds)" +
                         "      GROUP BY D.ID, D.DOMAIN_CODE, D.SML_SUBDOMAIN"),
+        @NamedNativeQuery(name = "DBDomain.updateNullSignAlias",
+                query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias WHERE SIGNATURE_KEY_ALIAS IS null"),
+        @NamedNativeQuery(name = "DBDomain.updateNullSMLAlias",
+                query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias " +
+                        "WHERE SML_CLIENT_KEY_ALIAS IS null"),
 })
 @SqlResultSetMapping(name = "DBDomainDeleteValidationMapping", classes = {
         @ConstructorResult(targetClass = DBDomainDeleteValidation.class,

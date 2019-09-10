@@ -22,7 +22,6 @@ public class DatabaseProperties extends Properties {
         List<DBConfiguration> lst = tq.getResultList();
         for (DBConfiguration dc : lst) {
             if(dc.getValue()!=null) {
-
                 LOG.info("Database property: '{}' value: '{}'",dc.getProperty(),
                         dc.getProperty().toLowerCase().contains("password")?"******": dc.getValue());
                 setProperty(dc.getProperty(), dc.getValue());

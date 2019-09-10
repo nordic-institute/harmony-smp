@@ -40,14 +40,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpWebAppConfig.class,
         SpringSecurityConfig.class})
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
 @SqlConfig(encoding = "UTF-8")
+@Sql(scripts = {"classpath:cleanup-database.sql",
+        "classpath:webapp_integration_test_data.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @TestPropertySource(properties = {
         "smp.artifact.name=TestApplicationSmpName",
         "smp.artifact.version=TestApplicationVersion",
         "smp.artifact.build.time=2018-11-27 00:00:00",
-        "bdmsl.integration.enabled=true"})
+})
 
 public class ApplicationResourceTest {
     private static final String PATH = "/ui/rest/application";
@@ -118,8 +119,7 @@ public class ApplicationResourceTest {
         SmpInfoRO info = mapper.readValue(value, SmpInfoRO.class);
 
         assertEquals("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00|Central European Time]", info.getVersion());
-        assertEquals(true, info.isSmlIntegrationOn());
+        assertEquals(false, info.isSmlIntegrationOn());
         assertEquals("/", info.getContextPath());
     }
-
 }

@@ -1,24 +1,16 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
-import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
-import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
-import eu.europa.ec.edelivery.smp.sml.SmlConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.net.URL;
 import java.util.TimeZone;
-import java.util.jar.Manifest;
 
 /**
  * @author Joze Rihtarsic
@@ -33,7 +25,7 @@ public class ApplicationResource {
     private Environment env;
 
     @Autowired
-    SmlConnector smlConnector;
+    ConfigurationService configurationService;
 
     @Value("${smp.artifact.name:eDelivery SMP}")
     String artifactName;
@@ -44,12 +36,12 @@ public class ApplicationResource {
 
 
     @RequestMapping(method = RequestMethod.GET, path = "name")
-    public  String getName() {
+    public String getName() {
         return artifactName;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "rootContext")
-    public  String getRootContext() {
+    public String getRootContext() {
         return env.getProperty("server.contextPath", "/");
     }
 
@@ -57,8 +49,8 @@ public class ApplicationResource {
     public SmpInfoRO getApplicationInfo() {
         SmpInfoRO info = new SmpInfoRO();
         info.setVersion(getDisplayVersion());
-        info.setSmlIntegrationOn(smlConnector.isSmlIntegrationEnabled());
-        info.setSmlParticipantMultiDomainOn(smlConnector.isSmlMultidomainEnabled());
+        info.setSmlIntegrationOn(configurationService.isSMLIntegrationEnabled());
+        info.setSmlParticipantMultiDomainOn(configurationService.isSMLMultiDomainEnabled());
         info.setContextPath(getRootContext());
         return info;
     }

@@ -17,12 +17,10 @@ import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
 import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
-import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
-import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,8 +29,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
 import static org.junit.Assert.*;
@@ -44,23 +42,26 @@ import static org.mockito.Mockito.verify;
  * since 4.1.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class,
-        SecurityUtilsServices.class, UIKeystoreService.class,
-        ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
-@TestPropertySource(properties = {
-        "bdmsl.integration.enabled=true"})
-public class SmlConnectorParticipantTest  {
+@ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class})
+public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
+    protected ConfigurationService configurationService;
+
+    @Autowired
     protected SmlConnector smlConnector;
+
     @Autowired
     SmlIntegrationConfiguration mockSml;
 
     @Before
     public void setup() {
+        configurationService = Mockito.spy(configurationService);
+        ReflectionTestUtils.setField(smlConnector,"configurationService",configurationService);
+        Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
         mockSml.reset();
     }
 

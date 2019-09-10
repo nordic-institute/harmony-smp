@@ -18,6 +18,7 @@ import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import org.hamcrest.core.StringStartsWith;
@@ -25,10 +26,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBException;
@@ -48,6 +51,7 @@ import static org.junit.Assert.*;
 /**
  * Created by gutowpa on 17/01/2018.
  */
+@RunWith(SpringRunner.class)
 public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Autowired
@@ -60,6 +64,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
     @Transactional
     public void prepareDatabase() {
         prepareDatabaseForSignleDomainEnv();
+        setDatabaseProperty(SMPPropertyEnum.SML_ENABLED,"false");
     }
     @Test
     public void createAndReadPositiveScenarioForNullDomain() throws IOException {

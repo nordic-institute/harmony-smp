@@ -2,8 +2,6 @@ package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.ConfigurableConversionService;
@@ -21,7 +19,7 @@ import java.util.List;
 @Component
 public class ConvertersRegistrar {
 
-    private final SMPLogger logger = SMPLoggerFactory.getLogger(ConvertersRegistrar.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConvertersRegistrar.class);
 
     @Autowired
     private ConfigurableConversionService conversionRegistry;
@@ -31,7 +29,6 @@ public class ConvertersRegistrar {
         for (Converter<?, ?> converter : converters) {
             conversionRegistry.addConverter(converter);
         }
-
-        logger.info("Finished registering custom converters: {}", converters);
+        LOG.info("Finished registering custom converters: {}", converters);
     }
 }

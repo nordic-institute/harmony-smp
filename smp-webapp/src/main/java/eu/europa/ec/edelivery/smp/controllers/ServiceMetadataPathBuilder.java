@@ -15,9 +15,11 @@ package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -42,9 +44,8 @@ public class ServiceMetadataPathBuilder {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger( ServiceMetadataPathBuilder.class);
 
 
-    @Value("${contextPath.output:true}")
-    private boolean keepContext;
-
+    @Autowired
+    ConfigurationService configurationService;
 
     enum ForwardedHeaderNameEnum {
         HOST("X-Forwarded-Host"),
@@ -95,7 +96,7 @@ public class ServiceMetadataPathBuilder {
 
 
     private String getUrlContext() {
-        if (keepContext) {
+        if (configurationService.isUrlContextEnabled()) {
             return new UrlPathHelper().getContextPath(getCurrentRequest());
         } else {
             return "";
