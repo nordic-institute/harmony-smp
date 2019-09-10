@@ -76,9 +76,6 @@ export class UserComponent implements OnInit {
   openEditTruststoreDialog() {
     const formRef: MatDialogRef<any> = this.dialog.open(TruststoreEditDialogComponent);
     formRef.afterClosed().subscribe(result => {
-      if (result) {
-        // close
-      }
     });
   }
 }
