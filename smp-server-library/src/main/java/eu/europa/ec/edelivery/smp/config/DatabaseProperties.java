@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class DatabaseProperties extends Properties {
-    SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyInitialization.class);
+    SMPLogger LOG = SMPLoggerFactory.getLogger(DatabaseProperties.class);
     private static final long serialVersionUID = 1L;
 
     private LocalDateTime lastUpdate;
@@ -27,7 +27,7 @@ public class DatabaseProperties extends Properties {
                         dc.getProperty().toLowerCase().contains("password")?"******": dc.getValue());
                 setProperty(dc.getProperty(), dc.getValue());
             }
-            lastUpdate = lastUpdate==null || lastUpdate.isBefore(dc.getLastUpdatedOn())? dc.getLastUpdatedOn() :lastUpdate;
+            lastUpdate = (lastUpdate==null || lastUpdate.isBefore(dc.getLastUpdatedOn()) )? dc.getLastUpdatedOn() :lastUpdate;
         }
 
     }

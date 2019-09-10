@@ -71,7 +71,7 @@ public class CRLVerifierService {
 
         List<String> crlDistPoints = X509CertificateUtils.getCrlDistributionPoints(cert);
         if (crlDistPoints.isEmpty()) {
-            LOG.warn("The certificate: [" + cert.getSubjectX500Principal() + "] has no CRL Lists");
+            LOG.warn("The certificate: '{}' has no CRL Lists.", cert.getSubjectX500Principal() );
             return;
         }
         String crlUrl = X509CertificateUtils.extractHttpCrlDistributionPoint(crlDistPoints);
@@ -88,11 +88,8 @@ public class CRLVerifierService {
 
 
     public void verifyCertificateCRLs(BigInteger serial, String crlDistributionPointURL) throws CertificateRevokedException {
-        LOG.info("Download CRL " + crlDistributionPointURL);
+        LOG.info("Download CRL {}." ,crlDistributionPointURL);
         X509CRL crl = getCRLByURL(crlDistributionPointURL);
-
-        LOG.debug("GOT  CRL " + crlDistributionPointURL + " CRL " + crl);
-
         if (crl != null && crl.getRevokedCertificates() != null) {
             validateCertificeCRL(crl, serial);
         }
@@ -108,7 +105,6 @@ public class CRLVerifierService {
         if (crlCacheMap.containsKey(url)) {
             X509CRL crlTmp = crlCacheMap.get(url);
             Long nextRefresh = crlCacheNextRefreshMap.getOrDefault(url, NULL_LONG);
-            ;
             if (nextRefresh > currentDate.getTime()) {
                 x509CRL = crlTmp;
             }
@@ -177,7 +173,7 @@ public class CRLVerifierService {
 
                 if (useProxy() && !doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())
                 ) {
-                    LOG.debug("Using proxy for downloading URL " + crlURL);
+                    LOG.debug("Using proxy for downloading URL: {}.", crlURL);
                     String decryptedPassword = configurationService.getProxyCredentialToken();
                     inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(), configurationService.getHttpProxyPort(),
                             configurationService.getProxyUsername(), decryptedPassword);
@@ -208,8 +204,8 @@ public class CRLVerifierService {
             RequestConfig config = RequestConfig.custom().setProxy(new HttpHost(proxyHost, proxyPort)).build();
             HttpGet httpget = new HttpGet(url);
             httpget.setConfig(config);
-            LOG.debug("Executing request " + url + " via proxy " + proxyHost +
-                    (credentialsProvider == null ? " with no authentication." : "with username: " + proxyHost + "."));
+            LOG.debug("Executing request '{}' via proxy '{}' {}",url, proxyHost,
+                    (credentialsProvider == null ? " with no authentication." : "with username: " + proxyUser + "."));
 
             return execute(httpclient, httpget);
         }
@@ -260,7 +256,7 @@ public class CRLVerifierService {
 
         int nphLength = nonProxyHosts != null ? nonProxyHosts.length : 0;
         if (nonProxyHosts == null || nphLength < 1) {
-            LOG.debug("host:'" + uriHost + "' : DEFAULT (0 non proxy host)");
+            LOG.debug("host:'{}' : DEFAULT (0 non proxy host)",uriHost );
             return false;
         }
 
@@ -268,11 +264,11 @@ public class CRLVerifierService {
         for (String nonProxyHost : nonProxyHosts) {
             String mathcRegExp = (nonProxyHost.startsWith("*") ? "." : "") + nonProxyHost;
             if (uriHost.matches(mathcRegExp)) {
-                LOG.debug(" host:'" + uriHost + "' matches nonProxyHost '" + mathcRegExp + "' : NO PROXY");
+                LOG.debug(" host:'{}' matches nonProxyHost '{}'", uriHost, mathcRegExp);
                 return true;
             }
         }
-        LOG.debug(" host:'" + uriHost + "' : DEFAULT  (no match of " + Arrays.toString(nonProxyHosts) + " non proxy host)");
+        LOG.debug(" host:'{}' : DEFAULT  (no match of [{}] non proxy host)",   uriHost,  Arrays.toString(nonProxyHosts));
         return false;
     }
 
