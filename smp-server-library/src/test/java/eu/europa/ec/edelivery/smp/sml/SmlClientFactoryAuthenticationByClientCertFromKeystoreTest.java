@@ -15,23 +15,30 @@ package eu.europa.ec.edelivery.smp.sml;
 
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
-import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
-import eu.europa.ec.edelivery.smp.config.PropertiesMultipleDomainTestConfig;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509KeyManager;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Map;
@@ -42,31 +49,36 @@ import static org.junit.Assert.*;
  * Created by gutowpa on 08/01/2018.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmlClientFactory.class,
-        SecurityUtilsServices.class, UIKeystoreService.class,
-        ConversionTestConfig.class, PropertiesMultipleDomainTestConfig.class})
-public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
-/*
-    @Configuration
-    @ComponentScan({"eu.europa.ec.edelivery.smp.sml","eu.europa.ec.edelivery.smp.services",  "eu.europa.ec.edelivery.smp.services.ui"})
-    static class Config {
-        Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores", "service_integration_signatures_multiple_domains.jks");
-        @Bean
-        public PropertySourcesPlaceholderConfigurer setLocalProperties() {
-            Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
-            return buildLocalProperties(new String[][]{
-                    {"bdmsl.integration.url", "https://sml.url.pl"},
-                    {"bdmsl.integration.keystore.path", resourceDirectory.toFile().getAbsolutePath()},
-                    {"bdmsl.integration.keystore.password", "test123"}
-            });
-        }
-    }
+@ContextConfiguration(classes = {SmlClientFactory.class})
+public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends AbstractServiceIntegrationTest {
 
-*/
+    Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
 
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+
+    @Autowired
+    UIKeystoreService keystoreService;
 
     @Autowired
     private SmlClientFactory smlClientFactory;
+
+
+    @Before
+    public void before() throws MalformedURLException {
+
+        ReflectionTestUtils.setField(keystoreService,"configurationService",configurationService);
+        ReflectionTestUtils.setField(smlClientFactory,"configurationService",configurationService);
+        ReflectionTestUtils.setField(smlClientFactory,"keystoreService",keystoreService);
+
+        // set keystore propertes
+        File keystoreFile = new File(resourceDirectory.toFile(), "smp-keystore_multiple_domains.jks");
+        Mockito.doReturn( keystoreFile).when(configurationService).getKeystoreFile();
+        Mockito.doReturn( resourceDirectory.toFile()).when(configurationService).getConfigurationFolder();
+        Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
+        Mockito.doReturn(new URL("http://localhost/edelivery-sml")).when(configurationService).getSMLIntegrationUrl();
+        keystoreService.refreshData();
+
+    }
 
     @Test
     public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
@@ -80,7 +92,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
         assertEquals("C=BE,O=CEF Digital,OU=SMP,CN=Secodn domain", clientCert.getSubjectDN().getName());
-        assertEquals("http://localhost:8080/manageparticipantidentifier/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("http://localhost/edelivery-sml/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
 
@@ -97,7 +109,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
         assertEquals("C=BE,O=CEF Digital,OU=SMP,CN=Secodn domain", clientCert.getSubjectDN().getName());
-        assertEquals("http://localhost:8080/manageparticipantidentifier/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("http://localhost/edelivery-sml/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
     @Test
@@ -161,7 +173,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
 
     @Test(expected = IllegalStateException.class)
     public void configureClientAuthenticationDoesNotAcceptBothAuthentication() {
-        smlClientFactory.configureClientAuthentication(null, null, "any_domain_alias", "any_header_value");
+        smlClientFactory.configureClientAuthentication(null, null, null, true);
     }
 
 }

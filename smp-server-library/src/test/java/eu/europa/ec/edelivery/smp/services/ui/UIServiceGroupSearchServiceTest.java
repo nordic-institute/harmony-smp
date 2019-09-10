@@ -7,7 +7,6 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 
-@ContextConfiguration(classes = {UIServiceGroupSearchService.class, UIServiceMetadataService.class, SecurityUtilsServices.class})
+@ContextConfiguration(classes = {UIServiceGroupSearchService.class, UIServiceMetadataService.class})
 public class UIServiceGroupSearchServiceTest extends AbstractServiceIntegrationTest {
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();

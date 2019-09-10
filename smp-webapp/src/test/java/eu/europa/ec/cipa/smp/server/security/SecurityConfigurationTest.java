@@ -15,10 +15,7 @@ package eu.europa.ec.cipa.smp.server.security;
 
 import eu.europa.ec.edelivery.exception.BlueCoatParseException;
 import eu.europa.ec.edelivery.smp.config.*;
-import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
-import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,14 +54,14 @@ public class SecurityConfigurationTest {
 
     public static final String RETURN_LOGGED_USER_PATH = "/getLoggedUsername";
 
-    public static final String TEST_USERNAME_CLEAR_PASS = "test_user_clear_pass";
-    public static final String TEST_USERNAME_HASHED_PASS = "test_user_hashed_pass";
+    public static final String TEST_USERNAME_DB_CLEAR_PASS = "test_user_clear_pass";
+    public static final String TEST_USERNAME_DB_HASHED_PASS = "test_user_hashed_pass";
     public static final String PASSWORD = "test123";
-    public static final String BLUE_COAT_VALID_HEADER = "sno=bb66&subject=C=BE,O=org,CN=comon name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
-    public static final String BLUE_COAT_VALID_HEADER_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=comon name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
-    public static final String TEST_USERNAME_BLUE_COAT = "CN=comon name,O=org,C=BE:000000000000bb66";
-    public static final String BLUE_COAT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=CN=comon name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
-    public static final String TEST_USERNAME_BLUE_COAT__DB_UPPER_SN = "CN=comon name UPPER database SN,O=org,C=BE:000000000000bb66";
+    public static final String BLUE_COAT_VALID_HEADER = "sno=bb66&subject=C=BE,O=org,CN=common name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String BLUE_COAT_VALID_HEADER_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=common name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String TEST_USERNAME_BLUE_COAT = "CN=common name,O=org,C=BE:000000000000bb66";
+    public static final String BLUE_COAT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=CN=common name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String TEST_USERNAME_BLUE_COAT__DB_UPPER_SN = "CN=common name UPPER database SN,O=org,C=BE:000000000000bb66";
 
     @Autowired
     private WebApplicationContext context;
@@ -107,15 +104,30 @@ public class SecurityConfigurationTest {
     @Test
     public void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
                 .andExpect(status().isOk())
-                .andExpect(content().string(TEST_USERNAME_HASHED_PASS));
+                .andExpect(content().string(TEST_USERNAME_DB_HASHED_PASS));
     }
+
+    @Test
+    public void userStoredWithUpperCaseUsernameIsAuthorizedForPutTest() throws Exception {
+        String upperCaseUsername = TEST_USERNAME_DB_HASHED_PASS.toUpperCase();
+        // test that is not the same
+        Assert.assertNotEquals(upperCaseUsername, TEST_USERNAME_DB_HASHED_PASS);
+
+        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
+                .with(httpBasic(upperCaseUsername, PASSWORD)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(upperCaseUsername));
+    }
+
+
+
 
     @Test
     public void userStoredWithClearPassIsNotAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(httpBasic(TEST_USERNAME_CLEAR_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_CLEAR_PASS, PASSWORD)))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -146,7 +158,7 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
-                .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
     }
@@ -157,7 +169,7 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
-                .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
     }
@@ -169,7 +181,7 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
-                .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT__DB_UPPER_SN));
     }
@@ -180,7 +192,7 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
-                .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT__DB_UPPER_SN));
     }
