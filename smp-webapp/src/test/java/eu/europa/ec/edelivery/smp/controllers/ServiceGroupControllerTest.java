@@ -15,6 +15,7 @@ package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.config.*;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import java.io.IOException;
 
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.*;
 import static java.lang.String.format;
@@ -87,7 +90,8 @@ public class ServiceGroupControllerTest {
     private MockMvc mvc;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
