@@ -26,6 +26,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.BLUE_COAT_ENABLED;
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
+
 /**
  * Created by gutowpa on 11/01/2018.
  */
@@ -36,19 +39,9 @@ import java.util.Properties;
 })
 public class PropertiesTestConfig {
 
-    private final static String SIGNING_KEYSTORE_PATH = Thread.currentThread().getContextClassLoader().getResource("service_integration_signatures_single_domain.jks").getFile();
-
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() throws IOException {
-        Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
-        Path targetDirectory = Paths.get("target", "keystores");
-
-        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
-
-        String path = targetDirectory.toFile().getAbsolutePath();
-
-
-
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()  {
+        // update keystore
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties localProps = new Properties();
@@ -59,11 +52,9 @@ public class PropertiesTestConfig {
         localProps.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         localProps.setProperty("spring.jpa.generate-ddl", "true");
         localProps.setProperty("spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
+        localProps.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
+        localProps.setProperty(BLUE_COAT_ENABLED.getProperty(), "true");
 
-        localProps.setProperty("configuration.dir", path);
-        localProps.setProperty("encryption.key.filename", "encryptionKey.key");
-        localProps.setProperty("smp.keystore.password", "FarFJE2WUfY39SVRTFOqSg==");
-        localProps.setProperty("smp.keystore.filename", "smp-keystore_multiple_domains.jks");
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
 
