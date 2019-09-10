@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 
@@ -55,6 +57,10 @@ public class ConfigurationService {
         return res;
     }
 
+    public Pattern getParticipantIdentifierSchemeRexExp(){
+        return (Pattern)configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP);
+    }
+
     public String getHttpProxyHost() {
         return configurationDAO.getCachedProperty(HTTP_PROXY_HOST);
     }
@@ -82,6 +88,14 @@ public class ConfigurationService {
         return (String) configurationDAO.getCachedPropertyValue(HTTP_PROXY_PASSWORD);
     }
 
+
+    public List<String> getCaseSensitiveDocumentScheme() {
+        return (List<String>)configurationDAO.getCachedPropertyValue(CS_DOCUMENTS);
+    }
+
+    public List<String> getCaseSensitiveParticipantScheme() {
+        return (List<String>)configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
+    }
 
     public boolean isProxyEnabled() {
         String proxyHost = configurationDAO.getCachedProperty(HTTP_PROXY_HOST);

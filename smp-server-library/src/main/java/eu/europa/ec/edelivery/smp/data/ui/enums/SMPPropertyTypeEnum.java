@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.data.ui.enums;
 
 public enum SMPPropertyTypeEnum {
     STRING ("Property [%s] is not valid String type!"),
+    LIST_STRING("Property [%s] is not valid LIST_STRING type!"),
     INTEGER("Property [%s] is not valid Integer!"),
     BOOLEAN("Property [%s] is not valid Boolean type!"),
     REGEXP("Property [%s] is not valid Regular Expression type!n"),

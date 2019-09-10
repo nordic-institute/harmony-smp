@@ -13,13 +13,16 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -36,8 +39,11 @@ public class CaseSensitivityNormalizerTest {
     @Before
     public void init() {
         normalizer = new CaseSensitivityNormalizer();
-        normalizer.setCaseSensitiveDocumentSchemes(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"}));
-        normalizer.setCaseSensitiveParticipantSchemes(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}));
+        ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+        ReflectionTestUtils.setField(normalizer, "configurationService", configurationService);
+        Mockito.doReturn(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"})).when(configurationService).getCaseSensitiveDocumentScheme();
+        Mockito.doReturn(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"})).when(configurationService).getCaseSensitiveParticipantScheme();
+
     }
 
     @SuppressWarnings("unused")

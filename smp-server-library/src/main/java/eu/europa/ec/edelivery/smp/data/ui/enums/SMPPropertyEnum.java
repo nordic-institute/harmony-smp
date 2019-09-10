@@ -13,8 +13,8 @@ public enum SMPPropertyEnum {
     OUTPUT_CONTEXT_PATH ("contextPath.output","true","This property controls pattern of URLs produced by SMP in GET ServiceGroup responses." , true, false , SMPPropertyTypeEnum.BOOLEAN),
 
     PARTC_SCH_REGEXP ("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex","^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)","Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false , SMPPropertyTypeEnum.REGEXP),
-    CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes","casesensitive-participant-scheme1|casesensitive-participant-scheme2","Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.STRING),
-    CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes","casesensitive-doc-scheme1|casesensitive-doc-scheme2","Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.STRING),
+    CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes","casesensitive-participant-scheme1|casesensitive-participant-scheme2","Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.LIST_STRING),
+    CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes","casesensitive-doc-scheme1|casesensitive-doc-scheme2","Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.LIST_STRING),
 
     SML_ENABLED("bdmsl.integration.enabled","false","BDMSL (SML) integration ON/OFF switch", false, false , SMPPropertyTypeEnum.BOOLEAN),
     SML_PARTICIPANT_MULTIDOMAIN("bdmsl.participant.multidomain.enabled","false","Set to true if SML support participant on multidomain", false, false , SMPPropertyTypeEnum.BOOLEAN),
