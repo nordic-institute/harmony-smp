@@ -1,13 +1,20 @@
 package eu.europa.ec.edelivery.smp.testutils;
 
+import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.junit.Before;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -18,7 +25,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public class X509CertificateTestUtils {
+
+
+
+
+    public static final  Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+    public static final  Path targetDirectory = Paths.get("target","keystores");
 
     public static X509Certificate createX509CertificateForTest( String subject) throws Exception {
         return createX509CertificateForTest("1234321", subject);
@@ -82,5 +96,11 @@ public class X509CertificateTestUtils {
 
         }
         return certs;
+    }
+
+
+    public static void reloadKeystores() throws IOException {
+        FileUtils.deleteDirectory(targetDirectory.toFile());
+        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
     }
 }

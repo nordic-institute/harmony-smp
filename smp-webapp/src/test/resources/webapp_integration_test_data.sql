@@ -8,6 +8,19 @@
 -- Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('configuration.dir','./target/keystores/',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('encryption.key.filename','encryptionKey.key',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('smp.keystore.password', 'FarFJE2WUfY39SVRTFOqSg==',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('smp.keystore.filename', 'smp-keystore_multiple_domains.jks',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('contextPath.output', 'true',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('cbdmsl.integration.physical.address', '0.0.0.0',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('bdmsl.integration.logical.address', 'http://localhost/smp',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('bdmsl.integration.url', 'http://localhost/edelivery-sml',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('bdmsl.integration.enabled', 'false',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+
+
 insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (1, 'smp_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW', 'SMP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (2, 'sg_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW', 'SERVICE_GROUP_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPDATED_ON) values (3, 'sys_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW', 'SYSTEM_ADMIN', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
