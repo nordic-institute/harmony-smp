@@ -1,7 +1,7 @@
 insert into smp_user(username, password, isadmin) values ('test_admin',                                '$2a$06$k.Q/6anG4Eq/nNTZ0C1UIuAKxpr6ra5oaMkMSrlESIyA5jKEsUdyS', 1);
 insert into smp_user(username, password, isadmin) values ('test_user_hashed_pass',                     '$2a$06$k.Q/6anG4Eq/nNTZ0C1UIuAKxpr6ra5oaMkMSrlESIyA5jKEsUdyS', 0);
 insert into smp_user(username, password, isadmin) values ('test_user_clear_pass',                      'gutek123',                                                     0);
-insert into smp_user(username, password, isadmin) values ('CN=comon name,O=org,C=BE:0000000000000066', '',                                                             0);
+insert into smp_user(username, password, isadmin) values ('CN=common name,O=org,C=BE:0000000000000066', '',                                                             0);
 Insert into smp_user (username,password,isadmin) values ('test','$2a$10$fvONLZ1J80Sj.4C2w0/UBuYxHEGoXLIZgZfxqEXoDSH8q3fbTcGJ6',0);
 Insert into smp_user (username,password,isadmin) values ('CN=GENERALERDS_AP_TEST_00000,O=European Commission,C=BE:e6588be5c376f78e',null,0);
 Insert into smp_user (username,password,isadmin) values ('CN=GENERALERDS_AP_TEST_00000/serialNumber\=1,O=European Commission,C=BE:e6588be5c376f78e',null,0);

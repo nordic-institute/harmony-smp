@@ -3,27 +3,31 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
-import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
-import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import eu.europa.ec.edelivery.smp.testutil.DBAssertion;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 
@@ -35,16 +39,23 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {H2JPATestConfig.class,PropertiesSingleDomainTestConfig.class,
+@ContextConfiguration(classes = {H2JPATestConfig.class,
         CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
-        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class,
-        UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class, SMLIntegrationService.class})
-@Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
+        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class,
+        UITruststoreService.class, UIKeystoreService.class, ConversionTestConfig.class, SMLIntegrationService.class,
+        CRLVerifierService.class, ConfigurationService.class})
+@Sql(scripts = {"classpath:cleanup-database.sql",
+        "classpath:basic_conf_data-h2.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
         (transactionMode = SqlConfig.TransactionMode.ISOLATED,
                 transactionManager = "transactionManager",
                 dataSource = "h2DataSource"))
 public abstract class AbstractServiceIntegrationTest {
+
+
+    protected Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+    protected Path targetDirectory = Paths.get("target","keystores");
 
     @Autowired
     protected ServiceGroupDao serviceGroupDao;
@@ -56,10 +67,18 @@ public abstract class AbstractServiceIntegrationTest {
     protected DomainDao domainDao;
 
     @Autowired
+    protected ConfigurationDao configurationDao;
+
+    @Autowired
     protected UserDao userDao;
 
     @Autowired
     DBAssertion dbAssertion;
+
+    @Before
+    public void before() throws IOException {
+        resetKeystore();
+    }
 
     /**
      * Domain: TEST_DOMAIN_CODE_1
@@ -122,6 +141,7 @@ public abstract class AbstractServiceIntegrationTest {
      */
 
     public void prepareDatabaseForMultipeDomainEnv() {
+
         prepareDatabaseForSignleDomainEnv();
         DBDomain testDomain02 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
         domainDao.persistFlushDetach(testDomain02);
@@ -131,6 +151,13 @@ public abstract class AbstractServiceIntegrationTest {
         DBServiceGroup sg2d2 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_3, TEST_SG_SCHEMA_1);
         sg2d2.getUsers().add(u1);
         serviceGroupDao.update(sg2d2);
+
+    }
+
+
+    public void setDatabaseProperty(SMPPropertyEnum prop, String value){
+        configurationDao.setPropertyToDatabase(prop,value,"Test property");
+        configurationDao.reloadPropertiesFromDatabase();
     }
 
     /**
@@ -177,5 +204,10 @@ public abstract class AbstractServiceIntegrationTest {
         sg3.getServiceGroupDomains().get(0).addServiceMetadata(sg3md1);
         sg3.getServiceGroupDomains().get(1).addServiceMetadata(sg3md2);
         serviceGroupDao.update(sg3);
+    }
+
+    protected void resetKeystore() throws IOException {
+        FileUtils.deleteDirectory(targetDirectory.toFile());
+        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
     }
 }

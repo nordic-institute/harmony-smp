@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -32,12 +33,13 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
     @Override
     public CertificateRO convert(X509Certificate cert) {
 
-        String subject = cert.getSubjectDN().getName();
-        String issuer = cert.getIssuerDN().getName();
-        String hash = cert.getIssuerDN().getName();
+        String subject = cert.getSubjectX500Principal().getName(X500Principal.RFC2253);
+        String issuer = cert.getIssuerX500Principal().getName(X500Principal.RFC2253);
         BigInteger serial = cert.getSerialNumber();
+
         String certId = getCertificateIdFromCertificate(subject, issuer, serial);
         CertificateRO cro = new CertificateRO();
+
         cro.setCertificateId(certId);
         cro.setSubject(subject);
         cro.setIssuer(issuer);
@@ -85,5 +87,4 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         }
         return "";
     }
-
 }

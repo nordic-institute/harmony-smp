@@ -8,6 +8,7 @@ import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,19 +56,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpWebAppConfig.class,
         SpringSecurityConfig.class})
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
 @SqlConfig(encoding = "UTF-8")
-@TestPropertySource(properties = {
-        "smp.artifact.name=TestApplicationSmpName",
-        "smp.artifact.version=TestApplicationVersion",
-        "smp.artifact.build.time=2018-11-27 00:00:00",
-        "bdmsl.integration.enabled=true"})
-
+@Sql(scripts = {"classpath:cleanup-database.sql",
+        "classpath:webapp_integration_test_data.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class KeystoreResourceTest {
     private static final String PATH = "/ui/rest/keystore";
 
-    Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
+    Path keystore = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
+
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -78,13 +76,16 @@ public class KeystoreResourceTest {
     private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
+
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
 
 
         initServletContext();
+        uiKeystoreService.refreshData();
     }
 
     private void initServletContext() {
@@ -138,7 +139,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/NewPassword1234")
                 .with(SYSTEM_CREDENTIALS)
-                .content(Files.readAllBytes(resourceDirectory)) )
+                .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 
         //them
@@ -156,7 +157,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/test123")
                 .with(SYSTEM_CREDENTIALS)
-                .content(Files.readAllBytes(resourceDirectory)) )
+                .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 
         //them
@@ -175,7 +176,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(delete(PATH+"/3/delete/second_domain_alias")
                 .with(SYSTEM_CREDENTIALS)
-                .content(Files.readAllBytes(resourceDirectory)) )
+                .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 
         //them

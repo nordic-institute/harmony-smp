@@ -28,6 +28,7 @@ import java.util.Objects;
         // case insesitive search
         @NamedQuery(name = "DBUser.getUserByUsernameInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.username) = lower(:username)"),
         @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
+        @NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.certificate.certificateId) = lower(:certificateId)"),
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",

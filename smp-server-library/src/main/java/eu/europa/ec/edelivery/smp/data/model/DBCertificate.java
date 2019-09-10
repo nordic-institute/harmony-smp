@@ -45,20 +45,26 @@ public class DBCertificate extends BaseEntity {
     @Column(name = "VALID_TO")
     @ColumnDescription(comment = "Certificate valid to date.")
     private LocalDateTime validTo;
-
     @Column(name = "SUBJECT", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
-    @ColumnDescription(comment = "Certificate subject (canonical form)" )
-    private String  subject;
+    @ColumnDescription(comment = "Certificate subject (canonical form)")
+    private String subject;
     @Column(name = "ISSUER", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
-    @ColumnDescription(comment = "Certificate issuer (canonical form)" )
-    private String  issuer;
+    @ColumnDescription(comment = "Certificate issuer (canonical form)")
+    private String issuer;
     @Column(name = "SERIALNUMBER", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
-    @ColumnDescription(comment = "Certificate serial number" )
-    private String  serialNumber;
+    @ColumnDescription(comment = "Certificate serial number")
+    private String serialNumber;
 
+    @Column(name = "PEM_ENCODED_CERT")
+    @ColumnDescription(comment = "PEM encoded  certificate")
+    @Lob
+    private String pemEncoding;
 
+    @Column(name = "CRL_URL", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
+    @ColumnDescription(comment = "URL to the certificate revocation list (CRL)")
+    private String crlUrl;
 
-    @Column(name = "CREATED_ON" , nullable = false)
+    @Column(name = "CREATED_ON", nullable = false)
     LocalDateTime createdOn;
     @Column(name = "LAST_UPDATED_ON", nullable = false)
     LocalDateTime lastUpdatedOn;
@@ -137,6 +143,22 @@ public class DBCertificate extends BaseEntity {
         this.serialNumber = serialNumber;
     }
 
+    public String getPemEncoding() {
+        return pemEncoding;
+    }
+
+    public void setPemEncoding(String pemEncoding) {
+        this.pemEncoding = pemEncoding;
+    }
+
+    public String getCrlUrl() {
+        return crlUrl;
+    }
+
+    public void setCrlUrl(String crlUrl) {
+        this.crlUrl = crlUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -154,7 +176,7 @@ public class DBCertificate extends BaseEntity {
 
     @PrePersist
     public void prePersist() {
-        if(createdOn == null) {
+        if (createdOn == null) {
             createdOn = LocalDateTime.now();
         }
         lastUpdatedOn = LocalDateTime.now();

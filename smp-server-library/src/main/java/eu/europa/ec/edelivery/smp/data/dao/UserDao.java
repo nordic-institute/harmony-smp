@@ -116,8 +116,20 @@ public class UserDao extends BaseDao<DBUser> {
      * @return returns Optional DBUser for certificateID
      */
     public Optional<DBUser> findUserByCertificateId(String certificateId) {
+        return findUserByCertificateId(certificateId, false);
+    }
+
+    /**
+     * Method finds user by certificateId. If user does not exist
+     * Optional  with isPresent - false is returned.
+     * @param certificateId
+     * @param caseInsensitive
+     * @return returns Optional DBUser for certificateID
+     */
+    public Optional<DBUser> findUserByCertificateId(String certificateId, boolean caseInsensitive) {
         try {
-            TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUserByCertificateId", DBUser.class);
+            String namedQuery = caseInsensitive?"DBUser.getUserByCertificateIdCaseInsensitive":"DBUser.getUserByCertificateId";
+            TypedQuery<DBUser> query = memEManager.createNamedQuery(namedQuery, DBUser.class);
             query.setParameter("certificateId", certificateId);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
