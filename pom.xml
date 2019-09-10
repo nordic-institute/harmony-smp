@@ -24,7 +24,7 @@
     <modules>
         <module>smp-parent-pom</module>
         <module>smp-api</module>
-        <!-- module>smp-angular</module -->
+        <module>smp-angular</module>
         <module>smp-server-library</module>
         <module>smp-webapp</module>
     </modules>

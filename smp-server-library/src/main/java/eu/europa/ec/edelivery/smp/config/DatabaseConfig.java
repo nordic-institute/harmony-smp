@@ -67,11 +67,11 @@ public class DatabaseConfig {
 
 
     @Bean(name = "dataSource")
-    public DataSource jndiDataSource() {
+    public DataSource getDataSource() {
 
         DataSource dataSource = null;
         if (!StringUtils.isBlank(url)) {
-            LOG.info("Retrieve datasource with JNDI: " + jndiDatasourceName);
+            LOG.info("create datasource with URL: " + url);
             DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
             driverManagerDataSource.setDriverClassName(driver);
             driverManagerDataSource.setUrl(url);
@@ -116,7 +116,7 @@ public class DatabaseConfig {
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
         if (!StringUtils.isBlank(hibernateDialect)) {
-          //  hibernateJpaVendorAdapter.setDatabasePlatform(hibernateDialect);
+            hibernateJpaVendorAdapter.setDatabasePlatform(hibernateDialect);
         }
         hibernateJpaVendorAdapter.setGenerateDdl(true);
         return hibernateJpaVendorAdapter;
