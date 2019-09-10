@@ -41,7 +41,7 @@ public class CaseSensitivityNormalizer {
 
     public ParticipantIdentifierType normalizeParticipantIdentifier(String scheme, String value) {
         List<String> caseSensitiveParticipantSchemes = configurationService.getCaseSensitiveParticipantScheme();
-        if (caseSensitiveParticipantSchemes == null || !caseSensitiveParticipantSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
+        if (scheme==null || caseSensitiveParticipantSchemes == null || !caseSensitiveParticipantSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
             scheme = StringUtils.lowerCase(scheme);
             value = StringUtils.lowerCase(value);
         }
@@ -62,7 +62,7 @@ public class CaseSensitivityNormalizer {
 
     public DocumentIdentifier normalizeDocumentIdentifier(String scheme, String value) {
         List<String> caseSensitiveDocumentSchemes = configurationService.getCaseSensitiveDocumentScheme();
-        if (caseSensitiveDocumentSchemes == null || !caseSensitiveDocumentSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
+        if (scheme==null || caseSensitiveDocumentSchemes == null || !caseSensitiveDocumentSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
             scheme = StringUtils.lowerCase(scheme);
             value = StringUtils.lowerCase(value);
         }
