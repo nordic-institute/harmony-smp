@@ -16,7 +16,10 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.smp.api.Identifiers;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -96,6 +99,20 @@ public class ServiceMetadataConverter {
         try {
             Document serviceMetadataDoc = parse(serviceMetadataXml);
             ServiceMetadata serviceMetadata = getUnmarshaller().unmarshal(serviceMetadataDoc, ServiceMetadata.class).getValue();
+
+            if (serviceMetadata!=null
+                    && serviceMetadata.getServiceInformation()!=null
+                    && serviceMetadata.getServiceInformation().getParticipantIdentifier()!=null
+                    && StringUtils.isBlank(serviceMetadata.getServiceInformation().getParticipantIdentifier().getScheme())
+                    && StringUtils.startsWithAny(serviceMetadata.getServiceInformation().getParticipantIdentifier().getValue(),
+                    Identifiers.EBCORE_IDENTIFIER_PREFIX,
+                    "::"+Identifiers.EBCORE_IDENTIFIER_PREFIX)){
+                // normalize participant identifier
+                LOG.info("Normalize ebCore identifier: " + serviceMetadata.getServiceInformation().getParticipantIdentifier().getValue());
+                ParticipantIdentifierType participantIdentifierType = Identifiers.asParticipantId(serviceMetadata.getServiceInformation().getParticipantIdentifier().getValue());
+                serviceMetadata.getServiceInformation().setParticipantIdentifier(participantIdentifierType);
+            }
+
             return serviceMetadata;
         } catch (SAXException | IOException | ParserConfigurationException | JAXBException ex) {
             throw new SMPRuntimeException(INVALID_SMD_XML, ex, ExceptionUtils.getRootCauseMessage(ex));

@@ -35,7 +35,6 @@ import javax.persistence.Query;
 import javax.sql.DataSource;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -54,13 +53,14 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
  * if not defined in property file jdbc/smpDatasource) to read application properties. Because this class is
  * invoked before datasource is initialiyzed by default - it creates it's own database connection.
  * Also it uses hibernate to handle dates  for Configuration table.
- *
  */
 public class PropertyInitialization {
+    // application priperties contains build data and are set at build time.
+    private static final String FILE_APPLICATION_PROPERTIES = "/application.properties";
 
-    private static final String PROP_BUILD_NAME="smp.artifact.name";
-    private static final String PROP_BUILD_VERSION="smp.artifact.version";
-    private static final String PROP_BUILD_TIME="smp.artifact.build.time";
+    private static final String PROP_BUILD_NAME = "smp.artifact.name";
+    private static final String PROP_BUILD_VERSION = "smp.artifact.version";
+    private static final String PROP_BUILD_TIME = "smp.artifact.build.time";
 
     private static final String VALID_PW_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
     private static final int DEFAULT_PASSWORD_LENGTH = 16;
@@ -68,26 +68,26 @@ public class PropertyInitialization {
     SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyInitialization.class);
 
 
-    public void logBuildProperties(){
-        InputStream is = PropertyInitialization.class.getResourceAsStream("/application.properties");
-        if(is!=null){
+    public void logBuildProperties() {
+        InputStream is = PropertyInitialization.class.getResourceAsStream(FILE_APPLICATION_PROPERTIES);
+        if (is != null) {
             Properties applProp = new Properties();
             try {
                 applProp.load(is);
                 LOG.info("*****************************************************************************************");
-                LOG.info("Start application: name: {}, version: {}, build time: {}.",applProp.getProperty(PROP_BUILD_NAME)
-                        ,applProp.getProperty(PROP_BUILD_VERSION)
-                        ,applProp.getProperty(PROP_BUILD_TIME));
+                LOG.info("Start application: name: {}, version: {}, build time: {}.", applProp.getProperty(PROP_BUILD_NAME)
+                        , applProp.getProperty(PROP_BUILD_VERSION)
+                        , applProp.getProperty(PROP_BUILD_TIME));
                 LOG.info("*****************************************************************************************");
             } catch (IOException e) {
-                LOG.error( "Error occurred  while reading application properties. Is file /application.properties included in war!", e);
+                LOG.error("Error occurred  while reading application properties. Is file " + FILE_APPLICATION_PROPERTIES + " included in war!", e);
             }
         } else {
-            LOG.error( "Not found application build properties: /application.properties!");
+            LOG.error("Not found application build properties: {}!", FILE_APPLICATION_PROPERTIES);
         }
     }
 
-    public Properties getFileProperties(){
+    public Properties getFileProperties() {
         return FileProperty.getFileProperties();
     }
 
@@ -133,7 +133,7 @@ public class PropertyInitialization {
      */
     protected void initializeProperties(EntityManager em, Properties fileProperties, Properties initProperties) {
         em.getTransaction().begin();
-        LOG.warn( "Database configuration table is empty! Initialize new values!");
+        LOG.warn("Database configuration table is empty! Initialize new values!");
         initNewValues(em, fileProperties, initProperties);
         for (SMPPropertyEnum val : SMPPropertyEnum.values()) {
             DBConfiguration dbConf = null;
@@ -147,7 +147,7 @@ public class PropertyInitialization {
                     break;
                 default:
                     // insert only non deprecated values
-                    if (val.getDesc() ==null || !val.getDesc().trim().equalsIgnoreCase("deprecated")) {
+                    if (val.getDesc() == null || !val.getDesc().trim().equalsIgnoreCase("deprecated")) {
                         dbConf = createDBEntry(val.getProperty(), fileProperties.getProperty(val.getProperty(), val.getDefValue()),
                                 val.getDesc());
                     }
@@ -162,10 +162,11 @@ public class PropertyInitialization {
 
     /**
      * Settings folder is where keystore is located.
+     *
      * @param fileProperties
      * @return
      */
-    protected File calculateSettingsPath( Properties fileProperties){
+    protected File calculateSettingsPath(Properties fileProperties) {
         String sigPath = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty());
         if (sigPath == null) {
             sigPath = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty());
@@ -181,6 +182,7 @@ public class PropertyInitialization {
 
     /**
      * Method initialize new values for configuration dir, encryption filename, keystore password, and keystore filename.
+     *
      * @param em
      * @param fileProperties
      */
@@ -189,7 +191,7 @@ public class PropertyInitialization {
         File settingsFolder = calculateSettingsPath(fileProperties);
         // set absolute path
         String absolutePath = settingsFolder.getAbsolutePath();
-        LOG.info( "Generate new keystore to folder: " + absolutePath);
+        LOG.info("Generate new keystore to folder: " + absolutePath);
 
         // add configuration path
         storeDBEntry(em, CONFIGURATION_DIR, absolutePath);
@@ -209,9 +211,9 @@ public class PropertyInitialization {
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
 
         // store encryption filename
-        File fEncryption =getNewFile(absolutePath, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
+        File fEncryption = getNewFile(absolutePath, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
 
-        LOG.info( "Generate new encryption key: " + fEncryption.getName()+ " settings folder: " + absolutePath);
+        LOG.info("Generate new encryption key: " + fEncryption.getName() + " settings folder: " + absolutePath);
         SecurityUtils.generatePrivateSymmetricKey(fEncryption);
         storeDBEntry(em, SMPPropertyEnum.ENCRYPTION_FILENAME, fEncryption.getName());
         initProperties.setProperty(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
@@ -235,19 +237,19 @@ public class PropertyInitialization {
             // initialize keystore
             newKeystore.load(null, newKeyPassword.toCharArray());
             // merge keys from signature keystore
-          if (!StringUtils.isBlank(sigKeystorePath)) {
-              LOG.info( "Import keys from keystore for signature: " + sigKeystorePath);
+            if (!StringUtils.isBlank(sigKeystorePath)) {
+                LOG.info("Import keys from keystore for signature: " + sigKeystorePath);
                 String keypasswd = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PASSWORD.getProperty());
                 try (FileInputStream fis = new FileInputStream(sigKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
                     sourceKeystore.load(fis, keypasswd.toCharArray());
                     SecurityUtils.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
                     // if there is only one certificate - update null signature aliases
-                    if (sourceKeystore.size()==1) {
+                    if (sourceKeystore.size() == 1) {
                         String alias = sourceKeystore.aliases().nextElement();
-                        updateAlias(em, "DBDomain.updateNullSignAlias",alias );
-                        if (StringUtils.equalsIgnoreCase(smlKeystorePath, sigKeystorePath)){
-                            updateAlias(em, "DBDomain.updateNullSMLAlias",alias );
+                        updateAlias(em, "DBDomain.updateNullSignAlias", alias);
+                        if (StringUtils.equalsIgnoreCase(smlKeystorePath, sigKeystorePath)) {
+                            updateAlias(em, "DBDomain.updateNullSMLAlias", alias);
                         }
                     }
                 }
@@ -255,7 +257,7 @@ public class PropertyInitialization {
 
             // merge keys from integration keystore
             if (!StringUtils.isBlank(smlKeystorePath) && !StringUtils.equalsIgnoreCase(smlKeystorePath, sigKeystorePath)) {
-                LOG.info( "Import keys from keystore for sml integration: " + smlKeystorePath);
+                LOG.info("Import keys from keystore for sml integration: " + smlKeystorePath);
                 String keypasswd = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PASSWORD.getProperty());
                 try (FileInputStream fis = new FileInputStream(smlKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -263,14 +265,14 @@ public class PropertyInitialization {
 
                     SecurityUtils.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
                     // if there is only one cetificate - update null signature aliases
-                    if (sourceKeystore.size()==1) {
-                        updateAlias(em, "DBDomain.updateNullSMLAlias",sourceKeystore.aliases().nextElement() );
+                    if (sourceKeystore.size() == 1) {
+                        updateAlias(em, "DBDomain.updateNullSMLAlias", sourceKeystore.aliases().nextElement());
                     }
                 }
             }
             // check if keystore is empty then generate cert for user
-            if (newKeystore.size()==0) {
-                X509CertificateUtils.createAndAddTextCertificate("CN=SMP_TEST-"+ UUID.randomUUID().toString()+", OU=eDelivery, O=DIGITAL, C=BE", newKeystore, newKeyPassword);
+            if (newKeystore.size() == 0) {
+                X509CertificateUtils.createAndAddTextCertificate("CN=SMP_TEST-" + UUID.randomUUID().toString() + ", OU=eDelivery, O=DIGITAL, C=BE", newKeystore, newKeyPassword);
             }
             newKeystore.store(out, newKeyPassword.toCharArray());
         } catch (IOException e) {
@@ -286,19 +288,19 @@ public class PropertyInitialization {
         }
     }
 
-    public File getNewFile(String folder, String fileName){
+    public File getNewFile(String folder, String fileName) {
         File file = new File(folder, fileName);
-        if (file.exists()){
+        if (file.exists()) {
             int index = 0;
-            File f= null;
+            File f = null;
             // search for new file
-            while((f= new File(folder, fileName+"."+ (++index))).exists()){
+            while ((f = new File(folder, fileName + "." + (++index))).exists()) {
 
             }
             try {
                 Files.move(file.toPath(), f.toPath());
             } catch (IOException e) {
-                throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while renaming file:" + fileName , e.getMessage());
+                throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while renaming file:" + fileName, e.getMessage());
             }
         }
         return file;
@@ -320,10 +322,10 @@ public class PropertyInitialization {
     protected void validateProperties(EntityManager em, Properties fileProperties, Properties databaseProperties) {
         em.getTransaction().begin();
 
-        if (!databaseProperties.containsKey(CONFIGURATION_DIR.getProperty())){
+        if (!databaseProperties.containsKey(CONFIGURATION_DIR.getProperty())) {
             String folder = (new File("./")).getAbsolutePath();
-            LOG.warn("Missing property: {} set new walue: {}", CONFIGURATION_DIR.getProperty(), folder );
-            storeDBEntry(em,CONFIGURATION_DIR, folder);
+            LOG.warn("Missing property: {} set new walue: {}", CONFIGURATION_DIR.getProperty(), folder);
+            storeDBEntry(em, CONFIGURATION_DIR, folder);
             databaseProperties.setProperty(CONFIGURATION_DIR.getProperty(), folder);
         }
 
@@ -368,7 +370,7 @@ public class PropertyInitialization {
         em.persist(cnt);
     }
 
-    protected void updateAlias(EntityManager em,String namedQuery, String alias) {
+    protected void updateAlias(EntityManager em, String namedQuery, String alias) {
         Query query = em.createNamedQuery(namedQuery);
         query.setParameter("alias", alias);
         query.executeUpdate();
@@ -380,14 +382,14 @@ public class PropertyInitialization {
      * @return
      */
     private DataSource getDatasource(Properties connectionProp) {
-        LOG.info( "Start database properties");
+        LOG.info("Start database properties");
         DataSource datasource = null;
         String url = connectionProp.getProperty("jdbc.url");
         String jndiDatasourceName = connectionProp.getProperty("datasource.jndi");
         jndiDatasourceName = StringUtils.isBlank(jndiDatasourceName) ? "jdbc/smpDatasource" : jndiDatasourceName;
 
         if (!StringUtils.isBlank(url)) {
-            LOG.info( "Connect to {}.", url);
+            LOG.info("Connect to {}.", url);
             DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
             driverManagerDataSource.setDriverClassName(connectionProp.getProperty("jdbc.driver"));
             driverManagerDataSource.setUrl(url);
@@ -395,14 +397,14 @@ public class PropertyInitialization {
             driverManagerDataSource.setPassword(connectionProp.getProperty("jdbc.password"));
             datasource = driverManagerDataSource;
         } else {
-            LOG.info( "Use JNDI {} to connect to database.", jndiDatasourceName);
+            LOG.info("Use JNDI {} to connect to database.", jndiDatasourceName);
             JndiObjectFactoryBean dataSource = new JndiObjectFactoryBean();
             dataSource.setJndiName(jndiDatasourceName);
             try {
                 dataSource.afterPropertiesSet();
             } catch (IllegalArgumentException | NamingException e) {
                 // rethrow
-                LOG.error( "Error occurred while retriving datasource whith JNDI {}. Is datasource configured in server!", jndiDatasourceName);
+                LOG.error("Error occurred while retriving datasource whith JNDI {}. Is datasource configured in server!", jndiDatasourceName);
                 throw new SMPRuntimeException(INTERNAL_ERROR, e, "Error occurred while retrieving datasource: " + jndiDatasourceName, e.getMessage());
             }
             datasource = (DataSource) dataSource.getObject();
@@ -429,5 +431,4 @@ public class PropertyInitialization {
         EntityManagerFactory enf = lef.getObject();
         return enf.createEntityManager();
     }
-
 }
