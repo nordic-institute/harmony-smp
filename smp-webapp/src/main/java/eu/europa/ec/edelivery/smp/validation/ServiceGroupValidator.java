@@ -42,6 +42,7 @@ public class ServiceGroupValidator {
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {
 
         final ParticipantIdentifierType participantId = Identifiers.asParticipantId(serviceGroupId);
+
         if (!participantId.equals(serviceGroup.getParticipantIdentifier())) {
             // Business identifier must equal path
             throw new BadRequestException(WRONG_FIELD, "Service Group Ids don't match between URL parameter and XML body");
