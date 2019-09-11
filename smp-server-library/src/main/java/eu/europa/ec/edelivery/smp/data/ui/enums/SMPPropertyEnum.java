@@ -65,7 +65,6 @@ public enum SMPPropertyEnum {
         this.isEncrypted=isEncrypted;
         this.isMandatory=isMandatory;
         this.propertyType=propertyType;
-
     }
 
     public String getProperty() {
