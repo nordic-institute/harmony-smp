@@ -225,7 +225,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
                 newDBTestPassword + "", "");
 
         // when
-        configurationDao.refreshProperties();
+        configurationDao.refreshAndUpdateProperties();
         // read properties again from database!
         configurationDao.reloadPropertiesFromDatabase();
 

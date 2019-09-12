@@ -125,14 +125,24 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     @Transactional
-    public void refreshProperties() {
+    public void refreshAndUpdateProperties() {
         // get update
         LocalDateTime lastUpdateFromDB = getLastUpdate();
         if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
             reloadPropertiesFromDatabase();
             // check and update non encrypted tokens
             updateCurrentEncryptedValues();
+        } else {
+            LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed:"
+                    + lastUpdateFromDB + ".");
+        }
+    }
 
+    public void refreshProperties() {
+        // get update
+        LocalDateTime lastUpdateFromDB = getLastUpdate();
+        if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
+            reloadPropertiesFromDatabase();
         } else {
             LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed:"
                     + lastUpdateFromDB + ".");
@@ -236,7 +246,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     protected String getNonEncryptedValue(String value) {
-        return value.substring(DECRYPTED_TOKEN_PREFIX.length(), value.lastIndexOf("}"));
+        return value.substring(DECRYPTED_TOKEN_PREFIX.length(), value.lastIndexOf('}'));
     }
 
 
