@@ -53,7 +53,7 @@ public class DatabaseConfig {
     @Value("${" + FileProperty.PROPERTY_DB_USER + ":}")
     private String username;
 
-    @Value("${" + FileProperty.PROPERTY_DB_PASSWORD + ":}")
+    @Value("${" + FileProperty.PROPERTY_DB_TOKEN + ":}")
     private String password;
 
     @Value("${" + FileProperty.PROPERTY_DB_URL + ":}")

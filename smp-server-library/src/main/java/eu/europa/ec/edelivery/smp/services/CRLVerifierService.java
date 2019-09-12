@@ -61,10 +61,10 @@ public class CRLVerifierService {
     Map<String, X509CRL> crlCacheMap = new HashMap<>();
     Map<String, Long> crlCacheNextRefreshMap = new HashMap<>();
     public static long REFRESH_CRL_INTERVAL = 1000 * 60 * 60;
-    public static Long NULL_LONG = new Long(-1);
+    public static final Long NULL_LONG = Long.valueOf(-1);
 
-    private static X500Principal NULL_ISSUER = new X500Principal("");
-    private static CRLReason NULL_CRL_REASON = CRLReason.UNSPECIFIED;
+    private static final X500Principal NULL_ISSUER = new X500Principal("");
+    private static final CRLReason NULL_CRL_REASON = CRLReason.UNSPECIFIED;
 
     @Autowired
     ConfigurationService configurationService;
@@ -209,8 +209,8 @@ public class CRLVerifierService {
             RequestConfig config = RequestConfig.custom().setProxy(new HttpHost(proxyHost, proxyPort)).build();
             HttpGet httpget = new HttpGet(url);
             httpget.setConfig(config);
-            LOG.debug("Executing request '{}' via proxy '{}' {}",url, proxyHost,
-                    (credentialsProvider == null ? " with no authentication." : "with username: " + proxyUser + "."));
+            LOG.debug("Executing request '{}' via proxy '{}' with user: '{}'.",url, proxyHost,
+                    (credentialsProvider == null ? "None" :  proxyUser ));
 
             return execute(httpclient, httpget);
         }
