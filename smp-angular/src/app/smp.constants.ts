@@ -8,6 +8,7 @@ export class SmpConstants {
   public static readonly REST_SECURITY_AUTHENTICATION = 'rest/security/authentication';
   public static readonly REST_SECURITY_USER = 'rest/security/user';
   public static readonly REST_APPLICATION = 'rest/application/info';
+  public static readonly REST_CONFIG = 'rest/application/config';
   public static readonly REST_KEYSTORE = 'rest/keystore';
   public static readonly REST_TRUSTSTORE = 'rest/truststore';
 
