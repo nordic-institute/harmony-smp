@@ -155,8 +155,7 @@ public class UITruststoreService {
         return cro;
     }
 
-    public void checkFullCertificateValidity(X509Certificate cert) throws CertificateException, CertificateExpiredException,
-            CertificateNotYetValidException, CertificateRevokedException {
+    public void checkFullCertificateValidity(X509Certificate cert) throws CertificateException{
         // test if certificate is valid
         cert.checkValidity();
         // check if certificate or its issuer is on trusted list
