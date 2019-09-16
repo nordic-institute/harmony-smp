@@ -12,7 +12,10 @@ public enum SMPPropertyEnum {
 
     OUTPUT_CONTEXT_PATH ("contextPath.output","true","This property controls pattern of URLs produced by SMP in GET ServiceGroup responses." , true, false , SMPPropertyTypeEnum.BOOLEAN),
 
-    PARTC_SCH_REGEXP ("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex","^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)","Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false , SMPPropertyTypeEnum.REGEXP),
+    PARTC_SCH_REGEXP ("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex","^((?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)|urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:).+)","Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false , SMPPropertyTypeEnum.REGEXP),
+    PARTC_SCH_REGEXP_MSG ("identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
+            "Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long. The Scheme Identifier MUST take the form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9]+-[a-z0-9]+-[a-z0-9]+. ", "Error message for UI",false, false , SMPPropertyTypeEnum.STRING),
+
     CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes","casesensitive-participant-scheme1|casesensitive-participant-scheme2","Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.LIST_STRING),
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes","casesensitive-doc-scheme1|casesensitive-doc-scheme2","Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.LIST_STRING),
 
