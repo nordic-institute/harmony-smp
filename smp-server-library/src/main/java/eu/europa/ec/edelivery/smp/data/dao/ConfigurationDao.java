@@ -125,17 +125,25 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     @Transactional
-    public void refreshProperties() {
+    public void refreshAndUpdateProperties() {
         // get update
         LocalDateTime lastUpdateFromDB = getLastUpdate();
         if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
             reloadPropertiesFromDatabase();
             // check and update non encrypted tokens
             updateCurrentEncryptedValues();
-
         } else {
-            LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed:"
-                    + lastUpdateFromDB + ".");
+            LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed: {}.", lastUpdateFromDB );
+        }
+    }
+
+    public void refreshProperties() {
+        // get update
+        LocalDateTime lastUpdateFromDB = getLastUpdate();
+        if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
+            reloadPropertiesFromDatabase();
+        } else {
+            LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed: {}."+ lastUpdateFromDB );
         }
     }
 
@@ -148,8 +156,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             Map<String, Object> resultProperties = null;
             try {
                 resultProperties = validateConfiguration(newProperties);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
+            } catch (SMPRuntimeException ex) {
                 LOG.error("Throwable error occurred while refreshing configuration. Configuration was not changed!  Error: {} ", ex.getMessage(), ex);
                 isRefreshProcess = false;
                 return;
@@ -177,6 +184,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     public void addPropertyUpdateListener(PropertyUpdateListener listener){
         updateListenerList.add(listener);
     }
+
     public boolean removePropertyUpdateListener(PropertyUpdateListener listener){
         return updateListenerList.remove(listener);
     }

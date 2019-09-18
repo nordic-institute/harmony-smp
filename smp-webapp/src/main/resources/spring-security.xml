@@ -68,7 +68,7 @@
     <task:scheduler id="scheduler" pool-size="1"/>
 
     <task:scheduled-tasks scheduler="scheduler">
-        <task:scheduled ref="configurationDao" method="refreshProperties"
+        <task:scheduled ref="configurationDao" method="refreshAndUpdateProperties"
                         cron="${smp.property.refresh.cronJobExpression:0 48 */1 * * *}"/>
 
     </task:scheduled-tasks>
