@@ -9,4 +9,6 @@ export interface CertificateRo {
   blueCoatHeader?:string;
   encodedValue?:string;
   alias?:string;
+  invalid?:boolean;
+  invalidReason?:string;
 }

@@ -41,6 +41,7 @@ public enum SMPPropertyEnum {
     CONFIGURATION_DIR("configuration.dir","./","Path to the folder containing all the configuration files (keystore and encryption key)", true, false , SMPPropertyTypeEnum.PATH),
     ENCRYPTION_FILENAME("encryption.key.filename","encryptionPrivateKey.private","Key filename to encrypt passwords", false, false , SMPPropertyTypeEnum.FILENAME),
     KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted","","Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false , SMPPropertyTypeEnum.STRING),
+    TRUSTSTORE_PASSWORD_DECRYPTED("smp.truststore.password.decrypted","","Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false , SMPPropertyTypeEnum.STRING),
 
     SML_KEYSTORE_PASSWORD("bdmsl.integration.keystore.password","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
     SML_KEYSTORE_PATH("bdmsl.integration.keystore.path","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
