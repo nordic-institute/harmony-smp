@@ -40,6 +40,8 @@ export class UserDetailsDialogComponent {
   editMode: boolean;
   userId: number;
   userRoles = [];
+  certificateValidationMessage: string = null;
+  isCertificateInvalid: boolean = true;
   existingRoles = [];
   userForm: FormGroup;
   current: UserRo;
@@ -66,8 +68,11 @@ export class UserDetailsDialogComponent {
     const validTo = control.get('validTo');
     const issuer = control.get('issuer');
     const serialNumber = control.get('serialNumber');
+    const isValid = control.get('isCertificateValid');
     return certificateToggle && subject && validFrom && validTo && issuer && serialNumber
-    && certificateToggle.value && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value) ? {certificateDetailsRequired: true} : null;
+    && certificateToggle.value
+    && isValid
+    && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value) ? {certificateDetailsRequired: true} : null;
   };
 
   private certificateExistValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
@@ -137,6 +142,7 @@ export class UserDetailsDialogComponent {
         status: SearchTableEntityStatus.NEW,
         statusPassword: SearchTableEntityStatus.NEW,
         certificate: this.newCertificateRo(),
+
       };
 
     // The password authentication is if username exists
@@ -175,7 +181,8 @@ export class UserDetailsDialogComponent {
       'validTo': new FormControl({value: '', disabled: true}, Validators.required),
       'issuer': new FormControl({value: '', disabled: true}, Validators.required),
       'serialNumber': new FormControl({value: '', disabled: true}, Validators.required),
-      'certificateId': new FormControl({value: '', disabled: true,}, [Validators.required]
+      'certificateId': new FormControl({value: '', disabled: true,}, [Validators.required]),
+      'isCertificateValid': new FormControl({value: 'true', disabled: true,}, [Validators.requiredTrue]
       ),
     }, {
       validator: [this.passwordConfirmationValidator,
@@ -199,6 +206,7 @@ export class UserDetailsDialogComponent {
     this.userForm.controls['issuer'].setValue(this.current.certificate.issuer);
     this.userForm.controls['serialNumber'].setValue(this.current.certificate.serialNumber);
     this.userForm.controls['certificateId'].setValue(this.current.certificate.certificateId);
+    this.userForm.controls['isCertificateValid'].setValue(!this.current.certificate.invalid);
 
     // if edit mode and user is given - toggle is disabled
     // username should not be changed.!
@@ -223,6 +231,9 @@ export class UserDetailsDialogComponent {
             'serialNumber': res.serialNumber,
             'certificateId': res.certificateId
           });
+          this.certificateValidationMessage = res.invalidReason;
+          this.isCertificateInvalid = res.invalid;
+
         } else {
           this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
         }
@@ -244,6 +255,10 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['validFrom'].setValue(this.tempStoreForCertificate.validFrom);
       this.userForm.controls['validFrom'].setValue(this.tempStoreForCertificate.validFrom);
       this.userForm.controls['validTo'].setValue(this.tempStoreForCertificate.validTo);
+
+      this.certificateValidationMessage = this.tempStoreForCertificate.invalidReason;
+      this.isCertificateInvalid= this.tempStoreForCertificate.invalid;
+
     } else {
       // store data to temp, set values to null
       this.tempStoreForCertificate.certificateId = this.userForm.controls['certificateId'].value;
@@ -252,6 +267,8 @@ export class UserDetailsDialogComponent {
       this.tempStoreForCertificate.serialNumber = this.userForm.controls['serialNumber'].value;
       this.tempStoreForCertificate.validFrom = this.userForm.controls['validFrom'].value;
       this.tempStoreForCertificate.validTo = this.userForm.controls['validTo'].value;
+      this.tempStoreForCertificate.invalidReason = this.certificateValidationMessage;
+      this.tempStoreForCertificate.invalid = this.isCertificateInvalid;
 
       this.userForm.controls['certificateId'].setValue("");
       this.userForm.controls['subject'].setValue("");
@@ -259,6 +276,10 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['serialNumber'].setValue("");
       this.userForm.controls['validFrom'].setValue("");
       this.userForm.controls['validTo'].setValue("");
+      this.userForm.controls['isCertificateValid'].setValue("true");
+
+      this.certificateValidationMessage = null;
+      this.isCertificateInvalid= false;
     }
   }
 

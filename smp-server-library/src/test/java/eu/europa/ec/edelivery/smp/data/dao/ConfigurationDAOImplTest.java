@@ -21,6 +21,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtilsTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -216,7 +218,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
         // give
         String newTestPassword = UUID.randomUUID().toString();
-        String newDBTestPassword = ConfigurationDao.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
+        String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.KEYSTORE_PASSWORD,
                 newDBTestPassword + "", "");
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.TRUSTSTORE_PASSWORD,
@@ -341,7 +343,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     public void testRetrieveNonEncryptedPassword() {
         // given
         String newTestPassword = UUID.randomUUID().toString();
-        String newDBTestPassword = ConfigurationDao.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
+        String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.KEYSTORE_PASSWORD,
                 newDBTestPassword + "", "");
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.TRUSTSTORE_PASSWORD,
@@ -365,21 +367,22 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     public void testGetNonEncryptedValue() {
         // given
         String newTestPassword = UUID.randomUUID().toString();
-        String newDBTestPassword = ConfigurationDao.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
-        String newDBTestPassword2 = ConfigurationDao.DECRYPTED_TOKEN_PREFIX + newTestPassword + "} ";
+        String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
+        String newDBTestPassword2 = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "} ";
         // when
-        String value = configurationDao.getNonEncryptedValue(newDBTestPassword);
-        String value2 = configurationDao.getNonEncryptedValue(newDBTestPassword2);
+        String value = SecurityUtils.getNonEncryptedValue(newDBTestPassword);
+        String value2 = SecurityUtils.getNonEncryptedValue(newDBTestPassword2);
 
         assertEquals(newTestPassword, value);
         assertEquals(newTestPassword, value2);
     }
 
     @Test
+    @Transactional
     public void testUpdateEncryptedValues() {
         // given
         String newTestPassword = UUID.randomUUID().toString();
-        String newDBTestPassword = ConfigurationDao.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
+        String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.KEYSTORE_PASSWORD,
                 newDBTestPassword + "", "");
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.TRUSTSTORE_PASSWORD,
