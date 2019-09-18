@@ -97,7 +97,7 @@ public class UserResource {
 
     @PostMapping(value = "/{id}/certdata" ,produces = {"application/json"},consumes = {"application/octet-stream"})
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
-    public CertificateRO uploadFile(@PathVariable("id") Long id, @RequestBody byte[] data) {
+    public CertificateRO uploadCertificate(@PathVariable("id") Long id, @RequestBody byte[] data) {
         LOG.info("Got certificate data size: {}", data.length);
 
 

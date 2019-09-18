@@ -138,10 +138,13 @@ public class UITruststoreService {
         X509Certificate cert = X509CertificateUtils.getX509Certificate(buff);
         CertificateRO cro = convertToRo(cert);
         if (validate) {
+            // first expect the worst
             cro.setInvalid(true);
+            cro.setInvalidReason("Certificate is not validated!");
             try {
                 checkFullCertificateValidity(cert);
                 cro.setInvalid(false);
+                cro.setInvalidReason(null);
             } catch (CertificateExpiredException ex) {
                 cro.setInvalidReason("Certificate is expired!");
             } catch (CertificateNotYetValidException ex) {
@@ -161,7 +164,9 @@ public class UITruststoreService {
         cert.checkValidity();
         // check if certificate or its issuer is on trusted list
         // check only issuer because using bluecoat Client-cert we do not have whole chain.
-        if (!(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
+        // if the truststore is empty then truststore validation is ignored
+        // backward compatibility
+        if ( !normalizedTrustedList.isEmpty()  &&  !(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
                 || isSubjectOnTrustedList(cert.getIssuerDN().getName()))) {
 
             throw new CertificateNotTrustedException("Certificate is not trusted!");
@@ -172,7 +177,8 @@ public class UITruststoreService {
 
     boolean isTruststoreChanged() {
         File file = getTruststoreFile();
-        return !Objects.equals(lastUpdateTrustStoreFile, file) || file.lastModified() != lastUpdateTrustoreFileTime;
+        return !Objects.equals(lastUpdateTrustStoreFile, file) ||
+                file!=null && file.lastModified() != lastUpdateTrustoreFileTime;
     }
 
     public File getTruststoreFile() {
@@ -180,6 +186,11 @@ public class UITruststoreService {
     }
 
     private KeyStore loadTruststore(File truststoreFile) {
+
+        if (truststoreFile==null) {
+            LOG.error("Truststore file is not configured! Update SMP configuration!");
+            return null;
+        }
         // Load the KeyStore.
         if (!truststoreFile.exists()) {
             LOG.error("Truststore file '{}' does not exists!", truststoreFile.getAbsolutePath());
