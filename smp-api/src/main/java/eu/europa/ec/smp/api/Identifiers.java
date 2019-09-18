@@ -58,7 +58,12 @@ public class Identifiers {
     }
 
     public static String asString(ParticipantIdentifierType participantId) {
-        String format = StringUtils.isBlank(participantId.getScheme()) &&
+        if(StringUtils.isBlank(participantId.getScheme())) {
+            // if scheme is empty just return value (for OASIS SMP 1.0 must start with :: )
+            return  (StringUtils.startsWithIgnoreCase(participantId.getScheme(), EBCORE_IDENTIFIER_PREFIX)?
+                   "":"::")  + participantId.getValue();
+        }
+        String format =
                 StringUtils.startsWithIgnoreCase(participantId.getScheme(), EBCORE_IDENTIFIER_PREFIX)?
                 EBCORE_IDENTIFIER_FORMAT:DOUBLE_COLON_IDENTIFIER_FORMAT;
 
