@@ -2,7 +2,7 @@
   "/rest/**": {
     "target": "http://localhost:8080/smp/ui/",
     "changeOrigin": true,
-    "secure": false,
+    "secure": true  ,
     "logLevel": "debug"
   }
 }

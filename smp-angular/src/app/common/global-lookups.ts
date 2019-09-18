@@ -8,7 +8,7 @@ import {Role} from "../security/role.model";
 import {AlertService} from "../alert/alert.service";
 import {Subscription} from "rxjs/internal/Subscription";
 import {SmpInfo} from "../app-info/smp-info.model";
-import {ReplaySubject} from "rxjs/index";
+import {SmpConfig} from "../app-config/smp-config.model";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -27,6 +27,7 @@ export class GlobalLookups implements OnInit {
   cachedCertificateList: Array<any> = [];
   cachedCertificateAliasList: Array<String> = [];
   cachedApplicationInfo: SmpInfo;
+  cachedApplicationConfig: SmpConfig;
   cachedTrustedCertificateList: Array<any> = [];
 
 
@@ -36,8 +37,8 @@ export class GlobalLookups implements OnInit {
     this.refreshUserLookup();
     this.refreshCertificateLookup();
     this.refreshApplicationInfo();
+    this.refreshApplicationConfiguration();
     this.refreshTrustedCertificateLookup();
-
   }
 
   ngOnInit() {
@@ -70,6 +71,20 @@ export class GlobalLookups implements OnInit {
         }
       );
 
+  }
+  public refreshApplicationConfiguration() {
+  // check if authenticated
+    this.securityService.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
+      if(isAuthenticated) {
+        this.http.get<SmpConfig>(SmpConstants.REST_CONFIG)
+          .subscribe((res: SmpConfig) => {
+              this.cachedApplicationConfig = res;
+            }, error => {
+              console.log("getSmpConfig:" + error);
+            }
+          );
+      }
+    });
   }
 
   public refreshUserLookup() {
