@@ -1,6 +1,6 @@
 <div fxLayout="column" fxFill="100" style=" top: 5px; bottom: 5px; left: 5px; right: 5px;">
   <h1  flex id="{{id}}_header_id" style="margin: 0 !important;">{{title}}</h1>
-  <div *ngIf="showSearchPanel" fxFlex="20" class="selectionCriteria">
+  <div *ngIf="showSearchPanel" fxFlex="170px" class="selectionCriteria">
     <mat-card>
       <mat-card-content>
         <div class="panel">
@@ -93,8 +93,8 @@
       </a>
     </ng-template>
   </div>
-  <div fxFlex="50px">
-    <ng-container *ngIf=showActionButtons>
+  <div fxFlex="50px"  *ngIf=showActionButtons >
+    <ng-container>
 
         <button id="cancelButton" mat-raised-button (click)="onCancelButtonClicked()" color="primary"
                 [disabled]="!submitButtonsEnabled">
