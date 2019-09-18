@@ -18,6 +18,8 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.smp.api.Identifiers;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -93,8 +95,20 @@ public class ServiceGroupConverter {
      */
     public static ServiceGroup unmarshal(byte[] serviceGroupXml) {
         try {
+            System.out.println("UNMARSHAL SERVICE GROUP " + new String(serviceGroupXml));
             Document serviceGroupDoc = parse(serviceGroupXml);
-            return getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
+            ServiceGroup serviceGroup =  getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
+            if (serviceGroup!=null && serviceGroup.getParticipantIdentifier()!=null
+            && StringUtils.isBlank(serviceGroup.getParticipantIdentifier().getScheme())
+            && StringUtils.startsWithAny(serviceGroup.getParticipantIdentifier().getValue(),
+                    Identifiers.EBCORE_IDENTIFIER_PREFIX,
+                    "::"+Identifiers.EBCORE_IDENTIFIER_PREFIX)){
+                // normalize participant identifier
+                LOG.info("Normalize ebCore identifier: " + serviceGroup.getParticipantIdentifier().getValue());
+                ParticipantIdentifierType participantIdentifierType = Identifiers.asParticipantId(serviceGroup.getParticipantIdentifier().getValue());
+                serviceGroup.setParticipantIdentifier(participantIdentifierType);
+            }
+            return serviceGroup;
         } catch (ParserConfigurationException | IOException | SAXException | JAXBException ex) {
             throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION,ex,ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));
         }

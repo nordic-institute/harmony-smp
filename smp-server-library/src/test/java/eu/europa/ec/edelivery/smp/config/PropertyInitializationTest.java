@@ -82,8 +82,8 @@ public class PropertyInitializationTest {
         Properties dbSettings = new Properties();
         testInstance.initNewValues(em, fileSettings, dbSettings);
 
-        assertEquals(4, dbSettings.size());
-        Mockito.verify(em, times(5)).persist(any()); // five times - save also non encrypted message
+        assertEquals(6, dbSettings.size());
+        Mockito.verify(em, times(8)).persist(any()); // five times - save also non encrypted message
         // more that one certificate in keystore
         Mockito.verify(em, times(0)).createNamedQuery("DBDomain.updateNullSignAlias"); // five times - save also non encrypted message
         // SML truststore is not set

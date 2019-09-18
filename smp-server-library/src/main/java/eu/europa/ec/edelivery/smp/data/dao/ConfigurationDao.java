@@ -41,7 +41,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
 public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
 
-    public static final String DECRYPTED_TOKEN_PREFIX = "{DEC}{";
+
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
 
@@ -229,22 +229,16 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return propertyValues;
     }
 
-
-    @Transactional
     public void updateCurrentEncryptedValues() {
         File encryptionKey = (File) cachedPropertyValues.get(ENCRYPTION_FILENAME.getProperty());
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
             String value = getProperty(cachedProperties, prop);
-            if (prop.isEncrypted() && !StringUtils.isBlank(value) && value.startsWith(DECRYPTED_TOKEN_PREFIX)) {
-                String valToEncrypt = getNonEncryptedValue(value);
+            if (prop.isEncrypted() && !StringUtils.isBlank(value) && value.startsWith( SecurityUtils.DECRYPTED_TOKEN_PREFIX)) {
+                String valToEncrypt = SecurityUtils.getNonEncryptedValue(value);
                 String encVal = encryptString(prop, valToEncrypt, encryptionKey);
                 setPropertyToDatabase(prop, encVal, prop.getDesc());
             }
         }
-    }
-
-    protected String getNonEncryptedValue(String value) {
-        return value.substring(DECRYPTED_TOKEN_PREFIX.length(), value.lastIndexOf('}'));
     }
 
 
@@ -291,8 +285,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
                 // try to decrypt it.
                 if (StringUtils.isBlank(value)) {
                     parsedProperty = null;
-                } else if (value.startsWith(DECRYPTED_TOKEN_PREFIX)) {
-                    parsedProperty = getNonEncryptedValue(value);
+                } else if (value.startsWith(SecurityUtils.DECRYPTED_TOKEN_PREFIX)) {
+                    parsedProperty = SecurityUtils.getNonEncryptedValue(value);
                 } else {
                     parsedProperty = decryptString(prop, value, encryptionKeyFile);
                 }

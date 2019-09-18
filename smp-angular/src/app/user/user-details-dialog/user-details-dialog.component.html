@@ -135,6 +135,11 @@
                    id="certificateId_id"
                   resizeable="true">
           </mat-form-field>
+          <div
+            *ngIf="isCertificateInvalid"
+            [style.color]="'red'">
+            {{certificateValidationMessage}}
+          </div>
 
           <label class="custom-file-upload">
             <input #fileInput type="file" id="custom-file-upload" accept=".cer,.crt,.pem,.der"
@@ -152,7 +157,7 @@
     <tr>
       <td>
         <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()"
-                [disabled]="!userForm.valid">
+                [disabled]="!userForm.valid || this.current && this.current.certificate && this.current.certificate.invalid">
           <mat-icon>check_circle</mat-icon>
           <span>OK</span>
         </button>
