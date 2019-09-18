@@ -60,11 +60,11 @@ public class CRLVerifierService {
 
     Map<String, X509CRL> crlCacheMap = new HashMap<>();
     Map<String, Long> crlCacheNextRefreshMap = new HashMap<>();
-    public static long REFRESH_CRL_INTERVAL = 1000 * 60 * 60;
-    public static Long NULL_LONG = new Long(-1);
+    public static final long REFRESH_CRL_INTERVAL = 1000L * 60 * 60;
+    public static final Long NULL_LONG = Long.valueOf(-1);
 
-    private static X500Principal NULL_ISSUER = new X500Principal("");
-    private static CRLReason NULL_CRL_REASON = CRLReason.UNSPECIFIED;
+    private static final X500Principal NULL_ISSUER = new X500Principal("");
+    private static final CRLReason NULL_CRL_REASON = CRLReason.UNSPECIFIED;
 
     @Autowired
     ConfigurationService configurationService;
@@ -105,43 +105,35 @@ public class CRLVerifierService {
         }
         Date currentDate = Calendar.getInstance().getTime();
         String url = crlURL.trim();
+        x509CRL = getCachedCRLByURL(url, currentDate);
+
+        if (x509CRL == null) {
+            // if CRL is null try to get one
+            boolean mandatoryCrlValidation = configurationService.forceCRLValidation();
+            x509CRL = downloadCRL(crlURL,mandatoryCrlValidation);
+            // calculate next update in milliseconds...
+            Long nextRefresh = x509CRL != null && x509CRL.getNextUpdate() != null ? x509CRL.getNextUpdate().getTime()
+                    : currentDate.getTime() + REFRESH_CRL_INTERVAL;
+
+            // set /replace data
+            crlCacheMap.put(crlURL, x509CRL);
+            crlCacheNextRefreshMap.put(crlURL, nextRefresh);
+        }
+        return x509CRL;
+    }
+
+    protected X509CRL getCachedCRLByURL(String crlURL, Date currentDate) {
+        X509CRL x509CRL = null;
+        if (StringUtils.isBlank(crlURL)) {
+            return x509CRL;
+        }
+        String url = crlURL.trim();
         if (crlCacheMap.containsKey(url)) {
             X509CRL crlTmp = crlCacheMap.get(url);
             Long nextRefresh = crlCacheNextRefreshMap.getOrDefault(url, NULL_LONG);
             if (nextRefresh > currentDate.getTime()) {
                 x509CRL = crlTmp;
             }
-        }
-        if (x509CRL == null) {
-
-            SMPRuntimeException exception = null;
-            try {
-                x509CRL = downloadCRL(crlURL);
-            } catch (IOException e) {
-                exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL
-                        , ExceptionUtils.getRootCauseMessage(e), e);
-            } catch (CertificateException e) {
-                exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL
-                        , ExceptionUtils.getRootCauseMessage(e), e);
-            } catch (CRLException e) {
-                exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL
-                        , ExceptionUtils.getRootCauseMessage(e), e);
-            }
-
-            if (exception != null) {
-                boolean force = configurationService.forceCRLValidation();
-                if (force) {
-                    throw exception;
-                } else {
-                    LOG.warn(SMPLogger.SECURITY_MARKER, exception.getMessage(), exception);
-                }
-
-            }
-            Long nextRefresh = x509CRL != null && x509CRL.getNextUpdate() != null ? x509CRL.getNextUpdate().getTime()
-                    : currentDate.getTime() + REFRESH_CRL_INTERVAL;
-
-            crlCacheMap.put(crlURL, x509CRL);
-            crlCacheNextRefreshMap.put(crlURL, nextRefresh);
         }
         return x509CRL;
     }
@@ -151,16 +143,34 @@ public class CRLVerifierService {
      * Downloads CRL from given URL. Supports http, https, ftp based
      * URLs.
      */
-    public X509CRL downloadCRL(String crlURL) throws IOException,
-            CertificateException, CRLException {
-
-        InputStream crlStream = downloadURL(crlURL);
+    public X509CRL downloadCRL(String crlURL, boolean mandatoryCRLValidation) {
 
         X509CRL crl = null;
-        if (crlStream != null) {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            crl = (X509CRL) cf.generateCRL(crlStream);
-            crlStream.close();
+        SMPRuntimeException exception = null;
+        try ( InputStream crlStream = downloadURL(crlURL)){
+            if (crlStream != null) {
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                crl = (X509CRL) cf.generateCRL(crlStream);
+            }
+        } catch (IOException e) {
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL
+                    , ExceptionUtils.getRootCauseMessage(e), e);
+        } catch (CertificateException e) {
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL
+                    , ExceptionUtils.getRootCauseMessage(e), e);
+        } catch (CRLException e) {
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL
+                    , ExceptionUtils.getRootCauseMessage(e), e);
+        } catch(SMPRuntimeException exc) {
+            exception = exc;
+        }
+        // if exception occurred
+        if (exception != null ) {
+            if (mandatoryCRLValidation) {
+                throw exception;
+            } else {
+                LOG.warn(SMPLogger.SECURITY_MARKER, exception.getMessage(), exception);
+            }
         }
         return crl;
     }
@@ -209,8 +219,10 @@ public class CRLVerifierService {
             RequestConfig config = RequestConfig.custom().setProxy(new HttpHost(proxyHost, proxyPort)).build();
             HttpGet httpget = new HttpGet(url);
             httpget.setConfig(config);
-            LOG.debug("Executing request '{}' via proxy '{}' {}",url, proxyHost,
-                    (credentialsProvider == null ? " with no authentication." : "with username: " + proxyUser + "."));
+            // log username
+            String logUserName = credentialsProvider == null ? "None" :  proxyUser;
+            LOG.debug("Executing request '{}' via proxy '{}' with user: '{}'.",url, proxyHost,
+                    logUserName);
 
             return execute(httpclient, httpget);
         }
