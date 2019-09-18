@@ -56,8 +56,9 @@
   </mat-sidenav>
 
   <!-- primary content -->
-  <div fxLayout="column" id=".my-content" style="position:absolute; bottom:5px; top:5px; right: 5px; left: 5px">
-    <alert style=" left:220px; top:0;right:0;z-index: 500"></alert>
+  <div fxLayout="column" id=".my-content" style="position:absolute; bottom:5px; top:5px; right: 5px; left: 5px"
+       [style.margin-left]="fullMenu? '225px' : '65px'">
+    <alert></alert>
 
     <div  id="sandwichMenuHolder" style="z-index: 500">
       <div id="sandwichMenu">
@@ -96,7 +97,7 @@
       </div>
     </div>
 
-    <div fxFill="100" id="routerHolder" style="min-height: 100%" >
+    <div fxFill="100" fxFlex="<grow> <shrink> <basis>" id="routerHolder" style="min-height: 100%" >
         <router-outlet></router-outlet>
     </div>
   </div>
