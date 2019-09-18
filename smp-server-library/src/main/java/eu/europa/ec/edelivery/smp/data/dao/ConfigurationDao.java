@@ -40,9 +40,6 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
 @Repository(value = "configurationDao")
 public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
-
-
-
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
 
 
@@ -143,7 +140,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
             reloadPropertiesFromDatabase();
         } else {
-            LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed: {}."+ lastUpdateFromDB );
+            LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed: {}.", lastUpdateFromDB );
         }
     }
 
@@ -209,6 +206,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
                     String.join(",", lstMissingProperties)));
         }
 
+
         Map<String, Object> propertyValues = parseProperties(properties);
 
         // property validation
@@ -229,6 +227,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return propertyValues;
     }
 
+    @Transactional
     public void updateCurrentEncryptedValues() {
         File encryptionKey = (File) cachedPropertyValues.get(ENCRYPTION_FILENAME.getProperty());
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
@@ -242,8 +241,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
 
-    protected Map<String, Object> parseProperties(Properties properties) {
-
+    protected void validateBasicProperties(Properties properties){
         // retrieve and validate  configuration dir and encryption filename
         // because they are important for 'parsing and validating' other parameters
         String configurationDir = getProperty(properties, CONFIGURATION_DIR);
@@ -267,6 +265,19 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Encryption file does not exists or is not a File! Value:  %s",
                     encryptionKeyFile.getAbsolutePath()));
         }
+    }
+
+
+    protected Map<String, Object> parseProperties(Properties properties) {
+
+        // retrieve and validate  configuration dir and encryption filename
+        // because they are important for 'parsing and validating' other parameters
+        validateBasicProperties(properties);
+        String configurationDir = getProperty(properties, CONFIGURATION_DIR);
+        String encryptionKeyFilename = getProperty(properties, ENCRYPTION_FILENAME);
+
+        File configFolder = new File(configurationDir);
+        File encryptionKeyFile = new File(configurationDir, encryptionKeyFilename);
 
         Map<String, Object> propertyValues = new HashMap();
         // put the first two values
