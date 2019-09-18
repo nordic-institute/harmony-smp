@@ -28,7 +28,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   static readonly EDIT_MODE = 'ServiceGroup Edit';
 
 
-  readonly participantSchemePattern ='^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$';
+  participantSchemePattern = '^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$';
+  participantSchemeMessage = '';
 
   @ViewChild('domainSelector') domainSelector: any;
 
@@ -55,7 +56,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
 
   multiDomainOn(multidomainOn: boolean) {
     return (c: AbstractControl): { [key: string]: any } => {
-      if (c.value && c.value.length < 2 || multidomainOn )
+      if (c.value && c.value.length < 2 || multidomainOn)
         return null;
 
       return {'multiDomainError': {valid: false}};
@@ -88,6 +89,13 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
         extension: '',
         status: SearchTableEntityStatus.NEW,
       };
+
+    if (this.lookups.cachedApplicationConfig) {
+      this.participantSchemePattern = this.lookups.cachedApplicationConfig.participantSchemaRegExp != null ?
+        this.lookups.cachedApplicationConfig.participantSchemaRegExp : ".*"
+
+      this.participantSchemeMessage = this.lookups.cachedApplicationConfig.participantSchemaRegExpMessage;
+    }
     // user is new when reopening the new item in edit mode!
     // allow to change data but warn on error!
 
@@ -132,7 +140,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.changeDetector.detectChanges()
   }
 
-  isDomainProperlyConfigured(domain: DomainRo){
+  isDomainProperlyConfigured(domain: DomainRo) {
     if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
       return domain.smlSmpId && (domain.smlClientKeyAlias || domain.smlClientCertHeader);
     } else {
@@ -151,7 +159,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       participantScheme: this.dialogForm.controls['participantScheme'].value,
       participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
       extension: this.dialogForm.controls['extension'].value,
-      statusAction: this.editMode?SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.NEW,
+      statusAction: this.editMode ? SearchTableEntityStatus.UPDATED : SearchTableEntityStatus.NEW,
     }
     //
     let validationObservable = this.http.post<ServiceGroupValidationRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_VALIDATE, request);
@@ -161,7 +169,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
 
         this.isExtensionValid = false;
         this.showSpinner = false;
-        if (res.errorCode == ServiceGroupValidationErrorCodeModel.ERROR_CODE_SERVICE_GROUP_EXISTS){
+        if (res.errorCode == ServiceGroupValidationErrorCodeModel.ERROR_CODE_SERVICE_GROUP_EXISTS) {
           this.dialogForm.controls['participantIdentifier'].setErrors({'dbExist': true});
         } else {
           this.extensionValidationMessage = res.errorMessage;
@@ -248,12 +256,12 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     return this.current;
   }
 
-  dataChanged(){
-    if (this.current.status === SearchTableEntityStatus.NEW){
+  dataChanged() {
+    if (this.current.status === SearchTableEntityStatus.NEW) {
       return true;
     }
     return this.current.users !== this.dialogForm.value['users'];
-           this.current.extension !== this.dialogForm.value['extension'];
+    this.current.extension !== this.dialogForm.value['extension'];
   }
 
   onExtensionDelete() {

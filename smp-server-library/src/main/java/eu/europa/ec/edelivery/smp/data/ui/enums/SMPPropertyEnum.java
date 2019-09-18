@@ -12,7 +12,10 @@ public enum SMPPropertyEnum {
 
     OUTPUT_CONTEXT_PATH ("contextPath.output","true","This property controls pattern of URLs produced by SMP in GET ServiceGroup responses." , true, false , SMPPropertyTypeEnum.BOOLEAN),
 
-    PARTC_SCH_REGEXP ("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex","^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)","Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false , SMPPropertyTypeEnum.REGEXP),
+    PARTC_SCH_REGEXP ("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex","^((?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)|urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:).+)","Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false , SMPPropertyTypeEnum.REGEXP),
+    PARTC_SCH_REGEXP_MSG ("identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
+            "Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long. The Scheme Identifier MUST take the form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9]+-[a-z0-9]+-[a-z0-9]+. ", "Error message for UI",false, false , SMPPropertyTypeEnum.STRING),
+
     CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes","casesensitive-participant-scheme1|casesensitive-participant-scheme2","Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.LIST_STRING),
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes","casesensitive-doc-scheme1|casesensitive-doc-scheme2","Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.", false, false , SMPPropertyTypeEnum.LIST_STRING),
 
@@ -38,6 +41,7 @@ public enum SMPPropertyEnum {
     CONFIGURATION_DIR("configuration.dir","./","Path to the folder containing all the configuration files (keystore and encryption key)", true, false , SMPPropertyTypeEnum.PATH),
     ENCRYPTION_FILENAME("encryption.key.filename","encryptionPrivateKey.private","Key filename to encrypt passwords", false, false , SMPPropertyTypeEnum.FILENAME),
     KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted","","Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false , SMPPropertyTypeEnum.STRING),
+    TRUSTSTORE_PASSWORD_DECRYPTED("smp.truststore.password.decrypted","","Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false , SMPPropertyTypeEnum.STRING),
 
     SML_KEYSTORE_PASSWORD("bdmsl.integration.keystore.password","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
     SML_KEYSTORE_PATH("bdmsl.integration.keystore.path","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
@@ -65,7 +69,6 @@ public enum SMPPropertyEnum {
         this.isEncrypted=isEncrypted;
         this.isMandatory=isMandatory;
         this.propertyType=propertyType;
-
     }
 
     public String getProperty() {

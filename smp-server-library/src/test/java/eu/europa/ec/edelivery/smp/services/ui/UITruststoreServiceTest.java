@@ -275,13 +275,12 @@ public class UITruststoreServiceTest extends AbstractServiceIntegrationTest {
 
         Mockito.doReturn(crl).when(crlVerifierService).getCRLByURL(crlUrl);
 
-        String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
         to.add(Calendar.DAY_OF_YEAR, 1);
         from.add(Calendar.DAY_OF_YEAR, -2);
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
-                revokedSerialFromList, certSubject, certSubject, from.getTime(), to.getTime(), Collections.singletonList(crlUrl));
+                revokedSerialFromList, S_SUBJECT_PEPPOL_NOT_TRUSTED, S_SUBJECT_PEPPOL_NOT_TRUSTED, from.getTime(), to.getTime(), Collections.singletonList(crlUrl));
         //then
         expectedEx.expect(CertificateNotTrustedException.class);
         // when

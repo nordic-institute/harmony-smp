@@ -15,7 +15,8 @@ import {CertificateRo} from "../certificate-ro.model";
 
 @Component({
   selector: 'truststore-edit-dialog',
-  templateUrl: './truststore-edit-dialog.component.html'
+  templateUrl: './truststore-edit-dialog.component.html',
+  styleUrls: ['truststore-edit-dialog.component.css']
 })
 export class TruststoreEditDialogComponent {
   formTitle: string;
@@ -87,15 +88,6 @@ export class TruststoreEditDialogComponent {
     );
   }
 
-  /* openImportKeystoreDialog() {
-     const formRef: MatDialogRef<any> = this.dialog.open(KeystoreImportDialogComponent);
-     formRef.afterClosed().subscribe(result => {
-       if (result) {
-         // import
-       }
-     });
-   }
-*/
   onActivate(event) {
     if ("dblclick" === event.type) {
       this.onShowCertificateDataRow(event.row);

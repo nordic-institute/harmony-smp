@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.crypto.*;
@@ -21,6 +23,9 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 public class SecurityUtils {
 
+    private static final String VALID_PW_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
+    private static final int DEFAULT_PASSWORD_LENGTH = 16;
+
     public static final String ALGORITHM_KEY = "AES";
     public static final String ALGORITHM_ENCRYPTION = "AES/GCM/NoPadding";
     public static final String ALGORITHM_ENCRYPTION_OBSOLETE = "AES/CBC/PKCS5Padding";
@@ -31,6 +36,12 @@ public class SecurityUtils {
     // NULL IV is for CBC which  has IV size 16!
     private static final IvParameterSpec NULL_IV = new IvParameterSpec(new byte[16]);
 
+    public static final String DECRYPTED_TOKEN_PREFIX = "{DEC}{";
+
+
+    public static String getNonEncryptedValue(String value) {
+        return value.substring(DECRYPTED_TOKEN_PREFIX.length(), value.lastIndexOf("}"));
+    }
 
     /**
      * Insert keys/certificates from sourceKeystore to target Keystore. If certificate with alias already exists alias is
@@ -69,6 +80,20 @@ public class SecurityUtils {
         return newAlias;
     }
 
+    public static String generateStrongPassword(){
+        String newKeyPassword = null;
+        try {
+            newKeyPassword = RandomStringUtils.random(DEFAULT_PASSWORD_LENGTH, 0, VALID_PW_CHARS.length(),
+                    false, false,
+                    VALID_PW_CHARS.toCharArray(), SecureRandom.getInstanceStrong());
+        } catch (NoSuchAlgorithmException e) {
+            String msg = "Error occurred while generation test password: No strong random algorithm. Error:"
+                    + ExceptionUtils.getRootCauseMessage(e);
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, msg, e.getMessage());
+        }
+        return newKeyPassword;
+    }
+
     public static void generatePrivateSymmetricKey(File path) {
 
         try {
@@ -98,7 +123,15 @@ public class SecurityUtils {
         }
     }
 
-    public static String encrypt(File path, String plainTextPassword) {
+    public static String encryptWrappedToken(File encKeyFile, String token) {
+        if (!StringUtils.isBlank(token) && token.startsWith( SecurityUtils.DECRYPTED_TOKEN_PREFIX) ){
+            String unWrapToken = getNonEncryptedValue(token);
+             return SecurityUtils.encrypt(encKeyFile, unWrapToken);
+        }
+        return token;
+    }
+
+    public static String encrypt(File path, String plainToken) {
         try {
             byte[] buff = Files.readAllBytes(path.toPath());
             AlgorithmParameterSpec iv = getSaltParameter(buff);
@@ -106,7 +139,7 @@ public class SecurityUtils {
 
             Cipher cipher = Cipher.getInstance(iv == NULL_IV ? ALGORITHM_ENCRYPTION_OBSOLETE : ALGORITHM_ENCRYPTION);
             cipher.init(Cipher.ENCRYPT_MODE, privateKey, iv);
-            byte[] encryptedData = cipher.doFinal(plainTextPassword.getBytes());
+            byte[] encryptedData = cipher.doFinal(plainToken.getBytes());
             return new String(Base64.getEncoder().encode(encryptedData));
         } catch (Exception exc) {
             throw new SMPRuntimeException(INTERNAL_ERROR, exc, "Error occurred while encrypting the password", exc.getMessage());

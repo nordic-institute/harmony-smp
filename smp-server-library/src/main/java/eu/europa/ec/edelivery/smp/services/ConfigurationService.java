@@ -61,15 +61,21 @@ public class ConfigurationService {
         return (Pattern)configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP);
     }
 
+    public String getParticipantIdentifierSchemeRexExpPattern(){
+        return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP);
+    }
+
+    public String getParticipantIdentifierSchemeRexExpMessage(){
+        return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP_MSG);
+    }
+
     public String getHttpProxyHost() {
         return configurationDAO.getCachedProperty(HTTP_PROXY_HOST);
     }
 
-
     public String getHttpNoProxyHosts() {
         return configurationDAO.getCachedProperty(HTTP_NO_PROXY_HOSTS);
     }
-
 
     public Optional<Integer> getHttpProxyPort() {
         Integer intVal = (Integer) configurationDAO.getCachedPropertyValue(HTTP_PROXY_PORT);

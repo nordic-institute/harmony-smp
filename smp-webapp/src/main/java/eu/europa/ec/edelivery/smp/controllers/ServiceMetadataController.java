@@ -56,8 +56,6 @@ public class ServiceMetadataController {
     @Autowired
     private ServiceMetadataService serviceMetadataService;
 
-    @Autowired
-    private ServiceGroupService serviceGroupService;
 
     @Autowired
     private ServiceMetadataPathBuilder pathBuilder;
