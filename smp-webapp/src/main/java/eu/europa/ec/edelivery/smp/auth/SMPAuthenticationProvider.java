@@ -60,7 +60,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         Authentication authentication = null;
         // PreAuthentication token for the rest service certificate authentication
         if (authenticationToken instanceof PreAuthenticatedAuthenticationToken) {
-
             Object principal = authenticationToken.getPrincipal();
             if (principal instanceof PreAuthenticatedCertificatePrincipal) {
                 authentication = authenticateByCertificateToken((PreAuthenticatedCertificatePrincipal) principal);
@@ -90,9 +89,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      * @return authentication value.
      */
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
-        mUserDao.findUserByCertificateId(principal.getName());
-
-        DBUser user;
+        LOG.info("authenticateByCertificateToken:" + principal.getName());
+              DBUser user;
         String userToken = principal.getName();
         try {
 
@@ -112,30 +110,38 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
 
         }
-        DBCertificate certificate = user.getCertificate();
 
+        DBCertificate certificate = user.getCertificate();
         // check if certificate is valid
         Date currentDate = Calendar.getInstance().getTime();
         // validate  dates
         if (principal.getNotBefore().after(currentDate)) {
-            throw new AuthenticationServiceException("Invalid certificate: NotBefore: " + dateFormatLocal.get().format(principal.getNotBefore()));
+            String msg = "Invalid certificate: Not Before: " + dateFormatLocal.get().format(principal.getNotBefore());
+            LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
+            throw new AuthenticationServiceException(msg);
         } else if (principal.getNotAfter().before(currentDate)) {
-            throw new AuthenticationServiceException("Invalid certificate:  NotAfter: " + dateFormatLocal.get().format(principal.getNotAfter()));
+            String msg = "Invalid certificate:  Not After: " + dateFormatLocal.get().format(principal.getNotAfter());
+            LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
+            throw new AuthenticationServiceException(msg);
         }
         // check if issuer or subject are in trusted list
         if (!(truststoreService.isSubjectOnTrustedList(principal.getSubjectOriginalDN())
          || truststoreService.isSubjectOnTrustedList(principal.getIssuerDN()) )) {
-            throw new AuthenticationServiceException("Non of the Certificate: '" + principal.getSubjectOriginalDN() + "'" +
-                    " or issuer: '"+principal.getIssuerDN()+"' are trusted!");
+            String msg = "Non of the Certificate: '" + principal.getSubjectOriginalDN() + "'" +
+                    " or issuer: '"+principal.getIssuerDN()+"' are trusted!";
+            LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
+            throw new AuthenticationServiceException(msg);
         }
-
         // Check crl list
         String url = certificate.getCrlUrl();
         if (!StringUtils.isBlank(url)) {
             try {
                 crlVerifierService.verifyCertificateCRLs(certificate.getSerialNumber(), url);
             } catch (CertificateRevokedException ex) {
-                throw new AuthenticationServiceException("Revoked certificate!");
+                String msg = "Certificate: '" + principal.getSubjectOriginalDN() + "'" +
+                        ", issuer: '"+principal.getIssuerDN()+"' is revoked!";
+                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
+                throw new AuthenticationServiceException(msg);
             } catch (Throwable th) {
                 String msg = "Error occurred while validating CRL for certificate!";
                 LOG.error(SMPLogger.SECURITY_MARKER, msg + "Err: " + ExceptionUtils.getRootCauseMessage(th), th);
@@ -176,27 +182,29 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
             user = oUsr.get();
         } catch (AuthenticationException ex) {
+            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
             throw ex;
 
         } catch (RuntimeException ex) {
-            LOG.error("Database connection error", ex);
+            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
             throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
 
         }
         String role = user.getRole();
+        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(username, password, Collections.singletonList(new SMPAuthority(role)), user);
         try {
             if (!BCrypt.checkpw(password, user.getPassword())) {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, username);
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
-
+           // smpAuthenticationToken.setAuthenticated(true);
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed;
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, username);
             throw new BadCredentialsException("Login failed; Invalid userID or password");
         }
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, username, role);
-        return new SMPAuthenticationToken(username, password, Collections.singletonList(new SMPAuthority(role)), user);
+        return smpAuthenticationToken;
     }
 
     @Override

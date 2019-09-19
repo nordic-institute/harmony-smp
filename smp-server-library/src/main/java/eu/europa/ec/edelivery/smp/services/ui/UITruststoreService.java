@@ -215,7 +215,8 @@ public class UITruststoreService {
 
     public boolean isSubjectOnTrustedList(String subject) {
 
-        if (!useTrustStore()) {
+        // do not validate if list is empty
+        if (!useTrustStore() || normalizedTrustedList.isEmpty()) {
             return true;
         }
 
