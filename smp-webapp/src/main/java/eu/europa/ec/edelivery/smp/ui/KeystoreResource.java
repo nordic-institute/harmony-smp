@@ -59,14 +59,11 @@ public class KeystoreResource {
         LOG.info("Got keystore data size: {}, type {}, password length {}", fileBytes.length, keystoreType, password.length());
         // try to open keystore
         KeystoreImportResult keystoreImportResult = new KeystoreImportResult();
-
-
-        KeyStore keyStore = null;
+          KeyStore keyStore = null;
         try {
-            keyStore = KeyStore.getInstance("JKS");
+            keyStore = KeyStore.getInstance(keystoreType);
             keyStore.load(new ByteArrayInputStream(fileBytes), password.toCharArray());
-
-            LOG.info(keyStore.aliases().nextElement());
+            LOG.debug(keyStore.aliases().nextElement());
             uiKeystoreService.importKeys(keyStore, password);
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException e) {
             String msg = e.getClass().getName() +" occurred while reading the keystore: " + e.getMessage();

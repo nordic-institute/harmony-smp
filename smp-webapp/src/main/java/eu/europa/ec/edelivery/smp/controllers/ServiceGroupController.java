@@ -108,7 +108,7 @@ public class ServiceGroupController {
 
     @DeleteMapping
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
-    public void deleteServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
+    public ResponseEntity deleteServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_GROUP,authentUser, host, serviceGroupId);
@@ -118,6 +118,7 @@ public class ServiceGroupController {
         serviceGroupService.deleteServiceGroup(aServiceGroupID);
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_GROUP,authentUser, host, serviceGroupId);
+        return ok().build();
     }
 
     private void addReferences(ServiceGroup serviceGroup) {
