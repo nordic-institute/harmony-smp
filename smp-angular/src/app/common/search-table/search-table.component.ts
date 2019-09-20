@@ -167,8 +167,7 @@ export class SearchTableComponent implements OnInit {
       // try again
       if (result.count < 1 && offset > 0) {
         this.pageInternal(offset--, pageSize, orderBy, asc)
-      }
-      else {
+      } else {
         this.offset = offset;
         this.rowLimiter.pageSize = pageSize;
         this.orderBy = orderBy;
@@ -233,7 +232,7 @@ export class SearchTableComponent implements OnInit {
         this.rows = [...this.rows, {...formRef.componentInstance.getCurrent()}];
         //this.rows = this.rows.concat(formRef.componentInstance.current);
         this.count++;
-        // this.searchtable.refresh();
+        // this.searchable.refresh();
       } else {
         this.unselectRows();
       }
@@ -254,10 +253,6 @@ export class SearchTableComponent implements OnInit {
 
   onSaveButtonClicked(withDownloadCSV: boolean) {
     try {
-      // TODO: add validation support to existing controllers
-      // const isValid = this.userValidatorService.validateUsers(this.users);
-      // if (!isValid) return;
-
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
         if (result) {
           // this.unselectRows();
@@ -333,11 +328,14 @@ export class SearchTableComponent implements OnInit {
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        const status = row.status === SearchTableEntityStatus.PERSISTED
-          ? SearchTableEntityStatus.UPDATED
-          : row.status;
-        this.rows[rowNumber] = {...formRef.componentInstance.getCurrent(), status};
-        this.rows = [...this.rows];
+        const changed = this.searchTableController.isRecordChanged(row, formRef.componentInstance.getCurrent());
+        if (changed) {
+          const status = row.status === SearchTableEntityStatus.PERSISTED
+            ? SearchTableEntityStatus.UPDATED
+            : row.status;
+          this.rows[rowNumber] = {...formRef.componentInstance.getCurrent(), status};
+          this.rows = [...this.rows];
+        }
       }
     });
   }
@@ -358,7 +356,7 @@ export class SearchTableComponent implements OnInit {
 
   private deleteSearchTableEntities(rows: Array<SearchTableEntity>) {
 
-    this.searchTableController.validateDeleteOperation(rows).subscribe( (res: SearchTableValidationResult) => {
+    this.searchTableController.validateDeleteOperation(rows).subscribe((res: SearchTableValidationResult) => {
       if (!res.validOperation) {
         this.alertService.exception("Delete validation error", res.stringMessage, false);
       } else {

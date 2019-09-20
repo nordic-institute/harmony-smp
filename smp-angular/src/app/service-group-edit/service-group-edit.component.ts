@@ -132,6 +132,12 @@ export class ServiceGroupEditComponent implements OnInit {
     formRef.afterClosed().subscribe(result => {
       if (result) {
 
+        let isXMLChanged=formRef.componentInstance.isMetaDataXMLChanged();
+        if (!isXMLChanged){
+          // nothing to save
+          return;
+        }
+
         let statusMetadata =metaDataRow.status === SearchTableEntityStatus.PERSISTED
           ? SearchTableEntityStatus.UPDATED
           : metaDataRow;
@@ -174,6 +180,16 @@ export class ServiceGroupEditComponent implements OnInit {
       // this.searchTable.rows[rowNumber] = {...serviceGroupRow, status};
       // this.searchTable.rows = [...this.searchTable.rows];
     }
+  }
+
+  isRecordChanged (oldModel, newModel): boolean {
+    for (var property in oldModel) {
+      var changed = false;
+      if (newModel[property] !== oldModel[property]) {
+        return true; // Property has changed
+      }
+    }
+    return false;
   }
 
   // for dirty guard...
