@@ -15,7 +15,7 @@ import {ServiceMetadataValidationEditRo} from "./service-metadata-validation-edi
 import {ServiceMetadataWizardRo} from "../service-metadata-wizard-dialog/service-metadata-wizard-edit-ro.model";
 
 @Component({
-  selector: 'app-messagelog-dialog',
+  selector: 'service-group-metadata-dialog',
   templateUrl: './service-group-metadata-dialog.component.html',
   styleUrls: ['./service-group-metadata-dialog.component.css']
 })
@@ -90,6 +90,8 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
       this.xmlServiceMetadataObserver = this.http.get<ServiceMetadataEditRo>(SmpConstants.REST_METADATA + '/' + this.current.id);
       this.xmlServiceMetadataObserver.subscribe((res: ServiceMetadataEditRo) => {
         this.dialogForm.get('xmlContent').setValue(res.xmlContent);
+        // store init xml to current value for change validation
+        this.current.xmlContent=res.xmlContent;
       });
     }
 
@@ -256,6 +258,10 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
       this.current.xmlContentStatus = SearchTableEntityStatus.UPDATED;
     }
     return this.current;
+  }
+
+  public isMetaDataXMLChanged():boolean{
+     return  this.dialogForm.value['xmlContent'] !== this.current.xmlContent;
   }
 
   compareDomainCode(sgDomain: ServiceGroupDomainEditRo, domainCode: String): boolean {

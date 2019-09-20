@@ -8,7 +8,6 @@ import {ServiceGroupMetadataDialogComponent} from "./service-group-metadata-dial
 import {of} from "rxjs/internal/observable/of";
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
 import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
-import {ServiceGroupSearchRo} from "../service-group-search/service-group-search-ro.model";
 
 export class ServiceGroupEditController implements SearchTableController {
 
@@ -88,5 +87,35 @@ export class ServiceGroupEditController implements SearchTableController {
   isRowExpanderDisabled(row: ServiceGroupEditRo): boolean {
     const serviceGroup = <ServiceGroupEditRo>row;
     return !(serviceGroup.serviceMetadata && serviceGroup.serviceMetadata.length);
+  }
+
+  isRecordChanged(oldModel, newModel): boolean {
+    // check if the extension was changed
+    if (newModel["extensionStatus"]!== SearchTableEntityStatus.PERSISTED){
+      return true;
+    }
+    // check if other properties were changed
+    for (var property in oldModel) {
+      if (property === 'extensionStatus'||
+          property === 'extension') {
+        // ignore
+        continue;
+      } else {
+        const isEqual = this.isEqual(newModel[property], oldModel[property]);
+        if (!isEqual) {
+          return true; // Property has changed
+        }
+      }
+    }
+    return false;
+  }
+
+  isEqual(val1, val2): boolean {
+    return (this.isEmpty(val1) && this.isEmpty(val2)
+      || val1 === val2);
+  }
+
+  isEmpty(str): boolean {
+    return (!str || 0 === str.length);
   }
 }

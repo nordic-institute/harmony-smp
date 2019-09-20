@@ -7,7 +7,6 @@ import {HttpClient} from '@angular/common/http';
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {SecurityService} from "../security/security.service";
 import {GlobalLookups} from "../common/global-lookups";
-import {KeystoreEditDialogComponent} from "../domain/keystore-edit-dialog/keystore-edit-dialog.component";
 import {TruststoreEditDialogComponent} from "./truststore-edit-dialog/truststore-edit-dialog.component";
 
 @Component({
@@ -71,7 +70,6 @@ export class UserComponent implements OnInit {
   isDirty (): boolean {
     return this.searchTable.isDirty();
   }
-
 
   openEditTruststoreDialog() {
     const formRef: MatDialogRef<any> = this.dialog.open(TruststoreEditDialogComponent);
