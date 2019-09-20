@@ -67,4 +67,23 @@ export class DomainController implements SearchTableController {
   isRowExpanderDisabled(row: SearchTableEntity): boolean {
     return false;
   }
+
+  isRecordChanged(oldModel, newModel): boolean {
+    for (var property in oldModel) {
+      const isEqual = this.isEqual(newModel[property],oldModel[property]);
+      if (!isEqual) {
+        return true; // Property has changed
+      }
+    }
+    return false;
+  }
+
+  isEqual(val1, val2): boolean {
+    return (this.isEmpty(val1) && this.isEmpty(val2)
+      || val1 === val2);
+  }
+
+  isEmpty(str): boolean {
+    return (!str || 0 === str.length);
+  }
 }

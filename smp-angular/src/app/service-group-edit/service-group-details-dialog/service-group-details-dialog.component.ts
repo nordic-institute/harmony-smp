@@ -130,6 +130,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       this.extensionObserver = this.http.get<ServiceGroupValidationRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION + '/' + this.current.id);
       this.extensionObserver.subscribe((res: ServiceGroupValidationRo) => {
         this.dialogForm.get('extension').setValue(res.extension);
+        this.current.extension = res.extension;
       });
     }
 
@@ -217,7 +218,9 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       this.current.participantIdentifier = this.dialogForm.value['participantIdentifier'];
       this.current.participantScheme = this.dialogForm.value['participantScheme'];
     } else {
-      this.current.extensionStatus = SearchTableEntityStatus.UPDATED;
+
+      this.current.extensionStatus = this.extensionChanged()?
+        SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.PERSISTED;
     }
     this.current.users = this.dialogForm.value['users'];
     this.current.extension = this.dialogForm.value['extension'];
@@ -261,7 +264,10 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       return true;
     }
     return this.current.users !== this.dialogForm.value['users'];
-    this.current.extension !== this.dialogForm.value['extension'];
+  }
+
+  extensionChanged():boolean {
+    return  this.current.extension !== this.dialogForm.value['extension'].toString();
   }
 
   onExtensionDelete() {

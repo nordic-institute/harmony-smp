@@ -10,6 +10,7 @@ export interface SearchTableController {
   newRow(): SearchTableEntity;
   newDialog(config?: MatDialogConfig): MatDialogRef<any>;
   dataSaved();
+  isRecordChanged(oldModel, newModel): boolean;
 
   /**
    * Returns whether the row expander should be shown as disabled even when the actual row is not fully disabled.
@@ -17,4 +18,5 @@ export interface SearchTableController {
    * @param row the row for which the row expander should be disabled or not
    */
   isRowExpanderDisabled(row: SearchTableEntity): boolean;
+
 }
