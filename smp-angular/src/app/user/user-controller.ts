@@ -8,9 +8,14 @@ import {SearchTableEntity} from "../common/search-table/search-table-entity.mode
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
 import {SmpConstants} from "../smp.constants";
 import {HttpClient} from "@angular/common/http";
+import {CertificateRo} from "./certificate-ro.model";
 
 export class UserController implements SearchTableController {
-  constructor(protected http: HttpClient, protected lookups: GlobalLookups, public dialog: MatDialog) { }
+
+  nullCert = this.newCertificateRo();
+
+  constructor(protected http: HttpClient, protected lookups: GlobalLookups, public dialog: MatDialog) {
+  }
 
   public showDetails(row: any) {
     let dialogRef: MatDialogRef<UserDetailsDialogComponent> = this.dialog.open(UserDetailsDialogComponent);
@@ -19,9 +24,11 @@ export class UserController implements SearchTableController {
     });
   }
 
-  public edit(row: any) { }
+  public edit(row: any) {
+  }
 
-  public delete(row: any) { }
+  public delete(row: any) {
+  }
 
   public newDialog(config?: MatDialogConfig): MatDialogRef<UserDetailsDialogComponent> {
     return this.dialog.open(UserDetailsDialogComponent, this.convertWithMode(config));
@@ -29,11 +36,13 @@ export class UserController implements SearchTableController {
 
   private convertWithMode(config) {
     return (config && config.data)
-      ? {...config,
-          data: {...config.data,
-            mode: config.data.mode || (config.data.edit ? UserDetailsDialogMode.EDIT_MODE : UserDetailsDialogMode.NEW_MODE)
-          }
+      ? {
+        ...config,
+        data: {
+          ...config.data,
+          mode: config.data.mode || (config.data.edit ? UserDetailsDialogMode.EDIT_MODE : UserDetailsDialogMode.NEW_MODE)
         }
+      }
       : config;
   }
 
@@ -54,21 +63,81 @@ export class UserController implements SearchTableController {
     this.lookups.refreshUserLookup();
   }
 
-  validateDeleteOperation(rows: Array<SearchTableEntity>){
+  validateDeleteOperation(rows: Array<SearchTableEntity>) {
     var deleteRowIds = rows.map(rows => rows.id);
-    return  this.http.post<SearchTableValidationResult>(SmpConstants.REST_USER_VALIDATE_DELETE, deleteRowIds);
+    return this.http.post<SearchTableValidationResult>(SmpConstants.REST_USER_VALIDATE_DELETE, deleteRowIds);
   }
 
   public newValidationResult(lst: Array<number>): SearchTableValidationResult {
     return {
       validOperation: false,
       stringMessage: null,
-      listId:lst,
+      listId: lst,
     }
   }
 
   isRowExpanderDisabled(row: SearchTableEntity): boolean {
     return false;
   }
+
+  isCertificateChanged(oldCert, newCert): boolean {
+    if (!this.isNotNull(oldCert) && !this.isNotNull(newCert)) {
+      return false;
+    }
+
+    if (!this.isNotNull(oldCert)) {
+      oldCert = this.nullCert;
+    }
+
+    if (!this.isNotNull(newCert)) {
+      newCert = this.nullCert;
+    }
+    return this.isRecordChanged(oldCert, newCert);
+  }
+
+
+  isRecordChanged(oldModel, newModel): boolean {
+
+    for (var property in oldModel) {
+      if (property === 'certificate') {
+        if (this.isCertificateChanged(newModel[property], oldModel[property])) {
+          return true; // Property has changed
+        }
+      } else {
+        const isEqual = this.isEqual(newModel[property], oldModel[property]);
+        if (!isEqual) {
+          return true; // Property has changed
+        }
+      }
+    }
+    return false;
+  }
+
+  isEqual(val1, val2): boolean {
+    return (this.isEmpty(val1) && this.isEmpty(val2)
+      || val1 === val2);
+  }
+
+  isEmpty(str): boolean {
+    return (!str || 0 === str.length);
+  }
+
+  isNotNull(obj): boolean {
+    return typeof obj != 'undefined' && obj
+  }
+
+
+  private newCertificateRo(): CertificateRo {
+    return {
+      subject: '',
+      validFrom: null,
+      validTo: null,
+      issuer: '',
+      serialNumber: '',
+      certificateId: '',
+      fingerprints: '',
+    };
+  }
+
 
 }

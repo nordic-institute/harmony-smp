@@ -6,8 +6,6 @@ import {CertificateService} from "../../user/certificate.service";
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {AlertService} from "../../alert/alert.service";
 import {ServiceMetadataWizardRo} from "./service-metadata-wizard-edit-ro.model";
-import {ServiceMetadataEditRo} from "../service-metadata-edit-ro.model";
-
 
 @Component({
   selector: 'service-metadata-wizard-dialog',
