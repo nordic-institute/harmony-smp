@@ -88,6 +88,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
         serviceGroupDomains: [],
         extension: '',
         status: SearchTableEntityStatus.NEW,
+        extensionStatus: SearchTableEntityStatus.UPDATED,
       };
 
     if (this.lookups.cachedApplicationConfig) {
@@ -131,6 +132,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       this.extensionObserver.subscribe((res: ServiceGroupValidationRo) => {
         this.dialogForm.get('extension').setValue(res.extension);
         this.current.extension = res.extension;
+        // store to initial data - so for next time there will be no need to retrieve data again from server!
+        this.data.row.extension = res.extension;
       });
     }
 
@@ -218,9 +221,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       this.current.participantIdentifier = this.dialogForm.value['participantIdentifier'];
       this.current.participantScheme = this.dialogForm.value['participantScheme'];
     } else {
-
-      this.current.extensionStatus = this.extensionChanged()?
-        SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.PERSISTED;
+      this.current.extensionStatus =
+        SearchTableEntityStatus.UPDATED;
     }
     this.current.users = this.dialogForm.value['users'];
     this.current.extension = this.dialogForm.value['extension'];
@@ -267,7 +269,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   }
 
   extensionChanged():boolean {
-    return  this.current.extension !== this.dialogForm.value['extension'].toString();
+    return  !this.isEqual(this.current.extension, this.dialogForm.value['extension'].toString());
   }
 
   onExtensionDelete() {
@@ -348,4 +350,12 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       }) : null;
   }
 
+  isEqual(val1, val2): boolean {
+    return (this.isEmpty(val1) && this.isEmpty(val2)
+      || val1 === val2);
+  }
+
+  isEmpty(str): boolean {
+    return (!str || 0 === str.length);
+  }
 }

@@ -1,7 +1,19 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 <mat-dialog-content style="height:600px;width:1000px">
   <mat-card style="height:500px">
-    <mat-card-content >
+    <mat-card-content>
+      <mat-label style="color: red;font-weight: bold">
+        If truststore is empty users certificates are NOT verified if trusted!
+      </mat-label>
+      <br/>
+      <mat-label style="color: red;font-weight: bold">
+        Else (if truststore is NOT empty) ALL certificates are verified if issuer or certificate itself is in the
+        truststore.
+        <mat-label style="color: red;font-weight: bold"><br/>
+        </mat-label>
+        Not trusted certificates cannot access REST services.
+      </mat-label>
+      <br/>
       <ngx-datatable
         id='truststoreTable_id'
         class='material striped'
@@ -38,10 +50,10 @@
       </ngx-datatable>
       <label class="custom-file-upload">
         <input #fileInput type="file" id="custom-file-upload" accept=".cer,.crt,.pem,.der"
-               (change)="uploadCertificate($event)" >
+               (change)="uploadCertificate($event)">
         <button mat-flat-button color="primary"
                 (click)="fileInput.click()"
-                >Add certificate
+        >Add certificate
         </button>
       </label>
 
