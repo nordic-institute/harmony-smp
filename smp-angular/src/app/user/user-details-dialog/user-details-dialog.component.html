@@ -157,7 +157,7 @@
     <tr>
       <td>
         <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()"
-                [disabled]="!userForm.valid || this.current && this.current.certificate && this.current.certificate.invalid">
+                [disabled]="!userForm.valid ">
           <mat-icon>check_circle</mat-icon>
           <span>OK</span>
         </button>
