@@ -68,10 +68,8 @@ export class UserDetailsDialogComponent {
     const validTo = control.get('validTo');
     const issuer = control.get('issuer');
     const serialNumber = control.get('serialNumber');
-    const isValid = control.get('isCertificateValid');
     return certificateToggle && subject && validFrom && validTo && issuer && serialNumber
     && certificateToggle.value
-    && isValid
     && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value) ? {certificateDetailsRequired: true} : null;
   };
 
@@ -129,9 +127,10 @@ export class UserDetailsDialogComponent {
     this.current = this.editMode
       ? {
         ...data.row,
+
         password: '', // ensures the user password is cleared before editing
         confirmation: '',
-        certificate: data.row.certificate || this.newCertificateRo()
+        certificate: data.row.certificate? {...data.row.certificate}  : this.newCertificateRo()
       } : {
         active: true,
         username: '',
@@ -208,6 +207,10 @@ export class UserDetailsDialogComponent {
     this.userForm.controls['certificateId'].setValue(this.current.certificate.certificateId);
     this.userForm.controls['isCertificateValid'].setValue(!this.current.certificate.invalid);
 
+
+    this.certificateValidationMessage =this.current.certificate.invalidReason;
+    this.isCertificateInvalid= this.current.certificate.invalid;
+
     // if edit mode and user is given - toggle is disabled
     // username should not be changed.!
     if (this.editMode && bUserPasswordAuthentication) {
@@ -229,7 +232,8 @@ export class UserDetailsDialogComponent {
             'validTo': res.validTo,
             'issuer': res.issuer,
             'serialNumber': res.serialNumber,
-            'certificateId': res.certificateId
+            'certificateId': res.certificateId,
+            'isCertificateValid': !res.invalid
           });
           this.certificateValidationMessage = res.invalidReason;
           this.isCertificateInvalid = res.invalid;
@@ -329,6 +333,8 @@ export class UserDetailsDialogComponent {
       this.current.certificate.serialNumber = this.userForm.controls['serialNumber'].value;
       this.current.certificate.validFrom = this.userForm.controls['validFrom'].value;
       this.current.certificate.validTo = this.userForm.controls['validTo'].value;
+      this.current.certificate.invalid = this.isCertificateInvalid;
+      this.current.certificate.invalidReason = this.certificateValidationMessage;
     } else {
       this.current.certificate = null;
     }

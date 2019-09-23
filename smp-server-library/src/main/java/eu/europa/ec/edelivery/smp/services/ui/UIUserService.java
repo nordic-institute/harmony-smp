@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.StringWriter;
+import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -36,6 +37,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     @Autowired
     private ConversionService conversionService;
+
+    @Autowired
+    private UITruststoreService truststoreService;
+
 
     @Override
     protected BaseDao<DBUser> getDatabaseDao() {
@@ -55,8 +60,24 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Transactional
     public ServiceResult<UserRO> getTableList(int page, int pageSize, String sortField, String sortOrder, Object filter) {
         ServiceResult<UserRO> resUsers = super.getTableList(page, pageSize, sortField, sortOrder, filter);
-        resUsers.getServiceEntities().forEach(usr -> usr.setPassword(null));
+        resUsers.getServiceEntities().forEach(this::updateUserStatus);
         return resUsers;
+    }
+
+        protected  void updateUserStatus(UserRO user){
+        // never return password even if is hashed...
+        user.setPassword(null);
+        if (user.getCertificate()!=null && !StringUtils.isBlank(user.getCertificate().getCertificateId())){
+            // validate certificate
+            try {
+                truststoreService.checkFullCertificateValidity(user.getCertificate());
+            } catch (CertificateException e) {
+                LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " +e.getMessage());
+                user.getCertificate().setInvalid(true);
+                user.getCertificate().setInvalidReason(e.getMessage());
+            }
+        }
+
     }
 
     @Transactional
