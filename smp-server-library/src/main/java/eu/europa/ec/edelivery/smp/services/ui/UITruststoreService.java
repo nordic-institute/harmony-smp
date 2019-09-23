@@ -4,6 +4,7 @@ import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,18 +22,24 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import java.io.*;
-import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.util.Collections.list;
+import static java.util.Locale.US;
 
 @Service
 public class UITruststoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
+
+    private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> {
+        return new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US);
+    });
 
     @Autowired
     private ConfigurationService configurationService;
@@ -158,14 +166,14 @@ public class UITruststoreService {
         return cro;
     }
 
-    public void checkFullCertificateValidity(X509Certificate cert) throws CertificateException{
+    public void checkFullCertificateValidity(X509Certificate cert) throws CertificateException {
         // test if certificate is valid
         cert.checkValidity();
         // check if certificate or its issuer is on trusted list
         // check only issuer because using bluecoat Client-cert we do not have whole chain.
         // if the truststore is empty then truststore validation is ignored
         // backward compatibility
-        if ( !normalizedTrustedList.isEmpty()  &&  !(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
+        if (!normalizedTrustedList.isEmpty() && !(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
                 || isSubjectOnTrustedList(cert.getIssuerDN().getName()))) {
 
             throw new CertificateNotTrustedException("Certificate is not trusted!");
@@ -174,10 +182,50 @@ public class UITruststoreService {
         crlVerifierService.verifyCertificateCRLs(cert);
     }
 
+    public void checkFullCertificateValidity(CertificateRO cert) throws CertificateException {
+        // trust data in database
+        Date currentDate = Calendar.getInstance().getTime();
+        if (cert.getValidFrom() != null && currentDate.before(cert.getValidFrom())) {
+            throw new CertificateNotYetValidException("Certificate: " + cert.getCertificateId() + " is valid from: "
+                    + dateFormatLocal.get().format(cert.getValidFrom()) + ".");
+
+        }
+        if (cert.getValidTo() != null && currentDate.after(cert.getValidTo())) {
+            throw new CertificateExpiredException("Certificate: " + cert.getCertificateId() + " was valid to: "
+                    + dateFormatLocal.get().format(cert.getValidTo()) + ".");
+        }
+        // if trusted list is not empty and exists issuer or subject then validate
+        if (!normalizedTrustedList.isEmpty() && (
+                !StringUtils.isBlank(cert.getIssuer()) || !StringUtils.isBlank(cert.getSubject()))) {
+
+            if (!isSubjectOnTrustedList(cert.getIssuer()) && !isSubjectOnTrustedList(cert.getSubject())) {
+                throw new CertificateNotTrustedException("Certificate is not trusted!");
+            }
+
+        }
+
+        // Check crl list
+        String url = cert.getCrlUrl();
+        if (!StringUtils.isBlank(url) && !StringUtils.isBlank(cert.getSerialNumber())) {
+            try {
+                crlVerifierService.verifyCertificateCRLs(cert.getSerialNumber(), url);
+            } catch (CertificateRevokedException ex) {
+                String msg = "Certificate: '" + cert.getCertificateId() + "'" +
+                        " is revoked!";
+                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, cert.getCertificateId(), msg);
+                throw new AuthenticationServiceException(msg);
+            } catch (Throwable th) {
+                String msg = "Error occurred while validating CRL for certificate!";
+                LOG.error(SMPLogger.SECURITY_MARKER, msg + "Err: " + ExceptionUtils.getRootCauseMessage(th), th);
+                throw new AuthenticationServiceException(msg);
+            }
+        }
+    }
+
     boolean isTruststoreChanged() {
         File file = getTruststoreFile();
         return !Objects.equals(lastUpdateTrustStoreFile, file) ||
-                file!=null && file.lastModified() != lastUpdateTrustoreFileTime;
+                file != null && file.lastModified() != lastUpdateTrustoreFileTime;
     }
 
     public File getTruststoreFile() {
@@ -186,7 +234,7 @@ public class UITruststoreService {
 
     private KeyStore loadTruststore(File truststoreFile) {
 
-        if (truststoreFile==null) {
+        if (truststoreFile == null) {
             LOG.error("Truststore file is not configured! Update SMP configuration!");
             return null;
         }

@@ -14,6 +14,12 @@
 
   <ng-template #roleCellTemplate let-value="value" ngx-datatable-cell-template>{{getRoleLabel(value)}}</ng-template>
 
+  <ng-template #certificateTemplate let-row="row"  ngx-datatable-cell-template>
+    <span [class]='certCssClass(row)'
+          matTooltip="{{row.certificate?.invalidReason}}"
+    >{{row.certificate?.certificateId}}</span>
+  </ng-template>
+
   <ng-template #additionalToolButtons >
     <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
 

@@ -12,9 +12,15 @@ import {CertificateRo} from "./certificate-ro.model";
 
 export class UserController implements SearchTableController {
 
-  nullCert = this.newCertificateRo();
+  nullCert:CertificateRo;
+
+
+  compareUserProperties = ["username","password","emailAddress","active","role","certificate"];
+  compareCertProperties = ["certificateId","subject","issuer","serialNumber","crlUrl","validFrom","validTo"];
+
 
   constructor(protected http: HttpClient, protected lookups: GlobalLookups, public dialog: MatDialog) {
+    this.nullCert = this.newCertificateRo();
   }
 
   public showDetails(row: any) {
@@ -81,31 +87,41 @@ export class UserController implements SearchTableController {
   }
 
   isCertificateChanged(oldCert, newCert): boolean {
-    if (!this.isNotNull(oldCert) && !this.isNotNull(newCert)) {
+    if (this.isNull(oldCert) && this.isNull(newCert)) {
+      console.log("both null return false! ");
       return false;
     }
 
-    if (!this.isNotNull(oldCert)) {
+    if (this.isNull(oldCert)) {
       oldCert = this.nullCert;
     }
 
-    if (!this.isNotNull(newCert)) {
+    if (this.isNull(newCert)) {
       newCert = this.nullCert;
     }
-    return this.isRecordChanged(oldCert, newCert);
+
+    return this.propertyChanged(oldCert, newCert, this.compareCertProperties);
   }
 
-
   isRecordChanged(oldModel, newModel): boolean {
+    return this.propertyChanged(oldModel, newModel, this.compareUserProperties);
+  }
 
-    for (var property in oldModel) {
-      if (property === 'certificate') {
-        if (this.isCertificateChanged(newModel[property], oldModel[property])) {
+  propertyChanged(oldModel, newModel, arrayProperties): boolean {
+
+
+    let propSize = arrayProperties.length;
+    for (let i = 0; i < propSize; i++) {
+
+      let property = arrayProperties[i];
+     if (property === 'certificate') {
+        if (this.isCertificateChanged(oldModel[property], newModel[property])) {
           return true; // Property has changed
         }
       } else {
         const isEqual = this.isEqual(newModel[property], oldModel[property]);
         if (!isEqual) {
+          console.log("property "+property+" is changed! ");
           return true; // Property has changed
         }
       }
@@ -122,8 +138,8 @@ export class UserController implements SearchTableController {
     return (!str || 0 === str.length);
   }
 
-  isNotNull(obj): boolean {
-    return typeof obj != 'undefined' && obj
+  isNull(obj): boolean {
+    return !obj
   }
 
 
