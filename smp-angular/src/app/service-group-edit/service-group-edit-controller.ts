@@ -11,6 +11,8 @@ import {SearchTableEntity} from "../common/search-table/search-table-entity.mode
 
 export class ServiceGroupEditController implements SearchTableController {
 
+  compareSGProperties = ["extension", "users", "serviceGroupDomains"];
+
   constructor(public dialog: MatDialog) {
   }
 
@@ -29,10 +31,10 @@ export class ServiceGroupEditController implements SearchTableController {
   public delete(row: any) {
 
     // set all rows as deleted
-    let sgRow =  row as ServiceGroupEditRo;
-    sgRow.serviceMetadata.forEach(function(part, index, metaDataList) {
+    let sgRow = row as ServiceGroupEditRo;
+    sgRow.serviceMetadata.forEach(function (part, index, metaDataList) {
       metaDataList[index].status = SearchTableEntityStatus.REMOVED;
-      metaDataList[index].deleted=true;
+      metaDataList[index].deleted = true;
     });
 
   }
@@ -61,20 +63,22 @@ export class ServiceGroupEditController implements SearchTableController {
 
   public newServiceMetadataRow(): ServiceMetadataEditRo {
     return {
-      id:null,
+      id: null,
       documentIdentifier: '',
       documentIdentifierScheme: '',
       smlSubdomain: '',
       domainCode: '',
-      domainId:null,
+      domainId: null,
       status: SearchTableEntityStatus.NEW,
       xmlContentStatus: SearchTableEntityStatus.NEW,
     };
   }
 
-  public dataSaved() {}
-  validateDeleteOperation(rows: Array<SearchTableEntity>){
-    return of( this.newValidationResult(true, '') );
+  public dataSaved() {
+  }
+
+  validateDeleteOperation(rows: Array<SearchTableEntity>) {
+    return of(this.newValidationResult(true, ''));
   }
 
   public newValidationResult(result: boolean, message: string): SearchTableValidationResult {
@@ -90,21 +94,15 @@ export class ServiceGroupEditController implements SearchTableController {
   }
 
   isRecordChanged(oldModel, newModel): boolean {
-    // check if the extension was changed
-    if (newModel["extensionStatus"]!== SearchTableEntityStatus.PERSISTED){
-      return true;
-    }
     // check if other properties were changed
-    for (var property in oldModel) {
-      if (property === 'extensionStatus'||
-          property === 'extension') {
-        // ignore
-        continue;
-      } else {
-        const isEqual = this.isEqual(newModel[property], oldModel[property]);
-        if (!isEqual) {
-          return true; // Property has changed
-        }
+    let propSize = this.compareSGProperties.length;
+    for (let i = 0; i < propSize; i++) {
+
+      let property =  this.compareSGProperties[i];
+      const isEqual = this.isEqual(newModel[property], oldModel[property]);
+      if (!isEqual) {
+        console.log("property: "+property+" changed!");
+        return true; // Property has changed
       }
     }
     return false;
