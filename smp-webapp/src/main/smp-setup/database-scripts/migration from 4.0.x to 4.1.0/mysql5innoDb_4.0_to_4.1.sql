@@ -276,9 +276,9 @@ INSERT INTO  SMP_SERVICE_GROUP ( CREATED_ON, LAST_UPDATED_ON, PARTICIPANT_IDENTI
     select  NOW(), NOW(), businessidentifier, businessidentifierscheme from SMP_SERVICE_GROUP_BCK;
 -- insert extensions
 INSERT INTO SMP_SG_EXTENSION (ID, CREATED_ON, LAST_UPDATED_ON, EXTENSION) 
-    select sg.id, NOW(),NOW(), sgb.xmlcontent  from SMP_SERVICE_GROUP sg INNER JOIN  SMP_SERVICE_GROUP_BCK sgb 
+    select sg.id, NOW(),NOW(), sgb.extension  from SMP_SERVICE_GROUP sg INNER JOIN  SMP_SERVICE_GROUP_BCK sgb
     ON sg.PARTICIPANT_IDENTIFIER= sgb.businessidentifier 
-        and sg.PARTICIPANT_SCHEME= sgb.businessidentifierscheme WHERE sgb.xmlcontent != '';
+        and sg.PARTICIPANT_SCHEME= sgb.businessidentifierscheme WHERE sgb.extension != '';
 
 -- insert service group domains 
 INSERT INTO SMP_SERVICE_GROUP_DOMAIN ( CREATED_ON, LAST_UPDATED_ON, SML_REGISTERED, FK_DOMAIN_ID, FK_SG_ID )
