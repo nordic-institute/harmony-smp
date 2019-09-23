@@ -8,6 +8,7 @@ import {SearchTableComponent} from "../common/search-table/search-table.componen
 import {SecurityService} from "../security/security.service";
 import {GlobalLookups} from "../common/global-lookups";
 import {TruststoreEditDialogComponent} from "./truststore-edit-dialog/truststore-edit-dialog.component";
+import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
 
 @Component({
   templateUrl:'./user.component.html',
@@ -19,6 +20,7 @@ export class UserComponent implements OnInit {
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
+  @ViewChild('certificateTemplate') certificateTemplate: TemplateRef<any>;
 
   columnPicker: ColumnPicker = new ColumnPicker();
   userController: UserController;
@@ -42,7 +44,7 @@ export class UserComponent implements OnInit {
       },
       {
         name: 'Certificate',
-        prop: 'certificate.certificateId',
+        cellTemplate: this.certificateTemplate,
         canAutoResize: true
       },
       {
@@ -60,6 +62,21 @@ export class UserComponent implements OnInit {
     if (this.securityService.isCurrentUserSystemAdmin()) {
       this.lookups.refreshTrustedCertificateLookup();
     }
+  }
+
+  certCssClass(row) {
+
+     if (row.certificate && row.certificate.invalid) {
+      return 'invalidCertificate';
+    } else if (row.status === SearchTableEntityStatus.NEW) {
+       return 'table-row-new';
+     } else if (row.status === SearchTableEntityStatus.UPDATED) {
+       return 'table-row-updated';
+     } else if (row.status === SearchTableEntityStatus.REMOVED) {
+       return 'deleted';
+     }else  {
+       return 'table-row';
+     }
   }
 
   details(row: any) {
