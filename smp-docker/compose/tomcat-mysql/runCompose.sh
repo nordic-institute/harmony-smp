@@ -49,5 +49,5 @@ clearOldContainers
 docker-compose -p ${PREFIX} up -d --force-recreate
 
 # wait until service is up
-for i in `seq 100`; do timeout 1  bash -c ' curl --head --silent --fail http://localhost:8980/smp/'; if [ $? -eq 0  ] ; then break;fi; echo "$i. Wait for tomcat to start!";  sleep 5;  done;
+for i in `seq 100`; do timeout 1  bash -c ' curl --head --silent --fail http://localhost:8981/smp/'; if [ $? -eq 0  ] ; then break;fi; echo "$i. Wait for tomcat to start!";  sleep 5;  done;
 
