@@ -50,12 +50,6 @@ init_tomcat() {
   rm -rf ${TOMCAT_HOME}/smp 
   ln -sf ${TOMCAT_DIR}/smp ${TOMCAT_HOME}/
 
- # sed -i -e "s#jdbc:mysql://localhost:3306/smp#jdbc:mysql://localhost:3306/$DB_SCHEMA#g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties"
-#  sed -i -e "s#jdbc.user\s*=\s*smp#jdbc.user=$DB_USER#g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties"
- ## sed -i -e "s#jdbc.password\s*=\s*secret123#jdbc.password=$DB_USER_PASSWORD#g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties"
- #   sed -i -e "s#/keystores/sample_signatures_keystore.jks#$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/sample_signatures_keystore.jks#g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties"
- 
-
 }
 
 
@@ -82,18 +76,25 @@ init_mysql() {
   else 
     echo "[INFO] MySQL ${DB_SCHEMA}  not found, creating initial DBs"
 
-    echo 'create smp database'
+    echo 'Create smp database'
     mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';drop schema if exists $DB_SCHEMA;DROP USER IF EXISTS $DB_USER;  create schema $DB_SCHEMA;alter database $DB_SCHEMA charset=utf8; create user $DB_USER identified by '$DB_USER_PASSWORD';grant all on $DB_SCHEMA.* to $DB_USER;"
-   echo 'create smp database objects'
-    mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/smp-4.1.1-SNAPSHOT/database-scripts/mysql5innodb.ddl"
 
-    if [ -f "/tmp/artefacts/mysql5innodb-init-data.sql" ]
+    if [ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]
     then
-         echo "Use custom init script!."
-         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/artefacts/mysql5innodb-init-data.sql"
+        echo "Use custom database script! "
+        mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "tmp/custom-database-scripts/mysql5innodb.ddl"
+    else
+          echo "Use default database ddl script!"
+           mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/smp-4.1.1-SNAPSHOT/database-scripts/mysql5innodb.ddl"        fi
+    fi
+
+    if [ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]
+    then
+         echo "Use custom init script! "
+         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "tmp/custom-database-scripts/mysql5innodb-data.sql"
      else
         echo "Use default init script!"
-         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/artefacts/smp-4.1.1-SNAPSHOT/database-scripts/mysql5innodb-init-data.sql"
+         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/artefacts/smp-4.1.1-SNAPSHOT/database-scripts/mysql5innodb-data.sql"
     fi
     
   fi
