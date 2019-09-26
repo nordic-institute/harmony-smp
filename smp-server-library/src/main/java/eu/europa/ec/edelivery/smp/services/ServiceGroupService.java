@@ -106,14 +106,16 @@ public class ServiceGroupService {
         // normalize service group owner
 
 
-        String newOwnerName = defineGroupOwner(serviceGroupOwner, authenticatedUser);
-        Optional<DBUser> newOwner = userDao.findUserByIdentifier(newOwnerName);
+        String ownerName = defineGroupOwner(serviceGroupOwner, authenticatedUser);
+        Optional<DBUser> newOwner = userDao.findUserByIdentifier(ownerName);
         if (!newOwner.isPresent()
                 && !StringUtils.isBlank(serviceGroupOwner) && serviceGroupOwner.contains(":")) {
             // try harder
-            String[] val = splitSerialFromSubject(newOwnerName);
-            newOwnerName = DistinguishedNamesCodingUtil.normalizeDN(val[0]) + ':' + val[1];
+            String[] val = splitSerialFromSubject(ownerName);
+            String newOwnerName = DistinguishedNamesCodingUtil.normalizeDN(val[0]) + ':' + val[1];
+            LOG.info("Owner not found: {} try with normalized owner: {}.", ownerName, newOwnerName);
             newOwner = userDao.findUserByIdentifier(newOwnerName);
+            ownerName = newOwnerName;
         }
 
         if (!newOwner.isPresent()) {
@@ -135,7 +137,7 @@ public class ServiceGroupService {
             // check if user has rights to modified
             // test service owner
             DBServiceGroup sg = dbServiceGroup.get();
-            validateOwnership(newOwnerName, sg);
+            validateOwnership(ownerName, sg);
             //check is domain exists
             Optional<DBServiceGroupDomain> sgd = sg.getServiceGroupForDomain(dmn.getDomainCode());
             if (!sgd.isPresent()){
