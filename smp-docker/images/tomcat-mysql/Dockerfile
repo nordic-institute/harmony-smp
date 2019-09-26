@@ -19,9 +19,11 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         mysql-server \
         openjdk-8-jdk \
+    locales\
 	curl \
-        unzip   \
+    unzip   \
     && rm -rf /var/lib/apt/lists/*  \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
 # set user 
     && addgroup mysql mysql   \
 # download SMP, SMP setup, tomcat mysql driver
@@ -36,10 +38,11 @@ RUN apt-get update \
     && rm tomcat.zip   \
     && mkdir -p $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/  \
     && echo "export CLASSPATH=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf" >   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
-    && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$DB_USER\" password=\"$DB_USER\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$DB_SCHEMA\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
+    && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$DB_USER\" password=\"$DB_USER\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$DB_SCHEMA?useSSL=false\&amp;characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
     && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"  \
-    && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  
-
+    && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
+     && echo "\nAdd init parameters" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
+    && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   
 
 # copy application to image 
 ADD ./artefacts /tmp/artefacts
@@ -48,7 +51,9 @@ ADD ./artefacts /tmp/artefacts
 # install SMP
 RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && mv /tmp/artefacts/smp.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/     
-   
+  
+ENV LANG en_US.utf8
+ 
 VOLUME ["/data"]
 
 COPY ./entrypoint.sh /sbin/entrypoint.sh 
