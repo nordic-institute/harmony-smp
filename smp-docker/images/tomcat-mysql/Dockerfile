@@ -46,7 +46,7 @@ ADD ./artefacts /tmp/artefacts
 
 
 # install SMP
-    run unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
+RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && mv /tmp/artefacts/smp.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/     
    
 VOLUME ["/data"]

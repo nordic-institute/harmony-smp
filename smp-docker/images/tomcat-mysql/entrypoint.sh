@@ -91,10 +91,10 @@ init_mysql() {
     if [ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]
     then
          echo "Use custom init script! "
-         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "tmp/custom-database-scripts/mysql5innodb-data.sql"
+         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/custom-database-scripts/mysql5innodb-data.sql"
      else
         echo "Use default init script!"
-         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/artefacts/smp-4.1.1-SNAPSHOT/database-scripts/mysql5innodb-data.sql"
+         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/smp-4.1.1-SNAPSHOT/database-scripts/mysql5innodb-data.sql"
     fi
     
   fi
