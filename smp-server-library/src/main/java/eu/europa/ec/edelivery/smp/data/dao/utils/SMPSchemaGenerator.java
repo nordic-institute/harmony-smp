@@ -33,7 +33,6 @@ public class SMPSchemaGenerator {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-
         String strDialects = args[0]; // comma separated dialects
         String strVersion = args.length > 1 ? args[1] : "";  // version
         String exportFolder = args.length > 2 ? args[2] : ""; // export folder
@@ -58,12 +57,7 @@ public class SMPSchemaGenerator {
      */
     public void createDDLScript(String exportFolder, String hibernateDialect, List<String> packageNames, String version) throws ClassNotFoundException, IOException {
         // create export file
-        String sqlVer = version;
-        int idx = version.indexOf("-SNAPSHOT");
-        if (idx > 0) {
-            sqlVer = version.substring(0, idx);
-        }
-        String filename = createFileName(hibernateDialect, filenameTemplate);
+         String filename = createFileName(hibernateDialect, filenameTemplate);
         String filenameDrop = createFileName(hibernateDialect, filenameDropTemplate);
 
         String dialect = getDialect(hibernateDialect);
