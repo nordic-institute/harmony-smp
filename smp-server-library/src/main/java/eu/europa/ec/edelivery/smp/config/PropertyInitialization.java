@@ -193,27 +193,32 @@ public class PropertyInitialization {
         String encTrustEncToken;
 
         if ( fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty())){
+            LOG.info("get token from  properties");
             encTrustEncToken = SecurityUtils.encryptWrappedToken(fEncryption,
                     fileProperties.getProperty(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty()));
         }else {
             // generate new token
+            LOG.info("generate  token");
             String trustToken = SecurityUtils.generateStrongPassword();
             storeDBEntry(em, SMPPropertyEnum.TRUSTSTORE_PASSWORD_DECRYPTED, trustToken);
             encTrustEncToken = SecurityUtils.encrypt(fEncryption, trustToken);
         }
-
+        LOG.info("Store truststore security token to database");
         // store token to database
         storeDBEntry(em, SMPPropertyEnum.TRUSTSTORE_PASSWORD, encTrustEncToken);
         properties.setProperty(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty(), encTrustEncToken);
 
-
+        LOG.info("Decode security token");
         String trustToken = SecurityUtils.decrypt(fEncryption,encTrustEncToken);
-
+        LOG.info("Gest keystore");
         File truststore;
         if ( fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty())){
+            LOG.info("Get  truststore value from property file");
             truststore = new File(absolutePath, fileProperties.getProperty(
                     SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty() ));
+
         } else {
+            LOG.info("Generate  truststore file ");
             truststore = getNewFile(absolutePath, "smp-truststore.jks");
         }
         // store file to database 
