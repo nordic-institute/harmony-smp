@@ -1,0 +1,12 @@
+version: "3.0"
+services:
+  tomcat-mysql:
+    image: tomcat_mysql_smp
+    container_name: tomcat_mysql_smp
+    volumes:
+      - ./properties/db-scripts:/tmp/custom-database-scripts/  # init script.
+    ports:
+      - 3906:3306
+      - 8980:8080
+
+
