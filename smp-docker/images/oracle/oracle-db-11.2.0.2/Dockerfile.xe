@@ -46,6 +46,7 @@ ENV ORACLE_BASE=/u01/app/oracle \
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$PATH
+ENV NLS_LANG=AMERICAN_AMERICA.AL32UTF8
 
 # Copy binaries
 # -------------
