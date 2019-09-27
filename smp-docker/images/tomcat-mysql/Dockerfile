@@ -44,6 +44,9 @@ RUN apt-get update \
      && echo "\nAdd init parameters" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
     && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   
 
+
+RUN curl -o /tmp/org.jacoco.agent.jar  https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.4/org.jacoco.agent-0.8.4-runtime.jar    
+
 # copy application to image 
 ADD ./artefacts /tmp/artefacts
 

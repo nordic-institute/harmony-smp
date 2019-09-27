@@ -1,0 +1,27 @@
+version: "3.0"
+services:
+  database:
+    image: oracle/database:11.2.0.2-xe
+    container_name: smp_oracle_db
+    volumes:
+      - ./properties/db-scripts:/u01/app/oracle/scripts/setup  # init script.
+      - shared-status-folder:/u01/status/
+    ports:
+      - 1721:1521
+    shm_size: '1gb'
+  weblogic:
+    depends_on:
+      - database
+#    command: [bash, -c, "for i in `seq 10`; do timeout 1  bash -c '</dev/tcp/database/1521'; if [ $$? -eq 0 ] ; then break;fi;sleep 1;  done;"]
+    command: [bash, -c, "for i in `seq 150`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.log' ] && [ \"$$( cat /u01/status/database.log )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 2;  done;   /u01/oracle/startAdminServer.sh"]
+    image:  weblogic_smp
+    container_name: wls-smp   
+    hostname: wlsadmin
+    volumes:
+      - ./properties/weblogic:/u01/oracle/properties
+      - shared-status-folder:/u01/status/
+    ports:
+      - 7901:7001
+volumes:
+   shared-status-folder:
+
