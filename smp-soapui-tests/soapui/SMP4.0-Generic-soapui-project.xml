@@ -4628,8 +4628,7 @@ testRunner.testCase.testSteps['Delete ServiceGroup'].run(testRunner, context);
   <con:entry key="ParticipantIdentifier" value="${TEST Put ServiceMetadata#ParticipantIdentifier}"/>
   <con:entry key="DocTypeIdentifierScheme" value="${TEST Put ServiceMetadata#DocTypeIdentifierScheme}"/>
 </con:parameters></con:restRequest></con:config></con:testStep><con:tearDownScript>// Run clean test steps.
-testRunner.testCase.testSteps['Delete ServiceMetadata'].run(testRunner, context);
-testRunner.testCase.testSteps['Delete ServiceGroup'].run(testRunner, context);
+testRunner.testCase.testSteps['Delete ServiceMetadata'].run(testRunner, context)
 //ExcelReporting.reportTestCase(testRunner, log)
 </con:tearDownScript><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>cda74952-fe52-42df-8643-8a59932a76f9</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>e84b7e54-b24e-491a-95b2-a12ff29eb5cc</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>46350f0e-d28d-4ed8-9a45-06d697f21192</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>a68ba073-b475-4085-9a6b-440292661eec</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>cb2dcecb-2b50-4b7a-b8aa-bf4da10bc6da</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>420cb632-3c39-4843-b4d2-4d1aad832f33</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase><con:testCase id="aea355cf-0ac4-4d38-94c4-789347738231" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="SMP070-serviceGroup Owner-Not existing" searchProperties="true"><con:description>ServiceGroup Owner-Not existing.
 
