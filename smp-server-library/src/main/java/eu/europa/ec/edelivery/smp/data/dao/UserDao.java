@@ -116,7 +116,7 @@ public class UserDao extends BaseDao<DBUser> {
      * @return returns Optional DBUser for certificateID
      */
     public Optional<DBUser> findUserByCertificateId(String certificateId) {
-        return findUserByCertificateId(certificateId, false);
+        return findUserByCertificateId(certificateId, true);
     }
 
     /**
