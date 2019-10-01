@@ -14,9 +14,7 @@
 # 3. run the scripts with arguments 
 # build-docker-images.sh  -f build-docker-images.sh  -f ${oracle_artefact_folder}
  
-DIRNAME=`dirname "$0"`
-cd "$DIRNAME"
-DIRNAME="$(pwd -P)"
+
 
 ORACLE_DB_FILE="oracle-xe-11.2.0-1.0.x86_64.rpm.zip"
 SERVER_JDK_FILE="server-jre-8u211-linux-x64.tar.gz"
@@ -27,9 +25,14 @@ ORACLE_ARTEFACTS="/CEF/oracle-install"
 SMP_ARTEFACTS="../../smp-webapp/target/"
 SMP_ARTEFACTS_CLEAR="false"
 
+SMP_IMAGE_PUBLISH="false"
+DOCKER_USER=$bamboo_DOCKER_USER
+DOCKER_PASSWORD=$bamboo_DOCKER_PASSWORD
+
+
 
 # READ argumnets 
-while getopts v:o:s:c: option
+while getopts v:o:s:c:p: option
 do
   case "${option}"
   in
@@ -37,19 +40,22 @@ do
     o) ORACLE_ARTEFACTS=${OPTARG};;
     s) SMP_ARTEFACTS=${OPTARG};;
     c) SMP_ARTEFACTS_CLEAR=${OPTARG};;
+    p) SMP_IMAGE_PUBLISH=${OPTARG};;
   esac
 done
 
-if [  -z "${SML_VERSION}" ]
+if [[  -z "${SML_VERSION}" ]]
 then
   # get version from setup file
-  cd "${SMP_ARTEFACTS}"
-  SMP_VERSION="$(ls smp-*-setup.zip | sed -e 's/.*smp-//g' | sed -e 's/-setup\.zip$//g')"
+  #cd "${SMP_ARTEFACTS}"
+  #SMP_VERSION="$(ls smp-*-setup.zip | sed -e 's/.*smp-//g' | sed -e 's/-setup\.zip$//g')"
+  SMP_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)"
   # go back to dirname
-  cd "$DIRNAME"
 fi
 
-
+DIRNAME=`dirname "$0"`
+cd "$DIRNAME"
+DIRNAME="$(pwd -P)"
 echo "*****************************************************************"
 echo "* SMP artefact folders: $SMP_ARTEFACTS, (Clear folder after build: $SMP_ARTEFACTS_CLEAR )"
 echo "* Build SMP image for version $SMP_VERSION"
@@ -58,13 +64,14 @@ echo "*****************************************************************"
 echo ""
 
 
+
 # -----------------------------------------------------------------------------
 # validate all necessary artefacts and prepare files to build images 
 # -----------------------------------------------------------------------------    
  validateAndPrepareArtefacts() {
    
   # check oracle database
-  if [ ! -f "${ORACLE_ARTEFACTS}/${ORACLE_DB_FILE}" ]
+  if [[ ! -f "${ORACLE_ARTEFACTS}/${ORACLE_DB_FILE}" ]]
   then
     echo "Oracle database artefacts '${ORACLE_ARTEFACTS}/${ORACLE_DB_FILE}' not found."
     exit 1;
@@ -74,7 +81,7 @@ echo ""
   fi
 
   # check server JDK
-  if [ ! -f "${ORACLE_ARTEFACTS}/${SERVER_JDK_FILE}" ]
+  if [[ ! -f "${ORACLE_ARTEFACTS}/${SERVER_JDK_FILE}" ]]
   then
     echo "Server JDK artefacts '${ORACLE_ARTEFACTS}/${SERVER_JDK_FILE}' not found."
     exit 1;
@@ -84,7 +91,7 @@ echo ""
   fi
 
  # check weblogic 
-  if [ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ]
+  if [[ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ]]
   then
     echo "Weblogic artefacts '${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}' not found."
     exit 1;
@@ -94,14 +101,14 @@ echo ""
   fi
  
 
-  if  [ ! -d "./tomcat-mysql/artefacts/" ]
+  if  [[ ! -d "./tomcat-mysql/artefacts/" ]]
   then
     mkdir -p "./tomcat-mysql/artefacts/"
   fi
     
 
   # SMP artefats 
-  if [ ! -f "${SMP_ARTEFACTS}/smp.war" ]
+  if [[ ! -f "${SMP_ARTEFACTS}/smp.war" ]]
   then
     echo "SMP artefact   '${SMP_ARTEFACTS}/smp.war' not found. Was project built!"
     exit 1;
@@ -114,7 +121,7 @@ echo ""
   fi
 
  # SMP setup zip   
-  if [ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]
+  if [[ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]]
   then
     echo "SMP setup boundle  '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found. Was project built!"
     exit 1;
@@ -138,7 +145,7 @@ echo ""
     # build docker image for oracle database 
     # -----------------------------------------------------------------------------
     # oracle 1.2.0.2-xe (https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance/dockerfiles/11.2.0.2)
-    docker build -f ./oracle/oracle-db-11.2.0.2/Dockerfile.xe -t oracle/database:11.2.0.2-xe ./oracle/oracle-db-11.2.0.2/
+    docker build -f ./oracle/oracle-db-11.2.0.2/Dockerfile.xe -t "smp-oradb-11.2.0.2-xe:${SMP_VERSION}" ./oracle/oracle-db-11.2.0.2/
 
     # -----------------------------------------------------------------------------
     # build docker image for oracle database 
@@ -156,11 +163,36 @@ echo ""
 
 
     # build SMP deployment.
-    docker build -t weblogic_smp ./weblogic-12.2.1.3-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
+    docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2.1.3-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
 
     # build tomcat mysql image  deployment.
-    docker build -t tomcat_mysql_smp ./tomcat-mysql/ 
+    docker build -t "smp-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql/  --build-arg SMP_VERSION=${SMP_VERSION}
 
+}
+
+function pushImageToDockerhub {
+
+   if [[ "V$SMP_IMAGE_PUBLISH" == "Vtrue" ]]
+   then
+       # login to docker
+       docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}"
+       # push images
+       pushImageIfExisting "smp-tomcat-mysql:${SMP_VERSION}"
+       pushImageIfExisting "smp-weblogic-122:${SMP_VERSION}"
+       pushImageIfExisting "smp-oradb-11.2.0.2-xe:${SMP_VERSION}"
+   fi
+}
+
+
+function pushImageIfExisting {
+  if [[ "x$(docker images -q "${1}")" != "x" ]]; then
+    echo "Pushing image ${1}"
+    docker tag "${1}" "${DOCKER_USER}"/"${1}"
+    docker push "${DOCKER_USER}"/"${1}"
+  else
+    echo "Could not find image ${1} to push!"
+  fi
+  return 0
 }
 
 # -----------------------------------------------------------------------------
@@ -176,7 +208,7 @@ echo ""
   # clear also the tomcat/mysql image  
   rm -rf "./tomcat-mysql/artefacts/*.*"
 
-  if [ "V$SMP_ARTEFACTS_CLEAR" == "Vtrue" ]
+  if [[ "V$SMP_ARTEFACTS_CLEAR" == "Vtrue" ]]
   then
     rm -rf  "${SMP_ARTEFACTS}/smp-setup.zip"
     rm -rf  "${SMP_ARTEFACTS}/smp.war"
@@ -187,5 +219,6 @@ echo ""
 
 validateAndPrepareArtefacts
 buildImages
+pushImageToDockerhub
 cleanArtefacts
 

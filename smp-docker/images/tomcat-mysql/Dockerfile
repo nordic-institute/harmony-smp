@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 MAINTAINER Joze Rihtarsic
 
-
+ARG SMP_VERSION
 # Set the SMP_VERSION env variable  \
 ENV SMP_HOME=/opt/smp  \
     MYSQL_DRV_VERSION=5.1.46  \
@@ -13,6 +13,14 @@ ENV SMP_HOME=/opt/smp  \
     DB_USER=smp  \ 
     DB_USER_PASSWORD=smp  \
     MYSQL_ROOT_PASSWORD=root  
+
+EXPOSE 3306 8080
+
+ENV LANG en_US.utf8
+ADD ./artefacts /tmp/artefacts
+COPY ./entrypoint.sh /sbin/entrypoint.sh  
+VOLUME ["/data"]
+
 
 # install utils, java, mysql   \
 RUN apt-get update \
@@ -41,29 +49,15 @@ RUN apt-get update \
     && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$DB_USER\" password=\"$DB_USER\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$DB_SCHEMA?useSSL=false\&amp;characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
     && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"  \
     && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
-     && echo "\nAdd init parameters" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
-    && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   
+    && echo "\nAdd init parameters" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
+    && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties    \
+    && unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
+    && mv /tmp/smp-$SMP_VERSION/* /tmp/artefacts/ \
+    && rm -rf /tmp/smp-$SMP_VERSION \
+    && mv /tmp/artefacts/smp.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/     \
+    && chmod u+x /sbin/entrypoint.sh \
+    && sed -i -e "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf  
 
-
-RUN curl -o /tmp/org.jacoco.agent.jar  https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.4/org.jacoco.agent-0.8.4-runtime.jar    
-
-# copy application to image 
-ADD ./artefacts /tmp/artefacts
-
-
-# install SMP
-RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
-    && mv /tmp/artefacts/smp.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/     
-  
-ENV LANG en_US.utf8
- 
-VOLUME ["/data"]
-
-COPY ./entrypoint.sh /sbin/entrypoint.sh 
-RUN chmod u+x /sbin/entrypoint.sh \
-      && sed -i -e "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf
-
-EXPOSE 3306 8080
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 

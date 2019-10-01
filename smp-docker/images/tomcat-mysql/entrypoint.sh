@@ -71,7 +71,7 @@ init_mysql() {
   echo '[INFO] start MySQL'
   service mysql start
 
-  if [ -d ${MYSQL_DATA_DIR}/${DB_SCHEMA} ]; then
+  if [[ -d ${MYSQL_DATA_DIR}/${DB_SCHEMA} ]]; then
     echo '[INFO] MySQL ${DB_SCHEMA} already present, skipping creation'
   else 
     echo "[INFO] MySQL ${DB_SCHEMA}  not found, creating initial DBs"
@@ -79,22 +79,22 @@ init_mysql() {
     echo 'Create smp database'
     mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';drop schema if exists $DB_SCHEMA;DROP USER IF EXISTS $DB_USER;  create schema $DB_SCHEMA;alter database $DB_SCHEMA charset=utf8; create user $DB_USER identified by '$DB_USER_PASSWORD';grant all on $DB_SCHEMA.* to $DB_USER;"
 
-    if [ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]
+    if [[ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]]
     then
         echo "Use custom database script! "
         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "tmp/custom-database-scripts/mysql5innodb.ddl"
     else
-          echo "Use default database ddl script!"
-           mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/smp-4.1.1-SNAPSHOT/database-scripts/mysql5innodb.ddl"        fi
+          echo "Use default database ddl script! test"
+           mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/artefacts/database-scripts/mysql5innodb.ddl"
     fi
 
-    if [ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]
+    if [[ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]]
     then
          echo "Use custom init script! "
          mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/custom-database-scripts/mysql5innodb-data.sql"
      else
         echo "Use default init script!"
-         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/smp-4.1.1-SNAPSHOT/database-scripts/mysql5innodb-data.sql"
+         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $DB_SCHEMA < "/tmp/artefacts/database-scripts/mysql5innodb-data.sql"
     fi
     
   fi
