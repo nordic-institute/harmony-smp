@@ -27,6 +27,8 @@ public class DBCertificateToCertificateROConverter implements Converter<DBCertif
         target.setSerialNumber(source.getSerialNumber());
         target.setIssuer(source.getIssuer());
         target.setSubject(source.getSubject());
+        target.setCrlUrl(source.getCrlUrl());
+        target.setEncodedValue(source.getPemEncoding());
         return target;
     }
 }
