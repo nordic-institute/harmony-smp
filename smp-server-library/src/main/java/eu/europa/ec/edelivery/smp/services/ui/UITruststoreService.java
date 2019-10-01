@@ -212,12 +212,12 @@ public class UITruststoreService {
             } catch (CertificateRevokedException ex) {
                 String msg = "Certificate: '" + cert.getCertificateId() + "'" +
                         " is revoked!";
-                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, cert.getCertificateId(), msg);
-                throw new AuthenticationServiceException(msg);
+                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, cert.getCertificateId(), msg, ex);
+                throw new CertificateException(msg);
             } catch (Throwable th) {
                 String msg = "Error occurred while validating CRL for certificate!";
                 LOG.error(SMPLogger.SECURITY_MARKER, msg + "Err: " + ExceptionUtils.getRootCauseMessage(th), th);
-                throw new AuthenticationServiceException(msg);
+                throw new CertificateException(msg);
             }
         }
     }

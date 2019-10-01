@@ -71,7 +71,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             // validate certificate
             try {
                 truststoreService.checkFullCertificateValidity(user.getCertificate());
-            } catch (CertificateException e) {
+            } catch (CertificateException  e) {
                 LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " +e.getMessage());
                 user.getCertificate().setInvalid(true);
                 user.getCertificate().setInvalidReason(e.getMessage());
