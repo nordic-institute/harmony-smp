@@ -3,13 +3,14 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+
 
 /**
  * @author Sebastian-Ion TINCU
@@ -33,6 +34,12 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         if (source.getCertificate() != null) {
             CertificateRO certificateRO = conversionService.convert(source.getCertificate(), CertificateRO.class);
             target.setCertificate(certificateRO);
+            if(StringUtils.equalsIgnoreCase(source.getCertificate().getCertificateId(), source.getUsername())) {
+                // clear username if is the same as certificate id.
+                // username as cert id is set to database to force unique users
+                // and to fix issue with mysql - where null value is also unique...
+                target.setUsername(null);
+            }
         }
         return target;
     }
