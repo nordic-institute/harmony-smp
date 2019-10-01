@@ -30,7 +30,6 @@ DOCKER_USER=$bamboo_DOCKER_USER
 DOCKER_PASSWORD=$bamboo_DOCKER_PASSWORD
 
 
-
 # READ argumnets 
 while getopts v:o:s:c:p: option
 do
