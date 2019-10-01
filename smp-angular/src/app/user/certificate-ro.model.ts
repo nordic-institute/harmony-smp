@@ -8,6 +8,7 @@ export interface CertificateRo {
   fingerprints: string;
   blueCoatHeader?:string;
   encodedValue?:string;
+  crlUrl?: String;
   alias?:string;
   invalid?:boolean;
   invalidReason?:string;

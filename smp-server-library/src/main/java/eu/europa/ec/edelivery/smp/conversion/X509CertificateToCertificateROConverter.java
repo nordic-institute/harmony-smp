@@ -6,6 +6,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         String subject = cert.getSubjectX500Principal().getName(X500Principal.RFC2253);
         String issuer = cert.getIssuerX500Principal().getName(X500Principal.RFC2253);
         BigInteger serial = cert.getSerialNumber();
+        String url = X509CertificateUtils.getCrlDistributionUrl(cert);
 
         String certId = getCertificateIdFromCertificate(subject, issuer, serial);
         CertificateRO cro = new CertificateRO();
@@ -43,6 +45,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         cro.setCertificateId(certId);
         cro.setSubject(subject);
         cro.setIssuer(issuer);
+        cro.setCrlUrl(url);
         // set serial as HEX
         cro.setSerialNumber(serial.toString(16));
         cro.setValidFrom(cert.getNotBefore());
