@@ -442,11 +442,6 @@ public class PropertyInitialization {
         if (!databaseProperties.containsKey(TRUSTSTORE_FILENAME.getProperty())) {
             initTruststore(configurationDir, fEncryption, em, databaseProperties, fileProperties);
         }
-
-        //
-        // if there is only one certificate - and there is empty alias
-        //initializeProperties();
-
         em.getTransaction().commit();
     }
 
@@ -481,11 +476,11 @@ public class PropertyInitialization {
      *
      * @return
      */
-    private DataSource getDatasource(Properties connectionProp) {
+    protected DataSource getDatasource(Properties connectionProp) {
         LOG.info("Start database properties");
-        DataSource datasource = null;
-        String url = connectionProp.getProperty("jdbc.url");
-        String jndiDatasourceName = connectionProp.getProperty("datasource.jndi");
+        DataSource datasource;
+        String url = connectionProp.getProperty(FileProperty.PROPERTY_DB_URL);
+        String jndiDatasourceName = connectionProp.getProperty(FileProperty.PROPERTY_DB_JNDI);
         jndiDatasourceName = StringUtils.isBlank(jndiDatasourceName) ? "jdbc/smpDatasource" : jndiDatasourceName;
 
         if (!StringUtils.isBlank(url)) {
