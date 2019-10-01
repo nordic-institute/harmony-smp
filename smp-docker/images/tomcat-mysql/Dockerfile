@@ -14,13 +14,16 @@ ENV SMP_HOME=/opt/smp  \
     DB_USER_PASSWORD=smp  \
     MYSQL_ROOT_PASSWORD=root  
 
-EXPOSE 3306 8080
+EXPOSE 3306 8080 6400
+# Exposing ports used in entrypoint.sh ..
+# - 3306 Mysql port
+# - 6400 JaCoCo port
+# - 8080 Tomcat port
 
+
+ENV JACOCO_VERSION 0.8.4
 ENV LANG en_US.utf8
-ADD ./artefacts /tmp/artefacts
-COPY ./entrypoint.sh /sbin/entrypoint.sh  
-VOLUME ["/data"]
-
+VOLUME ["/smp/data"]
 
 # install utils, java, mysql   \
 RUN apt-get update \
@@ -50,13 +53,19 @@ RUN apt-get update \
     && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"  \
     && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
     && echo "\nAdd init parameters" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
-    && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties    \
-    && unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
+    && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
+    && sed -i -e "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf   \
+    && mkdir /opt/jacoco  \
+    && curl -o /opt/jacoco/jacoco-agent.jar http://central.maven.org/maven2/org/jacoco/org.jacoco.agent/$JACOCO_VERSION/org.jacoco.agent-$JACOCO_VERSION-runtime.jar
+
+ADD ./artefacts /tmp/artefacts
+COPY ./entrypoint.sh /sbin/entrypoint.sh
+
+RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && mv /tmp/smp-$SMP_VERSION/* /tmp/artefacts/ \
     && rm -rf /tmp/smp-$SMP_VERSION \
     && mv /tmp/artefacts/smp.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/     \
-    && chmod u+x /sbin/entrypoint.sh \
-    && sed -i -e "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf  
+    && chmod u+x /sbin/entrypoint.sh
 
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
