@@ -18,7 +18,9 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import junitparams.naming.TestCaseName;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -31,6 +33,9 @@ import static org.junit.Assert.*;
  */
 @RunWith(JUnitParamsRunner.class)
 public class IdentifiersTest {
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
 
     public static final String MALFORMED_INPUT_MSG = "Malformed identifier, scheme and id should be delimited by double colon: ";
 
@@ -107,6 +112,32 @@ public class IdentifiersTest {
         };
     }
 
+    private static final Object[] ebCoreIdentifiersCases() {
+        return new Object[][]{
+                {"ebCore unregistered", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:domain:ec.europa.eu", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:domain", "ec.europa.eu"},
+                {"ebCore iso6523", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088:123456789", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088", "123456789"},
+                {"ebCore with space 1", " urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088:123456789", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088", "123456789"},
+                {"ebCore with space 2", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088:123456789 ", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088", "123456789"},
+                {"ebCore unregistered with urn and colons", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:ehealth:urn:ehealth:pl:ncp-idp", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:ehealth", "urn:ehealth:pl:ncp-idp"},
+                {"ebCore unregistered with dash", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:ehealth:pl:ncp-idp", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:ehealth", "pl:ncp-idp"},
+                {"ebCore unregistered example", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:blue-gw", "urn:oasis:names:tc:ebcore:partyid-type:unregistered", "blue-gw"},
+                {"ebCore unregistered domain example", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:ec.europa.eu", "urn:oasis:names:tc:ebcore:partyid-type:unregistered", "ec.europa.eu"},
+                {"ebCore unregistered email scheme example", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:email:test@my.mail.com", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:email", "test@my.mail.com"},
+                {"ebCore unregistered email example", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:test@my.mail.com", "urn:oasis:names:tc:ebcore:partyid-type:unregistered", "test@my.mail.com"},
+                {"ebCore with double colon", " urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088::123456789", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088", "123456789"},
+                {"ebCore with double colon start", " ::urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088:123456789", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088", "123456789"},
+
+        };
+    }
+
+    private static final Object[] ebCoreIdentifiersNegativeCases() {
+        return new Object[][]{
+                {"Not an ebCore ", "urn:my:space:tc:ebcore:partyid-type:unregistered:domain:ec.europa.eu", MalformedIdentifierException.class},
+                {"ebCore iso6523", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:Illegal-value-without-scheme", IllegalArgumentException.class},
+                {"ebCore with no catalog", " urn:oasis:names:tc:ebcore:partyid-type:0088123456789", IllegalArgumentException.class},
+        };
+    }
+
     private static final Object[] negativeCases() {
         return new Object[]{
                 null,
@@ -154,6 +185,19 @@ public class IdentifiersTest {
     }
 
     @Test
+    @Parameters(method = "ebCoreIdentifiersCases")
+    @TestCaseName("{0}")
+    public void testSplitEbCoreIdentifier(String caseName, String input, String scheme, String value) {
+        //when
+        String[] values = Identifiers.splitEbCoreIdentifier(input);
+
+        //then
+        assertEquals(2, values.length);
+        assertEquals(scheme, values[0]);
+        assertEquals(value, values[1]);
+    }
+
+    @Test
     @Parameters(method = "participantIdentifierNegativeCases")
     @TestCaseName("{0}")
     public void testParticipantIdNegative(String negativeInput) {
@@ -166,6 +210,17 @@ public class IdentifiersTest {
             return;
         }
         fail();
+    }
+
+    @Test
+    @Parameters(method = "ebCoreIdentifiersNegativeCases")
+    @TestCaseName("{0}")
+    public void testSplitEbCoreIdentifierNegative(String caseName, String negativeInput, Class clz) {
+
+        expectedEx.expect(clz);
+        //when
+        Identifiers.asParticipantId(negativeInput);
+
     }
 
     @Test
@@ -242,5 +297,6 @@ public class IdentifiersTest {
         //when-then
         assertEquals("busdox%3Adocid%3Aqns%3A%3Aurn%3A%3Aehealth%23%23services%3Aextended%3Aepsos01%3A%3A101", Identifiers.asUrlEncodedString(docId));
     }
+
 
 }
