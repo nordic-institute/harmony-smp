@@ -138,6 +138,8 @@ export class UserDetailsDialogComponent {
         password: '',
         confirmation: '',
         role: '',
+        encodedValue:'',
+        crlUrl:'',
         status: SearchTableEntityStatus.NEW,
         statusPassword: SearchTableEntityStatus.NEW,
         certificate: this.newCertificateRo(),
@@ -180,6 +182,8 @@ export class UserDetailsDialogComponent {
       'validTo': new FormControl({value: '', disabled: true}, Validators.required),
       'issuer': new FormControl({value: '', disabled: true}, Validators.required),
       'serialNumber': new FormControl({value: '', disabled: true}, Validators.required),
+      'crlUrl': new FormControl({value: '', disabled: true}),
+      'encodedValue': new FormControl({value: '', disabled: true}),
       'certificateId': new FormControl({value: '', disabled: true,}, [Validators.required]),
       'isCertificateValid': new FormControl({value: 'true', disabled: true,}, [Validators.requiredTrue]
       ),
@@ -205,6 +209,8 @@ export class UserDetailsDialogComponent {
     this.userForm.controls['issuer'].setValue(this.current.certificate.issuer);
     this.userForm.controls['serialNumber'].setValue(this.current.certificate.serialNumber);
     this.userForm.controls['certificateId'].setValue(this.current.certificate.certificateId);
+    this.userForm.controls['crlUrl'].setValue(this.current.certificate.crlUrl);
+    this.userForm.controls['encodedValue'].setValue(this.current.certificate.encodedValue);
     this.userForm.controls['isCertificateValid'].setValue(!this.current.certificate.invalid);
 
 
@@ -233,6 +239,8 @@ export class UserDetailsDialogComponent {
             'issuer': res.issuer,
             'serialNumber': res.serialNumber,
             'certificateId': res.certificateId,
+            'crlUrl': res.crlUrl,
+            'encodedValue': res.encodedValue,
             'isCertificateValid': !res.invalid
           });
           this.certificateValidationMessage = res.invalidReason;
@@ -259,7 +267,8 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['validFrom'].setValue(this.tempStoreForCertificate.validFrom);
       this.userForm.controls['validFrom'].setValue(this.tempStoreForCertificate.validFrom);
       this.userForm.controls['validTo'].setValue(this.tempStoreForCertificate.validTo);
-
+      this.userForm.controls['encodedValue'].setValue(this.tempStoreForCertificate.encodedValue);
+      this.userForm.controls['crlUrl'].setValue(this.tempStoreForCertificate.crlUrl);
       this.certificateValidationMessage = this.tempStoreForCertificate.invalidReason;
       this.isCertificateInvalid= this.tempStoreForCertificate.invalid;
 
@@ -271,6 +280,9 @@ export class UserDetailsDialogComponent {
       this.tempStoreForCertificate.serialNumber = this.userForm.controls['serialNumber'].value;
       this.tempStoreForCertificate.validFrom = this.userForm.controls['validFrom'].value;
       this.tempStoreForCertificate.validTo = this.userForm.controls['validTo'].value;
+      this.tempStoreForCertificate.encodedValue = this.userForm.controls['encodedValue'].value;
+      this.tempStoreForCertificate.crlUrl = this.userForm.controls['crlUrl'].value;
+
       this.tempStoreForCertificate.invalidReason = this.certificateValidationMessage;
       this.tempStoreForCertificate.invalid = this.isCertificateInvalid;
 
@@ -280,6 +292,8 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['serialNumber'].setValue("");
       this.userForm.controls['validFrom'].setValue("");
       this.userForm.controls['validTo'].setValue("");
+      this.userForm.controls['crlUrl'].setValue("");
+      this.userForm.controls['encodedValue'].setValue("");
       this.userForm.controls['isCertificateValid'].setValue("true");
 
       this.certificateValidationMessage = null;
@@ -333,6 +347,8 @@ export class UserDetailsDialogComponent {
       this.current.certificate.serialNumber = this.userForm.controls['serialNumber'].value;
       this.current.certificate.validFrom = this.userForm.controls['validFrom'].value;
       this.current.certificate.validTo = this.userForm.controls['validTo'].value;
+      this.current.certificate.crlUrl = this.userForm.controls['crlUrl'].value;
+      this.current.certificate.encodedValue = this.userForm.controls['encodedValue'].value;
       this.current.certificate.invalid = this.isCertificateInvalid;
       this.current.certificate.invalidReason = this.certificateValidationMessage;
     } else {
@@ -377,6 +393,8 @@ export class UserDetailsDialogComponent {
       serialNumber: '',
       certificateId: '',
       fingerprints: '',
+      crlUrl:'',
+      encodedValue:'',
     }
   }
 

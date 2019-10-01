@@ -107,6 +107,11 @@ public class X509CertificateUtils {
         return crlUrls;
     }
 
+    public static String getCrlDistributionUrl(X509Certificate cert) {
+        List<String> list = getCrlDistributionPoints(cert);
+        return list.isEmpty()?null:extractHttpCrlDistributionPoint(list);
+    }
+
     /**
      * Method retrieves https. If https does not exist it return http distribution list.
      * (LDAP is not allowed (FW OPEN) in targeted network)
