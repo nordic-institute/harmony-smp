@@ -123,9 +123,13 @@ public class DBServiceMetadata extends BaseEntity {
             }
         }
         else {
-            smdx.setServiceMetadata(this);
+            if (this.serviceMetadataXml == null) {
+                this.serviceMetadataXml = new DBServiceMetadataXml();
+                this.serviceMetadataXml.setServiceMetadata(this);
+            }
+            this.serviceMetadataXml.setXmlContent(smdx.getXmlContent());
+
         }
-        this.serviceMetadataXml = smdx;
     }
 
     @Transient

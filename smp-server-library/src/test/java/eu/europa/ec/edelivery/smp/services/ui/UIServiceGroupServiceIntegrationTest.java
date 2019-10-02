@@ -237,6 +237,49 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         assertEquals(testDomain02.getSmlSubdomain(), smdUpdated.getSmlSubdomain());
 
     }
+    @Test
+    public void testUpdateServiceMatadataChangeDomainReverseOrder() {
+
+        // given
+        DBDomain testDomain01 = TestDBUtils.createDBDomain(TestConstants.TEST_DOMAIN_CODE_1);
+
+        DBDomain testDomain02 = TestDBUtils.createDBDomain(TestConstants.TEST_DOMAIN_CODE_2);
+        domainDao.persistFlushDetach(testDomain02);
+        domainDao.persistFlushDetach(testDomain01);
+
+        DBServiceGroup dbServiceGroup = TestDBUtils.createDBServiceGroup();
+        dbServiceGroup.addDomain(testDomain02);
+        dbServiceGroup.addDomain(testDomain01);
+        DBServiceMetadata dbServiceMetadata = TestDBUtils.createDBServiceMetadata(dbServiceGroup.getParticipantIdentifier(), dbServiceGroup.getParticipantScheme());
+        dbServiceGroup.getServiceGroupDomains().get(1 ).addServiceMetadata(dbServiceMetadata);
+        // add second domain
+
+        serviceGroupDao.persistFlushDetach(dbServiceGroup);
+
+        ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1, -1, null, null, null);
+
+        assertNotNull(res);
+        assertEquals(1, res.getCount().intValue());
+        ServiceGroupRO sgChanged = res.getServiceEntities().get(0);
+        ServiceMetadataRO smdToChange = sgChanged.getServiceMetadata().get(0);
+        assertEquals(testDomain01.getDomainCode(), smdToChange.getDomainCode());
+        assertEquals(testDomain01.getSmlSubdomain(), smdToChange.getSmlSubdomain());
+
+        // then
+        sgChanged.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+        smdToChange.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+        smdToChange.setDomainCode(testDomain02.getDomainCode());
+        smdToChange.setSmlSubdomain(testDomain02.getSmlSubdomain());
+        testInstance.updateServiceGroupList(Collections.singletonList(sgChanged));
+
+        res = testInstance.getTableList(-1, -1, null, null, null);
+        ServiceGroupRO sgUpdated = res.getServiceEntities().get(0);
+        ServiceMetadataRO smdUpdated = sgUpdated.getServiceMetadata().get(0);
+
+        assertEquals(testDomain02.getDomainCode(), smdUpdated.getDomainCode());
+        assertEquals(testDomain02.getSmlSubdomain(), smdUpdated.getSmlSubdomain());
+
+    }
 
 
     @Test

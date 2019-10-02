@@ -78,6 +78,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.current = this.editMode
       ? {
         ...this.data.row,
+        // copy serviceGroupDomain array
+        serviceGroupDomains: [...this.data.row.serviceGroupDomains]
       }
       : {
         id: null,
@@ -322,16 +324,19 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     // if deselected warn  serviceMetadata will be deleted
     let domainCode = event.option.value.domainCode;
     if (!event.option.selected) {
-      this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          title: "Registered serviceMetadata on domain!",
-          description: "Unregistration of domain will also delete it's serviceMetadata. Do you want to continue?"
-        }
-      }).afterClosed().subscribe(result => {
-        if (!result) {
-          event.option.selected = true;
-        }
-      })
+      let smdCount = this.getServiceMetadataCountOnDomain(domainCode);
+      if (smdCount >0) {
+        this.dialog.open(ConfirmationDialogComponent, {
+          data: {
+            title: "Registered serviceMetadata on domain!",
+            description: "Unregistering service group from domain will also delete its serviceMetadata (count: "+smdCount+") from the domain! Do you want to continue?"
+          }
+        }).afterClosed().subscribe(result => {
+          if (!result) {
+            event.option.selected = true;
+          }
+        })
+      }
 
 
     }

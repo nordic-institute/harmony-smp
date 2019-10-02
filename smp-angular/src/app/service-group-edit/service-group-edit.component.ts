@@ -132,8 +132,9 @@ export class ServiceGroupEditComponent implements OnInit {
     formRef.afterClosed().subscribe(result => {
       if (result) {
 
-        let isXMLChanged=formRef.componentInstance.isMetaDataXMLChanged();
-        if (!isXMLChanged){
+        // method isServiceMetaDataChanged must be called before getCurrent!
+        let isChanged=formRef.componentInstance.isServiceMetaDataChanged();
+        if (!isChanged ){
           // nothing to save
           return;
         }
@@ -182,15 +183,7 @@ export class ServiceGroupEditComponent implements OnInit {
     }
   }
 
-  isRecordChanged (oldModel, newModel): boolean {
-    for (var property in oldModel) {
-      var changed = false;
-      if (newModel[property] !== oldModel[property]) {
-        return true; // Property has changed
-      }
-    }
-    return false;
-  }
+
 
   // for dirty guard...
   isDirty (): boolean {
