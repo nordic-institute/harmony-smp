@@ -97,15 +97,40 @@ export class ServiceGroupEditController implements SearchTableController {
     // check if other properties were changed
     let propSize = this.compareSGProperties.length;
     for (let i = 0; i < propSize; i++) {
-
       let property =  this.compareSGProperties[i];
-      const isEqual = this.isEqual(newModel[property], oldModel[property]);
+      let isEqual = false;
+
+      if (property ==='users'
+        || property ==='serviceGroupDomains') {
+        isEqual = this.isEqualListByAttribute(newModel[property], oldModel[property], "id");
+      }else {
+        isEqual = this.isEqual(newModel[property], oldModel[property]);
+      }
+      console.log("Property: "+property+" new: " +newModel[property] +  "old: " +oldModel[property] + " val: " + isEqual  );
       if (!isEqual) {
-        console.log("property: "+property+" changed!");
         return true; // Property has changed
       }
     }
     return false;
+  }
+
+  isEqualListByAttribute(array1, array2, compareByAttribute): boolean {
+    let result1 = array1.filter(function(o1){
+      // filter out (!) items in result2
+      return !array2.some(function(o2){
+        return o1[compareByAttribute] === o2[compareByAttribute]; //  unique id
+      });
+    });
+
+    let result2 = array2.filter(function(o1){
+      // filter out (!) items in result2
+      return !array1.some(function(o2){
+        return o1[compareByAttribute] === o2[compareByAttribute]; //  unique id
+      });
+    });
+
+    return (!result1 || result1.length === 0) && (!result2 || result2.length === 0);
+
   }
 
   isEqual(val1, val2): boolean {

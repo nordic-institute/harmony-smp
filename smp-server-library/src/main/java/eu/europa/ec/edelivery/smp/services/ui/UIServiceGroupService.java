@@ -352,23 +352,41 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 if (optionalDbServiceGroupDomain.isPresent()) {
 
                     DBServiceGroupDomain dbServiceGroupDomain = optionalDbServiceGroupDomain.get();
+                    DBServiceMetadata dbServiceMetadata = dbServiceGroupDomain.getServiceMetadata(serviceMetadataRO.getDocumentIdentifier(),
+                            serviceMetadataRO.getDocumentIdentifierScheme());
                     if (serviceMetadataRO.getXmlContentStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
                         // get service metadata
                         byte[] buff = validateServiceMetadata(serviceMetadataRO);
 
-                        DBServiceMetadata dbServiceMetadata = dbServiceGroupDomain.getServiceMetadata(serviceMetadataRO.getDocumentIdentifier(),
-                                serviceMetadataRO.getDocumentIdentifierScheme());
+
                         dbServiceMetadata.setXmlContent(buff);
                     }
 
                     if (!Objects.equals(serviceMetadataRO.getDomainCode(), dbServiceGroupDomain.getDomain().getDomainCode())) {
-                        // remove from old doman
+                        // remove from old domain
+                        LOG.info("Move service metadata from domain {} to domain: {}" , dbServiceGroupDomain.getDomain().getDomainCode(),
+                                serviceMetadataRO.getDomainCode( ));
+
                         DBServiceMetadata smd = dbServiceGroupDomain.removeServiceMetadata(serviceMetadataRO.getDocumentIdentifier(),
                                 serviceMetadataRO.getDocumentIdentifierScheme());
+
+
+
                         // find new domain and add
                         Optional<DBServiceGroupDomain> optNewDomain = dbServiceGroup.getServiceGroupForDomain(serviceMetadataRO.getDomainCode());
                         if (optNewDomain.isPresent()) {
-                            optNewDomain.get().addServiceMetadata(smd);
+                            LOG.info("ADD service metadata to domain {} " , optNewDomain.get().getDomain().getDomainCode(),
+                                    serviceMetadataRO.getDomainCode( ));
+                                // create new because the old service metadata will be deleted
+                                DBServiceMetadata smdNew = new DBServiceMetadata();
+                                smdNew.setDocumentIdentifier(dbServiceMetadata.getDocumentIdentifier());
+                                smdNew.setDocumentIdentifierScheme(dbServiceMetadata.getDocumentIdentifierScheme());
+                                smdNew.setServiceGroupDomain(optNewDomain.get());
+                                smdNew.setServiceMetadataXml(dbServiceMetadata.getServiceMetadataXml());
+                                smdNew.setCreatedOn(dbServiceMetadata.getCreatedOn());
+
+                                optNewDomain.get().addServiceMetadata(smdNew);
+
                         } else {
                             throw new SMPRuntimeException(SG_NOT_REGISTRED_FOR_DOMAIN, serviceMetadataRO.getDomainCode(),
                                     serviceGroupRO.getParticipantIdentifier(), serviceGroupRO.getParticipantScheme());
