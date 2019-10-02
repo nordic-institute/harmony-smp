@@ -260,11 +260,24 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
     return this.current;
   }
 
+  //!! this two method must be called before getCurrent
   public isMetaDataXMLChanged():boolean{
      return  this.dialogForm.value['xmlContent'] !== this.current.xmlContent;
+  }
+  public isServiceMetaDataChanged():boolean{
+    return  this.isMetaDataXMLChanged() || !this.isEqual(this.current.domainCode, this.domainList.selected.value.domainCode) ;
   }
 
   compareDomainCode(sgDomain: ServiceGroupDomainEditRo, domainCode: String): boolean {
     return sgDomain.domainCode === domainCode;
+  }
+
+  isEqual(val1, val2): boolean {
+    return (this.isEmpty(val1) && this.isEmpty(val2)
+      || val1 === val2);
+  }
+
+  isEmpty(str): boolean {
+    return (!str || 0 === str.length);
   }
 }

@@ -119,7 +119,7 @@ public class ServiceGroupResource {
     @RequestMapping(method = RequestMethod.PUT)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public void updateDomainList(@RequestBody(required = true) ServiceGroupRO[] updateEntities ){
-        LOG.info("GOT LIST OF ServiceGroupRO to UPDATE: " + updateEntities.length);
+        LOG.info("Update ServiceGroupRO count: " + updateEntities.length);
         uiServiceGroupService.updateServiceGroupList(Arrays.asList(updateEntities));
     }
 
