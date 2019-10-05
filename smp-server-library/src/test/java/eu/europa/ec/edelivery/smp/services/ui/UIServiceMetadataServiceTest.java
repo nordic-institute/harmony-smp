@@ -26,7 +26,7 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
     @Before
     @Transactional
     public void prepareDatabase() {
-        prepareDatabaseForSignleDomainEnv();
+        prepareDatabaseForSingleDomainEnv();
     }
 
     @Test

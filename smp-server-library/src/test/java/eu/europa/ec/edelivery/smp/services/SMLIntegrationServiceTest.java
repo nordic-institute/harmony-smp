@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes= {SmlIntegrationConfiguration.class,
         SMLIntegrationService.class} )
-public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegrationTest {
+public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
@@ -69,7 +69,10 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
     @Before
     @Transactional
     public void prepareDatabase() {
+
         configurationService = Mockito.spy(configurationService);
+        smlConnector = Mockito.spy(smlConnector);
+        Mockito.doNothing().when(smlConnector).configureClient(any(), any(), any());
 
         ReflectionTestUtils.setField(testInstance,"configurationService",configurationService);
         ReflectionTestUtils.setField(smlConnector,"configurationService",configurationService);
@@ -78,7 +81,7 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
 
         integrationMock.reset();
-        prepareDatabaseForSignleDomainEnv();
+        prepareDatabaseForSingleDomainEnv();
     }
 
     @Test
@@ -86,7 +89,9 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
 
          // given
         DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
-        assertFalse(testDomain01.isSmlRegistered());
+        testDomain01.setSmlRegistered(false);
+        domainDao.update(testDomain01);
+
 
         // when
         testInstance.registerDomain(testDomain01);
@@ -188,6 +193,7 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
     @Test
     public void unregisterParticipantFromSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
         DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+        testDomain01.setSmlRegistered(true);
         // when
         testInstance.unregisterParticipantFromSML(TEST_SG_ID_1,TEST_SG_SCHEMA_1,testDomain01 );
 

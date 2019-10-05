@@ -180,9 +180,9 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         assertEquals(roToUpdate.getParticipantIdentifier(), lst.get(0).getParticipantIdentifier());
     }
 
+    /*
     @Test
     @Transactional
-  //  @Sql( statements={"update SMP_CONFIGURATION set value='true' where property='bdmsl.integration.enabled'; "})
     public void updateListSMLRecordsAddDomain() {
 
         // given
@@ -230,5 +230,5 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
 
         assertEquals(5, integrationMock.getParticipantManagmentClientMocks().size());
     }
-
+*/
 }

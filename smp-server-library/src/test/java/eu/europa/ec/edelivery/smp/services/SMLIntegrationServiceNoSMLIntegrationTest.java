@@ -37,10 +37,11 @@ import static org.junit.Assert.assertTrue;
 @TestPropertySource(properties = {
         "bdmsl.integration.enabled=false"})
 @ContextConfiguration(classes = {SMLIntegrationService.class})
-public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest {
+public class
+SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     protected SMLIntegrationService testInstance;
@@ -48,17 +49,18 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
     @Before
     @Transactional
     public void prepareDatabase() {
-        prepareDatabaseForSignleDomainEnv();
+        prepareDatabaseForSingleDomainEnv();
     }
 
     @Test
     public void registerOnlyDomainToSml() {
 
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage("Configuration error: SML integration is not enabled!");
+        expectedException.expect(SMPRuntimeException.class);
+        expectedException.expectMessage("Configuration error: SML integration is not enabled!");
         // given
         DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
-        assertFalse(testDomain01.isSmlRegistered());
+        testDomain01.setSmlRegistered(false);
+        domainDao.update(testDomain01);
 
         // when
         testInstance.registerDomain(testDomain01);
@@ -67,8 +69,8 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
     @Test
     public void unregisterOnlyDomainToSml() {
 
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage("Configuration error: SML integration is not enabled!");
+        expectedException.expect(SMPRuntimeException.class);
+        expectedException.expectMessage("Configuration error: SML integration is not enabled!");
         // given
         DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
         testDomain01.setSmlRegistered(true);
@@ -82,8 +84,8 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
     @Test
     public void registerOnlyParticipantDomainToSml() {
 
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage("Configuration error: SML integration is not enabled!");
+        expectedException.expect(SMPRuntimeException.class);
+        expectedException.expectMessage("Configuration error: SML integration is not enabled!");
         // when
         testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1);
     }

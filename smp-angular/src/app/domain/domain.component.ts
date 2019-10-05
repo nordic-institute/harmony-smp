@@ -217,7 +217,9 @@ export class DomainComponent implements OnInit {
   }
 
   smlRegisterDomain(domain: DomainRo) {
-    this.smlIntegrationService.registerDomainToSML$(domain.domainCode).subscribe((res: SMLResult) => {
+    this.searchTable.showSpinner=true;
+    this.smlIntegrationService.registerDomainToSML$(domain.domainCode).toPromise().then((res: SMLResult) => {
+        this.searchTable.showSpinner=false;
         if (res) {
           if (res.success) {
             this.alertService.success("Domain " + domain.domainCode + " registered to sml!");
@@ -231,16 +233,19 @@ export class DomainComponent implements OnInit {
         }
       },
       err => {
+        this.searchTable.showSpinner=false;
         this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, err);
       }
     )
   }
 
   smlUnregisterDomain(domain: DomainRo) {
-    this.smlIntegrationService.unregisterDomainToSML$(domain.domainCode).subscribe((res: SMLResult) => {
+    this.searchTable.showSpinner=true;
+    this.smlIntegrationService.unregisterDomainToSML$(domain.domainCode).toPromise().then((res: SMLResult) => {
+        this.searchTable.showSpinner=false;
         if (res) {
           if (res.success) {
-            this.alertService.success("Domain " + domain.domainCode + " unregistering from sml!");
+            this.alertService.success("Domain " + domain.domainCode + " unregistered from sml!");
             this.lookups.refreshDomainLookup();
             domain.smlRegistered = false;
           } else {
@@ -252,6 +257,7 @@ export class DomainComponent implements OnInit {
       }
       ,
       err => {
+        this.searchTable.showSpinner=false;
         this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, err);
       }
     )

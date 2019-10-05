@@ -31,7 +31,6 @@ package eu.europa.ec.edelivery.smp.sml;
         import org.mockito.Mockito;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.test.context.ContextConfiguration;
-        import org.springframework.test.context.TestPropertySource;
         import org.springframework.test.context.junit4.SpringRunner;
         import org.springframework.test.util.ReflectionTestUtils;
 
@@ -57,7 +56,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
-    protected SmlConnector smlConnector;
+    protected SmlConnector testInstance;
     @Autowired
     SmlIntegrationConfiguration mockSml;
 
@@ -65,10 +64,11 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     public void setup() {
 
         configurationService = Mockito.spy(configurationService);
-        ReflectionTestUtils.setField(smlConnector,"configurationService",configurationService);
-
+        testInstance = Mockito.spy(testInstance);
+        // default behaviour
+        Mockito.doNothing().when(testInstance).configureClient(any(), any(), any());
+        ReflectionTestUtils.setField(testInstance,"configurationService",configurationService);
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
-
         mockSml.reset();
     }
 
@@ -76,7 +76,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     public void testRegisterDomainInDns() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
         //when
 
-        boolean result = smlConnector.registerDomain(DEFAULT_DOMAIN);
+        boolean result = testInstance.registerDomain(DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
@@ -90,7 +90,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_SMP_ALREADY_EXISTS);
         mockSml.setThrowException(ex);
-        boolean result = smlConnector.registerDomain(DEFAULT_DOMAIN);
+        boolean result = testInstance.registerDomain(DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
@@ -108,14 +108,14 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         expectedException.expectMessage(message);
         expectedException.expect(SMPRuntimeException.class);
 
-        smlConnector.registerDomain(DEFAULT_DOMAIN);
+        testInstance.registerDomain(DEFAULT_DOMAIN);
     }
 
     @Test
     public void testRegisterDomainInDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.registerDomain(DEFAULT_DOMAIN);
-        smlConnector.registerDomain(DEFAULT_DOMAIN);
+        testInstance.registerDomain(DEFAULT_DOMAIN);
+        testInstance.registerDomain(DEFAULT_DOMAIN);
 
         //then
         assertEquals(2, mockSml.getSmpManagerClientMocks().size());
@@ -127,7 +127,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     @Test
     public void testDomainUnregisterFromDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        boolean result = smlConnector.unregisterDomain(DEFAULT_DOMAIN);
+        boolean result = testInstance.unregisterDomain(DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
@@ -139,8 +139,8 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     @Test
     public void testUnregisterDomainFromDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.unregisterDomain(DEFAULT_DOMAIN);
-        smlConnector.unregisterDomain(DEFAULT_DOMAIN);
+        testInstance.unregisterDomain(DEFAULT_DOMAIN);
+        testInstance.unregisterDomain(DEFAULT_DOMAIN);
 
         //then
         assertEquals(2, mockSml.getSmpManagerClientMocks().size());
@@ -157,7 +157,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
         expectedException.expect(SMPRuntimeException.class);
 
-        smlConnector.unregisterDomain(DEFAULT_DOMAIN);
+        testInstance.unregisterDomain(DEFAULT_DOMAIN);
     }
 
     @Test
@@ -169,7 +169,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         expectedException.expectMessage(message);
         expectedException.expect(SMPRuntimeException.class);
 
-        smlConnector.unregisterDomain(DEFAULT_DOMAIN);
+        testInstance.unregisterDomain(DEFAULT_DOMAIN);
     }
 
     @Test
@@ -177,14 +177,14 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_SMP_NOT_EXISTS);
         mockSml.setThrowException(ex);
-        boolean suc = smlConnector.unregisterDomain(DEFAULT_DOMAIN);
+        boolean suc = testInstance.unregisterDomain(DEFAULT_DOMAIN);
 
         assertTrue(suc);
     }
 
     @Test
     public void testIsOkMessageForDomainNull() {
-        boolean suc = smlConnector.isOkMessage(DEFAULT_DOMAIN, null);
+        boolean suc = testInstance.isOkMessage(DEFAULT_DOMAIN, null);
 
         assertFalse(suc);
     }
@@ -192,7 +192,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     @Test
     public void testIsOkMessageForDomainFalse() {
 
-        boolean suc = smlConnector.isOkMessage(DEFAULT_DOMAIN, ERROR_UNEXPECTED_MESSAGE);
+        boolean suc = testInstance.isOkMessage(DEFAULT_DOMAIN, ERROR_UNEXPECTED_MESSAGE);
 
         assertFalse(suc);
     }
@@ -204,7 +204,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         domain.setSmlClientKeyAlias(UUID.randomUUID().toString());
         domain.setSmlBlueCoatAuth(false);
 
-        String alias = smlConnector.getSmlClientKeyAliasForDomain(domain);
+        String alias = testInstance.getSmlClientKeyAliasForDomain(domain);
 
         assertEquals(domain.getSmlClientKeyAlias(), alias);
     }
@@ -216,7 +216,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         domain.setSmlClientKeyAlias(null);
         domain.setSmlBlueCoatAuth(false);
 
-        String alias = smlConnector.getSmlClientKeyAliasForDomain(domain);
+        String alias = testInstance.getSmlClientKeyAliasForDomain(domain);
 
         assertEquals("single_domain_key", alias);
     }

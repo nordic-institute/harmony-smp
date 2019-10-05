@@ -55,7 +55,7 @@ export class KeystoreEditDialogComponent {
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
           title: "Delete key/certificate " + row.alias + " from keystore!",
-          description: "Action will permanently delete key/certifcate from keystore! Do you wish to continue?"
+          description: "Action will permanently delete key/certificate from keystore! Do you wish to continue?"
         }
       }).afterClosed().subscribe(result => {
         if (result) {

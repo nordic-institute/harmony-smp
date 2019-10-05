@@ -63,7 +63,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
     @Before
     @Transactional
     public void prepareDatabase() {
-        prepareDatabaseForSignleDomainEnv();
+        prepareDatabaseForSingleDomainEnv();
         setDatabaseProperty(SMPPropertyEnum.SML_ENABLED,"false");
     }
     @Test

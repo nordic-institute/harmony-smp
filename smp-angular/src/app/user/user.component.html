@@ -24,7 +24,9 @@
     <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
 
 
-    <button mat-raised-button color="primary" (click)="openEditTruststoreDialog()">
+    <button mat-raised-button color="primary"
+            (click)="openEditTruststoreDialog()"
+            matTooltip="Add remove certificates from truststore" >
       <mat-icon>vpn_key</mat-icon>
       <span> Edit truststore</span>
     </button>
