@@ -14,7 +14,6 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.SMLAction;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
@@ -501,6 +500,10 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         List<UserRO> lstUsers = serviceGroupRO.getUsers();
         for (UserRO userRO : lstUsers) {
             DBUser du = userDao.find(userRO.getId());
+            if (du==null) {
+                throw new SMPRuntimeException(INTERNAL_ERROR,
+                        "Database changed",  "User "+userRO.getUsername()+ " not exists! (Refresh data)");
+            }
             dbServiceGroup.getUsers().add(du);
         }
     }
@@ -546,7 +549,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier())) {
             return buff;
         } else {
-            throw new SMPRuntimeException(IVALID_SMD_DOCUMENT_DATA, di.getValue(), di.getScheme(),
+            throw new SMPRuntimeException(INVALID_SMD_DOCUMENT_DATA, di.getValue(), di.getScheme(),
                     serviceMetadataRO.getDocumentIdentifier(), serviceMetadataRO.getDocumentIdentifierScheme());
         }
     }
@@ -644,7 +647,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             if (Objects.equals(dbServiceGroupDomain.getId(), domainRo.getId())) {
                 // double check for domain
                 if (!Objects.equals(dbServiceGroupDomain.getDomain().getId(), domainRo.getDomainId())) {
-                    throw new SMPRuntimeException(INVALID_REQEUST, "Domain mismatch!", "Domain id for does not match for servicegroup domain");
+                    throw new SMPRuntimeException(INVALID_REQUEST, "Domain mismatch!", "Domain id for does not match for servicegroup domain");
                 }
                 return dbServiceGroupDomain;
             }
@@ -661,7 +664,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     public ServiceGroupValidationRO validateServiceGroup(ServiceGroupValidationRO serviceGroup) {
 
         if (serviceGroup == null) {
-            throw new SMPRuntimeException(INVALID_REQEUST, "Validate extension", "Missing Extension parameter");
+            throw new SMPRuntimeException(INVALID_REQUEST, "Validate extension", "Missing Extension parameter");
         } // if new check if service group already exist
 
         if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()){
@@ -726,7 +729,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
      */
     public ServiceGroupValidationRO formatExtension(ServiceGroupValidationRO sgExtension) {
         if (sgExtension == null) {
-            throw new SMPRuntimeException(INVALID_REQEUST, "Format extension", "Missing Extension parameter");
+            throw new SMPRuntimeException(INVALID_REQUEST, "Format extension", "Missing Extension parameter");
         } else if (StringUtils.isBlank(sgExtension.getExtension())) {
             sgExtension.setErrorMessage("Empty extension");
         } else {
