@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQEUST;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 
 @Service
 public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, ServiceMetadataRO> {
@@ -85,7 +85,7 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
     public ServiceMetadataValidationRO validateServiceMetadata(ServiceMetadataValidationRO serviceMetadataRO) {
         byte[] buff;
         if (serviceMetadataRO == null) {
-            throw new SMPRuntimeException(INVALID_REQEUST, "Validate service metadata", "Missing servicemetadata parameter");
+            throw new SMPRuntimeException(INVALID_REQUEST, "Validate service metadata", "Missing servicemetadata parameter");
         } else if (StringUtils.isBlank(serviceMetadataRO.getXmlContent())) {
             serviceMetadataRO.setErrorMessage("Service metadata xml must not be empty");
         } else {
