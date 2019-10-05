@@ -151,7 +151,7 @@ export class DomainComponent implements OnInit {
       msg = "The domain should have a defined signature CertAlias."
     }
     if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
-      if( domain.smlSmpId && (domain.smlClientKeyAlias || domain.smlClientCertHeader)){
+      if( !domain.smlSmpId || !domain.smlClientCertHeader){
         msg = (!msg?"": msg+" ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
       }
     }
