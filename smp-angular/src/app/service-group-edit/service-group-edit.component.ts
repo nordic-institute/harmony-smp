@@ -194,7 +194,13 @@ export class ServiceGroupEditComponent implements OnInit {
     return encodeURIComponent((!row.participantScheme? '' : row.participantScheme)+'::'+row.participantIdentifier);
   }
 
-  createServiceMetadataURL(row: any, rowSMD: any){
-    return encodeURIComponent((!row.participantScheme? '': row.participantScheme)+'::'+row.participantIdentifier)+'/services/'+ encodeURIComponent((!rowSMD.documentIdentifierScheme?'':rowSMD.documentIdentifierScheme)+'::'+rowSMD.documentIdentifier);
+  createServiceMetadataURL(serviceGroupRow: any, rowSMD: any){
+    return encodeURIComponent((!serviceGroupRow.participantScheme? '': serviceGroupRow.participantScheme)+'::'+serviceGroupRow.participantIdentifier)+'/services/'+ encodeURIComponent((!rowSMD.documentIdentifierScheme?'':rowSMD.documentIdentifierScheme)+'::'+rowSMD.documentIdentifier);
+  }
+
+  onActivateServiceMetadata(serviceGroupRow: any, event) {
+    if ("dblclick" === event.type) {
+      this.onEditMetadataRow(serviceGroupRow, event.row);
+    }
   }
 }

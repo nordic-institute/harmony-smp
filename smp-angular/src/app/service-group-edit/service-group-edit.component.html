@@ -73,6 +73,7 @@
         [headerHeight]='50'
         [footerHeight]='50'
         [rowHeight]='"auto"'
+        (activate)="onActivateServiceMetadata(row,$event)"
         [rowClass]="getRowClass">
         <ngx-datatable-column [cellTemplate]="rowDomain" name="Domain" maxWidth="250" ></ngx-datatable-column>
         <ngx-datatable-column prop="documentIdentifierScheme" name="Document identifier scheme" maxWidth="350" ></ngx-datatable-column>
