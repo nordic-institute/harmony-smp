@@ -6,3 +6,9 @@
   -moz-box-sizing: border-box; /* FF1+ */
   box-sizing: border-box; /* Chrome, IE8, Opera, Safari 5.1*/
 }
+
+/deep/ .domainWarning {
+  text-decoration: line-through !important;
+  font-weight: bold;
+  color:#fada00;
+}

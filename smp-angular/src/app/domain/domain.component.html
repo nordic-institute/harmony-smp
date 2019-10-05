@@ -13,6 +13,10 @@
 
 >
 
+  <ng-template #domainCodeColumnTemplate let-row="row"  ngx-datatable-cell-template>
+    <span [class]='aliasCssForDomainCodeClass(row)'  [matTooltip]='getDomainConfigurationWarning(row)'  >{{row.domainCode}}</span>
+  </ng-template>
+
   <ng-template #signKeyColumnTemplate let-row="row"  ngx-datatable-cell-template>
     <span [class]='aliasCssClass(row.signatureKeyAlias, row)'>{{row.signatureKeyAlias}}</span>
   </ng-template>

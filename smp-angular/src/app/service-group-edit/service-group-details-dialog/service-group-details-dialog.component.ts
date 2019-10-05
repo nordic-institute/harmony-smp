@@ -146,15 +146,32 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.changeDetector.detectChanges()
   }
 
-  isDomainProperlyConfigured(domain: DomainRo) {
-    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
-      return domain.smlSmpId && (domain.smlClientKeyAlias || domain.smlClientCertHeader);
-    } else {
-      return true;
+
+  getDomainCodeClass(domain) {
+    let domainWarning = this.getDomainConfigurationWarning(domain);
+    if (!!domainWarning) {
+      return 'domainWarning';
     }
-
+    return "";
   }
-
+  getDomainConfigurationWarning(domain: DomainRo) {
+    let msg =null;
+    if (!domain.signatureKeyAlias) {
+      msg = "The domain should have a defined signature CertAlias."
+    }
+    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
+      if( domain.smlSmpId && (domain.smlClientKeyAlias || domain.smlClientCertHeader)){
+        msg = (!msg?"": msg+" ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
+      }
+    }
+    if(msg) {
+       msg = msg + " To use domain first fix domain configuration."
+    }
+    return msg;
+  }
+  isDomainProperlyConfigured(domain: DomainRo){
+    return !this.getDomainConfigurationWarning(domain);
+  }
 
   submitForm() {
     this.checkValidity(this.dialogForm);
@@ -187,7 +204,9 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
         // we can close the dialog
         this.dialogRef.close(true);
       }
-    });
+    }).catch((err) => {
+      console.log("Error occurred on Validation Extension: " + err);
+    });;
 
 
   }
@@ -312,6 +331,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
         this.isExtensionValid = true;
         this.showSpinner = false;
       }
+    }).catch((err) => {
+      console.log("Error occurred on Validation Extension: " + err);
     });
 
   }

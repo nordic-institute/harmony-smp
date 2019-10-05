@@ -106,8 +106,10 @@
                                    style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
                 <mat-list-option *ngFor="let domain of lookups.cachedDomainList" [value]='domain'
                                  style="max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;"
-                                 [disabled]="!isDomainProperlyConfigured(domain)">
-                  {{domain.domainCode}} ({{domain.smlSubdomain}})
+                                 [disabled]="!isDomainProperlyConfigured(domain)"
+                                 [matTooltip]="getDomainConfigurationWarning(domain)" >
+                  <span [class]="getDomainCodeClass(domain)">
+                  {{domain.domainCode}} ({{domain.smlSubdomain}})</span>
                 </mat-list-option>
               </mat-selection-list>
             </mat-expansion-panel>

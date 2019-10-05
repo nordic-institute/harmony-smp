@@ -45,8 +45,9 @@
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
-            <mat-select placeholder="Response signature Certificate"
+            <mat-select placeholder="Response signature Certificate (Signature CertAlias)"
                         [formControl]="domainForm.controls['signatureKeyAlias']" name="cert"
+                        matTooltip="Certificate is used for signing REST responses for the domain."
                         id="signatureKeyAlias_id">
               <mat-option [value]="''">Choose certificate for signing soap response</mat-option>
               <mat-option *ngFor="let cert of lookups.cachedCertificateList" [value]="cert.alias">
@@ -79,9 +80,10 @@
             </div>
           </mat-form-field>
 
-          <mat-form-field style="width:100%">
+          <mat-form-field style="width:100%" matTooltip="Client Certificate used for SML authentication. The SML Client-Cert http Header is also generated from the certificate">
+
             <mat-select [(value)]="selectedSMLCert"
-                        placeholder="ClientCert Alias"
+                        placeholder="SML ClientCert Alias"
                         [formControl]="domainForm.controls['smlClientKeyCertificate']"
                         name="cert"
                         id="smlClientKeyAlias_id">
@@ -92,8 +94,8 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field style="width:100%">
-            <input matInput placeholder="ClientCert Header" name="Client certificate" id="smlClientHeader_id"
+          <mat-form-field style="width:100%"  matTooltip="SML Client-Cert http Header used for SML authentication. The header is generated from chosen  SML ClientCert Alias">
+            <input matInput placeholder="SML ClientCert Header" name="Client certificate" id="smlClientHeader_id"
                    [value]="selectedSMLCert?.blueCoatHeader" maxlength="2000" readonly="true">
           </mat-form-field>
 
