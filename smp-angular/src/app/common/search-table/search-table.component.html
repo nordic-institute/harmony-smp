@@ -1,5 +1,6 @@
 <div fxLayout="column" fxFill="100" style=" top: 5px; bottom: 5px; left: 5px; right: 5px;">
   <h1  flex id="{{id}}_header_id" style="margin: 0 !important;">{{title}}</h1>
+  <spinner [show]="showSpinner" [size]="150"> </spinner>
   <div *ngIf="showSearchPanel" fxFlex="170px" class="selectionCriteria">
     <mat-card>
       <mat-card-content>
@@ -74,11 +75,11 @@
                       [ngTemplateOutletContext]="{row:row}"></ng-container>
 
         <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
-                (click)="editSearchTableEntityRow(row)" tooltip="Edit">
+                (click)="editSearchTableEntityRow(row)" matTooltip="Edit">
           <mat-icon>edit</mat-icon>
         </button>
         <button *ngIf="allowDeleteItems"  mat-icon-button color="primary" [disabled]="row.deleted || loading"
-                (click)="onDeleteRowActionClicked(row)" tooltip="Delete">
+                (click)="onDeleteRowActionClicked(row)" matTooltip="Delete">
           <mat-icon>delete</mat-icon>
         </button>
       </div>

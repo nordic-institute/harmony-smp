@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -79,7 +80,7 @@ public class UIKeystoreService {
         // init key managers for TLS
         KeyManager[] keyManagersTemp;
         try {
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(keyStore, keystoreSecToken.toCharArray());
             keyManagersTemp = kmf.getKeyManagers();
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException exception) {
@@ -99,7 +100,8 @@ public class UIKeystoreService {
             LOG.error("Could not load signing certificate amd private keys Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
         }
-
+        LOG.debug("Set keystore certificates:");
+        hmCertificates.forEach((alias, cert)-> LOG.debug(" - {}, {}", alias, cert.getSubjectDN().toString() ));
         // if got all data from keystore - update data
         keyManagers = keyManagersTemp;
 

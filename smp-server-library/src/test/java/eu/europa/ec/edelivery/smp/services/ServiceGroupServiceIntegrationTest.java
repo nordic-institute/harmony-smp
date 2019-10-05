@@ -47,7 +47,7 @@ public class ServiceGroupServiceIntegrationTest extends AbstractServiceIntegrati
 
     @Before
     public void initDatabase(){
-        prepareDatabaseForSignleDomainEnv();
+        prepareDatabaseForSingleDomainEnv();
     }
 
     @Test

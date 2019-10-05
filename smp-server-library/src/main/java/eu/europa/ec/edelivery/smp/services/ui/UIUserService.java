@@ -64,15 +64,15 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return resUsers;
     }
 
-        protected  void updateUserStatus(UserRO user){
+    protected void updateUserStatus(UserRO user) {
         // never return password even if is hashed...
         user.setPassword(null);
-        if (user.getCertificate()!=null && !StringUtils.isBlank(user.getCertificate().getCertificateId())){
+        if (user.getCertificate() != null && !StringUtils.isBlank(user.getCertificate().getCertificateId())) {
             // validate certificate
             try {
                 truststoreService.checkFullCertificateValidity(user.getCertificate());
-            } catch (CertificateException  e) {
-                LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " +e.getMessage());
+            } catch (CertificateException e) {
+                LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
                 user.getCertificate().setInvalid(true);
                 user.getCertificate().setInvalidReason(e.getMessage());
             }

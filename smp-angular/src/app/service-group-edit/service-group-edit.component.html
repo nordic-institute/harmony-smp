@@ -15,13 +15,16 @@
 
   <ng-template #rowMetadataAction let-row="row" let-value="value" ngx-datatable-cell-template>
     <button mat-button color="primary"
-            (click)="metadataRowButtonAction(row)" id="metadataRowButtonAction{{row.$$index}}_id" tooltip="Metadata">
+            (click)="metadataRowButtonAction(row)" id="metadataRowButtonAction{{row.$$index}}_id"
+            matTooltip="Show metadata list" >
       <mat-icon>view_list</mat-icon>
       <span>Metadata</span>
     </button>
   </ng-template>
 
-  <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template>
+  <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template
+               matTooltip="Open metadata as XML data"
+    >
     <a target="_blank"
        href="{{contextPath}}{{createServiceGroupURL(row)}}">Open URL</a>
   </ng-template>
@@ -51,7 +54,7 @@
 
   <ng-template #additionalRowActionButtons let-row="row">
     <button mat-icon-button color="primary" [disabled]="row?.deleted || loading"
-            (click)="onAddMetadataRow(row)" tooltip="Edit">
+            (click)="onAddMetadataRow(row)" matTooltip="Add service metadata">
       <mat-icon>playlist_add</mat-icon>
     </button>
   </ng-template>
@@ -90,11 +93,11 @@
       <ng-template #rowMetadataActions let-rowSmd="row" ngx-datatable-cell-template>
         <div>
           <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"
-                  (click)="onEditMetadataRow(row, rowSmd)" tooltip="Edit">
+                  (click)="onEditMetadataRow(row, rowSmd)" matTooltip="Edit service metadata">
             <mat-icon>edit</mat-icon>
           </button>
           <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"
-                  (click)="onDeleteMetadataRowActionClicked(row, rowSmd)" tooltip="Delete">
+                  (click)="onDeleteMetadataRowActionClicked(row, rowSmd)" matTooltip="Delete service metadata">
             <mat-icon>delete</mat-icon>
           </button>
         </div>

@@ -103,7 +103,7 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
         uiKeystoreService.refreshData();
 
-        prepareDatabaseForSignleDomainEnv();
+        prepareDatabaseForSingleDomainEnv();
         DBServiceGroup sg = new DBServiceGroup();
         sg.setParticipantIdentifier(TEST_SG_ID_PL2.toLowerCase());
         sg.setParticipantScheme(TEST_SG_SCHEMA_PL2.toLowerCase());

@@ -21,6 +21,8 @@ import javax.annotation.PostConstruct;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -59,6 +61,9 @@ public class UITruststoreService {
     private long lastUpdateTrustoreFileTime = 0;
     private File lastUpdateTrustStoreFile = null;
 
+    TrustManager[] trustManagers;
+
+
     @PostConstruct
     public void init() {
         setupJCEProvider();
@@ -96,6 +101,21 @@ public class UITruststoreService {
                     " and the configuration!");
             return;
         }
+
+        // init key managers for TLS
+        TrustManager[] trustManagersTemp;
+        try {
+            TrustManagerFactory tmf = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(trustStore);
+            trustManagersTemp = tmf.getTrustManagers();
+        } catch (KeyStoreException | NoSuchAlgorithmException exception) {
+            LOG.error("Error occurred while initialize trustManagers : "
+                    + truststoreFile.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            return;
+        }
+
+
         // load keys for signature
         List<String> tmpList = new ArrayList<>();
         Map<String, X509Certificate> hmCertificates = new HashMap<>();
@@ -126,9 +146,9 @@ public class UITruststoreService {
             return;
         }
         truststoreCertificates.clear();
-
         normalizedTrustedList.clear();
 
+        trustManagers = trustManagersTemp;
         normalizedTrustedList.addAll(tmpList);
         truststoreCertificates.putAll(hmCertificates);
 
@@ -231,6 +251,17 @@ public class UITruststoreService {
     public File getTruststoreFile() {
         return configurationService.getTruststoreFile();
     }
+
+
+    public TrustManager[] getTrustManagers() {
+        // check if keystore is changes
+        if (isTruststoreChanged()) {
+            refreshData();
+        }
+        return trustManagers;
+    }
+
+
 
     private KeyStore loadTruststore(File truststoreFile) {
 

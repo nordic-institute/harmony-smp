@@ -63,6 +63,8 @@ export class SearchTableComponent implements OnInit {
   orderBy: string = null;
   asc = false;
   forceRefresh: boolean = false;
+  showSpinner: boolean = false;
+
 
   constructor(protected http: ExtendedHttpClient,
               protected alertService: AlertService,
@@ -258,7 +260,9 @@ export class SearchTableComponent implements OnInit {
           // this.unselectRows();
           const modifiedRowEntities = this.rows.filter(el => el.status !== SearchTableEntityStatus.PERSISTED);
           // this.isBusy = true;
-          this.http.put(/*UserComponent.USER_USERS_URL TODO: use PUT url*/this.url, modifiedRowEntities).subscribe(res => {
+          this.showSpinner = true;
+          this.http.put(this.url, modifiedRowEntities).toPromise().then(res => {
+            this.showSpinner = false;
             // this.isBusy = false;
             // this.getUsers();
             this.alertService.success('The operation \'update\' completed successfully.', false);
@@ -269,9 +273,11 @@ export class SearchTableComponent implements OnInit {
               this.downloadService.downloadNative(/*UserComponent.USER_CSV_URL TODO: use CSV url*/ '');
             }
           }, err => {
+            this.showSpinner = false;
             this.alertService.exception('The operation \'update\' not completed successfully.', err, false);
           });
         } else {
+          this.showSpinner = false;
           if (withDownloadCSV) {
             this.downloadService.downloadNative(/*UserComponent.USER_CSV_URL TODO: use CSV url*/ '');
           }
@@ -279,6 +285,7 @@ export class SearchTableComponent implements OnInit {
       });
     } catch (err) {
       // this.isBusy = false;
+      this.showSpinner = false;
       this.alertService.exception('The operation \'update\' completed with errors.', err);
     }
   }
