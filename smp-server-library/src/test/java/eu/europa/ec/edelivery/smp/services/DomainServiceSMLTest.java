@@ -17,7 +17,6 @@ import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
 import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
@@ -36,12 +35,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.ws.http.HTTPException;
-
 import java.io.IOException;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
@@ -58,7 +56,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SmlIntegrationConfiguration.class,
         SmlConnector.class, DomainService.class})
-public class DomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
+public class DomainServiceSMLTest extends AbstractServiceIntegrationTest {
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
@@ -66,12 +64,25 @@ public class DomainServiceIntegrationTest extends AbstractServiceIntegrationTest
     @Autowired
     SmlIntegrationConfiguration integrationMock;
 
+    @Autowired
+    SmlConnector smlConnector;
+
+    @Autowired
+    private SMLIntegrationService smlIntegrationService;
+
 
     @Autowired
     protected DomainService testInstance;
 
     @Before
     public void prepareDatabase() throws IOException {
+
+        smlConnector = Mockito.spy(smlConnector);
+        Mockito.doNothing().when(smlConnector).configureClient(any(), any(), any());
+
+        ReflectionTestUtils.setField(smlIntegrationService,"smlConnector",smlConnector);
+        ReflectionTestUtils.setField(testInstance,"smlIntegrationService",smlIntegrationService);
+
         resetKeystore();
         setDatabaseProperty(SMPPropertyEnum.SML_PHYSICAL_ADDRESS, "0.0.0.0");
         setDatabaseProperty(SMPPropertyEnum.SML_LOGICAL_ADDRESS, "http://localhost/smp");
@@ -79,7 +90,8 @@ public class DomainServiceIntegrationTest extends AbstractServiceIntegrationTest
         setDatabaseProperty(SMPPropertyEnum.SML_ENABLED, "true");
 
         integrationMock.reset();
-        prepareDatabaseForSignleDomainEnv();
+        prepareDatabaseForSingleDomainEnv(false);
+
     }
 
     @Test
@@ -170,6 +182,7 @@ public class DomainServiceIntegrationTest extends AbstractServiceIntegrationTest
                 TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1).get();
         DBServiceGroupDomain serviceGroupDomain2 = serviceGroupDao
                 .findServiceGroupDomain(TEST_SG_ID_2, TEST_SG_SCHEMA_2, TEST_DOMAIN_CODE_1).get();
+
         assertFalse(testDomain01.isSmlRegistered());
         assertFalse(serviceGroupDomain.isSmlRegistered());
         assertFalse(serviceGroupDomain2.isSmlRegistered());
@@ -181,8 +194,9 @@ public class DomainServiceIntegrationTest extends AbstractServiceIntegrationTest
             testInstance.registerDomainAndParticipants(testDomain01);
             fail("Testcase should throw an error with code 400");
         } catch (Exception ex) {
+            ex.printStackTrace();
             assertEquals(400, ((HTTPException) ExceptionUtils.getRootCause(ex)).getStatusCode());
-        }
+       }
 
 
         // then

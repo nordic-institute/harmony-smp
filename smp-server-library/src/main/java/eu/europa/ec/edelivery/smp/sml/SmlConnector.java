@@ -19,14 +19,27 @@ import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
+import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
+import org.apache.cxf.configuration.security.CertificateConstraintsType;
+import org.apache.cxf.configuration.security.CombinatorType;
+import org.apache.cxf.configuration.security.DNConstraintsType;
+import org.apache.cxf.configuration.security.ProxyAuthorizationPolicy;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.ext.logging.LoggingFeature;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.ProxyServerType;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
@@ -37,7 +50,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
 import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBusdoxParticipantId;
 import static eu.europa.ec.edelivery.smp.exceptions.SMLErrorMessages.*;
@@ -54,24 +75,39 @@ public class SmlConnector implements ApplicationContextAware {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmlConnector.class);
 
+    private static final String SERVICE_METADATA_CONTEXT = "manageservicemetadata";
+    private static final String PARTICIPANT_IDENTIFIER_CONTEXT = "manageparticipantidentifier";
+
+    private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
     @Autowired
     ConfigurationService configurationService;
 
     @Autowired
-    UIKeystoreService uiKeystoreService;
+    UIKeystoreService keystoreService;
+
+    @Autowired
+    UITruststoreService truststoreService;
 
     private ApplicationContext ctx;
 
     public boolean registerInDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
 
+
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
-        LOG.info("Registering new Participant in BDMSL: " + asString(normalizedParticipantId));
+        if (!domain.isSmlRegistered()) {
+            LOG.info("Participant {} is not registered to SML because domain {} is not registered!" ,
+                    asString(normalizedParticipantId), domain.getDomainCode());
+            return false;
+        }
+
+        LOG.debug("Registering new Participant: {} to domain: {}." , asString(normalizedParticipantId), domain.getDomainCode());
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
-            getClient(domain).create(smlRequest);
+            getParticipantWSClient(domain).create(smlRequest);
+            LOG.info("Participant: {} registered to domain: {}." , asString(normalizedParticipantId), domain.getDomainCode());
             return true;
         } catch (BadRequestFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
@@ -129,14 +165,14 @@ public class SmlConnector implements ApplicationContextAware {
         }
         String smpLogicalAddress = configurationService.getSMLIntegrationSMPLogicalAddress();
         String smpPhysicalAddress = configurationService.getSMLIntegrationSMPPhysicalAddress();
-        LOG.info("Registering new Domain  toSML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), domain.getSmlSmpId());
+        LOG.info("Registering new Domain  to SML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), domain.getSmlSmpId());
         try {
             ServiceMetadataPublisherServiceType smlSmpRequest = new ServiceMetadataPublisherServiceType();
             smlSmpRequest.setPublisherEndpoint(new PublisherEndpointType());
             smlSmpRequest.getPublisherEndpoint().setLogicalAddress(smpLogicalAddress);
             smlSmpRequest.getPublisherEndpoint().setPhysicalAddress(smpPhysicalAddress);
             smlSmpRequest.setServiceMetadataPublisherID(domain.getSmlSmpId());
-            getSMPManagerClient(domain).create(smlSmpRequest);
+            getSMPManagerWSClient(domain).create(smlSmpRequest);
             return true;
         } catch (BadRequestFault e) {
             return processSMLErrorMessage(e, domain);
@@ -186,10 +222,17 @@ public class SmlConnector implements ApplicationContextAware {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
-        LOG.info("Removing Participant from BDMSL: {} ", asString(normalizedParticipantId));
+        if (!domain.isSmlRegistered()) {
+            LOG.info("Participant {} is not unregistered from SML because domain {} is not registered!" ,
+                    asString(normalizedParticipantId), domain.getDomainCode());
+            return false;
+        }
+
+        LOG.debug("Removing Participant: {} from domain: {}.", asString(normalizedParticipantId), domain.getDomainCode());
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
-            getClient(domain).delete(smlRequest);
+            getParticipantWSClient(domain).delete(smlRequest);
+            LOG.info("Participant: {} removed domain: {}.", asString(normalizedParticipantId), domain.getDomainCode());
             return true;
         } catch (BadRequestFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
@@ -207,7 +250,7 @@ public class SmlConnector implements ApplicationContextAware {
         }
         LOG.info("Removing SMP id (Domain) from BDMSL: {} ", domain.getDomainCode());
         try {
-            getSMPManagerClient(domain).delete(domain.getSmlSmpId());
+            getSMPManagerWSClient(domain).delete(domain.getSmlSmpId());
             return true;
         } catch (BadRequestFault e) {
             return processSMLErrorMessage(e, domain);
@@ -219,17 +262,26 @@ public class SmlConnector implements ApplicationContextAware {
         }
     }
 
-    private IManageParticipantIdentifierWS getClient(DBDomain domain) {
-        ;
-        return ctx.getBean(IManageParticipantIdentifierWS.class, getSmlClientKeyAliasForDomain(domain),
+    private IManageParticipantIdentifierWS getParticipantWSClient(DBDomain domain) {
+
+        IManageParticipantIdentifierWS iManageServiceMetadataWS = ctx.getBean(IManageParticipantIdentifierWS.class, getSmlClientKeyAliasForDomain(domain),
                 domain.getSmlClientCertHeader(), domain.isSmlBlueCoatAuth());
+        // configure connection
+        configureClient(PARTICIPANT_IDENTIFIER_CONTEXT, iManageServiceMetadataWS, domain);
+
+        return iManageServiceMetadataWS;
     }
 
-    private IManageServiceMetadataWS getSMPManagerClient(DBDomain domain) {
+    private IManageServiceMetadataWS getSMPManagerWSClient(DBDomain domain) {
 
 
-        return ctx.getBean(IManageServiceMetadataWS.class,
+        IManageServiceMetadataWS iManageServiceMetadataWS = ctx.getBean(IManageServiceMetadataWS.class,
                 getSmlClientKeyAliasForDomain(domain), domain.getSmlClientCertHeader(), domain.isSmlBlueCoatAuth());
+        // configure value connection
+        configureClient(SERVICE_METADATA_CONTEXT, iManageServiceMetadataWS, domain);
+
+
+        return iManageServiceMetadataWS;
     }
 
     @Override
@@ -239,14 +291,168 @@ public class SmlConnector implements ApplicationContextAware {
 
     protected String getSmlClientKeyAliasForDomain(DBDomain domain) {
         String alias = domain.getSmlClientKeyAlias();
-        if (!domain.isSmlBlueCoatAuth() && StringUtils.isBlank(alias)){
-            List<CertificateRO> list = uiKeystoreService.getKeystoreEntriesList();
+        if (!domain.isSmlBlueCoatAuth() && StringUtils.isBlank(alias)) {
+            List<CertificateRO> list = keystoreService.getKeystoreEntriesList();
             // if there is only one certificate than choose the one
-            if (list.size()==1) {
-                alias =list.get(0).getAlias();
+            if (list.size() == 1) {
+                alias = list.get(0).getAlias();
             }
         }
         return alias;
+    }
+
+
+    public void configureClient(String serviceEndpoint, Object smlPort, DBDomain domain) {
+
+        String clientKeyAlias = getSmlClientKeyAliasForDomain(domain);
+        String clientCertHttpHeader = domain.getSmlClientCertHeader();
+        boolean blueCoatAuthentication = domain.isSmlBlueCoatAuth();
+
+        Client client = ClientProxy.getClient(smlPort);
+        URL url = configurationService.getSMLIntegrationUrl();
+        if (url == null) {
+            throw new IllegalArgumentException("Empty or null SML url. Check the configuration and set property: " + SMPPropertyEnum.SML_URL.getProperty());
+        }
+        URL urlSMPManagment;
+        try {
+            urlSMPManagment = new URL(StringUtils.appendIfMissing(url.toString(), "/") + serviceEndpoint);
+
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Malformed SML URL: " + url, e);
+        }
+        Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlSMPManagment.toString());
+
+        // check if there is only one cert in  keystore
+        if (!blueCoatAuthentication && StringUtils.isBlank(clientKeyAlias)) {
+            List<CertificateRO> list = keystoreService.getKeystoreEntriesList();
+            if (list.size()==1) {
+                // set the default alias
+                clientKeyAlias = list.get(0).getAlias();
+            } else if (list.isEmpty()) {
+                throw new IllegalStateException("Empty keystore! Import Key for SML authentication to keystore!");
+            } else {
+                throw new IllegalStateException("More than one key in Keystore! Define alias for the domain SML authentication!");
+            }
+        }
+
+        HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
+
+        configureClientAuthentication(httpConduit, requestContext,
+                blueCoatAuthentication ? clientCertHttpHeader : clientKeyAlias,
+                blueCoatAuthentication);
+        configureFaultHandling(requestContext);
+        configureProxy(httpConduit, urlSMPManagment);
+        configurePayloadLogging(client);
+
+
+
+        LOG.info("Get key managers {}", httpConduit.getTlsClientParameters().getKeyManagers() + " aa");
+        LOG.info("Get isUseHttpsURLConnectionDefaultSslSocketFactory {}", httpConduit.getTlsClientParameters().isUseHttpsURLConnectionDefaultSslSocketFactory());
+        LOG.info("Get isUseHttpsURLConnectionDefaultHostnameVerifier {}", httpConduit.getTlsClientParameters().isUseHttpsURLConnectionDefaultHostnameVerifier());
+
+    }
+
+
+    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientAuthentication, boolean blueCoatAuthentication) {
+        LOG.info("Connect to SML (smlClientAuthentication: {} use Client-CertHeader: {})", smlClientAuthentication, blueCoatAuthentication);
+        if (StringUtils.isBlank(smlClientAuthentication)) {
+            throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
+        }
+        // set truststore...
+        TLSClientParameters tlsParams = new TLSClientParameters();
+
+        tlsParams.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
+        tlsParams.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
+        tlsParams.setCertConstraints(createCertConstraint(configurationService.getSMLIntegrationServerCertSubjectRegExp()));
+        tlsParams.setDisableCNCheck(configurationService.smlDisableCNCheck());
+
+
+        if (!blueCoatAuthentication) {
+            LOG.info("SML X509 certificate authentication with alias  {}.", smlClientAuthentication);
+            tlsParams.setCertAlias(smlClientAuthentication);
+            tlsParams.setKeyManagers(keystoreService.getKeyManagers());
+            LOG.info("SET KEY MANAGERS!  {}.", keystoreService.getKeyManagers());
+        } else {
+            Map<String, List<String>> customHeaders = new HashMap<>();
+            customHeaders.put(CLIENT_CERT_HEADER_KEY, Arrays.asList(smlClientAuthentication));
+            requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
+        }
+
+        httpConduit.setTlsClientParameters(tlsParams);
+
+    }
+
+    SSLSocketFactory createSocketFactory() {
+
+        SSLContext sc = null;
+        try {
+            sc = SSLContext.getInstance("TLS");
+            sc.init(keystoreService.getKeyManagers(),
+                    truststoreService.getTrustManagers(), null);
+
+
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
+
+        return sc.getSocketFactory();
+
+
+    }
+
+    public CertificateConstraintsType createCertConstraint(String regExp){
+        if (StringUtils.isBlank(regExp)){
+            return null;
+        }
+
+        CertificateConstraintsType ct = new CertificateConstraintsType();
+        DNConstraintsType dnConstraintsType = new DNConstraintsType();
+        dnConstraintsType.setCombinator(CombinatorType.fromValue("ALL"));
+        dnConstraintsType.getRegularExpression().add(regExp);
+        ct.setSubjectDNConstraints(dnConstraintsType);
+
+        return ct;
+    }
+
+    private void configureFaultHandling(Map<String, Object> requestContext) {
+        // CXF by default stops processing response in a few cases, ie.: when server returned HTTP 400 (SOAP Fault)
+        // We want to finish processing such messages - otherwise we would not be able to log fault's reason.
+        requestContext.put(HTTPConduit.NO_IO_EXCEPTIONS, true);
+        requestContext.put(HTTPConduit.PROCESS_FAULT_ON_HTTP_400, true);
+    }
+
+    private void configurePayloadLogging(Client client) {
+        client.getBus().setFeatures(Arrays.asList(new LoggingFeature()));
+    }
+
+    private void configureProxy(HTTPConduit httpConduit, URL targetUrl) {
+
+        if (!configurationService.isProxyEnabled()) {
+            return;
+        }
+
+        String noProxyHosts = configurationService.getHttpNoProxyHosts();
+        if (!HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())) {
+            LOG.info("Terget host {} is match noProxy hosts {}!", targetUrl.getHost(), noProxyHosts);
+            return;
+        }
+        String proxyServer = configurationService.getHttpProxyHost();
+        Optional<Integer> proxyPort = configurationService.getHttpProxyPort();
+        String proxyUser = configurationService.getProxyUsername();
+        String proxyPassword = configurationService.getProxyCredentialToken();
+
+
+        LOG.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer, proxyPort.isPresent() ? proxyPort.get() : "");
+        httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);
+        httpConduit.getClient().setProxyServer(proxyServer);
+        if (proxyPort.isPresent()) {
+            httpConduit.getClient().setProxyServerPort(proxyPort.get());
+        }
+        ProxyAuthorizationPolicy proxyAuth = new ProxyAuthorizationPolicy();
+        proxyAuth.setUserName(proxyUser);
+        proxyAuth.setPassword(proxyPassword);
+        httpConduit.setProxyAuthorization(proxyAuth);
     }
 
 }

@@ -138,6 +138,14 @@ public class ConfigurationService {
         // by default is not froce
         return value != null && value;
     }
+    public String getSMLIntegrationServerCertSubjectRegExp() {
+        return configurationDAO.getCachedProperty(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
+    }
+    public boolean smlDisableCNCheck() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_DISABLE_CN_CHECK);
+        // by default is not froce
+        return value != null && value;
+    }
 
 
     public File getConfigurationFolder() {

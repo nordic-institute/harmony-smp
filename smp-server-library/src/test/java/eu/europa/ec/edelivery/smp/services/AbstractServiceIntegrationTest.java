@@ -95,8 +95,12 @@ public abstract class AbstractServiceIntegrationTest {
      *    - Owners: USERNAME_1
      *    - Metadata: /
      */
-    public void prepareDatabaseForSignleDomainEnv() {
+    public void prepareDatabaseForSingleDomainEnv() {
+        prepareDatabaseForSingleDomainEnv(true);
+    }
+    public void prepareDatabaseForSingleDomainEnv(boolean domainSMLRegister) {
         DBDomain testDomain01 =TestDBUtils.createDBDomain(TestConstants.TEST_DOMAIN_CODE_1);
+        testDomain01.setSmlRegistered(domainSMLRegister);
         domainDao.persistFlushDetach(testDomain01);
 
         DBUser u1 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
@@ -142,7 +146,7 @@ public abstract class AbstractServiceIntegrationTest {
 
     public void prepareDatabaseForMultipeDomainEnv() {
 
-        prepareDatabaseForSignleDomainEnv();
+        prepareDatabaseForSingleDomainEnv();
         DBDomain testDomain02 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
         domainDao.persistFlushDetach(testDomain02);
 

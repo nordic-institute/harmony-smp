@@ -52,23 +52,29 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     protected ConfigurationService configurationService;
 
     @Autowired
-    protected SmlConnector smlConnector;
+    protected SmlConnector testInstance;
 
     @Autowired
     SmlIntegrationConfiguration mockSml;
 
     @Before
     public void setup() {
+        testInstance = Mockito.spy(testInstance);
+        // default behaviour
+        Mockito.doNothing().when(testInstance).configureClient(any(), any(), any());
+
+
         configurationService = Mockito.spy(configurationService);
-        ReflectionTestUtils.setField(smlConnector,"configurationService",configurationService);
+        ReflectionTestUtils.setField(testInstance,"configurationService",configurationService);
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
+        DEFAULT_DOMAIN.setSmlRegistered(true);
         mockSml.reset();
     }
 
     @Test
     public void testRegisterInDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        boolean result = smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
@@ -82,7 +88,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
         mockSml.setThrowException(ex);
-        boolean result = smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
@@ -100,14 +106,14 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         expectedException.expectMessage(message);
         expectedException.expect(SMPRuntimeException.class);
 
-        smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
     }
 
     @Test
     public void testRegisterInDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
-        smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertEquals(2, mockSml.getParticipantManagmentClientMocks().size());
@@ -119,7 +125,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     @Test
     public void testUnregisterFromDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        boolean result = smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean result = testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
@@ -131,8 +137,8 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     @Test
     public void testUnregisterFromDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
-        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertEquals(2, mockSml.getParticipantManagmentClientMocks().size());
@@ -149,7 +155,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
         expectedException.expect(SMPRuntimeException.class);
 
-        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
     }
 
     @Test
@@ -161,7 +167,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         expectedException.expectMessage(message);
         expectedException.expect(SMPRuntimeException.class);
 
-        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
     }
 
     @Test
@@ -169,7 +175,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_PI_NO_EXISTS);
         mockSml.setThrowException(ex);
-        boolean suc = smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean suc = testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         assertTrue(suc);
     }
@@ -178,21 +184,21 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     @Test
     public void testIsOkMessageForParticipantNull() {
 
-        boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, null);
+        boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, null);
 
         assertFalse(suc);
     }
 
     @Test
     public void testIsOkMessageForParticipantOk() {
-        boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, ERROR_PI_ALREADY_EXISTS);
+        boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, ERROR_PI_ALREADY_EXISTS);
 
         assertTrue(suc);
     }
 
     @Test
     public void testIsOkMessageForParticipantFalse() {
-        boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, ERROR_UNEXPECTED_MESSAGE);
+        boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, ERROR_UNEXPECTED_MESSAGE);
 
         assertFalse(suc);
     }
@@ -202,7 +208,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     public void testProcessSMLErrorMessageBadRequestFaultIgnore() {
 
         BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
-        boolean suc = smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
+        boolean suc = testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
 
         assertTrue(suc);
     }
@@ -214,7 +220,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         expectedException.expect(SMPRuntimeException.class);
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
 
-        smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
+        testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
     }
 
 
@@ -225,7 +231,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         expectedException.expect(SMPRuntimeException.class);
         NotFoundFault ex = new NotFoundFault(ERROR_UNEXPECTED_MESSAGE);
 
-        smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
+        testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
     }
 
     @Test
@@ -233,7 +239,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
 
         NotFoundFault ex = new NotFoundFault(ERROR_PI_NO_EXISTS);
 
-        smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
+        testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
     }
 
 

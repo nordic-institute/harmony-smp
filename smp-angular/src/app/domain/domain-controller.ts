@@ -71,7 +71,7 @@ export class DomainController implements SearchTableController {
   isRecordChanged(oldModel, newModel): boolean {
     for (let property in oldModel) {
       let isEqual = this.isEqual(newModel[property],oldModel[property]);
-      //console.log("Property: "+property+" new: " +newModel[property] +  "old: " +oldModel[property] + " val: " + isEqual  );
+      console.log("Property: "+property+" new: " +newModel[property] +  "old: " +oldModel[property] + " val: " + isEqual  );
       if (!isEqual) {
         return true; // Property has changed
       }
