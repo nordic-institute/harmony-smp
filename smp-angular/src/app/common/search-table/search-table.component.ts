@@ -274,7 +274,16 @@ export class SearchTableComponent implements OnInit {
             }
           }, err => {
             this.showSpinner = false;
-            this.alertService.exception('The operation \'update\' not completed successfully.', err, false);
+            try {
+              console.log("eror: " + err)
+              let parser = new DOMParser();
+              let xmlDoc = parser.parseFromString(err.error,"text/xml");
+              let errDesc = xmlDoc.getElementsByTagName("ErrorDescription")[0].childNodes[0].nodeValue;
+              this.alertService.exception('The operation \'update\' not completed successfully.', errDesc, false);
+            }catch (err2){
+              // if parse failed
+              this.alertService.exception('The operation \'update\' not completed successfully.', err, false);
+            }
           });
         } else {
           this.showSpinner = false;
