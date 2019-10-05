@@ -18,6 +18,12 @@
   color:red;
 }
 
+/deep/ .domainWarning {
+  text-decoration: line-through !important;
+  font-weight: bold;
+  color:#fada00;
+}
+
 /deep/ .deleted  {
   text-decoration: line-through !important;
   font-weight: bold;

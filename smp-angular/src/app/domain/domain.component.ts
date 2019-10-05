@@ -28,6 +28,7 @@ export class DomainComponent implements OnInit {
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('signKeyColumnTemplate') signKeyColumnTemplate: TemplateRef<any>;
   @ViewChild('smlKeyColumnTemplate') smlKeyColumnTemplate: TemplateRef<any>;
+  @ViewChild('domainCodeColumnTemplate') domainCodeColumnTemplate: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
 
@@ -65,29 +66,34 @@ export class DomainComponent implements OnInit {
     this.columnPicker.allColumns = [
       {
         name: 'Domain code',
-        prop: 'domainCode',
-        width: 275
+        title: "Unique domain code.",
+        cellTemplate: this.domainCodeColumnTemplate,
+        width: 250
 
       },
       {
         name: 'SML Domain',
+        title: "Informative: SML domain name.",
         prop: 'smlSubdomain',
-        width: 275
+
       },
       {
-        name: 'SML SMP Id',
-        prop: 'smlSmpId',
-        width: 120
-      },
-      {
-        name: 'ClientCert Alias',
-        cellTemplate: this.smlKeyColumnTemplate,
+        name: 'Signature CertAlias',
+        title: "Certificate for signing REST responses",
+        cellTemplate: this.signKeyColumnTemplate,
+        width: 150
       },
 
       {
-        name: 'Signature CertAlias',
-        cellTemplate: this.signKeyColumnTemplate,
-        width: 120
+        name: 'SML SMP Id',
+        title: "SMP identifier for SML integration",
+        prop: 'smlSmpId',
+        width: 150
+      },
+      {
+        name: 'SML ClientCert Alias',
+        cellTemplate: this.smlKeyColumnTemplate,
+        width: 150
       },
       {
         name: 'Is SML Registered',
@@ -97,12 +103,12 @@ export class DomainComponent implements OnInit {
       {
         name: 'SML BueCoat Auth.',
         prop: 'smlBlueCoatAuth',
-        width: 120
+        width: 130
       },
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ['Domain code', 'SML Domain', 'SML SMP Id', 'ClientCert Alias', 'Signature CertAlias', 'Is SML Registered', 'SML BueCoat Auth.'].indexOf(col.name) != -1
+      return ['Domain code', 'SML Domain', 'Signature CertAlias', 'SML SMP Id', 'SML ClientCert Alias', 'Is SML Registered', 'SML BueCoat Auth.'].indexOf(col.name) != -1
     });
   }
 
@@ -126,6 +132,34 @@ export class DomainComponent implements OnInit {
       return 'deleted';
     }
   }
+
+  aliasCssForDomainCodeClass(domain) {
+    let domainWarning = this.getDomainConfigurationWarning(domain)
+    if (!!domainWarning) {
+      return 'domainWarning';
+    } else if (domain.status === SearchTableEntityStatus.NEW) {
+      return 'table-row-new';
+    } else if (domain.status === SearchTableEntityStatus.UPDATED) {
+      return 'table-row-updated';
+    } else if (domain.status === SearchTableEntityStatus.REMOVED) {
+      return 'deleted';
+    }
+  }
+  getDomainConfigurationWarning(domain: DomainRo) {
+    let msg =null;
+    if (!domain.signatureKeyAlias) {
+      msg = "The domain should have a defined signature CertAlias."
+    }
+    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
+      if( domain.smlSmpId && (domain.smlClientKeyAlias || domain.smlClientCertHeader)){
+        msg = (!msg?"": msg+" ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
+      }
+    }
+    return msg;
+
+  }
+
+
 
   details(row: any) {
     this.domainController.showDetails(row);
