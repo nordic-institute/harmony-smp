@@ -82,10 +82,7 @@ public class SecurityUtils {
 
     public static String generateStrongPassword(){
         String newKeyPassword = null;
-        newKeyPassword = RandomStringUtils.random(DEFAULT_PASSWORD_LENGTH, 0, VALID_PW_CHARS.length(),
-                false, false,
-                VALID_PW_CHARS.toCharArray());
-        /*
+
         try {
             newKeyPassword = RandomStringUtils.random(DEFAULT_PASSWORD_LENGTH, 0, VALID_PW_CHARS.length(),
                     false, false,
@@ -95,7 +92,7 @@ public class SecurityUtils {
             String msg = "Error occurred while generation test password: No strong random algorithm. Error:"
                     + ExceptionUtils.getRootCauseMessage(e);
             throw new SMPRuntimeException(INTERNAL_ERROR, e, msg, e.getMessage());
-        }*/
+        }
         return newKeyPassword;
     }
 

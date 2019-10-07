@@ -53,7 +53,9 @@ public class PropertiesConfig {
         if (!prop.containsKey(SMP_PROPERTY_REFRESH_CRON.getProperty())){
             prop.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
         }
-        prop.putAll(fileProperties);
+        // add properties from database - add override from the database properties
+        fileProperties.putAll(prop);
+
         // log application properties
         PROP_INIT_TOOLS.logBuildProperties();
         // update log configuration
@@ -61,7 +63,7 @@ public class PropertiesConfig {
                 fileProperties.getProperty(FileProperty.PROPERTY_LOG_PROPERTIES),prop.getProperty(CONFIGURATION_DIR.getProperty())
                 );
 
-        propertiesConfig.setProperties(prop);
+        propertiesConfig.setProperties(fileProperties);
         propertiesConfig.setLocalOverride(true);
         LOG.debug("Properties are initialized");
 

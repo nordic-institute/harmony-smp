@@ -26,8 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.BLUE_COAT_ENABLED;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 
 /**
  * Created by gutowpa on 11/01/2018.
@@ -55,9 +54,15 @@ public class PropertiesTestConfig {
         localProps.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
         localProps.setProperty(BLUE_COAT_ENABLED.getProperty(), "true");
 
+        // even thought keystore is generated but secure password generation can be very slow on some server
+        // crate test password..
+        localProps.setProperty(KEYSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
+        localProps.setProperty(TRUSTSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
+
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
 
         return propertiesConfig;
     }
+
 }
