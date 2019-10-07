@@ -89,12 +89,17 @@ public class PropertyInitialization {
 
     protected Properties getDatabaseProperties(Properties fileProperties) {
 
+
+        String dialect = fileProperties.getProperty(FileProperty.PROPERTY_DB_DIALECT);
+        if (StringUtils.isBlank(dialect)){
+            LOG.warn("Attribute: {} is empty. Database might not initialize!", FileProperty.PROPERTY_DB_DIALECT);
+        }
         // get datasource
         DataSource dataSource = getDatasource(fileProperties);
         EntityManager em = null;
         DatabaseProperties prop = null;
         try {
-            em = createEntityManager(dataSource);
+            em = createEntityManager(dataSource, dialect);
             prop = new DatabaseProperties(em);
             if (prop.size() == 0) {
                 initializeProperties(em, fileProperties, prop);
@@ -514,9 +519,14 @@ public class PropertyInitialization {
      * @param dataSource
      * @return
      */
-    private EntityManager createEntityManager(DataSource dataSource) {
+    private EntityManager createEntityManager(DataSource dataSource, String databaseDialect) {
+        LOG.info("Init entity manager with dialect: {}", databaseDialect);
         Properties prop = new Properties();
         prop.setProperty("hibernate.connection.autocommit", "true");
+        if (!StringUtils.isBlank(databaseDialect)) {
+            prop.setProperty("hibernate.dialect", databaseDialect);
+        }
+        prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(dataSource);
         lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());

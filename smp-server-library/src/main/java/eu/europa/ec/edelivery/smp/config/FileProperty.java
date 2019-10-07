@@ -21,9 +21,6 @@ public class FileProperty {
 
     public static final String PROPERTY_LOG_FOLDER = "log.folder";
     public static final String PROPERTY_LOG_PROPERTIES = "log.configuration.file";
-
-    public static final String PROPERTY_ALLOWED_ENC_SLASHES = "encodedSlashesAllowedInUrl";
-
     public static final String PROPERTY_DB_DRIVER = "jdbc.driver";
     public static final String PROPERTY_DB_USER = "jdbc.user";
     public static final String PROPERTY_DB_TOKEN = "jdbc.password";
