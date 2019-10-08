@@ -131,7 +131,7 @@ public class PropertyInitializationTest {
         // when
         File f = testInstance.calculateSettingsPath(p);
         // then
-        assertEquals((new File("")).getAbsolutePath(), f.getAbsolutePath());
+        assertEquals((new File("smp")).getAbsolutePath(), f.getAbsolutePath());
     }
 
     @Test

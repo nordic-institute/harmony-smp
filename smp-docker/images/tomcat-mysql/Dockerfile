@@ -54,6 +54,8 @@ RUN apt-get update \
     && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
     && echo "\nAdd init parameters" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
     && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
+    && echo "\nsmp.truststore.password={DEC}{test123}" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
+    && echo "\nsmp.keystore.password={DEC}{test123}" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
     && sed -i -e "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf   \
     && mkdir /opt/jacoco  \
     && curl -o /opt/jacoco/jacoco-agent.jar http://central.maven.org/maven2/org/jacoco/org.jacoco.agent/$JACOCO_VERSION/org.jacoco.agent-$JACOCO_VERSION-runtime.jar

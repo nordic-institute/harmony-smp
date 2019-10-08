@@ -4,9 +4,12 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.springframework.security.authentication.AuthenticationProvider;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -17,6 +20,8 @@ import java.util.regex.PatternSyntaxException;
 
 public class PropertyUtils {
 
+
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyUtils.class);
     private  static UrlValidator urlValidator =  new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
 
 
@@ -69,6 +74,12 @@ public class PropertyUtils {
                 }
             case PATH: {
                 File f = new File(value);
+                if (!f.exists()) {
+                    LOG.warn("Folder {} not exists. Try to create the folder.", f.getAbsolutePath());
+                    if (f.mkdirs()){
+                        LOG.info("Folder {} created.", f.getAbsolutePath());
+                    };
+                }
                 return f.exists() && f.isDirectory();
             }
             // nothing to validate

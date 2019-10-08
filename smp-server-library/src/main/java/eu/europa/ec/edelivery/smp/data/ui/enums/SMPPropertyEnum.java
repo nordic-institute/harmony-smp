@@ -43,7 +43,7 @@ public enum SMPPropertyEnum {
     TRUSTSTORE_FILENAME("smp.truststore.filename","","Truststore filename ", false, false , SMPPropertyTypeEnum.FILENAME),
     CERTIFICATE_CRL_FORCE("smp.certificate.crl.force","false","If false then if CRL is not reachable ignore CRL validation", false, false , SMPPropertyTypeEnum.BOOLEAN),
 
-    CONFIGURATION_DIR("configuration.dir","./","Path to the folder containing all the configuration files (keystore and encryption key)", true, false , SMPPropertyTypeEnum.PATH),
+    CONFIGURATION_DIR("configuration.dir","smp","Path to the folder containing all the configuration files (keystore and encryption key)", true, false , SMPPropertyTypeEnum.PATH),
     ENCRYPTION_FILENAME("encryption.key.filename","encryptionPrivateKey.private","Key filename to encrypt passwords", false, false , SMPPropertyTypeEnum.FILENAME),
     KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted","","Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false , SMPPropertyTypeEnum.STRING),
     TRUSTSTORE_PASSWORD_DECRYPTED("smp.truststore.password.decrypted","","Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false , SMPPropertyTypeEnum.STRING),
