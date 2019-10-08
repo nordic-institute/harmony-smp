@@ -175,6 +175,10 @@ public class Identifiers {
         if (result[1].startsWith(":")) {
             result[1] = StringUtils.removeStart(result[1], ":");
         }
+        //check if double colon was used for identifier separator in ebecoreid
+        if (result[0].endsWith(":")) {
+            result[0] = StringUtils.removeEnd(result[0] , ":");
+        }
         return result;
 
     }
