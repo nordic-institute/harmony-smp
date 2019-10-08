@@ -187,7 +187,7 @@ public class PropertyInitialization {
         if (sigPath != null) {
             settingsFolder = new File(sigPath).getParentFile();
         } else {
-            settingsFolder = new File("");
+            settingsFolder = new File(CONFIGURATION_DIR.getDefValue());
         }
         return settingsFolder;
     }
@@ -360,7 +360,14 @@ public class PropertyInitialization {
         } else {
             File settingsFolder = calculateSettingsPath(fileProperties);
             // set absolute path
+
             absolutePath = settingsFolder.getAbsolutePath();
+        }
+
+        File confFolder = new File(absolutePath);
+        if (!confFolder.exists()) {
+            LOG.warn("Configuration folder {} not exists. Folder will be created!", confFolder.getAbsolutePath());
+            confFolder.mkdirs();
         }
 
         LOG.info("Generate new keystore to folder: " + absolutePath);
