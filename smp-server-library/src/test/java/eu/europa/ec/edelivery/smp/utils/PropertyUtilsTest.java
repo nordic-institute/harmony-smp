@@ -36,7 +36,7 @@ public class PropertyUtilsTest {
                 {EMAIL, "test@coms.fs", false, false},
                 {FILENAME, "myfilename.txt", true, true},
                 {PATH, "./", true, true},
-                {PATH, "./notexits-tst", false, true},
+                {PATH, "./notexits", true, true}, // path will be created
         };
     }
 
