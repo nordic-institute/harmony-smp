@@ -97,17 +97,18 @@ public class SmlConnector implements ApplicationContextAware {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
+        String normalizedParticipantString = asString(normalizedParticipantId);
         if (!domain.isSmlRegistered()) {
             LOG.info("Participant {} is not registered to SML because domain {} is not registered!" ,
-                    asString(normalizedParticipantId), domain.getDomainCode());
+                    normalizedParticipantString, domain.getDomainCode());
             return false;
         }
 
-        LOG.debug("Registering new Participant: {} to domain: {}." , asString(normalizedParticipantId), domain.getDomainCode());
+        LOG.debug("Registering new Participant: {} to domain: {}." , normalizedParticipantString, domain.getDomainCode());
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
             getParticipantWSClient(domain).create(smlRequest);
-            LOG.info("Participant: {} registered to domain: {}." , asString(normalizedParticipantId), domain.getDomainCode());
+            LOG.info("Participant: {} registered to domain: {}." , normalizedParticipantString, domain.getDomainCode());
             return true;
         } catch (BadRequestFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
@@ -222,17 +223,18 @@ public class SmlConnector implements ApplicationContextAware {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
+        String normalizedParticipantString = asString(normalizedParticipantId);
         if (!domain.isSmlRegistered()) {
             LOG.info("Participant {} is not unregistered from SML because domain {} is not registered!" ,
-                    asString(normalizedParticipantId), domain.getDomainCode());
+                    normalizedParticipantString, domain.getDomainCode());
             return false;
         }
 
-        LOG.debug("Removing Participant: {} from domain: {}.", asString(normalizedParticipantId), domain.getDomainCode());
+        LOG.debug("Removing Participant: {} from domain: {}.", normalizedParticipantString, domain.getDomainCode());
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
             getParticipantWSClient(domain).delete(smlRequest);
-            LOG.info("Participant: {} removed domain: {}.", asString(normalizedParticipantId), domain.getDomainCode());
+            LOG.info("Participant: {} removed domain: {}.", normalizedParticipantString, domain.getDomainCode());
             return true;
         } catch (BadRequestFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
@@ -383,23 +385,6 @@ public class SmlConnector implements ApplicationContextAware {
 
     }
 
-    SSLSocketFactory createSocketFactory() {
-
-        SSLContext sc = null;
-        try {
-            sc = SSLContext.getInstance("TLS");
-            sc.init(keystoreService.getKeyManagers(),
-                    truststoreService.getTrustManagers(), null);
-
-
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            e.printStackTrace();
-        }
-
-        return sc.getSocketFactory();
-
-
-    }
 
     public CertificateConstraintsType createCertConstraint(String regExp){
         if (StringUtils.isBlank(regExp)){
