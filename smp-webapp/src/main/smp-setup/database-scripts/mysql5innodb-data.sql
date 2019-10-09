@@ -7,4 +7,4 @@ update SMP_USER_SEQ set next_val=4 where next_val=1;
 
 -- insert domain
 insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, SML_BLUE_COAT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values (1, 'testDomain','test','CEF-SMP-002', 'sample_key', 1,0, NOW(), NOW());
-update SMP_DOMAIN_SEQ set next_val=2 where next_val=1;
+update SMP_DOMAIN_SEQ set next_val=2 y;
