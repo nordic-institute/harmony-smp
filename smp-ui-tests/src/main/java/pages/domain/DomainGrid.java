@@ -12,28 +12,40 @@ public class DomainGrid extends BasicGrid {
 	public DomainGrid(WebDriver driver, WebElement container) {
 		super(driver, container);
 	}
-	
+
 	private By cellSelector = By.tagName("datatable-body-cell");
-	
+
 	public List<DomainRow> getRowsInfo(){
 		List<DomainRow> rowInfos = new ArrayList<>();
-		
+
 		for (WebElement gridRow : gridRows) {
 			List<WebElement> cells = gridRow.findElements(cellSelector);
-			
+
 			DomainRow row = new DomainRow();
-			row.setDomainCode(cells.get(0).getText().trim());
-			row.setSmlDomain(cells.get(1).getText().trim());
-			row.setSmlSmpID(cells.get(2).getText().trim());
-			row.setClientCertHeader(cells.get(3).getText().trim());
-			row.setClientCertAlias(cells.get(4).getText().trim());
-			row.setClientCertAlias(cells.get(5).getText().trim());
-			row.setSignatureCertAlias(cells.get(6).getText().trim());
-			
+
+			for (int i = 0; i < headerTxt.size(); i++) {
+				switch (headerTxt.get(i)){
+					case "Domain code":
+						row.setDomainCode(cells.get(i).getText().trim());
+						break;
+					case "SML Domain":
+						row.setSmlDomain(cells.get(i).getText().trim());
+						break;
+					case "Signature CertAlias":
+						row.setSignatureCertAlias(cells.get(i).getText().trim());
+						break;
+					case "SML SMP Id":
+						row.setSmlSmpID(cells.get(i).getText().trim());
+						break;
+				}
+
+			}
+
 			rowInfos.add(row);
 		}
-		
+
 		return rowInfos;
 	}
-	
+
+
 }
