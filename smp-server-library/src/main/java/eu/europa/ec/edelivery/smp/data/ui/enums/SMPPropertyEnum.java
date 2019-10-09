@@ -33,8 +33,8 @@ public enum SMPPropertyEnum {
     HTTP_PROXY_HOST("smp.proxy.host", "", "The http proxy host", false,false, SMPPropertyTypeEnum.STRING),
     HTTP_NO_PROXY_HOSTS("smp.noproxy.hosts", "localhost|127.0.0.1", "list of nor proxy hosts. Ex.: localhost|127.0.0.1", false,false, SMPPropertyTypeEnum.STRING),
     HTTP_PROXY_PASSWORD("smp.proxy.password", "", "Base64 encrypted password for Proxy.", false, true,SMPPropertyTypeEnum.STRING),
-    HTTP_PROXY_PORT("smp.http.port", "80", "The http proxy port", false, false, SMPPropertyTypeEnum.INTEGER),
-    HTTP_PROXY_USER("smp.http.user", "", "The proxy user", false, false, SMPPropertyTypeEnum.STRING),
+    HTTP_PROXY_PORT("smp.proxy.port", "80", "The http proxy port", false, false, SMPPropertyTypeEnum.INTEGER),
+    HTTP_PROXY_USER("smp.proxy.user", "", "The proxy user", false, false, SMPPropertyTypeEnum.STRING),
 
 
     KEYSTORE_PASSWORD("smp.keystore.password","","Encrypted keystore (and keys) password ", false, true, SMPPropertyTypeEnum.STRING),
