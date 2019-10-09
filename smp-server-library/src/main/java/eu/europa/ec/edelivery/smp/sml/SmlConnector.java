@@ -418,8 +418,8 @@ public class SmlConnector implements ApplicationContextAware {
         }
 
         String noProxyHosts = configurationService.getHttpNoProxyHosts();
-        if (!HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())) {
-            LOG.info("Terget host {} is match noProxy hosts {}!", targetUrl.getHost(), noProxyHosts);
+        if (HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), configurationService.getHttpNoProxyHosts())) {
+            LOG.info("Target host {} is match noProxy hosts {}!", targetUrl.getHost(), noProxyHosts);
             return;
         }
         String proxyServer = configurationService.getHttpProxyHost();
@@ -435,9 +435,13 @@ public class SmlConnector implements ApplicationContextAware {
             httpConduit.getClient().setProxyServerPort(proxyPort.get());
         }
         ProxyAuthorizationPolicy proxyAuth = new ProxyAuthorizationPolicy();
-        proxyAuth.setUserName(proxyUser);
-        proxyAuth.setPassword(proxyPassword);
-        httpConduit.setProxyAuthorization(proxyAuth);
+        if (!StringUtils.isBlank(proxyUser)){
+            LOG.debug("Set proxy authentication {}", proxyUser);
+            proxyAuth.setUserName(proxyUser);
+            proxyAuth.setPassword(proxyPassword);
+            httpConduit.setProxyAuthorization(proxyAuth);
+        }
+
     }
 
 }
