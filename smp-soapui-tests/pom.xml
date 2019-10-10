@@ -55,7 +55,7 @@
                     <projectFile>${project.basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
                     <testSuite>PASSING_AUTO_BAMBOO</testSuite>
                     <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
-                    <!-- testCase>SMP022-Create ServiceMetadata-Basic Flow</testCase -->
+                    <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
                     <!-- testCase>SMP079-EDELIVERY-2806-Basic Flow-BlueCote UTF8 chars</testCase -->
                     <projectProperties>
                         <value>url=${url}</value>
