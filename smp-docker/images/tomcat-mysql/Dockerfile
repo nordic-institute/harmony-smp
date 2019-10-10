@@ -52,7 +52,6 @@ RUN apt-get update \
     && rm tomcat.zip   \
     && mkdir -p $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/  \
     && echo "export CLASSPATH=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf" >   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
- #   && echo "export JAVA_OPTS=$JAVA_OPTS -Djdk.http.auth.tunneling.disabledSchemes= -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true" >>   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
     && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$DB_USER\" password=\"$DB_USER\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$DB_SCHEMA?useSSL=false\&amp;characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
     && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"  \
     && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
@@ -74,9 +73,7 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && mv /tmp/smp-$SMP_VERSION/* /tmp/artefacts/ \
     && rm -rf /tmp/smp-$SMP_VERSION \
     && mv /tmp/artefacts/smp.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/     \
-    && chmod u+x /sbin/entrypoint.sh  \
-    && echo "export JAVA_OPTS='$JAVA_OPTS -Djdk.http.auth.tunneling.disabledSchemes='' -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true'" >>   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh
-
+    && chmod u+x /sbin/entrypoint.sh
 
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
