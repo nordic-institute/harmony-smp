@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.data.ui.SmpConfigRO;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,6 +53,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ApplicationResourceTest {
     private static final String PATH = "/ui/rest/application";
+
+    private static final RequestPostProcessor SMP_ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+    private static final RequestPostProcessor SG_ADMIN_CREDENTIALS = httpBasic("sg_admin", "test123");
+    private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -80,7 +85,7 @@ public class ApplicationResourceTest {
     }
 
     @Test
-    public void getName() throws Exception {
+    public void testGetName() throws Exception {
         String value = mvc.perform(get(PATH + "/name"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -92,7 +97,7 @@ public class ApplicationResourceTest {
     }
 
     @Test
-    public void getRootContext() throws Exception {
+    public void testGetRootContext() throws Exception {
         String value = mvc.perform(get(PATH + "/rootContext"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -100,6 +105,61 @@ public class ApplicationResourceTest {
                 .getContentAsString();
 
         assertEquals("/", value);
+    }
+
+    @Test
+    public void testGetApplicationConfigNotAuthorized() throws Exception {
+        // when
+         mvc.perform(get(PATH + "/config"))
+                .andExpect(status().isUnauthorized())
+                .andReturn()
+                .getResponse();
+    }
+    @Test
+    public void testGetApplicationConfigAuthorized() throws Exception {
+        //  SMP admin
+        String val = mvc.perform(get(PATH + "/config").with(SMP_ADMIN_CREDENTIALS))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        assertNotNull(val);
+        //  service group
+        val = mvc.perform(get(PATH + "/config").with(SG_ADMIN_CREDENTIALS))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        assertNotNull(val);
+        // system admin
+        val = mvc.perform(get(PATH + "/config").with(SYSTEM_CREDENTIALS))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        assertNotNull(val);
+    }
+
+    @Test
+    public void testGetApplicationConfigSMPAdmin() throws Exception {
+        // when
+        String value = mvc.perform(get(PATH + "/config").with(SMP_ADMIN_CREDENTIALS))
+
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+       // then
+        ObjectMapper mapper = new ObjectMapper();
+        SmpConfigRO res = mapper.readValue(value, SmpConfigRO.class);
+
+
+        assertNotNull(res);
+        assertEquals("Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9].",res.getParticipantSchemaRegExpMessage());
+        assertEquals("^((?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)|urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$)",res.getParticipantSchemaRegExp());
+        assertFalse(res.isSmlIntegrationOn());
+        assertFalse(res.isSmlParticipantMultiDomainOn());
     }
 
     @Test
