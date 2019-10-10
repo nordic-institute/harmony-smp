@@ -12,7 +12,10 @@ DATA_DIR=/smp/data
 MYSQL_DATA_DIR=${DATA_DIR}/mysql
 TOMCAT_DIR=${DATA_DIR}/tomcat
 TOMCAT_HOME=${SMP_HOME}/apache-tomcat-$TOMCAT_VERSION/
-
+SQUID_CONFIG=/etc/squid/squid.smp.conf
+SQUID_USERS=/etc/squid/passwd
+SQUID_USER="proxyuser"
+SQUID_PASSWORD="test123"
 
 if [ ! -d ${DATA_DIR} ]; then
    mkdir -p ${DATA_DIR}
@@ -20,7 +23,7 @@ fi
 
 init_tomcat() {
   # add java code coverage angent to image
-  export JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6400"
+  export JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901"
 
 
   echo "[INFO] init tomcat folders: $tfile"
@@ -109,13 +112,35 @@ init_mysql() {
     
   fi
 sleep 5s
-  # start mysql 
- 
+  # start mysql
+}
+
+init_squid() {
+echo '[INFO] start squid'
+#  create squid property file
+  echo "auth_param basic program /usr/lib/squid3/basic_ncsa_auth $SQUID_USERS" > $SQUID_CONFIG
+  echo "auth_param basic children 1" >> $SQUID_CONFIG
+  echo "auth_param basic credentialsttl 1 minute" >> $SQUID_CONFIG
+  echo "auth_param basic casesensitive off" >> $SQUID_CONFIG
+  echo "" >> $SQUID_CONFIG
+  echo "acl auth proxy_auth REQUIRED" >> $SQUID_CONFIG
+  echo "http_access allow auth" >> $SQUID_CONFIG
+  echo "http_access deny all" >> $SQUID_CONFIG
+  echo "" >> $SQUID_CONFIG
+# just to make sure this configuration is loaded :)
+  echo "http_port 3127" >> $SQUID_CONFIG
+
+  # create a user
+  htpasswd -b -c $SQUID_USERS $SQUID_USER $SQUID_PASSWORD
+
+  $(which squid) -N -f /etc/squid/squid.conf -z
+  { nohup $(which squid) -f /etc/squid/squid.smp.conf -NYCd 1 &> /var/log/squid/squid.out & }
+
 }
 
 init_mysql
 init_tomcat
-
+init_squid
 
 echo '[INFO] start running SMP'
 chmod u+x $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/*.sh
