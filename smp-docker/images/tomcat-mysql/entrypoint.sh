@@ -23,7 +23,7 @@ fi
 
 init_tomcat() {
   # add java code coverage angent to image
-  export JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901"
+  export JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901"
 
 
   echo "[INFO] init tomcat folders: $tfile"

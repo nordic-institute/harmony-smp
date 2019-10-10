@@ -75,7 +75,7 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && rm -rf /tmp/smp-$SMP_VERSION \
     && mv /tmp/artefacts/smp.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/     \
     && chmod u+x /sbin/entrypoint.sh  \
-    && echo "export JAVA_OPTS='-Djdk.http.auth.tunneling.disabledSchemes='' -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true'" >>   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh
+    && echo "export JAVA_OPTS='$JAVA_OPTS -Djdk.http.auth.tunneling.disabledSchemes='' -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true'" >>   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh
 
 
 
