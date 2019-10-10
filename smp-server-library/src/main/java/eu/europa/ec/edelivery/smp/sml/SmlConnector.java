@@ -428,14 +428,16 @@ public class SmlConnector implements ApplicationContextAware {
         String proxyPassword = configurationService.getProxyCredentialToken();
 
 
-        LOG.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer, proxyPort.isPresent() ? proxyPort.get() : "");
+        LOG.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "******", proxyServer, proxyPort.isPresent() ? proxyPort.get() : "");
         httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);
         httpConduit.getClient().setProxyServer(proxyServer);
         if (proxyPort.isPresent()) {
             httpConduit.getClient().setProxyServerPort(proxyPort.get());
         }
-        ProxyAuthorizationPolicy proxyAuth = new ProxyAuthorizationPolicy();
+
         if (!StringUtils.isBlank(proxyUser)){
+            ProxyAuthorizationPolicy proxyAuth = new ProxyAuthorizationPolicy();
+            proxyAuth.setAuthorizationType("Basic");
             LOG.debug("Set proxy authentication {}", proxyUser);
             proxyAuth.setUserName(proxyUser);
             proxyAuth.setPassword(proxyPassword);
