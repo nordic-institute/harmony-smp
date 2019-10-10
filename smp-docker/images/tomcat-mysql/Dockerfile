@@ -52,15 +52,17 @@ RUN apt-get update \
     && rm tomcat.zip   \
     && mkdir -p $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/  \
     && echo "export CLASSPATH=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf" >   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
-    && echo "export JAVA_OPTS=-Djdk.http.auth.tunneling.disabledSchemes=" >>   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
+ #   && echo "export JAVA_OPTS=$JAVA_OPTS -Djdk.http.auth.tunneling.disabledSchemes= -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true" >>   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
     && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$DB_USER\" password=\"$DB_USER\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$DB_SCHEMA?useSSL=false\&amp;characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
     && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"  \
     && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
     && echo "\nAdd init parameters" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties   \
     && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
+    && echo "\nauthentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
     && echo "\nsmp.truststore.password={DEC}{test123}" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
     && echo "\nsmp.keystore.password={DEC}{test123}" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
     && echo "\nsmp.property.refresh.cronJobExpression=0 */2 * * * *" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
+    && echo "\nencodedSlashesAllowedInUrl=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp/conf/smp.config.properties  \
     && sed -i -e "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf   \
     && mkdir /opt/jacoco  \
     && curl -o /opt/jacoco/jacoco-agent.jar http://central.maven.org/maven2/org/jacoco/org.jacoco.agent/$JACOCO_VERSION/org.jacoco.agent-$JACOCO_VERSION-runtime.jar
@@ -72,7 +74,9 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && mv /tmp/smp-$SMP_VERSION/* /tmp/artefacts/ \
     && rm -rf /tmp/smp-$SMP_VERSION \
     && mv /tmp/artefacts/smp.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/     \
-    && chmod u+x /sbin/entrypoint.sh
+    && chmod u+x /sbin/entrypoint.sh  \
+    && echo "export JAVA_OPTS='-Djdk.http.auth.tunneling.disabledSchemes='' -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true'" >>   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh
+
 
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
