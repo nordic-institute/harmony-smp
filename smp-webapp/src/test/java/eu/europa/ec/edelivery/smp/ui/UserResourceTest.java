@@ -5,12 +5,10 @@ import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,20 +23,26 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.MediaType;
 
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -65,6 +69,7 @@ public class UserResourceTest {
     private MockMvc mvc;
     private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
     private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
+    private static final RequestPostProcessor SG_ADMIN_CREDENTIALS = httpBasic("sg_admin", "test123");
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
@@ -102,6 +107,121 @@ public class UserResourceTest {
     }
 
     @Test
+    public void testUpdateCurrentUserOK()  throws Exception {
+
+        // given when - log as SMP admin
+        MvcResult result = mvc.perform(post("/ui/rest/security/authentication")
+                .header("Content-Type","application/json")
+                .content("{\"username\":\"smp_admin\",\"password\":\"test123\"}"))
+                .andExpect(status().isOk()).andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        UserRO userRO = mapper.readValue(result.getResponse().getContentAsString(), UserRO.class);
+        assertNotNull(userRO);
+
+        // when
+        userRO.setActive(!userRO.isActive());
+        userRO.setEmailAddress("test@mail.com");
+        userRO.setPassword(UUID.randomUUID().toString());
+        if (userRO.getCertificate()==null) {
+            userRO.setCertificate(new CertificateRO());
+        }
+        userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
+
+        mvc.perform(put(PATH+"/"+userRO.getId()).with(ADMIN_CREDENTIALS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(userRO))
+        ).andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
+    public void testUpdateCurrentUserNotAuthenticatedUser()  throws Exception {
+
+        // given when - log as SMP admin
+        // then change values and list uses for changed value
+        MvcResult result = mvc.perform(post("/ui/rest/security/authentication")
+                .header("Content-Type","application/json")
+                .content("{\"username\":\"smp_admin\",\"password\":\"test123\"}"))
+                .andExpect(status().isOk()).andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        UserRO userRO = mapper.readValue(result.getResponse().getContentAsString(), UserRO.class);
+        assertNotNull(userRO);
+
+        // when
+        userRO.setActive(!userRO.isActive());
+        userRO.setEmailAddress("test@mail.com");
+        userRO.setPassword(UUID.randomUUID().toString());
+        if (userRO.getCertificate()==null) {
+            userRO.setCertificate(new CertificateRO());
+        }
+        userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
+
+        mvc.perform(put(PATH+"/"+userRO.getId()).with(SYSTEM_CREDENTIALS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(userRO))
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testUpdateUserList() throws Exception {
+        // given when
+        MvcResult result = mvc.perform(get(PATH).with(SYSTEM_CREDENTIALS)).
+                andExpect(status().isOk()).andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
+        assertNotNull(res);
+        assertFalse(res.getServiceEntities().isEmpty());
+        UserRO  userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
+        // then
+        userRO.setActive(!userRO.isActive());
+        userRO.setEmailAddress("test@mail.com");
+        userRO.setPassword(UUID.randomUUID().toString());
+        if (userRO.getCertificate()==null) {
+            userRO.setCertificate(new CertificateRO());
+        }
+        userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
+
+        mvc.perform(put(PATH)
+                .with(SYSTEM_CREDENTIALS).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
+                ).andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateUserListWrongAuthentication() throws Exception {
+        // given when
+        MvcResult result = mvc.perform(get(PATH).with(SYSTEM_CREDENTIALS)).
+                andExpect(status().isOk()).andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
+        assertNotNull(res);
+        assertFalse(res.getServiceEntities().isEmpty());
+        UserRO  userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
+        // then
+        userRO.setActive(!userRO.isActive());
+        userRO.setEmailAddress("test@mail.com");
+        userRO.setPassword(UUID.randomUUID().toString());
+        if (userRO.getCertificate()==null) {
+            userRO.setCertificate(new CertificateRO());
+        }
+        userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
+        // anonymous
+        mvc.perform(put(PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
+        ).andExpect(status().isUnauthorized());
+
+        mvc.perform(put(PATH)
+                .with(ADMIN_CREDENTIALS).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
+        ).andExpect(status().isUnauthorized());
+
+        mvc.perform(put(PATH)
+                .with(SG_ADMIN_CREDENTIALS).contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
     public void uploadCertificateSystemAdmin() throws Exception {
         byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
 
@@ -121,6 +241,19 @@ public class UserResourceTest {
         assertEquals("3", res.getSerialNumber());
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
         assertEquals("sno=3&subject=1.2.840.113549.1.9.1%3D%23160c736d7040746573742e636f6d%2CCN%3DSMP+test%2CO%3DDIGIT%2CC%3DBE&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=CN%3DIntermediate+CA%2CO%3DDIGIT%2CC%3DBE", res.getBlueCoatHeader());
+    }
+
+    @Test
+    public void uploadInvalidCertificate() throws Exception {
+        byte[] buff = (new String("Not a certficate :) ")).getBytes();
+
+        // given when
+        mvc.perform(post(PATH+"/1098765430/certdata")
+                .with(SYSTEM_CREDENTIALS)
+                .content(buff))
+                .andExpect(status().is5xxServerError())
+                .andExpect(content().string(CoreMatchers.containsString(" The certificate is not valid")));
+
     }
 
     @Test
@@ -186,6 +319,40 @@ public class UserResourceTest {
                 .content("test123"))
                 .andExpect(status().isUnauthorized()).andReturn();
 
+
+    }
+
+    @Test
+    public void testValidateDeleteUserOK() throws Exception {
+        MvcResult result = mvc.perform(post(PATH+"/validateDelete")
+                .with(SYSTEM_CREDENTIALS)
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content("[5]"))
+                .andExpect(status().isOk()).andReturn();
+
+        ObjectMapper mapper = new ObjectMapper();
+        DeleteEntityValidation res = mapper.readValue(result.getResponse().getContentAsString(), DeleteEntityValidation.class);
+
+        assertFalse(res.getListIds().isEmpty());
+        assertTrue(res.getListDeleteNotPermitedIds().isEmpty());
+        assertEquals(5, res.getListIds().get(0).intValue());
+    }
+
+    @Test
+    public void testValidateDeleteUserNotOK() throws Exception {
+        // note system credential has id 3!
+        MvcResult result = mvc.perform(post(PATH+"/validateDelete")
+                .with(SYSTEM_CREDENTIALS)
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content("[3]"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ObjectMapper mapper = new ObjectMapper();
+        DeleteEntityValidation res = mapper.readValue(result.getResponse().getContentAsString(), DeleteEntityValidation.class);
+
+        assertTrue(res.getListIds().isEmpty());
+        assertEquals("Could not delete logged user!",res.getStringMessage());
 
     }
 
