@@ -23,7 +23,10 @@ fi
 
 init_tomcat() {
   # add java code coverage angent to image
-  export JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901"
+  JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901 $JAVA_OPTS"
+  # add allow encoded slashes and disable scheme for proxy
+  JAVA_OPTS="$JAVA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true -Djdk.http.auth.tunneling.disabledSchemes="
+  export  JAVA_OPTS
 
 
   echo "[INFO] init tomcat folders: $tfile"
