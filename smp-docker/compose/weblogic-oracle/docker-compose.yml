@@ -14,7 +14,7 @@ services:
       - database
 #    command: [bash, -c, "for i in `seq 10`; do timeout 1  bash -c '</dev/tcp/database/1521'; if [ $$? -eq 0 ] ; then break;fi;sleep 1;  done;"]
     command: [bash, -c, "for i in `seq 150`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.log' ] && [ \"$$( cat /u01/status/database.log )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 2;  done;   /u01/oracle/startAdminServer.sh"]
-    image:  weblogic_smp
+    image:  smp-weblogic-122:${SMP_VERSION}
     container_name: wls-smp   
     hostname: wlsadmin
     volumes:
