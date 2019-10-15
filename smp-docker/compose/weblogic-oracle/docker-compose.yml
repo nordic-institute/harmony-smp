@@ -17,6 +17,8 @@ services:
     image:  smp-weblogic-122:${SMP_VERSION}
     container_name: wls-smp   
     hostname: wlsadmin
+    environment:
+      JAVA_OPTIONS: "-Dweblogic.webservice.i18n.charset=utf-8"
     volumes:
       - ./properties/weblogic:/u01/oracle/properties
       - shared-status-folder:/u01/status/
