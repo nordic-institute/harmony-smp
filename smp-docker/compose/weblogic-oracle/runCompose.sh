@@ -5,23 +5,37 @@ SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/oracl
 SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
 # soap ui data
 PREFIX="smp-wls-orcl"
+SMP_VERSION=
 
 
 
-echo "Working Directory: ${WORKING_DIR}"
-cd "$WORKING_DIR"
+
 # clear volume and containers - to run  restart from strach 
 
 
 # READ argumnets 
-while getopts i: option
+while getopts i:v: option
 do
   case "${option}"
   in
     i) SMP_INIT_DATABASE_DATA=${OPTARG};;
+    v) SMP_VERSION=${OPTARG};;
   esac
 done
 
+
+if [  -z "${SMP_VERSION}" ]
+then
+  # get version from POM file 
+  SMP_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)"
+fi
+
+echo "*************************************************************************"
+echo "SMP version: $SMP_VERSION"
+echo "Init sql data: ${SMP_INIT_DATABASE_DATA}"
+echo "Working Directory: ${WORKING_DIR}"
+echo "*************************************************************************"
+cd "$WORKING_DIR"
 
 # create  database init script from 
 echo "CONNECT smp/test@//localhost:1521/xe;" > ./properties/db-scripts/02_oracle10g.sql
@@ -56,6 +70,7 @@ function clearOldContainers {
 
 clearOldContainers
 # start 
+export SMP_VERSION="${SMP_VERSION}"
 docker-compose -p ${PREFIX} up -d --force-recreate
 
 # wait until service is up
