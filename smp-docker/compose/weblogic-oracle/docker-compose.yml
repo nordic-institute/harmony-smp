@@ -7,7 +7,7 @@ services:
       - ./properties/db-scripts:/u01/app/oracle/scripts/setup  # init script.
       - shared-status-folder:/u01/status/
     ports:
-      - 1721:1521
+      - 1921:1521
     shm_size: '1gb'
   weblogic:
     depends_on:
