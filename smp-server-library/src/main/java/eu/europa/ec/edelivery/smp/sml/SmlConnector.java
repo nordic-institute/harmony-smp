@@ -322,6 +322,7 @@ public class SmlConnector implements ApplicationContextAware {
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Malformed SML URL: " + url, e);
         }
+        boolean useTLS = urlSMPManagment.getProtocol().equalsIgnoreCase("https");
         Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlSMPManagment.toString());
 
@@ -338,37 +339,33 @@ public class SmlConnector implements ApplicationContextAware {
             }
         }
 
+        if (!blueCoatAuthentication && !useTLS) {
+           LOG.warn("SML integration is wrongly configured. Uses 2-way-SSL HTTPS but URL is not HTTPS! Url: {}." ,urlSMPManagment.toString());
+        }
+
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
 
         configureClientAuthentication(httpConduit, requestContext,
                 blueCoatAuthentication ? clientCertHttpHeader : clientKeyAlias,
-                blueCoatAuthentication);
+                blueCoatAuthentication, useTLS);
         configureFaultHandling(requestContext);
         configureProxy(httpConduit, urlSMPManagment);
         configurePayloadLogging(client);
-
-
-
-        LOG.info("Get key managers {}", httpConduit.getTlsClientParameters().getKeyManagers() + " aa");
-        LOG.info("Get isUseHttpsURLConnectionDefaultSslSocketFactory {}", httpConduit.getTlsClientParameters().isUseHttpsURLConnectionDefaultSslSocketFactory());
-        LOG.info("Get isUseHttpsURLConnectionDefaultHostnameVerifier {}", httpConduit.getTlsClientParameters().isUseHttpsURLConnectionDefaultHostnameVerifier());
-
     }
 
 
-    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientAuthentication, boolean blueCoatAuthentication) {
+    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientAuthentication, boolean blueCoatAuthentication, boolean useTLS) {
         LOG.info("Connect to SML (smlClientAuthentication: {} use Client-CertHeader: {})", smlClientAuthentication, blueCoatAuthentication);
         if (StringUtils.isBlank(smlClientAuthentication)) {
             throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
+
         // set truststore...
         TLSClientParameters tlsParams = new TLSClientParameters();
-
         tlsParams.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
         tlsParams.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
         tlsParams.setCertConstraints(createCertConstraint(configurationService.getSMLIntegrationServerCertSubjectRegExp()));
         tlsParams.setDisableCNCheck(configurationService.smlDisableCNCheck());
-
 
         if (!blueCoatAuthentication) {
             LOG.info("SML X509 certificate authentication with alias  {}.", smlClientAuthentication);
@@ -380,9 +377,10 @@ public class SmlConnector implements ApplicationContextAware {
             customHeaders.put(CLIENT_CERT_HEADER_KEY, Arrays.asList(smlClientAuthentication));
             requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
         }
+        if (useTLS) {
 
-        httpConduit.setTlsClientParameters(tlsParams);
-
+            httpConduit.setTlsClientParameters(tlsParams);
+        }
     }
 
 
