@@ -1,6 +1,6 @@
 version: "3.0"
 services:
-  tomcat-mysql:
+  tomcat-mysql-sml:
     image: smp-sml-tomcat-mysql:${SMP_VERSION}
     container_name: smp-sml-tomcat-mysql
     volumes:
@@ -9,6 +9,6 @@ services:
       - 3908:3306
       - 8982:8080
       - 6902:6901
-      - 53:53
+      - 8953:53
 
 
