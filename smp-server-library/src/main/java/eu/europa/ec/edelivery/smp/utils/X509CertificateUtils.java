@@ -32,6 +32,8 @@ import java.util.List;
 
 public class X509CertificateUtils {
 
+    public static String testCertIssuerDN = "CN=rootCNTest,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE";
+
     public static void setupJCEProvider() {
         Provider[] providerList = Security.getProviders();
         if (providerList == null || providerList.length <= 0 || !(providerList[0] instanceof BouncyCastleProvider)) {
@@ -39,7 +41,7 @@ public class X509CertificateUtils {
         }
     }
 
-    public static void createAndAddTextCertificate(String subject, KeyStore keystore, String secToken) throws Exception {
+    public static void createAndAddTextCertificate(String subject,  KeyStore keystore, String secToken) throws Exception {
         setupJCEProvider();
         Calendar from = Calendar.getInstance();
         from.add(Calendar.DAY_OF_MONTH, -1);
@@ -49,7 +51,7 @@ public class X509CertificateUtils {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
         keyGen.initialize(2048);
         KeyPair key = keyGen.generateKeyPair();
-        X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(new X500Name(subject),BigInteger.ONE, from.getTime(), to.getTime(), new X500Name(subject), SubjectPublicKeyInfo.getInstance(key.getPublic().getEncoded()));
+        X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(new X500Name(testCertIssuerDN),BigInteger.ONE, from.getTime(), to.getTime(), new X500Name(subject), SubjectPublicKeyInfo.getInstance(key.getPublic().getEncoded()));
 
         ContentSigner sigGen = new JcaContentSignerBuilder("SHA1WithRSAEncryption").setProvider("BC").build(key.getPrivate());
         X509Certificate cert =  new JcaX509CertificateConverter().setProvider("BC").getCertificate(certBuilder.build(sigGen));

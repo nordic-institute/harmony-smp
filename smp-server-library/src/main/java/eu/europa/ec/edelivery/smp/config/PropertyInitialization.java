@@ -312,7 +312,7 @@ public class PropertyInitialization {
             }
             // check if keystore is empty then generate cert for user
             if (newKeystore.size() == 0) {
-                X509CertificateUtils.createAndAddTextCertificate("CN=SMP_TEST-" + UUID.randomUUID().toString() + ", OU=eDelivery, O=DIGITAL, C=BE", newKeystore, newKeyPassword);
+                X509CertificateUtils.createAndAddTextCertificate("CN=SMP_TEST-PRE-SET-EXAMPLE, OU=eDelivery, O=DIGITAL, C=BE", newKeystore, newKeyPassword);
             }
             newKeystore.store(out, newKeyPassword.toCharArray());
         } catch (IOException e) {
