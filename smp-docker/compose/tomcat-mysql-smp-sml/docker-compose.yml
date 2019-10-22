@@ -6,6 +6,7 @@ services:
     volumes:
       - ./properties/db-scripts:/tmp/custom-database-scripts/  # init script.
     ports:
-      - 3908:3306
-      - 8982:8080
-      - 6902:6901
+      - "3908:3306"
+      - "8982:8080"
+      - "6902:6901"
+      - "8953:53"
