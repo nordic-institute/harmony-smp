@@ -30,10 +30,10 @@ ENV SMP_HOME=/opt/smp  \
 
 # Exposing ports used in entrypoint.sh ..
 # - 3306 Mysql port
-# - 6400 JaCoCo port
+# - 6901 JaCoCo port
 # - 8080 Tomcat port
 # - 53 dns port
-EXPOSE 3306 8080 6400 53
+EXPOSE 3306 8080 6901 53
 
 
 
