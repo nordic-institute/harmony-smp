@@ -104,6 +104,11 @@ echo ""
   then
     mkdir -p "./tomcat-mysql/artefacts/"
   fi
+
+  if  [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]
+  then
+    mkdir -p "./tomcat-mysql-smp-sml/artefacts"
+  fi
     
 
   # SMP artefats 
