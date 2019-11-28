@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 @Configuration
 @ComponentScan(basePackages = {
-        "eu.europa.ec"})
+        "eu.europa.ec.edelivery.smp"})
 @PropertySources({
         @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
