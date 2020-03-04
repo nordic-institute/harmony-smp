@@ -18,7 +18,9 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.naming.InvalidNameException;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.BasicAttribute;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.net.ssl.TrustManager;
@@ -359,20 +361,54 @@ public class UITruststoreService {
 
 
         String dn = x509cert.getSubjectX500Principal().getName();
+        String alias = null;
         try {
-            String alias = null;
+
             LdapName ldapDN = new LdapName(dn);
+            Rdn cn = null;
             for (Rdn rdn : ldapDN.getRdns()) {
-                if (Objects.equals("CN", rdn.getType())) {
+
+                if (rdn.size()>1) {
+                    NamingEnumeration enr = rdn.toAttributes().getAll();
+                    while(enr.hasMore()) {
+                        Object mvRDn = enr.next();
+                        if (mvRDn instanceof BasicAttribute){
+                            BasicAttribute ba = (BasicAttribute)mvRDn;
+                            if (Objects.equals("CN", ba.getID())) {
+                                cn = new Rdn(ba.getID(), ba.get());
+                                break;
+                            }
+                        }
+                    }
+
+                }else if (Objects.equals("CN", rdn.getType())) {
                     alias = rdn.getValue().toString().trim();
                     break;
                 }
+                if (cn !=null) {
+                    alias = cn.getValue().toString().trim();
+                    break;
+                }
             }
-            return alias;
-        } catch (InvalidNameException e) {
+
+        } catch (NamingException e) {
             LOG.error("Can not parse certificate subject: " + dn);
         }
-        return UUID.randomUUID().toString();
+        alias = StringUtils.isEmpty(alias)?UUID.randomUUID().toString():alias;
+
+        try {
+            if (truststore != null && truststore.containsAlias(alias)) {
+                int iVal = 1;
+                while(truststore.containsAlias(alias+"_"+iVal)){
+                    iVal++;
+                }
+                alias =alias+"_"+iVal;
+            }
+        } catch (KeyStoreException e) {
+            LOG.error("Error occured while reading truststore for validating alias: " + alias, e);
+        }
+
+        return alias;
 
     }
 
