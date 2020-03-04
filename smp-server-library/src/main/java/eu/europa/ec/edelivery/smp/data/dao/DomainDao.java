@@ -15,10 +15,9 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainDeleteValidation;
-import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
@@ -124,10 +123,11 @@ public class DomainDao extends BaseDao<DBDomain> {
 
     /**
      * Validation report for domain which are used by  service groups from list of domain ids..
-     *  @param domainIds
+     *
+     * @param domainIds
      * @return
      */
-    public List<DBDomainDeleteValidation> validateDomainsForDelete(List<Long> domainIds){
+    public List<DBDomainDeleteValidation> validateDomainsForDelete(List<Long> domainIds) {
         TypedQuery<DBDomainDeleteValidation> query = memEManager.createNamedQuery("DBDomainDeleteValidation.validateDomainUsage",
                 DBDomainDeleteValidation.class);
         query.setParameter("domainIds", domainIds);

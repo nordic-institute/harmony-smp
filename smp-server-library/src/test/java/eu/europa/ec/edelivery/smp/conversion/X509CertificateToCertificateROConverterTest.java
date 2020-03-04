@@ -25,11 +25,10 @@ import static org.junit.Assert.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class X509CertificateToCertificateROConverterTest {
-
-    @Before
-    public void setup(){
+    static {
         Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
     }
+
 
 
     private static final Object[] testCases() {
@@ -39,7 +38,7 @@ public class X509CertificateToCertificateROConverterTest {
                 {"cert-nonAscii.pem", "CN=NonAscii chars:  àøýßĉæãäħ,OU=CEF,O=DIGIT,C=BE", "CN=NonAscii chars:  àøýßĉæãäħ,OU=CEF,O=DIGIT,C=BE","5c1bb38d","sno=5c1bb38d&subject=CN%3DNonAscii+chars%3A++%C3%A0%C3%B8%C3%BD%C3%9F%C4%89%C3%A6%C3%A3%C3%A4%C4%A7%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE&validfrom=Dec+20+16%3A21%3A49+2018+GMT&validto=Dec+17+16%3A21%3A49+2028+GMT&issuer=CN%3DNonAscii+chars%3A++%C3%A0%C3%B8%C3%BD%C3%9F%C4%89%C3%A6%C3%A3%C3%A4%C4%A7%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE","CN=NonAscii chars:  aøyßcæaaħ,O=DIGIT,C=BE:000000005c1bb38d"},
                 {"cert-with-email.pem", "CN=Cert with email,OU=CEF,O=DIGIT,C=BE", "CN=Cert with email,OU=CEF,O=DIGIT,C=BE","5c1bb358","sno=5c1bb358&subject=CN%3DCert+with+email%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE&validfrom=Dec+20+16%3A20%3A56+2018+GMT&validto=Dec+17+16%3A20%3A56+2028+GMT&issuer=CN%3DCert+with+email%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE","CN=Cert with email,O=DIGIT,C=BE:000000005c1bb358"},
                 {"cert-smime.pem", "C=BE,O=European Commission,OU=PEPPOL TEST SMP,CN=edelivery_sml", "CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA - G2,OU=FOR TEST ONLY,O=OpenPEPPOL AISBL,C=BE","3cfe6b37e4702512c01e71f9b9175464","sno=3cfe6b37e4702512c01e71f9b9175464&subject=C%3DBE%2CO%3DEuropean+Commission%2COU%3DPEPPOL+TEST+SMP%2CCN%3Dedelivery_sml&validfrom=Sep+21+02%3A00%3A00+2018+GMT&validto=Sep+11+01%3A59%3A59+2020+GMT&issuer=CN%3DPEPPOL+SERVICE+METADATA+PUBLISHER+TEST+CA+-+G2%2COU%3DFOR+TEST+ONLY%2CO%3DOpenPEPPOL+AISBL%2CC%3DBE","CN=edelivery_sml,O=European Commission,C=BE:3cfe6b37e4702512c01e71f9b9175464"},
-
+                {"test-mvRdn.crt", "C=BE,O=DIGIT,2.5.4.5=#130131+2.5.4.42=#0c046a6f686e+CN=SMP_receiverCN", "C=BE,O=DIGIT,2.5.4.5=#130131+2.5.4.42=#0c046a6f686e+CN=SMP_receiverCN","123456789101112","sno=123456789101112&subject=C%3DBE%2CO%3DDIGIT%2C2.5.4.5%3D%23130131%2B2.5.4.42%3D%230c046a6f686e%2BCN%3DSMP_receiverCN&validfrom=Dec+09+14%3A14%3A11+2019+GMT&validto=Feb+01+14%3A14%3A11+2021+GMT&issuer=C%3DBE%2CO%3DDIGIT%2C2.5.4.5%3D%23130131%2B2.5.4.42%3D%230c046a6f686e%2BCN%3DSMP_receiverCN","CN=SMP_receiverCN,O=DIGIT,C=BE:0123456789101112"},
         };
     }
 
