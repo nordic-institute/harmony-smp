@@ -92,7 +92,7 @@ RUN apt-get update \
    && sed -i -e "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf   \
 # image is also used for code coverage report
     && mkdir /opt/jacoco  \
-    && curl -o /opt/jacoco/jacoco-agent.jar http://central.maven.org/maven2/org/jacoco/org.jacoco.agent/$JACOCO_VERSION/org.jacoco.agent-$JACOCO_VERSION-runtime.jar \
+    && curl -o /opt/jacoco/jacoco-agent.jar https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/$JACOCO_VERSION/org.jacoco.agent-$JACOCO_VERSION-runtime.jar \
     && mkdir /opt/smlconf \
     && mkdir /opt/smlconf/bind 
 # enable native TLS on tomcat  

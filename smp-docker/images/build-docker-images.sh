@@ -70,23 +70,23 @@ echo ""
  validateAndPrepareArtefacts() {
    
   # check oracle database
-  if [[ ! -f "${ORACLE_ARTEFACTS}/${ORACLE_DB_FILE}" ]]
+  if [[ ! -f "${ORACLE_ARTEFACTS}/Oracle/OracleDatabase/11.2.0.2/${ORACLE_DB_FILE}" ]]
   then
-    echo "Oracle database artefacts '${ORACLE_ARTEFACTS}/${ORACLE_DB_FILE}' not found."
+    echo "Oracle database artefacts '${ORACLE_ARTEFACTS}/Oracle/OracleDatabase/11.2.0.2/${ORACLE_DB_FILE}' not found."
     exit 1;
   else
     # copy artefact to docker build folder
-    cp "${ORACLE_ARTEFACTS}/${ORACLE_DB_FILE}"  ./oracle/oracle-db-11.2.0.2/
+    cp "${ORACLE_ARTEFACTS}/Oracle/OracleDatabase/11.2.0.2/${ORACLE_DB_FILE}"  ./oracle/oracle-db-11.2.0.2/
   fi
 
   # check server JDK
-  if [[ ! -f "${ORACLE_ARTEFACTS}/${SERVER_JDK_FILE}" ]]
+  if [[ ! -f "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}" ]]
   then
-    echo "Server JDK artefacts '${ORACLE_ARTEFACTS}/${SERVER_JDK_FILE}' not found."
+    echo "Server JDK artefacts '${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}' not found."
     exit 1;
   else
     # copy artefact to docker build folder
-    cp "${ORACLE_ARTEFACTS}/${SERVER_JDK_FILE}" ./oracle/OracleJava/java-8/
+    cp "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}" ./oracle/OracleJava/java-8/
   fi
 
  # check weblogic 

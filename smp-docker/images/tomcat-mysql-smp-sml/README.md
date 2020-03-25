@@ -18,7 +18,7 @@ url: http://localhost:8080/smp
 Database client connection (for testing and debugging )
 url: jdbc:mysql://localhost:3306/smp
 Username: smp
-Password:  smp
+Password: smp
 
 ## Volume (-v /opt/dockerdata/sml:/data)
 Mysql database files and tomcat configuration (and logs) can be externalized for experimenting with different SMP settings.
