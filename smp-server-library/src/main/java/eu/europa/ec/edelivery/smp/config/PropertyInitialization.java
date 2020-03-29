@@ -215,7 +215,7 @@ public class PropertyInitialization {
 
         LOG.info("Decode security token");
         String trustToken = SecurityUtils.decrypt(fEncryption,encTrustEncToken);
-        LOG.info("Gest keystore");
+        LOG.info("Get keystore");
         File truststore;
         if ( fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty())){
             LOG.info("Get  truststore value from property file");
