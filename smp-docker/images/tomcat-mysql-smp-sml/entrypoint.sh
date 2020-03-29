@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #set -e
 
@@ -25,7 +25,7 @@ fi
 
 init_tomcat() {
   # add java code coverage angent to image
-  if [[ -e /opt/jacoco/jacoco-agent.jar ]]; then
+  if [ -e /opt/jacoco/jacoco-agent.jar ]; then
     JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901 $JAVA_OPTS"
   fi
   # add allow encoded slashes and disable scheme for proxy
@@ -67,6 +67,21 @@ init_tomcat() {
    sleep 5s
 }
 
+init_smp_properties() {
+    echo "[INFO] init smp properties:"
+
+    { echo "# SMP init parameters"
+      echo "authentication.blueCoat.enabled=true"
+      echo "bdmsl.integration.enabled=true"
+      echo "bdmsl.integration.physical.address=0.0.0.0"
+      echo "bdmsl.participant.multidomain.enabled=false"
+      echo "bdmsl.integration.url=http://localhost:8080/edelivery-sml/"
+      echo "bdmsl.integration.logical.address=${SMP_LOGICAL_ADDRESS}"
+    } >>  "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties"
+
+    addOrReplaceProperties  "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties" "$SMP_INIT_PROPERTIES" "$SMP_INIT_PROPERTY_DELIMITER"
+}
+
 
 init_mysql() {
   echo "[INFO] init database:"
@@ -98,19 +113,19 @@ init_mysql() {
     echo 'Create smp database'
     mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';drop schema if exists $SMP_DB_SCHEMA;DROP USER IF EXISTS $SMP_DB_USER;  create schema $SMP_DB_SCHEMA;alter database $SMP_DB_SCHEMA charset=utf8; create user $SMP_DB_USER identified by '$SMP_DB_USER_PASSWORD';grant all on $SMP_DB_SCHEMA.* to $SMP_DB_USER;"
 
-    if [ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]
+    if [ -f "/tmp/custom-data/mysql5innodb.sql" ]
     then
         echo "Use custom database script! "
-        mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "tmp/custom-database-scripts/mysql5innodb.ddl"
+        mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "tmp/custom-data/mysql5innodb.ddl"
     else
           echo "Use default database ddl script!"
            mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/smp-setup/database-scripts/mysql5innodb.ddl"
     fi
 
-    if [ -f "/tmp/custom-database-scripts/mysql5innodb-data.sql" ]
+    if [ -f "/tmp/custom-data/mysql5innodb-data.sql" ]
     then
          echo "Use custom init script! "
-         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/custom-database-scripts/mysql5innodb-data.sql"
+         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/custom-data/mysql5innodb-data.sql"
      else
         echo "Use default init script!"
          mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SMP_DB_SCHEMA < "/tmp/smp-setup/database-scripts/mysql5innodb-data.sql"
@@ -127,19 +142,19 @@ init_mysql() {
     echo 'Create sml database'
         mysql -h localhost -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';drop schema if exists $SML_DB_SCHEMA;DROP USER IF EXISTS $SML_DB_USER;  create schema $SML_DB_SCHEMA;alter database $SML_DB_SCHEMA charset=utf8; create user $SML_DB_USER identified by '$SML_DB_USER_PASSWORD';grant all on $SML_DB_SCHEMA.* to $SML_DB_USER;"
 
-    if [ -f "/tmp/custom-database-scripts/sml-mysql5innodb.sql" ]
+    if [ -f "/tmp/custom-data/sml-mysql5innodb.sql" ]
     then
         echo "Use custom database script! "
-        mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA < "/tmp/custom-database-scripts/sml-mysql5innodb.ddl"
+        mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA < "/tmp/custom-data/sml-mysql5innodb.ddl"
     else
           echo "Use default database ddl script!"
            mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA < "/tmp/sml-setup/database-scripts/mysql5innodb.ddl"
     fi
 
-    if [ -f "/tmp/custom-database-scripts/sml-mysql5innodb-data.sql" ]
+    if [ -f "/tmp/custom-data/sml-mysql5innodb-data.sql" ]
     then
          echo "Use custom init script! "
-         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA < "/tmp/custom-database-scripts/sml-mysql5innodb-data.sql"
+         mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA < "/tmp/custom-data/sml-mysql5innodb-data.sql"
      else
         echo "Use default init script!"
          mysql -h localhost -u root --password=$MYSQL_ROOT_PASSWORD $SML_DB_SCHEMA < "/tmp/sml-setup/database-scripts/mysql5innodb-data.sql"
@@ -151,6 +166,45 @@ init_mysql() {
   # start mysql 
  
 }
+
+addOrReplaceProperties() {
+
+  PROP_FILE=$1
+  INIT_PROPERTIES=$2
+  INIT_PROPERTY_DELIMITER=$3
+  
+  # replace domibus properties
+  if [ -n "$INIT_PROPERTIES" ]; then
+    echo "Parse init properties: $INIT_PROPERTIES"
+    # add delimiter also to end :)
+
+    s="$INIT_PROPERTIES$INIT_PROPERTY_DELIMITER"
+
+
+    array=()
+    while [[ $s ]]; do
+      array+=("${s%%"$INIT_PROPERTY_DELIMITER"*}")
+      s=${s#*"$INIT_PROPERTY_DELIMITER"}
+    done
+
+    # replace parameters
+    IFS='='
+    for property in "${array[@]}"; do
+      read -r key value <<<"$property"
+      # escape regex chars ..
+      keyRE="$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|]/\\&/g')"
+      propertyRE="$(printf '%s' "$property" | sed 's/[.[\*^$()+?{|/]/\\&/g')"
+
+      echo "replace or add property: $property"
+      # replace key line and commented #key line with new property
+      sed -i "s/^$keyRE=.*/$propertyRE/;s/^#$keyRE=.*/$propertyRE/" $PROP_FILE
+      # test if replaced if the line not exists add in on the end
+      grep -qF -- "$property" "$PROP_FILE" || echo "$property" >>"$PROP_FILE"
+    done
+
+  fi
+}
+
 
 init_bind() {
 
@@ -165,15 +219,24 @@ init_bind() {
   chmod -R 0775 ${BIND_DATA_DIR}
   chown -R ${BIND_USER}:${BIND_USER} ${BIND_DATA_DIR}
 
+    # init data
+    if [ -f "/tmp/custom-data/db.test.edelivery.local" ]
+    then
+        echo "Use custom zone file! "
+        rm -rf /etc/bind/db.test.edelivery.local
+        cp /tmp/custom-data/db.test.edelivery.local /etc/bind/
+    fi
+
 }
 
+init_smp_properties
 init_bind
 init_mysql
 init_tomcat
 
 
 echo "Starting named..."
-$(which named) -u ${BIND_USER} &> $BIND_DATA_DIR/bind-console.out &  disown
+$(which named) -u ${BIND_USER} &> $BIND_DATA_DIR/bind-console.out &
 
 
 

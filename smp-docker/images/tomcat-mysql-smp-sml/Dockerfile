@@ -2,6 +2,8 @@ FROM ubuntu:18.04
 MAINTAINER Joze Rihtarsic
 
 ARG SMP_VERSION
+ARG SMP_LOGICAL_ADDRESS="${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
+
 # Set the SMP_VERSION env variable  \
 ENV SMP_HOME=/opt/smp  \
     MYSQL_DRV_VERSION=5.1.46  \
@@ -11,6 +13,8 @@ ENV SMP_HOME=/opt/smp  \
     TOMCAT_SHA512=51d8877782bc975b8c566263df7e55f383e617aa3c81ea2c219fed18e1f5d9e8233a92100de95b9a8df69ce5c0ad89a195d5b7e5647fcf9df26231870073a9cb   \
     SMP_DB_SCHEMA=smp  \
     SMP_DB_USER=smp \
+    SMP_INIT_PROPERTY_DELIMITER="||"  \
+    SMP_INIT_PROPERTIES=""   \
     SMP_DB_USER_PASSWORD=smp  \
     MYSQL_ROOT_PASSWORD=root \
 # sml environment variables
@@ -77,14 +81,7 @@ RUN apt-get update \
 # add SMP init configuration
     && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
     && echo "hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
-    && echo "# SMP init parameters" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
-    && echo "authentication.blueCoat.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties  \
-    && echo "bdmsl.integration.enabled=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties  \
-    && echo "bdmsl.integration.url=http://localhost:8080/edelivery-sml/" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties  \
-    && echo "bdmsl.integration.logical.address=http://localhost:8080/smp/" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties  \
-    && echo "bdmsl.integration.physical.address=0.0.0.0" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties  \
-    && echo "bdmsl.participant.multidomain.enabled=false" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties  \
-# add SML init configuration
+   # add SML init configuration
    && echo "sml.datasource.jndi=java:comp/env/jdbc/eDeliverySmlDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \
    && echo "sml.hibernate.dialect=org.hibernate.dialect.MySQLDialect" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \
    && echo "sml.jsp.servlet.class=org.apache.jasper.servlet.JspServlet" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \

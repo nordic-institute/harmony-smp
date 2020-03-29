@@ -11,5 +11,4 @@ test.edelivery.local	IN SOA	ns.test.edelivery.local. root.test.edelivery.local. 
 
 $ORIGIN test.edelivery.local.
 $TTL 60	; 1 minute
-ac			A	192.168.56.201
 ns			A	127.0.0.1
