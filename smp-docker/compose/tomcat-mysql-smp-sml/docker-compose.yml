@@ -4,7 +4,7 @@ services:
     image: smp-sml-tomcat-mysql:${SMP_VERSION}
     container_name: smp-sml-tomcat-mysql
     volumes:
-      - ./properties/db-scripts:/tmp/custom-database-scripts/  # init script.
+      - ./properties/db-scripts:/tmp/custom-data/  # init script.
     ports:
       - "3908:3306"
       - "8982:8080"
