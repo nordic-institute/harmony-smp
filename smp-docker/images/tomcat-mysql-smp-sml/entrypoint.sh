@@ -76,7 +76,7 @@ init_smp_properties() {
       echo "bdmsl.integration.physical.address=0.0.0.0"
       echo "bdmsl.participant.multidomain.enabled=false"
       echo "bdmsl.integration.url=http://localhost:8080/edelivery-sml/"
-      echo "bdmsl.integration.logical.address=${SMP_LOGICAL_ADDRESS}"
+      echo "bdmsl.integration.logical.address=${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
     } >>  "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties"
 
     addOrReplaceProperties  "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties" "$SMP_INIT_PROPERTIES" "$SMP_INIT_PROPERTY_DELIMITER"
