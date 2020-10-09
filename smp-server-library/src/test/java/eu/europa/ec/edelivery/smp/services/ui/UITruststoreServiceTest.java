@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -118,6 +119,23 @@ public class UITruststoreServiceTest extends AbstractServiceIntegrationTest {
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         String alias = UUID.randomUUID().toString();
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
+        int iSize = testInstance.getNormalizedTrustedList().size();
+        assertFalse(testInstance.isSubjectOnTrustedList(certSubject));
+        // when
+        testInstance.addCertificate(alias, certificate);
+
+        // then
+        assertEquals(iSize + 1, testInstance.getNormalizedTrustedList().size());
+        assertTrue(testInstance.isSubjectOnTrustedList(certSubject));
+    }
+
+    @Test
+    public void testAddCertificateRDN() throws Exception {
+        // given
+        String certSubject = "GIVENNAME=John+SERIALNUMBER=1+CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
+        String alias = UUID.randomUUID().toString();
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
+        String val = certificate.getSubjectX500Principal().getName(X500Principal.RFC2253);
         int iSize = testInstance.getNormalizedTrustedList().size();
         assertFalse(testInstance.isSubjectOnTrustedList(certSubject));
         // when
@@ -365,7 +383,32 @@ public class UITruststoreServiceTest extends AbstractServiceIntegrationTest {
         testInstance.checkFullCertificateValidity(certificate);
 
         // then
-        //no erroros should be thrown
+        //no errors should be thrown
+    }
+
+    @Test
+    public void testCreateAliasForCert() throws Exception {
+        // given
+        String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
+        // when
+        String alias = testInstance.createAliasFromCert(certificate, null);
+
+        // then
+        assertEquals("SMP Test", alias);
+    }
+
+
+    @Test
+    public void testCreateAliasFoMultiValuerCert() throws Exception {
+        // given
+        String certSubject = "GIVENNAME=John+SERIALNUMBER=1+CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
+        // when
+        String alias = testInstance.createAliasFromCert(certificate, null);
+
+        // then
+        assertEquals("SMP Test", alias);
     }
 
 }
