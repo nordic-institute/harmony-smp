@@ -41,6 +41,10 @@ public class PageComponent {
 		return webDriverWait.until(ExpectedConditions.visibilityOf(element));
 	}
 
+	public WebElement waitForElementToBeVisible(By elementSelector) {
+		return webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(elementSelector));
+	}
+
 	public void waitForElementToBeEnabled(WebElement element) {
 		int maxTimeout = PROPERTIES.TIMEOUT * 1000;
 		int waitedSoFar = 0;

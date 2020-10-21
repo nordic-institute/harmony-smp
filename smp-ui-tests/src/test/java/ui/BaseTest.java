@@ -9,6 +9,7 @@ import utils.Generator;
 import utils.PROPERTIES;
 import utils.TestDataProvider;
 import utils.customReporter.ExcelTestReporter;
+import utils.customReporter.TestProgressReporter;
 import utils.rest.SMPRestClient;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-@Listeners(ExcelTestReporter.class)
+@Listeners({ExcelTestReporter.class, TestProgressReporter.class})
 public class BaseTest {
 
 	static WebDriver driver;
