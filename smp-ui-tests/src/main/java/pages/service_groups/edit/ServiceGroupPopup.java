@@ -147,6 +147,7 @@ public class ServiceGroupPopup extends PageComponent {
 	public void enterDataInExtensionTextArea(String text){
 		waitForElementToBeVisible(extensionTextArea).clear();
 		extensionTextArea.sendKeys(text);
+		waitForXMillis(1000);
 	}
 
 	public void fillParticipantIdentifier(String participantIdentifier){
