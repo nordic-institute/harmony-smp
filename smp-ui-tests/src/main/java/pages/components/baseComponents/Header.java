@@ -41,4 +41,9 @@ public class Header extends PageComponent{
 		webDriverWait.until(ExpectedConditions.textToBePresentInElement(pageTitle, title));
 	}
 
+	public void waitForTitleToBe(){
+		waitForXMillis(500);
+		waitForElementToBeVisible(pageTitle);
+	}
+
 }
