@@ -5,6 +5,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import pages.components.baseComponents.Header;
 import pages.components.baseComponents.SMPPage;
 import pages.components.baseComponents.PageComponent;
 import utils.PROPERTIES;
@@ -58,6 +59,7 @@ public class Sidebar extends PageComponent {
 		}
 
 		waitForXMillis(500);
+		new Header(driver).waitForTitleToBe();
 		return PageFactory.initElements(driver, expect);
 	}
 

@@ -63,9 +63,6 @@ public class FilterArea extends PageComponent {
 		}
 
 		searchButton.click();
-//		TODO - wait for loading bar to disappear
-		waitForXMillis(1000);
-
 	}
 
 
