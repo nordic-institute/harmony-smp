@@ -1,6 +1,7 @@
 package pages.components.grid;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -21,6 +22,7 @@ public class BasicGrid extends PageComponent {
 		
 		log.info("Loading basic grid");
 		waitToLoad();
+		waitForRowsToLoad();
 		PageFactory.initElements( new DefaultElementLocatorFactory(container) , this);
 
 		for (int i = 0; i < gridHeaders.size(); i++) {
@@ -38,6 +40,23 @@ public class BasicGrid extends PageComponent {
 		} catch (Exception e) {
 
 		}
+	}
+
+	public void waitForRowsToLoad() {
+		try {
+			waitForElementToBeVisible(loadingBar);
+
+			int bars = 1;
+			int waits = 0;
+			while (bars > 0 && waits < 30) {
+				Object tmp = ((JavascriptExecutor) driver).executeScript("return document.querySelectorAll('.mat-ripple-element').length;");
+				bars = Integer.valueOf(tmp.toString());
+				waits++;
+				waitForXMillis(500);
+			}
+			log.debug("waited for rows to load for ms = 500*" + waits);
+			waitForXMillis(500);
+		} catch (Exception e) {	}
 	}
 
 	@FindBy(css = "datatable-header div.datatable-row-center datatable-header-cell")

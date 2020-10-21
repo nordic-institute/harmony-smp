@@ -18,14 +18,14 @@ import utils.rest.SMPRestClient;
 import java.util.List;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class EditPgTest extends BaseTest{
+public class EditPgTest extends BaseTest {
 
 	@AfterMethod
-	public void logoutAndReset(){
+	public void logoutAndReset() {
 		SMPPage page = new SMPPage(driver);
 		page.refreshPage();
 
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
+		if (page.pageHeader.sandwichMenu.isLoggedIn()) {
 			logger.info("Logout!!");
 			page.pageHeader.sandwichMenu.logout();
 		}
@@ -34,16 +34,16 @@ public class EditPgTest extends BaseTest{
 
 
 	@BeforeMethod
-	public void loginAndGoToEditPage(){
+	public void loginAndGoToEditPage() {
 
 		SMPPage page = new SMPPage(driver);
 
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
+		if (page.pageHeader.sandwichMenu.isLoggedIn()) {
 			logger.info("Logout!!");
 			page.pageHeader.sandwichMenu.logout();
 		}
 
-		if(!page.pageHeader.sandwichMenu.isLoggedIn()){
+		if (!page.pageHeader.sandwichMenu.isLoggedIn()) {
 			logger.info("Login!!");
 			page.pageHeader.goToLogin().login("SMP_ADMIN");
 		}
@@ -54,7 +54,7 @@ public class EditPgTest extends BaseTest{
 
 
 	@Test(description = "EDT-10")
-	public void testFilters(){
+	public void testFilters() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 
@@ -82,8 +82,8 @@ public class EditPgTest extends BaseTest{
 	}
 
 	@Test(description = "EDT-20")
-	public void doubleclickRow(){
-		String extensionData = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ExtensionID>df</ExtensionID><ExtensionName>sdxf</ExtensionName><!-- Custom element is mandatory by OASIS SMP schema. Replace following element with your XML structure. --><ext:example xmlns:ext=\"http://my.namespace.eu\">my mandatory content</ext:example></Extension>";
+	public void doubleclickRow() {
+		String extensionData = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ExtensionID>df</ExtensionID><ExtensionName>sdxf</ExtensionName><!-- Custom element is mandatory by OASIS SMP schema. Replace following element with your XML structure. --><ext:example xmlns:ext=\"http://my.namespace.eu\">" + Generator.randomAlphaNumeric(10) + "</ext:example></Extension>";
 
 
 		SoftAssert soft = new SoftAssert();
@@ -130,7 +130,7 @@ public class EditPgTest extends BaseTest{
 	}
 
 	@Test(description = "EDT-30")
-	public void editActionButtonOnRow(){
+	public void editActionButtonOnRow() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 
@@ -148,7 +148,7 @@ public class EditPgTest extends BaseTest{
 	}
 
 	@Test(description = "EDT-40")
-	public void editButtonOnPage(){
+	public void editButtonOnPage() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 
@@ -173,7 +173,7 @@ public class EditPgTest extends BaseTest{
 	}
 
 	@Test(description = "EDT-50")
-	public void serviceGroupPopupUICheck(){
+	public void serviceGroupPopupUICheck() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 
@@ -198,7 +198,7 @@ public class EditPgTest extends BaseTest{
 	}
 
 	@Test(description = "EDT-60")
-	public void newMetadataIcon(){
+	public void newMetadataIcon() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 
@@ -221,7 +221,7 @@ public class EditPgTest extends BaseTest{
 //	Cannot identify the cause of failure so move on and hope for the best
 
 	@Test(description = "EDT-70")
-	public void noSYSADMINOwners(){
+	public void noSYSADMINOwners() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 
@@ -242,7 +242,7 @@ public class EditPgTest extends BaseTest{
 		for (String sysadmin : sysadmins) {
 			logger.info("Checking sysadmin " + sysadmin);
 			for (String listedOption : listedOptions) {
-				if(listedOption.equalsIgnoreCase(sysadmin)){
+				if (listedOption.equalsIgnoreCase(sysadmin)) {
 					soft.fail("Found sysadmin between options for SG owners - " + sysadmin);
 				}
 			}
@@ -252,13 +252,13 @@ public class EditPgTest extends BaseTest{
 	}
 
 	@Test(description = "EDT-80")
-	public void allDomainsInDomainsAccordionSection(){
+	public void allDomainsInDomainsAccordionSection() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 
 		ServiceGroupGrid grid = page.getGrid();
 
-		Integer index = 0 ;
+		Integer index = 0;
 
 		ServiceGroupRowE row0 = grid.getRowsAs(ServiceGroupRowE.class).get(index);
 		grid.doubleClickRow(index);
@@ -273,8 +273,8 @@ public class EditPgTest extends BaseTest{
 			boolean found = false;
 			logger.info("Checking domain " + domain);
 			for (String listedOption : listedOptions) {
-				if(listedOption.equalsIgnoreCase(domain)){
-					found= true;
+				if (listedOption.equalsIgnoreCase(domain)) {
+					found = true;
 				}
 			}
 			soft.assertTrue(found, "Domain found in options - " + domain);
@@ -286,7 +286,7 @@ public class EditPgTest extends BaseTest{
 	}
 
 	@Test(description = "EDT-90")
-	public void extensionValidatedOnOK(){
+	public void extensionValidatedOnOK() {
 		String identifier = Generator.randomAlphaNumeric(7);
 		String tmpSchemeRoot = Generator.randomAlphaNumeric(3).toLowerCase();
 		String scheme = String.format("%s-%s-%s", tmpSchemeRoot, tmpSchemeRoot, tmpSchemeRoot);
@@ -351,7 +351,7 @@ public class EditPgTest extends BaseTest{
 	}
 
 	@Test(description = "EDT-100")
-	public void deleteServiceGroup(){
+	public void deleteServiceGroup() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 
@@ -393,7 +393,7 @@ public class EditPgTest extends BaseTest{
 
 	}
 
-	private int scrollToSG(String pi){
+	private int scrollToSG(String pi) {
 		EditPage page = new EditPage(driver);
 		page.pagination.skipToFirstPage();
 
@@ -403,14 +403,16 @@ public class EditPgTest extends BaseTest{
 
 			List<ServiceGroupRow> rows = page.getGrid().getRows();
 			for (int i = 0; i < rows.size(); i++) {
-				if(rows.get(i).getParticipantIdentifier().equalsIgnoreCase(pi)){
+				if (rows.get(i).getParticipantIdentifier().equalsIgnoreCase(pi)) {
 					return i;
 				}
 			}
 
-			if(page.pagination.hasNextPage()){
+			if (page.pagination.hasNextPage()) {
 				page.pagination.goToNextPage();
-			}else{end = true;}
+			} else {
+				end = true;
+			}
 		}
 
 		return -1;
