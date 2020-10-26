@@ -85,7 +85,6 @@ public class EditPgTest extends BaseTest {
 	public void doubleclickRow() {
 		String extensionData = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ExtensionID>df</ExtensionID><ExtensionName>sdxf</ExtensionName><!-- Custom element is mandatory by OASIS SMP schema. Replace following element with your XML structure. --><ext:example xmlns:ext=\"http://my.namespace.eu\">" + Generator.randomAlphaNumeric(10) + "</ext:example></Extension>";
 
-
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 

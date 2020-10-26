@@ -20,55 +20,55 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UsersPgTest extends BaseTest {
-	
-	
+
+
 	@AfterMethod
-	public void logoutAndReset(){
+	public void logoutAndReset() {
 		SMPPage page = new SMPPage(driver);
 		page.refreshPage();
-		
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
+
+		if (page.pageHeader.sandwichMenu.isLoggedIn()) {
 			logger.info("Logout!!");
 			page.pageHeader.sandwichMenu.logout();
 		}
 	}
-	
-	
+
+
 	@BeforeMethod
-	public void loginAndGoToUsersPage(){
-		
+	public void loginAndGoToUsersPage() {
+
 		SMPPage page = new SMPPage(driver);
 
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
+		if (page.pageHeader.sandwichMenu.isLoggedIn()) {
 			logger.info("Logout!!");
 			page.pageHeader.sandwichMenu.logout();
 		}
-		
-		if(!page.pageHeader.sandwichMenu.isLoggedIn()){
+
+		if (!page.pageHeader.sandwichMenu.isLoggedIn()) {
 			logger.info("Login!!");
 			page.pageHeader.goToLogin().login("SYS_ADMIN");
 		}
-		
+
 		logger.info("Going to Users page");
 		page.sidebar.goToPage(UsersPage.class);
 	}
-	
+
 	@Test(description = "USR-10")
-	public void newUser(){
+	public void newUser() {
 		String username = Generator.randomAlphaNumeric(10);
 		String validPass = "QW!@qw12";
-		
+
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage usersPage = new UsersPage(driver);
-		
+
 //		soft.assertTrue(usersPage.isNewButtonEnabled(), "New button should be enabled");
-		
+
 		UserPopup popup = usersPage.clickNew();
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
-		
+
 		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-		
+
 		popup.clickUserDetailsToggle();
 
 		popup.fillDetailsForm(username, validPass, validPass);
@@ -89,7 +89,7 @@ public class UsersPgTest extends BaseTest {
 
 
 	@Test(description = "USR-20")
-	public void usernameValidation(){
+	public void usernameValidation() {
 		String username = Generator.randomAlphaNumeric(10);
 		String validPass = "QW!@qw12";
 
@@ -120,7 +120,7 @@ public class UsersPgTest extends BaseTest {
 
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test(description = "USR-30")
-	public void passwordValidation(){
+	public void passwordValidation() {
 
 		ArrayList<String> passToValidate = new ArrayList<>(Arrays.asList("qwqw",
 				"QWERQWERQWERQWERQWERQWERQWERQWE33",
@@ -152,7 +152,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-40")
-	public void listedRoles(){
+	public void listedRoles() {
 
 		ArrayList<String> expectedRoleValues = new ArrayList<>(Arrays.asList("SYSTEM_ADMIN", "SMP_ADMIN", "SERVICE_GROUP_ADMIN"));
 
@@ -167,7 +167,7 @@ public class UsersPgTest extends BaseTest {
 		for (String expected : expectedRoleValues) {
 			boolean found = false;
 			for (String listedRole : listedRoles) {
-				if(listedRole.equalsIgnoreCase(expected)){
+				if (listedRole.equalsIgnoreCase(expected)) {
 					found = true;
 				}
 			}
@@ -178,13 +178,16 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-50")
-	public void deleteSYS_ADMIN(){
+	public void deleteSYS_ADMIN() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		SMPRestClient.createUser(username, "SYSTEM_ADMIN");
 		SoftAssert soft = new SoftAssert();
 
+		log.info("created user " + username);
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
+
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
 		int index = scrollToUser(username);
@@ -219,7 +222,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-60")
-	public void changeRoleSYS_ADMIN(){
+	public void changeRoleSYS_ADMIN() {
 
 		SoftAssert soft = new SoftAssert();
 
@@ -236,7 +239,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-70")
-	public void changeRoleNON_SYS_ADMIN(){
+	public void changeRoleNON_SYS_ADMIN() {
 
 		SoftAssert soft = new SoftAssert();
 
@@ -255,7 +258,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-80")
-	public void deleteOWNUserRecord(){
+	public void deleteOWNUserRecord() {
 
 		String username = new TestDataProvider().getUserWithRole("SYS_ADMIN").get("username");
 
@@ -277,13 +280,17 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-90")
-	public void deleteSMP_ADMIN(){
+	public void deleteSMP_ADMIN() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		SMPRestClient.createUser(username, "SMP_ADMIN");
 		SoftAssert soft = new SoftAssert();
 
+		log.info("Created username " + username);
+
+
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
 		int index = scrollToUser(username);
@@ -319,13 +326,15 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-100")
-	public void deleteSERVICE_GROUP_ADMIN(){
+	public void deleteSERVICE_GROUP_ADMIN() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		SMPRestClient.createUser(username, "SERVICE_GROUP_ADMIN");
+		log.info("Created username" + username);
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
 		int index = scrollToUser(username);
@@ -360,7 +369,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-110")
-	public void deleteSG_ADMINWithSG(){
+	public void deleteSG_ADMINWithSG() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		String pi = Generator.randomAlphaNumeric(10);
@@ -374,9 +383,13 @@ public class UsersPgTest extends BaseTest {
 				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
+		log.info("Created username " + username);
+		log.info("Created service group " + pi);
+
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
 
 		int index = scrollToUser(username);
 		page.grid().selectRow(index);
@@ -394,7 +407,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-120")
-	public void deleteSMP_ADMINWithSG(){
+	public void deleteSMP_ADMINWithSG() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		String pi = Generator.randomAlphaNumeric(10);
@@ -408,9 +421,12 @@ public class UsersPgTest extends BaseTest {
 				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
+		log.info("Created username "+ username);
+
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
 
 		int index = scrollToUser(username);
 		page.grid().selectRow(index);
@@ -429,9 +445,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 
-
-
-	private boolean isUserListed(String username){
+	private boolean isUserListed(String username) {
 		boolean end = false;
 
 		UsersPage page = new UsersPage(driver);
@@ -442,20 +456,23 @@ public class UsersPgTest extends BaseTest {
 			List<UserRowInfo> rows = page.grid().getRows();
 
 			for (UserRowInfo row : rows) {
-				if(row.getUsername().equalsIgnoreCase(username)){
+				if (row.getUsername().equalsIgnoreCase(username)) {
 					return true;
 				}
 			}
 
-			if(page.pagination.hasNextPage()){
+			if (page.pagination.hasNextPage()) {
 				page.pagination.goToNextPage();
-			}else{end = true;}
+			} else {
+				end = true;
+			}
 		}
 
 		return false;
 	}
 
-	private int scrollToUser(String username){
+	private int scrollToUser(String username) {
+
 		UsersPage page = new UsersPage(driver);
 		page.pagination.skipToFirstPage();
 
@@ -465,20 +482,22 @@ public class UsersPgTest extends BaseTest {
 
 			List<UserRowInfo> rows = page.grid().getRows();
 			for (int i = 0; i < rows.size(); i++) {
-				if(rows.get(i).getUsername().equalsIgnoreCase(username)){
+				if (rows.get(i).getUsername().equalsIgnoreCase(username)) {
 					return i;
 				}
 			}
 
-			if(page.pagination.hasNextPage()){
+			if (page.pagination.hasNextPage()) {
 				page.pagination.goToNextPage();
-			}else{end = true;}
+			} else {
+				end = true;
+			}
 		}
 
 		return -1;
 	}
 
-	private int scrollToUserWithRole(String role){
+	private int scrollToUserWithRole(String role) {
 		UsersPage page = new UsersPage(driver);
 		page.pagination.skipToFirstPage();
 
@@ -488,19 +507,20 @@ public class UsersPgTest extends BaseTest {
 
 			List<UserRowInfo> rows = page.grid().getRows();
 			for (int i = 0; i < rows.size(); i++) {
-				if(rows.get(i).getRole().equalsIgnoreCase(role)){
+				if (rows.get(i).getRole().equalsIgnoreCase(role)) {
 					return i;
 				}
 			}
 
-			if(page.pagination.hasNextPage()){
+			if (page.pagination.hasNextPage()) {
 				page.pagination.goToNextPage();
-			}else{end = true;}
+			} else {
+				end = true;
+			}
 		}
 
 		return -1;
 	}
-
 
 
 }

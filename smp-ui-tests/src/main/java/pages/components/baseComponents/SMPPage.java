@@ -16,27 +16,14 @@ public class SMPPage extends PageComponent {
 
 	public Header pageHeader = new Header(driver);
 
-	public void refreshPage(){
+	public void refreshPage() {
 		driver.navigate().refresh();
+		try {
+			new SMPPage(driver).pageHeader.waitForTitleToBe();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-
-	public void screenshotPage(){
-//		try {
-//			File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-//
-//			OutputStream out = new FileOutputStream(new File("screenshot.png"));
-//
-//
-//
-//			scrFile.createNewFile();
-//			out.write(scrFile);
-//			out.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-	}
-
-
 
 
 }
