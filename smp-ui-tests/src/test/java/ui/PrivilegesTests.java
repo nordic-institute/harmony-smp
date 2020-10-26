@@ -23,9 +23,13 @@ public class PrivilegesTests extends BaseTest {
 		SMPPage page = new SMPPage(driver);
 		page.refreshPage();
 
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
+		try {
+			if(page.pageHeader.sandwichMenu.isLoggedIn()){
+				logger.info("Logout!!");
+				page.pageHeader.sandwichMenu.logout();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
