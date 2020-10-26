@@ -59,7 +59,6 @@ public class DomainPgTest extends BaseTest {
 		
 		DomainPopup popup = new DomainPopup(driver);
 
-		page.screenshotPage();
 		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
 
 		soft.assertTrue(!popup.isDomainCodeInputEnabled(), "On double click Domain Code input is disabled");
