@@ -54,10 +54,35 @@ public class PageComponent {
 		}
 	}
 
+//	public void waitForElementToBeGone(WebElement element) {
+//		try {
+//			webDriverWait.until(ExpectedConditions.not(ExpectedConditions.visibilityOf(element)));
+//		} catch (Exception e) {	}
+//	}
+
 	public void waitForElementToBeGone(WebElement element) {
+		WebDriverWait myWait = new WebDriverWait(driver, PROPERTIES.SHORT_UI_TIMEOUT);
+
 		try {
-			webDriverWait.until(ExpectedConditions.not(ExpectedConditions.visibilityOf(element)));
-		} catch (Exception e) {	}
+			myWait.until(ExpectedConditions.visibilityOf(element));
+		} catch (Exception e) {	return;}
+
+		int waitTime = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
+		while (waitTime >0){
+			boolean displayed = true;
+
+			try {
+				displayed = element.isDisplayed();
+			} catch (Exception e) {
+				return;
+			}
+
+			if(!displayed){
+				return;
+			}
+			waitForXMillis(500);
+			waitTime = waitTime - 500;
+		}
 	}
 
 	public void waitForNumberOfWindowsToBe(int noOfWindows) {
