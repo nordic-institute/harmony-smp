@@ -311,20 +311,22 @@ public class SearchPgTest extends BaseTest {
 		SMPRestClient.createServiceGroup(participantID, participantScheme, owners, domains);
 
 		SearchPage searchPage = new SearchPage(driver);
+		searchPage.refreshPage();
 
 		searchPage.filters.filter(participantID, participantScheme, SMPRestClient.getDomainSubDomainCombo(createdDomains.get(0)));
 		List<ServiceGroupRow> results = searchPage.serviceGroupGrid.getRows();
 
-		soft.assertTrue(results.size() == 1, "Results size is 1 (first search)");
-		soft.assertTrue(results.get(0).getParticipantIdentifier().equalsIgnoreCase(participantID),
+//		soft.assertTrue(results.size() == 1, "Results size is 1 (first search)");
+		soft.assertEquals(results.size() , 1, "Results size is 1 (first search)");
+		soft.assertEquals(results.get(0).getParticipantIdentifier().toLowerCase(), participantID.toLowerCase(),
 				"First and only result is the one we entered and is found when filtering by first domain");
 
 
 		searchPage.filters.filter(participantID, participantScheme, SMPRestClient.getDomainSubDomainCombo(createdDomains.get(1)));
 		results = searchPage.serviceGroupGrid.getRows();
 
-		soft.assertTrue(results.size() == 1, "Results size is 1 (second search)");
-		soft.assertTrue(results.get(0).getParticipantIdentifier().equalsIgnoreCase(participantID),
+		soft.assertEquals(results.size(), 1, "Results size is 1 (second search)");
+		soft.assertEquals(results.get(0).getParticipantIdentifier().toLowerCase(), participantID.toLowerCase(),
 				"First and only result is the one we entered and is found when filtering by second domain");
 
 

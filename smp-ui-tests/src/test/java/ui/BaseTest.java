@@ -12,6 +12,7 @@ import utils.customReporter.ExcelTestReporter;
 import utils.customReporter.TestProgressReporter;
 import utils.rest.SMPRestClient;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ import java.util.List;
 
 @Listeners({ExcelTestReporter.class, TestProgressReporter.class})
 public class BaseTest {
+
+	static int methodCount = 1;
 
 	static WebDriver driver;
 	protected Logger logger = Logger.getLogger(this.getClass());
@@ -28,7 +31,7 @@ public class BaseTest {
 	static ArrayList<String> createdUsers = new ArrayList<>();
 	static ArrayList<String> createdServiceGroups = new ArrayList<>();
 
-
+	protected Logger log = Logger.getLogger(this.getClass());
 
 	@BeforeSuite(alwaysRun = true)
 	/*Starts the browser and navigates to the homepage. This happens once before the test
@@ -80,6 +83,13 @@ public class BaseTest {
 		driver.get(PROPERTIES.UI_BASE_URL);
 	}
 
+	@BeforeMethod(alwaysRun = true)
+	protected void logSeparator(Method method) throws Exception {
+
+		log.info("--------------------------- Running test number: " + methodCount);
+		log.info("--------------------------- Running test method: " + method.getDeclaringClass().getSimpleName() + "." + method.getName());
+		methodCount++;
+	}
 
 
 	private void createDomains(){
@@ -125,13 +135,25 @@ public class BaseTest {
 
 	private void deleteTestData(){
 		for (String createdServiceGroup : createdServiceGroups) {
-			SMPRestClient.deleteSG(createdServiceGroup);
+			try {
+				SMPRestClient.deleteSG(createdServiceGroup);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		for (String createdUser : createdUsers) {
-			SMPRestClient.deleteUser(createdUser);
+			try {
+				SMPRestClient.deleteUser(createdUser);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		for (String createdDomain : createdDomains) {
-			SMPRestClient.deleteDomain(createdDomain);
+			try {
+				SMPRestClient.deleteDomain(createdDomain);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
