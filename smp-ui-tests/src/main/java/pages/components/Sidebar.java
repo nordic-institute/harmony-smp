@@ -43,6 +43,7 @@ public class Sidebar extends PageComponent {
 	 and returns an instance of that class */
 	public <T extends SMPPage> T goToPage(Class<T> expect){
 		log.info("Navigating to " + expect.getSimpleName());
+
 		switch (expect.getSimpleName()) {
 			case "SearchPage":
 				waitForElementToBeClickable(searchLnk).click();
@@ -59,33 +60,23 @@ public class Sidebar extends PageComponent {
 		}
 
 		waitForXMillis(500);
+
 		new Header(driver).waitForTitleToBe();
+
 		return PageFactory.initElements(driver, expect);
 	}
 
-	public boolean isSearchLnkVisible(){
-		try {
-			return searchLnk.isDisplayed() && searchLnk.isEnabled();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isSearchLnkEnabled(){
+		return isVisible(searchLnk) && isEnabled(searchLnk);
 	}
-	public boolean isEditLnkVisible(){
-		try {
-			return editLnk.isDisplayed() && editLnk.isEnabled();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isEditLnkEnabled(){
+		return isVisible(editLnk) && isEnabled(editLnk);
 	}
-	public boolean isDomainLnkVisible(){
-		try {
-			return domainLnk.isDisplayed() && domainLnk.isEnabled();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isDomainLnkEnabled(){
+		return isVisible(domainLnk) && isEnabled(domainLnk);
 	}
-	public boolean isUsersLnkVisible(){
-		try {
-			return userLnk.isDisplayed() && userLnk.isEnabled();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isUsersLnkEnabled(){
+		return isVisible(userLnk) && isEnabled(userLnk);
 	}
 
 }

@@ -41,22 +41,22 @@ public class LoginPage extends SMPPage {
 
 	public boolean isLoaded(){
 		
-		log.info("check if is loaded");
+		log.info("check if Login page is loaded");
 		
-		if(!username.isEnabled()){
+		if(!isEnabled(username)){
 			log.error("Could not find username input!");
 			return false;
 		}
-		if(!password.isEnabled()){
+		if(!isEnabled(password)){
 			log.error("Could not find password input!");
 			return false;
 		}
-		if(!loginBtn.isDisplayed()){
+		if(!isVisible(loginBtn)){
 			log.error("Could not find login button!");
 			return false;
 		}
 
-		if(!smpVersion.isDisplayed()){
+		if(!isVisible(smpVersion)){
 			log.error("Could not find version text!");
 			return false;
 		}
@@ -66,10 +66,11 @@ public class LoginPage extends SMPPage {
 
 	public <T extends SMPPage> T login(String user, String pass, Class<T> expect){
 		log.info("Login started!!");
-		username.clear();
-		username.sendKeys(user);
-		password.clear();
-		password.sendKeys(pass);
+
+		clearAndFillInput(username, user);
+		clearAndFillInput(password, pass);
+
+		waitForElementToBeClickable(loginBtn);
 		loginBtn.click();
 
 		closeChangePassModal();
@@ -85,6 +86,7 @@ public class LoginPage extends SMPPage {
 		clearAndFillInput(username, user);
 		clearAndFillInput(password, pass);
 
+		waitForElementToBeClickable(loginBtn);
 		loginBtn.click();
 
 		closeChangePassModal();
@@ -94,9 +96,12 @@ public class LoginPage extends SMPPage {
 	}
 
 	public void invalidLogin(String user, String pass){
+		log.info("Invalid login started!!");
+
 		clearAndFillInput(username, user);
 		clearAndFillInput(password, pass);
 
+		waitForElementToBeClickable(loginBtn);
 		loginBtn.click();
 	}
 
@@ -108,8 +113,11 @@ public class LoginPage extends SMPPage {
 		clearAndFillInput(username, user.get("username"));
 		clearAndFillInput(password, user.get("password"));
 
+		waitForElementToBeClickable(loginBtn);
 		loginBtn.click();
+
 		closeChangePassModal();
+
 		log.info("Login action done!");
 
 		return new SearchPage(driver);
@@ -117,18 +125,22 @@ public class LoginPage extends SMPPage {
 
 
 	public String getListedSMPVersion(){
+		log.info("getting listed version");
 		return waitForElementToBeVisible(smpVersion).getText().trim();
 	}
 
 	public String getTextInUsernameInput(){
+		log.info("getting text in username input");
 		return waitForElementToBeVisible(username).getText().trim();
 	}
 
 	public String getTextInPasswordInput(){
+		log.info("getting text in pass input");
 		return waitForElementToBeVisible(password).getText().trim();
 	}
 
 	private void closeChangePassModal(){
+		log.info("Closing Change password modal");
 		try{
 			waitForElementToBeClickable(dialogOKBtn).click();
 			waitForElementToBeGone(dialogOKBtn);
