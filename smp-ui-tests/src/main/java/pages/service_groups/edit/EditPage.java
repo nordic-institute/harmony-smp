@@ -19,7 +19,7 @@ public class EditPage extends SMPPage {
 	public EditPage(WebDriver driver) {
 		super(driver);
 		this.pageHeader.waitForTitleToBe("Edit");
-		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
+		PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 		filterArea = new FilterArea(driver);
 	}
 
@@ -46,23 +46,37 @@ public class EditPage extends SMPPage {
 
 	public PaginationControls pagination = new PaginationControls(driver);
 
-	public boolean isCancelButtonEnabled(){
-		return cancelButton.isEnabled();
+	public boolean isCancelButtonEnabled() {
+		log.info("cancel button");
+		return isEnabled(cancelButton);
 	}
-	public boolean isSaveButtonEnabled(){
-		return saveButton.isEnabled();
+
+	public boolean isSaveButtonEnabled() {
+		log.info("save button");
+		return isEnabled(saveButton);
 	}
-	public boolean isDeleteButtonEnabled(){
-		return deleteButton.isEnabled();
+
+	public boolean isDeleteButtonEnabled() {
+		log.info("delete button");
+		return isEnabled(deleteButton);
 	}
-	public boolean isEditButtonEnabled(){
-		return editButton.isEnabled();
+
+	public boolean isEditButtonEnabled() {
+		log.info("edit button");
+		return isEnabled(editButton);
 	}
-	public boolean isNewButtonEnabled(){	return newButton.isEnabled();	}
+
+	public boolean isNewButtonEnabled() {
+		log.info("new button");
+		return isEnabled(newButton);
+	}
 
 
-	public ServiceGroupPopup clickEdit(){
-		if(!isEditButtonEnabled()){return null;}
+	public ServiceGroupPopup clickEdit() {
+		log.info("editing ...");
+		if (!isEditButtonEnabled()) {
+			return null;
+		}
 
 		editButton.click();
 
@@ -70,40 +84,42 @@ public class EditPage extends SMPPage {
 
 	}
 
-	public ServiceGroupPopup clickNew(){
+	public ServiceGroupPopup clickNew() {
+		log.info("new ...");
 		waitForElementToBeClickable(newButton).click();
 		return new ServiceGroupPopup(driver);
 	}
-	public ConfirmationDialog clickSave(){
+
+	public ConfirmationDialog clickSave() {
+		log.info("saving ...");
 		waitForElementToBeClickable(saveButton).click();
 		return new ConfirmationDialog(driver);
 	}
 
-	public ConfirmationDialog clickCancel(){
+	public ConfirmationDialog clickCancel() {
+		log.info("canceling ...");
 		waitForElementToBeClickable(cancelButton).click();
 		return new ConfirmationDialog(driver);
 	}
 
-	public void clickDelete(){
+	public void clickDelete() {
+		log.info("deleting ...");
 		waitForElementToBeClickable(deleteButton).click();
 	}
 
-	public boolean isNewButtonPresent(){
-		try {
-			return waitForElementToBeVisible(newButton).isDisplayed();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isNewButtonPresent() {
+		log.info("check if NEW button is visible");
+		return isVisible(newButton);
 	}
 
-	public boolean isDeleteButtonPresent(){
-		try {
-			return waitForElementToBeVisible(deleteButton).isDisplayed();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isDeleteButtonPresent() {
+		log.info("check if DELETE button is visible");
+		return isVisible(deleteButton);
 	}
 
 
-	public ServiceGroupGrid getGrid(){
+	public ServiceGroupGrid getGrid() {
+		log.info("getting grid");
 		waitForElementToBeVisible(searchTable);
 		ServiceGroupGrid grid = new ServiceGroupGrid(driver, searchTable);
 		return grid;
@@ -111,15 +127,18 @@ public class EditPage extends SMPPage {
 
 
 	public void addNewServiceGroup(String identifier, String scheme, List<String> owners, List<String> domains, String extension) {
+		log.info("adding new service group");
 		waitForElementToBeClickable(newButton).click();
 
 		ServiceGroupPopup popup = new ServiceGroupPopup(driver);
 		popup.fillForm(identifier, scheme, owners, domains, extension);
 		popup.clickOK();
 
+		waitForXMillis(300);
 	}
 
-	public void saveChangesAndConfirm(){
+	public void saveChangesAndConfirm() {
+		log.info("saving..");
 		waitForElementToBeClickable(saveButton).click();
 		new ConfirmationDialog(driver).confirm();
 	}
