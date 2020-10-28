@@ -55,8 +55,8 @@ public class BasicGrid extends PageComponent {
 				waitForXMillis(500);
 			}
 			log.debug("waited for rows to load for ms = 500*" + waits);
-			waitForXMillis(500);
 		} catch (Exception e) {	}
+		waitForXMillis(500);
 	}
 
 	@FindBy(css = "datatable-header div.datatable-row-center datatable-header-cell")

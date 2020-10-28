@@ -316,7 +316,6 @@ public class SearchPgTest extends BaseTest {
 		searchPage.filters.filter(participantID, participantScheme, SMPRestClient.getDomainSubDomainCombo(createdDomains.get(0)));
 		List<ServiceGroupRow> results = searchPage.serviceGroupGrid.getRows();
 
-//		soft.assertTrue(results.size() == 1, "Results size is 1 (first search)");
 		soft.assertEquals(results.size() , 1, "Results size is 1 (first search)");
 		soft.assertEquals(results.get(0).getParticipantIdentifier().toLowerCase(), participantID.toLowerCase(),
 				"First and only result is the one we entered and is found when filtering by first domain");

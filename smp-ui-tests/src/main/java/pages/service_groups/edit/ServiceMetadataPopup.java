@@ -13,7 +13,7 @@ public class ServiceMetadataPopup extends PageComponent {
 	public ServiceMetadataPopup(WebDriver driver) {
 		super(driver);
 
-		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
+		PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 
 		domainSelect = new GenericSelect(driver, domainSelectContainer);
 	}
@@ -64,20 +64,46 @@ public class ServiceMetadataPopup extends PageComponent {
 
 	}
 
-	public String getParticipantSchemeValue(){return participantSchemaInput.getAttribute("value").trim();}
-	public String getParticipantIdentifierValue(){return participantIdentifierInput.getAttribute("value").trim();}
-	public String getDocumentIdentifierValue(){return documentIdentifierInput.getAttribute("value").trim();}
-	public String getDocumentSchemeValue(){return documentSchemeInput.getAttribute("value").trim();}
+	public String getParticipantSchemeValue() {
+		waitForElementToBeVisible(participantSchemaInput);
+		return participantSchemaInput.getAttribute("value").trim();
+	}
 
-	public boolean isParticipantSchemeEnabled(){return null == participantSchemaInput.getAttribute("disabled");}
-	public boolean isParticipantIdentifierEnabled(){return null == participantIdentifierInput.getAttribute("disabled");}
-	public boolean isDocumentIdentifierEnabled(){return null == documentIdentifierInput.getAttribute("disabled");}
-	public boolean isDocumentSchemeEnabled(){return null == documentSchemeInput.getAttribute("disabled");}
+	public String getParticipantIdentifierValue() {
+		waitForElementToBeVisible(participantIdentifierInput);
+		return participantIdentifierInput.getAttribute("value").trim();
+	}
+
+	public String getDocumentIdentifierValue() {
+		waitForElementToBeVisible(documentIdentifierInput);
+		return documentIdentifierInput.getAttribute("value").trim();
+	}
+
+	public String getDocumentSchemeValue() {
+		waitForElementToBeVisible(documentSchemeInput);
+		return documentSchemeInput.getAttribute("value").trim();
+	}
+
+	public boolean isParticipantSchemeEnabled() {
+		return isEnabled(participantSchemaInput);
+	}
+
+	public boolean isParticipantIdentifierEnabled() {
+		return isEnabled(participantIdentifierInput);
+	}
+
+	public boolean isDocumentIdentifierEnabled() {
+		return isEnabled(documentIdentifierInput);
+	}
+
+	public boolean isDocumentSchemeEnabled() {
+		return isEnabled(documentSchemeInput);
+	}
 
 
-
-	public String getListedDomain(){return domainSelect.getSelectedValue().trim();}
-
+	public String getListedDomain() {
+		return domainSelect.getSelectedValue().trim();
+	}
 
 
 }
