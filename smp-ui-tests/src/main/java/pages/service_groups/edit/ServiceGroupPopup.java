@@ -62,51 +62,64 @@ public class ServiceGroupPopup extends PageComponent {
 
 
 	public boolean isOKButtonPresent(){
-		return okButton.isDisplayed();
+		log.info("is ok button visible");
+		return isVisible(okButton);
 	}
 	public boolean isCancelButtonPresent(){
-		return cancelButton.isDisplayed();
+		log.info("is cancel button visible");
+		return isVisible(cancelButton);
 	}
 
 	public boolean isExtensionAreaEditable(){
-		return null == extensionTextArea.getAttribute("disabled");
+		log.info("is Extension Area Editable");
+		return isEnabled( extensionTextArea);
 	}
 	public boolean isParticipantIdentifierInputEnabled(){
-		return null == participantIdentifierInput.getAttribute("disabled");
+		log.info("is Participant Identifier Input Enabled");
+		return isEnabled( participantIdentifierInput);
 	}
 
 	public boolean isParticipantSchemeInputEnabled(){
-		return null == participantSchemeInput.getAttribute("disabled");
+		log.info("is Participant Scheme Input Enabled");
+		return isEnabled( participantSchemeInput);
 	}
 
 	public boolean isOwnersPanelEnabled(){
+		log.info("check owner panel is enabled");
 		return ownersPanel.optionsEnabled();
 	}
 
 	public boolean isOwnersPanelPresent(){
+		log.info("check owner panel is present");
 		return null == ownersPanel;
 	}
 
 	public boolean isDomainsPanelEnabled(){
+		log.info("check domains panel is enabled");
 		return domainsPanel.optionsEnabled();
 	}
 
 	public void clickOK(){
+		log.info("click ok..");
 		waitForElementToBeClickable(okButton).click();
 		waitForElementToBeGone(okButton);
 	}
 
 	public void clickClear(){
+		log.info("click clear..");
 		waitForElementToBeClickable(clearExtensionButton).click();
 		waitForXMillis(100);
 	}
 
 	public void clickCancel(){
+		log.info("click cancel..");
 		waitForElementToBeClickable(cancelButton).click();
 		waitForElementToBeGone(okButton);
 	}
 
 	public void fillForm(String identifier, String scheme, List<String> owners, List<String> domains, String extension){
+		log.info("filling form..");
+
 		waitForElementToBeVisible(participantIdentifierInput);
 
 		clearAndFillInput(participantIdentifierInput, identifier);
@@ -139,6 +152,8 @@ public class ServiceGroupPopup extends PageComponent {
 	}
 
 	public String getExtensionAreaContent(){
+		log.info("getting Extension Area Content");
+
 		waitForElementToBeVisible(extensionTextArea);
 		waitForXMillis(500);
 		return extensionTextArea.getAttribute("value").trim();

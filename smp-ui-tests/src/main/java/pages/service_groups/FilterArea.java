@@ -37,24 +37,30 @@ public class FilterArea extends PageComponent {
 
 
 	public String getParticipantIdentifierInputValue() {
+		log.info("getting text in participant Identifier Input");
+		waitForElementToBeVisible(participantIdentifierInput);
 		return participantIdentifierInput.getText().trim();
 	}
 
 	public String getParticipantSchemeInputValue() {
+		log.info("getting text in participant Scheme Input");
+		waitForElementToBeVisible(participantSchemeInput);
 		return participantSchemeInput.getText().trim();
 	}
 
 	public boolean isLoaded(){
-		if(!participantIdentifierInput.isDisplayed()){
+		log.info("checking filter area is properly loaded");
+		if(!isVisible(participantIdentifierInput)){
 			return false;
 		}
-		if(!participantSchemeInput.isDisplayed()){
+		if(!isVisible(participantSchemeInput)){
 			return false;
 		}
 		return domainSelect.isLoaded();
 	}
 
 	public void filter(String identifier, String scheme, String domain){
+		log.info(String.format("filtering by %s, %s, %s", identifier, scheme, domain));
 		clearAndFillInput(participantIdentifierInput, identifier);
 		clearAndFillInput(participantSchemeInput, scheme);
 
@@ -62,7 +68,9 @@ public class FilterArea extends PageComponent {
 			domainSelect.selectOptionByText(domain);
 		}
 
-		searchButton.click();
+		log.info("clicking search");
+		waitForElementToBeClickable(searchButton).click();
+		waitForXMillis(1000);
 	}
 
 

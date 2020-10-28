@@ -21,6 +21,7 @@ public class MetadataGrid  extends PageComponent{
 	List<WebElement> rowContainers;
 
 	public List<MetadataRow> getMetadataRows(){
+		log.info("getting metadata info");
 		List<MetadataRow> rowList = new ArrayList<>();
 		for (WebElement rowContainer : rowContainers) {
 			rowList.add(new MetadataRow(driver, rowContainer));

@@ -29,6 +29,7 @@ public class SearchPage extends SMPPage {
 
 
 	public boolean isLoaded() {
+		log.info("checking if search page is loaded");
 		if(!filters.isLoaded()){ return false;}
 		return serviceGroupGrid.isLoaded();
 	}
