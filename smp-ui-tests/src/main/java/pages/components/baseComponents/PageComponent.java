@@ -3,72 +3,67 @@ package pages.components.baseComponents;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.PROPERTIES;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.concurrent.TimeUnit;
-
 
 public class PageComponent {
 
 	protected WebDriver driver;
-	protected WebDriverWait webDriverWait;
+	protected WebDriverWait wait;
 	protected Logger log = Logger.getLogger(this.getClass());
 
 
 	public PageComponent(WebDriver driver) {
 		this.driver = driver;
-		this.webDriverWait = new WebDriverWait(this.driver, PROPERTIES.TIMEOUT);
+		this.wait = new WebDriverWait(this.driver, PROPERTIES.TIMEOUT);
 	}
 
-	public void waitForXMillis(Integer millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) { e.printStackTrace(); }
-	}
 
 	public WebElement waitForElementToBeClickable(WebElement element) {
-		return webDriverWait.until(ExpectedConditions.elementToBeClickable(element));
+		return wait.until(ExpectedConditions.elementToBeClickable(element));
 	}
 
 	public WebElement waitForElementToBeVisible(WebElement element) {
-		return webDriverWait.until(ExpectedConditions.visibilityOf(element));
+		return wait.until(ExpectedConditions.visibilityOf(element));
 	}
 
 	public WebElement waitForElementToBeVisible(By elementSelector) {
-		return webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(elementSelector));
+		return wait.until(ExpectedConditions.visibilityOfElementLocated(elementSelector));
 	}
 
 	public void waitForElementToBeEnabled(WebElement element) {
-		int maxTimeout = PROPERTIES.TIMEOUT * 1000;
+		int maxTimeout = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
 		int waitedSoFar = 0;
-		while ((null != element.getAttribute("disabled")) && (waitedSoFar < maxTimeout)){
+		while ((null != element.getAttribute("disabled")) && (waitedSoFar < maxTimeout)) {
 			waitedSoFar += 300;
 			waitForXMillis(300);
 		}
 	}
 
-//	public void waitForElementToBeGone(WebElement element) {
-//		try {
-//			webDriverWait.until(ExpectedConditions.not(ExpectedConditions.visibilityOf(element)));
-//		} catch (Exception e) {	}
-//	}
+	public void waitForElementToBeDisabled(WebElement element) {
+		int maxTimeout = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
+		int waitedSoFar = 0;
+		while ((null == element.getAttribute("disabled")) && (waitedSoFar < maxTimeout)) {
+			waitedSoFar += 300;
+			waitForXMillis(300);
+		}
+	}
+
 
 	public void waitForElementToBeGone(WebElement element) {
 		WebDriverWait myWait = new WebDriverWait(driver, PROPERTIES.SHORT_UI_TIMEOUT);
 
 		try {
 			myWait.until(ExpectedConditions.visibilityOf(element));
-		} catch (Exception e) {	return;}
+		} catch (Exception e) {
+			return;
+		}
 
 		int waitTime = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
-		while (waitTime >0){
+		while (waitTime > 0) {
 			boolean displayed = true;
 
 			try {
@@ -77,7 +72,7 @@ public class PageComponent {
 				return;
 			}
 
-			if(!displayed){
+			if (!displayed) {
 				return;
 			}
 			waitForXMillis(500);
@@ -87,25 +82,29 @@ public class PageComponent {
 
 	public void waitForNumberOfWindowsToBe(int noOfWindows) {
 		try {
-			webDriverWait.until(numberOfWindowsToBe(noOfWindows));
-		} catch (Exception e) {	}
+			wait.until(numberOfWindowsToBe(noOfWindows));
+		} catch (Exception e) {
+		}
 	}
 
 	public void clearAndFillInput(WebElement element, String toFill) {
-
 		waitForElementToBeVisible(element).clear();
+		log.info("cleared input");
+		waitForElementToBeEnabled(element);
 		element.sendKeys(toFill);
+		log.info("filled in text " + toFill);
 	}
 
-	public void clickVoidSpace(){
+	public void clickVoidSpace() {
+		log.info("clicking void");
 		try {
 			waitForXMillis(500);
-			((JavascriptExecutor)driver).executeScript("document.querySelector('[class*=\"overlay-backdrop\"]').click()");
+			((JavascriptExecutor) driver).executeScript("document.querySelector('[class*=\"overlay-backdrop\"]').click()");
 			waitForXMillis(500);
-		} catch (Exception e) {	}
+		} catch (Exception e) {
+		}
 		waitForXMillis(500);
 	}
-
 
 	private ExpectedCondition<Boolean> numberOfWindowsToBe(final int numberOfWindows) {
 		return new ExpectedCondition<Boolean>() {
@@ -114,8 +113,82 @@ public class PageComponent {
 				driver.getWindowHandles();
 				return driver.getWindowHandles().size() == numberOfWindows;
 			}
-		};}
+		};
+	}
 
+	public void waitForXMillis(Integer millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			log.error("EXCEPTION: ", e);
+		}
+	}
+
+	public void waitForAttributeNotEmpty(WebElement element, String attributeName) {
+		wait.until(ExpectedConditions.attributeToBeNotEmpty(element, attributeName));
+	}
+
+	public void waitForElementToHaveText(WebElement element, String title) {
+		wait.until(ExpectedConditions.textToBePresentInElement(element, title));
+	}
+
+	public void waitForElementToBe(WebElement element) {
+
+		wait.until(new ExpectedCondition<Boolean>() {
+			@Override
+			public Boolean apply(WebDriver driver) {
+				return element.getLocation() != null;
+			}
+		});
+
+	}
+
+	public void waitForAttributeToContain(WebElement element, String attributeName, String value) {
+		wait.until(ExpectedConditions.attributeContains(element, attributeName, value));
+	}
+
+	public void waitForElementToHaveText(WebElement element) {
+		wait.until(new ExpectedCondition<Boolean>() {
+			@Override
+			public Boolean apply(WebDriver driver) {
+				return !element.getText().trim().isEmpty();
+			}
+		});
+	}
+
+	public void waitForElementToContainText(WebElement element, String text) {
+		wait.until(ExpectedConditions.textToBePresentInElement(element, text));
+	}
+
+	public boolean isVisible(WebElement element){
+		log.info("checking if element is visible");
+
+		try {
+			waitForElementToBe(element);
+			return element.isDisplayed();
+		} catch (Exception e) {		}
+		return false;
+	}
+
+	public boolean isEnabled(WebElement element){
+		log.info("checking if element is enabled");
+		try {
+			waitForElementToBeEnabled(element);
+		} catch (Exception e) {
+			return false;
+		}
+		return element.isEnabled();
+	}
+
+	public boolean isDisabled(WebElement element){
+		log.info("checking if element is disabled");
+		try {
+			waitForElementToBeDisabled(element);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
 
 }
 

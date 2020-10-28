@@ -44,46 +44,54 @@ public class UsersPage extends SMPPage {
 	
 	
 	public boolean isLoaded(){
-		
-		if(!cancelBtn.isDisplayed()){return false;}
-		if(!saveBtn.isDisplayed()){return false;}
-		if(!newBtn.isDisplayed()){return false;}
-		if(!newBtn.isEnabled()){return false;}
-		if(!editBtn.isDisplayed()){return false;}
-		return deleteBtn.isDisplayed();
+		log.info("checking Users page is loaded");
+
+		return isVisible(cancelBtn)
+				&& isVisible(saveBtn)
+				&& isVisible(newBtn)
+				&& isEnabled(newBtn)
+				&& isVisible(editBtn)
+				&& isVisible(deleteBtn);
 	}
 	
 	public boolean isCancelButtonEnabled(){
-		waitForElementToBeEnabled(cancelBtn);
-		return cancelBtn.isEnabled();
+		log.info("cancel button");
+		return isEnabled(cancelBtn);
 	}
 	public boolean isSaveButtonEnabled(){
-		waitForElementToBeEnabled(saveBtn);
-		return saveBtn.isEnabled();
+		log.info("save button");
+		return isEnabled(saveBtn);
 	}
 	public boolean isDeleteButtonEnabled(){
 		waitForXMillis(200);
-		return deleteBtn.isEnabled();
+		log.info("delete button");
+		return isEnabled(deleteBtn);
 	}
 
 	public ConfirmationDialog clickCancel(){
+		log.info("click cancel button");
 		waitForElementToBeClickable(cancelBtn).click();
 		return new ConfirmationDialog(driver);
 	}
 	
 	public ConfirmationDialog clickSave(){
+		log.info("click save button");
 		waitForElementToBeClickable(saveBtn).click();
 		return new ConfirmationDialog(driver);
 	}
 	
 	public void clickDelete(){
+		log.info("click delete button");
 		waitForElementToBeClickable(deleteBtn).click();
 	}
 	public UserPopup clickNew(){
+		log.info("click new button");
 		waitForElementToBeClickable(newBtn).click();
 		return new UserPopup(driver);
 	}
+
 	public UserPopup clickEdit(){
+		log.info("click edit button");
 		waitForElementToBeClickable(editBtn).click();
 		return new UserPopup(driver);
 	}
@@ -96,10 +104,11 @@ public class UsersPage extends SMPPage {
 
 
 	public void createUser(){
+		log.info("create user");
+
 		waitForElementToBeClickable(newBtn).click();
 
 		UserPopup popup = new UserPopup(driver);
-//		popup.fillData(user,"",role,password,password);
 		popup.clickOK();
 
 	}

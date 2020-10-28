@@ -16,6 +16,7 @@ public class DomainGrid extends BasicGrid {
 	private By cellSelector = By.tagName("datatable-body-cell");
 
 	public List<DomainRow> getRowsInfo(){
+		log.info("getting all row info");
 		List<DomainRow> rowInfos = new ArrayList<>();
 
 		for (WebElement gridRow : gridRows) {

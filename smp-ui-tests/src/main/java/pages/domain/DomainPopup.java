@@ -57,30 +57,33 @@ public class DomainPopup extends PageComponent {
 	}
 	
 	public boolean isLoaded() {
-		waitForElementToBeVisible(okBtn);
-		if(!okBtn.isDisplayed()){return false;}
-		if(!domainCodeInput.isDisplayed()){return false;}
-		if(!smlDomainInput.isDisplayed()){return false;}
-		if(null == signatureCertSelect){return false;}
-//		if(!smlClientHeaderInput.isDisplayed()){return false;}
-		if(null == smlClientAliasSelect){return false;}
-		return cancelBtn.isDisplayed() && cancelBtn.isEnabled();
+		log.info("checking if domain popup is properly loaded");
+		return isVisible(okBtn)
+				&& isVisible(domainCodeInput)
+				&& isVisible(smlDomainInput)
+				&& isVisible(cancelBtn)
+				&& isEnabled(cancelBtn)
+				&& (null != signatureCertSelect)
+				&& (null != smlClientAliasSelect);
 	}
 
-	public boolean isDomainCodeInputEnabled() {return waitForElementToBeVisible(domainCodeInput).isEnabled();}
-	public boolean isSMLDomainInputEnabled() {return waitForElementToBeVisible(smlDomainInput).isEnabled();}
+	public boolean isDomainCodeInputEnabled() {
+		log.info("domain code input");
+		return isEnabled(domainCodeInput);}
+	public boolean isSMLDomainInputEnabled() {return isEnabled(smlDomainInput);}
 
 	public void fillSMLSMPIdInput(String text){
+		log.info("fill sml smp input with " + text);
 		waitForXMillis(500);
 		clearAndFillInput(smlSMPIdInput, text);
 	}
 
 	public void fillDataForNewDomain(String domainCode, String smlDomain, String smlSmpID, String clientCertHeader){
+		log.info("filling data for new domain");
 		clearAndFillInput(domainCodeInput, domainCode);
 		clearAndFillInput(smlDomainInput, smlDomain);
 		signatureCertSelect.selectFirstOption();
 		clearAndFillInput(smlSMPIdInput, smlSmpID);
-//		clearAndFillInput(smlClientHeaderInput, clientCertHeader);
 		smlClientAliasSelect.selectFirstOption();
 	}
 

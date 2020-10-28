@@ -42,52 +42,60 @@ public class DomainPage extends SMPPage {
 	
 	
 	public boolean isLoaded(){
-
-		waitForElementToBeVisible(newBtn);
-
-		if(!cancelBtn.isDisplayed()){return false;}
-		if(!saveBtn.isDisplayed()){return false;}
-		if(!newBtn.isDisplayed()){return false;}
-		if(!newBtn.isEnabled()){return false;}
-		if(!editBtn.isDisplayed()){return false;}
-		return deleteBtn.isDisplayed();
+		log.info("checking if Domain page is loaded");
+		return isVisible(cancelBtn)
+				&& isVisible(saveBtn)
+				&& isVisible(newBtn)
+				&& isEnabled(newBtn)
+				&& isVisible(editBtn)
+				&& isVisible(deleteBtn);
 	}
 	
 	public boolean isCancelButtonEnabled(){
-		return cancelBtn.isEnabled();
+		log.info("cancel button");
+		return isEnabled(cancelBtn);
 	}
 	public boolean isSaveButtonEnabled(){
-		return saveBtn.isEnabled();
+		log.info("save button");
+		return isEnabled(saveBtn);
 	}
 	public boolean isDeleteButtonEnabled(){
-		return deleteBtn.isEnabled();
+		log.info("delete button");
+		return isEnabled(deleteBtn);
 	}
 	public boolean isEditButtonEnabled(){
-		return editBtn.isEnabled();
+		log.info("edit button");
+		return isEnabled(editBtn);
 	}
 	public boolean isNewButtonEnabled(){
-		return newBtn.isEnabled();
+		log.info("new button");
+		return isEnabled(newBtn);
 	}
 	
 	public ConfirmationDialog clickCancel(){
+		log.info("cancelling ..");
 		waitForElementToBeClickable(cancelBtn).click();
 		return new ConfirmationDialog(driver);
 	}
 	
 	public ConfirmationDialog clickSave(){
+		log.info("saving ...");
 		waitForElementToBeClickable(saveBtn).click();
 		return new ConfirmationDialog(driver);
 	}
 	
 	public void clickDelete(){
+		log.info("deleting ...");
 		waitForElementToBeClickable(deleteBtn).click();
 		waitForElementToBeEnabled(saveBtn);
 	}
 	public DomainPopup clickNew(){
+		log.info("clicking new ...");
 		waitForElementToBeClickable(newBtn).click();
 		return new DomainPopup(driver);
 	}
 	public DomainPopup clickEdit(){
+		log.info("editing ...");
 		waitForElementToBeClickable(editBtn).click();
 		return new DomainPopup(driver);
 	}
