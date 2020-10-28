@@ -59,5 +59,10 @@ public class SandwichMenu extends PageComponent {
 		return new SearchPage(driver);
 	}
 
+	public void waitForSandwichMenu(){
+		log.info("waiting for sandwich menu");
+		waitForXMillis(500);
+		waitForElementToBeVisible(expandoButton);
+	}
 
 }
