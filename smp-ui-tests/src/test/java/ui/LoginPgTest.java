@@ -13,8 +13,6 @@ import utils.Generator;
 import utils.enums.SMPMessages;
 import utils.rest.SMPRestClient;
 
-import java.util.HashMap;
-
 public class LoginPgTest extends BaseTest {
 
 
@@ -97,11 +95,11 @@ public class LoginPgTest extends BaseTest {
 		soft.assertTrue(loginPage.getTextInPasswordInput().isEmpty(), "User input is empty by default");
 		soft.assertTrue(loginPage.getTextInUsernameInput().isEmpty(), "Password input is empty by default");
 
-		soft.assertTrue(loginPage.sidebar.isSearchLnkVisible(), "Search link is visible");
+		soft.assertTrue(loginPage.sidebar.isSearchLnkEnabled(), "Search link is visible");
 
-		soft.assertFalse(loginPage.sidebar.isEditLnkVisible(), "Edit link is not visible");
-		soft.assertFalse(loginPage.sidebar.isDomainLnkVisible(), "Domain link is not visible");
-		soft.assertFalse(loginPage.sidebar.isUsersLnkVisible(), "Users link is not visible");
+		soft.assertFalse(loginPage.sidebar.isEditLnkEnabled(), "Edit link is not visible");
+		soft.assertFalse(loginPage.sidebar.isDomainLnkEnabled(), "Domain link is not visible");
+		soft.assertFalse(loginPage.sidebar.isUsersLnkEnabled(), "Users link is not visible");
 
 		soft.assertAll();
 	}
@@ -147,11 +145,11 @@ public class LoginPgTest extends BaseTest {
 		soft.assertEquals(message.getMessage(), SMPMessages.MSG_1, "Check the error message content");
 
 
-		soft.assertTrue(loginPage.sidebar.isSearchLnkVisible(), "Search link is still available in the sidebar");
-		soft.assertFalse(loginPage.sidebar.isEditLnkVisible(), "Edit link is NOT available in the sidebar");
+		soft.assertTrue(loginPage.sidebar.isSearchLnkEnabled(), "Search link is still available in the sidebar");
+		soft.assertFalse(loginPage.sidebar.isEditLnkEnabled(), "Edit link is NOT available in the sidebar");
 
-		soft.assertFalse(loginPage.sidebar.isDomainLnkVisible(), "Domain link is NOT available in the sidebar");
-		soft.assertFalse(loginPage.sidebar.isUsersLnkVisible(), "Users link is NOT available in the sidebar");
+		soft.assertFalse(loginPage.sidebar.isDomainLnkEnabled(), "Domain link is NOT available in the sidebar");
+		soft.assertFalse(loginPage.sidebar.isUsersLnkEnabled(), "Users link is NOT available in the sidebar");
 
 
 		soft.assertAll();

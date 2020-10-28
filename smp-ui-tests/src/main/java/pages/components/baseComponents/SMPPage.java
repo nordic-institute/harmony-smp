@@ -19,10 +19,11 @@ public class SMPPage extends PageComponent {
 	public void refreshPage() {
 		driver.navigate().refresh();
 		try {
-			new SMPPage(driver).pageHeader.waitForTitleToBe();
+			pageHeader.sandwichMenu.waitForSandwichMenu();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		waitForXMillis(500);
 	}
 
 
