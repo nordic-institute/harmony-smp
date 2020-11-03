@@ -73,7 +73,7 @@ public class SearchPgTest extends BaseTest {
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
 
-		List<String> headers = page.serviceGroupGrid.getHeaders();
+		List<String> headers = page.getServiceGroupGrid().getHeaders();
 		soft.assertTrue(headers.contains("Participant identifier"));
 		soft.assertTrue(headers.contains("Participant scheme"));
 		soft.assertTrue(headers.contains("OASIS ServiceGroup URL"));
@@ -89,14 +89,14 @@ public class SearchPgTest extends BaseTest {
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
 
-		ServiceGroupRow row0 = page.serviceGroupGrid.getRows().get(0);
+		ServiceGroupRow row0 = page.getServiceGroupGrid().getRows().get(0);
 		String pScheme = row0.getParticipantScheme();
 		String pIdentifier = row0.getParticipantIdentifier();
 
 //		looking for exact match
 		page.filters.filter(pIdentifier, pScheme, "");
 
-		List<ServiceGroupRow> rows = page.serviceGroupGrid.getRows();
+		List<ServiceGroupRow> rows = page.getServiceGroupGrid().getRows();
 
 		for (ServiceGroupRow row : rows) {
 			soft.assertTrue(row.getParticipantIdentifier().contains(pIdentifier));
@@ -105,7 +105,7 @@ public class SearchPgTest extends BaseTest {
 
 //		Search for substring
 		page.filters.filter(pIdentifier.substring(2), pScheme.substring(2), "");
-		rows = page.serviceGroupGrid.getRows();
+		rows = page.getServiceGroupGrid().getRows();
 
 		for (ServiceGroupRow row : rows) {
 
@@ -126,7 +126,7 @@ public class SearchPgTest extends BaseTest {
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
 
-		ServiceGroupRow row0 = page.serviceGroupGrid.getRows().get(0);
+		ServiceGroupRow row0 = page.getServiceGroupGrid().getRows().get(0);
 		String listedURL = row0.getServiceGroupURL();
 		String pScheme = row0.getParticipantScheme();
 		String pIdentifier = row0.getParticipantIdentifier();
@@ -158,7 +158,7 @@ public class SearchPgTest extends BaseTest {
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
 
-		ServiceGroupRow row0 = page.serviceGroupGrid.getRows().get(0);
+		ServiceGroupRow row0 = page.getServiceGroupGrid().getRows().get(0);
 		String listedURL = row0.getServiceGroupURL();
 		String pScheme = row0.getParticipantScheme();
 		String pIdentifier = row0.getParticipantIdentifier();
@@ -201,7 +201,7 @@ public class SearchPgTest extends BaseTest {
 		soft.assertTrue(page.isLoaded());
 
 		ServiceGroupRow row0 = null;
-		List<ServiceGroupRow> rows = page.serviceGroupGrid.getRows();
+		List<ServiceGroupRow> rows = page.getServiceGroupGrid().getRows();
 		for (int i = 0; i < rows.size(); i++) {
 			if(rows.get(i).getMetadataSize() >0 ){
 				row0 = rows.get(i);
@@ -213,7 +213,7 @@ public class SearchPgTest extends BaseTest {
 			SMPRestClient.createMetadata(row0.getParticipantIdentifier());
 			page.refreshPage();
 			logger.info("Created Metadata for row 0");
-			row0 = page.serviceGroupGrid.getRows().get(0);
+			row0 = page.getServiceGroupGrid().getRows().get(0);
 		}
 
 
@@ -238,7 +238,7 @@ public class SearchPgTest extends BaseTest {
 		soft.assertTrue(page.isLoaded());
 
 		ServiceGroupRow row0 = null;
-		List<ServiceGroupRow> rows = page.serviceGroupGrid.getRows();
+		List<ServiceGroupRow> rows = page.getServiceGroupGrid().getRows();
 		for (int i = 0; i < rows.size(); i++) {
 			if(rows.get(i).getMetadataSize() >0 ){
 				row0 = rows.get(i);
@@ -250,7 +250,7 @@ public class SearchPgTest extends BaseTest {
 			SMPRestClient.createMetadata(row0.getParticipantIdentifier());
 			page.refreshPage();
 			logger.info("Created Metadata for row 0");
-			row0 = page.serviceGroupGrid.getRows().get(0);
+			row0 = page.getServiceGroupGrid().getRows().get(0);
 		}
 
 		String listedURL = row0.getServiceGroupURL();
@@ -314,7 +314,7 @@ public class SearchPgTest extends BaseTest {
 		searchPage.refreshPage();
 
 		searchPage.filters.filter(participantID, participantScheme, SMPRestClient.getDomainSubDomainCombo(createdDomains.get(0)));
-		List<ServiceGroupRow> results = searchPage.serviceGroupGrid.getRows();
+		List<ServiceGroupRow> results = searchPage.getServiceGroupGrid().getRows();
 
 		soft.assertEquals(results.size() , 1, "Results size is 1 (first search)");
 		soft.assertEquals(results.get(0).getParticipantIdentifier().toLowerCase(), participantID.toLowerCase(),
@@ -322,7 +322,7 @@ public class SearchPgTest extends BaseTest {
 
 
 		searchPage.filters.filter(participantID, participantScheme, SMPRestClient.getDomainSubDomainCombo(createdDomains.get(1)));
-		results = searchPage.serviceGroupGrid.getRows();
+		results = searchPage.getServiceGroupGrid().getRows();
 
 		soft.assertEquals(results.size(), 1, "Results size is 1 (second search)");
 		soft.assertEquals(results.get(0).getParticipantIdentifier().toLowerCase(), participantID.toLowerCase(),

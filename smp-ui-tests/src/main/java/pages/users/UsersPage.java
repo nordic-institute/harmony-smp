@@ -83,6 +83,7 @@ public class UsersPage extends SMPPage {
 	public void clickDelete(){
 		log.info("click delete button");
 		waitForElementToBeClickable(deleteBtn).click();
+		waitForRowsToLoad();
 	}
 	public UserPopup clickNew(){
 		log.info("click new button");

@@ -18,6 +18,8 @@ public class ServiceGroupGrid extends PageComponent {
 	public ServiceGroupGrid(WebDriver driver, WebElement container) {
 		super(driver);
 		PageFactory.initElements( new AjaxElementLocatorFactory(container, PROPERTIES.TIMEOUT) , this);
+
+		waitForRowsToLoad();
 	}
 
 	@FindBy(className = "datatable-header-cell-label")

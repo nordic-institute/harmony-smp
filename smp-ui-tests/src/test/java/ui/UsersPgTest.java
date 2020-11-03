@@ -1,5 +1,6 @@
 package ui;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -24,6 +25,10 @@ public class UsersPgTest extends BaseTest {
 
 	@AfterMethod
 	public void logoutAndReset() {
+
+		driver.manage().deleteAllCookies();
+		((JavascriptExecutor) driver).executeScript("localStorage.clear();");
+
 		SMPPage page = new SMPPage(driver);
 		page.refreshPage();
 
@@ -51,6 +56,7 @@ public class UsersPgTest extends BaseTest {
 
 		logger.info("Going to Users page");
 		page.sidebar.goToPage(UsersPage.class);
+		page.waitForRowsToLoad();
 	}
 
 	@Test(description = "USR-10")
@@ -335,6 +341,8 @@ public class UsersPgTest extends BaseTest {
 
 		UsersPage page = new UsersPage(driver);
 		page.refreshPage();
+		page.waitForRowsToLoad();
+
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
 		int index = scrollToUser(username);
@@ -342,20 +350,25 @@ public class UsersPgTest extends BaseTest {
 		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
+		page.waitForRowsToLoad();
+
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted");
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted");
 
 		page.clickCancel().confirm();
 		new ConfirmationDialog(driver).confirm();
+		page.waitForRowsToLoad();
 		soft.assertTrue(isUserListed(username), "After canceling delete user is still listed");
 
 
 		index = scrollToUser(username);
 		page.grid().selectRow(index);
+
 		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
 
 		page.clickDelete();
+		page.waitForRowsToLoad();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted(2)");
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted(2)");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted(2)");
