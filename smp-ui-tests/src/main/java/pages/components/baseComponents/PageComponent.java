@@ -190,5 +190,28 @@ public class PageComponent {
 		return true;
 	}
 
+
+	protected By loadingBar = By.className("mat-ripple-element");
+
+	public void waitForRowsToLoad() {
+		log.info("waiting for rows to load");
+		try {
+			waitForElementToBeVisible(loadingBar);
+
+			int bars = 1;
+			int waits = 0;
+			while (bars > 0 && waits < 30) {
+				Object tmp = ((JavascriptExecutor) driver).executeScript("return document.querySelectorAll('.mat-ripple-element').length;");
+				bars = Integer.valueOf(tmp.toString());
+				waits++;
+				waitForXMillis(500);
+			}
+			log.debug("waited for rows to load for ms = 500*" + waits);
+		} catch (Exception e) {	}
+		waitForXMillis(500);
+	}
+
+
+
 }
 

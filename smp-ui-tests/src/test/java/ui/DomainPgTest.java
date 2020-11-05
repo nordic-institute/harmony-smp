@@ -45,6 +45,7 @@ public class DomainPgTest extends BaseTest {
 		
 		logger.info("Going to Domain page");
 		page.sidebar.goToPage(DomainPage.class);
+		page.waitForRowsToLoad();
 	}
 	
 	@Test(description = "DMN-0")
