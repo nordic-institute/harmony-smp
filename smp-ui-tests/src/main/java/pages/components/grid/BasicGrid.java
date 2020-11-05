@@ -31,8 +31,6 @@ public class BasicGrid extends PageComponent {
 
 	}
 
-	private By loadingBar = By.className("mat-ripple-element");
-
 	private void waitToLoad(){
 		try {
 			waitForXMillis(500);
@@ -42,22 +40,7 @@ public class BasicGrid extends PageComponent {
 		}
 	}
 
-	public void waitForRowsToLoad() {
-		try {
-			waitForElementToBeVisible(loadingBar);
 
-			int bars = 1;
-			int waits = 0;
-			while (bars > 0 && waits < 30) {
-				Object tmp = ((JavascriptExecutor) driver).executeScript("return document.querySelectorAll('.mat-ripple-element').length;");
-				bars = Integer.valueOf(tmp.toString());
-				waits++;
-				waitForXMillis(500);
-			}
-			log.debug("waited for rows to load for ms = 500*" + waits);
-		} catch (Exception e) {	}
-		waitForXMillis(500);
-	}
 
 	@FindBy(css = "datatable-header div.datatable-row-center datatable-header-cell")
 	protected List<WebElement> gridHeaders;
@@ -72,6 +55,7 @@ public class BasicGrid extends PageComponent {
 		log.info("selecting row with number ... " + rowNumber);
 		if(rowNumber>=gridRows.size()){return;}
 		gridRows.get(rowNumber).click();
+		waitForXMillis(500);
 	}
 	
 	public void doubleClickRow(int rowNumber){
