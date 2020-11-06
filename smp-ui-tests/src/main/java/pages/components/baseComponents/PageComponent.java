@@ -80,6 +80,34 @@ public class PageComponent {
 		}
 	}
 
+	public void waitForElementToBeGone(By locator) {
+		WebDriverWait myWait = new WebDriverWait(driver, PROPERTIES.SHORT_UI_TIMEOUT);
+
+		try {
+			myWait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+		} catch (Exception e) {
+			return;
+		}
+
+		int waitTime = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
+		while (waitTime > 0) {
+			boolean displayed = true;
+
+			try {
+				displayed = driver.findElement(locator).isDisplayed();
+			} catch (Exception e) {
+				return;
+			}
+
+			if (!displayed) {
+				return;
+			}
+
+			waitForXMillis(500);
+			waitTime = waitTime - 500;
+		}
+	}
+
 	public void waitForNumberOfWindowsToBe(int noOfWindows) {
 		try {
 			wait.until(numberOfWindowsToBe(noOfWindows));
@@ -196,17 +224,18 @@ public class PageComponent {
 	public void waitForRowsToLoad() {
 		log.info("waiting for rows to load");
 		try {
-			waitForElementToBeVisible(loadingBar);
-
-			int bars = 1;
-			int waits = 0;
-			while (bars > 0 && waits < 30) {
-				Object tmp = ((JavascriptExecutor) driver).executeScript("return document.querySelectorAll('.mat-ripple-element').length;");
-				bars = Integer.valueOf(tmp.toString());
-				waits++;
-				waitForXMillis(500);
-			}
-			log.debug("waited for rows to load for ms = 500*" + waits);
+			waitForElementToBeGone(loadingBar);
+//			waitForElementToBeVisible(loadingBar);
+//
+//			int bars = 1;
+//			int waits = 0;
+//			while (bars > 0 && waits < 30) {
+//				Object tmp = ((JavascriptExecutor) driver).executeScript("return document.querySelectorAll('.mat-ripple-element').length;");
+//				bars = Integer.valueOf(tmp.toString());
+//				waits++;
+//				waitForXMillis(500);
+//			}
+//			log.debug("waited for rows to load for ms = 500*" + waits);
 		} catch (Exception e) {	}
 		waitForXMillis(500);
 	}

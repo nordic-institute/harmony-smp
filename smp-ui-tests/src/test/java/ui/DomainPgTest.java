@@ -23,29 +23,17 @@ public class DomainPgTest extends BaseTest {
 	
 	@AfterMethod
 	public void logoutAndReset(){
-		SMPPage page = new SMPPage(driver);
-		page.refreshPage();
-		
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
+		genericLogoutProcedure();
 	}
-	
+
 	
 	@BeforeMethod
 	public void loginAndGoToDomainPage(){
 		
-		SMPPage page = new SMPPage(driver);
-		
-		if(!page.pageHeader.sandwichMenu.isLoggedIn()){
-			logger.info("Login!!");
-			page.pageHeader.goToLogin().login("SYS_ADMIN");
-		}
-		
+		SMPPage page = genericLoginProcedure("SYS_ADMIN");
+
 		logger.info("Going to Domain page");
 		page.sidebar.goToPage(DomainPage.class);
-		page.waitForRowsToLoad();
 	}
 	
 	@Test(description = "DMN-0")
