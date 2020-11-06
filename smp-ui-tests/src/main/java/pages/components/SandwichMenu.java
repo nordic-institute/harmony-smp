@@ -34,6 +34,7 @@ public class SandwichMenu extends PageComponent {
 
 	public boolean isLoggedIn(){
 		clickVoidSpace();
+
 		waitForElementToBeClickable(expandoButton).click();
 
 		boolean isLoggedIn = false;

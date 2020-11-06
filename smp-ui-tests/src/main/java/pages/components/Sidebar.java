@@ -63,6 +63,8 @@ public class Sidebar extends PageComponent {
 
 		new Header(driver).waitForTitleToBe();
 
+		waitForRowsToLoad();
+
 		return PageFactory.initElements(driver, expect);
 	}
 
