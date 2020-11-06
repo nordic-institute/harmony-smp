@@ -1,6 +1,5 @@
 package ui;
 
-import org.openqa.selenium.JavascriptExecutor;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -25,38 +24,17 @@ public class UsersPgTest extends BaseTest {
 
 	@AfterMethod
 	public void logoutAndReset() {
-
-		driver.manage().deleteAllCookies();
-		((JavascriptExecutor) driver).executeScript("localStorage.clear();");
-
-		SMPPage page = new SMPPage(driver);
-		page.refreshPage();
-
-		if (page.pageHeader.sandwichMenu.isLoggedIn()) {
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
+		genericLogoutProcedure();
 	}
 
 
 	@BeforeMethod
 	public void loginAndGoToUsersPage() {
 
-		SMPPage page = new SMPPage(driver);
-
-		if (page.pageHeader.sandwichMenu.isLoggedIn()) {
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
-
-		if (!page.pageHeader.sandwichMenu.isLoggedIn()) {
-			logger.info("Login!!");
-			page.pageHeader.goToLogin().login("SYS_ADMIN");
-		}
+		SMPPage page = genericLoginProcedure("SYS_ADMIN");
 
 		logger.info("Going to Users page");
 		page.sidebar.goToPage(UsersPage.class);
-		page.waitForRowsToLoad();
 	}
 
 	@Test(description = "USR-10")

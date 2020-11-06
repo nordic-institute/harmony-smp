@@ -20,17 +20,7 @@ public class PrivilegesTests extends BaseTest {
 
 	@AfterMethod
 	public void logoutAndReset(){
-		SMPPage page = new SMPPage(driver);
-		page.refreshPage();
-
-		try {
-			if(page.pageHeader.sandwichMenu.isLoggedIn()){
-				logger.info("Logout!!");
-				page.pageHeader.sandwichMenu.logout();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		genericLogoutProcedure();
 	}
 
 	@Test(description = "RGT-0")
