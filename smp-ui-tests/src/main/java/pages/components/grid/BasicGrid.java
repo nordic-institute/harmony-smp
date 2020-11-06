@@ -21,7 +21,7 @@ public class BasicGrid extends PageComponent {
 		super(driver);
 		
 		log.info("Loading basic grid");
-		waitToLoad();
+//		waitToLoad();
 		waitForRowsToLoad();
 		PageFactory.initElements( new DefaultElementLocatorFactory(container) , this);
 
@@ -31,14 +31,14 @@ public class BasicGrid extends PageComponent {
 
 	}
 
-	private void waitToLoad(){
-		try {
-			waitForXMillis(500);
-			waitForElementToBeGone(driver.findElement(loadingBar));
-		} catch (Exception e) {
-
-		}
-	}
+//	private void waitToLoad(){
+//		try {
+//			waitForXMillis(500);
+//			waitForElementToBeGone(driver.findElement(loadingBar));
+//		} catch (Exception e) {
+//
+//		}
+//	}
 
 
 

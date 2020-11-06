@@ -22,31 +22,14 @@ public class EditPgTest extends BaseTest {
 
 	@AfterMethod
 	public void logoutAndReset() {
-		SMPPage page = new SMPPage(driver);
-		page.refreshPage();
-
-		if (page.pageHeader.sandwichMenu.isLoggedIn()) {
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
-		page.waitForXMillis(100);
+		genericLogoutProcedure();
 	}
 
 
 	@BeforeMethod
 	public void loginAndGoToEditPage() {
 
-		SMPPage page = new SMPPage(driver);
-
-		if (page.pageHeader.sandwichMenu.isLoggedIn()) {
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
-
-		if (!page.pageHeader.sandwichMenu.isLoggedIn()) {
-			logger.info("Login!!");
-			page.pageHeader.goToLogin().login("SMP_ADMIN");
-		}
+		SMPPage page = genericLoginProcedure("SMP_ADMIN");
 
 		logger.info("Going to Edit page");
 		page.sidebar.goToPage(EditPage.class);
