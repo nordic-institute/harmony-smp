@@ -202,7 +202,7 @@ fi;
 $ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
   echo "#########################"
-  echo "DATABASE IS READY TO USE!" |& tee /u01/status/database.log 
+  echo "DATABASE IS READY TO USE!" |& tee /u01/status/database.status
   echo "#########################"
 
   # Execute custom provided startup scripts
@@ -211,7 +211,7 @@ if [ $? -eq 0 ]; then
 else
   echo "#####################################"
   echo "########### E R R O R ###############"
-  echo "DATABASE SETUP WAS NOT SUCCESSFUL!"  |& tee /u01/status/database.log
+  echo "DATABASE SETUP WAS NOT SUCCESSFUL!"  |& tee /u01/status/database.status
   echo "Please check output for further info!"
   echo "########### E R R O R ###############"
   echo "#####################################"

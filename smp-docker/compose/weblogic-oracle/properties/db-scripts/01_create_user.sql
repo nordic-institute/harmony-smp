@@ -1,10 +1,9 @@
-create tablespace smp_tblspace datafile 'smp_tblspace.dat'  size 10M autoextend on;
-create temporary tablespace smp_tblspace_temp tempfile 'smp_tblspace_temp.dat' size 5M autoextend on;
 
-create user smp identified by test default tablespace smp_tblspace temporary tablespace smp_tblspace_temp;
+ALTER SESSION SET CONTAINER=ORCLPDB1;
+CREATE USER smp IDENTIFIED BY "test" DEFAULT TABLESPACE users QUOTA UNLIMITED ON users; 
+GRANT CREATE SESSION TO smp;
+GRANT CREATE TABLE TO smp;
+GRANT CREATE VIEW TO smp;
+GRANT CREATE SEQUENCE TO smp;
+GRANT SELECT ON PENDING_TRANS$ TO smp;
 
-grant create session to smp;
-grant create sequence to smp;
-grant create table to smp;
-grant unlimited tablespace to smp;
-exit;
