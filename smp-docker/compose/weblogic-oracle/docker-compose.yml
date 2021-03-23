@@ -1,11 +1,14 @@
 version: "3.0"
 services:
   database:
-    image: oracle/database:11.2.0.2-xe
+    image: smp-oradb-19.3.0-se2:${SMP_VERSION}
     container_name: smp_oracle_db
+    environment:
+      - ORACLE_CHARACTERSET=AL32UTF8 # set database encoding
+      - NLS_LANG=.AL32UTF8  # set sqlplus encoding for stating up scripts
     volumes:
-      - ./properties/db-scripts:/u01/app/oracle/scripts/setup  # init script.
-      - shared-status-folder:/u01/status/
+      - ./properties/db-scripts:/docker-entrypoint-initdb.d/startup  # init script.
+      - ./status-folder:/u01/status/
     ports:
       - 1921:1521
     shm_size: '1gb'
@@ -13,7 +16,7 @@ services:
     depends_on:
       - database
 #    command: [bash, -c, "for i in `seq 10`; do timeout 1  bash -c '</dev/tcp/database/1521'; if [ $$? -eq 0 ] ; then break;fi;sleep 1;  done;"]
-    command: [bash, -c, "for i in `seq 150`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.log' ] && [ \"$$( cat /u01/status/database.log )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 2;  done;   /u01/oracle/startAdminServer.sh"]
+    command: [bash, -c, "for i in `seq 180`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.status' ] && [ \"$$( cat /u01/status/database.status )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 10;  done;   /u01/oracle/startAdminServer.sh"]
     image:  smp-weblogic-122:${SMP_VERSION}
     container_name: wls-smp   
     hostname: wlsadmin
@@ -21,7 +24,7 @@ services:
       JAVA_OPTIONS: "-Dweblogic.webservice.i18n.charset=utf-8"
     volumes:
       - ./properties/weblogic:/u01/oracle/properties
-      - shared-status-folder:/u01/status/
+      - ./status-folder:/u01/status/
     ports:
       - 7901:7001
 volumes:
