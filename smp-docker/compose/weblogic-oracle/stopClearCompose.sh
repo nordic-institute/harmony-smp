@@ -14,8 +14,6 @@ function clearOldContainers {
   echo "Database stopped"  > ./status-folder/database.status
   echo "Clear containers and volumes"
   docker-compose -p "${PREFIX}" rm -s -f -v
-  docker volume rm "${PREFIX}_shared-status-folder"
-
 }
 
 
