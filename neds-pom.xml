@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2017 European Commission | CEF eDelivery
+  ~
+  ~ Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+  ~ You may not use this work except in compliance with the Licence.
+  ~
+  ~ You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the Licence for the specific language governing permissions and limitations under the Licence.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.europa.ec</groupId>
+    <artifactId>smp-modules</artifactId>
+    <packaging>pom</packaging>
+    <name>SMP</name>
+    <version>4.1.1</version>
+
+    <modules>
+        <module>smp-parent-pom/neds-pom.xml</module>
+        <module>smp-api/neds-pom.xml</module>
+        <module>smp-angular/neds-pom.xml</module>
+        <module>smp-server-library/neds-pom.xml</module>
+        <module>smp-webapp/neds-pom.xml</module>
+    </modules>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <project.scm.id>edelivery-scm</project.scm.id>
+        <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
+        <sonar.exclusions>**/smp/data/model/*,**/smp/data/ui/*, **/smp/ui/exception/*,**/smp/services/ui/filters/*,
+            **/smp/exceptions/*, **/smp/data/ui/enums/*, **/to_be_removed/*
+        </sonar.exclusions>
+        <sonar.language>java</sonar.language>
+        <!-- jacoco remote agent settings start -->
+        <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
+        <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
+        <!-- jacoco remote agent settings end -->
+
+        <!-- jacoco, sonar code coverage settings start -->
+        <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage</sonar.jacoco.codeCoveragePath>
+        <sonar.jacoco.reportPath>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.reportPath>
+        <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
+
+        <!-- default value for deploy under Weblogic, etc -->
+        <deployWarFolder>/home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/</deployWarFolder>
+    </properties>
+
+    <scm>
+        <developerConnection>scm:git:https://ec.europa.eu/cefdigital/code/scm/edelivery/smp.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>SmartBearPluginRepository</id>
+            <url>http://www.soapui.org/repository/maven2/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>eviwarePluginRepository</id>
+            <url>http://www.eviware.com/repository/maven2/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <profiles>
+        <!-- soap ui -->
+        <profile>
+            <id>run-soapui</id>
+            <build>
+                <defaultGoal>test</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>com.smartbear.soapui</groupId>
+                        <artifactId>soapui-pro-maven-plugin</artifactId>
+                        <version>5.0.0</version>
+                        <configuration>
+                            <outputFolder>${sonar.jacoco.codeCoveragePath}/surefire-reports</outputFolder>
+                            <junitReport>true</junitReport>
+                            <printReport>true</printReport>
+                            <settingsFile>
+                                ${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/soapui-settings.xml
+                            </settingsFile>
+                            <soapuiProperties>
+                                <property>
+                                    <name>soapui.scripting.library</name>
+                                    <value>${maven.multiModuleProjectDirectory}/smp-soapui-tests/groovy</value>
+                                </property>
+                                <property>
+                                    <name>soapui.logroot</name>
+                                    <value>${sonar.jacoco.codeCoveragePath}/soapui/logs/</value>
+                                </property>
+                                <property>
+                                    <name>http.nonProxyHosts</name>
+                                    <value>localhost|127.*|[::1]</value>
+                                </property>
+                            </soapuiProperties>
+                            <testFailIgnore>true</testFailIgnore>
+                            <projectFile>
+                                ${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/SMP4.0-Generic-soapui-project.xml
+                            </projectFile>
+                            <testSuite>PASSING_AUTO_BAMBOO</testSuite>
+                            <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
+                            <projectProperties>
+                                <value>url=${url}</value>
+                                <value>SMPAdminUser=${SMPAdminUser}</value>
+                                <value>SMPAdminPassword=${SMPAdminPassword}</value>
+                            </projectProperties>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.maven.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>post-integration-test</phase>
+
+                                <goals>
+                                    <goal>dump</goal>
+                                </goals>
+                                <configuration>
+                                    <destFile>${sonar.jacoco.reportPath}</destFile>
+                                    <address>${sonar.jacoco.remoteAddress}</address>
+                                    <port>${sonar.jacoco.remotePort}</port>
+                                    <reset>false</reset>
+                                    <append>true</append>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>deploy-war</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <executions>
+                            <execution><!-- Deploy war under weblogic -->
+                                <id>Deploy war under weblogic</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <environmentVariables>
+                                        <DEPLOY_FOLDER>
+                                            ${deployWarFolder}
+                                        </DEPLOY_FOLDER>
+                                    </environmentVariables>
+                                    <executable>bash</executable>
+                                    <commandlineArgs>deploy_war.sh</commandlineArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+
+            </build>
+        </profile>
+
+        <profile>
+            <id>dependency-check</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>5.1.0</version>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <skipProvidedScope>true</skipProvidedScope>
+                            <skipRuntimeScope>true</skipRuntimeScope>
+                            <!-- Disable .Net Assembly Analyzer -->
+                            <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar.maven.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
