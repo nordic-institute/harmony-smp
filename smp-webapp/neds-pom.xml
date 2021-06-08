@@ -210,6 +210,21 @@
                     </dependency>
                 </dependencies>
             </plugin>
+
+            <!-- unit tests, surefire plugin, added here to exclude some tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <configuration>
+                            <excludesFile>ignoredTests.txt</excludesFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
