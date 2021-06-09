@@ -1,0 +1,8 @@
+# tests in this file are ignored in neds-pom.xml
+
+SignatureValidatorTest
+ServiceGroupControllerSingleDomainTest
+ServiceGroupControllerTest
+ApplicationResourceTest
+TruststoreResourceTest
+UserResourceTest
