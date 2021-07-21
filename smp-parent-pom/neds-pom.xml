@@ -113,27 +113,21 @@
     <!-- Where are we looking for JARs? -->
     <pluginRepositories>
         <pluginRepository>
-            <id>plugin.joinup</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
-        </pluginRepository>
-        <pluginRepository>
             <id>smartbear</id>
             <url>http://smartbearsoftware.com/repository/maven2</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>webgate-digit-third-party</id>
-            <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/thirdparty</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>webgate-digit</id>
-            <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/public</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>webgate-digit-soapui</id>
-            <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/soapui/</url>
-        </pluginRepository>
     </pluginRepositories>
+
     <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
         <repository>
             <id>cefdigital-releases</id>
             <url>https://ec.europa.eu/cefdigital/artifact/content/repositories/eDelivery/</url>
@@ -142,50 +136,6 @@
             </releases>
             <snapshots>
                 <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>cefdigital-snapshots</id>
-            <url>https://ec.europa.eu/cefdigital/artifact/content/repositories/eDelivery-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>cefdigital-thirdparty</id>
-            <url>https://ec.europa.eu/cefdigital/artifact/content/repositories/eDelivery-third-party/</url>
-        </repository>
-        <repository>
-            <id>webgate-digit</id>
-            <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/thirdparty</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>joinup.nexus</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>joinup.nexus.snapshot</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
