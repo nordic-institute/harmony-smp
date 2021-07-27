@@ -1,8 +1,10 @@
 # tests in this file are ignored in neds-pom.xml
 
 SignatureValidatorTest
-ServiceGroupControllerSingleDomainTest
+
+# intermittent errors, do not happens when tests are run separately
 ServiceGroupControllerTest
 ApplicationResourceTest
 TruststoreResourceTest
+KeystoreResourceTest
 UserResourceTest

@@ -1,4 +1,0 @@
-# tests in this file are ignored in neds-pom.xml
-
-X509CertificateToCertificateROConverterTest.java
-CRLVerifierServiceTest

@@ -616,7 +616,7 @@
                     <execution>
                         <id>default-test</id>
                         <configuration>
-                            <argLine>-server -ea -Duser.language=en -Xms512m -Xmx1024m ${surefire.argline}
+                            <argLine>-server -ea -Duser.language=en -Duser.timezone=CET -Xms512m -Xmx1024m ${surefire.argline}
                             </argLine>
                             <includes>
                                 <include>**/*Test.java</include>
