@@ -203,7 +203,7 @@ public class ServiceGroupControllerTest {
     }
 
     @Test
-    public void getExistingServiceMetadatWithReverseNoProxyHost() throws Exception {
+    public void getExistingServiceMetadataWithReverseNoProxyHost() throws Exception {
         //given
         prepareForGet();
 

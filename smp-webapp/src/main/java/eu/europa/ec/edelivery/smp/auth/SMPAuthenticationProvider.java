@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.stereotype.Component;
 
 import java.security.cert.CertificateRevokedException;
 import java.text.DateFormat;
@@ -33,6 +34,7 @@ import static java.util.Locale.US;
 
 
 @Import({SmpAppConfig.class})
+@Component
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationProvider.class);

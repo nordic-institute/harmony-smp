@@ -63,13 +63,10 @@ public class SecurityConfigurationTest {
     public static final String BLUE_COAT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=CN=common name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
     public static final String TEST_USERNAME_BLUE_COAT__DB_UPPER_SN = "CN=common name UPPER database SN,O=org,C=BE:000000000000bb66";
 
+    public static final String BLUE_COAT_NOT_AUTHORIZED_HEADER = "sno=bb61&subject=C=BE,O=org,CN=common name not exists&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+
     @Autowired
     private WebApplicationContext context;
-
-    /*
-    @PersistenceContext
-    private EntityManager em;
-    */
 
     MockMvc mvc;
 
@@ -150,6 +147,15 @@ public class SecurityConfigurationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT))
                 .andReturn().getResponse().getContentAsString();
+    }
+    @Test
+    public void blueCoatHeaderNotAuthorizedForPutTest() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Client-Cert", BLUE_COAT_NOT_AUTHORIZED_HEADER);
+
+        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
+                .headers(headers))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

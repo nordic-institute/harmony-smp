@@ -10,6 +10,7 @@ import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(value = "/ui/rest/security")
 public class AuthenticationResource {
 
+    public static final String CSRF_COOKIE_NAME = "XSRF-TOKEN";
+    public static final String SESSION_COOKIE_NAME = "JSESSIONID";
+
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationResource.class);
 
     @Autowired
@@ -45,6 +49,12 @@ public class AuthenticationResource {
     @Autowired
     private ConversionService conversionService;
 
+    @Autowired
+    private ConfigurationService configurationService;
+
+    SMPCookieWriter smpCookieWriter = new SMPCookieWriter();
+
+
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     @ExceptionHandler({AuthenticationException.class})
     public ErrorRO handleException(Exception ex) {
@@ -54,8 +64,12 @@ public class AuthenticationResource {
 
     @RequestMapping(value = "authentication", method = RequestMethod.POST)
     @Transactional(noRollbackFor = BadCredentialsException.class)
-    public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletResponse response) {
+    public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletRequest request, HttpServletResponse response) {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
+        // reset session id with login
+
+        recreatedSessionCookie(request, response);
+
         SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
         UserRO userRO = conversionService.convert(authentication.getUser(), UserRO.class);
         return authorizationService.sanitize(userRO);
@@ -70,7 +84,7 @@ public class AuthenticationResource {
         }
 
         LOG.info("Logging out user [{}]", auth.getName());
-        new CookieClearingLogoutHandler("JSESSIONID", "XSRF-TOKEN").logout(request, response, null);
+        new CookieClearingLogoutHandler(SESSION_COOKIE_NAME, CSRF_COOKIE_NAME).logout(request, response, null);
         LOG.info("Cleared cookies");
         new SecurityContextLogoutHandler().logout(request, response, auth);
         LOG.info("Logged out");
@@ -86,6 +100,24 @@ public class AuthenticationResource {
 
         user.setUsername(username);
         return user;
+    }
+
+    /**
+     * set cookie parameters https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+     *
+     * @param request
+     * @param response
+     */
+    public void recreatedSessionCookie(HttpServletRequest request, HttpServletResponse response) {
+        String sessionId = request.changeSessionId();
+        smpCookieWriter.writeCookieToResponse(SESSION_COOKIE_NAME,
+                sessionId,
+                configurationService.getSessionCookieSecure(), configurationService.getSessionCookieMaxAge(),
+                configurationService.getSessionCookiePath(),
+                configurationService.getSessionCookieSameSite(),
+                null,
+                request, response
+        );
     }
 
 }

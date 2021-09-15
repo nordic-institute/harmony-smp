@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpWebAppConfig.class,
         DatabaseConfig.class,
         SpringSecurityConfig.class,
-        SpringSecurityTestConfig.class,
+        SpringSecurityTestConfig.class
 })
 @WebAppConfiguration
 @Sql(scripts = {"classpath:/cleanup-database.sql",
@@ -123,7 +123,6 @@ public class SecurityConfigurationClientCertTest {
                 },
 
 
-
                 {
                         "Issue test one",
                         "CN=ncp.fi.ehealth.testa.eu,O=Kansanelakelaitos,C=FI:f71ee8b11cb3b787",
@@ -177,7 +176,7 @@ public class SecurityConfigurationClientCertTest {
 
     @Test
     public void validBlueCoatHeaderAuthorizedForPutTest() throws Exception {
-        System.out.println("Test: "+ testName);
+        System.out.println("Test: " + testName);
         String clientCert = buildClientCert(serialNumber, certificateDn);
         System.out.println("Client-Cert: " + clientCert);
 

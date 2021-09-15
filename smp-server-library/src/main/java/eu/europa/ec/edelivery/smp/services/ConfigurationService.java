@@ -170,4 +170,18 @@ public class ConfigurationService {
     }
 
 
+    public boolean getSessionCookieSecure() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_SECURE);
+        return value != null && value;
+    }
+    public Integer getSessionCookieMaxAge() {
+        return (Integer) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_MAX_AGE);
+    }
+    public String getSessionCookieSameSite() {
+        return (String) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_SITE);
+    }
+    public String getSessionCookiePath() {
+        return (String) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_PATH);
+    }
+
 }
