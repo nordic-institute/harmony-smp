@@ -50,8 +50,7 @@ import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.unm
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsByteArray;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshallToByteArray;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by gutowpa on 15/11/2017.
@@ -114,8 +113,6 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
 
     @Test
     public void saveAndReadPositiveScenario() throws IOException, TransformerException, JAXBException {
-
-
         //given
         byte[]  inServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
         byte[] expectedSignedServiceMetadataXml = loadDocumentAsByteArray(SIGNED_SERVICE_METADATA_XML_PATH);
@@ -131,7 +128,7 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
         assertEquals(1, docIdsAfter.size());
         assertEquals(DOC_ID.getValue().toLowerCase(), docIdsAfter.get(0).getValue()); // normalized
         assertEquals(DOC_ID.getScheme().toLowerCase(), docIdsAfter.get(0).getScheme()); // normalized
-        assertTrue(Arrays.equals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toByteArray(outServiceMetadataDoc) ));
+        assertArrayEquals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toByteArray(outServiceMetadataDoc));
     }
 
     @Test
