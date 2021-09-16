@@ -11,6 +11,7 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static eu.europa.ec.edelivery.smp.auth.SMPAuthority.*;
+import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.CSRF_COOKIE_NAME;
+import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
+
 /**
  * @author Sebastian-Ion TINCU
  * @since 4.0
@@ -34,9 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping(value = "/ui/rest/security")
 public class AuthenticationResource {
-
-    public static final String CSRF_COOKIE_NAME = "XSRF-TOKEN";
-    public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationResource.class);
 
@@ -91,7 +93,7 @@ public class AuthenticationResource {
     }
 
     @RequestMapping(value = "user", method = RequestMethod.GET)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public UserRO getUser() {
         UserRO user = new UserRO();
 
@@ -115,7 +117,6 @@ public class AuthenticationResource {
                 configurationService.getSessionCookieSecure(), configurationService.getSessionCookieMaxAge(),
                 configurationService.getSessionCookiePath(),
                 configurationService.getSessionCookieSameSite(),
-                null,
                 request, response
         );
     }
