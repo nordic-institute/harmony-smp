@@ -1,8 +1,7 @@
-package eu.europa.ec.edelivery.smp.ui;
+package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 
@@ -15,6 +14,10 @@ import java.time.format.DateTimeFormatter;
 
 public class SMPCookieWriter {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPCookieWriter.class);
+
+    public static final String CSRF_COOKIE_NAME = "XSRF-TOKEN";
+    public static final String SESSION_COOKIE_NAME = "JSESSIONID";
+
     private static final String COOKIE_PARAM_DELIMITER = "; ";
     private static final String COOKIE_PARAM_SECURE = "secure";
     private static final String COOKIE_PARAM_MAX_AGE = "Max-Age";
@@ -27,7 +30,25 @@ public class SMPCookieWriter {
     /**
      * set cookie parameters https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
      */
-    public void writeCookieToResponse(String cookieName, String cookieValue, boolean isSecure, Integer maxAge, String path, String sameSite, String domain, HttpServletRequest request, HttpServletResponse response) {
+    public void writeCookieToResponse(String cookieName, String cookieValue, boolean isSecure, Integer maxAge, String path, String sameSite, HttpServletRequest request, HttpServletResponse response) {
+        String cookieHeader = generateSetCookieHeader(cookieName, cookieValue, isSecure, maxAge, path, sameSite, request);
+        LOG.info("Set cookie [{}]",cookieHeader);
+        response.setHeader(HttpHeaders.SET_COOKIE, cookieHeader);
+    }
+
+    /**
+     * Method generates set cookie header
+     *
+     * @param cookieName
+     * @param cookieValue
+     * @param isSecure
+     * @param maxAge
+     * @param path
+     * @param sameSite
+     * @param request
+     * @return
+     */
+    public String generateSetCookieHeader(String cookieName, String cookieValue, boolean isSecure, Integer maxAge, String path, String sameSite, HttpServletRequest request) {
 
 
         StringBuilder sb = new StringBuilder();
@@ -59,7 +80,7 @@ public class SMPCookieWriter {
         if (StringUtils.isBlank(path)) {
             path = request.getContextPath();
             path = StringUtils.isNotBlank(path)
-                    ? path  : "/";
+                    ? path : "/";
         }
         if (StringUtils.isNotBlank(path)) {
             sb.append(COOKIE_PARAM_DELIMITER)
@@ -74,7 +95,7 @@ public class SMPCookieWriter {
                     .append(sameSite);
         }
 
-        LOG.info("Set cookie [{}]",sb.toString());
-        response.setHeader(HttpHeaders.SET_COOKIE, sb.toString());
+        LOG.debug("generated set cookie header [{}]", sb.toString());
+        return sb.toString();
     }
 }
