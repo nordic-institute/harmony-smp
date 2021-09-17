@@ -283,7 +283,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
 
     @Test
-    public void validateExtensionVaild() throws IOException {
+    public void validateExtensionValid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidExtension();
 
@@ -296,7 +296,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void validateExtensionMultipleVaild() throws IOException {
+    public void validateExtensionMultipleValid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidMultipleExtension();
 
@@ -309,7 +309,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void validateExtensionCustomTextInvaldValid() throws IOException {
+    public void validateExtensionCustomTextInvalid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidCustomText();
 
@@ -331,7 +331,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
         // then
         assertNotNull(sg.getErrorMessage());
-        assertThat(sg.getErrorMessage(), containsString(" Invalid content was found starting with element 'ExtensionID'."));
+        assertThat(sg.getErrorMessage(), containsString("cvc-complex-type.2.4.a: Invalid content was found starting with element '{\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\":ExtensionID}'."));
         assertNotNull(sg.getExtension());
     }
 

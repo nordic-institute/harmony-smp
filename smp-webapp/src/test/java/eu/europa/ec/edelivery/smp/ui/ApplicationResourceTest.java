@@ -29,6 +29,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import static org.junit.Assert.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -110,7 +111,8 @@ public class ApplicationResourceTest {
     @Test
     public void testGetApplicationConfigNotAuthorized() throws Exception {
         // when
-         mvc.perform(get(PATH + "/config"))
+         mvc.perform(get(PATH + "/config")
+                 .with(csrf()))
                 .andExpect(status().isUnauthorized())
                 .andReturn()
                 .getResponse();
@@ -118,21 +120,26 @@ public class ApplicationResourceTest {
     @Test
     public void testGetApplicationConfigAuthorized() throws Exception {
         //  SMP admin
-        String val = mvc.perform(get(PATH + "/config").with(SMP_ADMIN_CREDENTIALS))
+        String val = mvc.perform(get(PATH + "/config")
+                .with(SMP_ADMIN_CREDENTIALS)
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
         assertNotNull(val);
         //  service group
-        val = mvc.perform(get(PATH + "/config").with(SG_ADMIN_CREDENTIALS))
+        val = mvc.perform(get(PATH + "/config").with(SG_ADMIN_CREDENTIALS)
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
         assertNotNull(val);
         // system admin
-        val = mvc.perform(get(PATH + "/config").with(SYSTEM_CREDENTIALS))
+        val = mvc.perform(get(PATH + "/config")
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -143,8 +150,9 @@ public class ApplicationResourceTest {
     @Test
     public void testGetApplicationConfigSMPAdmin() throws Exception {
         // when
-        String value = mvc.perform(get(PATH + "/config").with(SMP_ADMIN_CREDENTIALS))
-
+        String value = mvc.perform(get(PATH + "/config")
+                .with(SMP_ADMIN_CREDENTIALS)
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
