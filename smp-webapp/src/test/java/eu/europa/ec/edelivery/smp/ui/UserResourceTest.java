@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -88,8 +89,10 @@ public class UserResourceTest {
     @Test
     public void getUserList() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(PATH).with(ADMIN_CREDENTIALS)).
-                andExpect(status().isOk()).andReturn();
+        MvcResult result = mvc.perform(get(PATH)
+                .with(ADMIN_CREDENTIALS)
+                .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
 
         //them
         ObjectMapper mapper = new ObjectMapper();
@@ -127,7 +130,9 @@ public class UserResourceTest {
         }
         userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
 
-        mvc.perform(put(PATH+"/"+userRO.getId()).with(ADMIN_CREDENTIALS)
+        mvc.perform(put(PATH+"/"+userRO.getId())
+                .with(ADMIN_CREDENTIALS)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(userRO))
         ).andExpect(status().isOk()).andReturn();
@@ -155,7 +160,9 @@ public class UserResourceTest {
         }
         userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
 
-        mvc.perform(put(PATH+"/"+userRO.getId()).with(SYSTEM_CREDENTIALS)
+        mvc.perform(put(PATH+"/"+userRO.getId())
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(userRO))
         ).andExpect(status().isUnauthorized());
@@ -164,8 +171,10 @@ public class UserResourceTest {
     @Test
     public void testUpdateUserList() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(PATH).with(SYSTEM_CREDENTIALS)).
-                andExpect(status().isOk()).andReturn();
+        MvcResult result = mvc.perform(get(PATH)
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
         ObjectMapper mapper = new ObjectMapper();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         assertNotNull(res);
@@ -181,7 +190,9 @@ public class UserResourceTest {
         userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
 
         mvc.perform(put(PATH)
-                .with(SYSTEM_CREDENTIALS).contentType(MediaType.APPLICATION_JSON)
+                        .with(SYSTEM_CREDENTIALS)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Arrays.asList(userRO)))
                 ).andExpect(status().isOk());
     }
@@ -189,8 +200,10 @@ public class UserResourceTest {
     @Test
     public void testUpdateUserListWrongAuthentication() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(PATH).with(SYSTEM_CREDENTIALS)).
-                andExpect(status().isOk()).andReturn();
+        MvcResult result = mvc.perform(get(PATH)
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
         ObjectMapper mapper = new ObjectMapper();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         assertNotNull(res);
@@ -206,17 +219,22 @@ public class UserResourceTest {
         userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
         // anonymous
         mvc.perform(put(PATH)
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Arrays.asList(userRO)))
         ).andExpect(status().isUnauthorized());
 
         mvc.perform(put(PATH)
-                .with(ADMIN_CREDENTIALS).contentType(MediaType.APPLICATION_JSON)
+                .with(ADMIN_CREDENTIALS)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Arrays.asList(userRO)))
         ).andExpect(status().isUnauthorized());
 
         mvc.perform(put(PATH)
-                .with(SG_ADMIN_CREDENTIALS).contentType(MediaType.APPLICATION_JSON)
+                .with(SG_ADMIN_CREDENTIALS)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Arrays.asList(userRO)))
         ).andExpect(status().isUnauthorized());
     }
@@ -228,6 +246,7 @@ public class UserResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/1098765430/certdata")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(buff))
                 .andExpect(status().isOk()).andReturn();
 
@@ -250,6 +269,7 @@ public class UserResourceTest {
         // given when
         mvc.perform(post(PATH+"/1098765430/certdata")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(buff))
                 .andExpect(status().is5xxServerError())
                 .andExpect(content().string(CoreMatchers.containsString(" The certificate is not valid")));
@@ -265,6 +285,7 @@ public class UserResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/1098765430/certdata")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(buff))
                 .andExpect(status().isOk()).andReturn();
 
@@ -283,6 +304,7 @@ public class UserResourceTest {
         // given when
         mvc.perform(post(PATH+"/34556655/certdata")
                 .with(ADMIN_CREDENTIALS)
+                .with(csrf())
                 .content(buff))
                 .andExpect(status().isUnauthorized()).andReturn();
     }
@@ -292,6 +314,7 @@ public class UserResourceTest {
         // 1 is id for smp_admin
         MvcResult result = mvc.perform(post(PATH+"/1/samePreviousPasswordUsed")
                 .with(ADMIN_CREDENTIALS)
+                .with(csrf())
                 .content("test123"))
                 .andExpect(status().isOk()).andReturn();
 
@@ -304,6 +327,7 @@ public class UserResourceTest {
         // 1 is id for smp_admin
         MvcResult result = mvc.perform(post(PATH+"/1/samePreviousPasswordUsed")
                 .with(ADMIN_CREDENTIALS)
+                .with(csrf())
                 .content("7777"))
                 .andExpect(status().isOk()).andReturn();
 
@@ -316,16 +340,16 @@ public class UserResourceTest {
         // 1 is id for smp_admin so for 3 should be Unauthorized
         MvcResult result = mvc.perform(post(PATH+"/3/samePreviousPasswordUsed")
                 .with(ADMIN_CREDENTIALS)
+                .with(csrf())
                 .content("test123"))
                 .andExpect(status().isUnauthorized()).andReturn();
-
-
     }
 
     @Test
     public void testValidateDeleteUserOK() throws Exception {
         MvcResult result = mvc.perform(post(PATH+"/validateDelete")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .content("[5]"))
                 .andExpect(status().isOk()).andReturn();
@@ -343,6 +367,7 @@ public class UserResourceTest {
         // note system credential has id 3!
         MvcResult result = mvc.perform(post(PATH+"/validateDelete")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .content("[3]"))
                 .andExpect(status().isOk())

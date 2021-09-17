@@ -42,6 +42,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -98,8 +99,10 @@ public class KeystoreResourceTest {
     public void getKeyCertificateList() throws Exception {
         // given when
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
-        MvcResult result = mvc.perform(get(PATH).with(SYSTEM_CREDENTIALS)).
-                andExpect(status().isOk()).andReturn();
+        MvcResult result = mvc.perform(get(PATH)
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
 
         //them
         ObjectMapper mapper = new ObjectMapper();
@@ -122,6 +125,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/test123")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content("invalid keystore")).
                 andExpect(status().isOk()).andReturn();
 
@@ -139,6 +143,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/NewPassword1234")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 
@@ -157,6 +162,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/test123")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 
@@ -176,6 +182,7 @@ public class KeystoreResourceTest {
         // given when
         MvcResult result = mvc.perform(delete(PATH+"/3/delete/second_domain_alias")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(Files.readAllBytes(keystore)) )
                 .andExpect(status().isOk()).andReturn();
 

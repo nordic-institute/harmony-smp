@@ -37,6 +37,7 @@ import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -95,7 +96,7 @@ public class ServiceGroupResourceTest {
     public void getServiceGroupListForSMPAdmin() throws Exception {
         // given when
         MvcResult result = mvc.perform(get(PATH)
-                .with(SMP_ADMIN_CREDENTIALS)
+                .with(SMP_ADMIN_CREDENTIALS).with(csrf())
         ).andExpect(status().isOk()).andReturn();
 
         //them
@@ -119,7 +120,7 @@ public class ServiceGroupResourceTest {
     public void getServiceGroupListForServiceGroupAdmin() throws Exception {
         // given when
         MvcResult result = mvc.perform(get(PATH)
-                .with(SG_ADMIN_CREDENTIALS)
+                .with(SG_ADMIN_CREDENTIALS).with(csrf())
         ).andExpect(status().isOk()).andReturn();
 
         //them
@@ -143,7 +144,7 @@ public class ServiceGroupResourceTest {
 
         // given when
         MvcResult result = mvc.perform(get(PATH + "/100000")
-                .with(SMP_ADMIN_CREDENTIALS)).
+                .with(SMP_ADMIN_CREDENTIALS).with(csrf())).
                 andExpect(status().isOk()).andReturn();
 
         //them
@@ -172,8 +173,8 @@ public class ServiceGroupResourceTest {
 
         // given when
         MvcResult result = mvc.perform(get(PATH + "/extension/100000")
-                .with(SMP_ADMIN_CREDENTIALS)).
-                andExpect(status().isOk()).andReturn();
+                .with(SMP_ADMIN_CREDENTIALS).with(csrf()))
+                .andExpect(status().isOk()).andReturn();
 
         //them
         ObjectMapper mapper = new ObjectMapper();
@@ -187,7 +188,7 @@ public class ServiceGroupResourceTest {
     }
 
     @Test
-    public void testValidateInvald() throws Exception {
+    public void testValidateInvalid() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         ServiceGroupValidationRO validate = new ServiceGroupValidationRO();
         validate.setExtension(validExtension + "<ADFA>sdfadsf");
@@ -196,7 +197,8 @@ public class ServiceGroupResourceTest {
         MvcResult result = mvc.perform(post(PATH + "/extension/validate")
                 .with(SMP_ADMIN_CREDENTIALS)
                 .header("Content-Type","application/json")
-                    .content(mapper.writeValueAsString(validate)))
+                    .content(mapper.writeValueAsString(validate))
+                .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
         //then

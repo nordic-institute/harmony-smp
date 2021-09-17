@@ -17,6 +17,7 @@ import eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
 import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,11 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Created by gutowpa on 12/07/2017.
@@ -82,7 +86,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         // prepare filters
         blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
 
-        httpSecurity.csrf().disable()
+        httpSecurity
+//                .csrf().disable()
+                .csrf().csrfTokenRepository(tokenRepository()).requireCsrfProtectionMatcher(csrfURLMatcher()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
                 .exceptionHandling().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and()
                 .headers().frameOptions().deny().contentTypeOptions().and().xssProtection().xssProtectionEnabled(true).and().and()
@@ -152,5 +158,29 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         EDeliveryX509AuthenticationFilter x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
         x509AuthenticationFilter.setAuthenticationManager(authenticationManager);
         return x509AuthenticationFilter;
+    }
+
+    @Bean
+    public CsrfTokenRepository tokenRepository(){
+        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
+        csrfTokenRepository.setCookieHttpOnly(false);
+        return csrfTokenRepository;
+    }
+
+    @Bean
+    public RequestMatcher csrfURLMatcher() {
+        URLCsrfMatcher requestMatcher = new URLCsrfMatcher();
+        // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
+        requestMatcher.addIgnoreUrl("/.*::.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
+        // ignore for login and logout
+        requestMatcher.addIgnoreUrl("/ui/rest/security/authentication", HttpMethod.DELETE, HttpMethod.POST);
+        // info
+        requestMatcher.addIgnoreUrl("/ui/rest/application/(info|rootContext|name)", HttpMethod.GET);
+        // monitor
+        requestMatcher.addIgnoreUrl("/monitor/is-alive", HttpMethod.GET);
+        // public search
+
+        requestMatcher.addIgnoreUrl("/ui/rest/search", HttpMethod.GET);
+        return requestMatcher;
     }
 }
