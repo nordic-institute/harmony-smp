@@ -48,7 +48,7 @@ public class SMPCookieWriterGenerateHeaderTest {
         });
     }
 
-    public SMPCookieWriterGenerateHeaderTest(String description, boolean isSecure, Integer maxAge, String path, String sameSite, String domain, String expectedResultContains, String expectedResultNotContains) {
+    public SMPCookieWriterGenerateHeaderTest(String description, boolean isSecure, Integer maxAge, String path, String sameSite,String expectedResultContains, String expectedResultNotContains) {
         this.description = description;
         this.isSecure = isSecure;
         this.maxAge = maxAge;
