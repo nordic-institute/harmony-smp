@@ -42,20 +42,24 @@ public class AuthenticationResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationResource.class);
 
-    @Autowired
     protected SMPAuthenticationService authenticationService;
 
-    @Autowired
     protected SMPAuthorizationService authorizationService;
 
-    @Autowired
     private ConversionService conversionService;
 
-    @Autowired
     private ConfigurationService configurationService;
 
-    SMPCookieWriter smpCookieWriter = new SMPCookieWriter();
+    SMPCookieWriter smpCookieWriter;
 
+    @Autowired
+    public AuthenticationResource(SMPAuthenticationService authenticationService, SMPAuthorizationService authorizationService, ConversionService conversionService, ConfigurationService configurationService, SMPCookieWriter smpCookieWriter) {
+        this.authenticationService = authenticationService;
+        this.authorizationService = authorizationService;
+        this.conversionService = conversionService;
+        this.configurationService = configurationService;
+        this.smpCookieWriter = smpCookieWriter;
+    }
 
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     @ExceptionHandler({AuthenticationException.class})
