@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {
   MatButtonModule,
@@ -153,6 +153,10 @@ import {SmlIntegrationService} from "./domain/sml-integration.service";
     BrowserModule,
     FlexLayoutModule,
     HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',
+      headerName: 'X-XSRF-TOKEN'
+    }),
     BrowserAnimationsModule,
     FormsModule,
     NgxDatatableModule,
@@ -200,7 +204,7 @@ import {SmlIntegrationService} from "./domain/sml-integration.service";
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
       deps: [HttpClient, HttpEventService, SecurityService]
-    },
+    }
   ],
   bootstrap: [AppComponent]
 })
