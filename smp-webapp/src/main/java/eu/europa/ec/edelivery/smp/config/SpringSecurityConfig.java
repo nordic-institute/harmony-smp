@@ -18,6 +18,7 @@ import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
+import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,18 +98,18 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.PUT).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.GET).permitAll().and()
                 .authorizeRequests().antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()).and()
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()).and()
         ;
 
 
@@ -152,5 +153,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         EDeliveryX509AuthenticationFilter x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
         x509AuthenticationFilter.setAuthenticationManager(authenticationManager);
         return x509AuthenticationFilter;
+    }
+
+    @Bean
+    public SMPCookieWriter getSMPCookieWriter() {
+        return new SMPCookieWriter();
     }
 }

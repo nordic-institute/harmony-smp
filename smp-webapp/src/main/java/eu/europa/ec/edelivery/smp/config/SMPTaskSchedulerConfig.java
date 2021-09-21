@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
         basePackages = "eu.europa.ec.edelivery.smp")
 public class SMPTaskSchedulerConfig {
 
-    ConfigurationDao configurationDao;
+    final ConfigurationDao configurationDao;
 
     @Autowired
     public SMPTaskSchedulerConfig(ConfigurationDao configurationDao) {
