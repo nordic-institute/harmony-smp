@@ -28,14 +28,11 @@ public enum SMPPropertyEnum {
     SML_LOGICAL_ADDRESS("bdmsl.integration.logical.address","http://localhost:8080/smp/","Logical SMP endpoint which will be registered on SML when registering new domain", false, false , SMPPropertyTypeEnum.URL),
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address","0.0.0.0","Physical SMP endpoint which will be registered on SML when registering new domain.", false, false , SMPPropertyTypeEnum.STRING),
 
-
-
     HTTP_PROXY_HOST("smp.proxy.host", "", "The http proxy host", false,false, SMPPropertyTypeEnum.STRING),
     HTTP_NO_PROXY_HOSTS("smp.noproxy.hosts", "localhost|127.0.0.1", "list of nor proxy hosts. Ex.: localhost|127.0.0.1", false,false, SMPPropertyTypeEnum.STRING),
     HTTP_PROXY_PASSWORD("smp.proxy.password", "", "Base64 encrypted password for Proxy.", false, true,SMPPropertyTypeEnum.STRING),
     HTTP_PROXY_PORT("smp.proxy.port", "80", "The http proxy port", false, false, SMPPropertyTypeEnum.INTEGER),
     HTTP_PROXY_USER("smp.proxy.user", "", "The proxy user", false, false, SMPPropertyTypeEnum.STRING),
-
 
     KEYSTORE_PASSWORD("smp.keystore.password","","Encrypted keystore (and keys) password ", false, true, SMPPropertyTypeEnum.STRING),
     KEYSTORE_FILENAME("smp.keystore.filename","smp-keystore.jks","Keystore filename ", true, false , SMPPropertyTypeEnum.FILENAME),
@@ -56,7 +53,12 @@ public enum SMPPropertyEnum {
     SML_PROXY_PORT("bdmsl.integration.proxy.port","","Deprecated", false, false , SMPPropertyTypeEnum.INTEGER),
     SML_PROXY_USER("bdmsl.integration.proxy.user","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
     SML_PROXY_PASSWORD("bdmsl.integration.proxy.password","","Deprecated", false, false , SMPPropertyTypeEnum.STRING),
-    SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression","0 48 */1 * * *","Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!", false, false , SMPPropertyTypeEnum.STRING);
+    SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression","0 48 */1 * * *","Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!", false, false , SMPPropertyTypeEnum.STRING),
+
+    UI_COOKIE_SESSION_SECURE("smp.ui.session.secure","false","Cookie is only sent to the server when a request is made with the https: scheme (except on localhost), and therefore is more resistent to man-in-the-middle attacks.", false, false , SMPPropertyTypeEnum.BOOLEAN),
+    UI_COOKIE_SESSION_MAX_AGE("smp.ui.session.max-age","","Number of seconds until the cookie expires. A zero or negative number will expire the cookie immediately. Empty value will not set parameter", false, false , SMPPropertyTypeEnum.INTEGER),
+    UI_COOKIE_SESSION_SITE("smp.ui.session.strict","None","Controls whether a cookie is sent with cross-origin requests, providing some protection against cross-site request forgery attacks. Possible values are: Strict, None, Lax", false, false , SMPPropertyTypeEnum.STRING),
+    UI_COOKIE_SESSION_PATH("smp.ui.session.path","","A path that must exist in the requested URL, or the browser won't send the Cookie header.  Null/Empty value sets the authentication requests context by default.  The forward slash (/) character is interpreted as a directory separator, and subdirectories will be matched as well: for Path=/docs, /docs, /docs/Web/, and /docs/Web/HTTP will all match", false, false , SMPPropertyTypeEnum.STRING);
 
 
     String property;

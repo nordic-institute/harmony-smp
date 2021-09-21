@@ -15,23 +15,148 @@ package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
+import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
 
 /**
  * Created by gutowpa on 12/07/2017.
  */
 
 @EnableWebSecurity
-@ImportResource("classpath:spring-security.xml")
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+//@ImportResource("classpath:spring-security.xml")
 @ComponentScan("eu.europa.ec.edelivery.smp.auth")
-public class SpringSecurityConfig {
+public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+    private static final Logger LOG = LoggerFactory.getLogger(SpringSecurityConfig.class);
+
+    SMPAuthenticationProvider smpAuthenticationProvider;
+    BlueCoatAuthenticationFilter blueCoatAuthenticationFilter;
+    EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
+
+    @Value("${authentication.blueCoat.enabled:false}")
+    boolean clientCertEnabled;
+    @Value("${encodedSlashesAllowedInUrl:true}")
+    boolean encodedSlashesAllowedInUrl;
+
+    /**
+     * Initialize beans. Use lazy initialization for filter to avoid circular dependencies
+     *
+     * @param smpAuthenticationProvider
+     * @param blueCoatAuthenticationFilter
+     * @param x509AuthenticationFilter
+     */
+    @Autowired
+    public SpringSecurityConfig(SMPAuthenticationProvider smpAuthenticationProvider,
+                                @Lazy BlueCoatAuthenticationFilter blueCoatAuthenticationFilter,
+                                @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter) {
+        super(false);
+        this.smpAuthenticationProvider = smpAuthenticationProvider;
+        this.blueCoatAuthenticationFilter = blueCoatAuthenticationFilter;
+        this.x509AuthenticationFilter = x509AuthenticationFilter;
+    }
+
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+
+        // prepare filters
+        blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
+
+        httpSecurity.csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
+                .exceptionHandling().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and()
+                .headers().frameOptions().deny().contentTypeOptions().and().xssProtection().xssProtectionEnabled(true).and().and()
+
+                .addFilter(blueCoatAuthenticationFilter)
+                .addFilter(x509AuthenticationFilter)
+                .httpBasic()
+                .and() // username
+                .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
+                .authorizeRequests().antMatchers(HttpMethod.DELETE, "/ui/rest/security/authentication").permitAll()
+                .antMatchers(HttpMethod.POST, "/ui/rest/security/authentication").permitAll()
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.GET).permitAll().and()
+                .authorizeRequests().antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()).and()
+        ;
 
 
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        super.configure(web);
+        web.httpFirewall(smpHttpFirewall());
+    }
+
+
+    @Bean
+    public HttpFirewall smpHttpFirewall() {
+        DefaultHttpFirewall firewall = new DefaultHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(encodedSlashesAllowedInUrl);
+        return firewall;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+        LOG.info("configureAuthenticationManagerBuilder, set SMP provider ");
+        auth.authenticationProvider(smpAuthenticationProvider);
+    }
+
+    @Override
+    @Bean(name = {BeanIds.AUTHENTICATION_MANAGER, "smpAuthenticationManager"})
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public BlueCoatAuthenticationFilter getClientCertAuthenticationFilter(@Qualifier("smpAuthenticationManager") AuthenticationManager authenticationManager) {
+        BlueCoatAuthenticationFilter blueCoatAuthenticationFilter = new BlueCoatAuthenticationFilter();
+        blueCoatAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        return blueCoatAuthenticationFilter;
+    }
+
+    @Bean
+    public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter(@Qualifier("smpAuthenticationManager") AuthenticationManager authenticationManager) {
+        EDeliveryX509AuthenticationFilter x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
+        x509AuthenticationFilter.setAuthenticationManager(authenticationManager);
+        return x509AuthenticationFilter;
+    }
+
+    @Bean
+    public SMPCookieWriter getSMPCookieWriter() {
+        return new SMPCookieWriter();
+    }
 }

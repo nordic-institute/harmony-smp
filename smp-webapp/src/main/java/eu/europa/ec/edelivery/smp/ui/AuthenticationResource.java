@@ -10,6 +10,8 @@ import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static eu.europa.ec.edelivery.smp.auth.SMPAuthority.*;
+import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.CSRF_COOKIE_NAME;
+import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
+
 /**
  * @author Sebastian-Ion TINCU
  * @since 4.0
@@ -36,14 +42,24 @@ public class AuthenticationResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationResource.class);
 
-    @Autowired
     protected SMPAuthenticationService authenticationService;
 
-    @Autowired
     protected SMPAuthorizationService authorizationService;
 
-    @Autowired
     private ConversionService conversionService;
+
+    private ConfigurationService configurationService;
+
+    SMPCookieWriter smpCookieWriter;
+
+    @Autowired
+    public AuthenticationResource(SMPAuthenticationService authenticationService, SMPAuthorizationService authorizationService, ConversionService conversionService, ConfigurationService configurationService, SMPCookieWriter smpCookieWriter) {
+        this.authenticationService = authenticationService;
+        this.authorizationService = authorizationService;
+        this.conversionService = conversionService;
+        this.configurationService = configurationService;
+        this.smpCookieWriter = smpCookieWriter;
+    }
 
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     @ExceptionHandler({AuthenticationException.class})
@@ -54,8 +70,12 @@ public class AuthenticationResource {
 
     @RequestMapping(value = "authentication", method = RequestMethod.POST)
     @Transactional(noRollbackFor = BadCredentialsException.class)
-    public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletResponse response) {
+    public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletRequest request, HttpServletResponse response) {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
+        // reset session id with login
+
+        recreatedSessionCookie(request, response);
+
         SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
         UserRO userRO = conversionService.convert(authentication.getUser(), UserRO.class);
         return authorizationService.sanitize(userRO);
@@ -70,14 +90,14 @@ public class AuthenticationResource {
         }
 
         LOG.info("Logging out user [{}]", auth.getName());
-        new CookieClearingLogoutHandler("JSESSIONID", "XSRF-TOKEN").logout(request, response, null);
+        new CookieClearingLogoutHandler(SESSION_COOKIE_NAME, CSRF_COOKIE_NAME).logout(request, response, null);
         LOG.info("Cleared cookies");
         new SecurityContextLogoutHandler().logout(request, response, auth);
         LOG.info("Logged out");
     }
 
     @RequestMapping(value = "user", method = RequestMethod.GET)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public UserRO getUser() {
         UserRO user = new UserRO();
 
@@ -86,6 +106,23 @@ public class AuthenticationResource {
 
         user.setUsername(username);
         return user;
+    }
+
+    /**
+     * set cookie parameters https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+     *
+     * @param request
+     * @param response
+     */
+    public void recreatedSessionCookie(HttpServletRequest request, HttpServletResponse response) {
+        String sessionId = request.changeSessionId();
+        smpCookieWriter.writeCookieToResponse(SESSION_COOKIE_NAME,
+                sessionId,
+                configurationService.getSessionCookieSecure(), configurationService.getSessionCookieMaxAge(),
+                configurationService.getSessionCookiePath(),
+                configurationService.getSessionCookieSameSite(),
+                request, response
+        );
     }
 
 }

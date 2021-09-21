@@ -24,7 +24,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
@@ -51,20 +50,20 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
+                         AuthenticationException authException) throws IOException {
         String errorMsg = authException.getMessage();
-        if(authException instanceof BadCredentialsException){
+        if (authException instanceof BadCredentialsException) {
             errorMsg += " - Provided username/password or client certificate are invalid";
         }
         handle(response, authException, errorMsg);
     }
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         handle(response, accessDeniedException, accessDeniedException.getMessage());
     }
 
-    private void handle(HttpServletResponse response, RuntimeException exception, String errorMsg) throws IOException, ServletException {
+    private void handle(HttpServletResponse response, RuntimeException exception, String errorMsg) throws IOException {
         ResponseEntity respEntity = buildAndWarn(exception, errorMsg);
         String errorBody = marshall((ErrorResponse) respEntity.getBody());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

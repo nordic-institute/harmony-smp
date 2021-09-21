@@ -125,7 +125,7 @@ public class SignatureValidatorTest {
     }
 
     @Test
-    public void validateLinarizedSignature() throws Throwable {
+    public void validateLinearizedSignature() throws Throwable {
         String serviceGroupId = "ehealth-actorid-qns::urn:brazil:ncpb";
         Principal principal = new PreAuthenticatedCertificatePrincipal("C=BE, O=European Commission,OU=CEF_eDelivery.europa.eu,OU=eHealth,OU=SMP_TEST,CN=EHEALTH_SMP_EC", "C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4", "f7:1e:e8:b1:1c:b3:b7:87");
         String filePathToLoad = "/input/ServiceMetadata_linarized.xml";
@@ -181,8 +181,8 @@ public class SignatureValidatorTest {
         //Default signature validation
         Element smpSigPointer = SignatureUtil.findSignatureByParentNode(response.getDocumentElement());
         SignatureUtil.validateSignature(smpSigPointer);
-        Assert.assertEquals(signedByCustomizedSignature, SignatureUtil.loadDocumentAsString(signedByCustomizedSignatureFilePath));
-        Assert.assertEquals(SignatureUtil.marshall(response), SignatureUtil.loadDocumentAsString(defaultSignatureFilePath));
+        Assert.assertEquals(SignatureUtil.loadDocumentAsString(signedByCustomizedSignatureFilePath), signedByCustomizedSignature);
+        Assert.assertEquals(SignatureUtil.loadDocumentAsString(defaultSignatureFilePath), SignatureUtil.marshall(response) );
     }
 
     public static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {

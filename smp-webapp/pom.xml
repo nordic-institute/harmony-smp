@@ -15,7 +15,7 @@
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
         <buildtimestamp>${maven.build.timestamp}</buildtimestamp>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss'Z'</maven.build.timestamp.format>
 
         <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
         <ftp.port>2059</ftp.port>
