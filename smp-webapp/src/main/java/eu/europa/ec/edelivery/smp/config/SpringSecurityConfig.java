@@ -36,7 +36,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
@@ -57,6 +56,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     SMPAuthenticationProvider smpAuthenticationProvider;
     BlueCoatAuthenticationFilter blueCoatAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
+    CsrfTokenRepository csrfTokenRepository;
+    RequestMatcher csrfURLMatcher;
 
     @Value("${authentication.blueCoat.enabled:false}")
     boolean clientCertEnabled;
@@ -73,11 +74,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public SpringSecurityConfig(SMPAuthenticationProvider smpAuthenticationProvider,
                                 @Lazy BlueCoatAuthenticationFilter blueCoatAuthenticationFilter,
-                                @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter) {
+                                @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
+                                @Lazy CsrfTokenRepository csrfTokenRepository,
+                                @Lazy RequestMatcher csrfURLMatcher) {
         super(false);
         this.smpAuthenticationProvider = smpAuthenticationProvider;
         this.blueCoatAuthenticationFilter = blueCoatAuthenticationFilter;
         this.x509AuthenticationFilter = x509AuthenticationFilter;
+        this.csrfTokenRepository = csrfTokenRepository;
+        this.csrfURLMatcher = csrfURLMatcher;
     }
 
     @Override
@@ -87,9 +92,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
 
         httpSecurity
-//                .csrf().disable()
-                .csrf().csrfTokenRepository(tokenRepository()).requireCsrfProtectionMatcher(csrfURLMatcher()).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
+                .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
                 .exceptionHandling().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and()
                 .headers().frameOptions().deny().contentTypeOptions().and().xssProtection().xssProtectionEnabled(true).and().and()
 
@@ -161,26 +164,33 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public CsrfTokenRepository tokenRepository(){
-        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
-        csrfTokenRepository.setCookieHttpOnly(false);
-        return csrfTokenRepository;
+    public CsrfTokenRepository tokenRepository() {
+        CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        return repository;
     }
 
     @Bean
     public RequestMatcher csrfURLMatcher() {
         URLCsrfMatcher requestMatcher = new URLCsrfMatcher();
+        // init pages
+        requestMatcher.addIgnoreUrl("^/$", HttpMethod.GET);
+        requestMatcher.addIgnoreUrl("favicon.ico$", HttpMethod.GET);
+        requestMatcher.addIgnoreUrl("^/(index.html|ui/(#/)?|)$", HttpMethod.GET);
         // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
         requestMatcher.addIgnoreUrl("/.*::.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
         // ignore for login and logout
         requestMatcher.addIgnoreUrl("/ui/rest/security/authentication", HttpMethod.DELETE, HttpMethod.POST);
-        // info
-        requestMatcher.addIgnoreUrl("/ui/rest/application/(info|rootContext|name)", HttpMethod.GET);
+        // allow all gets
+        requestMatcher.addIgnoreUrl("/ui/.*", HttpMethod.GET);
+        // altternative fine tuned
+        //requestMatcher.addIgnoreUrl("/ui/(index.html|styles.*|runtime.*|polyfills.*|main.*)", HttpMethod.GET);
+        //requestMatcher.addIgnoreUrl("/ui/.*(\\.html|\\.css|\\.js)$", HttpMethod.GET);
+        //requestMatcher.addIgnoreUrl("/ui/assets/.*", HttpMethod.GET); // allow to retrieve assets
+        //requestMatcher.addIgnoreUrl("/ui/rest/(domain|search).*", HttpMethod.GET); // public methods
+        //requestMatcher.addIgnoreUrl("/ui/rest/application/(info|rootContext|name)", HttpMethod.GET); // public methods
         // monitor
         requestMatcher.addIgnoreUrl("/monitor/is-alive", HttpMethod.GET);
-        // public search
 
-        requestMatcher.addIgnoreUrl("/ui/rest/search", HttpMethod.GET);
         return requestMatcher;
     }
 }
