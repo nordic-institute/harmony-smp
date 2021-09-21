@@ -50,8 +50,8 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.26</slf4j.version>
-        <spring.version>5.1.9.RELEASE</spring.version>
-        <spring.security.version>5.1.6.RELEASE</spring.security.version>
+        <spring.version>5.3.9</spring.version>
+        <spring.security.version>5.5.2</spring.security.version>
         <spring.boot.version>2.1.8.RELEASE</spring.boot.version>
         <!-- bdmsl.client.version>3.0.0</bdmsl.client.version -->
         <bdmsl.api.version>4.0.0</bdmsl.api.version>

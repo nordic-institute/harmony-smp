@@ -30,7 +30,6 @@ public class ConfigurationService {
     @Autowired
     private ConfigurationDao configurationDAO;
 
-
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
         String finalValue = StringUtils.trimToNull(value);
         if (finalValue == null) {
@@ -57,15 +56,15 @@ public class ConfigurationService {
         return res;
     }
 
-    public Pattern getParticipantIdentifierSchemeRexExp(){
-        return (Pattern)configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP);
+    public Pattern getParticipantIdentifierSchemeRexExp() {
+        return (Pattern) configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP);
     }
 
-    public String getParticipantIdentifierSchemeRexExpPattern(){
+    public String getParticipantIdentifierSchemeRexExpPattern() {
         return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP);
     }
 
-    public String getParticipantIdentifierSchemeRexExpMessage(){
+    public String getParticipantIdentifierSchemeRexExpMessage() {
         return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP_MSG);
     }
 
@@ -94,13 +93,12 @@ public class ConfigurationService {
         return (String) configurationDAO.getCachedPropertyValue(HTTP_PROXY_PASSWORD);
     }
 
-
     public List<String> getCaseSensitiveDocumentScheme() {
-        return (List<String>)configurationDAO.getCachedPropertyValue(CS_DOCUMENTS);
+        return (List<String>) configurationDAO.getCachedPropertyValue(CS_DOCUMENTS);
     }
 
     public List<String> getCaseSensitiveParticipantScheme() {
-        return (List<String>)configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
+        return (List<String>) configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
     }
 
     public boolean isProxyEnabled() {
@@ -132,26 +130,25 @@ public class ConfigurationService {
         return configurationDAO.getCachedProperty(SML_PHYSICAL_ADDRESS);
     }
 
-
     public boolean forceCRLValidation() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(CERTIFICATE_CRL_FORCE);
         // by default is not froce
         return value != null && value;
     }
+
     public String getSMLIntegrationServerCertSubjectRegExp() {
         return configurationDAO.getCachedProperty(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
     }
+
     public boolean smlDisableCNCheck() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_DISABLE_CN_CHECK);
         // by default is not froce
         return value != null && value;
     }
 
-
     public File getConfigurationFolder() {
         return (File) configurationDAO.getCachedPropertyValue(CONFIGURATION_DIR);
     }
-
 
     public File getTruststoreFile() {
         return (File) configurationDAO.getCachedPropertyValue(TRUSTSTORE_FILENAME);
@@ -169,5 +166,21 @@ public class ConfigurationService {
         return (String) configurationDAO.getCachedPropertyValue(KEYSTORE_PASSWORD);
     }
 
+    public boolean getSessionCookieSecure() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_SECURE);
+        return value != null && value;
+    }
+
+    public Integer getSessionCookieMaxAge() {
+        return (Integer) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_MAX_AGE);
+    }
+
+    public String getSessionCookieSameSite() {
+        return (String) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_SITE);
+    }
+
+    public String getSessionCookiePath() {
+        return (String) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_PATH);
+    }
 
 }
