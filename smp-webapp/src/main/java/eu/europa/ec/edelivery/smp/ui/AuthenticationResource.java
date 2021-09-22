@@ -61,7 +61,7 @@ public class AuthenticationResource {
             , ConversionService conversionService
             , ConfigurationService configurationService
             , SMPCookieWriter smpCookieWriter
-            , CsrfTokenRepository csrfTokenRepository;) {
+            , CsrfTokenRepository csrfTokenRepository) {
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
         this.conversionService = conversionService;
