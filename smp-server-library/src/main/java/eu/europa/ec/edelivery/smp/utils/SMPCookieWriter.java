@@ -12,6 +12,13 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+
+/**
+ * Purpose of class is to serialize SMP cookies with the security flags
+ *
+ * @author Joze Rihtarsic
+ * @since 4.2
+ */
 public class SMPCookieWriter {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPCookieWriter.class);
 
