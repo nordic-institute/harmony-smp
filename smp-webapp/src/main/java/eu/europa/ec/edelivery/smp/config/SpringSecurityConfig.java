@@ -87,41 +87,35 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-
-        // prepare filters
-        blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
-
         httpSecurity
                 .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
                 .exceptionHandling()
-                .authenticationEntryPoint(new SpringSecurityExceptionHandler())
-                .accessDeniedHandler(new SpringSecurityExceptionHandler())
+                    .authenticationEntryPoint(new SpringSecurityExceptionHandler())
+                    .accessDeniedHandler(new SpringSecurityExceptionHandler())
                 .and()
-
                 .headers().frameOptions().deny().contentTypeOptions().and().xssProtection().xssProtectionEnabled(true).and().and()
                 .addFilter(blueCoatAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
-                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler())
-                .and() // username
+                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
-                .authorizeRequests().antMatchers(HttpMethod.DELETE, "/ui/rest/security/authentication").permitAll()
-                .antMatchers(HttpMethod.POST, "/ui/rest/security/authentication").permitAll()
-                .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                    .antMatchers(HttpMethod.DELETE, "/ui/rest/security/authentication").permitAll()
+                    .antMatchers(HttpMethod.POST, "/ui/rest/security/authentication").permitAll().and()
+                .authorizeRequests()
+                    .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                    .antMatchers(HttpMethod.PUT).hasAnyAuthority(
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.GET).permitAll().and()
-                .authorizeRequests().antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()).and()
-        ;
+                .authorizeRequests()
+                    .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
+                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority());
     }
 
     @Override
@@ -154,6 +148,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public BlueCoatAuthenticationFilter getClientCertAuthenticationFilter(@Qualifier("smpAuthenticationManager") AuthenticationManager authenticationManager) {
         BlueCoatAuthenticationFilter blueCoatAuthenticationFilter = new BlueCoatAuthenticationFilter();
         blueCoatAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
         return blueCoatAuthenticationFilter;
     }
 
@@ -183,12 +178,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         requestMatcher.addIgnoreUrl("/ui/rest/security/authentication", HttpMethod.DELETE, HttpMethod.POST);
         // allow all gets
         requestMatcher.addIgnoreUrl("/ui/.*", HttpMethod.GET);
-        // altternative fine tuned
-        //requestMatcher.addIgnoreUrl("/ui/(index.html|styles.*|runtime.*|polyfills.*|main.*)", HttpMethod.GET);
-        //requestMatcher.addIgnoreUrl("/ui/.*(\\.html|\\.css|\\.js)$", HttpMethod.GET);
-        //requestMatcher.addIgnoreUrl("/ui/assets/.*", HttpMethod.GET); // allow to retrieve assets
-        //requestMatcher.addIgnoreUrl("/ui/rest/(domain|search).*", HttpMethod.GET); // public methods
-        //requestMatcher.addIgnoreUrl("/ui/rest/application/(info|rootContext|name)", HttpMethod.GET); // public methods
         // monitor
         requestMatcher.addIgnoreUrl("/monitor/is-alive", HttpMethod.GET);
 
