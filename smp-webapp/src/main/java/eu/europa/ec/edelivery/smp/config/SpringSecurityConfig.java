@@ -181,7 +181,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         requestMatcher.addIgnoreUrl("/ui/.*", HttpMethod.GET);
         // monitor
         requestMatcher.addIgnoreUrl("/monitor/is-alive", HttpMethod.GET);
-
         return requestMatcher;
+    }
+
+    @Bean
+    public SMPCookieWriter smpCookieWriter() {
+        return new SMPCookieWriter();
     }
 }
