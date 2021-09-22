@@ -93,12 +93,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         httpSecurity
                 .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
-                .exceptionHandling().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and()
-                .headers().frameOptions().deny().contentTypeOptions().and().xssProtection().xssProtectionEnabled(true).and().and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new SpringSecurityExceptionHandler())
+                .accessDeniedHandler(new SpringSecurityExceptionHandler())
+                .and()
 
+                .headers().frameOptions().deny().contentTypeOptions().and().xssProtection().xssProtectionEnabled(true).and().and()
                 .addFilter(blueCoatAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
-                .httpBasic()
+                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler())
                 .and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests().antMatchers(HttpMethod.DELETE, "/ui/rest/security/authentication").permitAll()
@@ -119,8 +122,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()).and()
         ;
-
-
     }
 
     @Override
