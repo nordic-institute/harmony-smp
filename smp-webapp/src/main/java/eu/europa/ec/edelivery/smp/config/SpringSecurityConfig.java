@@ -170,11 +170,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public RequestMatcher csrfURLMatcher() {
         URLCsrfMatcher requestMatcher = new URLCsrfMatcher();
         // init pages
-        requestMatcher.addIgnoreUrl("^/$", HttpMethod.GET);
+        requestMatcher.addIgnoreUrl("^(/smp)?/$", HttpMethod.GET);
         requestMatcher.addIgnoreUrl("favicon.ico$", HttpMethod.GET);
-        requestMatcher.addIgnoreUrl("^/(index.html|ui/(#/)?|)$", HttpMethod.GET);
+        requestMatcher.addIgnoreUrl("^(/smp)?/(index.html|ui/(#/)?|)$", HttpMethod.GET);
         // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
-        requestMatcher.addIgnoreUrl("/.*::.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
+        requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
         // ignore for login and logout
         requestMatcher.addIgnoreUrl("/ui/rest/security/authentication", HttpMethod.DELETE, HttpMethod.POST);
         // allow all gets
