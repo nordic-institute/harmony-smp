@@ -334,7 +334,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         // then
         assertNotNull(sg.getErrorMessage());
 
-        assertThat(sg.getErrorMessage(), matchesPattern(".*cvc-complex-type.2.4.a: Invalid content was found starting with element \\'\\{?(\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\")?:ExtensionID\\}?\\'.*"));
+        assertThat(sg.getErrorMessage(), matchesPattern(".*cvc-complex-type.2.4.a: Invalid content was found starting with element \\'\\{?(\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\")?:?ExtensionID\\}?\\'.*"));
         assertNotNull(sg.getExtension());
     }
 
