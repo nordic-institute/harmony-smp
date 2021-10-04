@@ -48,8 +48,8 @@ public class BdxSmpOasisValidatorTest {
 
     private static Object[] negativeCases() {
         return new Object[][]{
-                {"ServiceMetadata_ElementAdded.xml", "cvc-complex-type.2.4.a: Invalid content was found starting with element \\'\\{?(\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\")?:ElementAdded\\}?\\'.* is expected."},
-                {"ServiceMetadata_ElementMissing.xml", "cvc-complex-type.2.4.b: The content of element 'Redirect' is not complete. One of \\'\\{?(\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\")?:CertificateUID\\}?\\' is expected."},
+                {"ServiceMetadata_ElementAdded.xml", "cvc-complex-type.2.4.a: Invalid content was found starting with element \\'\\{?(\\\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\\\")?:?ElementAdded\\}?\\'.*Redirect.* is expected."},
+                {"ServiceMetadata_ElementMissing.xml", "cvc-complex-type.2.4.b: The content of element 'Redirect' is not complete. One of \\'\\{?(\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\")?:?CertificateUID\\}?\\' is expected."},
                 {"ServiceGroup_MissingAssignment.xml", "Attribute name \"missingAssignment\" associated with an element type \"ServiceMetadataReferenceCollection\" must be followed by the ' = ' character."},
                 {"ServiceGroup_UnexpectedAttribute.xml", "cvc-complex-type.3.2.2: Attribute 'unexpectedAttribute' is not allowed to appear in element 'ServiceMetadataReferenceCollection'."},
                 {"ServiceGroup_externalDTD.xml", "External DTD: Failed to read external DTD 'any_external_file_address.dtd', because 'file' access is not allowed due to restriction set by the accessExternalDTD property."}
