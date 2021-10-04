@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -94,8 +95,10 @@ public class TruststoreResourceTest {
     public void getCertificateList() throws Exception {
         // given when
         int countStart = uiTruststoreService.getCertificateROEntriesList().size();
-        MvcResult result = mvc.perform(get(PATH).with(SYSTEM_CREDENTIALS)).
-                andExpect(status().isOk()).andReturn();
+        MvcResult result = mvc.perform(get(PATH)
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
 
         //them
         ObjectMapper mapper = new ObjectMapper();
@@ -123,6 +126,7 @@ public class TruststoreResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH+"/3/certdata")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(buff))
                 .andExpect(status().isOk()).andReturn();
 
@@ -145,6 +149,7 @@ public class TruststoreResourceTest {
         int countStart =   uiTruststoreService.getNormalizedTrustedList().size();
         MvcResult prepRes = mvc.perform(post(PATH+"/3/certdata")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(buff))
                 .andExpect(status().isOk()).andReturn();
 
@@ -158,6 +163,7 @@ public class TruststoreResourceTest {
         // then
         MvcResult result = mvc.perform(delete(PATH+"/3/delete/"+res.getAlias())
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .content(buff))
                 .andExpect(status().isOk()).andReturn();
         uiTruststoreService.refreshData();

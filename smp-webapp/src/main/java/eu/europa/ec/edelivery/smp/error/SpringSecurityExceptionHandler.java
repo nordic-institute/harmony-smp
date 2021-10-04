@@ -45,7 +45,7 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
     private static final Logger log = LoggerFactory.getLogger(SpringSecurityExceptionHandler.class);
 
     public SpringSecurityExceptionHandler() {
-        this.setRealmName("any realm name");
+        this.setRealmName("SMPSecurityRealm");
     }
 
     @Override
@@ -79,8 +79,8 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();
         String logMsg = format("Error unique ID: %s", errorUniqueId);
-
-        log.warn(logMsg, exception);
+        log.warn("Security error:[{}] with [{}].", errorMsg, logMsg);
+        log.debug(logMsg, exception);
         return response;
     }
 

@@ -18,11 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.springframework.web.util.UriUtils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -34,12 +30,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class Identifiers {
 
     public static final String EBCORE_IDENTIFIER_PREFIX = "urn:oasis:names:tc:ebcore:partyid-type:";
-    public static final String EBCORE_IDENTIFIER_FORMAT="%s:%s";
-    public static final String EBCORE_IDENTIFIER_ISO6523_SCHEME="iso6523";
-    public static final String DOUBLE_COLON_IDENTIFIER_FORMAT="%s::%s";
+    public static final String EBCORE_IDENTIFIER_FORMAT = "%s:%s";
+    public static final String EBCORE_IDENTIFIER_ISO6523_SCHEME = "iso6523";
+    public static final String DOUBLE_COLON_IDENTIFIER_FORMAT = "%s::%s";
 
-    private static final String EMPTY_IDENTIFIER="Null/Empty";
-
+    private static final String EMPTY_IDENTIFIER = "Null/Empty";
 
 
     public static ParticipantIdentifierType asParticipantId(String participantIDentifier) {
@@ -58,20 +53,20 @@ public class Identifiers {
     }
 
     public static String asString(ParticipantIdentifierType participantId) {
-        if(StringUtils.isBlank(participantId.getScheme())) {
+        if (StringUtils.isBlank(participantId.getScheme())) {
             // if scheme is empty just return value (for OASIS SMP 1.0 must start with :: )
-            return  (StringUtils.startsWithIgnoreCase(participantId.getScheme(), EBCORE_IDENTIFIER_PREFIX)?
-                   "":"::")  + participantId.getValue();
+            return (StringUtils.startsWithIgnoreCase(participantId.getScheme(), EBCORE_IDENTIFIER_PREFIX) ?
+                    "" : "::") + participantId.getValue();
         }
         String format =
-                StringUtils.startsWithIgnoreCase(participantId.getScheme(), EBCORE_IDENTIFIER_PREFIX)?
-                EBCORE_IDENTIFIER_FORMAT:DOUBLE_COLON_IDENTIFIER_FORMAT;
+                StringUtils.startsWithIgnoreCase(participantId.getScheme(), EBCORE_IDENTIFIER_PREFIX) ?
+                        EBCORE_IDENTIFIER_FORMAT : DOUBLE_COLON_IDENTIFIER_FORMAT;
 
-        return  String.format(format, participantId.getScheme(), participantId.getValue());
+        return String.format(format, participantId.getScheme(), participantId.getValue());
     }
 
     public static String asString(DocumentIdentifier docId) {
-        return String.format(DOUBLE_COLON_IDENTIFIER_FORMAT, docId.getScheme()!=null?docId.getScheme():"", docId.getValue());
+        return String.format(DOUBLE_COLON_IDENTIFIER_FORMAT, docId.getScheme() != null ? docId.getScheme() : "", docId.getValue());
     }
 
     public static String asUrlEncodedString(ParticipantIdentifierType participantId) {
@@ -83,20 +78,17 @@ public class Identifiers {
     }
 
     private static String urlEncode(String s) {
-        try {
-            return URLEncoder.encode(s, UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        return UriUtils.encode(s, UTF_8.name());
     }
+
     private static String[] splitParticipantIdentifier(String participantIdentifier) {
 
         String[] idResult;
-        if (StringUtils.isBlank(participantIdentifier)){
+        if (StringUtils.isBlank(participantIdentifier)) {
             throw new MalformedIdentifierException(EMPTY_IDENTIFIER, null);
         }
         String identifier = participantIdentifier.trim();
-        if(identifier.startsWith(EBCORE_IDENTIFIER_PREFIX)
+        if (identifier.startsWith(EBCORE_IDENTIFIER_PREFIX)
                 || identifier.startsWith("::" + EBCORE_IDENTIFIER_PREFIX)) {
             idResult = splitEbCoreIdentifier(identifier);
         } else {
@@ -110,25 +102,26 @@ public class Identifiers {
     /**
      * Method splits identifier at first occurrence of double colon :: and returns array size of 2. The first value is
      * schema and the second is identifier. If identifier is blank or with missing :: MalformedIdentifierException is thrown
+     *
      * @param doubleColonDelimitedId
      * @return array with two elements. First is schema and second is id
      */
 
     private static String[] splitDoubleColonIdentifier(String doubleColonDelimitedId) {
-        if (StringUtils.isBlank(doubleColonDelimitedId)){
+        if (StringUtils.isBlank(doubleColonDelimitedId)) {
             throw new MalformedIdentifierException(EMPTY_IDENTIFIER, null);
         }
 
         String[] idResult = new String[2];
 
         int delimiterIndex = doubleColonDelimitedId.indexOf("::");
-        if (delimiterIndex<0){
+        if (delimiterIndex < 0) {
             throw new MalformedIdentifierException(doubleColonDelimitedId, null);
         }
-        idResult[0] = delimiterIndex==0?null:doubleColonDelimitedId.substring(0,delimiterIndex);
-        idResult[1] = doubleColonDelimitedId.substring(delimiterIndex+2);
+        idResult[0] = delimiterIndex == 0 ? null : doubleColonDelimitedId.substring(0, delimiterIndex);
+        idResult[1] = doubleColonDelimitedId.substring(delimiterIndex + 2);
 
-        if (StringUtils.isBlank(idResult[1])){
+        if (StringUtils.isBlank(idResult[1])) {
             throw new MalformedIdentifierException(doubleColonDelimitedId, null);
         }
 
@@ -136,26 +129,26 @@ public class Identifiers {
 
     }
 
-    public static String[] splitEbCoreIdentifier(final String partyId)  {
+    public static String[] splitEbCoreIdentifier(final String partyId) {
 
         String partyIdPrivate = partyId.trim();
         if (partyIdPrivate.startsWith("::")) {
             partyIdPrivate = StringUtils.removeStart(partyIdPrivate, "::");
         }
 
-        if (!partyIdPrivate.startsWith(EBCORE_IDENTIFIER_PREFIX)){
+        if (!partyIdPrivate.startsWith(EBCORE_IDENTIFIER_PREFIX)) {
             throw new MalformedIdentifierException(partyId, null);
         }
-        boolean isIso6523 = partyIdPrivate.startsWith(EBCORE_IDENTIFIER_PREFIX+EBCORE_IDENTIFIER_ISO6523_SCHEME +":");
+        boolean isIso6523 = partyIdPrivate.startsWith(EBCORE_IDENTIFIER_PREFIX + EBCORE_IDENTIFIER_ISO6523_SCHEME + ":");
 
-        int isSchemeDelimiter = partyIdPrivate.indexOf(':',EBCORE_IDENTIFIER_PREFIX.length());
-        if (isSchemeDelimiter < 0){
+        int isSchemeDelimiter = partyIdPrivate.indexOf(':', EBCORE_IDENTIFIER_PREFIX.length());
+        if (isSchemeDelimiter < 0) {
             // invalid scheme
-            throw new IllegalArgumentException(String.format("Invalid ebCore id [%s] ebcoreId must have prefix 'urn:oasis:names:tc:ebcore:partyid-type', "+
+            throw new IllegalArgumentException(String.format("Invalid ebCore id [%s] ebcoreId must have prefix 'urn:oasis:names:tc:ebcore:partyid-type', " +
                     "and parts <catalog-identifier>, <scheme-in-catalog>, <scheme-specific-identifier> separated by colon.  " +
                     "Example: urn:oasis:names:tc:ebcore:partyid-type:<catalog-identifier>:(<scheme-in-catalog>)?:<scheme-specific-identifier>.", partyIdPrivate));
         }
-        int isPartDelimiter = partyIdPrivate.indexOf(':',isSchemeDelimiter+1);
+        int isPartDelimiter = partyIdPrivate.indexOf(':', isSchemeDelimiter + 1);
 
         String[] result = new String[2];
         if (isPartDelimiter < 0 && isIso6523) { // for iso scheme-in-catalog is mandatory
@@ -163,10 +156,10 @@ public class Identifiers {
             throw new IllegalArgumentException(String.format("Invalid ebCore id [%s] ebcoreId must have prefix 'urn:oasis:names:tc:ebcore:partyid-type', " +
                     "and parts <catalog-identifier>, <scheme-in-catalog>, <scheme-specific-identifier> separated by colon.  " +
                     "Example: urn:oasis:names:tc:ebcore:partyid-type:<catalog-identifier>:(<scheme-in-catalog>)?:<scheme-specific-identifier>.", partyIdPrivate));
-        } else if (isPartDelimiter < 0){
+        } else if (isPartDelimiter < 0) {
             result[0] = partyIdPrivate.substring(0, isSchemeDelimiter).trim();
             result[1] = partyIdPrivate.substring(isSchemeDelimiter + 1).trim();
-        }else {
+        } else {
             result[0] = partyIdPrivate.substring(0, isPartDelimiter).trim();
             result[1] = partyIdPrivate.substring(isPartDelimiter + 1).trim();
         }
@@ -177,11 +170,8 @@ public class Identifiers {
         }
         //check if double colon was used for identifier separator in ebecoreid
         if (result[0].endsWith(":")) {
-            result[0] = StringUtils.removeEnd(result[0] , ":");
+            result[0] = StringUtils.removeEnd(result[0], ":");
         }
         return result;
-
     }
-
-
 }

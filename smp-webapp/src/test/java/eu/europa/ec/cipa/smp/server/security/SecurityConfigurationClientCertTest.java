@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -183,7 +184,7 @@ public class SecurityConfigurationClientCertTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", clientCert);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers))
+                .headers(headers).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedCertificateId))
                 .andReturn().getResponse().getContentAsString();
