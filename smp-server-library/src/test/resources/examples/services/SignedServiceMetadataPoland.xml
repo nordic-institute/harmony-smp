@@ -31,15 +31,15 @@
             <ExtensionAgencyName>Agency name 2</ExtensionAgencyName>
         </Extension>
     </ServiceInformation>
-</ServiceMetadata><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>bX6lTuxT21gbMILjxDoWzPYIZ4aQYu3iflyhpuLawys=</DigestValue></Reference></SignedInfo><SignatureValue>NQkzaoSBu9/Y7AilnxgX6/LM3A0g5WrDyxMEih9BbgnowPk24bNixc0A6kAI2Sp2MNojZUBRFue6
-uADhnQapRK4dRcAtHe2+Ao/SBHRP6233mghPosd4Y9Sw6hQ0wwziio5koa8bO5qtP5TjaVU8Yggo
-MsTCeW2rFgFFzPtZ4ac=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=SMP Mock Services,OU=DIGIT,O=European Commision,C=BE</X509SubjectName><X509Certificate>MIICIzCCAYygAwIBAgIEWCRzfjANBgkqhkiG9w0BAQsFADBWMQswCQYDVQQGEwJCRTEbMBkGA1UE
-CgwSRXVyb3BlYW4gQ29tbWlzaW9uMQ4wDAYDVQQLDAVESUdJVDEaMBgGA1UEAwwRU01QIE1vY2sg
-U2VydmljZXMwHhcNMTYxMTEwMTMxODE4WhcNMjYxMTEwMTMxODE4WjBWMQswCQYDVQQGEwJCRTEb
-MBkGA1UECgwSRXVyb3BlYW4gQ29tbWlzaW9uMQ4wDAYDVQQLDAVESUdJVDEaMBgGA1UEAwwRU01Q
-IE1vY2sgU2VydmljZXMwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALrpN2GGqctPTP27g+zA
-DCmQxdOZgDQg5AeF/N5w0knZYy1GnqvAoXgLGHeS1l+2DKx4/E6SlcU6SLIGhVtpF+Gitdp+3to2
-6FfV5qcCy4XKz1xm19r84ykXPWD835DbGB7o1HSlKx4+GmAr5eL2VH/zgINcJojam3gimvedoNWj
-AgMBAAEwDQYJKoZIhvcNAQELBQADgYEAXoh7T9eYOdjasnzPfsTeQ1ptEorj4pIZMRFjn2BWl+mZ
-K4XRn2+doLjN2dHremGyeKBgLb0Ulp9E9I5P8kxuIs7TjroxZofK9ixhfBv5rJhLcHy8XdrUYqAS
+</ServiceMetadata><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>bX6lTuxT21gbMILjxDoWzPYIZ4aQYu3iflyhpuLawys=</DigestValue></Reference></SignedInfo><SignatureValue>NQkzaoSBu9/Y7AilnxgX6/LM3A0g5WrDyxMEih9BbgnowPk24bNixc0A6kAI2Sp2MNojZUBRFue6&#13;
+uADhnQapRK4dRcAtHe2+Ao/SBHRP6233mghPosd4Y9Sw6hQ0wwziio5koa8bO5qtP5TjaVU8Yggo&#13;
+MsTCeW2rFgFFzPtZ4ac=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=SMP Mock Services,OU=DIGIT,O=European Commision,C=BE</X509SubjectName><X509Certificate>MIICIzCCAYygAwIBAgIEWCRzfjANBgkqhkiG9w0BAQsFADBWMQswCQYDVQQGEwJCRTEbMBkGA1UE&#13;
+CgwSRXVyb3BlYW4gQ29tbWlzaW9uMQ4wDAYDVQQLDAVESUdJVDEaMBgGA1UEAwwRU01QIE1vY2sg&#13;
+U2VydmljZXMwHhcNMTYxMTEwMTMxODE4WhcNMjYxMTEwMTMxODE4WjBWMQswCQYDVQQGEwJCRTEb&#13;
+MBkGA1UECgwSRXVyb3BlYW4gQ29tbWlzaW9uMQ4wDAYDVQQLDAVESUdJVDEaMBgGA1UEAwwRU01Q&#13;
+IE1vY2sgU2VydmljZXMwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALrpN2GGqctPTP27g+zA&#13;
+DCmQxdOZgDQg5AeF/N5w0knZYy1GnqvAoXgLGHeS1l+2DKx4/E6SlcU6SLIGhVtpF+Gitdp+3to2&#13;
+6FfV5qcCy4XKz1xm19r84ykXPWD835DbGB7o1HSlKx4+GmAr5eL2VH/zgINcJojam3gimvedoNWj&#13;
+AgMBAAEwDQYJKoZIhvcNAQELBQADgYEAXoh7T9eYOdjasnzPfsTeQ1ptEorj4pIZMRFjn2BWl+mZ&#13;
+K4XRn2+doLjN2dHremGyeKBgLb0Ulp9E9I5P8kxuIs7TjroxZofK9ixhfBv5rJhLcHy8XdrUYqAS&#13;
 awc3c5bM9fNxRWCMkNYNoSYVxPBdlS4zEeLNNzRY+wjrMNYIJR4=</X509Certificate></X509Data></KeyInfo></Signature></SignedServiceMetadata>

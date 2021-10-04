@@ -3,7 +3,6 @@ package eu.europa.ec.edelivery.smp.ui;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.ui.ErrorRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
@@ -22,6 +21,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,15 +51,23 @@ public class AuthenticationResource {
 
     private ConfigurationService configurationService;
 
+    public CsrfTokenRepository csrfTokenRepository;
+
     SMPCookieWriter smpCookieWriter;
 
     @Autowired
-    public AuthenticationResource(SMPAuthenticationService authenticationService, SMPAuthorizationService authorizationService, ConversionService conversionService, ConfigurationService configurationService, SMPCookieWriter smpCookieWriter) {
+    public AuthenticationResource(SMPAuthenticationService authenticationService
+            , SMPAuthorizationService authorizationService
+            , ConversionService conversionService
+            , ConfigurationService configurationService
+            , SMPCookieWriter smpCookieWriter
+            , CsrfTokenRepository csrfTokenRepository) {
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
         this.conversionService = conversionService;
         this.configurationService = configurationService;
         this.smpCookieWriter = smpCookieWriter;
+        this.csrfTokenRepository = csrfTokenRepository;
     }
 
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
@@ -72,9 +81,10 @@ public class AuthenticationResource {
     @Transactional(noRollbackFor = BadCredentialsException.class)
     public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletRequest request, HttpServletResponse response) {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
-        // reset session id with login
-
+        // reset session id token and the Csrf Token at login
         recreatedSessionCookie(request, response);
+        CsrfToken csfrToken = csrfTokenRepository.generateToken(request);
+        csrfTokenRepository.saveToken(csfrToken, request, response);
 
         SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
         UserRO userRO = conversionService.convert(authentication.getUser(), UserRO.class);
@@ -115,6 +125,8 @@ public class AuthenticationResource {
      * @param response
      */
     public void recreatedSessionCookie(HttpServletRequest request, HttpServletResponse response) {
+        // recreate session id  (first make sure it exists)
+        request.getSession(true).getId();
         String sessionId = request.changeSessionId();
         smpCookieWriter.writeCookieToResponse(SESSION_COOKIE_NAME,
                 sessionId,

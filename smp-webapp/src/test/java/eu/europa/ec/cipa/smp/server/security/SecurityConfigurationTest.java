@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -81,27 +82,31 @@ public class SecurityConfigurationTest {
 
     @Test
     public void getMethodAccessiblePubliclyTest() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get(RETURN_LOGGED_USER_PATH))
+        mvc.perform(MockMvcRequestBuilders.get(RETURN_LOGGED_USER_PATH)
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("anonymousUser"));
     }
 
     @Test
     public void notAuthenticatedUserCannotCallPutTest() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH))
+        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
+                .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void notAuthenticatedUserCannotCallDeleteTest() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.delete(RETURN_LOGGED_USER_PATH))
+        mvc.perform(MockMvcRequestBuilders.delete(RETURN_LOGGED_USER_PATH)
+                .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_DB_HASHED_PASS));
     }
@@ -113,7 +118,8 @@ public class SecurityConfigurationTest {
         Assert.assertNotEquals(upperCaseUsername, TEST_USERNAME_DB_HASHED_PASS);
 
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(httpBasic(upperCaseUsername, PASSWORD)))
+                .with(httpBasic(upperCaseUsername, PASSWORD))
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(upperCaseUsername));
     }
@@ -124,7 +130,7 @@ public class SecurityConfigurationTest {
     @Test
     public void userStoredWithClearPassIsNotAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(httpBasic(TEST_USERNAME_DB_CLEAR_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_CLEAR_PASS, PASSWORD)).with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -134,7 +140,7 @@ public class SecurityConfigurationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", "malformed header value");
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers))
+                .headers(headers).with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -143,7 +149,8 @@ public class SecurityConfigurationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers))
+                .headers(headers)
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT))
                 .andReturn().getResponse().getContentAsString();
@@ -154,7 +161,7 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_NOT_AUTHORIZED_HEADER);
 
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers))
+                .headers(headers).with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -164,7 +171,8 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
     }
@@ -175,7 +183,8 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
     }
@@ -187,7 +196,8 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT__DB_UPPER_SN));
     }
@@ -198,7 +208,8 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD)))
+                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT__DB_UPPER_SN));
     }

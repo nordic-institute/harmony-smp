@@ -30,6 +30,7 @@ import javax.servlet.ServletContextListener;
 
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -86,8 +87,10 @@ public class DomainResourceTest {
     public void geDomainList() throws Exception {
 
         // given when
-        MvcResult result = mvc.perform(get(PATH).with(SYSTEM_CREDENTIALS)).
-                andExpect(status().isOk()).andReturn();
+        MvcResult result = mvc.perform(get(PATH)
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
 
         //them
         ObjectMapper mapper = new ObjectMapper();
@@ -111,6 +114,7 @@ public class DomainResourceTest {
 
         MvcResult result = mvc.perform(put(PATH )
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[{\"status\":3,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false,\"deleted\":true}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
@@ -125,6 +129,7 @@ public class DomainResourceTest {
 // given when
         MvcResult result = mvc.perform(put(PATH )
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[{\"status\":3,\"index\":9,\"id\":10,\"domainCode\":\"domainTwoNotExist\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false,\"deleted\":true}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
@@ -135,6 +140,7 @@ public class DomainResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH + "/validateDelete")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[2]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
@@ -157,6 +163,7 @@ public class DomainResourceTest {
 
         MvcResult result = mvc.perform(put(PATH )
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[{\"status\":1,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false,\"deleted\":true}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
@@ -170,6 +177,7 @@ public class DomainResourceTest {
         // given when
         MvcResult result = mvc.perform(post(PATH + "/validateDelete")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[1]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
@@ -192,6 +200,7 @@ public class DomainResourceTest {
         // domainTwo -  domain code
         mvc.perform(post(PATH + "/3/smlregister/domainTwo")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .header("Content-Type", " application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(stringContainsInOrder("Configuration error: SML integration is not enabled!!")));
@@ -204,6 +213,7 @@ public class DomainResourceTest {
         // domainTwo -  domain code
         mvc.perform(post(PATH + "/3/smlunregister/domainTwo")
                 .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
                 .header("Content-Type", " application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(stringContainsInOrder("Configuration error: SML integration is not enabled!!")));

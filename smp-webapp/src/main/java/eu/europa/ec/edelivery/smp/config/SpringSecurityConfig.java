@@ -17,6 +17,7 @@ import eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
 import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.slf4j.Logger;
@@ -36,9 +37,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Created by gutowpa on 12/07/2017.
@@ -54,6 +57,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     SMPAuthenticationProvider smpAuthenticationProvider;
     BlueCoatAuthenticationFilter blueCoatAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
+    CsrfTokenRepository csrfTokenRepository;
+    RequestMatcher csrfURLMatcher;
 
     @Value("${authentication.blueCoat.enabled:false}")
     boolean clientCertEnabled;
@@ -70,49 +75,48 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public SpringSecurityConfig(SMPAuthenticationProvider smpAuthenticationProvider,
                                 @Lazy BlueCoatAuthenticationFilter blueCoatAuthenticationFilter,
-                                @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter) {
+                                @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
+                                @Lazy CsrfTokenRepository csrfTokenRepository,
+                                @Lazy RequestMatcher csrfURLMatcher) {
         super(false);
         this.smpAuthenticationProvider = smpAuthenticationProvider;
         this.blueCoatAuthenticationFilter = blueCoatAuthenticationFilter;
         this.x509AuthenticationFilter = x509AuthenticationFilter;
+        this.csrfTokenRepository = csrfTokenRepository;
+        this.csrfURLMatcher = csrfURLMatcher;
     }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-
-        // prepare filters
-        blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
-
-        httpSecurity.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
-                .exceptionHandling().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and()
+        httpSecurity
+                .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
+                .exceptionHandling()
+                    .authenticationEntryPoint(new SpringSecurityExceptionHandler())
+                    .accessDeniedHandler(new SpringSecurityExceptionHandler())
+                .and()
                 .headers().frameOptions().deny().contentTypeOptions().and().xssProtection().xssProtectionEnabled(true).and().and()
-
                 .addFilter(blueCoatAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
-                .httpBasic()
-                .and() // username
+                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
-                .authorizeRequests().antMatchers(HttpMethod.DELETE, "/ui/rest/security/authentication").permitAll()
-                .antMatchers(HttpMethod.POST, "/ui/rest/security/authentication").permitAll()
-                .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
+                    .antMatchers(HttpMethod.DELETE, "/ui/rest/security/authentication").permitAll()
+                    .antMatchers(HttpMethod.POST, "/ui/rest/security/authentication").permitAll().and()
+                .authorizeRequests()
+                    .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
                         SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
                         SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
                         SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
+                    .antMatchers(HttpMethod.PUT).hasAnyAuthority(
                         SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
                         SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
                         SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.GET).permitAll().and()
-                .authorizeRequests().antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
+                .authorizeRequests()
+                    .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
                         SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
                         SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()).and()
-        ;
-
-
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority());
     }
 
     @Override
@@ -145,6 +149,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public BlueCoatAuthenticationFilter getClientCertAuthenticationFilter(@Qualifier("smpAuthenticationManager") AuthenticationManager authenticationManager) {
         BlueCoatAuthenticationFilter blueCoatAuthenticationFilter = new BlueCoatAuthenticationFilter();
         blueCoatAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
         return blueCoatAuthenticationFilter;
     }
 
@@ -156,7 +161,31 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public SMPCookieWriter getSMPCookieWriter() {
+    public CsrfTokenRepository tokenRepository() {
+        CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        return repository;
+    }
+
+    @Bean
+    public RequestMatcher csrfURLMatcher() {
+        URLCsrfMatcher requestMatcher = new URLCsrfMatcher();
+        // init pages
+        requestMatcher.addIgnoreUrl("^/$", HttpMethod.GET);
+        requestMatcher.addIgnoreUrl("favicon.ico$", HttpMethod.GET);
+        requestMatcher.addIgnoreUrl("^/(index.html|ui/(#/)?|)$", HttpMethod.GET);
+        // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
+        requestMatcher.addIgnoreUrl("/.*::.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
+        // ignore for login and logout
+        requestMatcher.addIgnoreUrl("/ui/rest/security/authentication", HttpMethod.DELETE, HttpMethod.POST);
+        // allow all gets
+        requestMatcher.addIgnoreUrl("/ui/.*", HttpMethod.GET);
+        // monitor
+        requestMatcher.addIgnoreUrl("/monitor/is-alive", HttpMethod.GET);
+        return requestMatcher;
+    }
+
+    @Bean
+    public SMPCookieWriter smpCookieWriter() {
         return new SMPCookieWriter();
     }
 }
