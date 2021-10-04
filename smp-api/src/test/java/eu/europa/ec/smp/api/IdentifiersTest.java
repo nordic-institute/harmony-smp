@@ -174,7 +174,6 @@ public class IdentifiersTest {
         return res;
     }
 
-
     @Test
     @Parameters(method = "participantIdentifierPositiveCases")
     @TestCaseName("{0}")
@@ -248,7 +247,6 @@ public class IdentifiersTest {
         assertEquals(value, processId.getValue());
     }
 
-
     @Test
     @Parameters(method = "negativeCases")
     public void testProcessIdNegative(String negativeInput) {
@@ -277,7 +275,6 @@ public class IdentifiersTest {
         fail();
     }
 
-
     private void negativeAssertions(String negativeInput, Exception e) {
         assertTrue(e instanceof MalformedIdentifierException);
         assertEquals(MALFORMED_INPUT_MSG + (StringUtils.isBlank(negativeInput) ? "Null/Empty" : negativeInput), e.getMessage());
@@ -293,6 +290,16 @@ public class IdentifiersTest {
     }
 
     @Test
+    public void testUrlEncodingParticipantIdWithSpace() {
+        //given
+        ParticipantIdentifierType participantId = new ParticipantIdentifierType("GPR: 0088:conformance:sg01#", "ehealth:actorid:qns");
+
+        //when-then
+        //Because this is path segment spaces must be percent encoded (not with +)!
+        assertEquals("ehealth%3Aactorid%3Aqns%3A%3AGPR%3A%200088%3Aconformance%3Asg01%23", Identifiers.asUrlEncodedString(participantId));
+    }
+
+    @Test
     public void testUrlEncodingDocumentId() {
         //given
         DocumentIdentifier docId = new DocumentIdentifier("urn::ehealth##services:extended:epsos01::101", "busdox:docid:qns");
@@ -301,5 +308,14 @@ public class IdentifiersTest {
         assertEquals("busdox%3Adocid%3Aqns%3A%3Aurn%3A%3Aehealth%23%23services%3Aextended%3Aepsos01%3A%3A101", Identifiers.asUrlEncodedString(docId));
     }
 
+    @Test
+    public void testUrlEncodingDocumentIdWithSpace() {
+        //given
+        DocumentIdentifier docId = new DocumentIdentifier("urn::ehealth##services:extended:epsos01:: 101", "busdox:docid:qns");
+
+        //when-then
+        //Because this is path segment spaces must be percent encoded (not with +)!
+        assertEquals("busdox%3Adocid%3Aqns%3A%3Aurn%3A%3Aehealth%23%23services%3Aextended%3Aepsos01%3A%3A%20101", Identifiers.asUrlEncodedString(docId));
+    }
 
 }
