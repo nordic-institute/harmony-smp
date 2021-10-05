@@ -111,7 +111,7 @@ public class MonitorResource {
         newSg.addDomain(lstDomain.get(0)); // add initial domain
         // persist (make sure this is not in transaction)
         serviceGroupDao.testPersist(newSg, true, TEST_DB_SUCCESSFUL_ROLLBACK);
-        return false;
+        return true;
     }
 
 
