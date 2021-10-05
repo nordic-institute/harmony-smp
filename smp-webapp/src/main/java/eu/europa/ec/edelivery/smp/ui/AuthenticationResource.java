@@ -77,7 +77,7 @@ public class AuthenticationResource {
         return new ErrorRO(ex.getMessage());
     }
 
-    @RequestMapping(value = "authentication", method = RequestMethod.POST)
+    @PostMapping(value = "authentication")
     @Transactional(noRollbackFor = BadCredentialsException.class)
     public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletRequest request, HttpServletResponse response) {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
@@ -91,7 +91,7 @@ public class AuthenticationResource {
         return authorizationService.sanitize(userRO);
     }
 
-    @RequestMapping(value = "authentication", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "authentication")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null) {
@@ -106,7 +106,7 @@ public class AuthenticationResource {
         LOG.info("Logged out");
     }
 
-    @RequestMapping(value = "user", method = RequestMethod.GET)
+    @GetMapping(value = "user")
     @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public UserRO getUser() {
         UserRO user = new UserRO();
