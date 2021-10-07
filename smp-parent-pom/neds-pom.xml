@@ -62,7 +62,7 @@
         <build.helper.maven.version>1.9.1</build.helper.maven.version>
         <ehcache.version>2.10.6</ehcache.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <bouncycastle.version>1.62</bouncycastle.version>
+        <bouncycastle.version>1.69</bouncycastle.version>
         <dnsjava.version>2.1.7</dnsjava.version>
         <h2.version>1.4.187</h2.version>
         <jstl.version>1.2</jstl.version>
