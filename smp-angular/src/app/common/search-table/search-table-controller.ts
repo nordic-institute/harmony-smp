@@ -1,4 +1,4 @@
-import {MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {SearchTableEntity} from './search-table-entity.model';
 
 export interface SearchTableController {

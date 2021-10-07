@@ -1,5 +1,5 @@
 import {SearchTableController} from '../common/search-table/search-table-controller';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {DomainDetailsDialogComponent} from './domain-details-dialog/domain-details-dialog.component';
 import {DomainRo} from './domain-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';

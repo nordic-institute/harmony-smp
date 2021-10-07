@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {SecurityService} from "../../security/security.service";
@@ -47,6 +47,4 @@ export class CertificateDialogComponent {
     this.certificateForm.controls['encodedValue'].setValue(this.current.encodedValue);
 
   }
-
-
 }

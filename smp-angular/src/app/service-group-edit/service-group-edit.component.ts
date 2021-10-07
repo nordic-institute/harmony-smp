@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlertService} from '../alert/alert.service';
 import {ServiceGroupEditController} from './service-group-edit-controller';
 import {HttpClient} from '@angular/common/http';
@@ -17,10 +17,10 @@ import {SecurityService} from "../security/security.service";
 })
 export class ServiceGroupEditComponent implements OnInit {
 
-  @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
-  @ViewChild('rowActions') rowActions: TemplateRef<any>;
-  @ViewChild('rowSMPUrlLinkAction') rowSMPUrlLinkAction: TemplateRef<any>;
-  @ViewChild('searchTable') searchTable: SearchTableComponent;
+  @ViewChild('rowMetadataAction' , { static: true }) rowMetadataAction: TemplateRef<any>
+  @ViewChild('rowActions' , { static: true }) rowActions: TemplateRef<any>;
+  @ViewChild('rowSMPUrlLinkAction', { static: true }) rowSMPUrlLinkAction: TemplateRef<any>;
+  @ViewChild('searchTable', { static: true }) searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
   serviceGroupEditController: ServiceGroupEditController;
@@ -43,9 +43,6 @@ export class ServiceGroupEditComponent implements OnInit {
   }
 
   ngOnInit() {
-
-
-
     this.serviceGroupEditController = new ServiceGroupEditController(this.dialog);
 
     this.columnPicker.allColumns = [

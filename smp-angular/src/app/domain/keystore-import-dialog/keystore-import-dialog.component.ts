@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AlertService} from "../../alert/alert.service";
 import {GlobalLookups} from "../../common/global-lookups";
@@ -41,16 +41,12 @@ export class KeystoreImportDialogComponent {
     this.dialogForm.controls['keystoreType'].setValue("JKS");
     this.dialogForm.controls['password'].setValue("");
     this.dialogForm.controls['file'].setValue("");
-
-
   }
-
 
   keystoreFileSelected(event) {
     this.selectedFile = event.target.files[0];
     this.dialogForm.controls['file'].setValue(this.selectedFile ? this.selectedFile.name : "");
   }
-
 
   importKeystore() {
     this.keystoreService.uploadKeystore$(this.selectedFile,this.dialogForm.controls['keystoreType'].value,
