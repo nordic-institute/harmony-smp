@@ -49,7 +49,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-//@ImportResource("classpath:spring-security.xml")
 @ComponentScan("eu.europa.ec.edelivery.smp.auth")
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(SpringSecurityConfig.class);
@@ -58,6 +57,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     BlueCoatAuthenticationFilter blueCoatAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
     CsrfTokenRepository csrfTokenRepository;
+    HttpFirewall httpFirewall;
     RequestMatcher csrfURLMatcher;
 
     @Value("${authentication.blueCoat.enabled:false}")
@@ -77,13 +77,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                                 @Lazy BlueCoatAuthenticationFilter blueCoatAuthenticationFilter,
                                 @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
                                 @Lazy CsrfTokenRepository csrfTokenRepository,
-                                @Lazy RequestMatcher csrfURLMatcher) {
+                                @Lazy RequestMatcher csrfURLMatcher,
+                                @Lazy HttpFirewall httpFirewall) {
         super(false);
         this.smpAuthenticationProvider = smpAuthenticationProvider;
         this.blueCoatAuthenticationFilter = blueCoatAuthenticationFilter;
         this.x509AuthenticationFilter = x509AuthenticationFilter;
         this.csrfTokenRepository = csrfTokenRepository;
         this.csrfURLMatcher = csrfURLMatcher;
+        this.httpFirewall = httpFirewall;
     }
 
     @Override
@@ -94,14 +96,19 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .authenticationEntryPoint(new SpringSecurityExceptionHandler())
                     .accessDeniedHandler(new SpringSecurityExceptionHandler())
                 .and()
-                .headers().frameOptions().deny().contentTypeOptions().and().xssProtection().xssProtectionEnabled(true).and().and()
+                .headers().frameOptions().deny()
+                    .contentTypeOptions().and()
+                    .xssProtection().xssProtectionEnabled(true).and()
+                .and()
+                 .sessionManagement().sessionFixation().newSession().and()
                 .addFilter(blueCoatAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
                 .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests()
                     .antMatchers(HttpMethod.DELETE, "/ui/rest/security/authentication").permitAll()
-                    .antMatchers(HttpMethod.POST, "/ui/rest/security/authentication").permitAll().and()
+                    .antMatchers(HttpMethod.POST, "/ui/rest/security/authentication").permitAll()
+                .and()
                 .authorizeRequests()
                     .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
                         SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
@@ -116,21 +123,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
                         SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
                         SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority());
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+        ;
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         super.configure(web);
-        web.httpFirewall(smpHttpFirewall());
-    }
-
-
-    @Bean
-    public HttpFirewall smpHttpFirewall() {
-        DefaultHttpFirewall firewall = new DefaultHttpFirewall();
-        firewall.setAllowUrlEncodedSlash(encodedSlashesAllowedInUrl);
-        return firewall;
+        web.httpFirewall(httpFirewall);
     }
 
     @Override
@@ -143,6 +143,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean(name = {BeanIds.AUTHENTICATION_MANAGER, "smpAuthenticationManager"})
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+    @Bean
+    public HttpFirewall smpHttpFirewall() {
+        DefaultHttpFirewall firewall = new DefaultHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(encodedSlashesAllowedInUrl);
+        return firewall;
     }
 
     @Bean

@@ -63,8 +63,6 @@ import {SharedModule} from './common/module/shared.module';
 import {ClearInvalidDirective} from './custom-date/clear-invalid.directive';
 import {PageHeaderComponent} from './common/page-header/page-header.component';
 import {DomainSelectorComponent} from './common/domain-selector/domain-selector.component';
-import {AlertsComponent} from './alerts/alerts.component';
-
 import {SearchTableComponent} from './common/search-table/search-table.component';
 import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-group-metadata-dialog/service-group-metadata-dialog.component';
 import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domain-details-dialog.component';
@@ -120,7 +118,6 @@ import {SmlIntegrationService} from "./domain/sml-integration.service";
     ClearInvalidDirective,
     PageHeaderComponent,
     DomainSelectorComponent,
-    AlertsComponent,
     SearchTableComponent,
     UserDetailsDialogComponent,
     ExpiredPasswordDialogComponent,

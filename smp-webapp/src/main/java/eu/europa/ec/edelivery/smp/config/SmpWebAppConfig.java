@@ -56,9 +56,6 @@ public class SmpWebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        //Default value (true) would break @PathVariable Identifiers containing dot character "."
-        configurer.setUseSuffixPatternMatch(false);
-
         // do not decode path before mapping - that cause problems to identifiers with /
         UrlPathHelper urlPathHelper = configurer.getUrlPathHelper();
         if (urlPathHelper == null) {
