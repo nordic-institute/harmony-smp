@@ -7,7 +7,7 @@
   [searchPanel]="searchPanel"
   [filter]="filter"
   [searchTableController]="serviceGroupSearchController"
-  [tableRowDetailContainer]="tableRowDetailContainer"
+  [tableRowDetailContainer]="serviceGroupSearchRowDetailContainer"
   [showActionButtons]="false"
   [showIndexColumn]="true"
 >
@@ -50,7 +50,7 @@
   <ng-template #additionalToolButtons>
   </ng-template>
 
-  <ng-template #tableRowDetailContainer let-row="row">
+  <ng-template #serviceGroupSearchRowDetailContainer let-row="row">
 
     <div *ngIf="row.serviceMetadata.length===0" style="padding-left:20px;">
       No service metadata

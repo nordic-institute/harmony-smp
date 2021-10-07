@@ -7,7 +7,7 @@
   box-sizing: border-box; /* Chrome, IE8, Opera, Safari 5.1*/
 }
 
-/deep/ .domainWarning {
+::ng-deep .domainWarning {
   text-decoration: line-through !important;
   font-weight: bold;
   color:#c6c639;

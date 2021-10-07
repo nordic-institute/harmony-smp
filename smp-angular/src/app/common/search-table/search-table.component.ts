@@ -1,8 +1,8 @@
-import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
 import {Observable} from 'rxjs';
 import {AlertService} from '../../alert/alert.service';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ColumnPicker} from '../column-picker/column-picker.model';
 import {RowLimiter} from '../row-limiter/row-limiter.model';
 import {SearchTableController} from './search-table-controller';
@@ -23,15 +23,15 @@ import {ExtendedHttpClient} from "../../http/extended-http-client";
   styleUrls: ['./search-table.component.css']
 })
 export class SearchTableComponent implements OnInit {
-  @ViewChild('searchTable') searchTable: any;
-  @ViewChild('rowActions') rowActions: TemplateRef<any>;
-  @ViewChild('rowExpand') rowExpand: TemplateRef<any>;
-  @ViewChild('rowIndex') rowIndex: TemplateRef<any>;
+  @ViewChild('searchTable', { static: true }) searchTable: any;
+  @ViewChild('rowActions', { static: true }) rowActions: TemplateRef<any>;
+  @ViewChild('rowExpand', { static: true }) rowExpand: TemplateRef<any>;
+  @ViewChild('rowIndex', { static: true }) rowIndex: TemplateRef<any>;
 
-  @Input() @ViewChild('additionalToolButtons') additionalToolButtons: TemplateRef<any>;
-  @Input() @ViewChild('additionalRowActionButtons') additionalRowActionButtons: TemplateRef<any>;
-  @Input() @ViewChild('searchPanel') searchPanel: TemplateRef<any>;
-  @Input() @ViewChild('tableRowDetailContainer') tableRowDetailContainer: TemplateRef<any>;
+  @Input() additionalToolButtons: TemplateRef<any>;
+  @Input() additionalRowActionButtons: TemplateRef<any>;
+  @Input() searchPanel: TemplateRef<any>;
+  @Input() tableRowDetailContainer: TemplateRef<any>;
 
   @Input() id: String = "";
   @Input() title: String = "";
@@ -90,7 +90,7 @@ export class SearchTableComponent implements OnInit {
     };
     this.columnExpandDetails = {
       cellTemplate: this.rowExpand,
-      name: ' ',
+      name: 'Upd.',
       width: 40,
       maxWidth: 50,
       sortable: false
@@ -277,10 +277,10 @@ export class SearchTableComponent implements OnInit {
             try {
               console.log("eror: " + err)
               let parser = new DOMParser();
-              let xmlDoc = parser.parseFromString(err.error,"text/xml");
+              let xmlDoc = parser.parseFromString(err.error, "text/xml");
               let errDesc = xmlDoc.getElementsByTagName("ErrorDescription")[0].childNodes[0].nodeValue;
               this.alertService.exception('The operation \'update\' not completed successfully.', errDesc, false);
-            }catch (err2){
+            } catch (err2) {
               // if parse failed
               this.alertService.exception('The operation \'update\' not completed successfully.', err, false);
             }

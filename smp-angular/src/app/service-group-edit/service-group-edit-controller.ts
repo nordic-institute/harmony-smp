@@ -1,5 +1,5 @@
 import {SearchTableController} from '../common/search-table/search-table-controller';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {ServiceGroupDetailsDialogComponent} from './service-group-details-dialog/service-group-details-dialog.component';
 import {ServiceGroupEditRo} from './service-group-edit-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
@@ -24,7 +24,6 @@ export class ServiceGroupEditController implements SearchTableController {
     });
   }
 
-
   public edit(row: any) {
   }
 
@@ -36,7 +35,6 @@ export class ServiceGroupEditController implements SearchTableController {
       metaDataList[index].status = SearchTableEntityStatus.REMOVED;
       metaDataList[index].deleted = true;
     });
-
   }
 
   public newDialog(config?: MatDialogConfig): MatDialogRef<ServiceGroupDetailsDialogComponent> {
@@ -130,7 +128,6 @@ export class ServiceGroupEditController implements SearchTableController {
     });
 
     return (!result1 || result1.length === 0) && (!result2 || result2.length === 0);
-
   }
 
   isEqual(val1, val2): boolean {
