@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
 import {Observable} from 'rxjs';
 import {AlertService} from '../../alert/alert.service';
@@ -16,6 +16,8 @@ import {HttpParams} from '@angular/common/http';
 import {ConfirmationDialogComponent} from "../confirmation-dialog/confirmation-dialog.component";
 import {SearchTableValidationResult} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
+import {Router} from "@angular/router";
+import {AuthenticatedGuard} from "../../guards/authenticated.guard";
 
 @Component({
   selector: 'smp-search-table',
@@ -23,10 +25,10 @@ import {ExtendedHttpClient} from "../../http/extended-http-client";
   styleUrls: ['./search-table.component.css']
 })
 export class SearchTableComponent implements OnInit {
-  @ViewChild('searchTable', { static: true }) searchTable: any;
-  @ViewChild('rowActions', { static: true }) rowActions: TemplateRef<any>;
-  @ViewChild('rowExpand', { static: true }) rowExpand: TemplateRef<any>;
-  @ViewChild('rowIndex', { static: true }) rowIndex: TemplateRef<any>;
+  @ViewChild('searchTable', {static: true}) searchTable: any;
+  @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
+  @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
+  @ViewChild('rowIndex', {static: true}) rowIndex: TemplateRef<any>;
 
   @Input() additionalToolButtons: TemplateRef<any>;
   @Input() additionalRowActionButtons: TemplateRef<any>;
@@ -69,7 +71,8 @@ export class SearchTableComponent implements OnInit {
   constructor(protected http: ExtendedHttpClient,
               protected alertService: AlertService,
               private downloadService: DownloadService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private router: Router, private authenticatedGuard: AuthenticatedGuard) {
   }
 
   ngOnInit() {
@@ -221,11 +224,15 @@ export class SearchTableComponent implements OnInit {
   }
 
 
-  onDeleteRowActionClicked(row: SearchTableEntity) {
-    this.deleteSearchTableEntities([row]);
+  onNewButtonClicked() {
+    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
+      if (authorized) {
+        this.fireCreateNewEntityEvent();
+      }
+    })
   }
 
-  onNewButtonClicked() {
+  fireCreateNewEntityEvent() {
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
       data: {edit: false}
     });
@@ -242,16 +249,42 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteButtonClicked() {
+    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
+      if (authorized) {
+        this.fireDeleteEntityEvent();
+      }
+    })
+  }
+
+  fireDeleteEntityEvent() {
     this.deleteSearchTableEntities(this.selected);
   }
 
+  onDeleteRowActionClicked(row: SearchTableEntity) {
+    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
+      if (authorized) {
+        this.deleteSearchTableEntities([row]);
+      }
+    })
+
+  }
+
   onEditButtonClicked() {
+    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
+      if (authorized) {
+        this.fireEditEntityEvent();
+      }
+    })
+  }
+
+  fireEditEntityEvent() {
     if (this.rowNumber >= 0 && this.rows[this.rowNumber] && this.rows[this.rowNumber].deleted) {
       this.alertService.error('You cannot edit a deleted entry.', false);
       return;
     }
     this.editSearchTableEntity(this.rowNumber);
   }
+
 
   onSaveButtonClicked(withDownloadCSV: boolean) {
     try {
