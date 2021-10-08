@@ -16,9 +16,11 @@ export class AuthenticatedGuard implements CanActivate {
       if(isAuthenticated) {
         subject.next(true);
       } else {
+        console.log("User session is not active")
         // not logged in so redirect to login page with the return url
         this.router.navigate(['/login'], {queryParams: {returnUrl: state.url}});
         subject.next(false);
+        this.alertService.error('You have been logged out because of inactivity or missing access permissions.', true);
       }
     });
     return subject.asObservable();
