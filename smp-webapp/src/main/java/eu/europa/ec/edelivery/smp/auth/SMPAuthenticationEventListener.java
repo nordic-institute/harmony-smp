@@ -45,10 +45,23 @@ public class SMPAuthenticationEventListener implements ApplicationListener<Authe
     public void onApplicationEvent (AuthenticationSuccessEvent event) {
         Collection<? extends GrantedAuthority> authorities = event.getAuthentication().getAuthorities();
         boolean hasAdminRole = authorities.stream().anyMatch(grantedAuthority -> StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()));
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session = attr.getRequest().getSession();
-        int idleTimeout =(hasAdminRole ? configurationService.getSessionIdleTimeoutForAdmin():configurationService.getSessionIdleTimeoutForUser());
-        LOG.debug("Set session idle timeout [{}] for user [{}]", idleTimeout,event.getAuthentication().getName());
-        session.setMaxInactiveInterval(idleTimeout);
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attr!= null) {
+            HttpSession session = attr.getRequest().getSession();
+            int idleTimeout = (hasAdminRole ? configurationService.getSessionIdleTimeoutForAdmin() : configurationService.getSessionIdleTimeoutForUser());
+            LOG.debug("Set session idle timeout [{}] for user [{}]", idleTimeout, event.getAuthentication().getName());
+            session.setMaxInactiveInterval(idleTimeout);
+        } else {
+            LOG.warn("Could not get ServletRequestAttributes attributes for authentication [{}]", event.getAuthentication() );
+        }
+        /*try {
+
+            HttpSession session = attr.getRequest().getSession();
+            int idleTimeout = (hasAdminRole ? configurationService.getSessionIdleTimeoutForAdmin() : configurationService.getSessionIdleTimeoutForUser());
+            LOG.debug("Set session idle timeout [{}] for user [{}]", idleTimeout, event.getAuthentication().getName());
+            session.setMaxInactiveInterval(idleTimeout);
+        } catch (RuntimeException ex) {
+            LOG.error("Session error: " , ex);
+        }*/
     }
 }
