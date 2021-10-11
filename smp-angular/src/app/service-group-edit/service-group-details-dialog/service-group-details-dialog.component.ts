@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient} from "@angular/common/http";
 import {SmpConstants} from "../../smp.constants";
@@ -358,8 +358,6 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
           }
         })
       }
-
-
     }
   }
 

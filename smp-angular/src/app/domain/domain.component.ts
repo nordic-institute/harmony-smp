@@ -1,6 +1,6 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 
 import {AlertService} from '../alert/alert.service';
 import {DomainController} from './domain-controller';
@@ -156,10 +156,7 @@ export class DomainComponent implements OnInit {
       }
     }
     return msg;
-
   }
-
-
 
   details(row: any) {
     this.domainController.showDetails(row);
@@ -170,9 +167,8 @@ export class DomainComponent implements OnInit {
     return this.searchTable.isDirty();
   }
 
-
   enableSMLRegister(): boolean {
-    if (this.searchTable.selected.length !== 1 || !this.isSMPIntegrationOn) {
+    if (!this.selectedOneRow || !this.isSMPIntegrationOn) {
       return false;
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
@@ -192,7 +188,7 @@ export class DomainComponent implements OnInit {
   }
 
   enableSMLUnregister(): boolean {
-    if (this.searchTable.selected.length !== 1 || !this.isSMPIntegrationOn) {
+    if ( !this.selectedOneRow || !this.isSMPIntegrationOn) {
       return false;
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
@@ -212,8 +208,12 @@ export class DomainComponent implements OnInit {
     return domainRo.smlRegistered;
   }
 
+  get selectedOneRow() : boolean{
+    return this.searchTable?.selected.length === 1
+  }
+
   smlUnregisterSelectedDomain() {
-    if (this.searchTable.selected.length !== 1) {
+    if (!this.selectedOneRow) {
       return false;
     }
 

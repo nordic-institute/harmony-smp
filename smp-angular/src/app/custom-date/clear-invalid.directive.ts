@@ -1,5 +1,5 @@
 import {Directive, ElementRef, OnInit, OnDestroy} from '@angular/core';
-import {MatDatepicker, MatDatepickerInput} from '@angular/material';
+import {MatDatepickerInput} from '@angular/material/datepicker';
 
 
 @Directive({

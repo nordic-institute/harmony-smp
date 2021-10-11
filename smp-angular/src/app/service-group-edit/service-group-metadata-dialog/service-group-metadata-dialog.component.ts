@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AlertService} from "../../alert/alert.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
@@ -138,7 +138,6 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
 
     });
   }
-
 
   onClearServiceMetadata() {
     this.dialogForm.controls['xmlContent'].setValue("");

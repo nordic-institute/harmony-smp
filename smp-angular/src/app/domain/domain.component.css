@@ -12,30 +12,30 @@
   position: fixed;
 }
 
-/deep/ .missingKey {
+::ng-deep .missingKey {
   text-decoration: line-through !important;
   font-weight: bold;
   color:red;
 }
 
-/deep/ .domainWarning {
+::ng-deep .domainWarning {
   text-decoration: line-through !important;
   font-weight: bold;
   color:#c6c639;
 }
 
-/deep/ .deleted  {
+::ng-deep .deleted  {
   text-decoration: line-through !important;
   font-weight: bold;
 }
-/deep/ .table-row-new  {
+::ng-deep .table-row-new  {
 
   color: darkgreen !important;
   font-weight: bold;
 }
-/deep/ .table-row-updated  {
+::ng-deep .table-row-updated  {
   font-weight: bold;
 }
-/deep/ .table-row  {
+::ng-deep .table-row  {
   font-weight: normal;
 }

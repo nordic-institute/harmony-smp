@@ -182,5 +182,12 @@ public class ConfigurationService {
     public String getSessionCookiePath() {
         return (String) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_PATH);
     }
+    public Integer getSessionIdleTimeoutForAdmin() {
+        return (Integer) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
+    }
+
+    public Integer getSessionIdleTimeoutForUser() {
+        return (Integer) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_IDLE_TIMEOUT_USER);
+    }
 
 }

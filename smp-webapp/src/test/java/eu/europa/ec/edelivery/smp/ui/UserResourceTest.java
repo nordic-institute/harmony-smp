@@ -5,7 +5,10 @@ import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
-import eu.europa.ec.edelivery.smp.data.ui.*;
+import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
+import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
@@ -23,20 +26,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
-
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -62,7 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SqlConfig(encoding = "UTF-8")
 public class UserResourceTest {
 
-    private static final String PATH="/ui/rest/user";
+    private static final String PATH = "/ui/rest/user";
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -71,6 +69,7 @@ public class UserResourceTest {
     private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
     private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
     private static final RequestPostProcessor SG_ADMIN_CREDENTIALS = httpBasic("sg_admin", "test123");
+
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
@@ -101,8 +100,8 @@ public class UserResourceTest {
 
         assertNotNull(res);
         assertEquals(10, res.getServiceEntities().size());
-        res.getServiceEntities().forEach(sgMap-> {
-            UserRO  sgro = mapper.convertValue(sgMap, UserRO.class);
+        res.getServiceEntities().forEach(sgMap -> {
+            UserRO sgro = mapper.convertValue(sgMap, UserRO.class);
             assertNotNull(sgro.getId());
             assertNotNull(sgro.getUsername());
             assertNotNull(sgro.getRole());
@@ -110,11 +109,11 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testUpdateCurrentUserOK()  throws Exception {
+    public void testUpdateCurrentUserOK() throws Exception {
 
         // given when - log as SMP admin
         MvcResult result = mvc.perform(post("/ui/rest/security/authentication")
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content("{\"username\":\"smp_admin\",\"password\":\"test123\"}"))
                 .andExpect(status().isOk()).andReturn();
         ObjectMapper mapper = new ObjectMapper();
@@ -125,12 +124,12 @@ public class UserResourceTest {
         userRO.setActive(!userRO.isActive());
         userRO.setEmailAddress("test@mail.com");
         userRO.setPassword(UUID.randomUUID().toString());
-        if (userRO.getCertificate()==null) {
+        if (userRO.getCertificate() == null) {
             userRO.setCertificate(new CertificateRO());
         }
         userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
 
-        mvc.perform(put(PATH+"/"+userRO.getId())
+        mvc.perform(put(PATH + "/" + userRO.getId())
                 .with(ADMIN_CREDENTIALS)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -139,12 +138,12 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testUpdateCurrentUserNotAuthenticatedUser()  throws Exception {
+    public void testUpdateCurrentUserNotAuthenticatedUser() throws Exception {
 
         // given when - log as SMP admin
         // then change values and list uses for changed value
         MvcResult result = mvc.perform(post("/ui/rest/security/authentication")
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content("{\"username\":\"smp_admin\",\"password\":\"test123\"}"))
                 .andExpect(status().isOk()).andReturn();
         ObjectMapper mapper = new ObjectMapper();
@@ -155,12 +154,12 @@ public class UserResourceTest {
         userRO.setActive(!userRO.isActive());
         userRO.setEmailAddress("test@mail.com");
         userRO.setPassword(UUID.randomUUID().toString());
-        if (userRO.getCertificate()==null) {
+        if (userRO.getCertificate() == null) {
             userRO.setCertificate(new CertificateRO());
         }
         userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
 
-        mvc.perform(put(PATH+"/"+userRO.getId())
+        mvc.perform(put(PATH + "/" + userRO.getId())
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -179,22 +178,22 @@ public class UserResourceTest {
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         assertNotNull(res);
         assertFalse(res.getServiceEntities().isEmpty());
-        UserRO  userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
+        UserRO userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
         // then
         userRO.setActive(!userRO.isActive());
         userRO.setEmailAddress("test@mail.com");
         userRO.setPassword(UUID.randomUUID().toString());
-        if (userRO.getCertificate()==null) {
+        if (userRO.getCertificate() == null) {
             userRO.setCertificate(new CertificateRO());
         }
         userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
 
         mvc.perform(put(PATH)
-                        .with(SYSTEM_CREDENTIALS)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Arrays.asList(userRO)))
-                ).andExpect(status().isOk());
+        ).andExpect(status().isOk());
     }
 
     @Test
@@ -208,12 +207,12 @@ public class UserResourceTest {
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         assertNotNull(res);
         assertFalse(res.getServiceEntities().isEmpty());
-        UserRO  userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
+        UserRO userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
         // then
         userRO.setActive(!userRO.isActive());
         userRO.setEmailAddress("test@mail.com");
         userRO.setPassword(UUID.randomUUID().toString());
-        if (userRO.getCertificate()==null) {
+        if (userRO.getCertificate() == null) {
             userRO.setCertificate(new CertificateRO());
         }
         userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
@@ -244,7 +243,7 @@ public class UserResourceTest {
         byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
 
         // given when
-        MvcResult result = mvc.perform(post(PATH+"/1098765430/certdata")
+        MvcResult result = mvc.perform(post(PATH + "/1098765430/certdata")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .content(buff))
@@ -267,7 +266,7 @@ public class UserResourceTest {
         byte[] buff = (new String("Not a certficate :) ")).getBytes();
 
         // given when
-        mvc.perform(post(PATH+"/1098765430/certdata")
+        mvc.perform(post(PATH + "/1098765430/certdata")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .content(buff))
@@ -283,7 +282,7 @@ public class UserResourceTest {
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(serialNumber, subject);
         byte[] buff = certificate.getEncoded();
         // given when
-        MvcResult result = mvc.perform(post(PATH+"/1098765430/certdata")
+        MvcResult result = mvc.perform(post(PATH + "/1098765430/certdata")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .content(buff))
@@ -302,7 +301,7 @@ public class UserResourceTest {
         byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
         // id and logged user not match
         // given when
-        mvc.perform(post(PATH+"/34556655/certdata")
+        mvc.perform(post(PATH + "/34556655/certdata")
                 .with(ADMIN_CREDENTIALS)
                 .with(csrf())
                 .content(buff))
@@ -312,7 +311,7 @@ public class UserResourceTest {
     @Test
     public void samePreviousPasswordUsedTrue() throws Exception {
         // 1 is id for smp_admin
-        MvcResult result = mvc.perform(post(PATH+"/1/samePreviousPasswordUsed")
+        MvcResult result = mvc.perform(post(PATH + "/1/samePreviousPasswordUsed")
                 .with(ADMIN_CREDENTIALS)
                 .with(csrf())
                 .content("test123"))
@@ -325,7 +324,7 @@ public class UserResourceTest {
     @Test
     public void samePreviousPasswordUsedFalse() throws Exception {
         // 1 is id for smp_admin
-        MvcResult result = mvc.perform(post(PATH+"/1/samePreviousPasswordUsed")
+        MvcResult result = mvc.perform(post(PATH + "/1/samePreviousPasswordUsed")
                 .with(ADMIN_CREDENTIALS)
                 .with(csrf())
                 .content("7777"))
@@ -338,7 +337,7 @@ public class UserResourceTest {
     @Test
     public void samePreviousPasswordUsedUnauthorized() throws Exception {
         // 1 is id for smp_admin so for 3 should be Unauthorized
-        MvcResult result = mvc.perform(post(PATH+"/3/samePreviousPasswordUsed")
+        MvcResult result = mvc.perform(post(PATH + "/3/samePreviousPasswordUsed")
                 .with(ADMIN_CREDENTIALS)
                 .with(csrf())
                 .content("test123"))
@@ -347,7 +346,7 @@ public class UserResourceTest {
 
     @Test
     public void testValidateDeleteUserOK() throws Exception {
-        MvcResult result = mvc.perform(post(PATH+"/validateDelete")
+        MvcResult result = mvc.perform(post(PATH + "/validateDelete")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
@@ -365,7 +364,7 @@ public class UserResourceTest {
     @Test
     public void testValidateDeleteUserNotOK() throws Exception {
         // note system credential has id 3!
-        MvcResult result = mvc.perform(post(PATH+"/validateDelete")
+        MvcResult result = mvc.perform(post(PATH + "/validateDelete")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
@@ -377,7 +376,7 @@ public class UserResourceTest {
         DeleteEntityValidation res = mapper.readValue(result.getResponse().getContentAsString(), DeleteEntityValidation.class);
 
         assertTrue(res.getListIds().isEmpty());
-        assertEquals("Could not delete logged user!",res.getStringMessage());
+        assertEquals("Could not delete logged user!", res.getStringMessage());
 
     }
 

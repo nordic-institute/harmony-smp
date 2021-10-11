@@ -42,9 +42,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
     /**
      * thread safe validator
      */
-    private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> {
-        return new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US);
-    });
+    private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US));
 
     @Autowired
     UserDao mUserDao;
@@ -71,7 +69,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
             authentication = authenticateByUsernameToken((UsernamePasswordAuthenticationToken) authenticationToken);
         }
-
 
         // set anonymous token
         if (authentication == null) {
