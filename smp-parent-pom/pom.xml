@@ -49,7 +49,7 @@
         <edelivery.ssl-auth.version>1.8</edelivery.ssl-auth.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.26</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
         <spring.version>5.3.9</spring.version>
         <spring.security.version>5.5.2</spring.security.version>
         <spring.boot.version>2.1.8.RELEASE</spring.boot.version>
@@ -69,6 +69,8 @@
         <javaee-api.version>7.0</javaee-api.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-validator.version>1.7</commons-validator.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.23.4</mockito.version>
         <guava.version>24.1.1-jre</guava.version>
@@ -493,7 +495,20 @@
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator.version}</version>
             </dependency>
-
+            <!-- commons-collections and commons-beanutils are transient dependencies of
+            slf4j: 1.7.32 and commons-validator: 1.7
+            they were upgraded because of OWASP reported ISSUE. When upgrading SLF4J check if this is still needed
+          -->
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
