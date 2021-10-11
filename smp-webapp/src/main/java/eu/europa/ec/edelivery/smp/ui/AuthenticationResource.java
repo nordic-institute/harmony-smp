@@ -51,7 +51,7 @@ public class AuthenticationResource {
 
     private ConfigurationService configurationService;
 
-    public CsrfTokenRepository csrfTokenRepository;
+    private CsrfTokenRepository csrfTokenRepository;
 
     SMPCookieWriter smpCookieWriter;
 
