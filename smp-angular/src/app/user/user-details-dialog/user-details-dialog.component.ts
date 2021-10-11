@@ -1,5 +1,6 @@
 import {Component, Inject, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggleChange} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -21,6 +22,7 @@ import {GlobalLookups} from "../../common/global-lookups";
 import {Observable, of} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {UserDetailsService} from "./user-details.service";
+import {MatSlideToggleChange} from "@angular/material/slide-toggle";
 
 @Component({
   selector: 'user-details-dialog',

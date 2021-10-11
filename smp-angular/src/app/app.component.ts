@@ -3,7 +3,7 @@ import {SecurityService} from './security/security.service';
 import {Router} from '@angular/router';
 import {Authority} from "./security/authority.model";
 import {AlertService} from "./alert/alert.service";
-import {MatDialog, MatDialogRef} from "@angular/material";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {GlobalLookups} from "./common/global-lookups";
 import {UserController} from "./user/user-controller";
 import {HttpClient} from "@angular/common/http";
@@ -40,11 +40,11 @@ export class AppComponent {
   }
 
   isCurrentUserSMPAdmin(): boolean {
-    return this.securityService.isCurrentUserInRole([ Authority.SMP_ADMIN]);
+    return this.securityService.isCurrentUserInRole([Authority.SMP_ADMIN]);
   }
 
   isCurrentUserServiceGroupAdmin(): boolean {
-    return this.securityService.isCurrentUserInRole([ Authority.SERVICE_GROUP_ADMIN]);
+    return this.securityService.isCurrentUserInRole([Authority.SERVICE_GROUP_ADMIN]);
   }
 
   editCurrentUser() {
@@ -65,14 +65,14 @@ export class AppComponent {
   }
 
   get currentUserRoleDescription(): string {
-      if (this.securityService.isCurrentUserSystemAdmin()){
-        return "System administrator";
-      } else if (this.securityService.isCurrentUserSMPAdmin()){
-        return "SMP administrator";
-      } else if (this.securityService.isCurrentUserServiceGroupAdmin()){
-        return "Service group administrator";
-      }
-      return "";
+    if (this.securityService.isCurrentUserSystemAdmin()) {
+      return "System administrator";
+    } else if (this.securityService.isCurrentUserSMPAdmin()) {
+      return "SMP administrator";
+    } else if (this.securityService.isCurrentUserServiceGroupAdmin()) {
+      return "Service group administrator";
+    }
+    return "";
   }
 
   logout(event: Event): void {
@@ -97,7 +97,7 @@ export class AppComponent {
     //containing a ng-datatable and it only works after one clicks inside the table
   }
 
-  clearWarning(){
+  clearWarning() {
     this.alertService.clearAlert();
   }
 

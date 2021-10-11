@@ -1,11 +1,9 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +16,6 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
@@ -27,11 +24,10 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.MediaType;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -47,19 +43,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SqlConfig(encoding = "UTF-8")
 public class AuthenticationResourceTest {
 
-    private static final String PATH="/ui/rest/security/authentication";
+    private static final String PATH = "/ui/rest/security/authentication";
 
     @Autowired
     private WebApplicationContext webAppContext;
 
     private MockMvc mvc;
     private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
-
 
 
         initServletContext();
@@ -73,11 +69,11 @@ public class AuthenticationResourceTest {
 
 
     @Test
-    public void authenticateSuccessTest()  throws Exception {
+    public void authenticateSuccessTest() throws Exception {
 
         // given when
         HttpSession session = mvc.perform(post(PATH)
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content("{\"username\":\"smp_admin\",\"password\":\"test123\"}"))
                 .andExpect(status().isOk()).andReturn()
                 .getRequest()
@@ -88,11 +84,11 @@ public class AuthenticationResourceTest {
 
 
     @Test
-    public void authenticateInvalidPasswordTest()  throws Exception {
+    public void authenticateInvalidPasswordTest() throws Exception {
 
         // given when then
         mvc.perform(post(PATH)
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content("{\"username\":\"smp_admin\",\"password\":\"test1235\"}"))
                 .andExpect(status().isForbidden()).andReturn()
                 .getRequest()
@@ -100,11 +96,11 @@ public class AuthenticationResourceTest {
     }
 
     @Test
-    public void authenticateInvalidUsernameTest()  throws Exception {
+    public void authenticateInvalidUsernameTest() throws Exception {
 
         // given when
         mvc.perform(post(PATH)
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content("{\"username\":\"smp_admin1\",\"password\":\"test123\"}"))
                 .andExpect(status().isForbidden()).andReturn()
                 .getRequest()

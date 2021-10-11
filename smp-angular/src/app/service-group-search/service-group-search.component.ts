@@ -1,7 +1,7 @@
 ///<reference path="../smp.constants.ts"/>
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
-import {MatDialog} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
 import {AlertService} from '../alert/alert.service';
 import {ServiceGroupSearchController} from './service-group-search-controller';
 import {HttpClient} from '@angular/common/http';
@@ -15,9 +15,9 @@ import {GlobalLookups} from "../common/global-lookups";
 })
 export class ServiceGroupSearchComponent implements OnInit {
 
-  @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>
-  @ViewChild('rowSMPUrlLinkAction') rowSMPUrlLinkAction: TemplateRef<any>
-  @ViewChild('rowActions') rowActions: TemplateRef<any>;
+  @ViewChild('rowExtensionAction' , { static: true }) rowExtensionAction: TemplateRef<any>
+  @ViewChild('rowSMPUrlLinkAction', { static: true }) rowSMPUrlLinkAction: TemplateRef<any>
+  @ViewChild('rowActions', { static: true }) rowActions: TemplateRef<any>;
 
   columnPicker: ColumnPicker = new ColumnPicker();
   serviceGroupSearchController: ServiceGroupSearchController;

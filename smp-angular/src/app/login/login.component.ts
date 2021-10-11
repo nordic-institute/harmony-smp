@@ -5,7 +5,7 @@ import {HttpEventService} from '../http/http-event.service';
 import {AlertService} from '../alert/alert.service';
 import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
-import {MatDialogRef, MatDialog} from '@angular/material';
+import {MatDialogRef, MatDialog} from '@angular/material/dialog';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
 import {Subscription} from 'rxjs';
 import {ExpiredPasswordDialogComponent} from '../common/expired-password-dialog/expired-password-dialog.component';
