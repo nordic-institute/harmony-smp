@@ -196,6 +196,9 @@
                             <skipRuntimeScope>true</skipRuntimeScope>
                             <!-- Disable .Net Assembly Analyzer -->
                             <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                            <!-- Disable checking npm dev dependencies -->
+                            <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+                            <nodeAuditSkipDevDependencies>true</nodeAuditSkipDevDependencies>
                         </configuration>
                         <executions>
                             <execution>
