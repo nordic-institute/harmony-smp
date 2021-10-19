@@ -15,8 +15,7 @@
 
   <properties>
     <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
-    <!--node.version>v8.9.1</node.version>
-    <npm.version>5.3.0</npm.version-->
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <node.version>v14.18.0</node.version>
     <npm.version>7.24.2</npm.version>
   </properties>
