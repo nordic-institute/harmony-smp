@@ -93,6 +93,7 @@
         <xmlunit.version>2.5.1</xmlunit.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
         <jackson.version>2.13.0</jackson.version>
+        <logback.version>1.2.6</logback.version>
 
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -380,9 +381,9 @@
                 <version>${guava.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

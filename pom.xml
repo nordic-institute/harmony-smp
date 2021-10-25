@@ -189,13 +189,18 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>6.3.2</version>
+                        <version>6.4.1</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
                             <skipRuntimeScope>true</skipRuntimeScope>
                             <!-- Disable .Net Assembly Analyzer -->
                             <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+
+                            <nodeAnalyzerEnabled>true</nodeAnalyzerEnabled>
+                            <!-- Disable checking npm dev dependencies -->
+                            <nodeAuditSkipDevDependencies>true</nodeAuditSkipDevDependencies>
+                            <nodePackageSkipDevDependencies>true</nodePackageSkipDevDependencies>
                         </configuration>
                         <executions>
                             <execution>
