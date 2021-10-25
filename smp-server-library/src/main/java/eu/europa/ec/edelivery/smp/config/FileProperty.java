@@ -1,11 +1,13 @@
 package eu.europa.ec.edelivery.smp.config;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,39 +34,33 @@ public class FileProperty {
     }
 
     public static void updateLog4jConfiguration(String logFileFolder, String logPropertyFile, String configurationFolder) {
-        Properties props = new Properties();
-        try {
-            InputStream configStream = null;
-            if (!StringUtils.isBlank(logPropertyFile)) {
-                File f = new File(logPropertyFile);
-                if (!f.exists()) {
-                    LOG.info("Log configuration file:  {} not exists.", f.getAbsolutePath());
-                    f = new File(configurationFolder, logPropertyFile);
-                    LOG.info("Set log configuration file: {}.", f.getAbsolutePath());
-                }
 
-                if (f.exists()) {
-                    LOG.info("Set log configuration: {}.",f.getAbsolutePath());
-                    configStream = new FileInputStream(f);
-                }
-            }
-            // if null use default properties
-            if (configStream == null) {
-                LOG.info("Set default log configuration.");
-                configStream = FileProperty.class.getResourceAsStream("/smp-log4j.properties");
-            }
-            props.load(configStream);
-            configStream.close();
-        } catch (IOException e) {
-            LOG.info("Error occurred while loading default LOG configuration.", e);
+        if (StringUtils.isNotBlank(logFileFolder)) {
+            System.setProperty(PROPERTY_LOG_FOLDER, logFileFolder);
         }
-        // set
-        if (!StringUtils.isBlank(logFileFolder)) {
-            LOG.info("Set log4j.appender.MainLogFile.File:{}. ",  logFileFolder + "/edelivery-smp.log");
-            props.setProperty("log4j.appender.MainLogFile.File {}", logFileFolder + "/edelivery-smp.log");
+
+        File f = new File(logPropertyFile);
+        if (!f.exists()) {
+            LOG.info("Log configuration file: {} not exists.", f.getAbsolutePath());
+            f = new File(configurationFolder, logPropertyFile);
+            LOG.info("Set log configuration file: {}.", f.getAbsolutePath());
+
         }
-        LogManager.resetConfiguration();
-        PropertyConfigurator.configure(props);
+        // if configuration file exist update configuration
+        if (f.exists()) {
+            setLogConfiguration(f);
+        }
+    }
+
+    public static void setLogConfiguration(File configurationFile) {
+        try (InputStream configStream = new FileInputStream(configurationFile)) {
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            JoranConfigurator configurator = new JoranConfigurator();
+            configurator.setContext(context);
+            configurator.doConfigure(configStream); // loads logback file
+        } catch (IOException | JoranException e) {
+            LOG.info("Error occurred while loading LOG configuration.", e);
+        }
     }
 
     public static Properties getFileProperties() {
