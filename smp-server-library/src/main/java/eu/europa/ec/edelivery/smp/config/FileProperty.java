@@ -33,10 +33,14 @@ public class FileProperty {
     private FileProperty() {
     }
 
-    public static void updateLog4jConfiguration(String logFileFolder, String logPropertyFile, String configurationFolder) {
+    public static void updateLogConfiguration(String logFileFolder, String logPropertyFile, String configurationFolder) {
 
         if (StringUtils.isNotBlank(logFileFolder)) {
             System.setProperty(PROPERTY_LOG_FOLDER, logFileFolder);
+        }
+        if (StringUtils.isBlank(logPropertyFile)) {
+            LOG.info("Log configuration file is not set.");
+            return;
         }
 
         File f = new File(logPropertyFile);
@@ -54,7 +58,7 @@ public class FileProperty {
 
     public static void setLogConfiguration(File configurationFile) {
         try (InputStream configStream = new FileInputStream(configurationFile)) {
-            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+                LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext(context);
             configurator.doConfigure(configStream); // loads logback file

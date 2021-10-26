@@ -57,7 +57,7 @@ public class PropertiesConfig {
         // log application properties
         PROP_INIT_TOOLS.logBuildProperties();
         // update log configuration
-        FileProperty.updateLog4jConfiguration(fileProperties.getProperty(FileProperty.PROPERTY_LOG_FOLDER),
+        FileProperty.updateLogConfiguration(fileProperties.getProperty(FileProperty.PROPERTY_LOG_FOLDER),
                 fileProperties.getProperty(FileProperty.PROPERTY_LOG_PROPERTIES), prop.getProperty(CONFIGURATION_DIR.getProperty())
         );
 
