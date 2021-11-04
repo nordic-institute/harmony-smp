@@ -15,14 +15,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.edelivery</groupId>
-        <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.1</version>
+        <groupId>org.niis</groupId>
+        <artifactId>harmonysmp-parent-pom</artifactId>
+        <version>0.0.1</version>
         <relativePath>../smp-parent-pom/neds-pom.xml</relativePath>
     </parent>
 
-    <artifactId>smp-api</artifactId>
-    <name>smp-api</name>
+    <artifactId>harmonysmp-api</artifactId>
+    <name>harmonysmp-api</name>
 
     <dependencies>
         <!-- Generated equals() methods need it in runtime -->
