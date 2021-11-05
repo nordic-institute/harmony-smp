@@ -14,13 +14,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.edelivery</groupId>
-        <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.1</version>
+        <groupId>org.niis</groupId>
+        <artifactId>harmonysmp-parent-pom</artifactId>
+        <version>0.0.1</version>
         <relativePath>../smp-parent-pom/neds-pom.xml</relativePath>
     </parent>
-    <artifactId>smp-server-library</artifactId>
-    <name>smp-server-library</name>
+    <artifactId>harmonysmp-server-library</artifactId>
+    <name>harmonysmp-server-library</name>
 
     <!-- Default values for local compilation. The properties can be overriden for continuous integration servers -->
     <properties>
@@ -42,8 +42,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.europa.ec.edelivery</groupId>
-            <artifactId>smp-api</artifactId>
+            <groupId>org.niis</groupId>
+            <artifactId>harmonysmp-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

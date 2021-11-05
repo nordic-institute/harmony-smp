@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.edelivery</groupId>
-        <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.1</version>
+        <groupId>org.niis</groupId>
+        <artifactId>harmonysmp-parent-pom</artifactId>
+        <version>0.0.1</version>
         <relativePath>../smp-parent-pom/neds-pom.xml</relativePath>
     </parent>
-    <artifactId>smp</artifactId>
+    <artifactId>harmonysmp</artifactId>
     <packaging>war</packaging>
-    <name>smp-webapp</name>
-    <description>SMP REST service WEB APP</description>
+    <name>harmonysmp-webapp</name>
+    <description>Harmony SMP REST service WEB APP</description>
 
 
     <properties>
@@ -42,13 +42,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.europa.ec.edelivery</groupId>
-            <artifactId>smp-server-library</artifactId>
+            <groupId>org.niis</groupId>
+            <artifactId>harmonysmp-server-library</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.edelivery</groupId>
-            <artifactId>smp-angular</artifactId>
+            <groupId>org.niis</groupId>
+            <artifactId>harmonysmp-angular</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -161,29 +161,12 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
-                    <warName>${project.artifactId}</warName>
                     <archive>
                         <manifestEntries>
                             <WebLogic-Application-Version>v${project.version}</WebLogic-Application-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>assembly-smp-setup</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptor>src/main/smp-setup/smp-setup.xml</descriptor>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
