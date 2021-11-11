@@ -1,0 +1,4 @@
+# integration tests in this file are ignored in neds-pom.xml
+
+UIKeystoreServiceTest
+SmlClientFactoryAuthenticationByClientCertFromKeystoreTest
