@@ -12,7 +12,8 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec</groupId>
     <artifactId>smp-modules</artifactId>
@@ -189,7 +190,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>6.4.1</version>
+                        <version>6.5.0</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
@@ -213,9 +214,57 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>license-check</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>2.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>download-licenses</id>
+                                <goals>
+                                    <goal>aggregate-download-licenses</goal>
+                                    <goal>aggregate-add-third-party</goal>
+                                </goals>
+                            </execution>
+                        </executions>
 
+                        <configuration>
+                            <licenseMerges>
+                                <licenseMerge>Apache License, Version 2.0|Apache License 2.0|The Apache Software
+                                    License, Version 2.0|Apache Public License 2.0|Apache 2|Apache License, version
+                                    2.0|The Apache License, Version 2.0
+                                </licenseMerge>
+                                <!--  Common Public License Version 1.0|CPL was replaced by Eclipse Public License -->
+                                <licenseMerge>Eclipse Public License 1.0 (EPL-1.0)|Eclipse Public License (EPL)
+                                    v1.0|Eclipse Public License - v 1.0|Eclipse Distribution License - v 1.0|Eclipse
+                                    Public License 1.0|EDL 1.0|Common Public License Version 1.0|CPL
+                                </licenseMerge>
+                                <licenseMerge>The MIT License|MIT License</licenseMerge>
+                                <licenseMerge>BSD license (all versions)|BSD License|The BSD License|BSD 3-clause New
+                                    License|BSD Licence 3|BSD-Style License|BSD-3-Clause|New BSD License
+                                </licenseMerge>
+                                <licenseMerge>Dual license consisting of the CDDL v1.1 and GPL v2|CDDL + GPLv2 with
+                                    classpath exception|CDDL/GPLv2+CE|CDDL+GPL License
+                                </licenseMerge>
+                                <licenseMerge>Common Development and Distribution License (CDDL)|Common Development and
+                                    Distribution License (CDDL) v1.0|Common Development and Distribution|CDDL 1.1|
+                                </licenseMerge>
+                            </licenseMerges>
+                            <excludedLicenses>
+                                <excludedLicense>Unknown license</excludedLicense>
+                                <excludedLicense>licenseB</excludedLicense>
+                            </excludedLicenses>
+                            <excludedGroups>eu.europa.ec.*</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-
     <build>
         <plugins>
             <plugin>
@@ -232,5 +281,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
