@@ -12,7 +12,8 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.edelivery</groupId>
     <artifactId>smp-parent-pom</artifactId>
@@ -50,12 +51,10 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.32</slf4j.version>
-        <spring.version>5.3.9</spring.version>
-        <spring.security.version>5.5.2</spring.security.version>
+        <spring.version>5.3.13</spring.version>
+        <spring.security.version>5.5.3</spring.security.version>
         <spring.boot.version>2.1.8.RELEASE</spring.boot.version>
-
         <bdmsl.api.version>4.1.0</bdmsl.api.version>
-
         <cxf.version>3.4.5</cxf.version>
         <cxf-xjc-runtime.version>3.2.0</cxf-xjc-runtime.version>
         <httpclient.version>4.5.13</httpclient.version>
@@ -97,8 +96,10 @@
 
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-        <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
-        <sonar.jacoco.itReportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
+        <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec
+        </sonar.jacoco.reportPath>
+        <sonar.jacoco.itReportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-it.exec
+        </sonar.jacoco.itReportPath>
         <sonar.language>java</sonar.language>
 
 
@@ -630,11 +631,6 @@
                     <version>3.0.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.mycila</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>2.11</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.6</version>
@@ -760,7 +756,6 @@
                 </executions>
             </plugin>
             <!-- jacoco end -->
-
         </plugins>
     </build>
 </project>
