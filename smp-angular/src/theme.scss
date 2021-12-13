@@ -135,7 +135,7 @@ $datatable_background_color_active: map-get($mat-grey, 600);
 }
 
 .smpLink {
-  color: #03A9F4;//map-get($mat-blue, A200);
+  color: #003399;
 }
 
 .searchArea {
@@ -145,7 +145,7 @@ $datatable_background_color_active: map-get($mat-grey, 600);
     @extend .smpLink;
     vertical-align: bottom;
     margin-left: 10px;
-    color: #03A9F4;
+    color: #003399;
   }
 }
 
