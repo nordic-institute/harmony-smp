@@ -95,6 +95,7 @@ ngx-datatable span:before {
 /* --- SIDEBAR --------- */
 /*---------------------- */
 mat-sidenav[_ngcontent-c0] {
+  background-color: #f0fbfc;
   box-shadow: 0px 0px 2px #9B9B9B !important;
 }
 
@@ -128,11 +129,14 @@ mat-sidenav[_ngcontent-c0] {
   border-radius: 0;
   line-height: 50px !important;
   letter-spacing: 1px;
-
+  color: #003399;
 }
 
 .sideNavButton {
-  padding-left: 20px !important;
+}
+
+.button-text {
+  padding-left: 10px;
 }
 
 /* --- Collapse button ---*/
@@ -141,9 +145,12 @@ mat-sidenav[_ngcontent-c0] {
   bottom: 0;
 }
 
-/* --- EC Logo ---*/
-#bottomLogo {
-  display: none;
+.bottom-link {
+  position: absolute;
+  bottom: 60px;
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 /* --- MAIN CONTENT --------- */

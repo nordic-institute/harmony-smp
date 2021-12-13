@@ -68,17 +68,19 @@ html, body, material-app, .my-content {
   display: flex;
   justify-content: center;
   align-items: center;
+  vertical-align: middle;
   padding-top: 18px;
   padding-bottom: 20px;
   padding-left: 15px;
+  padding-right: 20px;
 }
 
 .menu-collapsed #topLogo {
-  display: block;
-  padding-top: 30px;
-  padding-bottom: 12px;
-  padding-left: 0;
-  height: 70px;
+  display: flex;
+  padding-top: 18px;
+  padding-bottom: 25px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 #collapse_id, #expand_id {
