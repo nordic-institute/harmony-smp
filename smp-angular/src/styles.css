@@ -187,7 +187,7 @@ mat-sidenav[_ngcontent-c0] {
 }
 
 #sandwichMenu .material-icons:hover {
-  color: #03A9F4;
+  color: #003399;
 }
 
 /* --- Help button ---*/
@@ -320,7 +320,7 @@ mat-card {
 
 /* --- TABS --- */
 .md2-tab-ink-bar {
-  background-color: #03A9F4 !important;
+  background-color: #003399 !important;
 }
 
 /*--------------------------------------------------
