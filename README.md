@@ -41,8 +41,8 @@ All tests can be skipped using the `maven.test.skip` property
 
     mvn -f neds-pom.xml clean install -Dmaven.test.skip=true
 
-Full build instruction are available in the `harmony-common` [repository]([here](https://github.com/nordic-institute/harmony-common/)).
+Full build instruction are available in the `harmony-common` [repository](https://github.com/nordic-institute/harmony-common/).
 
 ## Install and Run
 
-Instructions to install and run Harmony SMP are available in the `harmony-common` [repository]([here](https://github.com/nordic-institute/harmony-common/)).
+Instructions to install and run Harmony SMP are available in the `harmony-common` [repository](https://github.com/nordic-institute/harmony-common/).
