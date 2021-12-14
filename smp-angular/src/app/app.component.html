@@ -81,7 +81,9 @@
     </div>
 
     <div fxFill="100" fxFlex="<grow> <shrink> <basis>" id="routerHolder" style="min-height: 100%" >
-        <router-outlet></router-outlet>
+      <div style="margin:15px;height: 100%;">
+        <router-outlet class="full-height"></router-outlet>
+      </div>
     </div>
   </div>
 </mat-sidenav-container>

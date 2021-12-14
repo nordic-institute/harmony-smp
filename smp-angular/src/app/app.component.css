@@ -1,5 +1,5 @@
 [mat-raised-button] {
-  width: 95%;
+  width: 100%;
 }
 
 mat-sidenav-container {
@@ -11,7 +11,7 @@ mat-sidenav-container {
 
 mat-sidenav {
   text-align: center;
-  box-shadow: 7px 7px 10px #9B9B9B;
+  box-shadow: 7px 7px 10px #9B9B9B !important;
   /*border: dashed red;*/
 }
 
@@ -92,4 +92,11 @@ html, body, material-app, .my-content {
 
 .menu-collapsed .sideNavButton span {
   display: none;
+}
+
+.mat-raised-button:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+.sideNavSubmenu {
+  margin-bottom: -16px;
 }
