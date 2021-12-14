@@ -21,11 +21,11 @@
     <version>0.0.1</version>
 
     <modules>
-        <module>smp-parent-pom/neds-pom.xml</module>
-        <module>smp-api/neds-pom.xml</module>
-        <module>smp-angular/neds-pom.xml</module>
-        <module>smp-server-library/neds-pom.xml</module>
-        <module>smp-webapp/neds-pom.xml</module>
+        <module>smp-parent-pom/harmony-pom.xml</module>
+        <module>smp-api/harmony-pom.xml</module>
+        <module>smp-angular/harmony-pom.xml</module>
+        <module>smp-server-library/harmony-pom.xml</module>
+        <module>smp-webapp/harmony-pom.xml</module>
     </modules>
 
     <properties>
