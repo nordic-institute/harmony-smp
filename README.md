@@ -31,8 +31,6 @@ Harmony SMP can be built using the following command:
 
     mvn -f neds-pom.xml clean install
 
-**Note:** Running the tests takes a long time (~20 min or more).
-
 Integration tests can be skipped using the `skipITs` property:
 
     mvn -f neds-pom.xml clean install -DskipITs=true
