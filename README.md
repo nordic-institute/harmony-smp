@@ -1,45 +1,48 @@
-# Service Metadata Publishing
 
-## Continuous Integration
+[![License badge](https://img.shields.io/badge/license-EUPL-blue.svg)](LICENSE.md)
+[![Documentation badge](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://github.com/nordic-institute/harmony-common/tree/harmony-develop/doc)
+[![Support badge]( https://img.shields.io/badge/support-sof-yellowgreen.svg)](https://edelivery.digital/contact)
 
-[https://webgate.ec.europa.eu/CITnet/bamboo/browse/EDELIVERY-SMPDEV]
+# Harmony eDelivery Access - Service Metadata Publisher (SMP)
 
-## Building SMP
-SMP requires Maven 3.0 and Java 1.7. 
+![Harmony eDelivery Access logo](harmony-logo.png)
 
-Integration tests included into build process require access to DB. By default it is a local instance of MySQL with preconfigured schema:   
-[https://ec.europa.eu/cefdigital/code/projects/EDELIVERY/repos/smp/browse/smp-server-library/database]
+## About the Repository
 
-Any remote DB with preconfigured schema might be used as well. Sample build command:
+This repository contains the source code of the SMP component of Harmony eDelivery Access. 
 
-    mvn clean install \
-    -Djdbc.driver=oracle.jdbc.OracleDriver \
-    -Djdbc.url=jdbc:oracle:thin:<HOST_AND_PORT_AND_SERVICENAME> \
-    -Djdbc.user=<USERNAME> \
-    -Djdbc.password=<PASSWORD> \ 
-    -Dtarget-database=Oracle \ 
-    -Djdbc.read-connections.max=10
-    
-## Source code history
-This is a continuation of CIPA SMP Joinup repository, which was migrated here to GIT on 07.12.2016:
-[https://joinup.ec.europa.eu/svn/cipaedelivery/trunk]
+Harmony eDelivery Access by [NIIS](https://niis.org) is a free and actively maintained open-source component for joining one or more eDelivery policy domains.
 
-## To run with SoapUI code coverage (from Bamboo, etc)
-Step 1:
+Harmony SMP is based on upon the [SMP](https://ec.europa.eu/cefdigital/code/projects/EDELIVERY/repos/smp) open source project by the [European Commission](https://ec.europa.eu/). 
 
-mvn clean install -Prun-soapui -Pdeploy-war
-    -Djdbc.driver=oracle.jdbc.OracleDriver
-    -Djdbc.url=jdbc:oracle:thin:<HOST_AND_PORT_AND_SERVICENAME>
-    -Djdbc.user=<USERNAME>
-    "-Djdbc.password=<PASSWORD>"
-    -Dtarget-database=Oracle
-    -DjacocoRemotePort=65000
-    -DjacocoRemoteAddress=localhost
-    "-Durl=http://localhost:7001/smp"
-    -DdeployWarFolder=/home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/
+## Documentation
 
-Step 2:
+The official Harmony documentation is available in a separate repository that can be found [here](https://github.com/nordic-institute/harmony-common/).
 
-mvn sonar:sonar
+In addition, the following documents that are available on the [SMP release page](https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/SMP) are applicable for the Harmony SMP too:
 
+ * Administration Guide 
+ * Interface Control Documents
+ * Software Architecture Document.
 
+## Build
+
+Harmony SMP can be built using the following command:
+
+    mvn -f neds-pom.xml clean install
+
+**Note:** Running the tests takes a long time (~20 min or more).
+
+Integration tests can be skipped using the `skipITs` property:
+
+    mvn -f neds-pom.xml clean install -DskipITs=true
+
+All tests can be skipped using the `maven.test.skip` property
+
+    mvn -f neds-pom.xml clean install -Dmaven.test.skip=true
+
+Full build instruction are available in the `harmony-common` [repository]([here](https://github.com/nordic-institute/harmony-common/)).
+
+## Install and Run
+
+Instructions to install and run Harmony SMP are available in the `harmony-common` [repository]([here](https://github.com/nordic-institute/harmony-common/)).
