@@ -29,15 +29,15 @@ In addition, the following documents that are available on the [SMP release page
 
 Harmony SMP can be built using the following command:
 
-    mvn -f neds-pom.xml clean install
+    mvn -f harmony-pom.xml clean install
 
 Integration tests can be skipped using the `skipITs` property:
 
-    mvn -f neds-pom.xml clean install -DskipITs=true
+    mvn -f harmony-pom.xml clean install -DskipITs=true
 
 All tests can be skipped using the `maven.test.skip` property
 
-    mvn -f neds-pom.xml clean install -Dmaven.test.skip=true
+    mvn -f harmony-pom.xml clean install -Dmaven.test.skip=true
 
 Full build instruction are available in the `harmony-common` [repository](https://github.com/nordic-institute/harmony-common/).
 

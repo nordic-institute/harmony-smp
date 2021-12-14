@@ -1,4 +1,4 @@
-# integration tests in this file are ignored in neds-pom.xml
+# integration tests in this file are ignored in harmony-pom.xml
 
 UIKeystoreServiceTest
 SmlClientFactoryAuthenticationByClientCertFromKeystoreTest
