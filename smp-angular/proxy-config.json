@@ -1,8 +1,8 @@
 {
   "/rest/**": {
-    "target": "http://localhost:8080/smp/ui/",
+    "target": "https://niis-smp.lxd:8443/ui/",
     "changeOrigin": true,
-    "secure": true  ,
+    "secure": false  ,
     "logLevel": "debug"
   }
 }

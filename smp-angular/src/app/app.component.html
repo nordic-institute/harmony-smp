@@ -3,10 +3,8 @@
 
     <!-- sidenav content -->
     <div id="topLogo">
-      <img src="assets/images/smp_logo_icon.svg" [attr.height]="fullMenu ? '74px' : '40px'" [attr.width]="fullMenu ? '74px' : '40px'"/>
-      <div id="topLogoText" *ngIf="fullMenu">
-        <div style="font-weight: bold;font-size: 15px">eDelivery SMP <span style="font-weight: normal;font-size: 14px">Administration <br>Console</span></div>
-      </div>
+      <img src="assets/images/Logo.svg" *ngIf="fullMenu"/>
+      <img src="assets/images/Logomark.svg" *ngIf="!fullMenu"/>
     </div>
 
     <button mat-raised-button class="sideNavButton" [routerLink]="['/']" id="sidebar_search_id">
@@ -30,7 +28,7 @@
 
     <div class="bottom-link" *ngIf="fullMenu">
       <a target="_blank"
-         href="https://edelivery.digital/smp-licence-info">License info</a>
+         href="https://edelivery.digital/smp-licence-info">Licence info</a>
     </div>
 
     <div class="collapse-button">
@@ -41,21 +39,6 @@
       <button *ngIf="!fullMenu" mat-raised-button id="collapse_id" (click)="toggleMenu()">
         <mat-icon matTooltip="Expand" [matTooltipPosition]="'right'">chevron_right</mat-icon>
       </button>
-    </div>
-
-    <div id="bottomLogo" *ngIf="fullMenu">
-      <div>
-        <img src="assets/images/EC+Logo2.png"/>
-      </div>
-      <div class="smpTextSmall"
-           style="display: flex;flex-direction: column-reverse;text-align: left;color:#004494;padding-left: 5px;">
-        <div>
-          Connecting Europe
-        </div>
-        <div style="font-size: 10pt">
-          CEF Digital
-        </div>
-      </div>
     </div>
 
   </mat-sidenav>
@@ -103,7 +86,9 @@
     </div>
 
     <div fxFill="100" fxFlex="<grow> <shrink> <basis>" id="routerHolder" style="min-height: 100%" >
-        <router-outlet></router-outlet>
+      <div style="margin:15px;height: 100%;">
+        <router-outlet class="full-height"></router-outlet>
+      </div>
     </div>
   </div>
 </mat-sidenav-container>

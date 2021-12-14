@@ -1,5 +1,5 @@
 [mat-raised-button] {
-  width: 95%;
+  width: 100%;
 }
 
 mat-sidenav-container {
@@ -11,7 +11,7 @@ mat-sidenav-container {
 
 mat-sidenav {
   text-align: center;
-  box-shadow: 7px 7px 10px #9B9B9B;
+  box-shadow: 7px 7px 10px #9B9B9B !important;
   /*border: dashed red;*/
 }
 
@@ -68,17 +68,19 @@ html, body, material-app, .my-content {
   display: flex;
   justify-content: center;
   align-items: center;
+  vertical-align: middle;
   padding-top: 18px;
   padding-bottom: 20px;
   padding-left: 15px;
+  padding-right: 20px;
 }
 
 .menu-collapsed #topLogo {
-  display: block;
-  padding-top: 30px;
-  padding-bottom: 12px;
-  padding-left: 0;
-  height: 70px;
+  display: flex;
+  padding-top: 18px;
+  padding-bottom: 25px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 #collapse_id, #expand_id {
@@ -90,4 +92,11 @@ html, body, material-app, .my-content {
 
 .menu-collapsed .sideNavButton span {
   display: none;
+}
+
+.mat-raised-button:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+.sideNavSubmenu {
+  margin-bottom: -16px;
 }

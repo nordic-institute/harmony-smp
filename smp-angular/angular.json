@@ -49,7 +49,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "SMP-UI:build"
+            "browserTarget": "SMP-UI:build",
+            "port": 4300
           },
           "configurations": {
             "production": {
