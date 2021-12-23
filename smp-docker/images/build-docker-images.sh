@@ -34,8 +34,10 @@ SMP_ARTEFACTS_CLEAR="false"
 SMP_IMAGE_PUBLISH="false"
 DOCKER_USER=$bamboo_DOCKER_USER
 DOCKER_PASSWORD=$bamboo_DOCKER_PASSWORD
+DOCKER_REGISTRY_HOST=${bamboo_DOCKER_REGISTRY_HOST}
+DOCKER_FOLDER=${bamboo_DOCKER_FOLDER:-${bamboo_DOCKER_USER}}
 
-# READ argumnets
+# READ arguments
 while getopts v:o:s:c:p: option; do
   case "${option}" in
 
@@ -202,9 +204,10 @@ function pushImageToDockerhub() {
 
 function pushImageIfExisting() {
   if [[ "x$(docker images -q "${1}")" != "x" ]]; then
-    echo "Pushing image ${1}"
-    docker tag "${1}" "${DOCKER_USER}"/"${1}"
-    docker push "${DOCKER_USER}"/"${1}"
+    local TAGGED_IMAGE="${DOCKER_REGISTRY_HOST:+$DOCKER_REGISTRY_HOST/}${DOCKER_FOLDER:+$DOCKER_FOLDER/}${1}"
+    docker tag "${1}" "${TAGGED_IMAGE}"
+    echo "Pushing image ${1} as ${TAGGED_IMAGE}"
+    docker push "${TAGGED_IMAGE}"
   else
     echo "Could not find image ${1} to push!"
   fi
