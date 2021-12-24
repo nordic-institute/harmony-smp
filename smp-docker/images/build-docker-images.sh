@@ -193,7 +193,7 @@ function pushImageToDockerhub() {
 
   if [[ "V$SMP_IMAGE_PUBLISH" == "Vtrue" ]]; then
     # login to docker
-    docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}"
+    docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}" "${DOCKER_REGISTRY_HOST}"
     # push images
     pushImageIfExisting "smp-tomcat-mysql:${SMP_VERSION}"
     pushImageIfExisting "smp-sml-tomcat-mysql:${SMP_VERSION}"
