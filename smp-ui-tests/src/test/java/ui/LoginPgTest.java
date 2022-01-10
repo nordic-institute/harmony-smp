@@ -13,6 +13,8 @@ import utils.Generator;
 import utils.enums.SMPMessages;
 import utils.rest.SMPRestClient;
 
+import java.util.HashMap;
+
 public class LoginPgTest extends BaseTest {
 
 
@@ -159,6 +161,60 @@ public class LoginPgTest extends BaseTest {
 	@Test(description = "LGN-50")
 	public void SMPNotRunningTest() {
 		throw new SkipException("This test will be executed manually !!!");
+	}
+
+	@Test(description = "LGN-60")
+	public void loginButtonDisableVerification() {
+		SoftAssert soft = new SoftAssert();
+		SearchPage page = new SearchPage(driver);
+		logger.info("Going to login page");
+		LoginPage loginPage = page.pageHeader.goToLogin();
+		loginPage.loginWithoutUserAndPassword();
+		soft.assertTrue(loginPage.isLoginButtonEnable(), "login button is enabled");
+		soft.assertAll();
+	}
+
+	@Test(description = "LGN-70")
+	public void verifyMenuButtonMsg() {
+		SoftAssert soft = new SoftAssert();
+		SearchPage page = new SearchPage(driver);
+		logger.info("Going to login page");
+		LoginPage loginPage = page.pageHeader.goToLogin();
+		soft.assertFalse(loginPage.pageHeader.sandwichMenu.isLoggedIn(), "Menu does not contain the message 'Not logged in'");
+		soft.assertAll();
+	}
+
+	@Test(description = "LGN-80")
+	public void verifyLoginButtonEnable()
+	{
+		SoftAssert soft = new SoftAssert();
+		SearchPage page = new SearchPage(driver);
+		logger.info("Going to login page");
+		LoginPage loginPage = page.pageHeader.goToLogin();
+		HashMap<String, String> user = testDataProvider.getUserWithRole("SYS_ADMIN");
+		loginPage.fillLoginInput(user.get("username"), user.get("password"));
+		soft.assertFalse(loginPage.isLoginButtonEnable(), "Login Button Is Disabled");
+
+		soft.assertAll();
+	}
+
+	@Test(description = "LGN-90")
+	public void verifyRoleAfterLogin()
+	{
+		SoftAssert soft = new SoftAssert();
+
+		SMPPage page = new SMPPage(driver);
+		logger.info("Going to login page");
+		page.pageHeader.goToLogin();
+
+		LoginPage loginPage = new LoginPage(driver);
+		HashMap<String, String> user = testDataProvider.getUserWithRole("SYS_ADMIN");
+		SearchPage searchPage = loginPage.login(user.get("username"), user.get("password"));
+		soft.assertTrue(searchPage.pageHeader.sandwichMenu.isLoggedIn(), "User is logged in");
+		String roleName = page.pageHeader.getRoleName();
+		soft.assertEquals(roleName , "System administrator" , "the role doesn't contain System administrator");
+
+		soft.assertAll();
 	}
 
 

@@ -73,5 +73,23 @@ public class FilterArea extends PageComponent {
 		waitForXMillis(1000);
 	}
 
+	public boolean isSearchButtonVisible(){
+		try{
+			return searchButton.isDisplayed();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+	}
 
+	public boolean isSearchButtonEnable(){
+		try{
+			return searchButton.isEnabled();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

@@ -36,6 +36,8 @@ public class SearchPgTest extends BaseTest {
 
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
+		soft.assertTrue(page.filters.isSearchButtonVisible(), "Search button is not visible");
+		soft.assertTrue(page.filters.isSearchButtonEnable(), "Search button is not enable");
 		soft.assertTrue(page.filters.getParticipantIdentifierInputValue().isEmpty());
 		soft.assertTrue(page.filters.getParticipantSchemeInputValue().isEmpty());
 		soft.assertEquals(page.filters.domainSelect.getSelectedValue(), "All Domains");
@@ -334,7 +336,24 @@ public class SearchPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
+	@Test(description = "SRCH-90")
+	public void verifyDifferentParticipantIdAndSchemeResult() {
+		SoftAssert soft = new SoftAssert();
 
+		SearchPage page = new SearchPage(driver);
+		soft.assertTrue(page.isLoaded());
+		String emptyMsg = "No data to display";
 
+		ServiceGroupRow row0 = page.getServiceGroupGrid().getRows().get(0);
+		String pScheme = row0.getParticipantScheme();
+
+		ServiceGroupRow row1 = page.getServiceGroupGrid().getRows().get(1);
+		String pIdentifier = row1.getParticipantIdentifier();
+
+		page.filters.filter(pIdentifier, pScheme, "");
+
+		soft.assertEquals(page.getServiceGroupGrid().getEmptyTableText(), emptyMsg, "empty table not found");
+		soft.assertAll();
+	}
 
 }
