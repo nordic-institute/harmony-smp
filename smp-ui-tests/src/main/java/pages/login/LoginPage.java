@@ -147,6 +147,25 @@ public class LoginPage extends SMPPage {
 		}catch (Exception e){}
 	}
 
+	public void loginWithoutUserAndPassword() {
+		username.clear();
+		password.clear();
 
+	}
+
+	public boolean isLoginButtonEnable() {
+		try {
+			return !loginBtn.isEnabled();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	public void fillLoginInput(String user, String pass) {
+
+		clearAndFillInput(username, user);
+		clearAndFillInput(password, pass);
+	}
 
 }
