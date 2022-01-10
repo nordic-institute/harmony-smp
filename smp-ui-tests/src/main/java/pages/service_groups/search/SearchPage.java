@@ -32,7 +32,8 @@ public class SearchPage extends SMPPage {
 		return getServiceGroupGrid().isLoaded();
 	}
 
-	public ServiceGroupGrid getServiceGroupGrid() {
+	public ServiceGroupGrid
+		getServiceGroupGrid() {
 		return new ServiceGroupGrid(driver, searchGridContainer);
 	}
 }
