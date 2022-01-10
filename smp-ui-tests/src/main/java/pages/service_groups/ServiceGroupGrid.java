@@ -1,5 +1,6 @@
 package pages.service_groups;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -27,6 +28,9 @@ public class ServiceGroupGrid extends PageComponent {
 
 	@FindBy(className = "datatable-row-wrapper")
 	List<WebElement> rowWrappers;
+
+	@FindBy(tagName = "datatable-body")
+	WebElement dataTableBody;
 
 	public List<ServiceGroupRow> getRows() {
 		log.info("getting row info");
@@ -92,6 +96,15 @@ public class ServiceGroupGrid extends PageComponent {
 		return toReturn;
 	}
 
+	public String getEmptyTableText() {
+		try{
+			return dataTableBody.findElement(By.className("empty-row")).getText();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return "";
+		}
+	}
 
 
 }

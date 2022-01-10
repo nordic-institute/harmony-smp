@@ -26,6 +26,9 @@ public class Header extends PageComponent{
 	@FindBy(css = "#sandwichMenu a")
 	private WebElement loginLnk;
 
+	@FindBy(css = "#sandwichMenu .ng-star-inserted")
+	private WebElement role;
+
 	public SandwichMenu sandwichMenu = new SandwichMenu(driver);
 
 	public LoginPage goToLogin(){
@@ -47,4 +50,10 @@ public class Header extends PageComponent{
 		waitForElementToBeVisible(pageTitle);
 	}
 
+	public String getRoleName()
+	{
+		String getUserRole = role.getText();
+		String roleName= getUserRole.split(":")[0].trim();
+		return roleName;
+	}
 }
