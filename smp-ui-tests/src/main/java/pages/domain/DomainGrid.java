@@ -3,6 +3,7 @@ package pages.domain;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import pages.components.grid.BasicGrid;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class DomainGrid extends BasicGrid {
 
 	private By cellSelector = By.tagName("datatable-body-cell");
 
-	public List<DomainRow> getRowsInfo(){
+	public List<DomainRow> getRowsInfo() {
 		log.info("getting all row info");
 		List<DomainRow> rowInfos = new ArrayList<>();
 
@@ -25,7 +26,7 @@ public class DomainGrid extends BasicGrid {
 			DomainRow row = new DomainRow();
 
 			for (int i = 0; i < headerTxt.size(); i++) {
-				switch (headerTxt.get(i)){
+				switch (headerTxt.get(i)) {
 					case "Domain code":
 						row.setDomainCode(cells.get(i).getText().trim());
 						break;
@@ -47,6 +48,11 @@ public class DomainGrid extends BasicGrid {
 
 		return rowInfos;
 	}
-
+	public void mouseHoverOnDomainCode(int rowNumber)
+	{
+		WebElement element = driver.findElement(By.cssSelector(".datatable-row-wrapper:nth-child(" + rowNumber + ") .datatable-body-cell:nth-child(1) .datatable-body-cell-label span"));
+		Actions action = new Actions(driver);
+		action.moveToElement(element).build().perform();
+	}
 
 }
