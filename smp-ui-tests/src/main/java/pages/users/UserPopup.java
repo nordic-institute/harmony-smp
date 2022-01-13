@@ -49,6 +49,9 @@ public class UserPopup extends PageComponent {
 	@FindBy(css = "mat-dialog-content > table > tbody > tr > td > button:nth-child(2)")
 	WebElement cancelBtn;
 
+	@FindBy(xpath = "//div[text()=\'Passwords do not match \']")
+	WebElement passwordUnmatchingMsg;
+
 	@FindBy(css = "#role_id")
 	WebElement rolesSelectContainer;
 	public GenericSelect rolesSelect;
@@ -128,5 +131,10 @@ public class UserPopup extends PageComponent {
 		} catch (Exception e) {
 		}
 		return null;
+	}
+
+	public String getPasswordUnmatchingMsg()
+	{
+		return passwordUnmatchingMsg.getText();
 	}
 }
