@@ -38,6 +38,13 @@ public class DomainPopup extends PageComponent {
 
 	@FindBy(css = "#smlSMPId_id")
 	WebElement smlSMPIdInput;
+
+	@FindBy(xpath = "//div[contains(text(),' The Domain code already exists! ')]")
+	WebElement duplicateDomainErrorMsg;
+
+
+
+
 	
 //	@FindBy(css = "#smlClientHeader_id")
 //	WebElement smlClientHeaderInput;
@@ -87,6 +94,40 @@ public class DomainPopup extends PageComponent {
 		smlClientAliasSelect.selectFirstOption();
 	}
 
+    public String getDuplicateDomainErrorMsgText()
+	{
+		String duplicateDomainMsg = duplicateDomainErrorMsg.getText();
+		return duplicateDomainMsg;
+
+	}
+	public boolean isEnableOkButton()
+	{
+		try {
+			return okBtn.isEnabled();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	public boolean isEnableCancelButton()
+	{
+		try {
+			return cancelBtn.isEnabled();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	public void clearAndFillDomainCodeInput(String domainCode) {
+		log.info("filling only domain code data for new domain");
+		clearAndFillInput(domainCodeInput, domainCode);
+	}
 
 
 }

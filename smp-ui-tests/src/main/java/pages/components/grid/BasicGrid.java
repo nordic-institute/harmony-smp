@@ -75,9 +75,10 @@ public class BasicGrid extends PageComponent {
 	public int getRowsNo(){
 		return gridRows.size();
 	}
-	
 
-	
-	
-	
+	public void scrollRow(int index) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();",gridRows.get(index));
+		waitForXMillis(500);
+	}
 }

@@ -41,6 +41,9 @@ public class UsersPage extends SMPPage {
 	
 	@FindBy(id = "deleteButton")
 	private WebElement deleteBtn;
+
+	@FindBy(xpath = "//div[contains(text(),'Unexpected technical error occurred.')]")
+	private WebElement duplicateUserCreationMsg;
 	
 	
 	public boolean isLoaded(){
@@ -113,10 +116,26 @@ public class UsersPage extends SMPPage {
 		popup.clickOK();
 
 	}
+
+	public boolean isNewButtonEnabled()
+
+	{
+		try{
+			return newBtn.isEnabled();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw e;
+		}
+	}
 	
-	
-	
-	
+	public String getDuplicateUserErrorMsg()
+	{
+		return duplicateUserCreationMsg.getText();
+	}
+
+
 	
 	
 }
