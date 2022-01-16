@@ -1,5 +1,6 @@
 package pages.domain;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -38,13 +39,6 @@ public class DomainPopup extends PageComponent {
 
 	@FindBy(css = "#smlSMPId_id")
 	WebElement smlSMPIdInput;
-
-	@FindBy(xpath = "//div[contains(text(),' The Domain code already exists! ')]")
-	WebElement duplicateDomainErrorMsg;
-
-
-
-
 	
 //	@FindBy(css = "#smlClientHeader_id")
 //	WebElement smlClientHeaderInput;
@@ -96,8 +90,9 @@ public class DomainPopup extends PageComponent {
 
     public String getDuplicateDomainErrorMsgText()
 	{
-		String duplicateDomainMsg = duplicateDomainErrorMsg.getText();
-		return duplicateDomainMsg;
+		WebElement duplicateDomainErrorMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.ng-star-inserted"));
+		return duplicateDomainErrorMsg.getText();
+
 
 	}
 	public boolean isEnableOkButton()

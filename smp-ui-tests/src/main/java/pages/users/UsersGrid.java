@@ -26,7 +26,83 @@ public class UsersGrid extends BasicGrid {
 		}
 		return rowInfos;
 	}
-	
+
+	public boolean isUserListed(String username) {
+		boolean end = false;
+
+		UsersPage page = new UsersPage(driver);
+		page.pagination.skipToFirstPage();
+
+		while (!end) {
+			page = new UsersPage(driver);
+			List<UserRowInfo> rows = page.grid().getRows();
+
+			for (UserRowInfo row : rows) {
+				if (row.getUsername().equalsIgnoreCase(username)) {
+					return true;
+				}
+			}
+
+			if (page.pagination.hasNextPage()) {
+				page.pagination.goToNextPage();
+			} else {
+				end = true;
+			}
+		}
+
+		return false;
+	}
+
+	public int scrollToUser(String username) {
+
+		UsersPage page = new UsersPage(driver);
+		page.pagination.skipToFirstPage();
+
+		boolean end = false;
+		while (!end) {
+			page = new UsersPage(driver);
+
+			List<UserRowInfo> rows = page.grid().getRows();
+			for (int i = 0; i < rows.size(); i++) {
+				if (rows.get(i).getUsername().equalsIgnoreCase(username)) {
+					return i;
+				}
+			}
+
+			if (page.pagination.hasNextPage()) {
+				page.pagination.goToNextPage();
+			} else {
+				end = true;
+			}
+		}
+
+		return -1;
+	}
+
+	public int scrollToUserWithRole(String role) {
+		UsersPage page = new UsersPage(driver);
+		page.pagination.skipToFirstPage();
+
+		boolean end = false;
+		while (!end) {
+			page = new UsersPage(driver);
+
+			List<UserRowInfo> rows = page.grid().getRows();
+			for (int i = 0; i < rows.size(); i++) {
+				if (rows.get(i).getRole().equalsIgnoreCase(role)) {
+					return i;
+				}
+			}
+
+			if (page.pagination.hasNextPage()) {
+				page.pagination.goToNextPage();
+			} else {
+				end = true;
+			}
+		}
+
+		return -1;
+	}
 	
 	
 }
