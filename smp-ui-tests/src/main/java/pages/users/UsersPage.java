@@ -42,7 +42,6 @@ public class UsersPage extends SMPPage {
 	
 	@FindBy(id = "deleteButton")
 	private WebElement deleteBtn;
-
 	
 	
 	public boolean isLoaded(){
@@ -129,7 +128,7 @@ public class UsersPage extends SMPPage {
 		}
 
 	}
-	
+
 
 
 

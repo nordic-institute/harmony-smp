@@ -20,211 +20,211 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DomainPgTest extends BaseTest {
+	
+	@AfterMethod
+	public void logoutAndReset(){
+		genericLogoutProcedure();
+	}
 
-    @AfterMethod
-    public void logoutAndReset() {
-        genericLogoutProcedure();
-    }
+	
+	@BeforeMethod
+	public void loginAndGoToDomainPage(){
+		
+		SMPPage page = genericLoginProcedure("SYS_ADMIN");
 
+		logger.info("Going to Domain page");
+		page.sidebar.goToPage(DomainPage.class);
+	}
+	
+	@Test(description = "DMN-0")
+	public void openDomainPage(){
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
 
-    @BeforeMethod
-    public void loginAndGoToDomainPage() {
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		DomainGrid grid = page.grid();
+		DomainRow row0 = grid.getRowsInfo().get(0);
+		grid.doubleClickRow(0);
+		
+		DomainPopup popup = new DomainPopup(driver);
 
-        SMPPage page = genericLoginProcedure("SYS_ADMIN");
+		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
 
-        logger.info("Going to Domain page");
-        page.sidebar.goToPage(DomainPage.class);
-    }
+		soft.assertTrue(!popup.isDomainCodeInputEnabled(), "On double click Domain Code input is disabled");
+		soft.assertTrue(!popup.isSMLDomainInputEnabled(), "On double click SML Domain input is disabled");
 
-    @Test(description = "DMN-0")
-    public void openDomainPage() {
-        SoftAssert soft = new SoftAssert();
-        DomainPage page = new DomainPage(driver);
+		popup.clickCancel();
+		
+		soft.assertEquals(row0, page.grid().getRowsInfo().get(0), "Row is unchanged");
+		soft.assertTrue(!page.isSaveButtonEnabled(), "Save button is not enabled");
 
-        soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
-        DomainGrid grid = page.grid();
-        DomainRow row0 = grid.getRowsInfo().get(0);
-        grid.doubleClickRow(0);
+		soft.assertAll();
+	}
 
-        DomainPopup popup = new DomainPopup(driver);
+	@Test(description = "DMN-10")
+	public void editDomain(){
 
-        soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
 
-        soft.assertTrue(!popup.isDomainCodeInputEnabled(), "On double click Domain Code input is disabled");
-        soft.assertTrue(!popup.isSMLDomainInputEnabled(), "On double click SML Domain input is disabled");
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		DomainGrid grid = page.grid();
+		DomainRow row0 = grid.getRowsInfo().get(0);
+		grid.doubleClickRow(0);
 
-        popup.clickCancel();
+		DomainPopup popup = new DomainPopup(driver);
 
-        soft.assertEquals(row0, page.grid().getRowsInfo().get(0), "Row is unchanged");
-        soft.assertTrue(!page.isSaveButtonEnabled(), "Save button is not enabled");
+		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
 
-        soft.assertAll();
-    }
+		soft.assertTrue(!popup.isDomainCodeInputEnabled(), "On double click Domain Code input is disabled");
+		soft.assertTrue(!popup.isSMLDomainInputEnabled(), "On double click SML Domain input is disabled");
 
-    @Test(description = "DMN-10")
-    public void editDomain() {
+		String rndString = Generator.randomAlphaNumeric(10);
+		popup.fillSMLSMPIdInput(rndString);
+		popup.clickCancel();
 
-        SoftAssert soft = new SoftAssert();
-        DomainPage page = new DomainPage(driver);
+		soft.assertEquals(row0, page.grid().getRowsInfo().get(0), "Row 0 is not changed");
 
-        soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
-        DomainGrid grid = page.grid();
-        DomainRow row0 = grid.getRowsInfo().get(0);
-        grid.doubleClickRow(0);
+		page.grid().doubleClickRow(0);
+		popup = new DomainPopup(driver);
+		popup.fillSMLSMPIdInput(rndString);
+		popup.clickOK();
 
-        DomainPopup popup = new DomainPopup(driver);
+		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+		soft.assertNotEquals(row0, page.grid().getRowsInfo().get(0), "Row 0 is changed");
 
-        soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
+		page.clickSave().confirm();
 
-        soft.assertTrue(!popup.isDomainCodeInputEnabled(), "On double click Domain Code input is disabled");
-        soft.assertTrue(!popup.isSMLDomainInputEnabled(), "On double click SML Domain input is disabled");
+		DomainRow newRow0 = page.grid().getRowsInfo().get(0);
+		soft.assertNotEquals(row0, newRow0, "Row 0 is changed after save");
+		soft.assertEquals(newRow0.getSmlSmpID(), rndString, "SML SMP ID is changed to the desired string");
 
-        String rndString = Generator.randomAlphaNumeric(10);
-        popup.fillSMLSMPIdInput(rndString);
-        popup.clickCancel();
+		soft.assertEquals(page.alertArea.getAlertMessage().getMessage(), SMPMessages.MSG_18, "Proper message displayed");
 
-        soft.assertEquals(row0, page.grid().getRowsInfo().get(0), "Row 0 is not changed");
-
-        page.grid().doubleClickRow(0);
-        popup = new DomainPopup(driver);
-        popup.fillSMLSMPIdInput(rndString);
-        popup.clickOK();
-
-        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
-        soft.assertNotEquals(row0, page.grid().getRowsInfo().get(0), "Row 0 is changed");
-
-        page.clickSave().confirm();
-
-        DomainRow newRow0 = page.grid().getRowsInfo().get(0);
-        soft.assertNotEquals(row0, newRow0, "Row 0 is changed after save");
-        soft.assertEquals(newRow0.getSmlSmpID(), rndString, "SML SMP ID is changed to the desired string");
-
-        soft.assertEquals(page.alertArea.getAlertMessage().getMessage(), SMPMessages.MSG_18, "Proper message displayed");
-
-        soft.assertAll();
-    }
-
-
-    @Test(description = "DMN-20")
-    public void newDomain() {
-        SoftAssert soft = new SoftAssert();
-        DomainPage page = new DomainPage(driver);
-
-        soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
-
-        DomainPopup popup = page.clickNew();
-        soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
-
-        soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
-        soft.assertTrue(popup.isSMLDomainInputEnabled(), "When defining new domain -SML Domain input is disabled");
-
-        String rndString = Generator.randomAlphaNumeric(10);
+		soft.assertAll();
+	}
 
 
-        popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
-        popup.clickCancel();
+	@Test(description = "DMN-20")
+	public void newDomain(){
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
 
-        soft.assertTrue(!page.isSaveButtonEnabled(), "Save button is NOT enabled");
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
 
-        popup = page.clickNew();
-        popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
-        popup.clickOK();
+		DomainPopup popup = page.clickNew();
+		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
 
-        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+		soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
+		soft.assertTrue(popup.isSMLDomainInputEnabled(), "When defining new domain -SML Domain input is disabled");
 
-        page.clickSave().confirm();
-
-        soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18),
-                "Success message is as expected");
-
-        List<DomainRow> rows = page.grid().getRowsInfo();
-        while (page.pagination.hasNextPage()) {
-            page.pagination.goToNextPage();
-            rows.addAll(page.grid().getRowsInfo());
-        }
-
-        boolean found = false;
-        for (DomainRow row : rows) {
-            if (row.getDomainCode().equalsIgnoreCase(rndString)) {
-                found = true;
-                break;
-            }
-        }
-
-        soft.assertTrue(found, "Found new domain in the list of domains");
-
-        soft.assertAll();
-    }
-
-    @Test(description = "DMN-30")
-    public void cancelNewDomainCreation() {
-        SoftAssert soft = new SoftAssert();
-        DomainPage page = new DomainPage(driver);
-
-        soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
-
-        DomainPopup popup = page.clickNew();
-        soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
-
-        soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
-        soft.assertTrue(popup.isSMLDomainInputEnabled(), "When defining new domain -SML Domain input is disabled");
-
-        String rndString = Generator.randomAlphaNumeric(10);
+		String rndString = Generator.randomAlphaNumeric(10);
 
 
-        popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
-        popup.clickOK();
+		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
+		popup.clickCancel();
 
-        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+		soft.assertTrue(!page.isSaveButtonEnabled(), "Save button is NOT enabled");
 
-        page.clickCancel().confirm();
-        new ConfirmationDialog(driver).confirm();
+		popup = page.clickNew();
+		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
+		popup.clickOK();
 
-        List<DomainRow> rows = page.grid().getRowsInfo();
-        while (page.pagination.hasNextPage()) {
-            page.pagination.goToNextPage();
-            rows.addAll(page.grid().getRowsInfo());
-        }
+		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
 
-        boolean found = false;
-        for (DomainRow row : rows) {
-            if (row.getDomainCode().equalsIgnoreCase(rndString)) {
-                found = true;
-                break;
-            }
-        }
+		page.clickSave().confirm();
 
-        soft.assertTrue(!found, "New domain NOT in the list of domains");
+		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18),
+				"Success message is as expected");
 
-        soft.assertAll();
-    }
+		List<DomainRow> rows = page.grid().getRowsInfo();
+		while (page.pagination.hasNextPage()){
+			page.pagination.goToNextPage();
+			rows.addAll(page.grid().getRowsInfo());
+		}
 
-    @Test(description = "DMN-40")
-    public void deleteDomain() {
-        String rndStr = Generator.randomAlphaNumeric(10);
-        SMPRestClient.createDomain(rndStr);
+		boolean found = false;
+		for (DomainRow row : rows) {
+			if(row.getDomainCode().equalsIgnoreCase(rndString)){
+				found = true;
+				break;
+			}
+		}
 
-        SoftAssert soft = new SoftAssert();
-        DomainPage page = new DomainPage(driver);
+		soft.assertTrue(found, "Found new domain in the list of domains");
 
-        page.refreshPage();
+		soft.assertAll();
+	}
 
-        soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
-        soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
+	@Test(description = "DMN-30")
+	public void cancelNewDomainCreation(){
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+
+		DomainPopup popup = page.clickNew();
+		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
+
+		soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
+		soft.assertTrue(popup.isSMLDomainInputEnabled(), "When defining new domain -SML Domain input is disabled");
+
+		String rndString = Generator.randomAlphaNumeric(10);
+
+
+		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
+		popup.clickOK();
+
+		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+
+		page.clickCancel().confirm();
+		new ConfirmationDialog(driver).confirm();
+
+		List<DomainRow> rows = page.grid().getRowsInfo();
+		while (page.pagination.hasNextPage()){
+			page.pagination.goToNextPage();
+			rows.addAll(page.grid().getRowsInfo());
+		}
+
+		boolean found = false;
+		for (DomainRow row : rows) {
+			if(row.getDomainCode().equalsIgnoreCase(rndString)){
+				found = true;
+				break;
+			}
+		}
+
+		soft.assertTrue(!found, "New domain NOT in the list of domains");
+
+		soft.assertAll();
+	}
+
+	@Test(description = "DMN-40")
+	public void deleteDomain(){
+		String rndStr = Generator.randomAlphaNumeric(10);
+		SMPRestClient.createDomain(rndStr);
+
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+
+		page.refreshPage();
+
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
         int index = page.grid().scrollToDomain(rndStr);
 
-        page.grid().selectRow(index);
+		page.grid().selectRow(index);
 
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row selected");
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row selected");
 
-        page.clickDelete();
-        soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled (2)");
-        soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled");
-        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+		page.clickDelete();
+		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled (2)");
+		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled");
+		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
 
-        page.clickCancel().confirm();
-        new ConfirmationDialog(driver).confirm();
+		page.clickCancel().confirm();
+		new ConfirmationDialog(driver).confirm();
 
         soft.assertTrue(page.grid().isDomainStillPresent(rndStr), "Row is still present");
 
@@ -236,40 +236,40 @@ public class DomainPgTest extends BaseTest {
         soft.assertTrue(!page.grid().isDomainStillPresent(rndStr), "Row is still NOT present after delete");
 
 
-        soft.assertAll();
-    }
+		soft.assertAll();
+	}
 
-    @Test(description = "DMN-50")
-    public void deleteDomainWithSG() {
+	@Test(description = "DMN-50")
+	public void deleteDomainWithSG(){
 
-        String domainName = Generator.randomAlphaNumeric(10);
-        String pi = Generator.randomAlphaNumeric(10);
-        String ps = Generator.randomAlphaNumeric(10);
+		String domainName = Generator.randomAlphaNumeric(10);
+		String pi = Generator.randomAlphaNumeric(10);
+		String ps = Generator.randomAlphaNumeric(10);
 
-        String expectedErrorMess = String.format("Delete validation error Could not delete domains used by Service groups! Domain: %s (%s ) uses by:1 SG.", domainName, domainName);
+		String expectedErrorMess = String.format("Delete validation error Could not delete domains used by Service groups! Domain: %s (%s ) uses by:1 SG.", domainName, domainName);
 
-        SMPRestClient.createDomain(domainName);
-        SMPRestClient.createServiceGroup(pi, ps, new ArrayList<>(Arrays.asList("smp")), new ArrayList<>(Arrays.asList(domainName)));
+		SMPRestClient.createDomain(domainName);
+		SMPRestClient.createServiceGroup(pi, ps, new ArrayList<>(Arrays.asList("smp")),new ArrayList<>(Arrays.asList(domainName)));
 
-        SoftAssert soft = new SoftAssert();
+		SoftAssert soft = new SoftAssert();
 
-        DomainPage page = new DomainPage(driver);
-        page.refreshPage();
+		DomainPage page = new DomainPage(driver);
+		page.refreshPage();
 
         int index = page.grid().scrollToDomain(domainName);
         page.grid().selectRow(index);
         soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
-        page.clickDelete();
-        AlertMessage message = page.alertArea.getAlertMessage();
-        soft.assertTrue(message.isError(), "Page shows error message when deleting domain with SG");
-        soft.assertTrue(message.getMessage().equalsIgnoreCase(expectedErrorMess), "Desired message appears");
+		page.clickDelete();
+		AlertMessage message = page.alertArea.getAlertMessage();
+		soft.assertTrue(message.isError(), "Page shows error message when deleting domain with SG");
+		soft.assertTrue(message.getMessage().equalsIgnoreCase(expectedErrorMess), "Desired message appears");
 
-        SMPRestClient.deleteSG(pi);
-        SMPRestClient.deleteDomain(domainName);
+		SMPRestClient.deleteSG(pi);
+		SMPRestClient.deleteDomain(domainName);
 
-        soft.assertAll();
-    }
+		soft.assertAll();
+	}
 
     @Test(description = "DMN-60")
     public void duplicateDomainCreation() {
