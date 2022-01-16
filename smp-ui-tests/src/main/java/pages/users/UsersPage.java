@@ -1,5 +1,6 @@
 package pages.users;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -42,8 +43,6 @@ public class UsersPage extends SMPPage {
 	@FindBy(id = "deleteButton")
 	private WebElement deleteBtn;
 
-	@FindBy(xpath = "//div[contains(text(),'Unexpected technical error occurred.')]")
-	private WebElement duplicateUserCreationMsg;
 	
 	
 	public boolean isLoaded(){
@@ -126,14 +125,12 @@ public class UsersPage extends SMPPage {
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			throw e;
+			return false;
 		}
+
 	}
 	
-	public String getDuplicateUserErrorMsg()
-	{
-		return duplicateUserCreationMsg.getText();
-	}
+
 
 
 	

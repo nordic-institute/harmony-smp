@@ -1,5 +1,6 @@
 package pages.users;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -49,7 +50,7 @@ public class UserPopup extends PageComponent {
 	@FindBy(css = "mat-dialog-content > table > tbody > tr > td > button:nth-child(2)")
 	WebElement cancelBtn;
 
-	@FindBy(xpath = "//div[text()=\'Passwords do not match \']")
+	@FindBy(css = ".mat-form-field-infix > div.has-error")
 	WebElement passwordUnmatchingMsg;
 
 	@FindBy(css = "#role_id")
@@ -133,8 +134,20 @@ public class UserPopup extends PageComponent {
 		return null;
 	}
 
+	public boolean isDuplicateUserNameErrorMsgDisPlayed()
+	{
+		try{
+			return driver.findElement(By.cssSelector("mat-form-field.username > div .has-error")).isDisplayed();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public String getPasswordUnmatchingMsg()
 	{
+		WebElement passwordUnmatchingMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.has-error"));
 		return passwordUnmatchingMsg.getText();
 	}
 }
