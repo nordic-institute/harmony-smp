@@ -8,8 +8,6 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import pages.components.ConfirmationDialog;
 import pages.components.baseComponents.PaginationControls;
 import pages.components.baseComponents.SMPPage;
-import pages.components.grid.BasicGrid;
-import pages.users.UserPopup;
 import utils.PROPERTIES;
 
 public class DomainPage extends SMPPage {

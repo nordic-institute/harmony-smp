@@ -1,5 +1,6 @@
 package pages.domain;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -87,6 +88,41 @@ public class DomainPopup extends PageComponent {
 		smlClientAliasSelect.selectFirstOption();
 	}
 
+    public String getDuplicateDomainErrorMsgText()
+	{
+		WebElement duplicateDomainErrorMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.ng-star-inserted"));
+		return duplicateDomainErrorMsg.getText();
+
+
+	}
+	public boolean isEnableOkButton()
+	{
+		try {
+			return okBtn.isEnabled();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	public boolean isEnableCancelButton()
+	{
+		try {
+			return cancelBtn.isEnabled();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	public void clearAndFillDomainCodeInput(String domainCode) {
+		log.info("filling only domain code data for new domain");
+		clearAndFillInput(domainCodeInput, domainCode);
+	}
 
 
 }
