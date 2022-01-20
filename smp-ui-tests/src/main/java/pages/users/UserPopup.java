@@ -44,6 +44,9 @@ public class UserPopup extends PageComponent {
 	@FindBy(css = "mat-form-field.password-confirmation > div > div.mat-form-field-flex > div > div")
 	WebElement passConfirmationValidationError;
 
+	@FindBy(css = ".mat-form-field-infix > div.has-error")
+	WebElement passMatchValidationError;
+
 	@FindBy(css = "mat-dialog-content > table > tbody > tr > td > button:nth-child(1)")
 	WebElement okBtn;
 
@@ -131,20 +134,17 @@ public class UserPopup extends PageComponent {
 		return null;
 	}
 
-	public boolean isDuplicateUserNameErrorMsgDisPlayed()
-	{
-		try{
+	public boolean isDuplicateUserNameErrorMsgDisPlayed() {
+		try {
 			return driver.findElement(By.cssSelector("mat-form-field.username > div .has-error")).isDisplayed();
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
 
-	public String getPasswordUnmatchingMsg()
-	{
-		WebElement passwordUnmatchingMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.has-error"));
-		return passwordUnmatchingMsg.getText();
+	public String getPassDontMatchValidationMsg() {
+//		WebElement passwordUnmatchingMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.has-error"));
+		return passMatchValidationError.getText();
 	}
 }

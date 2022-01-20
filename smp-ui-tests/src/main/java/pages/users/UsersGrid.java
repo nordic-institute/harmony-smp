@@ -3,6 +3,7 @@ package pages.users;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import pages.components.baseComponents.PaginationControls;
 import pages.components.grid.BasicGrid;
 
 import java.util.ArrayList;
@@ -12,10 +13,10 @@ public class UsersGrid extends BasicGrid {
 	public UsersGrid(WebDriver driver, WebElement container) {
 		super(driver, container);
 	}
-	
-	public List<UserRowInfo> getRows(){
+
+	public List<UserRowInfo> getRows() {
 		List<UserRowInfo> rowInfos = new ArrayList<>();
-		
+
 		for (WebElement gridRow : gridRows) {
 			List<WebElement> cells = gridRow.findElements(By.tagName("datatable-body-cell"));
 			UserRowInfo rowInfo = new UserRowInfo();
@@ -30,12 +31,11 @@ public class UsersGrid extends BasicGrid {
 	public boolean isUserListed(String username) {
 		boolean end = false;
 
-		UsersPage page = new UsersPage(driver);
-		page.pagination.skipToFirstPage();
+		PaginationControls pagination = new PaginationControls(driver);
+		pagination.skipToFirstPage();
 
-		while (!end) {
-			page = new UsersPage(driver);
-			List<UserRowInfo> rows = page.grid().getRows();
+		do {
+			List<UserRowInfo> rows = getRows();
 
 			for (UserRowInfo row : rows) {
 				if (row.getUsername().equalsIgnoreCase(username)) {
@@ -43,66 +43,60 @@ public class UsersGrid extends BasicGrid {
 				}
 			}
 
-			if (page.pagination.hasNextPage()) {
-				page.pagination.goToNextPage();
-			} else {
-				end = true;
+			try {
+				pagination.goToNextPage();
+			} catch (Exception e) {
 			}
-		}
+		} while (pagination.hasNextPage());
 
 		return false;
 	}
 
 	public int scrollToUser(String username) {
 
-		UsersPage page = new UsersPage(driver);
-		page.pagination.skipToFirstPage();
+		PaginationControls pagination = new PaginationControls(driver);
+		pagination.skipToFirstPage();
 
-		boolean end = false;
-		while (!end) {
-			page = new UsersPage(driver);
+		do {
 
-			List<UserRowInfo> rows = page.grid().getRows();
+			List<UserRowInfo> rows = getRows();
 			for (int i = 0; i < rows.size(); i++) {
 				if (rows.get(i).getUsername().equalsIgnoreCase(username)) {
 					return i;
 				}
 			}
-
-			if (page.pagination.hasNextPage()) {
-				page.pagination.goToNextPage();
-			} else {
-				end = true;
+			try {
+				pagination.goToNextPage();
+			} catch (Exception e) {
 			}
-		}
+
+		} while (pagination.hasNextPage());
 
 		return -1;
 	}
 
 	public int scrollToUserWithRole(String role) {
-		UsersPage page = new UsersPage(driver);
-		page.pagination.skipToFirstPage();
+		PaginationControls pagination = new PaginationControls(driver);
+		pagination.skipToFirstPage();
 
-		boolean end = false;
-		while (!end) {
-			page = new UsersPage(driver);
+		do {
 
-			List<UserRowInfo> rows = page.grid().getRows();
+			List<UserRowInfo> rows = getRows();
 			for (int i = 0; i < rows.size(); i++) {
 				if (rows.get(i).getRole().equalsIgnoreCase(role)) {
 					return i;
 				}
 			}
 
-			if (page.pagination.hasNextPage()) {
-				page.pagination.goToNextPage();
-			} else {
-				end = true;
+			try {
+				pagination.goToNextPage();
+			} catch (Exception e) {
 			}
-		}
+
+		} while (pagination.hasNextPage());
 
 		return -1;
 	}
-	
-	
+
+
 }

@@ -8,7 +8,6 @@ import pages.components.ConfirmationDialog;
 import pages.components.baseComponents.SMPPage;
 import pages.components.messageArea.AlertMessage;
 import pages.users.UserPopup;
-import pages.users.UserRowInfo;
 import pages.users.UsersPage;
 import utils.Generator;
 import utils.TestDataProvider;
@@ -483,7 +482,7 @@ public class UsersPgTest extends BaseTest {
 
         popup.fillDetailsForm(username, validPass, confirmPass);
         soft.assertTrue(!popup.isOKButtonActive(), "OK button is enabled before valid data is filled in the popup(2)");
-        soft.assertEquals(popup.getPasswordUnmatchingMsg(), errorMsg, "confirmation input does not contain the message 'Passwords do not match' .");
+        soft.assertEquals(popup.getPassDontMatchValidationMsg(), errorMsg, "confirmation input does not contain the message 'Passwords do not match' .");
         soft.assertAll();
     }
 
