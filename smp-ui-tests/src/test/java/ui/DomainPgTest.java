@@ -212,7 +212,7 @@ public class DomainPgTest extends BaseTest {
 		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-		int index = scrollToDomain(rndStr);
+        int index = page.grid().scrollToDomain(rndStr);
 
 		page.grid().selectRow(index);
 
@@ -226,14 +226,14 @@ public class DomainPgTest extends BaseTest {
 		page.clickCancel().confirm();
 		new ConfirmationDialog(driver).confirm();
 
-		soft.assertTrue(isDomainStillPresent(rndStr), "Row is still present");
+        soft.assertTrue(page.grid().isDomainStillPresent(rndStr), "Row is still present");
 
-		index = scrollToDomain(rndStr);
-		page.grid().selectRow(index);
-		page.clickDelete();
-		page.clickSave().confirm();
+        index = page.grid().scrollToDomain(rndStr);
+        page.grid().selectRow(index);
+        page.clickDelete();
+        page.clickSave().confirm();
 
-		soft.assertTrue(!isDomainStillPresent(rndStr), "Row is still NOT present after delete");
+        soft.assertTrue(!page.grid().isDomainStillPresent(rndStr), "Row is still NOT present after delete");
 
 
 		soft.assertAll();
@@ -256,9 +256,9 @@ public class DomainPgTest extends BaseTest {
 		DomainPage page = new DomainPage(driver);
 		page.refreshPage();
 
-		int index = scrollToDomain(domainName);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+        int index = page.grid().scrollToDomain(domainName);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		AlertMessage message = page.alertArea.getAlertMessage();
@@ -271,55 +271,70 @@ public class DomainPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
+    @Test(description = "DMN-60")
+    public void duplicateDomainCreation() {
+        SoftAssert soft = new SoftAssert();
+        DomainPage page = new DomainPage(driver);
+        String errorMsg = "The Domain code already exists!";
+        soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+        String rndString = Generator.randomAlphaNumeric(10);
+        DomainPopup popup = page.clickNew();
+        soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
+        soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
+        soft.assertTrue(popup.isSMLDomainInputEnabled(), "When defining new domain -SML Domain input is disabled");
+        popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
+        popup.clickOK();
+        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+        page.clickSave().confirm();
+        page.clickNew();
+        soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
+        soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
+        soft.assertTrue(popup.isSMLDomainInputEnabled(), "When defining new domain -SML Domain input is disabled");
+        popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
+        soft.assertEquals(popup.getDuplicateDomainErrorMsgText(), errorMsg, "The message is not matching with our expected error message");
+        soft.assertFalse(popup.isEnableOkButton(), "Ok button is enable");
+        soft.assertTrue(popup.isEnableCancelButton(), "Cancel button is disabled");
+        popup.clickCancel();
+        soft.assertAll();
+    }
 
-
-
-	private boolean isDomainStillPresent(String domainCode){
-		boolean end = false;
-		List<DomainRow> rows = new ArrayList<>();
-		DomainPage page = new DomainPage(driver);
-		page.pagination.skipToFirstPage();
-
-		while (!end) {
-			page = new DomainPage(driver);
-			rows.addAll(page.grid().getRowsInfo());
-			if(page.pagination.hasNextPage()){
-				page.pagination.goToNextPage();
-			}else{end = true;}
-		}
-
-		boolean found = false;
-		for (DomainRow row : rows) {
-			if(row.getDomainCode().equalsIgnoreCase(domainCode)){
-				found = true;
-			}
-		}
-		return found;
-	}
-
-	private int scrollToDomain(String domainCode){
-		DomainPage page = new DomainPage(driver);
-		page.pagination.skipToFirstPage();
-
-		boolean end = false;
-		while (!end) {
-			page = new DomainPage(driver);
-
-			List<DomainRow> rows = page.grid().getRowsInfo();
-			for (int i = 0; i < rows.size(); i++) {
-				if(rows.get(i).getDomainCode().equalsIgnoreCase(domainCode)){
-					return i;
-				}
-			}
-
-			if(page.pagination.hasNextPage()){
-				page.pagination.goToNextPage();
-			}else{end = true;}
-		}
-
-		return -1;
-	}
-
+    @Test(description = "DMN-70")
+    public void onlyDomainCodeSavingMsgVerify() {
+        SoftAssert soft = new SoftAssert();
+        DomainPage page = new DomainPage(driver);
+//        String errorMsg = "The domain should have a defined signature CertAlias.";
+        soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+        int index = page.grid().scrollToSmlDomain("");
+        if (index >= 0) {
+            try {
+                page.grid().selectRow(index);
+                page.clickDelete();
+                page.clickSave().confirm();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        String rndString = Generator.randomAlphaNumeric(10);
+        DomainPopup popup = page.clickNew();
+        soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
+        soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
+        popup.clearAndFillDomainCodeInput(rndString);
+        soft.assertTrue(popup.isEnableOkButton(), "Ok button is disabled");
+        popup.clickOK();
+        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+        page.clickSave().confirm();
+        soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18),
+                "Success message is as expected");
+        index = page.grid().scrollToSmlDomain("");
+        if (index >= 0) {
+            page.grid().scrollRow(index);
+        }
+        int rowNumber = index + 1;
+        page.grid().mouseHoverOnDomainCode(rowNumber);
+//        WebElement text = driver.findElement(By.xpath("//*[text()='The domain should have a defined signature CertAlias.']"));
+//        soft.assertEquals(text.getText(),errorMsg, "the message 'The domain should have a defined signature CertAlias.' is not displayed");
+        soft.assertAll();
+    }
 
 
 }
