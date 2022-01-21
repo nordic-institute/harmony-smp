@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
-import eu.europa.ec.edelivery.smp.config.DatabaseConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
@@ -25,10 +24,7 @@ import org.springframework.stereotype.Component;
 import java.security.cert.CertificateRevokedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Locale.US;
 
@@ -38,20 +34,29 @@ import static java.util.Locale.US;
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationProvider.class);
-
     /**
      * thread safe validator
      */
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US));
 
-    @Autowired
+    // generate dummyPassword hash just to mimic password validation to disable attacker to discover
+    // usernames because of different response times if password or username is wrong
+    private final String dummyPasswordHash;
+    private final String dummyPassword;
+
     UserDao mUserDao;
-
-    @Autowired
     CRLVerifierService crlVerifierService;
+    UITruststoreService truststoreService;
 
     @Autowired
-    UITruststoreService truststoreService;
+    public SMPAuthenticationProvider(UserDao mUserDao, CRLVerifierService crlVerifierService, UITruststoreService truststoreService) {
+        this.dummyPassword = UUID.randomUUID().toString();
+        this.dummyPasswordHash = BCrypt.hashpw(dummyPassword, BCrypt.gensalt());
+
+        this.mUserDao = mUserDao;
+        this.crlVerifierService = crlVerifierService;
+        this.truststoreService = truststoreService;
+    }
 
     @Override
     public Authentication authenticate(Authentication authenticationToken)
@@ -89,7 +94,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      */
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
-              DBUser user;
+        DBUser user;
         String userToken = principal.getName();
         try {
 
@@ -125,9 +130,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         }
         // check if issuer or subject are in trusted list
         if (!(truststoreService.isSubjectOnTrustedList(principal.getSubjectOriginalDN())
-         || truststoreService.isSubjectOnTrustedList(principal.getIssuerDN()) )) {
+                || truststoreService.isSubjectOnTrustedList(principal.getIssuerDN()))) {
             String msg = "Non of the Certificate: '" + principal.getSubjectOriginalDN() + "'" +
-                    " or issuer: '"+principal.getIssuerDN()+"' are trusted!";
+                    " or issuer: '" + principal.getIssuerDN() + "' are trusted!";
             LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
             throw new AuthenticationServiceException(msg);
         }
@@ -138,7 +143,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 crlVerifierService.verifyCertificateCRLs(certificate.getSerialNumber(), url);
             } catch (CertificateRevokedException ex) {
                 String msg = "Certificate: '" + principal.getSubjectOriginalDN() + "'" +
-                        ", issuer: '"+principal.getIssuerDN()+"' is revoked!";
+                        ", issuer: '" + principal.getIssuerDN() + "' is revoked!";
                 LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
                 throw new AuthenticationServiceException(msg);
             } catch (Throwable th) {
@@ -147,8 +152,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 throw new AuthenticationServiceException(msg);
             }
         }
-
-
         // get role
         String role = user.getRole();
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, userToken, role);
@@ -174,6 +177,10 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
             if (!oUsr.isPresent()) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, username);
+                //run validation on dummy password to achieve similar response time
+                // as it would be if the password is invalid
+                BCrypt.checkpw(dummyPassword, dummyPasswordHash);
+
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
@@ -196,7 +203,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, username);
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
-           // smpAuthenticationToken.setAuthenticated(true);
+            // smpAuthenticationToken.setAuthenticated(true);
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed;
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, username);
@@ -213,7 +220,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         if (!supportAuthentication) {
             LOG.warn("SMP does not support authentication type: " + auth);
         }
-
         return supportAuthentication;
     }
 }
