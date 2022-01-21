@@ -203,7 +203,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, username);
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
-            // smpAuthenticationToken.setAuthenticated(true);
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed;
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, username);
