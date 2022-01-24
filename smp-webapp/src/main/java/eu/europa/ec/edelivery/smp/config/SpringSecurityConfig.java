@@ -37,10 +37,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
@@ -92,6 +94,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                    //on authentication, a new HTTP Session is created, the old one is invalidated and the attributes from the old session are copied over.
+                    .sessionFixation().migrateSession()
+                    //In order to force only one  concurrent sessions for the same user,
+                    .maximumSessions(1).and()
+                .and()
                 .exceptionHandling()
                     .authenticationEntryPoint(new SpringSecurityExceptionHandler())
                     .accessDeniedHandler(new SpringSecurityExceptionHandler())
@@ -100,7 +109,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .contentTypeOptions().and()
                     .xssProtection().xssProtectionEnabled(true).and()
                 .and()
-                 .sessionManagement().sessionFixation().newSession().and()
                 .addFilter(blueCoatAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
                 .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
@@ -176,8 +184,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public RequestMatcher csrfURLMatcher() {
         URLCsrfMatcher requestMatcher = new URLCsrfMatcher();
         // init pages
+        requestMatcher.addIgnoreUrl("^$", HttpMethod.GET);
         requestMatcher.addIgnoreUrl("^(/smp)?/$", HttpMethod.GET);
-        requestMatcher.addIgnoreUrl("favicon.ico$", HttpMethod.GET);
+        requestMatcher.addIgnoreUrl("/favicon(-[0-9x]{2,7})?.(png|ico)$", HttpMethod.GET);
         requestMatcher.addIgnoreUrl("^(/smp)?/(index.html|ui/(#/)?|)$", HttpMethod.GET);
         // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
         requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
@@ -193,5 +202,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public SMPCookieWriter smpCookieWriter() {
         return new SMPCookieWriter();
+    }
+
+    /**
+     * This is needed to enable the concurrent session-control support is to add the following listener
+     * @return
+     */
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }
