@@ -126,8 +126,8 @@ public class AuthenticationResource {
      */
     public void recreatedSessionCookie(HttpServletRequest request, HttpServletResponse response) {
         // recreate session id  (first make sure it exists)
-        request.getSession(true).getId();
-        String sessionId = request.changeSessionId();
+        String sessionId = request.getSession(true).getId();
+//        String sessionId = request.changeSessionId();
         smpCookieWriter.writeCookieToResponse(SESSION_COOKIE_NAME,
                 sessionId,
                 configurationService.getSessionCookieSecure(), configurationService.getSessionCookieMaxAge(),

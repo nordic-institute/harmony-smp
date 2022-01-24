@@ -37,7 +37,6 @@ public class SMPAuthorizationService {
      */
     public UserRO sanitize(UserRO userRO) {
         userRO.setPassword("");
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication instanceof SMPAuthenticationToken) {
             userRO.setAuthorities(
@@ -46,7 +45,6 @@ public class SMPAuthorizationService {
                             .map(authority -> authority.getAuthority())
                             .collect(toList()));
         }
-
         return userRO;
     }
 }
