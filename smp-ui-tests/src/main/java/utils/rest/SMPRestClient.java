@@ -15,6 +15,8 @@ import utils.TestDataProvider;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
+import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,53 +77,95 @@ public class SMPRestClient {
 		return domainCode;
 	}
 
-	public static Cookie login(String role){
+/*	public static Cookie login(String role){
 		String authTemplate = "{\"username\": \"%s\", \"password\": \"%s\"}";
 		TestDataProvider tdp = new TestDataProvider();
 		Map<String, String> user = tdp.getUserWithRole(role);
 		String auth = String.format(authTemplate, user.get("username"), user.get("password"));
 
 		Cookie session = resource.path(SMPPaths.LOGIN_PATH).accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON_TYPE)
-				.post(ClientResponse.class, auth).getCookies().get(0);
+				.post(ClientResponse.class, auth).getCookies().get(1);
+		return session;
+	}*/
+
+	public static List<NewCookie> login(String role){
+		String authTemplate = "{\"username\": \"%s\", \"password\": \"%s\"}";
+		TestDataProvider tdp = new TestDataProvider();
+		Map<String, String> user = tdp.getUserWithRole(role);
+		String auth = String.format(authTemplate, user.get("username"), user.get("password"));
+
+		List<NewCookie> session = resource.path(SMPPaths.LOGIN_PATH).accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON_TYPE)
+				.post(ClientResponse.class, auth).getCookies();//.getCookies();
 		return session;
 	}
 
-	public static List<String> getSysAdmins(){
-		Cookie jssesionID = login("SYS_ADMIN");
+	public static List<String> getSysAdmins() {
+		List<NewCookie> cookies = login("SYS_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 
 		try {
-			String responseRaw = resource.path(SMPPaths.USER_LIST)
-					.queryParam("page", "-1")
-					.queryParam("pageSize", "-1")
-					.accept(MediaType.APPLICATION_JSON_TYPE)
-					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
-					.get(String.class);
-			JSONArray users = new JSONObject(responseRaw).getJSONArray("serviceEntities");
-
-			List<String> sysadmins = new ArrayList<>();
-
-			for (int i = 0; i < users.length(); i++) {
-				JSONObject usr = users.getJSONObject(i);
-				if(usr.getString("role").equalsIgnoreCase("SYSTEM_ADMIN")){
-					sysadmins.add(usr.getString("username"));
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
 				}
 			}
-			return sysadmins;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
+				String responseRaw = resource.path(SMPPaths.USER_LIST)
+						.queryParam("page", "-1")
+						.queryParam("pageSize", "-1")
+						.accept(MediaType.APPLICATION_JSON_TYPE)
+						.type(MediaType.APPLICATION_JSON_TYPE)
+						.cookie(new Cookie("JSESSIONID", jsessionID))
+						.cookie(new Cookie("XSRF-TOKEN", xsrf))
+						.header("X-XSRF-TOKEN", xsrf)
+						.get(String.class);
+				JSONArray users = new JSONObject(responseRaw).getJSONArray("serviceEntities");
 
+				List<String> sysadmins = new ArrayList<>();
+
+				for (int i = 0; i < users.length(); i++) {
+					JSONObject usr = users.getJSONObject(i);
+					if (usr.getString("role").equalsIgnoreCase("SYSTEM_ADMIN")) {
+						sysadmins.add(usr.getString("username"));
+					}
+				}
+				return sysadmins;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 	public static List<String> getKeyStoreEntries(){
-		Cookie jssesionID = login("SYS_ADMIN");
+		List<NewCookie> cookies = login("SYS_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 
 		try {
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			String responseRaw = resource.path(SMPPaths.KEYSTORE)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID", jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN", xsrf))
+					.header("X-XSRF-TOKEN", xsrf)
 					.get(String.class);
 			JSONArray entries = new JSONObject(responseRaw).getJSONArray("serviceEntities");
 
@@ -141,16 +185,31 @@ public class SMPRestClient {
 
 
 	public static boolean createDomain(String domainCode){
-		Cookie jssesionID = login("SYS_ADMIN");
+		List<NewCookie> cookies = login("SYS_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 		String template = "[{\"domainCode\":\"%s\",\"smlSubdomain\":\"%s\",\"smlSmpId\":\"%s\",\"smlClientKeyAlias\":\"%s\",\"signatureKeyAlias\":\"%s\",\"status\":2,\"smlClientCertHeader\":\"%s\"}]";
 		String domainPostStr = String.format(template, domainCode, domainCode, domainCode, domainCode, domainCode, domainCode);
 
 		try {
-
+			for (NewCookie cookie : cookies) {
+				if("XSRF-TOKEN".equals(cookie.getName())){
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if("JSESSIONID".equals(cookie.getName())){
+					jsessionID = cookie.getValue();
+				break;
+				}
+			}
 			ClientResponse getResponse = resource.path(SMPPaths.REST_POST_DOMAIN)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.put(ClientResponse.class, domainPostStr);
 
 			return getResponse.getStatus() == 200;
@@ -161,15 +220,31 @@ public class SMPRestClient {
 	}
 
 	public static boolean createUser(String username, String role){
-		Cookie jssesionID = login("SYS_ADMIN");
+		List<NewCookie> cookies = login("SYS_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 		String template = "[{\"active\":true,\"username\":\"%s\",\"emailAddress\":\"\",\"password\":\"QW!@qw12\",\"confirmation\":\"\",\"role\":\"%s\",\"status\":2,\"statusPassword\":2,\"certificate\":{\"subject\":\"\",\"validFrom\":null,\"validTo\":null,\"issuer\":\"\",\"serialNumber\":\"\",\"certificateId\":\"\",\"fingerprints\":\"\"}}]";
 		String postStr = String.format(template, username, role);
 
 		try {
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			ClientResponse getResponse = resource.path(SMPPaths.USER_LIST)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.put(ClientResponse.class, postStr);
 
 			return getResponse.getStatus() == 200;
@@ -181,6 +256,8 @@ public class SMPRestClient {
 
 	public static boolean createServiceGroup(String pi, String ps, List<String> usernames, List<String> domainCodes){
 		String template = "[{\"id\":null,\"participantIdentifier\":\"%s\",\"participantScheme\":\"%s\",\"serviceMetadata\":[],\"users\":%s,\"serviceGroupDomains\":%s,\"extension\":\"\",\"status\":2}]";
+		String xsrf = "";
+		String jsessionID = "";
 		try {
 
 			JSONArray users = new JSONArray();
@@ -193,13 +270,30 @@ public class SMPRestClient {
 				domains.put(transformDomainForSGPost(getDomainForName(codes)));
 			}
 
+
+
 			String postStr = String.format(template, pi, ps, users.toString(), domains.toString());
 
-			Cookie jssesionID = login("SMP_ADMIN");
+			List<NewCookie> cookies = login("SMP_ADMIN");
+
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			ClientResponse getResponse = resource.path(SMPPaths.SERVICE_GROUP)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.put(ClientResponse.class, postStr);
 
 			return getResponse.getStatus() == 200;
@@ -212,9 +306,9 @@ public class SMPRestClient {
 	public static boolean createMetadata(String pi){
 		String template = "{\"documentIdentifier\":\"%s\",\"documentIdentifierScheme\":\"%s\",\"smlSubdomain\":\"%s\",\"domainCode\":\"%s\",\"domainId\":%s,\"status\":2,\"xmlContentStatus\":2}";
 		String xmlTemplate = "<ServiceMetadata xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"> <ServiceInformation> <ParticipantIdentifier scheme=\"%s\">%s</ParticipantIdentifier> <DocumentIdentifier scheme=\"%s\">%s</DocumentIdentifier> <ProcessList> <Process> <ProcessIdentifier scheme=\"[enterProcessType]\">[enterProcessName]</ProcessIdentifier> <ServiceEndpointList> <Endpoint transportProfile=\"bdxr-transport-ebms3-as4-v1p0\"> <EndpointURI>https://mypage.eu</EndpointURI> <Certificate>UGFzdGUgYmFzZTY0IGVuY29kZWQgY2VydGlmaWNhdGUgb2YgQVA=</Certificate> <ServiceDescription>Service description for partners</ServiceDescription> <TechnicalContactUrl>www.best-page.eu</TechnicalContactUrl> </Endpoint> </ServiceEndpointList> </Process> </ProcessList> </ServiceInformation> </ServiceMetadata>";
-
+		String xsrf = "";
+		String jsessionID = "";
 		try {
-
 			JSONObject sg = getSGforPI(pi);
 			JSONObject domain = sg.getJSONArray("serviceGroupDomains").getJSONObject(0);
 			String domainCode = domain.getString("domainCode");
@@ -231,11 +325,26 @@ public class SMPRestClient {
 			sg.put("status", 1);
 
 
-			Cookie jssesionID = login("SMP_ADMIN");
+			List<NewCookie> cookies = login("SMP_ADMIN");
+
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			ClientResponse getResponse = resource.path(SMPPaths.SERVICE_GROUP)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.put(ClientResponse.class, new JSONArray().put(sg).toString());
 
 			return getResponse.getStatus() == 200;
@@ -247,6 +356,7 @@ public class SMPRestClient {
 
 	public static String getMetadataString(String url){
 		try {
+
 			System.out.println("url = " + url);
 //			------------------------------
 			return client.resource(url).accept(MediaType.APPLICATION_XML).get(String.class);
@@ -257,15 +367,31 @@ public class SMPRestClient {
 	}
 
 	private static JSONObject getUserForName(String username){
-		Cookie jssesionID = login("SYS_ADMIN");
+		List<NewCookie> cookies = login("SYS_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 
 		try {
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			String responseRaw = resource.path(SMPPaths.USER_LIST)
 					.queryParam("page", "-1")
 					.queryParam("pageSize", "-1")
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.get(String.class);
 			JSONArray users = new JSONObject(responseRaw).getJSONArray("serviceEntities");
 
@@ -282,14 +408,30 @@ public class SMPRestClient {
 	}
 
 	private static JSONObject getDomainForName(String domainName){
-		Cookie jssesionID = login("SYS_ADMIN");
+		List<NewCookie> cookies = login("SYS_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 		try {
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			String responseRaw = resource.path(SMPPaths.REST_DOMAIN_LIST)
 					.queryParam("page", "-1")
 					.queryParam("pageSize", "-1")
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.get(String.class);
 			JSONArray domains = new JSONObject(responseRaw).getJSONArray("serviceEntities");
 			for (int i = 0; i < domains.length(); i++) {
@@ -304,15 +446,31 @@ public class SMPRestClient {
 	}
 
 	private static JSONObject getSGforPI(String pi){
-		Cookie jssesionID = login("SMP_ADMIN");
+		List<NewCookie> cookies = login("SMP_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 		try {
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			String responseRaw = resource.path(SMPPaths.SERVICE_GROUP)
 					.queryParam("page", "-1")
 					.queryParam("pageSize", "-1")
 					.queryParam("participantIdentifier", pi)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.get(String.class);
 			JSONArray sgs = new JSONObject(responseRaw).getJSONArray("serviceEntities");
 			for (int i = 0; i < sgs.length(); i++) {
@@ -327,13 +485,17 @@ public class SMPRestClient {
 	}
 
 	public static boolean deleteDomain(String domainCode){
-		Cookie jssesionID = login("SYS_ADMIN");
+		List<NewCookie> cookies = login("SYS_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 		try {
 			String domainPostStr = "[" + getDomainForName(domainCode).put("status", 3).toString() + "]";
 			ClientResponse getResponse = resource.path(SMPPaths.REST_POST_DOMAIN)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.put(ClientResponse.class, domainPostStr);
 
 			return getResponse.getStatus() == 200;
@@ -344,13 +506,29 @@ public class SMPRestClient {
 	}
 
 	public static boolean deleteUser(String username){
-		Cookie jssesionID = login("SYS_ADMIN");
+		List<NewCookie> cookies = login("SYS_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 		try {
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			String putStr = "[" + getUserForName(username).put("status", 3).toString() + "]";
 			ClientResponse getResponse = resource.path(SMPPaths.USER_LIST)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.put(ClientResponse.class, putStr);
 
 			return getResponse.getStatus() == 200;
@@ -361,13 +539,29 @@ public class SMPRestClient {
 	}
 
 	public static boolean deleteSG(String pi){
-		Cookie jssesionID = login("SMP_ADMIN");
+		List<NewCookie> cookies = login("SMP_ADMIN");
+		String xsrf = "";
+		String jsessionID = "";
 		try {
+			for (NewCookie cookie : cookies) {
+				if ("XSRF-TOKEN".equals(cookie.getName())) {
+					xsrf = cookie.getValue();
+					break;
+				}
+			}
+			for (NewCookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					jsessionID = cookie.getValue();
+					break;
+				}
+			}
 			String putStr = "[" + getSGforPI(pi).put("status", 3).toString() + "]";
 			ClientResponse getResponse = resource.path(SMPPaths.SERVICE_GROUP)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
 					.type(MediaType.APPLICATION_JSON_TYPE)
-					.cookie(jssesionID)
+					.cookie(new Cookie("JSESSIONID",jsessionID))
+					.cookie(new Cookie("XSRF-TOKEN",xsrf))
+					.header("X-XSRF-TOKEN",xsrf)
 					.put(ClientResponse.class, putStr);
 
 			return getResponse.getStatus() == 200;

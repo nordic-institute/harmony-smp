@@ -57,7 +57,9 @@ public class BaseTest {
 
 		logger.info("Quitting!!!! Buh bye!!!");
 		try {
-			driver.quit();
+			if(null!=driver){
+				driver.quit();
+			}
 		} catch (Exception e) {
 			logger.warn("Closing the driver failed !!!!");
 			e.printStackTrace();
