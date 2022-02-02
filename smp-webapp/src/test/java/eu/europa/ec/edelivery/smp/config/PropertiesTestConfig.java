@@ -13,17 +13,12 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
@@ -39,7 +34,7 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 public class PropertiesTestConfig {
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()  {
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         // update keystore
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
@@ -64,5 +59,4 @@ public class PropertiesTestConfig {
 
         return propertiesConfig;
     }
-
 }
