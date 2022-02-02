@@ -4,6 +4,7 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import java.util.Calendar;
 import java.util.Optional;
 
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -33,6 +35,7 @@ public class SMPAuthenticationProviderTest {
         UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken("User", "User");
         DBUser user = new DBUser();
         user.setId(1L);
+
         user.setUsername("User");
         user.setPassword(BCrypt.hashpw("InvalidPassword", BCrypt.gensalt()));
         user.setRole("MY_ROLE");
@@ -62,7 +65,8 @@ public class SMPAuthenticationProviderTest {
         }
 
         // the average should be the same!
-        assertTrue(Math.abs(averageExists - averageNotExist) < 150);
+        assertThat("average difference between failed login must be less than 2ms", Math.abs(averageExists - averageNotExist),
+                Matchers.lessThan(200L));
 
     }
 }
