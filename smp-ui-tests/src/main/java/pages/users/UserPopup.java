@@ -47,10 +47,10 @@ public class UserPopup extends PageComponent {
 	@FindBy(css = ".mat-form-field-infix > div.has-error")
 	WebElement passMatchValidationError;
 
-	@FindBy(css = "mat-dialog-content > table > tbody > tr > td > button:nth-child(1)")
+	@FindBy(css = "mat-dialog-content > table > tr > td > button:nth-child(1)")
 	WebElement okBtn;
 
-	@FindBy(css = "mat-dialog-content > table > tbody > tr > td > button:nth-child(2)")
+	@FindBy(css = "mat-dialog-content > table > tr > td > button:nth-child(2)")
 	WebElement cancelBtn;
 
 	@FindBy(css = "#role_id")

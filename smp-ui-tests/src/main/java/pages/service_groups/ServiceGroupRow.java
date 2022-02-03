@@ -18,13 +18,11 @@ public class ServiceGroupRow extends PageComponent {
 	}
 
 
-//	private WebElement container;
+
 
 	@FindBy(tagName = "datatable-body-cell")
 	protected List<WebElement> cells;
 
-	/*@FindBy(className = "table-button-expand")
-	private WebElement expandMetadata;*/
 
 	@FindBy(css = ".ng-star-inserted.datatable-icon-right")
 	private WebElement expandMetadata;
