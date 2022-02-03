@@ -29,49 +29,43 @@ public class UsersGrid extends BasicGrid {
 	}
 
 	public boolean isUserListed(String username) {
-		boolean end = false;
-
 		PaginationControls pagination = new PaginationControls(driver);
 		pagination.skipToFirstPage();
-
+		List<UserRowInfo> rows;
+		int count = 0;
 		do {
-			List<UserRowInfo> rows = getRows();
-
+			if (count != 0) {
+				pagination.goToNextPage();
+			}
+			rows =getRows();
 			for (UserRowInfo row : rows) {
 				if (row.getUsername().equalsIgnoreCase(username)) {
 					return true;
 				}
 			}
-
-			try {
-				pagination.goToNextPage();
-			} catch (Exception e) {
-			}
-		} while (pagination.hasNextPage());
-
+			count++;
+		}
+		while (pagination.hasNextPage());
 		return false;
 	}
 
 	public int scrollToUser(String username) {
-
 		PaginationControls pagination = new PaginationControls(driver);
 		pagination.skipToFirstPage();
-
+		List<UserRowInfo> rows;
+		int count = 0;
 		do {
-
-			List<UserRowInfo> rows = getRows();
+			if(count!=0){
+				pagination.goToNextPage();
+			}
+			rows = getRows();
 			for (int i = 0; i < rows.size(); i++) {
 				if (rows.get(i).getUsername().equalsIgnoreCase(username)) {
 					return i;
 				}
 			}
-			try {
-				pagination.goToNextPage();
-			} catch (Exception e) {
-			}
-
+			count++;
 		} while (pagination.hasNextPage());
-
 		return -1;
 	}
 
