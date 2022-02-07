@@ -220,13 +220,13 @@ public class SearchPgTest extends BaseTest {
 
 
 
-		soft.assertTrue(row0.getExpandButtonText().contains("+"), "Initially the row has + on it");
+		soft.assertTrue(row0.verifyMetadataExpandButton(), "Initially the row has expanding symbol on it");
 		row0.expandMetadata();
 
-		soft.assertTrue(row0.getExpandButtonText().contains("-"), "Row has - on it after first click");
+		soft.assertTrue(row0.verifyMetadataCollapseButton(), "Row has collapsing symbol on it after first click");
 
 		row0.collapseMetadata();
-		soft.assertTrue(row0.getExpandButtonText().contains("+"), "Row has + on it after collapse");
+		soft.assertTrue(row0.verifyMetadataExpandButton(), "Row has expanding symbol on it after collapse");
 		soft.assertFalse(row0.isMetadataExpanded(), "Metadata table is not present no more");
 
 		soft.assertAll();
