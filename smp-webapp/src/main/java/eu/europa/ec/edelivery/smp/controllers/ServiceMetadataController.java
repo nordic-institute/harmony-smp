@@ -17,13 +17,10 @@ import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
-import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,7 +55,7 @@ public class ServiceMetadataController {
 
 
     @Autowired
-    private ServiceMetadataPathBuilder pathBuilder;
+    private SmpUrlBuilder pathBuilder;
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
     public String getServiceMetadata(HttpServletRequest httpReq,
@@ -75,7 +72,7 @@ public class ServiceMetadataController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
+    @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
             " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
     public ResponseEntity saveServiceMetadata(HttpServletRequest httpReq,
             @PathVariable String serviceGroupId,
@@ -97,7 +94,7 @@ public class ServiceMetadataController {
     }
 
     @DeleteMapping
-     @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
+     @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
               " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
     public ResponseEntity deleteServiceMetadata(HttpServletRequest httpReq,
                                   @PathVariable String serviceGroupId,

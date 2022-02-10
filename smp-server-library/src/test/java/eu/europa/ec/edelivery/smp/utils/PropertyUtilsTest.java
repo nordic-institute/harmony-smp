@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
@@ -151,6 +152,9 @@ public class PropertyUtilsTest {
                 break;
             case LIST_STRING:
                 Assert.assertTrue(List.class.isInstance(value));
+                break;
+            case MAP_STRING:
+                Assert.assertTrue(Map.class.isInstance(value));
                 break;
             case PATH:
             case FILENAME:

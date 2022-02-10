@@ -28,7 +28,6 @@ public class DatabaseProperties extends Properties {
             }
             lastUpdate = (lastUpdate==null || lastUpdate.isBefore(dc.getLastUpdatedOn()) )? dc.getLastUpdatedOn() :lastUpdate;
         }
-
     }
 
     public LocalDateTime getLastUpdate() {

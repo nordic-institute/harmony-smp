@@ -141,6 +141,11 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
     }
 
+    @Transactional(readOnly = true)
+    public DBUser findUserByUsername(String userName) {
+        return userDao.findUserByUsername(userName).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
+    }
+
     @Override
     public UserRO convertToRo(DBUser d) {
         return conversionService.convert(d, UserRO.class);

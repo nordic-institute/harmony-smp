@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -58,7 +58,7 @@ public class ServiceGroupController {
     private ServiceGroupValidator serviceGroupValidator;
 
     @Autowired
-    private ServiceMetadataPathBuilder pathBuilder;
+    private SmpUrlBuilder pathBuilder;
 
     @Autowired
     private ServiceGroupService serviceGroupService;
@@ -126,7 +126,7 @@ public class ServiceGroupController {
         List<DocumentIdentifier> docIds = serviceMetadataService.findServiceMetadataIdentifiers(participantId);
         List<ServiceMetadataReferenceType> referenceIds = serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences();
         for (DocumentIdentifier docId : docIds) {
-            String url = pathBuilder.buildSelfUrl(participantId, docId);
+            String url = pathBuilder.buildSMPUrlForParticipantAndDocumentIdentifier(participantId, docId);
             referenceIds.add(new ServiceMetadataReferenceType(url));
         }
     }

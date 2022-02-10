@@ -25,11 +25,12 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static eu.europa.ec.edelivery.smp.auth.SMPAuthority.*;
+import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.*;
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.CSRF_COOKIE_NAME;
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 
@@ -106,14 +107,32 @@ public class AuthenticationResource {
         LOG.info("Logged out");
     }
 
+    /**
+     * Resource is protected with CAS authentication. If user was successfully.
+     * User is able to access the resource only if is SSO authenticates exists in SMP user table with appropriate roles.
+     * Redirect to main page as authenticated user.
+     *
+     * @return Redirection object.
+     */
+    @GetMapping(value = "cas")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    public RedirectView authenticateCAS() {
+        LOG.debug("Authenticating cas");
+        // if user was able to access resource - redirect back to main page
+        return new RedirectView("../../#/");
+    }
+
     @GetMapping(value = "user")
     @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public UserRO getUser() {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof  UserRO){
+            return (UserRO)principal;
+        }
         UserRO user = new UserRO();
-
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = (String) principal;
         LOG.debug("get user: {}", username);
-
         user.setUsername(username);
         return user;
     }
@@ -136,5 +155,4 @@ public class AuthenticationResource {
                 request, response
         );
     }
-
 }

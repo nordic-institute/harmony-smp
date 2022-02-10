@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;

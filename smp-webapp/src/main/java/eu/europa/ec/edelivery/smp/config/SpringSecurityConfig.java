@@ -16,9 +16,10 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.cas.authentication.CasAuthenticationProvider;
+import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
+import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -37,13 +42,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
+
+import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.*;
 
 /**
  * Created by gutowpa on 12/07/2017.
@@ -56,11 +66,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(SpringSecurityConfig.class);
 
     SMPAuthenticationProvider smpAuthenticationProvider;
+    CasAuthenticationProvider casAuthenticationProvider;
     BlueCoatAuthenticationFilter blueCoatAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
+    CasAuthenticationFilter casAuthenticationFilter;
+    CasAuthenticationEntryPoint casAuthenticationEntryPoint;
     CsrfTokenRepository csrfTokenRepository;
     HttpFirewall httpFirewall;
     RequestMatcher csrfURLMatcher;
+    ConfigurationService configurationService;
 
     @Value("${authentication.blueCoat.enabled:false}")
     boolean clientCertEnabled;
@@ -76,15 +90,25 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     public SpringSecurityConfig(SMPAuthenticationProvider smpAuthenticationProvider,
+                                ConfigurationService configurationService,
                                 @Lazy BlueCoatAuthenticationFilter blueCoatAuthenticationFilter,
                                 @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
                                 @Lazy CsrfTokenRepository csrfTokenRepository,
                                 @Lazy RequestMatcher csrfURLMatcher,
-                                @Lazy HttpFirewall httpFirewall) {
+                                @Lazy HttpFirewall httpFirewall,
+                                // optional cas authentication configuration
+                                @Lazy CasAuthenticationProvider casAuthenticationProvider,
+                                @Lazy @Qualifier(SMP_CAS_FILTER_BEAN) CasAuthenticationFilter casAuthenticationFilter,
+                                @Lazy CasAuthenticationEntryPoint casAuthenticationEntryPoint
+    ) {
         super(false);
+        this.configurationService = configurationService;
         this.smpAuthenticationProvider = smpAuthenticationProvider;
+        this.casAuthenticationProvider = casAuthenticationProvider;
         this.blueCoatAuthenticationFilter = blueCoatAuthenticationFilter;
         this.x509AuthenticationFilter = x509AuthenticationFilter;
+        this.casAuthenticationFilter = casAuthenticationFilter;
+        this.casAuthenticationEntryPoint = casAuthenticationEntryPoint;
         this.csrfTokenRepository = csrfTokenRepository;
         this.csrfURLMatcher = csrfURLMatcher;
         this.httpFirewall = httpFirewall;
@@ -95,43 +119,56 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
                 .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                    //on authentication, a new HTTP Session is created, the old one is invalidated and the attributes from the old session are copied over.
-                    .sessionFixation().migrateSession()
-                    //In order to force only one  concurrent sessions for the same user,
-                    .maximumSessions(1).and()
-                .and()
-                .exceptionHandling()
-                    .authenticationEntryPoint(new SpringSecurityExceptionHandler())
-                    .accessDeniedHandler(new SpringSecurityExceptionHandler())
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                //on authentication, a new HTTP Session is created, the old one is invalidated and the attributes from the old session are copied over.
+                .sessionFixation().migrateSession()
+                //In order to force only one  concurrent sessions for the same user,
+                .maximumSessions(1).and()
+                .and();
+
+        ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer = httpSecurity.exceptionHandling();
+        if (configurationService.isCasEnabled()) {
+            LOG.info("REGISTER casAuthenticationEntryPoint: [{}]", casAuthenticationEntryPoint);
+            exceptionHandlingConfigurer = exceptionHandlingConfigurer.defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint, new AntPathRequestMatcher(SMP_SECURITY_PATH_CAS_AUTHENTICATE));
+        }
+        exceptionHandlingConfigurer.authenticationEntryPoint(new SpringSecurityExceptionHandler());
+
+        httpSecurity = exceptionHandlingConfigurer
+                .accessDeniedHandler(new SpringSecurityExceptionHandler())
                 .and()
                 .headers().frameOptions().deny()
-                    .contentTypeOptions().and()
-                    .xssProtection().xssProtectionEnabled(true).and()
-                .and()
-                .addFilter(blueCoatAuthenticationFilter)
+                .contentTypeOptions().and()
+                .xssProtection().xssProtectionEnabled(true).and()
+                .and();
+
+        if (configurationService.isCasEnabled()) {
+            httpSecurity = httpSecurity.addFilter(casAuthenticationFilter);
+        }
+
+        httpSecurity.addFilter(blueCoatAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
                 .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.DELETE, "/ui/rest/security/authentication").permitAll()
-                    .antMatchers(HttpMethod.POST, "/ui/rest/security/authentication").permitAll()
+                .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
+                .antMatchers(HttpMethod.POST, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
+                .antMatchers(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE).authenticated()
                 .and()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
-                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                    .antMatchers(HttpMethod.PUT).hasAnyAuthority(
-                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.GET).permitAll().and()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
-                        SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                        SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
         ;
     }
 
@@ -144,14 +181,19 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         LOG.info("configureAuthenticationManagerBuilder, set SMP provider ");
+        if (configurationService.isCasEnabled()) {
+            LOG.info("[CAS] Authentication Provider enabled");
+            auth.authenticationProvider(casAuthenticationProvider);
+        }
         auth.authenticationProvider(smpAuthenticationProvider);
     }
 
     @Override
-    @Bean(name = {BeanIds.AUTHENTICATION_MANAGER, "smpAuthenticationManager"})
+    @Bean(name = {BeanIds.AUTHENTICATION_MANAGER, SMP_AUTHENTICATION_MANAGER_BEAN})
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
     @Bean
     public HttpFirewall smpHttpFirewall() {
         DefaultHttpFirewall firewall = new DefaultHttpFirewall();
@@ -160,7 +202,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public BlueCoatAuthenticationFilter getClientCertAuthenticationFilter(@Qualifier("smpAuthenticationManager") AuthenticationManager authenticationManager) {
+    public BlueCoatAuthenticationFilter getClientCertAuthenticationFilter(@Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager) {
         BlueCoatAuthenticationFilter blueCoatAuthenticationFilter = new BlueCoatAuthenticationFilter();
         blueCoatAuthenticationFilter.setAuthenticationManager(authenticationManager);
         blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
@@ -168,7 +210,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter(@Qualifier("smpAuthenticationManager") AuthenticationManager authenticationManager) {
+    public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter(@Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager) {
         EDeliveryX509AuthenticationFilter x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
         x509AuthenticationFilter.setAuthenticationManager(authenticationManager);
         return x509AuthenticationFilter;
@@ -192,6 +234,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
         // ignore for login and logout
         requestMatcher.addIgnoreUrl("/ui/rest/security/authentication", HttpMethod.DELETE, HttpMethod.POST);
+
+        requestMatcher.addIgnoreUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE, HttpMethod.GET);
         // allow all gets
         requestMatcher.addIgnoreUrl("/ui/.*", HttpMethod.GET);
         // monitor
@@ -206,10 +250,29 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * This is needed to enable the concurrent session-control support is to add the following listener
+     *
      * @return
      */
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+
+    /*
+     * Bean removes "Forwarded" and "X-Forwarded-*" headers if 'smp.http.forwarded.headers.enabled' is set to false.
+     * Else it extracts values from "Forwarded" and "X-Forwarded-*" headers to override the request URI so to reflects
+     * the client-originated protocol and address.
+     *
+     * NOTE: Enable use of headers with "security considerations" since an application cannot know if the headers were
+     * added by a proxy, as intended, or by a malicious client.
+     */
+    //@Bean(SMP_FORWARDED_HEADER_TRANSFORMER_BEAN)
+    @Bean
+    public ForwardedHeaderTransformer smpForwardedHeaderTransformer() {
+        ForwardedHeaderTransformer forwardedHeaderTransformer =  new ForwardedHeaderTransformer();
+       // WebHttpHandlerBuilder.forwardedHeaderTransformer(ForwardedHeaderTransformer);
+        forwardedHeaderTransformer.setRemoveOnly(false);
+        return forwardedHeaderTransformer;
+
     }
 }
