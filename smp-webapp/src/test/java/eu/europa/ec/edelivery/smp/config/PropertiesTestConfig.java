@@ -50,7 +50,7 @@ public class PropertiesTestConfig {
         localProps.setProperty(BLUE_COAT_ENABLED.getProperty(), "true");
 
         // even thought keystore is generated but secure password generation can be very slow on some server
-        // crate test password..
+        // create test password..
         localProps.setProperty(KEYSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
         localProps.setProperty(TRUSTSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
 

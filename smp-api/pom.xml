@@ -70,6 +70,7 @@
                     <args>
                         <arg>-Xvalue-constructor</arg><!-- generates value constructors -->
                         <arg>-Xequals</arg><!-- generates equals() metods -->
+                        <arg>-XtoString</arg>
                     </args>
                     <plugins>
                         <!-- generates value constructors -->

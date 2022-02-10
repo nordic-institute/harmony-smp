@@ -1,8 +1,12 @@
-package eu.europa.ec.edelivery.smp.auth;
+package eu.europa.ec.edelivery.smp.data.ui.auth;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import eu.europa.ec.edelivery.smp.data.ui.databind.SMPAuthorityDeserializer;
 import org.springframework.security.core.GrantedAuthority;
 
 
+@JsonDeserialize(using = SMPAuthorityDeserializer.class)
 public class SMPAuthority implements GrantedAuthority {
 
     // static constants for annotations!
@@ -24,6 +28,7 @@ public class SMPAuthority implements GrantedAuthority {
     }
 
     @Override
+    @JsonValue
     public String getAuthority() {
         return "ROLE_" + role;
     }

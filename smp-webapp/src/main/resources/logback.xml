@@ -37,7 +37,8 @@
         </encoder>
     </appender>
 
-    <logger name="eu.europa.ec.edelivery.smp" level="INFO" />
+    <logger name="eu.europa.ec.edelivery" level="DEBUG" />
+    <logger name="org.springframework.security.cas" level="DEBUG" />
     <root level="WARN">
         <appender-ref ref="file"/>
         <appender-ref ref="stdout"/>

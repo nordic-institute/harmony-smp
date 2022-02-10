@@ -21,6 +21,7 @@ import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +59,8 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.Calendar;
+import java.util.Date;
 
 import static java.lang.String.format;
 import static java.net.URLEncoder.encode;
@@ -116,7 +119,8 @@ public class SignatureValidatorTest {
     @Test
     public void validateSignature() throws Throwable {
         String serviceGroupId = "ehealth-actorid-qns::urn:australia:ncpb";
-        Principal principal = new PreAuthenticatedCertificatePrincipal("C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu, OU=eHealth, CN=EHEALTH_SMP_TEST_BRAZIL", "C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4", "48:b6:81:ee:8e:0d:cc:08");
+        Principal principal = generateMockValidPrincipal();
+
         String filePathToLoad = "/input/ServiceMetadata.xml";
         String signedByCustomizedSignatureFilePath = "/expected_output/PUT_ServiceMetadata_request.xml";
         String defaultSignatureFilePath = "/expected_output/GET_SignedServiceMetadata_response.xml";
@@ -127,7 +131,7 @@ public class SignatureValidatorTest {
     @Test
     public void validateLinearizedSignature() throws Throwable {
         String serviceGroupId = "ehealth-actorid-qns::urn:brazil:ncpb";
-        Principal principal = new PreAuthenticatedCertificatePrincipal("C=BE, O=European Commission,OU=CEF_eDelivery.europa.eu,OU=eHealth,OU=SMP_TEST,CN=EHEALTH_SMP_EC", "C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4", "f7:1e:e8:b1:1c:b3:b7:87");
+        Principal principal = generateMockValidPrincipal();
         String filePathToLoad = "/input/ServiceMetadata_linarized.xml";
         String signedByCustomizedSignatureFilePath = "/expected_output/PUT_ServiceMetadata_request_linarized.xml";
         String defaultSignatureFilePath = "/expected_output/GET_SignedServiceMetadata_response_linarized.xml";
@@ -135,6 +139,13 @@ public class SignatureValidatorTest {
         commonTest(serviceGroupId, principal, filePathToLoad, signedByCustomizedSignatureFilePath, defaultSignatureFilePath);
     }
 
+    private Principal generateMockValidPrincipal(){
+        PreAuthenticatedCertificatePrincipal principal = new PreAuthenticatedCertificatePrincipal("C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu, OU=eHealth, CN=EHEALTH_SMP_TEST_BRAZIL", "C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4", "48:b6:81:ee:8e:0d:cc:08");
+        Date date = Calendar.getInstance().getTime();
+        principal.setNotAfter(DateUtils.addDays(date,2));
+        principal.setNotBefore(DateUtils.addDays(date,-1));
+        return principal;
+    }
     private void commonTest(String serviceGroupId, Principal principal, String filePathToLoad, String signedByCustomizedSignatureFilePath, String defaultSignatureFilePath) throws Throwable {
         //given
         String documentTypeId = encode("ehealth-resid-qns::urn::epsos##services:extended:epsos::107", "UTF-8");

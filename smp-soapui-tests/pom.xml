@@ -58,6 +58,8 @@
                     <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
                     <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
                     <!-- testCase>SMP079-EDELIVERY-2806-Basic Flow-BlueCote UTF8 chars</testCase -->
+                    <!-- testCase>SMP094-Basic Flow-ClientCert-UTF8-Variants</testCase -->
+
                     <projectProperties>
                         <value>url=${url}</value>
                         <value>SMPAdminUser=${SMPAdminUser}</value>

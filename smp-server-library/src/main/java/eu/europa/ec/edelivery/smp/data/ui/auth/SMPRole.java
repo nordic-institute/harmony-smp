@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.auth;
+package eu.europa.ec.edelivery.smp.data.ui.auth;
 
 public enum SMPRole {
 

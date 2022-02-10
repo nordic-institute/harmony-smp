@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -132,7 +133,7 @@ public class ConfigurationService {
 
     public boolean forceCRLValidation() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(CERTIFICATE_CRL_FORCE);
-        // by default is not froce
+        // by default is not forced
         return value != null && value;
     }
 
@@ -142,7 +143,7 @@ public class ConfigurationService {
 
     public boolean smlDisableCNCheck() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_DISABLE_CN_CHECK);
-        // by default is not froce
+        // by default is not forced
         return value != null && value;
     }
 
@@ -182,6 +183,7 @@ public class ConfigurationService {
     public String getSessionCookiePath() {
         return (String) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_PATH);
     }
+
     public Integer getSessionIdleTimeoutForAdmin() {
         return (Integer) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
     }
@@ -190,4 +192,35 @@ public class ConfigurationService {
         return (Integer) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_IDLE_TIMEOUT_USER);
     }
 
+    public boolean isCasEnabled() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SSO_CAS_ENABLED);
+        return value != null && value;
+    }
+
+    public String getCasUILabel() {
+        return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_UI_LABEL);
+    }
+
+    public java.net.URL getCasURL() {
+        return (java.net.URL) configurationDAO.getCachedPropertyValue(SSO_CAS_URL);
+    }
+
+    public java.net.URL getCasCallbackUrl() {
+        return (java.net.URL) configurationDAO.getCachedPropertyValue(SSO_CAS_CALLBACK_URL);
+    }
+
+    public String getCasURLPathLogin() {
+        return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_URLPATH_LOGIN);
+    }
+
+    public String getCasURLTokenValidation() {
+        return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_URLPATH);
+    }
+
+    public Map<String, String> getCasTokenValidationParams() {
+        return (Map<String, String>) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_PARAMS);
+    }
+    public List<String> getCasURLTokenValidationGroups() {
+        return (List<String>) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_GROUPS);
+    }
 }

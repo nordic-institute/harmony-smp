@@ -14,7 +14,6 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.data.model.*;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.junit.Assert;
@@ -38,7 +37,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.*;
 import static org.junit.Assert.assertTrue;
 
 /**
- *  Purpose of class is to test all Audit classes and  methods with database.
+ * Purpose of class is to test all Audit classes and  methods with database.
  *
  * @author Joze Rihtarsic
  * @since 4.1
@@ -77,8 +76,7 @@ public class AuditIntegrationTest {
         alterVal.put("smlClientKeyAlias", UUID.randomUUID().toString());
         alterVal.put("smlSubdomain", UUID.randomUUID().toString());
 
-
-        testAuditEntity(domain,alterVal );
+        testAuditEntity(domain, alterVal);
     }
 
 
@@ -91,8 +89,7 @@ public class AuditIntegrationTest {
         alterVal.put("role", UUID.randomUUID().toString());
         alterVal.put("passwordChanged", LocalDateTime.now());
 
-        testAuditEntity(dbuser,alterVal );
-
+        testAuditEntity(dbuser, alterVal);
     }
 
     @Test
@@ -107,10 +104,10 @@ public class AuditIntegrationTest {
         alterValCert.put("validTo", LocalDateTime.now());
 
 
-        testAuditSubEntity(dbuser,dbuser.getCertificate(), alterValCert );
+        testAuditSubEntity(dbuser, dbuser.getCertificate(), alterValCert);
     }
 
-       @Test
+    @Test
     public void testAuditDBServiceGroup() {
 
         DBServiceGroup grp = createDBServiceGroup();
@@ -118,7 +115,7 @@ public class AuditIntegrationTest {
         EntityManager em = emf.createEntityManager();
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("extension", UUID.randomUUID().toString().getBytes());
-        testAuditSubEntity(grp, grp.getServiceGroupExtension(),alterVal );
+        testAuditSubEntity(grp, grp.getServiceGroupExtension(), alterVal);
     }
 
 
@@ -128,7 +125,7 @@ public class AuditIntegrationTest {
         DBServiceMetadata md = createDBServiceMetadata(UUID.randomUUID().toString(), UUID.randomUUID().toString());
         DBDomain domain = createDBDomain();
         DBServiceGroup grp = createDBServiceGroup();
-        DBServiceGroupDomain serviceGroupDomain =  new DBServiceGroupDomain();
+        DBServiceGroupDomain serviceGroupDomain = new DBServiceGroupDomain();
 
         EntityManager em = emf.createEntityManager();
         persist(em, domain);
@@ -141,16 +138,17 @@ public class AuditIntegrationTest {
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("XmlContent", UUID.randomUUID().toString().getBytes());
 
-        testAuditSubEntity(md, md.getServiceMetadataXml(),alterVal );
+        testAuditSubEntity(md, md.getServiceMetadataXml(), alterVal);
     }
 
 
     /**
      * Method updates value in Map, then checks if revision increased. Last test in removing the entity.
+     *
      * @param entity
      * @param alterValues
      */
-    private void testAuditEntity(BaseEntity entity, Map<String, Object> alterValues ) {
+    private void testAuditEntity(BaseEntity entity, Map<String, Object> alterValues) {
         testAuditSubEntity(entity, entity, alterValues);
         EntityManager em = emf.createEntityManager();
     }
@@ -162,7 +160,7 @@ public class AuditIntegrationTest {
      * @param subEntity
      * @param alterValues
      */
-    private void testAuditSubEntity(BaseEntity entity, BaseEntity subEntity, Map<String, Object> alterValues ) {
+    private void testAuditSubEntity(BaseEntity entity, BaseEntity subEntity, Map<String, Object> alterValues) {
         EntityManager em = emf.createEntityManager();
 
         AuditReader ar = AuditReaderFactory.get(em);
@@ -182,22 +180,22 @@ public class AuditIntegrationTest {
 
         // remove master
         remove(em, entity.getClass(), dbId);
-        Assert.assertEquals(++iRevSize,ar.getRevisions(subEntity.getClass(), dbId ).size());
+        Assert.assertEquals(++iRevSize, ar.getRevisions(subEntity.getClass(), dbId).size());
     }
 
-   private void persist(EntityManager em, Object dbEnetity){
-       em.getTransaction().begin();
-       em.persist(dbEnetity);
-       em.getTransaction().commit();
-   }
+    private void persist(EntityManager em, Object dbEnetity) {
+        em.getTransaction().begin();
+        em.persist(dbEnetity);
+        em.getTransaction().commit();
+    }
 
-    private void update(EntityManager em, Object dbEntity){
+    private void update(EntityManager em, Object dbEntity) {
         em.getTransaction().begin();
         em.merge(dbEntity);
         em.getTransaction().commit();
     }
 
-    private void remove(EntityManager em, Class cls,  Object dbId){
+    private void remove(EntityManager em, Class cls, Object dbId) {
         em.getTransaction().begin();
         // get attached reference to delete it
         Object dbEntity = em.getReference(cls, dbId);

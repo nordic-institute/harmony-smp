@@ -7,7 +7,8 @@ public class SmpInfoRO implements Serializable {
     String version;
     boolean smlIntegrationOn;
     boolean smlParticipantMultiDomainOn;
-
+    boolean ssoAuthentication;
+    String ssoAuthenticationLabel;
     String contextPath;
 
     public String getVersion() {
@@ -40,5 +41,21 @@ public class SmpInfoRO implements Serializable {
 
     public void setSmlParticipantMultiDomainOn(boolean smlParticipantMultidomainOn) {
         this.smlParticipantMultiDomainOn = smlParticipantMultidomainOn;
+    }
+
+    public boolean isSsoAuthentication() {
+        return ssoAuthentication;
+    }
+
+    public void setSsoAuthentication(boolean ssoAuthentication) {
+        this.ssoAuthentication = ssoAuthentication;
+    }
+
+    public String getSsoAuthenticationLabel() {
+        return ssoAuthenticationLabel;
+    }
+
+    public void setSsoAuthenticationLabel(String ssoAuthenticationLabel) {
+        this.ssoAuthenticationLabel = ssoAuthenticationLabel;
     }
 }

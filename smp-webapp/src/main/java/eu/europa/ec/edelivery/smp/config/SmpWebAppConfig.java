@@ -19,10 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.util.UrlPathHelper;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
@@ -41,6 +39,14 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
 public class SmpWebAppConfig implements WebMvcConfigurer {
     private static final Logger LOG = LoggerFactory.getLogger(SmpWebAppConfig.class);
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*");
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

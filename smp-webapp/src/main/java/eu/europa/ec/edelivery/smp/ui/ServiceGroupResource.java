@@ -2,8 +2,8 @@ package eu.europa.ec.edelivery.smp.ui;
 
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.auth.SMPRole;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPRole;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO;
@@ -78,7 +78,7 @@ public class ServiceGroupResource {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // show all service groups only for SMP Admin
-        System.out.println("USER authorites: "+ authentication.getAuthorities().size());
+        // SMP admin can edit all service groups. For others return only services groups they own.
         if (!request.isUserInRole(SMPRole.SMP_ADMIN.getCode())){
             SMPAuthenticationToken authToken = (SMPAuthenticationToken) authentication;
             DBUser user = authToken.getUser();

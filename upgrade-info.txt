@@ -1,0 +1,2 @@
+SMP 4.2 from 4.1.1)
+ - Set: smp.http.forwarded.headers.enabled to true if SMP is set behind RP/LoadBalancer

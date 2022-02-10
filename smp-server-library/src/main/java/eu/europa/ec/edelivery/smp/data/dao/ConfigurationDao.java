@@ -202,8 +202,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
 
         if (!lstMissingProperties.isEmpty()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Missing mandatory properties:  %s",
-                    String.join(",", lstMissingProperties)));
+            LOG.error("Missing mandatory properties: [{}]. Fix the SMP configuration!", lstMissingProperties);
         }
 
 
