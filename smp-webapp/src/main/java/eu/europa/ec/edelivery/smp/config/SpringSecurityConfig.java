@@ -144,6 +144,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         if (configurationService.isCasEnabled()) {
             httpSecurity = httpSecurity.addFilter(casAuthenticationFilter);
         }
+        // set HstsMAxAge
+        Integer maxAge = configurationService.getHttpHeaderHstsMaxAge();
+        if (maxAge!=null) {
+            httpSecurity
+                    .headers()
+                    .httpStrictTransportSecurity()
+                    .includeSubDomains(true)
+                    .maxAgeInSeconds(maxAge);
+        }
 
         httpSecurity.addFilter(blueCoatAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
