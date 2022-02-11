@@ -15,4 +15,5 @@ Domibus 4.2
     smp.sso.cas.token.validation.urlpath: The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.token.validation}.
     smp.sso.cas.token.validation.params: The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'
     smp.sso.cas.token.validation.groups:  The '|' separated CAS groups user must belong to.
+    smp.http.httpStrictTransportSecurity.maxAge: How long(in seconds) HSTS should last in the browser's cache(default one year)
     

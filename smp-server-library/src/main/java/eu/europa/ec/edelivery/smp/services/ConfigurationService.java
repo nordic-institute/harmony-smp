@@ -69,6 +69,10 @@ public class ConfigurationService {
         return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP_MSG);
     }
 
+    public Integer getHttpHeaderHstsMaxAge() {
+        return (Integer) configurationDAO.getCachedPropertyValue(HTTP_HSTS_MAX_AGE);
+    }
+
     public String getHttpProxyHost() {
         return configurationDAO.getCachedProperty(HTTP_PROXY_HOST);
     }
@@ -220,6 +224,7 @@ public class ConfigurationService {
     public Map<String, String> getCasTokenValidationParams() {
         return (Map<String, String>) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_PARAMS);
     }
+
     public List<String> getCasURLTokenValidationGroups() {
         return (List<String>) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_GROUPS);
     }
