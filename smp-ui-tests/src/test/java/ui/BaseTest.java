@@ -31,8 +31,6 @@ public class BaseTest {
 	static ArrayList<String> createdUsers = new ArrayList<>();
 	static ArrayList<String> createdServiceGroups = new ArrayList<>();
 
-	protected Logger log = Logger.getLogger(this.getClass());
-
 	@BeforeSuite(alwaysRun = true)
 	/*Starts the browser and navigates to the homepage. This happens once before the test
 	suite and the browser window is reused for all tests in suite*/
@@ -88,8 +86,8 @@ public class BaseTest {
 	@BeforeMethod(alwaysRun = true)
 	protected void logSeparator(Method method) throws Exception {
 
-		log.info("--------------------------- Running test number: " + methodCount);
-		log.info("--------------------------- Running test method: " + method.getDeclaringClass().getSimpleName() + "." + method.getName());
+		logger.info("--------------------------- Running test number: " + methodCount);
+		logger.info("--------------------------- Running test method: " + method.getDeclaringClass().getSimpleName() + "." + method.getName());
 		methodCount++;
 	}
 
@@ -97,6 +95,7 @@ public class BaseTest {
 	private void createDomains() {
 		for (int i = 0; i < 5; i++) {
 			String generated = Generator.randomAlphaNumeric(10);
+			logger.info("creating domain whose value is :"+generated);
 			boolean created = SMPRestClient.createDomain(generated);
 			if (created) {
 				createdDomains.add(generated);
@@ -160,7 +159,7 @@ public class BaseTest {
 
 
 	protected void genericLogoutProcedure() {
-		log.info("executing the generic logout procedure");
+		logger.info("executing the generic logout procedure");
 
 		SMPPage page = new SMPPage(driver);
 		page.refreshPage();
