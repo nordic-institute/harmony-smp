@@ -336,5 +336,34 @@ public class DomainPgTest extends BaseTest {
         soft.assertAll();
     }
 
+	@Test(description = "DMN-80")
+	public void onlyDomainCodeAndSMLDomainSavingMsgVerify() {
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+//        String errorMsg = "The domain should have a defined signature CertAlias.";
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		String rndString = Generator.randomAlphaNumeric(10);
+		DomainPopup popup = page.clickNew();
+		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
+		soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
+		popup.clearAndFillDomainCodeInput(rndString);
+		popup.clearAndFillSMLDomainInput(rndString);
+		soft.assertTrue(popup.isEnableOkButton(), "Ok button is disabled");
+		popup.clickOK();
+		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+		page.clickSave().confirm();
+		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18),
+				"Success message is as expected");
+		int index = page.grid().scrollToSmlDomain(rndString);
+		if (index >= 0) {
+			page.grid().scrollRow(index);
+		}
+		int rowNumber = index + 1;
+		page.grid().mouseHoverOnDomainCode(rowNumber);
+//        WebElement text = driver.findElement(By.xpath("//*[text()='The domain should have a defined signature CertAlias.']"));
+//        soft.assertEquals(text.getText(),errorMsg, "the message 'The domain should have a defined signature CertAlias.' is not displayed");
+		soft.assertAll();
+	}
+
 
 }

@@ -167,7 +167,7 @@ public class UsersPgTest extends BaseTest {
 		SMPRestClient.createUser(username, "SYSTEM_ADMIN");
 		SoftAssert soft = new SoftAssert();
 
-		log.info("created user " + username);
+		logger.info("created user " + username);
 		UsersPage page = new UsersPage(driver);
 		page.refreshPage();
 
@@ -269,7 +269,7 @@ public class UsersPgTest extends BaseTest {
 		SMPRestClient.createUser(username, "SMP_ADMIN");
 		SoftAssert soft = new SoftAssert();
 
-		log.info("Created username " + username);
+		logger.info("Created username " + username);
 
 
 		UsersPage page = new UsersPage(driver);
@@ -313,7 +313,7 @@ public class UsersPgTest extends BaseTest {
 
 		String username = Generator.randomAlphaNumeric(10);
 		SMPRestClient.createUser(username, "SERVICE_GROUP_ADMIN");
-		log.info("Created username" + username);
+		logger.info("Created username" + username);
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage page = new UsersPage(driver);
@@ -373,8 +373,8 @@ public class UsersPgTest extends BaseTest {
 				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
-		log.info("Created username " + username);
-		log.info("Created service group " + pi);
+		logger.info("Created username " + username);
+		logger.info("Created service group " + pi);
 
 		SoftAssert soft = new SoftAssert();
 
@@ -411,7 +411,7 @@ public class UsersPgTest extends BaseTest {
 				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
-		log.info("Created username "+ username);
+		logger.info("Created username "+ username);
 
 		SoftAssert soft = new SoftAssert();
 

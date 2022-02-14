@@ -22,7 +22,8 @@ public class ServiceGroupRow extends PageComponent {
 
 	@FindBy(tagName = "datatable-body-cell")
 	protected List<WebElement> cells;
-
+    @FindBy(css = "div.datatable-row-detail.ng-star-inserted > div.ng-star-inserted")
+	private WebElement emptyMetadataContent;
 
 	@FindBy(css = ".ng-star-inserted.datatable-icon-right")
 	private WebElement expandMetadata;
@@ -69,6 +70,11 @@ public class ServiceGroupRow extends PageComponent {
 			}
 		}catch (Exception e){ e.printStackTrace();}
 		return false;
+	}
+
+	public String emptyMetadataContentText()
+	{
+		return emptyMetadataContent.getText();
 	}
 
 

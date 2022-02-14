@@ -5,6 +5,9 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
+import org.apache.log4j.LogMF;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +28,7 @@ import java.util.Map;
 
 public class SMPRestClient {
 
+    protected static Logger log =  Logger.getLogger(SMPRestClient.class);
     private static Client client = Client.create();
     private static WebResource resource = client.resource(PROPERTIES.UI_BASE_URL);
 
@@ -180,7 +184,8 @@ public class SMPRestClient {
 		HashMap<String, String> map = getCookies(cookies);
 		String xsrf = map.get("XSRF-TOKEN");
 		String jsessionID = map.get("JSESSIONID");
-
+           log.info("Creating domain template whose value is :"+template);
+           log.info("Creating the doamainpoststring" +domainPostStr);
         try {
 			ClientResponse getResponse = resource.path(SMPPaths.REST_POST_DOMAIN)
 					.accept(MediaType.APPLICATION_JSON_TYPE)
@@ -189,10 +194,12 @@ public class SMPRestClient {
 					.cookie(new Cookie("XSRF-TOKEN", xsrf))
 					.header("X-XSRF-TOKEN", xsrf)
 					.put(ClientResponse.class, domainPostStr);
+          log.info("Create domain return status code is:"+getResponse.getStatus());
             return getResponse.getStatus() == 200;
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return false;
     }
 
