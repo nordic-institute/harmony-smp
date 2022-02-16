@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
@@ -48,20 +49,26 @@ public class RootController {
         return new ModelAndView("redirect:/index.html", model);
     }
 
-    @GetMapping( produces = {MediaType.TEXT_HTML_VALUE, MediaType.IMAGE_PNG_VALUE},
-            value={ "/index.html", "/favicon-16x16.png"})
+    @GetMapping( produces = {MediaType.TEXT_HTML_VALUE,
+            MediaType.IMAGE_PNG_VALUE,
+             "image/ico","image/x-ico"
+},
+            value={ "/index.html","/favicon.png","/favicon.ico"})
     @Order(HIGHEST_PRECEDENCE)
-    public byte[] getServiceGroup(HttpServletRequest httpReq) throws IOException {
+    public byte[] getServiceGroup(HttpServletRequest httpReq, HttpServletResponse httpRes) throws IOException {
         String host = httpReq.getRemoteHost();
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT,host,httpReq.getPathInfo());
-        String value = httpReq.getServletPath();
-        if(value!=null && value.endsWith("favicon-16x16.png")){
-            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon-16x16.png"));
-        }else {
+        String value = httpReq.getPathInfo();
+        if(value!=null && value.endsWith("favicon.png")){
+            httpRes.setContentType("image/x-ico");
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.png"));
+        }else if(value!=null && value.endsWith("favicon.ico")){
+            httpRes.setContentType(MediaType.IMAGE_PNG_VALUE);
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.ico"));
+        } else {
             return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/index.html"));
         }
     }
-
     /**
      * redirect angular pages to index.html
      * solve the 404 error on refresh

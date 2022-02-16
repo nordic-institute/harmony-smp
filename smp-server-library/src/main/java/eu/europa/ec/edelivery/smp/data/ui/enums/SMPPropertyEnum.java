@@ -63,10 +63,6 @@ public enum SMPPropertyEnum {
     UI_COOKIE_SESSION_SITE("smp.ui.session.strict","Lax","Controls whether a cookie is sent with cross-origin requests, providing some protection against cross-site request forgery attacks. Possible values are: Strict, None, Lax. (Cookies with SameSite=None require a secure context/HTTPS)!!)", false, false,false, SMPPropertyTypeEnum.STRING),
     UI_COOKIE_SESSION_PATH("smp.ui.session.path","","A path that must exist in the requested URL, or the browser won't send the Cookie header.  Null/Empty value sets the authentication requests context by default. The forward slash (/) character is interpreted as a directory separator, and subdirectories will be matched as well: for Path=/docs, /docs, /docs/Web/, and /docs/Web/HTTP will all match", false, false,false, SMPPropertyTypeEnum.STRING),
 
-
-
-
-
     UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN("smp.ui.session.idle_timeout.admin","300","Specifies the time, in seconds, between client requests before the SMP will invalidate session for ADMIN users (System)!", false, false,false, SMPPropertyTypeEnum.INTEGER),
     UI_COOKIE_SESSION_IDLE_TIMEOUT_USER("smp.ui.session.idle_timeout.user","1800","Specifies the time, in seconds, between client requests before the SMP will invalidate session for users (Service group, SMP Admin)", false, false,false, SMPPropertyTypeEnum.INTEGER),
     // SSO configuration

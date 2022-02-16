@@ -50,6 +50,7 @@ import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
@@ -128,7 +129,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer = httpSecurity.exceptionHandling();
         if (configurationService.isCasEnabled()) {
-            LOG.info("REGISTER casAuthenticationEntryPoint: [{}]", casAuthenticationEntryPoint);
+            LOG.debug("The CAS authentication is enabled. Set casAuthenticationEntryPoint!");
             exceptionHandlingConfigurer = exceptionHandlingConfigurer.defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint, new AntPathRequestMatcher(SMP_SECURITY_PATH_CAS_AUTHENTICATE));
         }
         exceptionHandlingConfigurer.authenticationEntryPoint(new SpringSecurityExceptionHandler());
@@ -142,16 +143,29 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and();
 
         if (configurationService.isCasEnabled()) {
+            LOG.debug("The CAS authentication is enabled. Add CAS filter!");
             httpSecurity = httpSecurity.addFilter(casAuthenticationFilter);
         }
         // set HstsMAxAge
         Integer maxAge = configurationService.getHttpHeaderHstsMaxAge();
-        if (maxAge!=null) {
-            httpSecurity
-                    .headers()
+        if (maxAge == null || maxAge < 0){
+            LOG.info("The httpStrictTransportSecurity (HSTS) policy is set for HTTPS/1Y!" );
+            httpSecurity = httpSecurity.headers()
                     .httpStrictTransportSecurity()
                     .includeSubDomains(true)
-                    .maxAgeInSeconds(maxAge);
+                    .preload(false)
+                    .maxAgeInSeconds(31536000).and().and();
+        }else if ( maxAge == 0){
+            LOG.warn("The httpStrictTransportSecurity (HSTS) policy is disabled!" );
+            httpSecurity = httpSecurity.headers().httpStrictTransportSecurity().disable().and();
+        } else {
+            LOG.info("The httpStrictTransportSecurity (HSTS) policy is set to [{}] for http and https!",maxAge );
+            httpSecurity = httpSecurity.headers()
+                    .httpStrictTransportSecurity()
+                    .includeSubDomains(true)
+                    .preload(false)
+                    .maxAgeInSeconds(maxAge)
+                    .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
         }
 
         httpSecurity.addFilter(blueCoatAuthenticationFilter)
