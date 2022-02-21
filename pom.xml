@@ -83,15 +83,19 @@
 
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-        <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec
-        </sonar.jacoco.reportPath>
-        <sonar.jacoco.itReportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-it.exec
-        </sonar.jacoco.itReportPath>
+        <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage</sonar.jacoco.codeCoveragePath>
+        <sonar.jacoco.reportPath>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.itReportPath>{sonar.jacoco.codeCoveragePath}/jacoco-it.exec</sonar.jacoco.itReportPath>
         <sonar.language>java</sonar.language>
 
         <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
-        <sonar.exclusions>**/smp/data/model/*,**/smp/data/ui/*, **/smp/ui/exception/*,**/smp/services/ui/filters/*,
-            **/smp/exceptions/*, **/smp/data/ui/enums/*, **/to_be_removed/*
+        <sonar.exclusions>**/smp/data/model/*,
+            **/smp/data/ui/*,
+            **/smp/ui/exception/*,
+            **/smp/services/ui/filters/*,
+            **/smp/exceptions/*,
+            **/smp/data/ui/enums/*,
+            **/to_be_removed/*
         </sonar.exclusions>
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
@@ -723,9 +727,7 @@
                             <outputFolder>${sonar.jacoco.codeCoveragePath}/surefire-reports</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
-                            <settingsFile>
-                                ${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/soapui-settings.xml
-                            </settingsFile>
+                            <settingsFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/soapui-settings.xml</settingsFile>
                             <soapuiProperties>
                                 <property>
                                     <name>soapui.scripting.library</name>
@@ -741,9 +743,7 @@
                                 </property>
                             </soapuiProperties>
                             <testFailIgnore>true</testFailIgnore>
-                            <projectFile>
-                                ${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/SMP4.0-Generic-soapui-project.xml
-                            </projectFile>
+                            <projectFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
                             <testSuite>PASSING_AUTO_BAMBOO</testSuite>
                             <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
                             <projectProperties>
