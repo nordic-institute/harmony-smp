@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.SmpConfigRO;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -54,6 +54,8 @@ public class ApplicationResource {
         info.setVersion(getDisplayVersion());
         info.setSmlIntegrationOn(configurationService.isSMLIntegrationEnabled());
         info.setSmlParticipantMultiDomainOn(configurationService.isSMLMultiDomainEnabled());
+        info.setSsoAuthentication(configurationService.isCasEnabled());
+        info.setSsoAuthenticationLabel(configurationService.getCasUILabel());
         info.setContextPath(getRootContext());
         return info;
     }

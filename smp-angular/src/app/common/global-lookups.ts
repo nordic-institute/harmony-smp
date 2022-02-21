@@ -33,6 +33,7 @@ export class GlobalLookups implements OnInit {
 
 
   constructor(protected alertService: AlertService,  protected securityService: SecurityService, protected http: HttpClient) {
+    securityService.refreshLoggedUserFromServer();
     this.refreshDomainLookup();
     this.refreshUserLookup();
     this.refreshCertificateLookup();
@@ -156,6 +157,4 @@ export class GlobalLookups implements OnInit {
       });
     }
   }
-
-
 }

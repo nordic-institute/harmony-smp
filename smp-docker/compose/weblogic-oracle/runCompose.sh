@@ -106,5 +106,5 @@ docker-compose -p ${PREFIX} up -d --force-recreate
 
 
 # wait until service is up
-for i in `seq 200`; do timeout 10  bash -c ' curl --head --silent --fail http://localhost:7901/smp/'; if [ $? -eq 0  ] ; then break;fi; echo "$i. Wait for weblogic to start!";  sleep 10;  done;
+for i in `seq 200`; do timeout 10  bash -c ' curl --silent --fail http://localhost:7901/smp/'; if [ $? -eq 0  ] ; then break;fi; echo "$i. Wait for weblogic to start!";  sleep 10;  done;
 

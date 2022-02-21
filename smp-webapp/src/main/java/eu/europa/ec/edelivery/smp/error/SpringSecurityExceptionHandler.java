@@ -42,7 +42,7 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoint implements AccessDeniedHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SpringSecurityExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SpringSecurityExceptionHandler.class);
 
     public SpringSecurityExceptionHandler() {
         this.setRealmName("SMPSecurityRealm");
@@ -79,8 +79,8 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();
         String logMsg = format("Error unique ID: %s", errorUniqueId);
-        log.warn("Security error:[{}] with [{}].", errorMsg, logMsg);
-        log.debug(logMsg, exception);
+        LOG.warn("Security error:[{}] with [{}].", errorMsg, logMsg);
+        LOG.debug(logMsg, exception);
         return response;
     }
 
@@ -92,8 +92,9 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
             jaxbMarshaller.marshal(errorResponse, sw);
             return sw.toString();
         } catch (JAXBException e) {
-            return e.getMessage();
+            LOG.error("Error occurred while marshal the error [{}], code: [{}], desc [{}].", errorResponse.getBusinessCode(), errorResponse.getErrorUniqueId(), errorResponse.getErrorDescription());
         }
+        return null;
     }
 
 }

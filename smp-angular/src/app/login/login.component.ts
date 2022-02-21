@@ -9,10 +9,12 @@ import {MatDialogRef, MatDialog} from '@angular/material/dialog';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
 import {Subscription} from 'rxjs';
 import {ExpiredPasswordDialogComponent} from '../common/expired-password-dialog/expired-password-dialog.component';
+import {GlobalLookups} from "../common/global-lookups";
 
 @Component({
   moduleId: module.id,
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
@@ -23,6 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private router: Router,
+              public lookups: GlobalLookups,
               private securityService: SecurityService,
               private httpEventService: HttpEventService,
               private alertService: AlertService,

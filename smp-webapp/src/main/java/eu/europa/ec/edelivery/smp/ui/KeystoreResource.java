@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;

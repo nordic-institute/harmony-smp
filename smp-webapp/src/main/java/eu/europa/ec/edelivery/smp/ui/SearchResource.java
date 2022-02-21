@@ -2,10 +2,8 @@ package eu.europa.ec.edelivery.smp.ui;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupSearchService;
@@ -14,14 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.Optional;
-
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 
 /**
  * @author Joze Rihtarsic
@@ -53,7 +45,7 @@ public class SearchResource {
             @RequestParam(value = "domain", required = false) String domainCode
     ) {
 
-        String participantIdentifierDecoded =decodeUrlToUTF8(participantIdentifier);
+        String participantIdentifierDecoded = decodeUrlToUTF8(participantIdentifier);
         String participantSchemeDecoded = decodeUrlToUTF8(participantScheme);
         String domainCodeDecoded = decodeUrlToUTF8(domainCode);
 
@@ -69,13 +61,13 @@ public class SearchResource {
         return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, sgf);
     }
 
-    private String decodeUrlToUTF8(String value){
-        if (StringUtils.isBlank(value)){
+    private String decodeUrlToUTF8(String value) {
+        if (StringUtils.isBlank(value)) {
             return null;
         }
         try {
             return URLDecoder.decode(value, "UTF-8");
-        } catch (UnsupportedEncodingException ex){
+        } catch (UnsupportedEncodingException ex) {
             LOG.error("Unsupported UTF-8 encoding while converting: " + value, ex);
         }
         return value;

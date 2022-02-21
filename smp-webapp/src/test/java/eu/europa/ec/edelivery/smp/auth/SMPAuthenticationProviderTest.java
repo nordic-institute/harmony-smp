@@ -65,8 +65,8 @@ public class SMPAuthenticationProviderTest {
         }
 
         // the average should be the same!
-        assertThat("average difference between failed login must be less than 2ms", Math.abs(averageExists - averageNotExist),
-                Matchers.lessThan(200L));
+        assertThat("average difference between failed login must be less than 10ms", Math.abs(averageExists - averageNotExist),
+                Matchers.lessThan(1000L));
 
     }
 }

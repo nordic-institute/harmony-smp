@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
@@ -119,11 +120,19 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         // check if certificate is valid
         Date currentDate = Calendar.getInstance().getTime();
         // validate  dates
-        if (principal.getNotBefore().after(currentDate)) {
-            String msg = "Invalid certificate: Not Before: " + dateFormatLocal.get().format(principal.getNotBefore());
+        if (principal.getNotBefore() == null) {
+            String msg = "Invalid certificate configuration: 'Not Before' value is missing!";
             LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
             throw new AuthenticationServiceException(msg);
-        } else if (principal.getNotAfter().before(currentDate)) {
+        }
+
+        if (principal.getNotAfter() == null) {
+            String msg = "Invalid certificate configuration: 'Not After' value is missing!";
+            LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
+            throw new AuthenticationServiceException(msg);
+        }
+
+        if (principal.getNotAfter().before(currentDate)) {
             String msg = "Invalid certificate:  Not After: " + dateFormatLocal.get().format(principal.getNotAfter());
             LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
             throw new AuthenticationServiceException(msg);

@@ -1,23 +1,25 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
 
 
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class UserRO extends BaseRO {
+public class UserRO extends BaseRO implements UserDetails {
 
     private static final long serialVersionUID = 2821447495333163882L;
 
     private String username;
     private String password;
     private String emailAddress;
-    private List<String> authorities;
+    private Collection<SMPAuthority> authorities;
     private boolean active = true;
     private String role;
     private Long id;
@@ -89,11 +91,12 @@ public class UserRO extends BaseRO {
         this.certificate = certificate;
     }
 
-    public List<String> getAuthorities() {
+    @Override
+    public Collection<SMPAuthority> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(List<String> authorities) {
+    public void setAuthorities(Collection<SMPAuthority> authorities) {
         this.authorities = authorities;
     }
 
@@ -103,5 +106,29 @@ public class UserRO extends BaseRO {
 
     public void setStatusPassword(int statusPassword) {
         this.statusPassword = statusPassword;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return active;
     }
 }
