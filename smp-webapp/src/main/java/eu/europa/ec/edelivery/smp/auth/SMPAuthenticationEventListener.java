@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.auth;
 
-import eu.europa.ec.edelivery.smp.config.PropertiesConfig;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -54,14 +54,5 @@ public class SMPAuthenticationEventListener implements ApplicationListener<Authe
         } else {
             LOG.warn("Could not get ServletRequestAttributes attributes for authentication [{}]", event.getAuthentication() );
         }
-        /*try {
-
-            HttpSession session = attr.getRequest().getSession();
-            int idleTimeout = (hasAdminRole ? configurationService.getSessionIdleTimeoutForAdmin() : configurationService.getSessionIdleTimeoutForUser());
-            LOG.debug("Set session idle timeout [{}] for user [{}]", idleTimeout, event.getAuthentication().getName());
-            session.setMaxInactiveInterval(idleTimeout);
-        } catch (RuntimeException ex) {
-            LOG.error("Session error: " , ex);
-        }*/
     }
 }

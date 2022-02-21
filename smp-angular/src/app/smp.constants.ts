@@ -6,6 +6,7 @@ export class SmpConstants {
   public static readonly REST_EDIT = 'rest/servicegroup';
   public static readonly REST_METADATA = 'rest/servicemetadata';
   public static readonly REST_SECURITY_AUTHENTICATION = 'rest/security/authentication';
+  public static readonly REST_SECURITY_CAS_AUTHENTICATION = 'rest/security/saml';
   public static readonly REST_SECURITY_USER = 'rest/security/user';
   public static readonly REST_APPLICATION = 'rest/application/info';
   public static readonly REST_CONFIG = 'rest/application/config';

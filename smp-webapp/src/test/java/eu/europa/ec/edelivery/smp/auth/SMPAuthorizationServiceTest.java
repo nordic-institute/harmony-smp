@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -29,9 +30,9 @@ public class SMPAuthorizationServiceTest {
         user.setId((long) 10);
 
 
-
         mockSecurityContextSystemAdmin = new SecurityContext() {
             SMPAuthenticationToken smpa = new SMPAuthenticationToken("smp_admin", "test123", Collections.singletonList(SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN), user);
+
             @Override
             public Authentication getAuthentication() {
                 return smpa;
@@ -43,6 +44,7 @@ public class SMPAuthorizationServiceTest {
         };
         mockSecurityContextSGAdmin = new SecurityContext() {
             SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", Collections.singletonList(SMPAuthority.S_AUTHORITY_SERVICE_GROUP), user);
+
             @Override
             public Authentication getAuthentication() {
                 return smpa;

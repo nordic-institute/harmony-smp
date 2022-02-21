@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.monitor;
 
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;

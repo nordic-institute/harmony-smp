@@ -15,14 +15,20 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.*;
 
 public class PropertyUtils {
 
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyUtils.class);
-    private  static UrlValidator urlValidator =  new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
+    private static final String REG_EXP_SEPARATOR="\\|";
+
+    private static UrlValidator urlValidator =  new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
 
 
     public static Object parseProperty(SMPPropertyEnum prop, String value, File rootFolder) {
@@ -86,6 +92,7 @@ public class PropertyUtils {
             case URL:
                 return urlValidator.isValid(value);
             case LIST_STRING:
+            case MAP_STRING:
             case FILENAME:
             case STRING:
                 return true;
@@ -116,7 +123,10 @@ public class PropertyUtils {
                     throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid integer: " + value);
                 }
             case LIST_STRING: {
-                return Arrays.asList(value.split("\\|"));
+                return Arrays.asList(value.split(REG_EXP_SEPARATOR));
+            }case MAP_STRING: {
+                return Arrays.asList(value.split(REG_EXP_SEPARATOR)).stream().collect(Collectors.toMap(
+                        val -> trim(substringBefore(val,":")), val-> trim(substringAfter(val,":"))));
             }
             case PATH: {
                 return new File(value);

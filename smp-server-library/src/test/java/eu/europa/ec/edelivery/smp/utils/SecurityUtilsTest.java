@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SecurityUtilsTest {
-    ;
 
     @Before
     public void setup(){

@@ -1,0 +1,19 @@
+Domibus 4.2
+- added new properties:
+    smp.http.forwarded.headers.enabled to control usage of Forwarded parameters RP/LoadBalancer.
+    smp.ui.session.secure: Cookie is only sent to the server when a request is made with the https: scheme (except on localhost), and therefore is more resistant to man-in-the-middle attacks.
+    smp.ui.session.max-age: Number of seconds until the cookie expires. A zero or negative number will expire the cookie immediately. Empty value will not set parameter
+    smp.ui.session.strict: Controls whether a cookie is sent with cross-origin requests, providing some protection against cross-site request forgery attacks. Possible values are: Strict, None, Lax. (Cookies with SameSite=None require a secure context/HTTPS)!!)
+    smp.ui.session.path: A path that must exist in the requested URL, or the browser won't send the Cookie header.  Null/Empty value sets the authentication requests context by default.  The forward slash (/) character is interpreted as a directory separator, and subdirectories will be matched as well: for Path=/docs, /docs, /docs/Web/, and /docs/Web/HTTP will all match.
+    smp.ui.session.idle_timeout.admin: Specifies the time, in seconds, between client requests before the SMP will invalidate session for ADMIN users (System)!
+    smp.ui.session.idle_timeout.user: Specifies the time, in seconds, between client requests before the SMP will invalidate session for users (Service group, SMP Admin)
+    smp.sso.cas.enabled:  Enable/disable CAS authentication.
+    smp.sso.cas.ui.label: The SSO service provider label.
+    smp.sso.cas.url: The SSO CAS URL enpoint
+    smp.sso.cas.urlpath.login: The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.login}.
+    smp.sso.cas.callback.url: The URL is the callback URL belonging to the local SMP Security System. If using RP make sure it target SMP path '/ui/rest/security/cas'
+    smp.sso.cas.token.validation.urlpath: The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.token.validation}.
+    smp.sso.cas.token.validation.params: The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'
+    smp.sso.cas.token.validation.groups:  The '|' separated CAS groups user must belong to.
+    smp.http.httpStrictTransportSecurity.maxAge: How long(in seconds) HSTS should last in the browser's cache(default one year)
+    

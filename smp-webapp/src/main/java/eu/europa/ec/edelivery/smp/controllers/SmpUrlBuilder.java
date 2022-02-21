@@ -16,16 +16,17 @@ package eu.europa.ec.edelivery.smp.controllers;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.utils.HttpForwardedHeaders;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UrlPathHelper;
@@ -36,64 +37,81 @@ import java.net.URI;
 import static eu.europa.ec.smp.api.Identifiers.asUrlEncodedString;
 
 /**
- * Created by gutowpa on 13/07/2017.
+ * This class provides tools to generate SMP's URL in responses. The client can use provided URL for another call to the SMP.
+ * Because SMP can run behind the reverse proxy, the X-Forwarded-* headers from the request are used for generating the URL.
+ * Note: the reverse proxy must set the X-Forwarded-* headers when forwarding the request to the SMP.
+ * <p>
+ * The X-Forwarded-Host header defines which Host was used in the Client's request. In some RP implementations, it has only domain/ip
+ * 'example.com' and (non-standard) X-Forwarded-Port is used for submitting port some implementations is combined with the port
+ * as an example 'example.com:443'
+ * The X-Forwarded-Proto header defines the protocol (HTTP or HTTPS).
+ * The X-Forwarded-For header identifies the originating IP address of a client connecting through reverse proxy/load balancer.
+ *
+ * @author gutowpa
+ * @author Joze Rihtarsic
+ * @since 3.0
  */
 @Component
-public class ServiceMetadataPathBuilder {
+public class SmpUrlBuilder {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger( ServiceMetadataPathBuilder.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmpUrlBuilder.class);
 
+    private static final String SMP_DOCUMENT_RESOURCE_TEMPLATE = "/{participantId}/services/{docId}";
 
     @Autowired
     ConfigurationService configurationService;
 
-    enum ForwardedHeaderNameEnum {
-        HOST("X-Forwarded-Host"),
-        PORT("X-Forwarded-Port"),
-        PROTO("X-Forwarded-Proto"),
-        PREFIX("X-Forwarded-Prefix"),
-        SSL("X-Forwarded-Ssl"),
-        FOR("X-Forwarded-For");
+    @Autowired
+    ForwardedHeaderTransformer forwardedHeaderTransformer;
 
-        String headerName;
-
-        ForwardedHeaderNameEnum(String headerName) {
-            this.headerName = headerName;
-        }
-
-        public String getHeaderName() {
-            return headerName;
-        }
-    }
 
     public URI getCurrentUri() {
         return ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
     }
 
-    public String buildSelfUrl(ParticipantIdentifierType participantId, DocumentIdentifier docId) {
-
+    public String buildSMPUrlForParticipantAndDocumentIdentifier(ParticipantIdentifierType participantId, DocumentIdentifier docId) {
+        LOG.debug("Build SMP url for participant identifier: [{}] and document identifier [{}].", participantId, docId);
         HttpServletRequest req = getCurrentRequest();
-        ForwardedHeaders fh = new ForwardedHeaders(req);
-        LOG.info("Generate response uri for forwareded headers: " + fh.toString());
-
-        UriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequestUri();
-        uriBuilder = uriBuilder.replacePath(getUrlContext());
+        HttpForwardedHeaders fh = new HttpForwardedHeaders(req);
+        LOG.info("Generate response uri for forwarded headers: " + fh.toString());
+        UriComponentsBuilder uriBuilder = getSMPUrlBuilder();
+        //
         if (fh.getHost()!=null) {
             uriBuilder = uriBuilder.host(fh.getHost());
-            if (!StringUtils.isBlank(fh.getPort())) {
-                uriBuilder = uriBuilder.port(fh.getPort());
+            String port = fh.getNonDefaultPort();
+            if (!StringUtils.isBlank(port)) {
+                uriBuilder = uriBuilder.port(port);
             }
             uriBuilder = uriBuilder.scheme(fh.getProto());
         }
 
         String path = uriBuilder
-                .path("/{participantId}/services/{docId}")
+                .path(SMP_DOCUMENT_RESOURCE_TEMPLATE)
                 .buildAndExpand(asUrlEncodedString(participantId), asUrlEncodedString(docId))
                 .toUriString();
 
         return path;
     }
 
+    public String buildSMPUrlForPath(String path) {
+        LOG.debug("Build SMP url for path: [{}].", path);
+
+        UriComponentsBuilder uriBuilder = getSMPUrlBuilder();
+        return uriBuilder.path(path).build().toUriString();
+    }
+
+    /**
+     * Method updates the root context of the URL. The schema, hostname, port, and root context using the X-Forwarded-*
+     * headers from the request are updated by the ForwardedHeaderTransformer according SMP configuration: parameter 'smp.http.forwarded.headers.enabled'.
+     *
+     * @return UriComponentsBuilder - the Url Builder
+     */
+    public UriComponentsBuilder getSMPUrlBuilder() {
+
+        UriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequestUri();
+        uriBuilder = uriBuilder.replacePath(getUrlContext());
+        return uriBuilder;
+    }
 
     private String getUrlContext() {
         if (configurationService.isUrlContextEnabled()) {
@@ -112,59 +130,4 @@ public class ServiceMetadataPathBuilder {
         return servletRequest;
     }
 
-    private static class ForwardedHeaders {
-        final String host;
-        final String port;
-        final String proto;
-        final String forClientHost;
-        final String ssl;
-
-
-        public ForwardedHeaders(HttpServletRequest request) {
-            if (request != null) {
-                host = request.getHeader(ForwardedHeaderNameEnum.HOST.getHeaderName());
-                port = request.getHeader(ForwardedHeaderNameEnum.PORT.getHeaderName());;
-                proto = request.getHeader(ForwardedHeaderNameEnum.PROTO.getHeaderName());;
-                forClientHost = request.getHeader(ForwardedHeaderNameEnum.FOR.getHeaderName());;
-                ssl = request.getHeader(ForwardedHeaderNameEnum.SSL.getHeaderName());;
-            } else {
-                host = null;
-                port = null;
-                proto = null;
-                forClientHost = null;
-                ssl = null;
-            }
-        }
-
-        public String getHost() {
-            return host;
-        }
-
-        public String getPort() {
-            return port;
-        }
-
-        public String getProto() {
-            return proto;
-        }
-
-        public String getForClientHost() {
-            return forClientHost;
-        }
-
-        public String getSsl() {
-            return ssl;
-        }
-
-        @Override
-        public String toString() {
-            return "ForwardedHeaders{" +
-                    "host='" + host + '\'' +
-                    ", port='" + port + '\'' +
-                    ", proto='" + proto + '\'' +
-                    ", forClientHost='" + forClientHost + '\'' +
-                    ", ssl='" + ssl + '\'' +
-                    '}';
-        }
-    }
 }

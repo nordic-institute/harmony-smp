@@ -17,6 +17,7 @@ import eu.europa.ec.edelivery.smp.config.*;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -57,7 +59,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpAppConfig.class,
         SmpWebAppConfig.class,
         SpringSecurityConfig.class,
-        UIKeystoreService.class
+        UIKeystoreService.class,
+        ForwardedHeaderTransformer.class
 })
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")
@@ -87,10 +90,14 @@ public class ServiceGroupControllerTest {
     @Autowired
     private WebApplicationContext webAppContext;
 
+    @Autowired
+    ForwardedHeaderTransformer forwardedHeaderTransformer;
+
     private MockMvc mvc;
 
     @Before
     public void setup() throws IOException {
+        forwardedHeaderTransformer.setRemoveOnly(false);
         X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
@@ -228,8 +235,7 @@ public class ServiceGroupControllerTest {
         // when then..
         String expectedUrl = "http://ec.test.eu:8443/";
         mvc.perform(get(URL_PATH)
-                .header("X-Forwarded-Port", "8443")
-                .header("X-Forwarded-Host", "ec.test.eu")
+                .header("X-Forwarded-Host", "ec.test.eu:8443")
                 .header("X-Forwarded-Proto", "http"))
                 .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                         "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
@@ -258,6 +264,61 @@ public class ServiceGroupControllerTest {
                         "</ServiceMetadataReferenceCollection></ServiceGroup>"));
     }
 
+    @Test
+    public void getExistingServiceMetadatWithReverseProxySkipDefaultPortHttps() throws Exception {
+        //given
+        prepareForGet();
+
+        // when then..
+        String expectedUrl = "https://ec.test.eu/";
+        mvc.perform(get(URL_PATH)
+                .header("X-Forwarded-Port", "443")
+                .header("X-Forwarded-Host", "ec.test.eu")
+                .header("X-Forwarded-Proto", "https"))
+                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
+                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
+                        "<ServiceMetadataReferenceCollection>" +
+                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+    }
+    @Test
+    public void getExistingServiceMetadatWithReverseProxySkipDefaultPortHttp() throws Exception {
+        //given
+        prepareForGet();
+
+        // when then..
+        String expectedUrl = "http://ec.test.eu/";
+        mvc.perform(get(URL_PATH)
+                .header("X-Forwarded-Port", "80")
+                .header("X-Forwarded-Host", "ec.test.eu")
+                .header("X-Forwarded-Proto", "http"))
+                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
+                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
+                        "<ServiceMetadataReferenceCollection>" +
+                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+    }
+
+    @Test
+    public void getExistingServiceMetadatWithReverseProxyPortInHost() throws Exception {
+        //given
+        prepareForGet();
+
+        // when then..
+        String expectedUrl = "https://ec.test.eu:8443/";
+        mvc.perform(get(URL_PATH)
+                .header("X-Forwarded-Port", "8443")
+                .header("X-Forwarded-Host", "ec.test.eu:8443")
+                .header("X-Forwarded-Proto", "https"))
+                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
+                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
+                        "<ServiceMetadataReferenceCollection>" +
+                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+    }
 
     @Test
     public void anonymousUserCannotCreateServiceGroup() throws Exception {

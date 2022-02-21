@@ -41,9 +41,9 @@ public class UITruststoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
-    private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> {
-        return new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US);
-    });
+    private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() ->
+        new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
+    );
 
     @Autowired
     private ConfigurationService configurationService;

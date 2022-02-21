@@ -38,6 +38,17 @@ export class SecurityService {
         });
   }
 
+  refreshLoggedUserFromServer() {
+    let subject = new ReplaySubject<string>();
+
+    this.getCurrentUsernameFromServer().subscribe((res: string) => {
+        this.updateUserDetails(res);
+      }, (error: any) => {
+        //console.log('getCurrentUsernameFromServer:' + error);
+        this.securityEventService.notifyLoginErrorEvent(error);
+      });
+  }
+
   logout() {
     this.http.delete(SmpConstants.REST_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
         this.clearLocalStorage();

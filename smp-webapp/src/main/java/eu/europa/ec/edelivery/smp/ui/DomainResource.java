@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
