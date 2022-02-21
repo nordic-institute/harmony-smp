@@ -12,6 +12,10 @@ PREFIX="smp-wls-orcl"
 
 function clearOldContainers {
   echo "Database stopped"  > ./status-folder/database.status
+
+  echo "Save docker log to docker-file"
+  docker logs ${PREFIX} > smp-container.log 2>&1
+
   echo "Clear containers and volumes"
   docker-compose -p "${PREFIX}" rm -s -f -v
 }
