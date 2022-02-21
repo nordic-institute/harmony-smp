@@ -15,9 +15,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
-        <artifactId>smp-parent-pom</artifactId>
+        <artifactId>smp-modules</artifactId>
         <version>4.2-SNAPSHOT</version>
-        <relativePath>../smp-parent-pom/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>smp-server-library</artifactId>
     <name>smp-server-library</name>
