@@ -72,7 +72,7 @@ public class ServiceGroupService {
      * for all domains else it returns metadata only for particular domain.
      * If domain is given and participantId is not defined on that domain than NotFoundException if thrown.
      *
-     * @param participantId
+     * @param participantId participant identifier object
      * @return ServiceGroup for participant id
      */
     public ServiceGroup getServiceGroup(ParticipantIdentifierType participantId) {
@@ -90,11 +90,11 @@ public class ServiceGroupService {
     /**
      * Method save (or update if exists) serviceGroup for domain and servicegroup owner
      *
-     * @param serviceGroup
-     * @param domain
-     * @param serviceGroupOwner
-     * @param authenticatedUser
-     * @return
+     * @param serviceGroup service group entity to be stored
+     * @param domain domain of service group
+     * @param serviceGroupOwner owner of the service group
+     * @param authenticatedUser authenticated user who is trying to save service group
+     * @return return true if object was stored
      */
     @Transactional
     public boolean saveServiceGroup(ServiceGroup serviceGroup, String domain, String serviceGroupOwner, String authenticatedUser) {
@@ -113,12 +113,13 @@ public class ServiceGroupService {
             // try harder
             String[] val = splitSerialFromSubject(ownerName);
             String newOwnerName = DistinguishedNamesCodingUtil.normalizeDN(val[0]) + ':' + val[1];
-            LOG.info("Owner not found: {} try with normalized owner: {}.", ownerName, newOwnerName);
+            LOG.info("Owner not found: [{}] try with normalized owner: [{}].", ownerName, newOwnerName);
             newOwner = userDao.findUserByIdentifier(newOwnerName);
             ownerName = newOwnerName;
         }
 
         if (!newOwner.isPresent()) {
+            LOG.error("The owner [{}] does not exist! Save service group is rejected!", ownerName);
             SMPRuntimeException ex = new SMPRuntimeException(USER_NOT_EXISTS);
             LOG.businessError(SMPMessageCode.BUS_SAVE_SERVICE_GROUP_FAILED,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme(), ex.getMessage()  );
             throw ex;
