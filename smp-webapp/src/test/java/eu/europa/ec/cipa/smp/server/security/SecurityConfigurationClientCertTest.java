@@ -15,6 +15,7 @@ package eu.europa.ec.cipa.smp.server.security;
 
 
 import eu.europa.ec.edelivery.smp.config.*;
+import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -34,6 +35,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -156,14 +158,14 @@ public class SecurityConfigurationClientCertTest {
 
 
     @Before
-    public void setup() {
-
+    public void setup() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
     }
 
-    @Parameterized.Parameter(0)
+    @Parameterized.Parameter()
     public String testName;
 
     @Parameterized.Parameter(1)
