@@ -4,12 +4,14 @@ package eu.europa.ec.edelivery.smp.ui;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.ErrorRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -44,6 +46,8 @@ public class AuthenticationResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationResource.class);
 
+    private UIUserService uiUserService;
+
     protected SMPAuthenticationService authenticationService;
 
     protected SMPAuthorizationService authorizationService;
@@ -62,13 +66,15 @@ public class AuthenticationResource {
             , ConversionService conversionService
             , ConfigurationService configurationService
             , SMPCookieWriter smpCookieWriter
-            , CsrfTokenRepository csrfTokenRepository) {
+            , CsrfTokenRepository csrfTokenRepository
+            , UIUserService uiUserService) {
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
         this.conversionService = conversionService;
         this.configurationService = configurationService;
         this.smpCookieWriter = smpCookieWriter;
         this.csrfTokenRepository = csrfTokenRepository;
+        this.uiUserService = uiUserService;
     }
 
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
@@ -127,14 +133,21 @@ public class AuthenticationResource {
     public UserRO getUser() {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof  UserRO){
-            return (UserRO)principal;
+        if (principal instanceof UserRO) {
+            return (UserRO) principal;
         }
-        UserRO user = new UserRO();
+
         String username = (String) principal;
-        LOG.debug("get user: {}", username);
-        user.setUsername(username);
-        return user;
+        LOG.debug("get user: [{}]", username);
+        DBUser user = uiUserService.findUserByUsername(username);
+
+        if (user == null || !user.isActive()) {
+            LOG.warn("User: [{}] does not exists anymore or is not active.", username);
+            return null;
+        }
+
+        UserRO userRO = conversionService.convert(user, UserRO.class);
+        return authorizationService.sanitize(userRO);
     }
 
     /**
