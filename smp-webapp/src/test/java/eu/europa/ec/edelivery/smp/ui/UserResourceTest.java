@@ -292,7 +292,6 @@ public class UserResourceTest {
         ObjectMapper mapper = new ObjectMapper();
         CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
 
-
         assertEquals("CN=common name,O=org,C=BE:0000000001234321", res.getCertificateId());
     }
 
