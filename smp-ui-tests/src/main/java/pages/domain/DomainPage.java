@@ -8,6 +8,7 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import pages.components.ConfirmationDialog;
 import pages.components.baseComponents.PaginationControls;
 import pages.components.baseComponents.SMPPage;
+import pages.keystore.KeyStoreEditDialog;
 import utils.PROPERTIES;
 
 public class DomainPage extends SMPPage {
@@ -34,6 +35,9 @@ public class DomainPage extends SMPPage {
 	
 	@FindBy(id = "deleteButton")
 	private WebElement deleteBtn;
+
+	@FindBy(xpath = "//span[text()=' Edit keystore']")
+	private WebElement editKeyStore;
 
 	public PaginationControls pagination = new PaginationControls(driver);
 	
@@ -96,6 +100,12 @@ public class DomainPage extends SMPPage {
 		log.info("editing ...");
 		waitForElementToBeClickable(editBtn).click();
 		return new DomainPopup(driver);
+	}
+
+	public KeyStoreEditDialog clickEditKeyStore(){
+		log.info("clicking edit keystore");
+		waitForElementToBeClickable(editKeyStore).click();
+		return new KeyStoreEditDialog(driver);
 	}
 	
 	

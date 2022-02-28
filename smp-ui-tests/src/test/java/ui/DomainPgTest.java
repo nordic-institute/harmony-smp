@@ -1,5 +1,6 @@
 package ui;
 
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -11,10 +12,13 @@ import pages.domain.DomainGrid;
 import pages.domain.DomainPage;
 import pages.domain.DomainPopup;
 import pages.domain.DomainRow;
+import pages.keystore.KeyStoreEditDialog;
+import pages.keystore.KeyStoreImportDialog;
 import utils.Generator;
 import utils.enums.SMPMessages;
 import utils.rest.SMPRestClient;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -362,6 +366,86 @@ public class DomainPgTest extends BaseTest {
 		page.grid().mouseHoverOnDomainCode(rowNumber);
 //        WebElement text = driver.findElement(By.xpath("//*[text()='The domain should have a defined signature CertAlias.']"));
 //        soft.assertEquals(text.getText(),errorMsg, "the message 'The domain should have a defined signature CertAlias.' is not displayed");
+		soft.assertAll();
+	}
+
+	@Test(description = "DMN-90")
+	public void createKeyStore() {
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		String pass="test123";
+		KeyStoreEditDialog keyStoreEdit = page.clickEditKeyStore();
+		int keyStoreRowBeforeAddition = keyStoreEdit.grid().getRowsNo();
+		KeyStoreImportDialog keyStoreImport = keyStoreEdit.clickImportKeystore();
+		keyStoreImport.chooseKeystoreFile();
+		Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
+		//String keyStoreFileNameWithExt = keyStoreImport.getKeyStoreFileName();
+	//	String keyStoreFileName = keyStoreFileNameWithExt.substring(0,keyStoreFileNameWithExt.lastIndexOf("."));
+		keyStoreImport.fillPassword(pass);
+		keyStoreImport.clickImportBtn();
+		keyStoreEdit.clickCloseInKeystore();
+		soft.assertFalse(page.alertArea.getAlertMessage().isError());
+		keyStoreEdit = page.clickEditKeyStore();
+		int keyStoreRowAfterAddition = keyStoreEdit.grid().getRowsNo();
+		soft.assertEquals(keyStoreRowAfterAddition,keyStoreRowBeforeAddition+1, "KeyStore is not added to the grid");
+//		soft.assertTrue(keyStoreEdit.grid().isKeyStoreCreated(keyStoreRowAfterAddition-1, keyStoreFileName),keyStoreFileName +" is not present in keystore grid");
+		if(keyStoreRowAfterAddition > 1){
+			keyStoreEdit.grid().deleteKeyStore(keyStoreRowAfterAddition-1).confirm();
+			int keyStoreRowAfterDeletion = keyStoreEdit.grid().getRowsNo();
+			soft.assertEquals(keyStoreRowAfterDeletion,keyStoreRowAfterAddition-1, "KeyStore is not delete from the grid");
+			keyStoreEdit.clickCloseInKeystore();
+			soft.assertFalse(page.alertArea.getAlertMessage().isError());
+		}
+		soft.assertAll();
+	}
+
+	@Test(description = "DMN-110")
+	public void allowDuplicateKeyStore() {
+			SoftAssert soft = new SoftAssert();
+			DomainPage page = new DomainPage(driver);
+			soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+			String pass="test123";
+			KeyStoreEditDialog keyStoreEdit = page.clickEditKeyStore();
+			int keyStoreRowBeforeAddition = keyStoreEdit.grid().getRowsNo();
+			KeyStoreImportDialog keyStoreImport = keyStoreEdit.clickImportKeystore();
+			keyStoreImport.chooseKeystoreFile();
+			Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
+			//String keyStoreFileNameWithExt = keyStoreImport.getKeyStoreFileName();
+			//String keyStoreFileName = keyStoreFileNameWithExt.substring(0,keyStoreFileNameWithExt.lastIndexOf("."));
+			keyStoreImport.fillPassword(pass);
+			keyStoreImport.clickImportBtn();
+			keyStoreEdit.clickCloseInKeystore();
+			soft.assertFalse(page.alertArea.getAlertMessage().isError());
+			keyStoreEdit = page.clickEditKeyStore();
+			int keyStoreRowAfterAddition = keyStoreEdit.grid().getRowsNo();
+			soft.assertEquals(keyStoreRowAfterAddition,keyStoreRowBeforeAddition+1, "KeyStore is not added to the grid");
+		keyStoreRowBeforeAddition = keyStoreRowAfterAddition;
+		keyStoreImport = keyStoreEdit.clickImportKeystore();
+		keyStoreImport.chooseKeystoreFile();
+		Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
+		//String keyStoreFileNameWithExt = keyStoreImport.getKeyStoreFileName();
+		//String keyStoreFileName = keyStoreFileNameWithExt.substring(0,keyStoreFileNameWithExt.lastIndexOf("."));
+		keyStoreImport.fillPassword(pass);
+		keyStoreImport.clickImportBtn();
+		keyStoreEdit.clickCloseInKeystore();
+		soft.assertFalse(page.alertArea.getAlertMessage().isError());
+		keyStoreEdit = page.clickEditKeyStore();
+		keyStoreRowAfterAddition = keyStoreEdit.grid().getRowsNo();
+		soft.assertEquals(keyStoreRowAfterAddition,keyStoreRowBeforeAddition+1, "KeyStore is not added to the grid");
+		if(keyStoreRowAfterAddition > 1){
+			keyStoreEdit.grid().deleteKeyStore(keyStoreRowAfterAddition-1).confirm();
+			int keyStoreRowAfterDeletion = keyStoreEdit.grid().getRowsNo();
+			soft.assertEquals(keyStoreRowAfterDeletion,keyStoreRowAfterAddition-1, "KeyStore is not delete from the grid");
+			keyStoreRowAfterAddition = keyStoreRowAfterDeletion;
+		}
+		if(keyStoreRowAfterAddition > 1){
+			keyStoreEdit.grid().deleteKeyStore(keyStoreRowAfterAddition-1).confirm();
+			int keyStoreRowAfterDeletion = keyStoreEdit.grid().getRowsNo();
+			soft.assertEquals(keyStoreRowAfterDeletion,keyStoreRowAfterAddition-1, "KeyStore is not delete from the grid");
+			keyStoreEdit.clickCloseInKeystore();
+			soft.assertFalse(page.alertArea.getAlertMessage().isError());
+		}
 		soft.assertAll();
 	}
 

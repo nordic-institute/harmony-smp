@@ -75,8 +75,8 @@ public class SMPMessages {
 	public static final String PASS_NO_MATCH_MESSAGE = "Passwords do not match";
 	public static final String PASS_NO_EMPTY_MESSAGE = "You should type a password";
 
-	
-
+	public static final String KEYSTORE_IMPORTED_MSG = "Keystore keystore_dummy1.jks imported!";
+	public static final String KEYSTORE_DELETION_MSG = "Certificate sample_key_dummy1 deleted!";
 
 
 
