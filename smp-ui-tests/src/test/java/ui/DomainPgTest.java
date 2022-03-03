@@ -306,7 +306,6 @@ public class DomainPgTest extends BaseTest {
     public void onlyDomainCodeSavingMsgVerify() {
         SoftAssert soft = new SoftAssert();
         DomainPage page = new DomainPage(driver);
-//        String errorMsg = "The domain should have a defined signature CertAlias.";
         soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
         int index = page.grid().scrollToSmlDomain("");
         if (index >= 0) {
@@ -334,9 +333,6 @@ public class DomainPgTest extends BaseTest {
             page.grid().scrollRow(index);
         }
         int rowNumber = index + 1;
-        page.grid().mouseHoverOnDomainCode(rowNumber);
-//        WebElement text = driver.findElement(By.xpath("//*[text()='The domain should have a defined signature CertAlias.']"));
-//        soft.assertEquals(text.getText(),errorMsg, "the message 'The domain should have a defined signature CertAlias.' is not displayed");
         soft.assertAll();
     }
 
@@ -344,7 +340,6 @@ public class DomainPgTest extends BaseTest {
 	public void onlyDomainCodeAndSMLDomainSavingMsgVerify() {
 		SoftAssert soft = new SoftAssert();
 		DomainPage page = new DomainPage(driver);
-//        String errorMsg = "The domain should have a defined signature CertAlias.";
 		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
 		String rndString = Generator.randomAlphaNumeric(10);
 		DomainPopup popup = page.clickNew();
@@ -364,8 +359,6 @@ public class DomainPgTest extends BaseTest {
 		}
 		int rowNumber = index + 1;
 		page.grid().mouseHoverOnDomainCode(rowNumber);
-//        WebElement text = driver.findElement(By.xpath("//*[text()='The domain should have a defined signature CertAlias.']"));
-//        soft.assertEquals(text.getText(),errorMsg, "the message 'The domain should have a defined signature CertAlias.' is not displayed");
 		soft.assertAll();
 	}
 
@@ -380,8 +373,6 @@ public class DomainPgTest extends BaseTest {
 		KeyStoreImportDialog keyStoreImport = keyStoreEdit.clickImportKeystore();
 		keyStoreImport.chooseKeystoreFile();
 		Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
-		//String keyStoreFileNameWithExt = keyStoreImport.getKeyStoreFileName();
-	//	String keyStoreFileName = keyStoreFileNameWithExt.substring(0,keyStoreFileNameWithExt.lastIndexOf("."));
 		keyStoreImport.fillPassword(pass);
 		keyStoreImport.clickImportBtn();
 		keyStoreEdit.clickCloseInKeystore();
@@ -389,7 +380,6 @@ public class DomainPgTest extends BaseTest {
 		keyStoreEdit = page.clickEditKeyStore();
 		int keyStoreRowAfterAddition = keyStoreEdit.grid().getRowsNo();
 		soft.assertEquals(keyStoreRowAfterAddition,keyStoreRowBeforeAddition+1, "KeyStore is not added to the grid");
-//		soft.assertTrue(keyStoreEdit.grid().isKeyStoreCreated(keyStoreRowAfterAddition-1, keyStoreFileName),keyStoreFileName +" is not present in keystore grid");
 		if(keyStoreRowAfterAddition > 1){
 			keyStoreEdit.grid().deleteKeyStore(keyStoreRowAfterAddition-1).confirm();
 			int keyStoreRowAfterDeletion = keyStoreEdit.grid().getRowsNo();
@@ -411,8 +401,6 @@ public class DomainPgTest extends BaseTest {
 			KeyStoreImportDialog keyStoreImport = keyStoreEdit.clickImportKeystore();
 			keyStoreImport.chooseKeystoreFile();
 			Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
-			//String keyStoreFileNameWithExt = keyStoreImport.getKeyStoreFileName();
-			//String keyStoreFileName = keyStoreFileNameWithExt.substring(0,keyStoreFileNameWithExt.lastIndexOf("."));
 			keyStoreImport.fillPassword(pass);
 			keyStoreImport.clickImportBtn();
 			keyStoreEdit.clickCloseInKeystore();
@@ -424,8 +412,6 @@ public class DomainPgTest extends BaseTest {
 		keyStoreImport = keyStoreEdit.clickImportKeystore();
 		keyStoreImport.chooseKeystoreFile();
 		Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
-		//String keyStoreFileNameWithExt = keyStoreImport.getKeyStoreFileName();
-		//String keyStoreFileName = keyStoreFileNameWithExt.substring(0,keyStoreFileNameWithExt.lastIndexOf("."));
 		keyStoreImport.fillPassword(pass);
 		keyStoreImport.clickImportBtn();
 		keyStoreEdit.clickCloseInKeystore();
