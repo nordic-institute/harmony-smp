@@ -14,9 +14,13 @@
 # 3. run the scripts with arguments
 # build-docker-images.sh  -f build-docker-images.sh  -f ${oracle_artefact_folder}
 
-ORA_VERSION="19.3.0"
-ORA_EDITION="se2"
-ORA_SERVICE="ORCLPDB1"
+#ORA_VERSION="19.3.0"
+#ORA_EDITION="se2"
+#ORA_SERVICE="ORCLPDB1"
+
+ORA_VERSION="11.2.0.2"
+ORA_EDITION="xe"
+ORA_SERVICE="xe"
 
 ORACLE_DB11_FILE="oracle-xe-11.2.0-1.0.x86_64.rpm.zip"
 ORACLE_DB19_FILE="LINUX.X64_193000_db_home.zip"
