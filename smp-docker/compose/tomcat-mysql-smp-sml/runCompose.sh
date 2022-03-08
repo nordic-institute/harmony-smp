@@ -3,6 +3,7 @@
 WORKING_DIR="$(dirname $0)"
 SML_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl"
 SML_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql"
+SML_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql"
 # soap ui data
 PREFIX="smp-sml-tomcat-mysql"
 SMP_VERSION=

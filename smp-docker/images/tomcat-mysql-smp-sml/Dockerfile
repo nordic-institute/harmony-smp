@@ -21,9 +21,9 @@ ENV SMP_HOME=/opt/smp  \
     MYSQL_ROOT_PASSWORD=root \
 # sml environment variables
     SML_VERSION=4.0.1 \
-    SML_DISTRIBUTION_URL=https://ec.europa.eu/cefdigital/artifact/repository/public/eu/europa/ec/bdmsl/bdmsl-webapp/ \
-    SML_SHA1=ba1f70eba030095ccc23b1653cbf1a1cc2c2fa7b  \
-    SML_SETUP_SHA1=d47852efa419e67111ad850b477e127e02cb83f8  \
+    SML_DISTRIBUTION_URL=https://ec.europa.eu/digital-building-blocks/artifact/repository/public/eu/europa/ec/bdmsl/bdmsl-webapp/ \
+    SML_SHA512=b40d6ff717216635839e420f467b9dbf5cab87582babc103dea3ed7cbb0fd264f0755fc95607bb3d5ddbcd976a13f0d2170cbf824b3dfebb2ca046579a5d5278  \
+    SML_SETUP_SHA512=dee04b6c60696c052f4807cc24df72a09dd7443e1c87df82967b08a02381c3042af338f726bc60f40e9428de301af8c317839d286ac58e37b5c7c6ae36c42468  \
     SML_DB_SCHEMA=sml  \
     SML_DB_USER=sml \
     SML_DB_USER_PASSWORD=sml  \
@@ -104,9 +104,9 @@ RUN export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::") \
 
 # dowload and deploy sml
 RUN  curl -o $SMP_HOME/edelivery-sml.war "$SML_DISTRIBUTION_URL/$SML_VERSION/bdmsl-webapp-$SML_VERSION.war"
-RUN sha1sum $SMP_HOME/edelivery-sml.war  | grep $SML_SHA1
+RUN sha512sum $SMP_HOME/edelivery-sml.war  | grep $SML_SHA512
 RUN curl -o /tmp/sml-setup.zip "$SML_DISTRIBUTION_URL/$SML_VERSION/bdmsl-webapp-$SML_VERSION-setup.zip"     
-RUN sha1sum /tmp/sml-setup.zip  | grep $SML_SETUP_SHA1  
+RUN sha512sum /tmp/sml-setup.zip  | grep $SML_SETUP_SHA512
 RUN mv $SMP_HOME/edelivery-sml.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/
 
 ENV BIND_USER=bind
