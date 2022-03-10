@@ -11,10 +11,13 @@ import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.x509.CertificatePolicies;
+import org.bouncycastle.asn1.x509.PolicyInformation;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -32,6 +35,8 @@ import java.security.cert.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.list;
 import static java.util.Locale.US;
@@ -42,7 +47,7 @@ public class UITruststoreService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() ->
-        new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
+            new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
     );
 
     @Autowired
@@ -52,17 +57,14 @@ public class UITruststoreService {
     CRLVerifierService crlVerifierService;
 
     @Autowired
-    private ConversionService conversionService;
+    ConversionService conversionService;
 
-    private List<String> normalizedTrustedList = new ArrayList<>();
+    List<String> normalizedTrustedList = new ArrayList<>();
 
-    private Map<String, X509Certificate> truststoreCertificates = new HashMap();
-    private List<CertificateRO> certificateROList = new ArrayList<>();
-
-
-    private long lastUpdateTrustoreFileTime = 0;
-    private File lastUpdateTrustStoreFile = null;
-
+    Map<String, X509Certificate> truststoreCertificates = new HashMap();
+    List<CertificateRO> certificateROList = new ArrayList<>();
+    long lastUpdateTrustoreFileTime = 0;
+    File lastUpdateTrustStoreFile = null;
     TrustManager[] trustManagers;
 
 
@@ -103,7 +105,6 @@ public class UITruststoreService {
                     " and the configuration!");
             return;
         }
-
         // init key managers for TLS
         TrustManager[] trustManagersTemp;
         try {
@@ -200,6 +201,8 @@ public class UITruststoreService {
 
             throw new CertificateNotTrustedException("Certificate is not trusted!");
         }
+        validateCertificatePolicyMatch(cert);
+        validateCertificateSubjectExpression(cert);
         // check CRL - it is using only HTTP or https
         crlVerifierService.verifyCertificateCRLs(cert);
     }
@@ -262,7 +265,6 @@ public class UITruststoreService {
         }
         return trustManagers;
     }
-
 
 
     private KeyStore loadTruststore(File truststoreFile) {
@@ -368,12 +370,12 @@ public class UITruststoreService {
             Rdn cn = null;
             for (Rdn rdn : ldapDN.getRdns()) {
 
-                if (rdn.size()>1) {
+                if (rdn.size() > 1) {
                     NamingEnumeration enr = rdn.toAttributes().getAll();
-                    while(enr.hasMore()) {
+                    while (enr.hasMore()) {
                         Object mvRDn = enr.next();
-                        if (mvRDn instanceof BasicAttribute){
-                            BasicAttribute ba = (BasicAttribute)mvRDn;
+                        if (mvRDn instanceof BasicAttribute) {
+                            BasicAttribute ba = (BasicAttribute) mvRDn;
                             if (Objects.equals("CN", ba.getID())) {
                                 cn = new Rdn(ba.getID(), ba.get());
                                 break;
@@ -381,11 +383,11 @@ public class UITruststoreService {
                         }
                     }
 
-                }else if (Objects.equals("CN", rdn.getType())) {
+                } else if (Objects.equals("CN", rdn.getType())) {
                     alias = rdn.getValue().toString().trim();
                     break;
                 }
-                if (cn !=null) {
+                if (cn != null) {
                     alias = cn.getValue().toString().trim();
                     break;
                 }
@@ -394,22 +396,20 @@ public class UITruststoreService {
         } catch (NamingException e) {
             LOG.error("Can not parse certificate subject: " + dn);
         }
-        alias = StringUtils.isEmpty(alias)?UUID.randomUUID().toString():alias;
+        alias = StringUtils.isEmpty(alias) ? UUID.randomUUID().toString() : alias;
 
         try {
             if (truststore != null && truststore.containsAlias(alias)) {
                 int iVal = 1;
-                while(truststore.containsAlias(alias+"_"+iVal)){
+                while (truststore.containsAlias(alias + "_" + iVal)) {
                     iVal++;
                 }
-                alias =alias+"_"+iVal;
+                alias = alias + "_" + iVal;
             }
         } catch (KeyStoreException e) {
             LOG.error("Error occured while reading truststore for validating alias: " + alias, e);
         }
-
         return alias;
-
     }
 
 
@@ -450,6 +450,76 @@ public class UITruststoreService {
 
     public CertificateRO convertToRo(X509Certificate d) {
         return conversionService.convert(d, CertificateRO.class);
+    }
+
+    /**
+     * Extracts all Certificate Policy identifiers the "Certificate policy" extension of X.509.
+     * If the certificate policy extension is unavailable, returns an empty list.
+     *
+     * @param cert a X509 certificate
+     * @return the list of CRL urls of certificate policy identifiers
+     */
+    public List<String> getCertificatePolicyIdentifiers(X509Certificate cert) throws CertificateException {
+
+        byte[] certPolicyExt = cert.getExtensionValue(org.bouncycastle.asn1.x509.Extension.certificatePolicies.getId());
+        if (certPolicyExt == null) {
+            return new ArrayList<>();
+        }
+
+        CertificatePolicies policies;
+        try {
+            policies = CertificatePolicies.getInstance(JcaX509ExtensionUtils.parseExtensionValue(certPolicyExt));
+        } catch (IOException e) {
+            throw new CertificateException("Error occurred while reading certificate policy object!", e);
+        }
+
+        return Arrays.stream(policies.getPolicyInformation())
+                .map(PolicyInformation::getPolicyIdentifier)
+                .map(ASN1ObjectIdentifier::getId)
+                .map(StringUtils::trim)
+                .collect(Collectors.toList());
+    }
+
+    protected void validateCertificatePolicyMatch(X509Certificate certificate) throws CertificateException {
+
+        // allowed list
+        List<String> allowedCertificatePolicyOIDList = configurationService.getAllowedCertificatePolicies();
+        if (allowedCertificatePolicyOIDList == null || allowedCertificatePolicyOIDList.isEmpty()) {
+            LOG.debug("Certificate policy is not configured. Skip Certificate policy validation!");
+            return;
+        }
+        // certificate list
+        List<String> certPolicyList = getCertificatePolicyIdentifiers(certificate);
+        if (certPolicyList.isEmpty()) {
+            String excMessage = String.format("Certificate has empty CertificatePolicy extension. Certificate: %s ", certificate);
+            throw new CertificateException(excMessage);
+        }
+
+        Optional<String> result = certPolicyList.stream().filter(certPolicyOID -> allowedCertificatePolicyOIDList.contains(certPolicyOID)).findFirst();
+        if (result.isPresent()) {
+            LOG.info("Certificate [{}] is trusted with certificate policy [{}]", certificate, result.get());
+            return;
+        }
+        String excMessage = String.format("Certificate policy verification failed. Certificate [%s] does not contain any of the policy: [%s]", certificate, allowedCertificatePolicyOIDList);
+        throw new CertificateException(excMessage);
+    }
+
+    protected void validateCertificateSubjectExpression(X509Certificate signingCertificate) throws CertificateException {
+        LOG.debug("Validate certificate subject");
+
+
+        String subject = signingCertificate.getSubjectDN().getName();
+        Pattern certSubjectExpression = configurationService.getCertificateSubjectRegularExpression();
+        if (certSubjectExpression == null) {
+            LOG.debug("Certificate subject regular expression is empty, verification is disabled.");
+            return;
+        }
+
+        if (!certSubjectExpression.matcher(subject).matches()) {
+            String excMessage = String.format("Certificate subject [%s] does not match the regular expression configured [%s]", subject, certSubjectExpression);
+            LOG.error(excMessage);
+            throw new CertificateException(excMessage);
+        }
     }
 
 }
