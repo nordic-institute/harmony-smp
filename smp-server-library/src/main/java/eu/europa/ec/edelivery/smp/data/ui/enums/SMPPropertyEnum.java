@@ -41,6 +41,8 @@ public enum SMPPropertyEnum {
     TRUSTSTORE_PASSWORD("smp.truststore.password","","Encrypted truststore password ", false, true,false, SMPPropertyTypeEnum.STRING),
     TRUSTSTORE_FILENAME("smp.truststore.filename","","Truststore filename ", false, false,false, SMPPropertyTypeEnum.FILENAME),
     CERTIFICATE_CRL_FORCE("smp.certificate.crl.force","false","If false then if CRL is not reachable ignore CRL validation", false, false,false, SMPPropertyTypeEnum.BOOLEAN),
+    CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs","","List of certificate policy OIDs separated by comma where at least one must be in the CertifictePolicy extension", false, false,false, SMPPropertyTypeEnum.STRING),
+    CERTIFICATE_SUBJECT_REGULAR_EXPRESSION("smp.certificate.validation.subjectRegex",".*","Regular expression to validate subject of the certificate", false, false,false, SMPPropertyTypeEnum.REGEXP),
 
     CONFIGURATION_DIR("configuration.dir","smp","Path to the folder containing all the configuration files (keystore and encryption key)", true, false,true, SMPPropertyTypeEnum.PATH),
     ENCRYPTION_FILENAME("encryption.key.filename","encryptionPrivateKey.private","Key filename to encrypt passwords", false, false,true, SMPPropertyTypeEnum.FILENAME),

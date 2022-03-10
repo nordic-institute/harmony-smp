@@ -99,16 +99,16 @@ public class SmlConnector implements ApplicationContextAware {
         }
         String normalizedParticipantString = asString(normalizedParticipantId);
         if (!domain.isSmlRegistered()) {
-            LOG.info("Participant {} is not registered to SML because domain {} is not registered!" ,
+            LOG.info("Participant {} is not registered to SML because domain {} is not registered!",
                     normalizedParticipantString, domain.getDomainCode());
             return false;
         }
 
-        LOG.debug("Registering new Participant: {} to domain: {}." , normalizedParticipantString, domain.getDomainCode());
+        LOG.debug("Registering new Participant: {} to domain: {}.", normalizedParticipantString, domain.getDomainCode());
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
             getParticipantWSClient(domain).create(smlRequest);
-            LOG.info("Participant: {} registered to domain: {}." , normalizedParticipantString, domain.getDomainCode());
+            LOG.info("Participant: {} registered to domain: {}.", normalizedParticipantString, domain.getDomainCode());
             return true;
         } catch (BadRequestFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
@@ -225,7 +225,7 @@ public class SmlConnector implements ApplicationContextAware {
         }
         String normalizedParticipantString = asString(normalizedParticipantId);
         if (!domain.isSmlRegistered()) {
-            LOG.info("Participant {} is not unregistered from SML because domain {} is not registered!" ,
+            LOG.info("Participant {} is not unregistered from SML because domain {} is not registered!",
                     normalizedParticipantString, domain.getDomainCode());
             return false;
         }
@@ -329,7 +329,7 @@ public class SmlConnector implements ApplicationContextAware {
         // check if there is only one cert in  keystore
         if (!blueCoatAuthentication && StringUtils.isBlank(clientKeyAlias)) {
             List<CertificateRO> list = keystoreService.getKeystoreEntriesList();
-            if (list.size()==1) {
+            if (list.size() == 1) {
                 // set the default alias
                 clientKeyAlias = list.get(0).getAlias();
             } else if (list.isEmpty()) {
@@ -340,7 +340,7 @@ public class SmlConnector implements ApplicationContextAware {
         }
 
         if (!blueCoatAuthentication && !useTLS) {
-           LOG.warn("SML integration is wrongly configured. Uses 2-way-SSL HTTPS but URL is not HTTPS! Url: {}." ,urlSMPManagment.toString());
+            LOG.warn("SML integration is wrongly configured. Uses 2-way-SSL HTTPS but URL is not HTTPS! Url: {}.", urlSMPManagment.toString());
         }
 
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
@@ -378,14 +378,13 @@ public class SmlConnector implements ApplicationContextAware {
             requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
         }
         if (useTLS) {
-
             httpConduit.setTlsClientParameters(tlsParams);
         }
     }
 
 
-    public CertificateConstraintsType createCertConstraint(String regExp){
-        if (StringUtils.isBlank(regExp)){
+    public CertificateConstraintsType createCertConstraint(String regExp) {
+        if (StringUtils.isBlank(regExp)) {
             return null;
         }
 
@@ -433,7 +432,7 @@ public class SmlConnector implements ApplicationContextAware {
             httpConduit.getClient().setProxyServerPort(proxyPort.get());
         }
 
-        if (!StringUtils.isBlank(proxyUser)){
+        if (!StringUtils.isBlank(proxyUser)) {
             ProxyAuthorizationPolicy proxyAuth = new ProxyAuthorizationPolicy();
             proxyAuth.setAuthorizationType("Basic");
             LOG.debug("Set proxy authentication {}", proxyUser);
