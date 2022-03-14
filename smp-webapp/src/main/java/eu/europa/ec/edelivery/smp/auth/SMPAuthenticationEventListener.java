@@ -39,20 +39,29 @@ public class SMPAuthenticationEventListener implements ApplicationListener<Authe
 
     /**
      * On successful authentication method validates the roles and set max session idle time before it invalidates the session.
+     *
      * @param event
      */
     @Override
-    public void onApplicationEvent (AuthenticationSuccessEvent event) {
-        Collection<? extends GrantedAuthority> authorities = event.getAuthentication().getAuthorities();
-        boolean hasAdminRole = authorities.stream().anyMatch(grantedAuthority -> StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()));
+    public void onApplicationEvent(AuthenticationSuccessEvent event) {
+
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attr!= null) {
+        if (attr != null) {
+            Collection<? extends GrantedAuthority> authorities = event.getAuthentication().getAuthorities();
             HttpSession session = attr.getRequest().getSession();
-            int idleTimeout = (hasAdminRole ? configurationService.getSessionIdleTimeoutForAdmin() : configurationService.getSessionIdleTimeoutForUser());
-            LOG.debug("Set session idle timeout [{}] for user [{}]", idleTimeout, event.getAuthentication().getName());
+            int idleTimeout = getSessionTimeoutForRoles(authorities);
+            LOG.debug("Set session idle timeout [{}] for user [{}] with roles [{}]", idleTimeout, event.getAuthentication().getName(), authorities);
             session.setMaxInactiveInterval(idleTimeout);
         } else {
-            LOG.warn("Could not get ServletRequestAttributes attributes for authentication [{}]", event.getAuthentication() );
+            LOG.warn("Could not get ServletRequestAttributes attributes for authentication [{}]", event.getAuthentication());
         }
+    }
+
+    public int getSessionTimeoutForRoles(Collection<? extends GrantedAuthority> authorities) {
+        boolean hasAdminRole = authorities.stream().anyMatch(grantedAuthority ->
+                StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority()));
+        LOG.debug("has admin role [{}]", hasAdminRole);
+        return hasAdminRole ? configurationService.getSessionIdleTimeoutForAdmin() : configurationService.getSessionIdleTimeoutForUser();
     }
 }
