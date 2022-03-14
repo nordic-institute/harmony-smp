@@ -35,7 +35,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Only selected modules are deployed -->
         <maven.deploy.skip>true</maven.deploy.skip>
-        <edelivery.ssl-auth.version>1.10-SNAPSHOT</edelivery.ssl-auth.version>
+        <edelivery.ssl-auth.version>1.9</edelivery.ssl-auth.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ant-commons-net.version>1.6.5</ant-commons-net.version>
