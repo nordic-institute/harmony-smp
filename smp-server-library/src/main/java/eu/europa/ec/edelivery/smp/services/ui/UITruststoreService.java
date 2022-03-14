@@ -14,7 +14,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -42,7 +41,7 @@ public class UITruststoreService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() ->
-        new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
+            new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
     );
 
     @Autowired
@@ -55,9 +54,9 @@ public class UITruststoreService {
     private ConversionService conversionService;
 
     private List<String> normalizedTrustedList = new ArrayList<>();
-
     private Map<String, X509Certificate> truststoreCertificates = new HashMap();
     private List<CertificateRO> certificateROList = new ArrayList<>();
+    KeyStore trustStore = null;
 
 
     private long lastUpdateTrustoreFileTime = 0;
@@ -79,7 +78,7 @@ public class UITruststoreService {
         }
     }
 
-    private boolean useTrustStore() {
+    public boolean useTrustStore() {
         File truststoreFile = configurationService.getTruststoreFile();
         return truststoreFile != null;
     }
@@ -97,7 +96,7 @@ public class UITruststoreService {
 
         // load keystore
         File truststoreFile = getTruststoreFile();
-        KeyStore trustStore = loadTruststore(truststoreFile);
+        trustStore = loadTruststore(truststoreFile);
         if (trustStore == null) {
             LOG.error("Keystore: '" + truststoreFile.getAbsolutePath() + "' is not loaded! Check the truststore filename" +
                     " and the configuration!");
@@ -129,7 +128,6 @@ public class UITruststoreService {
                 if (cert instanceof X509Certificate) {
                     X509Certificate x509Certificate = (X509Certificate) cert;
                     String subject = x509Certificate.getSubjectX500Principal().getName();
-
 
                     subject = DistinguishedNamesCodingUtil.normalizeDN(subject,
                             DistinguishedNamesCodingUtil.getCommonAttributesDN());
@@ -192,7 +190,7 @@ public class UITruststoreService {
         // test if certificate is valid
         cert.checkValidity();
         // check if certificate or its issuer is on trusted list
-        // check only issuer because using bluecoat Client-cert we do not have whole chain.
+        // check only issuer because using Client-cert header we do not have whole chain.
         // if the truststore is empty then truststore validation is ignored
         // backward compatibility
         if (!normalizedTrustedList.isEmpty() && !(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
@@ -262,7 +260,6 @@ public class UITruststoreService {
         }
         return trustManagers;
     }
-
 
 
     private KeyStore loadTruststore(File truststoreFile) {
@@ -357,6 +354,10 @@ public class UITruststoreService {
         return null;
     }
 
+    public KeyStore getTrustStore() {
+        return trustStore;
+    }
+
     public String createAliasFromCert(X509Certificate x509cert, KeyStore truststore) {
 
 
@@ -368,12 +369,12 @@ public class UITruststoreService {
             Rdn cn = null;
             for (Rdn rdn : ldapDN.getRdns()) {
 
-                if (rdn.size()>1) {
+                if (rdn.size() > 1) {
                     NamingEnumeration enr = rdn.toAttributes().getAll();
-                    while(enr.hasMore()) {
+                    while (enr.hasMore()) {
                         Object mvRDn = enr.next();
-                        if (mvRDn instanceof BasicAttribute){
-                            BasicAttribute ba = (BasicAttribute)mvRDn;
+                        if (mvRDn instanceof BasicAttribute) {
+                            BasicAttribute ba = (BasicAttribute) mvRDn;
                             if (Objects.equals("CN", ba.getID())) {
                                 cn = new Rdn(ba.getID(), ba.get());
                                 break;
@@ -381,11 +382,11 @@ public class UITruststoreService {
                         }
                     }
 
-                }else if (Objects.equals("CN", rdn.getType())) {
+                } else if (Objects.equals("CN", rdn.getType())) {
                     alias = rdn.getValue().toString().trim();
                     break;
                 }
-                if (cn !=null) {
+                if (cn != null) {
                     alias = cn.getValue().toString().trim();
                     break;
                 }
@@ -394,15 +395,15 @@ public class UITruststoreService {
         } catch (NamingException e) {
             LOG.error("Can not parse certificate subject: " + dn);
         }
-        alias = StringUtils.isEmpty(alias)?UUID.randomUUID().toString():alias;
+        alias = StringUtils.isEmpty(alias) ? UUID.randomUUID().toString() : alias;
 
         try {
             if (truststore != null && truststore.containsAlias(alias)) {
                 int iVal = 1;
-                while(truststore.containsAlias(alias+"_"+iVal)){
+                while (truststore.containsAlias(alias + "_" + iVal)) {
                     iVal++;
                 }
-                alias =alias+"_"+iVal;
+                alias = alias + "_" + iVal;
             }
         } catch (KeyStoreException e) {
             LOG.error("Error occured while reading truststore for validating alias: " + alias, e);

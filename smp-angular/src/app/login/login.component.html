@@ -1,18 +1,15 @@
 ﻿<div id="page" class="login-page" [style]="'justify-content:center; align-items:center; height:100%'">
-
-
   <div fxLayout="row" [style]="'justify-content:center; align-items:center; height:100%'">
-    <mat-card *ngIf="lookups.cachedApplicationInfo.ssoAuthentication" fxFlex="400px" [style]="'width:400px;height:300px;margin:10px'">
+    <mat-card *ngIf="isUserAuthSSOEnabled()  == true" fxFlex="400px" [style]="'width:400px;height:300px;margin:10px'">
       <mat-card-title>SSO Login: {{lookups.cachedApplicationInfo.ssoAuthenticationLabel}}</mat-card-title>
       <mat-card-content style="align-items: center;justify-content: center;display: flex;height: 200px;">
         <a mat-raised-button color="primary" href="/smp/ui/rest/security/cas" [style]="'width=150px'">
           <mat-icon>input</mat-icon>
           <span> SSO Login</span>
         </a>
-
       </mat-card-content>
     </mat-card>
-    <mat-card fxFlex="400px" [style]="'width:400px;height:300px;margin:10px'">
+    <mat-card *ngIf="isUserAuthPasswdEnabled() == true" fxFlex="400px" [style]="'width:400px;height:300px;margin:10px'">
       <mat-card-title>SMP Login</mat-card-title>
       <mat-card-content style="align-items: center;justify-content: center;display: flex;height: 200px;">
         <form name="loginForm" #loginForm="ngForm" (ngSubmit)="login()">
@@ -36,7 +33,8 @@
             </tr>
             <tr>
               <td>
-                <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid" id="loginbutton_id" [style]="'width=150px'">
+                <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid" id="loginbutton_id"
+                        [style]="'width=150px'">
                   <mat-icon>input</mat-icon>
                   <span> Login</span>
                 </button>

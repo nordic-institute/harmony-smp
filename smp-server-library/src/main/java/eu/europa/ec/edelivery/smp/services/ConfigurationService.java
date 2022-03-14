@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
@@ -137,7 +138,13 @@ public class ConfigurationService {
 
     public boolean forceCRLValidation() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(CERTIFICATE_CRL_FORCE);
-        // by default is not forced
+        // by default is not forced -> if missing is false!
+        return value != null && value;
+    }
+
+    public boolean isAuthenticationWithClientCertHeaderEnabled() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SMPPropertyEnum.BLUE_COAT_ENABLED);
+        // by default is not forced -> if missing is false!
         return value != null && value;
     }
 
@@ -196,9 +203,9 @@ public class ConfigurationService {
         return (Integer) configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_IDLE_TIMEOUT_USER);
     }
 
-    public boolean isCasEnabled() {
-        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SSO_CAS_ENABLED);
-        return value != null && value;
+    public boolean isSSOEnabledForUserAuthentication() {
+        List<String> userAuthenticationTypes = getUIAuthenticationTypes();
+        return userAuthenticationTypes != null && userAuthenticationTypes.contains(SMPUserAuthenticationTypes.SSO.name());
     }
 
     public String getCasUILabel() {
@@ -227,5 +234,13 @@ public class ConfigurationService {
 
     public List<String> getCasURLTokenValidationGroups() {
         return (List<String>) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_GROUPS);
+    }
+
+    public List<String> getUIAuthenticationTypes() {
+        return (List<String>) configurationDAO.getCachedPropertyValue(UI_AUTHENTICATION_TYPES);
+    }
+
+    public List<String> getAutomationAuthenticationTypes() {
+        return (List<String>) configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHENTICATION_TYPES);
     }
 }
