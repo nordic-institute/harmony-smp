@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter;
+import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
 import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
-import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
@@ -68,7 +67,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     SMPAuthenticationProvider smpAuthenticationProvider;
     CasAuthenticationProvider casAuthenticationProvider;
-    BlueCoatAuthenticationFilter blueCoatAuthenticationFilter;
+    ClientCertAuthenticationFilter ClientCertAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
     CasAuthenticationFilter casAuthenticationFilter;
     CasAuthenticationEntryPoint casAuthenticationEntryPoint;
@@ -86,13 +85,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      * Initialize beans. Use lazy initialization for filter to avoid circular dependencies
      *
      * @param smpAuthenticationProvider
-     * @param blueCoatAuthenticationFilter
+     * @param ClientCertAuthenticationFilter
      * @param x509AuthenticationFilter
      */
     @Autowired
     public SpringSecurityConfig(SMPAuthenticationProvider smpAuthenticationProvider,
                                 ConfigurationService configurationService,
-                                @Lazy BlueCoatAuthenticationFilter blueCoatAuthenticationFilter,
+                                @Lazy ClientCertAuthenticationFilter ClientCertAuthenticationFilter,
                                 @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
                                 @Lazy CsrfTokenRepository csrfTokenRepository,
                                 @Lazy RequestMatcher csrfURLMatcher,
@@ -106,7 +105,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         this.configurationService = configurationService;
         this.smpAuthenticationProvider = smpAuthenticationProvider;
         this.casAuthenticationProvider = casAuthenticationProvider;
-        this.blueCoatAuthenticationFilter = blueCoatAuthenticationFilter;
+        this.ClientCertAuthenticationFilter = ClientCertAuthenticationFilter;
         this.x509AuthenticationFilter = x509AuthenticationFilter;
         this.casAuthenticationFilter = casAuthenticationFilter;
         this.casAuthenticationEntryPoint = casAuthenticationEntryPoint;
@@ -128,7 +127,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and();
 
         ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer = httpSecurity.exceptionHandling();
-        if (configurationService.isCasEnabled()) {
+        if (configurationService.isSSOEnabledForUserAuthentication()) {
             LOG.debug("The CAS authentication is enabled. Set casAuthenticationEntryPoint!");
             exceptionHandlingConfigurer = exceptionHandlingConfigurer.defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint, new AntPathRequestMatcher(SMP_SECURITY_PATH_CAS_AUTHENTICATE));
         }
@@ -142,24 +141,24 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .xssProtection().xssProtectionEnabled(true).and()
                 .and();
 
-        if (configurationService.isCasEnabled()) {
+        if (configurationService.isSSOEnabledForUserAuthentication()) {
             LOG.debug("The CAS authentication is enabled. Add CAS filter!");
             httpSecurity = httpSecurity.addFilter(casAuthenticationFilter);
         }
         // set HstsMAxAge
         Integer maxAge = configurationService.getHttpHeaderHstsMaxAge();
-        if (maxAge == null || maxAge < 0){
-            LOG.info("The httpStrictTransportSecurity (HSTS) policy is set for HTTPS/1Y!" );
+        if (maxAge == null || maxAge < 0) {
+            LOG.info("The httpStrictTransportSecurity (HSTS) policy is set for HTTPS/1Y!");
             httpSecurity = httpSecurity.headers()
                     .httpStrictTransportSecurity()
                     .includeSubDomains(true)
                     .preload(false)
                     .maxAgeInSeconds(31536000).and().and();
-        }else if ( maxAge == 0){
-            LOG.warn("The httpStrictTransportSecurity (HSTS) policy is disabled!" );
+        } else if (maxAge == 0) {
+            LOG.warn("The httpStrictTransportSecurity (HSTS) policy is disabled!");
             httpSecurity = httpSecurity.headers().httpStrictTransportSecurity().disable().and();
         } else {
-            LOG.info("The httpStrictTransportSecurity (HSTS) policy is set to [{}] for http and https!",maxAge );
+            LOG.info("The httpStrictTransportSecurity (HSTS) policy is set to [{}] for http and https!", maxAge);
             httpSecurity = httpSecurity.headers()
                     .httpStrictTransportSecurity()
                     .includeSubDomains(true)
@@ -168,7 +167,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
         }
 
-        httpSecurity.addFilter(blueCoatAuthenticationFilter)
+        httpSecurity.addFilter(ClientCertAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
                 .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
@@ -204,7 +203,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         LOG.info("configureAuthenticationManagerBuilder, set SMP provider ");
-        if (configurationService.isCasEnabled()) {
+        if (configurationService.isSSOEnabledForUserAuthentication()) {
             LOG.info("[CAS] Authentication Provider enabled");
             auth.authenticationProvider(casAuthenticationProvider);
         }
@@ -225,11 +224,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public BlueCoatAuthenticationFilter getClientCertAuthenticationFilter(@Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager) {
-        BlueCoatAuthenticationFilter blueCoatAuthenticationFilter = new BlueCoatAuthenticationFilter();
-        blueCoatAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        blueCoatAuthenticationFilter.setBlueCoatEnabled(clientCertEnabled);
-        return blueCoatAuthenticationFilter;
+    public ClientCertAuthenticationFilter getClientCertAuthenticationFilter(@Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager) {
+        ClientCertAuthenticationFilter ClientCertAuthenticationFilter = new ClientCertAuthenticationFilter();
+        ClientCertAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        ClientCertAuthenticationFilter.setClientCertAuthenticationEnabled(clientCertEnabled);
+        return ClientCertAuthenticationFilter;
     }
 
     @Bean
@@ -292,8 +291,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     //@Bean(SMP_FORWARDED_HEADER_TRANSFORMER_BEAN)
     @Bean
     public ForwardedHeaderTransformer smpForwardedHeaderTransformer() {
-        ForwardedHeaderTransformer forwardedHeaderTransformer =  new ForwardedHeaderTransformer();
-       // WebHttpHandlerBuilder.forwardedHeaderTransformer(ForwardedHeaderTransformer);
+        ForwardedHeaderTransformer forwardedHeaderTransformer = new ForwardedHeaderTransformer();
+        // WebHttpHandlerBuilder.forwardedHeaderTransformer(ForwardedHeaderTransformer);
         forwardedHeaderTransformer.setRemoveOnly(false);
         return forwardedHeaderTransformer;
 

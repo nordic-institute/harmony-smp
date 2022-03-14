@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter;
+import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import org.junit.Test;
@@ -11,10 +11,10 @@ public class SMPSecurityPropertyUpdateListenerTest {
 
 
 
-    BlueCoatAuthenticationFilter blueCoatAuthenticationFilter = Mockito.mock(BlueCoatAuthenticationFilter.class);
+    ClientCertAuthenticationFilter ClientCertAuthenticationFilter = Mockito.mock(ClientCertAuthenticationFilter.class);
     ConfigurationDao configurationDao = Mockito.mock(ConfigurationDao.class);
     ForwardedHeaderTransformer forwardedHeaderTransformer = Mockito.mock(ForwardedHeaderTransformer.class);
-    SMPSecurityPropertyUpdateListener testInstance = new SMPSecurityPropertyUpdateListener(blueCoatAuthenticationFilter,configurationDao,forwardedHeaderTransformer );
+    SMPSecurityPropertyUpdateListener testInstance = new SMPSecurityPropertyUpdateListener(ClientCertAuthenticationFilter,configurationDao,forwardedHeaderTransformer );
 
     @Test
     public void testInit() {
@@ -27,7 +27,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
         Mockito.doReturn(Boolean.TRUE ).when(configurationDao).getCachedPropertyValue(SMPPropertyEnum.BLUE_COAT_ENABLED);
         Mockito.doReturn(Boolean.TRUE ).when(configurationDao).getCachedPropertyValue(SMPPropertyEnum.HTTP_FORWARDED_HEADERS_ENABLED);
         testInstance.propertiesUpdate();
-        Mockito.verify(blueCoatAuthenticationFilter, Mockito.times(1)).setBlueCoatEnabled(true);
+        Mockito.verify(ClientCertAuthenticationFilter, Mockito.times(1)).setClientCertAuthenticationEnabled(true);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(false);
     }
 
@@ -36,7 +36,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
         Mockito.doReturn(Boolean.FALSE ).when(configurationDao).getCachedPropertyValue(SMPPropertyEnum.BLUE_COAT_ENABLED);
         Mockito.doReturn(Boolean.FALSE ).when(configurationDao).getCachedPropertyValue(SMPPropertyEnum.HTTP_FORWARDED_HEADERS_ENABLED);
         testInstance.propertiesUpdate();
-        Mockito.verify(blueCoatAuthenticationFilter, Mockito.times(1)).setBlueCoatEnabled(false);
+        Mockito.verify(ClientCertAuthenticationFilter, Mockito.times(1)).setClientCertAuthenticationEnabled(false);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(true);
     }
 }

@@ -1,9 +1,9 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
-import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.SmpConfigRO;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,6 @@ import java.util.TimeZone;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-
 @RestController
 @RequestMapping(value = "/ui/rest/application")
 public class ApplicationResource {
@@ -54,14 +53,14 @@ public class ApplicationResource {
         info.setVersion(getDisplayVersion());
         info.setSmlIntegrationOn(configurationService.isSMLIntegrationEnabled());
         info.setSmlParticipantMultiDomainOn(configurationService.isSMLMultiDomainEnabled());
-        info.setSsoAuthentication(configurationService.isCasEnabled());
+        info.setAuthTypes(configurationService.getUIAuthenticationTypes());
         info.setSsoAuthenticationLabel(configurationService.getCasUILabel());
         info.setContextPath(getRootContext());
         return info;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "config")
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN,SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN,
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN,
             SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public SmpConfigRO getApplicationConfig() {
         SmpConfigRO info = new SmpConfigRO();
@@ -73,7 +72,6 @@ public class ApplicationResource {
 
         return info;
     }
-
 
     public String getDisplayVersion() {
         StringBuilder display = new StringBuilder();
