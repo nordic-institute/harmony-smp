@@ -148,6 +148,15 @@ public class ConfigurationService {
         return value != null && value;
     }
 
+
+    public Pattern getCertificateSubjectRegularExpression() {
+        return (Pattern) configurationDAO.getCachedPropertyValue(CERTIFICATE_SUBJECT_REGULAR_EXPRESSION);
+    }
+
+    public List<String> getAllowedCertificatePolicies() {
+        return (List<String>) configurationDAO.getCachedPropertyValue(CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS);
+    }
+
     public String getSMLIntegrationServerCertSubjectRegExp() {
         return configurationDAO.getCachedProperty(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
     }
