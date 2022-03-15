@@ -43,6 +43,8 @@ public enum SMPPropertyEnum {
     ENCRYPTION_FILENAME("encryption.key.filename", "encryptionPrivateKey.private", "Key filename to encrypt passwords", false, false, true, SMPPropertyTypeEnum.FILENAME),
     KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted", "", "Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false, false, SMPPropertyTypeEnum.STRING),
     TRUSTSTORE_PASSWORD_DECRYPTED("smp.truststore.password.decrypted", "", "Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false, false, SMPPropertyTypeEnum.STRING),
+    CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs","","List of certificate policy OIDs separated by comma where at least one must be in the CertifictePolicy extension", false, false,false, SMPPropertyTypeEnum.STRING),
+    CERTIFICATE_SUBJECT_REGULAR_EXPRESSION("smp.certificate.validation.subjectRegex",".*","Regular expression to validate subject of the certificate", false, false,false, SMPPropertyTypeEnum.REGEXP),
 
     SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression", "0 48 */1 * * *", "Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!", false, false, true, SMPPropertyTypeEnum.STRING),
     // UI COOKIE configuration
