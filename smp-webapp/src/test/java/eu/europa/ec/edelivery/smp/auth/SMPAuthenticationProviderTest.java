@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.auth;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -16,7 +17,6 @@ import java.util.Calendar;
 import java.util.Optional;
 
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -25,9 +25,9 @@ public class SMPAuthenticationProviderTest {
     UserDao mockUserDao = Mockito.mock(UserDao.class);
     CRLVerifierService mockCrlVerifierService = Mockito.mock(CRLVerifierService.class);
     UITruststoreService mockTruststoreService = Mockito.mock(UITruststoreService.class);
+    ConfigurationService mockConfigurationService = Mockito.mock(ConfigurationService.class);
 
-    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockUserDao, mockCrlVerifierService, mockTruststoreService);
-
+    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockUserDao, mockCrlVerifierService, mockTruststoreService, mockConfigurationService);
 
     @Test
     // response time for existing and non existing user should be "approx. equal"

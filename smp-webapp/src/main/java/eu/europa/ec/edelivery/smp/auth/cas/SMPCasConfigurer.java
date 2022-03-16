@@ -55,7 +55,7 @@ public class SMPCasConfigurer {
         URL path = configurationService.getCasCallbackUrl();
         ServiceProperties serviceProperties = new ServiceProperties();
         serviceProperties.setArtifactParameter(ServiceProperties.DEFAULT_CAS_ARTIFACT_PARAMETER);
-        serviceProperties.setService(path!=null? path.toExternalForm():"null");
+        serviceProperties.setService(path != null ? path.toExternalForm() : "null");
         serviceProperties.setAuthenticateAllArtifacts(true);
         LOG.info("Configured CAS ServiceProperties with callback Url: [{}]", serviceProperties.getService());
         return serviceProperties;
@@ -70,7 +70,7 @@ public class SMPCasConfigurer {
     @Bean
     public CasAuthenticationEntryPoint casAuthenticationEntryPoint(@Nullable @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties serviceProperties, ConfigurationService configService) {
 
-        if (!configService.isCasEnabled()) {
+        if (!configService.isSSOEnabledForUserAuthentication()) {
             LOG.debug("Bean CasAuthenticationEntryPoint is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
             return null;
         }
@@ -88,11 +88,11 @@ public class SMPCasConfigurer {
 
     @Bean
     public SMPCas20ServiceTicketValidator ecasServiceTicketValidator(ConfigurationService configService) {
-        if (!configService.isCasEnabled()) {
+        if (!configService.isSSOEnabledForUserAuthentication()) {
             LOG.debug("Bean SMPCas20ServiceTicketValidator is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
             return null;
         }
-        if (configService.getCasURL()==null){
+        if (configService.getCasURL() == null) {
             LOG.error("Bean SMPCas20ServiceTicketValidator is not created! Missing Service parameter [{}]!", SSO_CAS_URL.getProperty());
             return null;
         }
@@ -135,7 +135,7 @@ public class SMPCasConfigurer {
             @Nullable SMPCasUserService smpCasUserService,
             ConfigurationService configService) {
 
-        if (!configService.isCasEnabled()) {
+        if (!configService.isSSOEnabledForUserAuthentication()) {
             LOG.debug("Bean [CasAuthenticationProvider:{}] is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
             return null;
         }

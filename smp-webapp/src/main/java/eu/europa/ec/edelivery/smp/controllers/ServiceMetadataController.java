@@ -63,11 +63,11 @@ public class ServiceMetadataController {
                                      @PathVariable String serviceMetadataId) throws TransformerException, UnsupportedEncodingException {
 
         String host = httpReq.getRemoteHost();
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_METADATA,host, serviceGroupId, serviceMetadataId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_METADATA, host, serviceGroupId, serviceMetadataId);
 
         Document serviceMetadata = serviceMetadataService.getServiceMetadataDocument(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
 
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_SERVICE_METADATA,host, serviceGroupId, serviceMetadataId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_SERVICE_METADATA, host, serviceGroupId, serviceMetadataId);
         return ServiceMetadataConverter.toString(serviceMetadata);
     }
 
@@ -75,45 +75,45 @@ public class ServiceMetadataController {
     @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
             " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
     public ResponseEntity saveServiceMetadata(HttpServletRequest httpReq,
-            @PathVariable String serviceGroupId,
-            @PathVariable String serviceMetadataId,
-            @RequestHeader(name = HTTP_PARAM_DOMAIN, required = false) String domain,
-            @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
+                                              @PathVariable String serviceGroupId,
+                                              @PathVariable String serviceMetadataId,
+                                              @RequestHeader(name = HTTP_PARAM_DOMAIN, required = false) String domain,
+                                              @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_METADATA,authentUser, host, domain, serviceGroupId, serviceMetadataId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
 
         boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
 
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_END_SERVICE_METADATA,authentUser, host, domain, serviceGroupId, serviceMetadataId, newServiceMetadataCreated);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_END_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId, newServiceMetadataCreated);
 
         return newServiceMetadataCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
 
     @DeleteMapping
-     @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
-              " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
+    @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
+            " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
     public ResponseEntity deleteServiceMetadata(HttpServletRequest httpReq,
-                                  @PathVariable String serviceGroupId,
-                                  @PathVariable String serviceMetadataId,
-                                  @RequestHeader(name = "Domain", required = false) String domain ) {
+                                                @PathVariable String serviceGroupId,
+                                                @PathVariable String serviceMetadataId,
+                                                @RequestHeader(name = "Domain", required = false) String domain) {
 
 
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_METADATA,authentUser, host, domain, serviceGroupId, serviceMetadataId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
 
         serviceMetadataService.deleteServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
 
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_METADATA,authentUser, host, domain, serviceGroupId, serviceMetadataId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
         return ok().build();
     }
 
-    public String getRemoteHost(HttpServletRequest httpReq){
+    public String getRemoteHost(HttpServletRequest httpReq) {
         String host = httpReq.getHeader("X-Forwarded-For");
-        return StringUtils.isBlank(host)?httpReq.getRemoteHost():host;
+        return StringUtils.isBlank(host) ? httpReq.getRemoteHost() : host;
     }
 }

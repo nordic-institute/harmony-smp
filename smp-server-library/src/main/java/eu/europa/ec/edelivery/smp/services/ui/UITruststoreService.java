@@ -66,6 +66,7 @@ public class UITruststoreService {
     long lastUpdateTrustoreFileTime = 0;
     File lastUpdateTrustStoreFile = null;
     TrustManager[] trustManagers;
+    KeyStore trustStore = null;
 
 
     @PostConstruct
@@ -81,7 +82,7 @@ public class UITruststoreService {
         }
     }
 
-    private boolean useTrustStore() {
+    public boolean useTrustStore() {
         File truststoreFile = configurationService.getTruststoreFile();
         return truststoreFile != null;
     }
@@ -99,7 +100,7 @@ public class UITruststoreService {
 
         // load keystore
         File truststoreFile = getTruststoreFile();
-        KeyStore trustStore = loadTruststore(truststoreFile);
+        trustStore = loadTruststore(truststoreFile);
         if (trustStore == null) {
             LOG.error("Keystore: '" + truststoreFile.getAbsolutePath() + "' is not loaded! Check the truststore filename" +
                     " and the configuration!");
@@ -130,7 +131,6 @@ public class UITruststoreService {
                 if (cert instanceof X509Certificate) {
                     X509Certificate x509Certificate = (X509Certificate) cert;
                     String subject = x509Certificate.getSubjectX500Principal().getName();
-
 
                     subject = DistinguishedNamesCodingUtil.normalizeDN(subject,
                             DistinguishedNamesCodingUtil.getCommonAttributesDN());
@@ -193,7 +193,7 @@ public class UITruststoreService {
         // test if certificate is valid
         cert.checkValidity();
         // check if certificate or its issuer is on trusted list
-        // check only issuer because using bluecoat Client-cert we do not have whole chain.
+        // check only issuer because using Client-cert header we do not have whole chain.
         // if the truststore is empty then truststore validation is ignored
         // backward compatibility
         if (!normalizedTrustedList.isEmpty() && !(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
@@ -357,6 +357,10 @@ public class UITruststoreService {
             return aliasPrivate;
         }
         return null;
+    }
+
+    public KeyStore getTrustStore() {
+        return trustStore;
     }
 
     public String createAliasFromCert(X509Certificate x509cert, KeyStore truststore) {

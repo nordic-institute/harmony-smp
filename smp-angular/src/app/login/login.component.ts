@@ -100,4 +100,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub.unsubscribe();
   }
+
+  isUserAuthSSOEnabled(): boolean {
+     return this.lookups.cachedApplicationInfo.authTypes.includes('SSO');
+  }
+
+  isUserAuthPasswdEnabled():boolean {
+    return this.lookups.cachedApplicationInfo.authTypes.includes('PASSWORD');
+  }
 }
