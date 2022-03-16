@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
@@ -10,6 +11,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -22,7 +24,10 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateRevokedException;
+import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,18 +50,19 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
     private final String dummyPasswordHash;
     private final String dummyPassword;
 
-    UserDao mUserDao;
-    CRLVerifierService crlVerifierService;
-    UITruststoreService truststoreService;
+    final UserDao mUserDao;
+    final CRLVerifierService crlVerifierService;
+    final UITruststoreService truststoreService;
+    final ConfigurationService configurationService;
 
     @Autowired
-    public SMPAuthenticationProvider(UserDao mUserDao, CRLVerifierService crlVerifierService, UITruststoreService truststoreService) {
+    public SMPAuthenticationProvider(UserDao mUserDao, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService) {
         this.dummyPassword = UUID.randomUUID().toString();
         this.dummyPasswordHash = BCrypt.hashpw(dummyPassword, BCrypt.gensalt());
-
         this.mUserDao = mUserDao;
         this.crlVerifierService = crlVerifierService;
         this.truststoreService = truststoreService;
+        this.configurationService = configurationService;
     }
 
     @Override
@@ -88,15 +94,30 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
 
     /**
-     * Authenticate by certificate token got by BlueCoat or X509Certificate authentication)
+     * Authenticated using the X509Certificate or ClientCert header certificate)
      *
      * @param principal - certificate principal
      * @return authentication value.
      */
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
+
+        KeyStore truststore = truststoreService.getTrustStore();
+
         DBUser user;
+        X509Certificate x509Certificate = principal.getCertificate();
         String userToken = principal.getName();
+
+        if (truststore != null && x509Certificate != null) {
+            CertificateValidator certificateValidator = new CertificateValidator(
+                    null, truststore, null);
+            try {
+                certificateValidator.validateCertificate(x509Certificate);
+            } catch (CertificateException e) {
+                throw new BadCredentialsException("Certificate is not trusted!");
+            }
+        }
+
         try {
 
             Optional<DBUser> oUsr = mUserDao.findUserByCertificateId(userToken, true);
@@ -113,7 +134,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         } catch (RuntimeException ex) {
             LOG.error("Database connection error", ex);
             throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
-
         }
 
         DBCertificate certificate = user.getCertificate();

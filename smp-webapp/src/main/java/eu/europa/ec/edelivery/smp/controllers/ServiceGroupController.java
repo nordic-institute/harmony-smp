@@ -72,12 +72,12 @@ public class ServiceGroupController {
 
 
         String host = httpReq.getRemoteHost();
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_GROUP,host, serviceGroupId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_GROUP, host, serviceGroupId);
 
         ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(asParticipantId(serviceGroupId));
         addReferences(serviceGroup);
 
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_SERVICE_GROUP,host, serviceGroupId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_SERVICE_GROUP, host, serviceGroupId);
         return serviceGroup;
     }
 
@@ -85,14 +85,14 @@ public class ServiceGroupController {
     @PutMapping
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ResponseEntity saveServiceGroup(HttpServletRequest httpReq,
-            @PathVariable String serviceGroupId,
-            @RequestHeader(name = HTTP_PARAM_OWNER, required = false) String serviceGroupOwner,
-            @RequestHeader(name = HTTP_PARAM_DOMAIN, required = false) String domain,
-            @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
+                                           @PathVariable String serviceGroupId,
+                                           @RequestHeader(name = HTTP_PARAM_OWNER, required = false) String serviceGroupOwner,
+                                           @RequestHeader(name = HTTP_PARAM_DOMAIN, required = false) String domain,
+                                           @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP,authentUser, host, serviceGroupOwner, domain, serviceGroupId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP, authentUser, host, serviceGroupOwner, domain, serviceGroupId);
 
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
@@ -100,9 +100,9 @@ public class ServiceGroupController {
         serviceGroupValidator.validate(serviceGroupId, serviceGroup);
 
         // Service action
-         boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, domain, serviceGroupOwner, authentUser);
+        boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, domain, serviceGroupOwner, authentUser);
 
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP,authentUser, host, serviceGroupOwner, domain, serviceGroupId, newServiceGroupCreated);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP, authentUser, host, serviceGroupOwner, domain, serviceGroupId, newServiceGroupCreated);
         return newServiceGroupCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
 
@@ -111,13 +111,13 @@ public class ServiceGroupController {
     public ResponseEntity deleteServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_GROUP,authentUser, host, serviceGroupId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_GROUP, authentUser, host, serviceGroupId);
 
 
         final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(serviceGroupId);
         serviceGroupService.deleteServiceGroup(aServiceGroupID);
 
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_GROUP,authentUser, host, serviceGroupId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_GROUP, authentUser, host, serviceGroupId);
         return ok().build();
     }
 
@@ -131,9 +131,8 @@ public class ServiceGroupController {
         }
     }
 
-    public String getRemoteHost(HttpServletRequest httpReq){
+    public String getRemoteHost(HttpServletRequest httpReq) {
         String host = httpReq.getHeader("X-Forwarded-For");
-        return StringUtils.isBlank(host)?httpReq.getRemoteHost():host;
+        return StringUtils.isBlank(host) ? httpReq.getRemoteHost() : host;
     }
-
 }

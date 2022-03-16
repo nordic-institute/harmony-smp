@@ -22,10 +22,9 @@
     <version>4.2-SNAPSHOT</version>
 
     <modules>
-        <!-- module>smp-parent-pom</module -->
         <module>smp-api</module>
-        <module>smp-angular</module>
         <module>smp-server-library</module>
+        <module>smp-angular</module>
         <module>smp-webapp</module>
     </modules>
 
@@ -35,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Only selected modules are deployed -->
         <maven.deploy.skip>true</maven.deploy.skip>
-        <edelivery.ssl-auth.version>1.9</edelivery.ssl-auth.version>
+        <edelivery.ssl-auth.version>1.10-SNAPSHOT</edelivery.ssl-auth.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ant-commons-net.version>1.6.5</ant-commons-net.version>
@@ -83,7 +82,7 @@
 
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-        <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage</sonar.jacoco.codeCoveragePath>
+        <sonar.jacoco.codeCoveragePath>${basedir}/target/code-coverage</sonar.jacoco.codeCoveragePath>
         <sonar.jacoco.reportPath>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.reportPath>
         <sonar.jacoco.itReportPath>${sonar.jacoco.codeCoveragePath}/jacoco-it.exec</sonar.jacoco.itReportPath>
         <sonar.language>java</sonar.language>
@@ -604,8 +603,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <reportsDirectory>${maven.multiModuleProjectDirectory}/code-coverage/surefire-reports
-                    </reportsDirectory>
+                    <reportsDirectory>${basedir}/target/code-coverage/surefire-reports</reportsDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -630,8 +628,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                    <reportsDirectory>${maven.multiModuleProjectDirectory}/code-coverage/failsafe-reports
-                    </reportsDirectory>
+                    <reportsDirectory>${basedir}/target/code-coverage/failsafe-reports</reportsDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -727,11 +724,11 @@
                             <outputFolder>${sonar.jacoco.codeCoveragePath}/surefire-reports</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
-                            <settingsFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/soapui-settings.xml</settingsFile>
+                            <settingsFile>${basedir}/soapui/soapui-settings.xml</settingsFile>
                             <soapuiProperties>
                                 <property>
                                     <name>soapui.scripting.library</name>
-                                    <value>${maven.multiModuleProjectDirectory}/smp-soapui-tests/groovy</value>
+                                    <value>${basedir}/groovy</value>
                                 </property>
                                 <property>
                                     <name>soapui.logroot</name>
@@ -743,7 +740,7 @@
                                 </property>
                             </soapuiProperties>
                             <testFailIgnore>true</testFailIgnore>
-                            <projectFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
+                            <projectFile>${basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
                             <testSuite>PASSING_AUTO_BAMBOO</testSuite>
                             <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
                             <projectProperties>

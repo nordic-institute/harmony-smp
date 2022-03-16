@@ -3,7 +3,6 @@ export interface SmpInfo {
   smlIntegrationOn?: boolean;
   contextPath?: string;
   smlParticipantMultiDomainOn?: boolean
-  ssoAuthentication?: boolean;
+  authTypes?: string[];
   ssoAuthenticationLabel?: string;
-
 }
