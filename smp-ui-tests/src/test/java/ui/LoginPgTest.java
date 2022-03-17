@@ -21,19 +21,19 @@ public class LoginPgTest extends BaseTest {
 	@AfterMethod
 	public void logoutAndReset() {
 
-		log.info("deleting cookies");
+		logger.info("deleting cookies");
 		driver.manage().deleteAllCookies();
 
 		try {
-			log.info("clearing localstorage");
+			logger.info("clearing localstorage");
 			((JavascriptExecutor) driver).executeScript("localStorage.clear();");
 		} catch (Exception e) {
-			log.info("clearing localcstorage failed");
+			logger.info("clearing localcstorage failed");
 		}
 
 
 		SMPPage page = new SMPPage(driver);
-		log.info("refreshing page to close all popups");
+		logger.info("refreshing page to close all popups");
 		page.refreshPage();
 
 		try {
@@ -112,13 +112,13 @@ public class LoginPgTest extends BaseTest {
 
 		String username = Generator.randomAlphaNumeric(10);
 		SMPRestClient.createUser(username, "SYSTEM_ADMIN");
-		log.info("created user " + username);
+		logger.info("created user " + username);
 
 		SMPPage page = new SMPPage(driver);
 		logger.info("Going to login page");
 		page.pageHeader.goToLogin();
 
-		log.info("trying to login with " + username);
+		logger.info("trying to login with " + username);
 		LoginPage loginPage = new LoginPage(driver);
 		SearchPage searchPage = loginPage.login(username, "QW!@qw12");
 

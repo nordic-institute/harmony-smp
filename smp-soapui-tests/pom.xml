@@ -20,54 +20,82 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-				<groupId>com.smartbear.soapui</groupId>
-                <artifactId>soapui-pro-maven-plugin</artifactId>
-                <version>5.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <outputFolder>${project.build.directory}/surefire-reports</outputFolder>
-                    <junitReport>true</junitReport>
-                    <printReport>true</printReport>
-                    <soapuiProperties>
-                        <property>
-                            <name>soapui.scripting.library</name>
-                            <value>${project.basedir}/groovy</value>
-                        </property>
-                        <property>
-                            <name>soapui.logroot</name>
-                            <value>${project.build.directory}/soapui/logs/</value>
-                        </property>
-                        <property>
-                            <name>http.nonProxyHosts</name>
-                            <value>localhost|127.*|[::1]</value>
-                        </property>
-                    </soapuiProperties>
-                    <testFailIgnore>true</testFailIgnore>
-                    <projectFile>${project.basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
-                    <testSuite>PASSING_AUTO_BAMBOO</testSuite>
-                    <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
-                    <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
-                    <!-- testCase>SMP079-EDELIVERY-2806-Basic Flow-BlueCote UTF8 chars</testCase -->
-                    <!-- testCase>SMP094-Basic Flow-ClientCert-UTF8-Variants</testCase -->
+    <profiles>
+        <!-- soap ui -->
+        <profile>
+            <id>run-soapui</id>
+            <build>
+                <defaultGoal>test</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>com.smartbear.soapui</groupId>
+                        <artifactId>soapui-pro-maven-plugin</artifactId>
+                        <version>5.0.0</version>
+                        <configuration>
+                            <outputFolder>${sonar.jacoco.codeCoveragePath}/surefire-reports</outputFolder>
+                            <junitReport>true</junitReport>
+                            <printReport>true</printReport>
+                            <settingsFile>${basedir}/soapui/soapui-settings.xml</settingsFile>
+                            <soapuiProperties>
+                                <property>
+                                    <name>soapui.scripting.library</name>
+                                    <value>${basedir}/groovy</value>
+                                </property>
+                                <property>
+                                    <name>soapui.logroot</name>
+                                    <value>${sonar.jacoco.codeCoveragePath}/soapui/logs/</value>
+                                </property>
+                                <property>
+                                    <name>http.nonProxyHosts</name>
+                                    <value>localhost|127.*|[::1]</value>
+                                </property>
+                            </soapuiProperties>
+                            <testFailIgnore>true</testFailIgnore>
+                            <projectFile>${basedir}/soapui/SMP4.0-Generic-soapui-project.xml
+                            </projectFile>
+                            <testSuite>PASSING_AUTO_BAMBOO</testSuite>
+                            <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
+                            <projectProperties>
+                                <value>url=${url}</value>
+                                <value>SMPAdminUser=${SMPAdminUser}</value>
+                                <value>SMPAdminPassword=${SMPAdminPassword}</value>
+                            </projectProperties>
+                        </configuration>
 
-                    <projectProperties>
-                        <value>url=${url}</value>
-                        <value>SMPAdminUser=${SMPAdminUser}</value>
-                        <value>SMPAdminPassword=${SMPAdminPassword}</value>
-                    </projectProperties>
-                </configuration>
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
 
-            </plugin>
-        </plugins>
-    </build>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.maven.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>post-integration-test</phase>
+
+                                <goals>
+                                    <goal>dump</goal>
+                                </goals>
+                                <configuration>
+                                    <destFile>${sonar.jacoco.reportPath}</destFile>
+                                    <address>${sonar.jacoco.remoteAddress}</address>
+                                    <port>${sonar.jacoco.remotePort}</port>
+                                    <reset>false</reset>
+                                    <append>true</append>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
