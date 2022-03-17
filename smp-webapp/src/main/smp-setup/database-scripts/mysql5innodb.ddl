@@ -238,6 +238,9 @@
         LAST_UPDATED_ON datetime not null,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted password for username/password login',
         PASSWORD_CHANGED datetime comment 'Last date when password was changed',
+        PAT_GENERATED datetime comment 'Date when personal access token was generated',
+        PAT_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Personal access token id',
+        PAT_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted personal access token',
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User role',
         USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Login username',
         primary key (ID)
@@ -253,6 +256,9 @@
         LAST_UPDATED_ON datetime,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PASSWORD_CHANGED datetime,
+        PAT_GENERATED datetime,
+        PAT_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PAT_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID, REV)
@@ -282,6 +288,9 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
     alter table SMP_SERVICE_METADATA 
        add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME);
+
+    alter table SMP_USER 
+       add constraint UK_eia7hvki1b2358ggu7kpnahyi unique (PAT_ID);
 
     alter table SMP_USER 
        add constraint UK_rt1f0anklfo05lt0my05fqq6 unique (USERNAME);

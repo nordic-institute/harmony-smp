@@ -34,12 +34,22 @@ import java.util.*;
 
 import static java.util.Locale.US;
 
-
+/**
+ * Authentication provider for the Accounts supporting automated application functionalities. The account are used in SMP for
+ * webservice access as application to application integration with SMP. Authentication provider supports following
+ *  {@link org.springframework.security.core.Authentication} implementation:
+ *      - {@link org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken} implementation using
+ *
+ *
+ *
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 @Import({SmpAppConfig.class})
 @Component
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationProvider.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);
     /**
      * thread safe validator
      */
@@ -194,18 +204,15 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticateByUsernameToken(UsernamePasswordAuthenticationToken auth)
             throws AuthenticationException {
 
-        // get user
-        // test credentials
-        // get and return  user roles.
-        String username = auth.getName();
-        String password = auth.getCredentials().toString();
+        String authenticationTokenId = auth.getName();
+        String authenticationTokenValue = auth.getCredentials().toString();
 
         DBUser user;
         try {
-            Optional<DBUser> oUsr = mUserDao.findUserByIdentifier(username);
+            Optional<DBUser> oUsr = mUserDao.findUserByAuthenticationToken(authenticationTokenId);
 
             if (!oUsr.isPresent()) {
-                LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, username);
+                LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, authenticationTokenId);
                 //run validation on dummy password to achieve similar response time
                 // as it would be if the password is invalid
                 BCrypt.checkpw(dummyPassword, dummyPasswordHash);
@@ -217,27 +224,28 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
             user = oUsr.get();
         } catch (AuthenticationException ex) {
-            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
+            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
             throw ex;
 
         } catch (RuntimeException ex) {
-            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
+            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
             throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
 
         }
-        String role = user.getRole();
-        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(username, password, Collections.singletonList(new SMPAuthority(role)), user);
         try {
-            if (!BCrypt.checkpw(password, user.getPassword())) {
-                LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, username);
+            if (!BCrypt.checkpw(authenticationTokenValue, user.getPatValue())) {
+                LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, authenticationTokenId);
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed;
-            LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, username);
+            LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, authenticationTokenId);
             throw new BadCredentialsException("Login failed; Invalid userID or password");
         }
-        LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, username, role);
+        String role = "WS_"+user.getRole();
+        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(authenticationTokenId, authenticationTokenValue, Collections.singletonList(new SMPAuthority(role)), user);
+
+        LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, authenticationTokenId, role);
         return smpAuthenticationToken;
     }
 

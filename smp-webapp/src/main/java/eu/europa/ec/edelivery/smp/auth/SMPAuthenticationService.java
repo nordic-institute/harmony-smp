@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.auth;
 
+import eu.europa.ec.edelivery.smp.config.SMPSecurityConstants;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.ui.AuthenticationResource;
@@ -19,11 +20,12 @@ public class SMPAuthenticationService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationService.class);
 
     @Autowired
-    @Qualifier("smpAuthenticationManager")
+    @Qualifier(SMPSecurityConstants.SMP_AUTHENTICATION_MANAGER_BEAN)
     private AuthenticationManager authenticationManager;
 
     @Transactional(noRollbackFor = AuthenticationException.class)
     public Authentication authenticate(String username, String password) {
+        LOG.debug("Authenticate: [{}]", username);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);

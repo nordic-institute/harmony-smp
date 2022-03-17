@@ -88,7 +88,7 @@ public class SignatureValidatorTest {
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "123456");
 
     @Autowired
     private WebApplicationContext webAppContext;
