@@ -42,7 +42,6 @@ public class DomainGrid extends BasicGrid {
 				}
 
 			}
-
 			rowInfos.add(row);
 		}
 
