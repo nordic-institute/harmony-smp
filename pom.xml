@@ -26,6 +26,7 @@
         <module>smp-server-library</module>
         <module>smp-angular</module>
         <module>smp-webapp</module>
+
     </modules>
 
     <properties>
@@ -724,11 +725,11 @@
                             <outputFolder>${sonar.jacoco.codeCoveragePath}/surefire-reports</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
-                            <settingsFile>${basedir}/soapui/soapui-settings.xml</settingsFile>
+                            <settingsFile>${basedir}/smp-soapui-tests/soapui/soapui-settings.xml</settingsFile>
                             <soapuiProperties>
                                 <property>
                                     <name>soapui.scripting.library</name>
-                                    <value>${basedir}/groovy</value>
+                                    <value>${basedir}/smp-soapui-tests/groovy</value>
                                 </property>
                                 <property>
                                     <name>soapui.logroot</name>
@@ -740,7 +741,7 @@
                                 </property>
                             </soapuiProperties>
                             <testFailIgnore>true</testFailIgnore>
-                            <projectFile>${basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
+                            <projectFile>${basedir}/smp-soapui-tests/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
                             <testSuite>PASSING_AUTO_BAMBOO</testSuite>
                             <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
                             <projectProperties>
