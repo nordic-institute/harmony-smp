@@ -23,15 +23,15 @@ import java.util.Set;
 public class SearchPgTest extends BaseTest {
 
 	@AfterMethod
-	public void resetFilters(){
-		SMPPage page  = new SMPPage(driver);
+	public void resetFilters() {
+		SMPPage page = new SMPPage(driver);
 		page.refreshPage();
 		page.waitForXMillis(500);
 
 	}
 
 	@Test(description = "SRCH-0")
-	public void searchPgInitialState(){
+	public void searchPgInitialState() {
 		SoftAssert soft = new SoftAssert();
 
 		SearchPage page = new SearchPage(driver);
@@ -46,7 +46,7 @@ public class SearchPgTest extends BaseTest {
 	}
 
 	@Test(description = "SRCH-10")
-	public void domainSelectContent(){
+	public void domainSelectContent() {
 		SoftAssert soft = new SoftAssert();
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
@@ -57,7 +57,7 @@ public class SearchPgTest extends BaseTest {
 		for (String restDomain : restDomains) {
 			boolean found = false;
 			for (String uiDomain : uiDomains) {
-				if(uiDomain.equalsIgnoreCase(restDomain)){
+				if (uiDomain.equalsIgnoreCase(restDomain)) {
 					found = true;
 				}
 			}
@@ -69,7 +69,7 @@ public class SearchPgTest extends BaseTest {
 	}
 
 	@Test(description = "SRCH-20")
-	public void searchGridInitialState(){
+	public void searchGridInitialState() {
 		SoftAssert soft = new SoftAssert();
 
 		SearchPage page = new SearchPage(driver);
@@ -85,7 +85,7 @@ public class SearchPgTest extends BaseTest {
 	}
 
 	@Test(description = "SRCH-30")
-	public void searchFilterResults(){
+	public void searchFilterResults() {
 		SoftAssert soft = new SoftAssert();
 
 		SearchPage page = new SearchPage(driver);
@@ -111,8 +111,8 @@ public class SearchPgTest extends BaseTest {
 
 		for (ServiceGroupRow row : rows) {
 
-			String identifier =row.getParticipantIdentifier();
-			String scheme =row.getParticipantScheme();
+			String identifier = row.getParticipantIdentifier();
+			String scheme = row.getParticipantScheme();
 
 			soft.assertTrue(identifier.contains(pIdentifier), String.format("Identifier %s, found %s", pIdentifier, identifier));
 			soft.assertTrue(scheme.contains(pScheme), String.format("Scheme %s, found %s", pScheme, scheme));
@@ -122,7 +122,7 @@ public class SearchPgTest extends BaseTest {
 	}
 
 	@Test(description = "SRCH-40")
-	public void openURLLink(){
+	public void openURLLink() {
 		SoftAssert soft = new SoftAssert();
 
 		SearchPage page = new SearchPage(driver);
@@ -137,7 +137,7 @@ public class SearchPgTest extends BaseTest {
 		String tmpURLPart = null;
 		try {
 			tmpURLPart = URLDecoder.decode(listedURL, "UTF-8").split("smp/")[1].trim();
-			soft.assertEquals(tmpURLPart, pScheme+"::"+pIdentifier, "URL contains the proper scheme and identifier");
+			soft.assertEquals(tmpURLPart, pScheme + "::" + pIdentifier, "URL contains the proper scheme and identifier");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -148,13 +148,13 @@ public class SearchPgTest extends BaseTest {
 				"Number of listed MetadataReferences in XML matches UI");
 
 
-
 		soft.assertAll();
 	}
 
 
-	@Test(description = "SRCH-50") @Ignore
-	public void expandServiceGroupCheckMetadata(){
+	@Test(description = "SRCH-50")
+	@Ignore
+	public void expandServiceGroupCheckMetadata() {
 		SoftAssert soft = new SoftAssert();
 
 		SearchPage page = new SearchPage(driver);
@@ -179,15 +179,15 @@ public class SearchPgTest extends BaseTest {
 			String docId = metadataRow.getDocumentIdentifier();
 			String url = metadataRow.getURL();
 
-			soft.assertTrue(url.contains(String.format("%s::%s/services/%s::%s", pScheme, pIdentifier, docScheme, docId)), "Checking URL format for metadata "+ docId);
+			soft.assertTrue(url.contains(String.format("%s::%s/services/%s::%s", pScheme, pIdentifier, docScheme, docId)), "Checking URL format for metadata " + docId);
 
 
 			String metadata = SMPRestClient.getMetadataString(url);
 
-			soft.assertTrue(metadata.contains(pScheme), "Checking XML contains proper participant scheme for metadata "+ docId);
-			soft.assertTrue(metadata.contains(pIdentifier), "Checking XML contains proper participant ID for metadata "+ docId);
-			soft.assertTrue(metadata.toLowerCase().contains(docId.toLowerCase()), "Checking XML contains proper document ID for metadata "+ docId);
-			soft.assertTrue(metadata.contains(docScheme), "Checking XML contains proper document scheme for metadata "+ docId);
+			soft.assertTrue(metadata.contains(pScheme), "Checking XML contains proper participant scheme for metadata " + docId);
+			soft.assertTrue(metadata.contains(pIdentifier), "Checking XML contains proper participant ID for metadata " + docId);
+			soft.assertTrue(metadata.toLowerCase().contains(docId.toLowerCase()), "Checking XML contains proper document ID for metadata " + docId);
+			soft.assertTrue(metadata.contains(docScheme), "Checking XML contains proper document scheme for metadata " + docId);
 
 
 		}
@@ -196,7 +196,7 @@ public class SearchPgTest extends BaseTest {
 	}
 
 	@Test(description = "SRCH-60")
-	public void collapseMetadata(){
+	public void collapseMetadata() {
 		SoftAssert soft = new SoftAssert();
 
 		SearchPage page = new SearchPage(driver);
@@ -205,19 +205,18 @@ public class SearchPgTest extends BaseTest {
 		ServiceGroupRow row0 = null;
 		List<ServiceGroupRow> rows = page.getServiceGroupGrid().getRows();
 		for (int i = 0; i < rows.size(); i++) {
-			if(rows.get(i).getMetadataSize() >0 ){
+			if (rows.get(i).getMetadataSize() > 0) {
 				row0 = rows.get(i);
 			}
 		}
 
-		if(null == row0){
+		if (null == row0) {
 			row0 = rows.get(0);
 			SMPRestClient.createMetadata(row0.getParticipantIdentifier());
 			page.refreshPage();
 			logger.info("Created Metadata for row 0");
 			row0 = page.getServiceGroupGrid().getRows().get(0);
 		}
-
 
 
 		soft.assertTrue(row0.verifyMetadataExpandButton(), "Initially the row has expanding symbol on it");
@@ -233,7 +232,7 @@ public class SearchPgTest extends BaseTest {
 	}
 
 	@Test(description = "SRCH-70")
-	public void verifyOpenMetadataURL(){
+	public void verifyOpenMetadataURL() {
 		SoftAssert soft = new SoftAssert();
 
 		SearchPage page = new SearchPage(driver);
@@ -242,12 +241,12 @@ public class SearchPgTest extends BaseTest {
 		ServiceGroupRow row0 = null;
 		List<ServiceGroupRow> rows = page.getServiceGroupGrid().getRows();
 		for (int i = 0; i < rows.size(); i++) {
-			if(rows.get(i).getMetadataSize() >0 ){
+			if (rows.get(i).getMetadataSize() > 0) {
 				row0 = rows.get(i);
 			}
 		}
 
-		if(null == row0){
+		if (null == row0) {
 			row0 = rows.get(0);
 			SMPRestClient.createMetadata(row0.getParticipantIdentifier());
 			page.refreshPage();
@@ -278,7 +277,7 @@ public class SearchPgTest extends BaseTest {
 				e.printStackTrace();
 			}
 
-			soft.assertTrue(url.contains(String.format("%s::%s/services/%s::%s", pScheme, pIdentifier, docScheme, docId)), "Checking URL format for metadata "+ docId);
+			soft.assertTrue(url.contains(String.format("%s::%s/services/%s::%s", pScheme, pIdentifier, docScheme, docId)), "Checking URL format for metadata " + docId);
 
 			String mainWindow = driver.getWindowHandle();
 
@@ -299,7 +298,7 @@ public class SearchPgTest extends BaseTest {
 	}
 
 	@Test(description = "SRCH-80")
-	public void filterByDifferentDomains(){
+	public void filterByDifferentDomains() {
 		SoftAssert soft = new SoftAssert();
 
 		String participantID = Generator.randomAlphaNumeric(5);
@@ -318,7 +317,7 @@ public class SearchPgTest extends BaseTest {
 		searchPage.filters.filter(participantID, participantScheme, SMPRestClient.getDomainSubDomainCombo(createdDomains.get(0)));
 		List<ServiceGroupRow> results = searchPage.getServiceGroupGrid().getRows();
 
-		soft.assertEquals(results.size() , 1, "Results size is 1 (first search)");
+		soft.assertEquals(results.size(), 1, "Results size is 1 (first search)");
 		soft.assertEquals(results.get(0).getParticipantIdentifier().toLowerCase(), participantID.toLowerCase(),
 				"First and only result is the one we entered and is found when filtering by first domain");
 
@@ -356,4 +355,39 @@ public class SearchPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
+	@Test(description = "SRCH-100")
+	public void metadataTableContent() {
+		SoftAssert soft = new SoftAssert();
+
+		SearchPage page = new SearchPage(driver);
+		soft.assertTrue(page.isLoaded());
+		ServiceGroupRow row0 = null;
+		List<ServiceGroupRow> rows = page.getServiceGroupGrid().getRows();
+		row0 = rows.get(0);
+		MetadataGrid metadataGrid = row0.expandMetadata();
+		List<MetadataRow> metadataRows = metadataGrid.getMetadataRows();
+		if (row0.getMetadataSize() == 0) {
+			//row0.emptyMetadataContentText()
+			soft.assertEquals(row0.emptyMetadataContentText(), "No service metadata");
+		} else {
+			if (row0.getMetadataSize() > 0) {
+				soft.assertTrue(row0.getMetadataSize() == metadataRows.size(), "metadata size is not equal to no of metadata present inside the corressponding row");
+			}
+
+		}
+      soft.assertAll();
+	}
+
+	@Test(description = "SRCH-101")
+	public void verifyCollapsingSidebarPageAfterLogin()
+	{
+		SoftAssert soft = new SoftAssert();
+		SearchPage page = new SearchPage(driver);
+		soft.assertTrue(page.isLoaded());
+		page.sidebar.collapsingSideBar();
+		soft.assertFalse(page.sidebar.isSidebarSearchTextEnable(),"Search button is visible so sidebar page is not collpased");
+        page.sidebar.expandingSideBar();
+		soft.assertTrue(page.sidebar.isSidebarSearchTextEnable(),"Search button is not visible so sidebar page is not expanding");
+		soft.assertAll();
+	}
 }
