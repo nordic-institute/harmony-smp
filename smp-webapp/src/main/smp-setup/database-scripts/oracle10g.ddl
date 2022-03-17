@@ -319,6 +319,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp not null,
         PASSWORD varchar2(256 char),
         PASSWORD_CHANGED timestamp,
+        PAT_GENERATED timestamp,
+        PAT_ID varchar2(256 char),
+        PAT_VALUE varchar2(256 char),
         ROLE varchar2(256 char),
         USERNAME varchar2(256 char),
         primary key (ID)
@@ -342,6 +345,15 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_USER.PASSWORD_CHANGED is
         'Last date when password was changed';
 
+    comment on column SMP_USER.PAT_GENERATED is
+        'Date when personal access token was generated';
+
+    comment on column SMP_USER.PAT_ID is
+        'Personal access token id';
+
+    comment on column SMP_USER.PAT_VALUE is
+        'BCrypted personal access token';
+
     comment on column SMP_USER.ROLE is
         'User role';
 
@@ -358,6 +370,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp,
         PASSWORD varchar2(256 char),
         PASSWORD_CHANGED timestamp,
+        PAT_GENERATED timestamp,
+        PAT_ID varchar2(256 char),
+        PAT_VALUE varchar2(256 char),
         ROLE varchar2(256 char),
         USERNAME varchar2(256 char),
         primary key (ID, REV)
@@ -381,6 +396,9 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
     alter table SMP_SERVICE_METADATA 
        add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME);
+
+    alter table SMP_USER 
+       add constraint UK_eia7hvki1b2358ggu7kpnahyi unique (PAT_ID);
 
     alter table SMP_USER 
        add constraint UK_rt1f0anklfo05lt0my05fqq6 unique (USERNAME);

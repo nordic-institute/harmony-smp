@@ -28,6 +28,7 @@ import java.util.Objects;
         // case insesitive search
         @NamedQuery(name = "DBUser.getUserByUsernameInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.username) = lower(:username)"),
         @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
+        @NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.patId = :patId"),
         @NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.certificate.certificateId) = lower(:certificateId)"),
 })
 @NamedNativeQueries({
@@ -57,19 +58,29 @@ public class DBUser extends BaseEntity {
     @ColumnDescription(comment = "Unique user id")
     Long id;
 
+    @Column(name = "EMAIL", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
+    @ColumnDescription(comment = "User email")
+    private String emailAddress;
+    // username
     @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
     @ColumnDescription(comment = "Login username")
     private String username;
     @Column(name = "PASSWORD", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
     @ColumnDescription(comment = "BCrypted password for username/password login")
     private String password;
-    @Column(name = "EMAIL", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
-    @ColumnDescription(comment = "User email")
-    private String emailAddress;
-
     @Column(name = "PASSWORD_CHANGED")
     @ColumnDescription(comment = "Last date when password was changed")
     LocalDateTime passwordChanged;
+    // Personal access token
+    @Column(name = "PAT_ID", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
+    @ColumnDescription(comment = "Personal access token id")
+    private String patId;
+    @Column(name = "PAT_VALUE", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
+    @ColumnDescription(comment = "BCrypted personal access token")
+    private String patValue;
+    @Column(name = "PAT_GENERATED")
+    @ColumnDescription(comment = "Date when personal access token was generated")
+    LocalDateTime patGenerated;
 
     @Column(name = "ACTIVE", nullable = false)
     @ColumnDescription(comment = "Is user active")
@@ -122,6 +133,30 @@ public class DBUser extends BaseEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getPatId() {
+        return patId;
+    }
+
+    public void setPatId(String patId) {
+        this.patId = patId;
+    }
+
+    public String getPatValue() {
+        return patValue;
+    }
+
+    public void setPatValue(String patValue) {
+        this.patValue = patValue;
+    }
+
+    public LocalDateTime getPatGenerated() {
+        return patGenerated;
+    }
+
+    public void setPatGenerated(LocalDateTime patGenerated) {
+        this.patGenerated = patGenerated;
     }
 
     public String getRole() {

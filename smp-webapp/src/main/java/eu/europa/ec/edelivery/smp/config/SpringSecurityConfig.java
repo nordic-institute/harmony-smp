@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProviderForUI;
 import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
@@ -66,11 +67,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(SpringSecurityConfig.class);
 
     SMPAuthenticationProvider smpAuthenticationProvider;
+    SMPAuthenticationProviderForUI smpAuthenticationProviderForUI;
     CasAuthenticationProvider casAuthenticationProvider;
-    ClientCertAuthenticationFilter ClientCertAuthenticationFilter;
+    // Accounts supporting automated application functionalities
+    ClientCertAuthenticationFilter clientCertAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
+    // User account
     CasAuthenticationFilter casAuthenticationFilter;
     CasAuthenticationEntryPoint casAuthenticationEntryPoint;
+
     CsrfTokenRepository csrfTokenRepository;
     HttpFirewall httpFirewall;
     RequestMatcher csrfURLMatcher;
@@ -85,13 +90,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      * Initialize beans. Use lazy initialization for filter to avoid circular dependencies
      *
      * @param smpAuthenticationProvider
-     * @param ClientCertAuthenticationFilter
+     * @param clientCertAuthenticationFilter
      * @param x509AuthenticationFilter
      */
     @Autowired
     public SpringSecurityConfig(SMPAuthenticationProvider smpAuthenticationProvider,
+                                SMPAuthenticationProviderForUI smpAuthenticationProviderForUI,
                                 ConfigurationService configurationService,
-                                @Lazy ClientCertAuthenticationFilter ClientCertAuthenticationFilter,
+                                @Lazy ClientCertAuthenticationFilter clientCertAuthenticationFilter,
                                 @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
                                 @Lazy CsrfTokenRepository csrfTokenRepository,
                                 @Lazy RequestMatcher csrfURLMatcher,
@@ -104,8 +110,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         super(false);
         this.configurationService = configurationService;
         this.smpAuthenticationProvider = smpAuthenticationProvider;
+        this.smpAuthenticationProviderForUI = smpAuthenticationProviderForUI;
         this.casAuthenticationProvider = casAuthenticationProvider;
-        this.ClientCertAuthenticationFilter = ClientCertAuthenticationFilter;
+        this.clientCertAuthenticationFilter = clientCertAuthenticationFilter;
         this.x509AuthenticationFilter = x509AuthenticationFilter;
         this.casAuthenticationFilter = casAuthenticationFilter;
         this.casAuthenticationEntryPoint = casAuthenticationEntryPoint;
@@ -167,7 +174,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
         }
 
-        httpSecurity.addFilter(ClientCertAuthenticationFilter)
+        httpSecurity.addFilter(clientCertAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
                 .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
@@ -207,7 +214,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             LOG.info("[CAS] Authentication Provider enabled");
             auth.authenticationProvider(casAuthenticationProvider);
         }
+        // add UI authentication provider
+        auth.authenticationProvider(smpAuthenticationProviderForUI);
+        // fallback automation user token authentication
         auth.authenticationProvider(smpAuthenticationProvider);
+
+
     }
 
     @Override

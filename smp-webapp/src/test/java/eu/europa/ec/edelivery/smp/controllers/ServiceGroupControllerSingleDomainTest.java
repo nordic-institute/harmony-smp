@@ -84,7 +84,7 @@ public class ServiceGroupControllerSingleDomainTest {
 
     private static final String OTHER_OWNER_NAME = "CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08";
 
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "test123");
 
     @Autowired
     private WebApplicationContext webAppContext;
