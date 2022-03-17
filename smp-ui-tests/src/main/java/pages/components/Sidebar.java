@@ -1,5 +1,6 @@
 package pages.components;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -38,6 +39,12 @@ public class Sidebar extends PageComponent {
 
 	@FindBy(id = "sidebar_user_id")
 	private WebElement userLnk;
+
+	@FindBy(css = "mat-icon[role=img][mattooltip=Collapse]")
+	private WebElement collapseButton;
+
+	@FindBy(xpath = "//button[@id='sidebar_search_id']//span[text()='Search']")
+	private WebElement sidebarSearchText;
 
 	/* Receives the Page object class as parameter and based on the class name it navigates to the appropriate page
 	 and returns an instance of that class */
@@ -80,5 +87,13 @@ public class Sidebar extends PageComponent {
 	public boolean isUsersLnkEnabled(){
 		return isVisible(userLnk) && isEnabled(userLnk);
 	}
-
+	public boolean isSidebarSearchTextEnable(){
+		return isVisible(sidebarSearchText) && isEnabled(sidebarSearchText);
+	}
+    public void collapsingSideBar(){
+		collapseButton.click();
+	}
+	public void expandingSideBar(){
+		driver.findElement(By.cssSelector("mat-icon[role=img][mattooltip=Expand]")).click();
+	}
 }

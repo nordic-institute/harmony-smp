@@ -120,8 +120,13 @@ public class DomainPopup extends PageComponent {
 	}
 
 	public void clearAndFillDomainCodeInput(String domainCode) {
-		log.info("filling only domain code data for new domain");
+		log.info("clear and fill domain code data");
 		clearAndFillInput(domainCodeInput, domainCode);
+	}
+
+	public void clearAndFillSMLDomainInput(String SMLDomain) {
+		log.info("filling only domain code data for new domain");
+		clearAndFillInput(smlDomainInput, SMLDomain);
 	}
 
 
