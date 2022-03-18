@@ -129,7 +129,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         }
 
         try {
-
             Optional<DBUser> oUsr = mUserDao.findUserByCertificateId(userToken, true);
             if (!oUsr.isPresent()) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, userToken);
@@ -192,7 +191,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             }
         }
         // get role
-        String role = user.getRole();
+        String role = "WS_"+user.getRole();
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, userToken, role);
         SMPCertificateAuthentication authentication = new SMPCertificateAuthentication(principal, Collections.singletonList(new SMPAuthority(role)), user);
 
@@ -233,7 +232,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
         }
         try {
-            if (!BCrypt.checkpw(authenticationTokenValue, user.getPatValue())) {
+            if (!BCrypt.checkpw(authenticationTokenValue, user.getAccessToken())) {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, authenticationTokenId);
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }

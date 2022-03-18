@@ -28,6 +28,7 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         target.setUsername(source.getUsername());
         target.setRole(source.getRole());
         target.setPassword(source.getPassword());
+        target.setAccessTokenId(source.getAccessTokenIdentifier());
         target.setPasswordExpired(isPasswordExpired(source));
         target.setActive(source.isActive());
         target.setId(source.getId());

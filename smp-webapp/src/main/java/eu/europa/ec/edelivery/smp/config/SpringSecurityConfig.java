@@ -123,15 +123,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                //on authentication, a new HTTP Session is created, the old one is invalidated and the attributes from the old session are copied over.
-                .sessionFixation().migrateSession()
-                //In order to force only one  concurrent sessions for the same user,
-                .maximumSessions(1).and()
-                .and();
+
+        configureSecurityHeaders(httpSecurity);
 
         ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer = httpSecurity.exceptionHandling();
         if (configurationService.isSSOEnabledForUserAuthentication()) {
@@ -139,7 +132,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             exceptionHandlingConfigurer = exceptionHandlingConfigurer.defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint, new AntPathRequestMatcher(SMP_SECURITY_PATH_CAS_AUTHENTICATE));
         }
         exceptionHandlingConfigurer.authenticationEntryPoint(new SpringSecurityExceptionHandler());
-
         httpSecurity = exceptionHandlingConfigurer
                 .accessDeniedHandler(new SpringSecurityExceptionHandler())
                 .and()
@@ -152,6 +144,51 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             LOG.debug("The CAS authentication is enabled. Add CAS filter!");
             httpSecurity = httpSecurity.addFilter(casAuthenticationFilter);
         }
+
+
+        httpSecurity.addFilter(clientCertAuthenticationFilter)
+                .addFilter(x509AuthenticationFilter)
+                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
+                .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
+                .antMatchers(HttpMethod.POST, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
+                .antMatchers(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE).authenticated()
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
+                SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN,
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
+                SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN,
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.GET).permitAll().and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+        ;
+    }
+
+    protected void configureSecurityHeaders(HttpSecurity httpSecurity) throws Exception {
+        // configure session and csrf headers
+        httpSecurity
+                .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                //on authentication, a new HTTP Session is created, the old one is invalidated and the attributes from the old session are copied over.
+                .sessionFixation().migrateSession()
+                //In order to force only one  concurrent sessions for the same user,
+                .maximumSessions(1).and()
+                .and();
+
         // set HstsMAxAge
         Integer maxAge = configurationService.getHttpHeaderHstsMaxAge();
         if (maxAge == null || maxAge < 0) {
@@ -173,32 +210,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .maxAgeInSeconds(maxAge)
                     .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
         }
-
-        httpSecurity.addFilter(clientCertAuthenticationFilter)
-                .addFilter(x509AuthenticationFilter)
-                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
-                .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
-                .antMatchers(HttpMethod.POST, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
-                .antMatchers(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE).authenticated()
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.GET).permitAll().and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-        ;
     }
 
     @Override

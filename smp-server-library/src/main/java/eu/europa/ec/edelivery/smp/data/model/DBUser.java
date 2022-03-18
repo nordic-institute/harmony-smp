@@ -28,7 +28,7 @@ import java.util.Objects;
         // case insesitive search
         @NamedQuery(name = "DBUser.getUserByUsernameInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.username) = lower(:username)"),
         @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
-        @NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.patId = :patId"),
+        @NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.accessTokenIdentifier = :patId"),
         @NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.certificate.certificateId) = lower(:certificateId)"),
 })
 @NamedNativeQueries({
@@ -72,15 +72,15 @@ public class DBUser extends BaseEntity {
     @ColumnDescription(comment = "Last date when password was changed")
     LocalDateTime passwordChanged;
     // Personal access token
-    @Column(name = "PAT_ID", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
+    @Column(name = "ACCESS_TOKEN_ID", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
     @ColumnDescription(comment = "Personal access token id")
-    private String patId;
-    @Column(name = "PAT_VALUE", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
+    private String accessTokenIdentifier;
+    @Column(name = "ACCESS_TOKEN", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
     @ColumnDescription(comment = "BCrypted personal access token")
-    private String patValue;
+    private String accessToken;
     @Column(name = "PAT_GENERATED")
     @ColumnDescription(comment = "Date when personal access token was generated")
-    LocalDateTime patGenerated;
+    LocalDateTime accessTokenGeneratedOn;
 
     @Column(name = "ACTIVE", nullable = false)
     @ColumnDescription(comment = "Is user active")
@@ -135,28 +135,28 @@ public class DBUser extends BaseEntity {
         this.active = active;
     }
 
-    public String getPatId() {
-        return patId;
+    public String getAccessTokenIdentifier() {
+        return accessTokenIdentifier;
     }
 
-    public void setPatId(String patId) {
-        this.patId = patId;
+    public void setAccessTokenIdentifier(String accessTokenIdentifier) {
+        this.accessTokenIdentifier = accessTokenIdentifier;
     }
 
-    public String getPatValue() {
-        return patValue;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setPatValue(String patValue) {
-        this.patValue = patValue;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
-    public LocalDateTime getPatGenerated() {
-        return patGenerated;
+    public LocalDateTime getAccessTokenGeneratedOn() {
+        return accessTokenGeneratedOn;
     }
 
-    public void setPatGenerated(LocalDateTime patGenerated) {
-        this.patGenerated = patGenerated;
+    public void setAccessTokenGeneratedOn(LocalDateTime accessTokenGeneratedOn) {
+        this.accessTokenGeneratedOn = accessTokenGeneratedOn;
     }
 
     public String getRole() {
@@ -213,7 +213,6 @@ public class DBUser extends BaseEntity {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), id, username, certificate);
     }
 
