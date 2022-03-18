@@ -5,16 +5,14 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -78,6 +76,24 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             }
         }
 
+    }
+
+    /**
+     *  Method regenerate access token for user and returns access token
+     *  In the database the access token value is saved in format BCryptPasswordHash
+     *
+     * @param userRO
+     * @return generated AccessToken.
+     */
+    @Transactional
+    public AccessTokenRO generateAccessTokenForUser(Long userId) {
+        DBUser dbUser = userDao.find(userId);
+        AccessTokenRO token = SecurityUtils.generateAccessToken();
+        dbUser.setAccessTokenIdentifier(token.getIdentifier());
+        dbUser.setAccessToken(BCryptPasswordHash.hashPassword(token.getValue()));
+        dbUser.setAccessTokenGeneratedOn(token.getGeneratedOn());
+        userDao.update(dbUser);
+        return token;
     }
 
     @Transactional

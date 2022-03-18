@@ -84,8 +84,8 @@ public class TestDBUtils {
         dbuser.setEmailAddress("test@test.eu");
         dbuser.setPasswordChanged(LocalDateTime.now());
         dbuser.setPassword(UUID.randomUUID().toString());
-        dbuser.setPatId(userName);
-        dbuser.setPatValue(UUID.randomUUID().toString());
+        dbuser.setAccessTokenIdentifier(userName);
+        dbuser.setAccessToken(UUID.randomUUID().toString());
         return dbuser;
     }
 
