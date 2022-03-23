@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,6 +210,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .preload(false)
                     .maxAgeInSeconds(maxAge)
                     .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
+        }
+
+        String contentSecurityPolicy = configurationService.getHttpHeaderContentSecurityPolicy();
+        if (StringUtils.isNotBlank(contentSecurityPolicy)) {
+            httpSecurity = httpSecurity.headers().contentSecurityPolicy(contentSecurityPolicy).and().and();
         }
     }
 
