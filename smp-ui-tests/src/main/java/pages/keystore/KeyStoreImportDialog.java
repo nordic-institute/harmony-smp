@@ -61,7 +61,6 @@ public class KeyStoreImportDialog extends PageComponent{
         return new KeyStoreEditDialog(driver);
     }
     public void chooseKeystoreFile(String relativePath) {
-       //String path =new File("src/main/resources/keystore/keystore_dummy1.jks").getAbsolutePath() ;
         String path =new File(relativePath).getAbsolutePath() ;
         chooseKeystore.sendKeys(path);
     }
