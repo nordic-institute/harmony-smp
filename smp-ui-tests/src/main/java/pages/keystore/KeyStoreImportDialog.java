@@ -60,8 +60,9 @@ public class KeyStoreImportDialog extends PageComponent{
         waitForElementToBeGone(closeBtn);
         return new KeyStoreEditDialog(driver);
     }
-    public void chooseKeystoreFile() {
-        String path =System.getProperty("user.dir")+ File.separator +"target"+ File.separator + "classes" + File.separator + "keystore" + File.separator + "keystore_dummy1.jks";
+    public void chooseKeystoreFile(String relativePath) {
+       //String path =new File("src/main/resources/keystore/keystore_dummy1.jks").getAbsolutePath() ;
+        String path =new File(relativePath).getAbsolutePath() ;
         chooseKeystore.sendKeys(path);
     }
     public void fillPassword(String password)
