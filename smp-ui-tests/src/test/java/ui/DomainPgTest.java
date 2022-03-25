@@ -371,7 +371,7 @@ public class DomainPgTest extends BaseTest {
 		KeyStoreEditDialog keyStoreEdit = page.clickEditKeyStore();
 		int keyStoreRowBeforeAddition = keyStoreEdit.grid().getRowsNo();
 		KeyStoreImportDialog keyStoreImport = keyStoreEdit.clickImportKeystore();
-		keyStoreImport.chooseKeystoreFile();
+		keyStoreImport.chooseKeystoreFile("src/main/resources/keystore/keystore_dummy1.jks");
 		Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
 		keyStoreImport.fillPassword(pass);
 		keyStoreImport.clickImportBtn();
@@ -399,7 +399,7 @@ public class DomainPgTest extends BaseTest {
 			KeyStoreEditDialog keyStoreEdit = page.clickEditKeyStore();
 			int keyStoreRowBeforeAddition = keyStoreEdit.grid().getRowsNo();
 			KeyStoreImportDialog keyStoreImport = keyStoreEdit.clickImportKeystore();
-			keyStoreImport.chooseKeystoreFile();
+			keyStoreImport.chooseKeystoreFile("src/main/resources/keystore/keystore_dummy1.jks");
 			Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
 			keyStoreImport.fillPassword(pass);
 			keyStoreImport.clickImportBtn();
@@ -410,7 +410,7 @@ public class DomainPgTest extends BaseTest {
 			soft.assertEquals(keyStoreRowAfterAddition,keyStoreRowBeforeAddition+1, "KeyStore is not added to the grid");
 		keyStoreRowBeforeAddition = keyStoreRowAfterAddition;
 		keyStoreImport = keyStoreEdit.clickImportKeystore();
-		keyStoreImport.chooseKeystoreFile();
+		keyStoreImport.chooseKeystoreFile("src/main/resources/keystore/keystore_dummy1.jks");
 		Assert.assertEquals(keyStoreImport.getKeyStoreFileName(),"keystore_dummy1.jks","the keystore file name is not correct");
 		keyStoreImport.fillPassword(pass);
 		keyStoreImport.clickImportBtn();

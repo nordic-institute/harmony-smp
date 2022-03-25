@@ -439,7 +439,6 @@ public class UsersPgTest extends BaseTest {
         SoftAssert soft = new SoftAssert();
         String userName = Generator.randomAlphaNumeric(10);
         String validPass = "QW!@qw12";
-       // String errorMsg = "×\n" + "The operation 'update' not completed successfully. Unexpected technical error occurred.";
         UsersPage page = new UsersPage(driver);
 
         soft.assertTrue(page.isNewButtonEnabled(), "New button should be enabled");
