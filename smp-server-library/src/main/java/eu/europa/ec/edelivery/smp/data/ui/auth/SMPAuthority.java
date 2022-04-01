@@ -10,6 +10,9 @@ import org.springframework.security.core.GrantedAuthority;
 public class SMPAuthority implements GrantedAuthority {
 
     // static constants for annotations!
+    public static final String S_AUTHORITY_TOKEN_WS_SMP_ADMIN = "ROLE_WS_SMP_ADMIN";
+    public static final String S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN = "ROLE_WS_SERVICE_GROUP_ADMIN";
+    // ui
     public static final String S_AUTHORITY_TOKEN_SYSTEM_ADMIN = "ROLE_SYSTEM_ADMIN";
     public static final String S_AUTHORITY_TOKEN_SMP_ADMIN = "ROLE_SMP_ADMIN";
     public static final String S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN = "ROLE_SERVICE_GROUP_ADMIN";

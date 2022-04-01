@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.spec.AlgorithmParameterSpec;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Enumeration;
@@ -24,7 +26,9 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 public class SecurityUtils {
 
     private static final String VALID_PW_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
+    private static final String VALID_USER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int DEFAULT_PASSWORD_LENGTH = 16;
+    private static final int DEFAULT_USER_LENGTH = 8;
 
     public static final String ALGORITHM_KEY = "AES";
     public static final String ALGORITHM_ENCRYPTION = "AES/GCM/NoPadding";
@@ -80,8 +84,8 @@ public class SecurityUtils {
         return newAlias;
     }
 
-    public static String generateStrongPassword(){
-        String newKeyPassword = null;
+    public static String generateAuthenticationToken() {
+        String newKeyPassword;
 
         try {
             newKeyPassword = RandomStringUtils.random(DEFAULT_PASSWORD_LENGTH, 0, VALID_PW_CHARS.length(),
@@ -94,6 +98,29 @@ public class SecurityUtils {
             throw new SMPRuntimeException(INTERNAL_ERROR, e, msg, e.getMessage());
         }
         return newKeyPassword;
+    }
+
+    public static String generateAuthenticationTokenIdentifier() {
+        String newKeyPassword;
+        try {
+            newKeyPassword = RandomStringUtils.random(DEFAULT_USER_LENGTH, 0, VALID_USER_CHARS.length(),
+                    true, false,
+                    VALID_USER_CHARS.toCharArray(), SecureRandom.getInstanceStrong());
+
+        } catch (NoSuchAlgorithmException e) {
+            String msg = "Error occurred while generation test password: No strong random algorithm. Error:"
+                    + ExceptionUtils.getRootCauseMessage(e);
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, msg, e.getMessage());
+        }
+        return newKeyPassword;
+    }
+
+    public static AccessTokenRO generateAccessToken() {
+        AccessTokenRO accessToken = new AccessTokenRO();
+        accessToken.setGeneratedOn(LocalDateTime.now());
+        accessToken.setIdentifier(generateAuthenticationTokenIdentifier());
+        accessToken.setValue(generateAuthenticationToken());
+        return accessToken;
     }
 
     public static void generatePrivateSymmetricKey(File path) {
@@ -126,9 +153,9 @@ public class SecurityUtils {
     }
 
     public static String encryptWrappedToken(File encKeyFile, String token) {
-        if (!StringUtils.isBlank(token) && token.startsWith( SecurityUtils.DECRYPTED_TOKEN_PREFIX) ){
+        if (!StringUtils.isBlank(token) && token.startsWith(SecurityUtils.DECRYPTED_TOKEN_PREFIX)) {
             String unWrapToken = getNonEncryptedValue(token);
-             return SecurityUtils.encrypt(encKeyFile, unWrapToken);
+            return SecurityUtils.encrypt(encKeyFile, unWrapToken);
         }
         return token;
     }

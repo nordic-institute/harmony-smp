@@ -18,6 +18,7 @@ public class UserRO extends BaseRO implements UserDetails {
 
     private String username;
     private String password;
+    private String accessTokenId;
     private String emailAddress;
     private Collection<SMPAuthority> authorities;
     private boolean active = true;
@@ -49,6 +50,14 @@ public class UserRO extends BaseRO implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAccessTokenId() {
+        return accessTokenId;
+    }
+
+    public void setAccessTokenId(String accessTokenId) {
+        this.accessTokenId = accessTokenId;
     }
 
     public String getEmailAddress() {

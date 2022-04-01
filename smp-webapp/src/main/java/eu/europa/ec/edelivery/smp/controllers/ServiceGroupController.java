@@ -40,6 +40,7 @@ import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_DOMAIN;
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_OWNER;
+import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.*;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
@@ -83,7 +84,7 @@ public class ServiceGroupController {
 
 
     @PutMapping
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
+    @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_WS_SMP_ADMIN })
     public ResponseEntity saveServiceGroup(HttpServletRequest httpReq,
                                            @PathVariable String serviceGroupId,
                                            @RequestHeader(name = HTTP_PARAM_OWNER, required = false) String serviceGroupOwner,
@@ -107,7 +108,7 @@ public class ServiceGroupController {
     }
 
     @DeleteMapping
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
+    @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_WS_SMP_ADMIN })
     public ResponseEntity deleteServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);

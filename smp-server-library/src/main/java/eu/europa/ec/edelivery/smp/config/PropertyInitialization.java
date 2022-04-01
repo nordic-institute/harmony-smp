@@ -40,7 +40,6 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
@@ -204,7 +203,7 @@ public class PropertyInitialization {
         }else {
             // generate new token
             LOG.info("generate  token");
-            String trustToken = SecurityUtils.generateStrongPassword();
+            String trustToken = SecurityUtils.generateAuthenticationToken();
             storeDBEntry(em, SMPPropertyEnum.TRUSTSTORE_PASSWORD_DECRYPTED, trustToken);
             encTrustEncToken = SecurityUtils.encrypt(fEncryption, trustToken);
         }
@@ -257,7 +256,7 @@ public class PropertyInitialization {
                                      Properties fileProperties) {
 
         // store keystore password  filename
-        String newKeyPassword = SecurityUtils.generateStrongPassword();
+        String newKeyPassword = SecurityUtils.generateAuthenticationToken();
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
         String encPasswd = SecurityUtils.encrypt(fEncryption, newKeyPassword);
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD, encPasswd);

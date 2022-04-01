@@ -13,6 +13,7 @@ public enum SMPPropertyEnum {
     OUTPUT_CONTEXT_PATH("contextPath.output", "true", "This property controls pattern of URLs produced by SMP in GET ServiceGroup responses.", true, false, true, SMPPropertyTypeEnum.BOOLEAN),
     HTTP_FORWARDED_HEADERS_ENABLED("smp.http.forwarded.headers.enabled", "false", "Use (value true) or remove (value false) forwarded headers! There are security considerations for forwarded headers since an application cannot know if the headers were added by a proxy, as intended, or by a malicious client.", false, false, false, SMPPropertyTypeEnum.BOOLEAN),
     HTTP_HSTS_MAX_AGE("smp.http.httpStrictTransportSecurity.maxAge", "31536000", "How long(in seconds) HSTS should last in the browser's cache(default one year)", false, false, true, SMPPropertyTypeEnum.INTEGER),
+    HTTP_HEADER_SEC_POLICY("smp.http.header.security.policy", "default-src 'self'; script-src 'self'; child-src 'none'; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'; form-action 'self';", "Content Security Policy (CSP)", false, false, true, SMPPropertyTypeEnum.INTEGER),
     // http proxy configuration
     HTTP_PROXY_HOST("smp.proxy.host", "", "The http proxy host", false, false, false, SMPPropertyTypeEnum.STRING),
     HTTP_NO_PROXY_HOSTS("smp.noproxy.hosts", "localhost|127.0.0.1", "list of nor proxy hosts. Ex.: localhost|127.0.0.1", false, false, false, SMPPropertyTypeEnum.STRING),

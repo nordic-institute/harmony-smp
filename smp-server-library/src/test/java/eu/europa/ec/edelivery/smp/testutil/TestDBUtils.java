@@ -74,7 +74,7 @@ public class TestDBUtils {
 
 
     public static DBUser createDBUser(String username1) {
-        return createDBUserByUsername(TestConstants.USERNAME_1);
+        return createDBUserByUsername(username1);
     }
 
     public static DBUser createDBUserByUsername(String userName) {
@@ -84,6 +84,8 @@ public class TestDBUtils {
         dbuser.setEmailAddress("test@test.eu");
         dbuser.setPasswordChanged(LocalDateTime.now());
         dbuser.setPassword(UUID.randomUUID().toString());
+        dbuser.setAccessTokenIdentifier(userName);
+        dbuser.setAccessToken(UUID.randomUUID().toString());
         return dbuser;
     }
 
