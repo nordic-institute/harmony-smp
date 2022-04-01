@@ -38,26 +38,22 @@ DOCKER_PASSWORD=$bamboo_DOCKER_PASSWORD
 DOCKER_REGISTRY_HOST=${bamboo_DOCKER_REGISTRY_HOST}
 DOCKER_FOLDER=${bamboo_DOCKER_FOLDER:-${bamboo_DOCKER_USER}}
 
+# READ arguments
+while getopts v:o:s:c:p: option; do
+  case "${option}" in
 
-# READ argumnets 
-while getopts v:o:s:c:p: option
-do
-  case "${option}"
-  in
-    v) SMP_VERSION=${OPTARG};;
-    o) ORACLE_ARTEFACTS=${OPTARG};;
-    s) SMP_ARTEFACTS=${OPTARG};;
-    c) SMP_ARTEFACTS_CLEAR=${OPTARG};;
-    p) SMP_IMAGE_PUBLISH=${OPTARG};;
+  v) SMP_VERSION=${OPTARG} ;;
+  o) ORACLE_ARTEFACTS=${OPTARG} ;;
+  s) SMP_ARTEFACTS=${OPTARG} ;;
+  c) SMP_ARTEFACTS_CLEAR=${OPTARG} ;;
+  p) SMP_IMAGE_PUBLISH=${OPTARG} ;;
   esac
 done
 
-if [[  -z "${SML_VERSION}" ]]
-then
+if [[ -z "${SMP_VERSION}" ]]; then
   # get version from setup file
-  #cd "${SMP_ARTEFACTS}"
-  #SMP_VERSION="$(ls smp-*-setup.zip | sed -e 's/.*smp-//g' | sed -e 's/-setup\.zip$//g')"
-  SMP_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)"
+  echo "Get version from the pom: $(pwd)"
+  SMP_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout)"
   # go back to dirname
   if [[ -z "${SMP_VERSION}" ]]; then
     echo "Try to get version from artefacts: $(ls -ltr $SMP_ARTEFACTS)"
