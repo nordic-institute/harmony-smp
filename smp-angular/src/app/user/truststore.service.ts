@@ -26,7 +26,7 @@ export class TruststoreService {
       .set("Content-Type", "application/octet-stream");
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<CertificateRo>(`${SmpConstants.REST_TRUSTSTORE}/${currentUser.id}/certdata`, payload, {headers});
+    return this.http.post<CertificateRo>(`${SmpConstants.REST_INTERNAL_TRUSTSTORE}/${currentUser.userId}/validate-certificate`, payload, {headers});
   }
 
   deleteCertificateFromKeystore$(certificateAlias): Observable<TruststoreResult> {
@@ -35,6 +35,6 @@ export class TruststoreService {
     let certificateAliasEncoded = encodeURIComponent(certificateAlias);
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.delete<TruststoreResult>(`${SmpConstants.REST_TRUSTSTORE}/${currentUser.id}/delete/${certificateAliasEncoded}`);
+    return this.http.delete<TruststoreResult>(`${SmpConstants.REST_INTERNAL_TRUSTSTORE}/${currentUser.userId}/delete/${certificateAliasEncoded}`);
   }
 }

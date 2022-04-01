@@ -19,12 +19,12 @@ import java.util.Map;
  */
 public class SMPLogger extends CategoryLogger {
 
-    public static final String MDC_USER = "userId";
-    public static final String MDC_SESSION_ID = "messageId";
-    public static final String MDC_DOMAIN = "domain";
-
 
     public static final String MDC_PROPERTY_PREFIX = "smp_";
+
+    public static final String MDC_USER = MDC_PROPERTY_PREFIX+"user";
+    public static final String MDC_REQUEST_ID = MDC_PROPERTY_PREFIX+"request_id";
+    public static final String MDC_SESSION_ID = MDC_PROPERTY_PREFIX+"session_id";
 
     public static final Marker BUSINESS_MARKER = MarkerFactory.getMarker("BUSINESS");
     public static final Marker SECURITY_MARKER = MarkerFactory.getMarker("SECURITY");

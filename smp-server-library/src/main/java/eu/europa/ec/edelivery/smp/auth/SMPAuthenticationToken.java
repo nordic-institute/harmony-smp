@@ -1,6 +1,9 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,8 +12,11 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class SMPAuthenticationToken extends UsernamePasswordAuthenticationToken {
-
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationToken.class);
     DBUser user;
+    // session encryption key to encrypt sensitive data
+    // at the moment used for UI sessions
+    SecurityUtils.Secret secret=null;
 
     public SMPAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
         super(principal,credentials, authorities );
@@ -25,6 +31,15 @@ public class SMPAuthenticationToken extends UsernamePasswordAuthenticationToken 
         return user;
     }
 
+    public SecurityUtils.Secret getSecret(){
+        if (secret==null) {
+            LOG.debug("Secret does not yet exist. Create user session secret!");
+            secret = SecurityUtils.generatePrivateSymmetricKey();
+            LOG.debug("User session secret created!");
+        }
+        return secret;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,7 +52,6 @@ public class SMPAuthenticationToken extends UsernamePasswordAuthenticationToken 
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), user);
     }
 }

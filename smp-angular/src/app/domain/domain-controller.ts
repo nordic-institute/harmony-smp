@@ -54,7 +54,7 @@ export class DomainController implements SearchTableController {
 
   validateDeleteOperation(rows: Array<SearchTableEntity>){
     var deleteRowIds = rows.map(rows => rows.id);
-    return  this.http.post<SearchTableValidationResult>(SmpConstants.REST_DOMAIN_VALIDATE_DELETE, deleteRowIds);
+    return  this.http.post<SearchTableValidationResult>(SmpConstants.REST_INTERNAL_DOMAIN_VALIDATE_DELETE, deleteRowIds);
   }
 
   public newValidationResult(result: boolean, message: string): SearchTableValidationResult {

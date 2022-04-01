@@ -11,19 +11,31 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
+import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class UIUserService extends UIServiceBase<DBUser, UserRO> {
@@ -33,6 +45,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private ConfigurationService configurationService;
     @Autowired
     private ConversionService conversionService;
 
@@ -79,70 +93,155 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     /**
-     *  Method regenerate access token for user and returns access token
-     *  In the database the access token value is saved in format BCryptPasswordHash
+     * Method regenerate access token for user and returns access token
+     * In the database the access token value is saved in format BCryptPasswordHash
      *
-     * @param userRO
+     * @param userId
      * @return generated AccessToken.
      */
     @Transactional
-    public AccessTokenRO generateAccessTokenForUser(Long userId) {
+    public AccessTokenRO generateAccessTokenForUser(Long userId, String currentPassword) {
+
         DBUser dbUser = userDao.find(userId);
+        if (dbUser == null) {
+            LOG.error("Can not update user password because user for id [{}] does not exist!", userId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+        }
+        if (!BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
+            throw new BadCredentialsException("Password change failed; Invalid current password!");
+        }
+        // setup new daes
         AccessTokenRO token = SecurityUtils.generateAccessToken();
+        LocalDateTime generatedTime = token.getGeneratedOn();
+        token.setExpireOn(generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
         dbUser.setAccessTokenIdentifier(token.getIdentifier());
         dbUser.setAccessToken(BCryptPasswordHash.hashPassword(token.getValue()));
-        dbUser.setAccessTokenGeneratedOn(token.getGeneratedOn());
-        userDao.update(dbUser);
+        dbUser.setAccessTokenGeneratedOn(generatedTime);
+        dbUser.setPasswordExpireOn(token.getExpireOn());
         return token;
+    }
+
+    /**
+     * Method regenerate access token for user and returns access token
+     * In the database the access token value is saved in format BCryptPasswordHash
+     *
+     * @param userId
+     * @return generated AccessToken.
+     */
+    @Transactional
+    public boolean updateUserPassword(Long userId, String currentPassword, String newPassword) {
+
+        Pattern pattern = configurationService.getPasswordPolicyRexExp();
+        if (!pattern.matcher(newPassword).matches()) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
+        }
+        DBUser dbUser = userDao.find(userId);
+        if (dbUser == null) {
+            LOG.error("Can not update user password because user for id [{}] does not exist!", userId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+        }
+
+        if (!BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
+            throw new BadCredentialsException("Password change failed; Invalid current password!");
+        }
+        dbUser.setPassword(BCryptPasswordHash.hashPassword(newPassword));
+        LocalDateTime currentTime = LocalDateTime.now();
+        dbUser.setPasswordChanged(currentTime);
+        dbUser.setPasswordExpireOn(currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
+        return true;
     }
 
     @Transactional
     public void updateUserList(List<UserRO> lst, LocalDateTime passwordChange) {
         for (UserRO userRO : lst) {
-            if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
-                DBUser dbUser = convertFromRo(userRO);
-                if (!StringUtils.isBlank(userRO.getPassword())) {
-                    dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
-                }
-                userDao.persistFlushDetach(dbUser);
-            } else if (userRO.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
-                DBUser dbUser = userDao.find(userRO.getId());
-                dbUser.setEmailAddress(userRO.getEmailAddress());
-                dbUser.setRole(userRO.getRole());
-                dbUser.setActive(userRO.isActive());
-                dbUser.setUsername(userRO.getUsername());
-                if (StringUtils.isBlank(userRO.getUsername())) {
-                    // if username is empty than clear the password
-                    dbUser.setPassword("");
-                } else if (!StringUtils.isBlank(userRO.getPassword())) {
-                    // check for new password
-                    dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
-                    dbUser.setPasswordChanged(passwordChange);
-                }
-                // update certificate data
-                if (userRO.getCertificate() == null || StringUtils.isBlank(userRO.getCertificate().getCertificateId())) {
-                    dbUser.setCertificate(null);
-                } else {
-                    CertificateRO certificateRO = userRO.getCertificate();
-                    DBCertificate dbCertificate = dbUser.getCertificate() != null ? dbUser.getCertificate() : new DBCertificate();
-                    dbUser.setCertificate(dbCertificate);
-                    if (certificateRO.getValidFrom() != null) {
-                        dbCertificate.setValidFrom(LocalDateTime.ofInstant(certificateRO.getValidFrom().toInstant(), ZoneId.systemDefault()));
-                    }
-                    if (certificateRO.getValidTo() != null) {
-                        dbCertificate.setValidTo(LocalDateTime.ofInstant(certificateRO.getValidTo().toInstant(), ZoneId.systemDefault()));
-                    }
-                    dbCertificate.setCertificateId(certificateRO.getCertificateId());
-                    dbCertificate.setSerialNumber(certificateRO.getSerialNumber());
-                    dbCertificate.setSubject(certificateRO.getSubject());
-                    dbCertificate.setIssuer(certificateRO.getIssuer());
-                }
-                dbUser.setLastUpdatedOn(LocalDateTime.now());
-                userDao.update(dbUser);
-            } else if (userRO.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
-                userDao.removeById(userRO.getId());
-            }
+            createOrUpdateUser(userRO, passwordChange);
         }
+    }
+
+    @Transactional
+    public void updateUserdata(Long userId, UserRO user) {
+        DBUser dbUser = userDao.find(userId);
+        if (dbUser == null) {
+            LOG.error("Can not update user because user for id [{}] does not exist!", userId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+        }
+
+        dbUser.setEmailAddress(user.getEmailAddress());
+        if (user.getCertificate() != null && (dbUser.getCertificate() == null
+                || !StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId()))) {
+            CertificateRO certRo = user.getCertificate();
+            LOG.info(certRo.getEncodedValue() );
+            if (user.getCertificate().getEncodedValue()!=null ){
+                X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
+                String certificateAlias;
+                try {
+                    certificateAlias = truststoreService.addCertificate(certRo.getAlias(), x509Certificate);
+                } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
+                    LOG.error("Error occurred while adding certificate to truststore.", e);
+                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "AddUserCertificate", ExceptionUtils.getRootCauseMessage(e));
+                }
+                certRo.setAlias(certificateAlias);
+            }
+            // first
+            DBCertificate certificate = conversionService.convert(user.getCertificate(), DBCertificate.class);
+            dbUser.setCertificate(certificate);
+        }
+    }
+
+    protected void createOrUpdateUser(UserRO userRO, LocalDateTime passwordChange) {
+        if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
+            DBUser dbUser = convertFromRo(userRO);
+            if (!StringUtils.isBlank(userRO.getPassword())) {
+                dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
+            }
+            userDao.persistFlushDetach(dbUser);
+            return;
+        }
+        Optional<DBUser> optionalDBUser = userDao.findUserByUsername(userRO.getUsername());
+        if (!optionalDBUser.isPresent()) {
+            return;
+        }
+        DBUser dbUser = optionalDBUser.get();
+
+
+        if (userRO.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
+
+            dbUser.setEmailAddress(userRO.getEmailAddress());
+            dbUser.setRole(userRO.getRole());
+            dbUser.setActive(userRO.isActive());
+            dbUser.setUsername(userRO.getUsername());
+            if (StringUtils.isBlank(userRO.getUsername())) {
+                // if username is empty than clear the password
+                dbUser.setPassword("");
+            } else if (!StringUtils.isBlank(userRO.getPassword())) {
+                // check for new password
+                dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
+                dbUser.setPasswordChanged(passwordChange);
+            }
+            // update certificate data
+            if (userRO.getCertificate() == null || StringUtils.isBlank(userRO.getCertificate().getCertificateId())) {
+                dbUser.setCertificate(null);
+            } else {
+                CertificateRO certificateRO = userRO.getCertificate();
+                DBCertificate dbCertificate = dbUser.getCertificate() != null ? dbUser.getCertificate() : new DBCertificate();
+                dbUser.setCertificate(dbCertificate);
+                if (certificateRO.getValidFrom() != null) {
+                    dbCertificate.setValidFrom(LocalDateTime.ofInstant(certificateRO.getValidFrom().toInstant(), ZoneId.systemDefault()));
+                }
+                if (certificateRO.getValidTo() != null) {
+                    dbCertificate.setValidTo(LocalDateTime.ofInstant(certificateRO.getValidTo().toInstant(), ZoneId.systemDefault()));
+                }
+                dbCertificate.setCertificateId(certificateRO.getCertificateId());
+                dbCertificate.setSerialNumber(certificateRO.getSerialNumber());
+                dbCertificate.setSubject(certificateRO.getSubject());
+                dbCertificate.setIssuer(certificateRO.getIssuer());
+            }
+            dbUser.setLastUpdatedOn(LocalDateTime.now());
+            userDao.update(dbUser);
+        } else if (userRO.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
+            userDao.removeById(dbUser.getId());
+        }
+
     }
 
     /**

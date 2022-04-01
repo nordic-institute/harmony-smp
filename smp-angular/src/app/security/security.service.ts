@@ -24,7 +24,7 @@ export class SecurityService {
 
   login(username: string, password: string) {
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post<string>(SmpConstants.REST_SECURITY_AUTHENTICATION,
+    return this.http.post<string>(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION,
       JSON.stringify({
         username: username,
         password: password
@@ -50,7 +50,7 @@ export class SecurityService {
   }
 
   logout() {
-    this.http.delete(SmpConstants.REST_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
+    this.http.delete(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
         this.clearLocalStorage();
         this.securityEventService.notifyLogoutSuccessEvent(res);
       },
@@ -65,7 +65,7 @@ export class SecurityService {
 
   private getCurrentUsernameFromServer(): Observable<string> {
     let subject = new ReplaySubject<string>();
-    this.http.get<string>(SmpConstants.REST_SECURITY_USER)
+    this.http.get<string>(SmpConstants.REST_PUBLIC_SECURITY_USER)
       .subscribe((res: string) => {
         subject.next(res);
       }, (error: any) => {

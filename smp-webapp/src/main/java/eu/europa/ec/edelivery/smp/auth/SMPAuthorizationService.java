@@ -2,6 +2,11 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,6 +20,7 @@ import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_T
  */
 @Service("smpAuthorizationService")
 public class SMPAuthorizationService {
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthorizationService.class);
 
     public boolean isSystemAdministrator() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -22,11 +28,18 @@ public class SMPAuthorizationService {
                 && authentication.getAuthorities().stream().anyMatch(grantedAuthority -> S_AUTHORITY_TOKEN_SYSTEM_ADMIN.equals(grantedAuthority.getAuthority()));
     }
 
-    public boolean isCurrentlyLoggedIn(Long userId) {
+    public boolean isCurrentlyLoggedIn(String userId) {
+        Long entityId;
+        try {
+            entityId = SessionSecurityUtils.decryptEntityId(userId);
+        }catch (SMPRuntimeException | NumberFormatException ex){
+            LOG.error("Error occurred while decrypting user-id:["+userId+"]", ex);
+            throw new BadCredentialsException("Login failed; Invalid userID or password");
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof SMPAuthenticationToken) {
-            Long loggedInUserId = ((SMPAuthenticationToken) authentication).getUser().getId();
-            return loggedInUserId.equals(userId);
+            Long loggedUserId = ((SMPAuthenticationToken) authentication).getUser().getId();
+            return entityId.equals(loggedUserId);
         }
         return false;
     }

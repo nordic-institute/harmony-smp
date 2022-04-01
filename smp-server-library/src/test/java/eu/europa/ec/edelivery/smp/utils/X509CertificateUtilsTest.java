@@ -57,10 +57,10 @@ public class X509CertificateUtilsTest {
 
     private static final Object[] crlExtractHTTPSTestListCases() {
         return new Object[][]{
-                {"ldap://localhost/clr,https://localhost/clr,http://localhost/clr","https://localhost/clr"},
-                { "https://localhost/clr","https://localhost/clr"},
-                { "http://localhost/clr","http://localhost/clr"},
-                { "ldap://localhost/clr", null},
+                {"ldap://localhost/clr,https://localhost/clr,http://localhost/clr", "https://localhost/clr"},
+                {"https://localhost/clr", "https://localhost/clr"},
+                {"http://localhost/clr", "http://localhost/clr"},
+                {"ldap://localhost/clr", null},
                 {"", null},
         };
     }
@@ -103,10 +103,9 @@ public class X509CertificateUtilsTest {
     }
 
 
-
     @Test
     @Parameters(method = "crlExtractHTTPSTestListCases")
-    public void extractHttpCrlDistributionPoints(String clrLists, String value){
+    public void extractHttpCrlDistributionPoints(String clrLists, String value) {
         //given
         List<String> urlList = clrLists == null ? Collections.emptyList() : Arrays.asList(clrLists.split(","));
         // when
@@ -114,7 +113,6 @@ public class X509CertificateUtilsTest {
         // then
         assertEquals(value, url);
     }
-
 
 
     public static X509Certificate loadCertificate(String filename) throws CertificateException {
@@ -128,7 +126,6 @@ public class X509CertificateUtilsTest {
     public static byte[] getBytes(String filename) throws CertificateException, IOException {
         return IOUtils.toByteArray(X509CertificateUtilsTest.class.getResourceAsStream("/certificates/" + filename));
     }
-
 
 
 }

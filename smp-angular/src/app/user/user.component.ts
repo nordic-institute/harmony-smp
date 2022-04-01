@@ -1,4 +1,4 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlertService} from '../alert/alert.service';
@@ -9,12 +9,13 @@ import {SecurityService} from "../security/security.service";
 import {GlobalLookups} from "../common/global-lookups";
 import {TruststoreEditDialogComponent} from "./truststore-edit-dialog/truststore-edit-dialog.component";
 import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
+import {SmpConstants} from "../smp.constants";
 
 @Component({
   templateUrl:'./user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class UserComponent implements OnInit {
+export class UserComponent implements AfterViewInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
@@ -25,6 +26,7 @@ export class UserComponent implements OnInit {
   columnPicker: ColumnPicker = new ColumnPicker();
   userController: UserController;
   filter: any = {};
+  baseUrl:string=SmpConstants.REST_INTERNAL_USER_MANAGE;
 
   constructor(private lookups: GlobalLookups,
               public securityService: SecurityService,
@@ -33,7 +35,7 @@ export class UserComponent implements OnInit {
               public dialog: MatDialog) {
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
@@ -44,6 +46,7 @@ export class UserComponent implements OnInit {
       },
       {
         name: 'Certificate',
+        prop: 'certificate',
         cellTemplate: this.certificateTemplate,
         canAutoResize: true
       },

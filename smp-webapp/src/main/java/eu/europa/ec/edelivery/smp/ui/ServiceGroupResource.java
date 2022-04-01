@@ -32,7 +32,7 @@ import java.util.Arrays;
  */
 
 @RestController
-@RequestMapping(value = "/ui/rest/servicegroup")
+@RequestMapping(value = ResourceConstants.CONTEXT_PATH_PUBLIC_SERVICE_GROUP)
 public class ServiceGroupResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupResource.class);

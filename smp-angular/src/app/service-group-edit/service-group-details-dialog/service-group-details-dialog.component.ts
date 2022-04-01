@@ -169,6 +169,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     }
     return msg;
   }
+
   isDomainProperlyConfigured(domain: DomainRo){
     return !this.getDomainConfigurationWarning(domain);
   }

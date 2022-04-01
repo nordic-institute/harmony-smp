@@ -13,13 +13,12 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice;
+import eu.europa.ec.edelivery.smp.error.ServiceErrorControllerAdvice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -36,7 +35,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
         "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.edelivery.smp.monitor",
         "eu.europa.ec.edelivery.smp.ui"})
-@Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
+@Import({GlobalMethodSecurityConfig.class, ServiceErrorControllerAdvice.class})
 public class SmpWebAppConfig implements WebMvcConfigurer {
     private static final Logger LOG = LoggerFactory.getLogger(SmpWebAppConfig.class);
 
