@@ -59,6 +59,11 @@ then
   #SMP_VERSION="$(ls smp-*-setup.zip | sed -e 's/.*smp-//g' | sed -e 's/-setup\.zip$//g')"
   SMP_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)"
   # go back to dirname
+  if [[ -z "${SMP_VERSION}" ]]; then
+    echo "Try to get version from artefacts: $(ls -ltr $SMP_ARTEFACTS)"
+    SMP_VERSION="$(ls ${SMP_ARTEFACTS}/smp-*-setup.zip | sed -e 's/.*smp-//g' | sed -e 's/-setup\.zip$//g')"
+  fi
+
 fi
 
 DIRNAME=`dirname "$0"`
