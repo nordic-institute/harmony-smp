@@ -10,7 +10,6 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -91,33 +88,12 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         // all table properties should not be null
         assertNotNull(res);
-        assertNotNull(res.getServiceEntities().get(0).getId());
+        assertNotNull(res.getServiceEntities().get(0).getUserId());
         assertNotNull(res.getServiceEntities().get(0).getUsername());
         assertNotNull(res.getServiceEntities().get(0).getEmailAddress());
         assertNull(res.getServiceEntities().get(0).getPassword()); // Service list must not return passwords
         assertNotNull(res.getServiceEntities().get(0).getRole());
     }
-
-    @Test
-    public void testUpdateUserPassword() {
-        // given
-        insertDataObjects(1);
-        String newPassword = "TestPasswd!@#" + Calendar.getInstance().getTime();
-        ServiceResult<UserRO> urTest  =  testInstance.getTableList(-1,-1,null, null, null);
-        assertEquals(1, urTest.getServiceEntities().size());
-
-        UserRO usr = urTest.getServiceEntities().get(0);
-
-        //when
-        usr.setPassword(newPassword);
-        usr.setStatus(EntityROStatus.UPDATED.getStatusNumber());
-        testInstance.updateUserList(Collections.singletonList(usr), null);
-
-        // then
-        DBUser dbuser = userDao.find(usr.getId());
-        assertTrue(BCrypt.checkpw(newPassword, dbuser.getPassword()));
-    }
-
 
     @Test
     public void testAddUserWithoutCertificate() {

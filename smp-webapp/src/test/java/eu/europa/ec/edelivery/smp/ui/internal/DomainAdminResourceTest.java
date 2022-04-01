@@ -1,11 +1,15 @@
-package eu.europa.ec.edelivery.smp.ui;
+package eu.europa.ec.edelivery.smp.ui.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.edelivery.smp.config.*;
+import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
+import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
+import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
+import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,9 +36,7 @@ import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,17 +51,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")
 @SqlConfig(encoding = "UTF-8")
-@TestPropertySource(properties = {
-        "smp.artifact.name=TestApplicationSmpName",
-        "smp.artifact.version=TestApplicationVersion",
-        "smp.artifact.build.time=2018-11-27 00:00:00",
-        "bdmsl.integration.enabled=false"})
-public class DomainResourceTest {
-    private static final String PATH = "/ui/rest/domain";
+public class DomainAdminResourceTest {
+    private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
 
     @Autowired
     private WebApplicationContext webAppContext;
-
 
     @Autowired
     DomainDao domainDao;
@@ -83,29 +79,6 @@ public class DomainResourceTest {
     }
 
 
-    @Test
-    public void geDomainList() throws Exception {
-
-        // given when
-        MvcResult result = mvc.perform(get(PATH)
-                .with(SYSTEM_CREDENTIALS)
-                .with(csrf()))
-                .andExpect(status().isOk()).andReturn();
-
-        //them
-        ObjectMapper mapper = new ObjectMapper();
-        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
-
-
-        assertNotNull(res);
-        assertEquals(2, res.getServiceEntities().size());
-        res.getServiceEntities().forEach(sgMap -> {
-            DomainRO sgro = mapper.convertValue(sgMap, DomainRO.class);
-            assertNotNull(sgro.getId());
-            assertNotNull(sgro.getDomainCode());
-            assertNotNull(sgro.getSmlSmpId());
-        });
-    }
 
     @Test
     public void updateDomainListOkDelete() throws Exception {
@@ -138,7 +111,7 @@ public class DomainResourceTest {
     @Test
     public void validateDeleteDomainOK() throws Exception {
         // given when
-        MvcResult result = mvc.perform(post(PATH + "/validateDelete")
+        MvcResult result = mvc.perform(put(PATH + "/validate-delete")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json")
@@ -170,12 +143,11 @@ public class DomainResourceTest {
 
         // check if exists
         assertEquals("CEF-SMP-010", domainDao.getDomainByCode("domainTwo").get().getSmlSmpId());
-
     }
     @Test
     public void validateDeleteDomainFalse() throws Exception {
         // given when
-        MvcResult result = mvc.perform(post(PATH + "/validateDelete")
+        MvcResult result = mvc.perform(put(PATH + "/validate-delete")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json")
@@ -198,7 +170,7 @@ public class DomainResourceTest {
         // given when
         // 3- user id
         // domainTwo -  domain code
-        mvc.perform(post(PATH + "/3/smlregister/domainTwo")
+        mvc.perform(put(PATH + "/3/sml-register/domainTwo")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json"))
@@ -211,7 +183,7 @@ public class DomainResourceTest {
         // given when
         // 3- user id
         // domainTwo -  domain code
-        mvc.perform(post(PATH + "/3/smlunregister/domainTwo")
+        mvc.perform(put(PATH + "/3/sml-unregister/domainTwo")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json"))

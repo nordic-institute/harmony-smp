@@ -314,7 +314,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     create table SMP_USER (
        ID number(19,0) not null,
         ACCESS_TOKEN varchar2(256 char),
-        PAT_GENERATED timestamp,
+        ACCESS_TOKEN_EXPIRE_ON timestamp,
+        ACCESS_TOKEN_GENERATED_ON timestamp,
         ACCESS_TOKEN_ID varchar2(256 char),
         ACTIVE number(1,0) not null,
         CREATED_ON timestamp not null,
@@ -322,8 +323,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp not null,
         PASSWORD varchar2(256 char),
         PASSWORD_CHANGED timestamp,
+        PASSWORD_EXPIRE_ON timestamp,
         ROLE varchar2(256 char),
-        USERNAME varchar2(256 char),
+        USERNAME varchar2(256 char) not null,
         primary key (ID)
     );
 
@@ -336,7 +338,10 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_USER.ACCESS_TOKEN is
         'BCrypted personal access token';
 
-    comment on column SMP_USER.PAT_GENERATED is
+    comment on column SMP_USER.ACCESS_TOKEN_EXPIRE_ON is
+        'Date when personal access token will expire';
+
+    comment on column SMP_USER.ACCESS_TOKEN_GENERATED_ON is
         'Date when personal access token was generated';
 
     comment on column SMP_USER.ACCESS_TOKEN_ID is
@@ -354,18 +359,22 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_USER.PASSWORD_CHANGED is
         'Last date when password was changed';
 
+    comment on column SMP_USER.PASSWORD_EXPIRE_ON is
+        'Date when password will expire';
+
     comment on column SMP_USER.ROLE is
         'User role';
 
     comment on column SMP_USER.USERNAME is
-        'Login username';
+        'Unique username identifier. The Username must not be null';
 
     create table SMP_USER_AUD (
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
         ACCESS_TOKEN varchar2(256 char),
-        PAT_GENERATED timestamp,
+        ACCESS_TOKEN_EXPIRE_ON timestamp,
+        ACCESS_TOKEN_GENERATED_ON timestamp,
         ACCESS_TOKEN_ID varchar2(256 char),
         ACTIVE number(1,0),
         CREATED_ON timestamp,
@@ -373,6 +382,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp,
         PASSWORD varchar2(256 char),
         PASSWORD_CHANGED timestamp,
+        PASSWORD_EXPIRE_ON timestamp,
         ROLE varchar2(256 char),
         USERNAME varchar2(256 char),
         primary key (ID, REV)

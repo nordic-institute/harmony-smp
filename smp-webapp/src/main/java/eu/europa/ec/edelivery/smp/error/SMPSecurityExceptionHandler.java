@@ -13,8 +13,12 @@
 
 package eu.europa.ec.edelivery.smp.error;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -37,14 +41,17 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 /**
- * Created by gutowpa on 27/01/2017.
+ * SMPSecurityExceptionHandler
+ *
+ * @author gutowpa
+ * @author Joze Rihtarsic
+ * @since 3.0
  */
+public class SMPSecurityExceptionHandler extends BasicAuthenticationEntryPoint implements AccessDeniedHandler {
 
-public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoint implements AccessDeniedHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(SMPSecurityExceptionHandler.class);
 
-    private static final Logger LOG = LoggerFactory.getLogger(SpringSecurityExceptionHandler.class);
-
-    public SpringSecurityExceptionHandler() {
+    public SMPSecurityExceptionHandler() {
         this.setRealmName("SMPSecurityRealm");
     }
 
@@ -55,21 +62,22 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
         if (authException instanceof BadCredentialsException) {
             errorMsg += " - Provided username/password or client certificate are invalid";
         }
-        handle(response, authException, errorMsg);
+        handle(request, response, authException, errorMsg);
     }
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        handle(response, accessDeniedException, accessDeniedException.getMessage());
+        handle(request, response, accessDeniedException, accessDeniedException.getMessage());
     }
 
-    private void handle(HttpServletResponse response, RuntimeException exception, String errorMsg) throws IOException {
+    private void handle(HttpServletRequest request, HttpServletResponse response, RuntimeException exception, String errorMsg) throws IOException {
         ResponseEntity respEntity = buildAndWarn(exception, errorMsg);
-        String errorBody = marshall((ErrorResponse) respEntity.getBody());
+        String errorBody = marshall((ErrorResponse) respEntity.getBody(), request);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(TEXT_HTML_VALUE);
         response.getOutputStream().print(errorBody);
     }
+
 
     private ResponseEntity buildAndWarn(RuntimeException exception, String errorMsg) {
         ResponseEntity response = ErrorResponseBuilder.status(UNAUTHORIZED)
@@ -84,7 +92,39 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
         return response;
     }
 
-    private static String marshall(ErrorResponse errorResponse) {
+    /**
+     * Method marshals the response. If the request endpoint is UI it marshal it to JSON else to XML format
+
+     * @param errorResponse - the error to marshal
+     * @param request - The incoming HTTP request for the error
+     * @return string representation of the error
+     */
+    protected String marshall(ErrorResponse errorResponse, HttpServletRequest request) {
+        return isUITRestRequest(request)? marshallToJSon(errorResponse):marshallToXML(errorResponse);
+    }
+
+    /**
+     * Method validates if the request was submitted to UI or to "Oasis-SMP service" endpoint. If the endpoint is UI it returns
+     * true.
+     * @param request - HTTP request to SMP
+     * @return true if request targets the UI.
+     */
+    protected boolean isUITRestRequest(HttpServletRequest request){
+        String contextPath = request!=null?request.getRequestURI():null;
+        boolean result  = StringUtils.isNotBlank(contextPath)
+                && StringUtils.containsAny(contextPath, ResourceConstants.CONTEXT_PATH_PUBLIC,ResourceConstants.CONTEXT_PATH_INTERNAL);
+        LOG.debug("Context path: [{}] is UI rest request: [{}]", contextPath, result);
+        return result;
+    }
+
+    /**
+     * Marshal ErrorResponse to XML format
+     *
+     * @param errorResponse
+     * @return xml string representation of the Error
+     */
+    protected String marshallToXML(ErrorResponse errorResponse) {
+        LOG.debug("Marshal error [{}] to XML format", errorResponse);
         try {
             StringWriter sw = new StringWriter();
             JAXBContext jaxbContext = JAXBContext.newInstance(ErrorResponse.class);
@@ -92,6 +132,22 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
             jaxbMarshaller.marshal(errorResponse, sw);
             return sw.toString();
         } catch (JAXBException e) {
+            LOG.error("Error occurred while marshal the error [{}], code: [{}], desc [{}].", errorResponse.getBusinessCode(), errorResponse.getErrorUniqueId(), errorResponse.getErrorDescription());
+        }
+        return null;
+    }
+
+    /**
+     * Marshal ErrorResponse to JSON format
+     *
+     * @param errorResponse
+     * @return json string representation of the Error
+     */
+    protected String marshallToJSon(ErrorResponse errorResponse) {
+        LOG.debug("Marshal error [{}] to JSON format", errorResponse);
+        try {
+            return new ObjectMapper().writeValueAsString(errorResponse);
+        } catch (JsonProcessingException e) {
             LOG.error("Error occurred while marshal the error [{}], code: [{}], desc [{}].", errorResponse.getBusinessCode(), errorResponse.getErrorUniqueId(), errorResponse.getErrorDescription());
         }
         return null;

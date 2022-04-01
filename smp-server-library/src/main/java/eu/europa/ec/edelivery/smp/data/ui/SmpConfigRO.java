@@ -11,6 +11,10 @@ public class SmpConfigRO implements Serializable {
     String participantSchemaRegExpMessage;
 
 
+    String passwordValidationRegExp;
+    String passwordValidationRegExpMessage;
+
+
     public boolean isSmlIntegrationOn() {
         return smlIntegrationOn;
     }
@@ -41,5 +45,21 @@ public class SmpConfigRO implements Serializable {
 
     public void setParticipantSchemaRegExpMessage(String participantSchemaRegExpMessage) {
         this.participantSchemaRegExpMessage = participantSchemaRegExpMessage;
+    }
+
+    public String getPasswordValidationRegExp() {
+        return passwordValidationRegExp;
+    }
+
+    public void setPasswordValidationRegExp(String passwordValidationRegExp) {
+        this.passwordValidationRegExp = passwordValidationRegExp;
+    }
+
+    public String getPasswordValidationRegExpMessage() {
+        return passwordValidationRegExpMessage;
+    }
+
+    public void setPasswordValidationRegExpMessage(String passwordValidationRegExpMessage) {
+        this.passwordValidationRegExpMessage = passwordValidationRegExpMessage;
     }
 }

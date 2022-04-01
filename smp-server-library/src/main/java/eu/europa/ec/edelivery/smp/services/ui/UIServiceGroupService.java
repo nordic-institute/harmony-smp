@@ -499,12 +499,12 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         dbServiceGroup.getUsers().clear();
         List<UserRO> lstUsers = serviceGroupRO.getUsers();
         for (UserRO userRO : lstUsers) {
-            DBUser du = userDao.find(userRO.getId());
-            if (du==null) {
+            Optional<DBUser> optUser = userDao.findUserByUsername(userRO.getUsername());
+            if (!optUser.isPresent()) {
                 throw new SMPRuntimeException(INTERNAL_ERROR,
                         "Database changed",  "User "+userRO.getUsername()+ " not exists! (Refresh data)");
             }
-            dbServiceGroup.getUsers().add(du);
+            dbServiceGroup.getUsers().add(optUser.get());
         }
     }
 
@@ -589,7 +589,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         // add users
         dbServiceGroup.getUsers().forEach(usr -> {
             UserRO userRO = new UserRO();
-            userRO.setId(usr.getId());
+            userRO.setUserId(usr.getId()+"");
             userRO.setUsername(usr.getUsername());
             userRO.setActive(usr.isActive());
             userRO.setEmailAddress(usr.getEmailAddress());

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping(value = "/ui/rest/servicemetadata")
+@RequestMapping(value = ResourceConstants.CONTEXT_PATH_PUBLIC_SERVICE_METADATA)
 public class ServiceMetadataResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceMetadataResource.class);

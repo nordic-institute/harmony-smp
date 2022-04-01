@@ -9,6 +9,8 @@ import {AlertService} from "../alert/alert.service";
 import {Subscription} from "rxjs/internal/Subscription";
 import {SmpInfo} from "../app-info/smp-info.model";
 import {SmpConfig} from "../app-config/smp-config.model";
+import {SecurityEventService} from "../security/security-event.service";
+import {ExpiredPasswordDialogComponent} from "./expired-password-dialog/expired-password-dialog.component";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -30,12 +32,16 @@ export class GlobalLookups implements OnInit {
   cachedApplicationConfig: SmpConfig;
   cachedTrustedCertificateList: Array<any> = [];
 
+  loginSubscription: Subscription;
+  logoutSubscription: Subscription;
 
 
-  constructor(protected alertService: AlertService,  protected securityService: SecurityService, protected http: HttpClient) {
+  constructor(protected alertService: AlertService,
+              protected securityService: SecurityService,
+              protected http: HttpClient,
+              private securityEventService: SecurityEventService) {
     securityService.refreshLoggedUserFromServer();
     this.refreshDomainLookup();
-    this.refreshUserLookup();
     this.refreshCertificateLookup();
     this.refreshApplicationInfo();
     this.refreshApplicationConfiguration();
@@ -43,28 +49,32 @@ export class GlobalLookups implements OnInit {
   }
 
   ngOnInit() {
-
   }
 
   public refreshDomainLookup() {
+    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN_SEARCH;
+    // for authenticated admin use internal url which returns more data!
+    if (this.securityService.isCurrentUserSMPAdmin() || this.securityService.isCurrentUserSystemAdmin()) {
+      domainUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE;
+    }
     let params: HttpParams = new HttpParams()
       .set('page', '-1')
       .set('pageSize', '-1');
     // init domains
-    this.domainObserver = this.http.get<SearchTableResult>(SmpConstants.REST_DOMAIN, {params});
+    this.domainObserver = this.http.get<SearchTableResult>(domainUrl, {params});
     this.domainObserver.subscribe((domains: SearchTableResult) => {
       this.cachedDomainList = domains.serviceEntities.map(serviceEntity => {
-        return {...serviceEntity}
-      },
-      (error:any) => {
+          return {...serviceEntity}
+        },
+        (error: any) => {
           this.alertService.error("Error occurred while loading domain lookup [" + error + "].")
-      });
+        });
     });
   }
 
   public refreshApplicationInfo() {
 
-    this.http.get<SmpInfo>(SmpConstants.REST_APPLICATION)
+    this.http.get<SmpInfo>(SmpConstants.REST_PUBLIC_APPLICATION_INFO)
       .subscribe((res: SmpInfo) => {
           this.cachedApplicationInfo = res;
         }, error => {
@@ -73,11 +83,12 @@ export class GlobalLookups implements OnInit {
       );
 
   }
+
   public refreshApplicationConfiguration() {
-  // check if authenticated
+    // check if authenticated
     this.securityService.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
-      if(isAuthenticated) {
-        this.http.get<SmpConfig>(SmpConstants.REST_CONFIG)
+      if (isAuthenticated) {
+        this.http.get<SmpConfig>(SmpConstants.REST_INTERNAL_APPLICATION_CONFIG)
           .subscribe((res: SmpConfig) => {
               this.cachedApplicationConfig = res;
             }, error => {
@@ -90,47 +101,47 @@ export class GlobalLookups implements OnInit {
 
   public refreshUserLookup() {
     // call only for authenticated users.
-    if (this.securityService.isCurrentUserSMPAdmin() || this.securityService.isCurrentUserSystemAdmin() ) {
+    if (this.securityService.isCurrentUserSMPAdmin() || this.securityService.isCurrentUserSystemAdmin()) {
       let params: HttpParams = new HttpParams()
         .set('page', '-1')
         .set('pageSize', '-1');
 
       // return only smp and service group admins..
-      if (this.securityService.isCurrentUserSMPAdmin() ) {
-        params = params .set('roles', Role.SMP_ADMIN +","+Role.SERVICE_GROUP_ADMIN);
+      if (this.securityService.isCurrentUserSMPAdmin()) {
+        params = params.set('roles', Role.SMP_ADMIN + "," + Role.SERVICE_GROUP_ADMIN);
       }
 
-      // init users
-      this.userObserver = this.http.get<SearchTableResult>(SmpConstants.REST_USER, {params});
+      // retrieve user list
+      this.userObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_USER_MANAGE, {params});
       let sub: Subscription = this.userObserver.subscribe((users: SearchTableResult) => {
         this.cachedServiceGroupOwnerList = users.serviceEntities.map(serviceEntity => {
           return {...serviceEntity}
 
         });
         sub.unsubscribe();
-      },(error:any) => {
+      }, (error: any) => {
         // check if unauthorized
         // just console try latter
         sub.unsubscribe();
-          console.log("Error occurred while loading user owners lookup [" + error + "]");
-        });
+        console.log("Error occurred while loading user owners lookup [" + error + "]");
+      });
     }
 
   }
 
   public refreshCertificateLookup() {
     // call only for authenticated users.
-    if ( this.securityService.isCurrentUserSystemAdmin() ) {
+    if (this.securityService.isCurrentUserSystemAdmin()) {
 
       // init users
-      this.certificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_KEYSTORE );
+      this.certificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_KEYSTORE);
       this.certificateObserver.subscribe((certs: SearchTableResult) => {
         this.cachedCertificateList = certs.serviceEntities.map(serviceEntity => {
           return {...serviceEntity}
         });
         //update alias list
-        this.cachedCertificateAliasList =this.cachedCertificateList.map(cert => cert.alias);
-      },(error:any) => {
+        this.cachedCertificateAliasList = this.cachedCertificateList.map(cert => cert.alias);
+      }, (error: any) => {
         // check if unauthorized
         // just console try latter
         console.log("Error occurred while loading user owners lookup [" + error + "]");
@@ -141,16 +152,16 @@ export class GlobalLookups implements OnInit {
 
   public refreshTrustedCertificateLookup() {
     // call only for authenticated users.
-    if ( this.securityService.isCurrentUserSystemAdmin() ) {
+    if (this.securityService.isCurrentUserSystemAdmin()) {
 
       // init users
-      this.trustedCertificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_TRUSTSTORE );
+      this.trustedCertificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_TRUSTSTORE);
       this.trustedCertificateObserver.subscribe((certs: SearchTableResult) => {
         this.cachedTrustedCertificateList = certs.serviceEntities.map(serviceEntity => {
           return {...serviceEntity}
 
         });
-      },(error:any) => {
+      }, (error: any) => {
         // check if unauthorized
         // just console try latter
         console.log("Error occurred while loading trusted certifcates lookup [" + error + "]");

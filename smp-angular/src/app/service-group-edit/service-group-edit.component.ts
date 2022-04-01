@@ -25,7 +25,7 @@ export class ServiceGroupEditComponent implements OnInit {
   columnPicker: ColumnPicker = new ColumnPicker();
   serviceGroupEditController: ServiceGroupEditController;
   filter: any = {};
-  baseUrl: string = SmpConstants.REST_EDIT;
+  baseUrl: string = SmpConstants.REST_PUBLIC_SERVICE_GROUP;
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
 
   constructor(public securityService: SecurityService,

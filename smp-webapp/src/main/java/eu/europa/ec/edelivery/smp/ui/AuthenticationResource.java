@@ -41,7 +41,7 @@ import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NA
  * @since 4.0
  */
 @RestController
-@RequestMapping(value = "/ui/rest/security")
+@RequestMapping(value = ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY)
 public class AuthenticationResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationResource.class);
@@ -75,13 +75,6 @@ public class AuthenticationResource {
         this.smpCookieWriter = smpCookieWriter;
         this.csrfTokenRepository = csrfTokenRepository;
         this.uiUserService = uiUserService;
-    }
-
-    @ResponseStatus(value = HttpStatus.FORBIDDEN)
-    @ExceptionHandler({AuthenticationException.class})
-    public ErrorRO handleException(Exception ex) {
-        LOG.error(ex.getMessage(), ex);
-        return new ErrorRO(ex.getMessage());
     }
 
     @PostMapping(value = "authentication")
