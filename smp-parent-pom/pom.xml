@@ -98,6 +98,7 @@
         <jackson.version>2.13.2</jackson.version>
         <jackson-databind.version>2.13.2.2</jackson-databind.version>
         <jackson.annotations.version>2.13.2</jackson.annotations.version>
+        <hamcrest.version>2.0.0.0</hamcrest.version>
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
@@ -557,6 +558,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-junit</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
