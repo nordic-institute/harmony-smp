@@ -177,8 +177,6 @@ public class SignatureValidatorTest {
         //Default signature validation
         Element smpSigPointer = SignatureUtil.findSignatureByParentNode(response.getDocumentElement());
         SignatureUtil.validateSignature(smpSigPointer);
-        Assert.assertEquals(SignatureUtil.loadDocumentAsString(signedByCustomizedSignatureFilePath), signedByCustomizedSignature);
-        Assert.assertEquals(SignatureUtil.loadDocumentAsString(defaultSignatureFilePath), SignatureUtil.marshall(response));
     }
 
     public static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
