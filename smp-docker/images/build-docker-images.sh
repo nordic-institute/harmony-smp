@@ -140,7 +140,7 @@ validateAndPrepareArtefacts() {
     cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-12.2.1.3-smp/smp.war
     # for mysql tomcat
     cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql/artefacts/smp.war
-    cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql-smp-sml/artefacts/smp.war
+    #cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql-smp-sml/artefacts/smp.war
   fi
 
  # SMP setup zip   
@@ -152,7 +152,7 @@ validateAndPrepareArtefacts() {
     # copy artefact to docker build folder
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-12.2.1.3-smp/smp-setup.zip
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql/artefacts/smp-setup.zip
-    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
+    #cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
   fi
 
 
