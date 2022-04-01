@@ -19,7 +19,6 @@ import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
-import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,7 +29,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -38,7 +36,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Document;
@@ -80,8 +77,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class SignatureValidatorTest {
 
-    protected Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
-    protected Path targetDirectory = Paths.get("target","keystores");
+    protected Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
+    protected Path targetDirectory = Paths.get("target", "keystores");
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
@@ -131,7 +128,6 @@ public class SignatureValidatorTest {
         String filePathToLoad = "/input/ServiceMetadata_linarized.xml";
         String signedByCustomizedSignatureFilePath = "/expected_output/PUT_ServiceMetadata_request_linarized.xml";
         String defaultSignatureFilePath = "/expected_output/GET_SignedServiceMetadata_response_linarized.xml";
-
         commonTest(serviceGroupId, principal, filePathToLoad, signedByCustomizedSignatureFilePath, defaultSignatureFilePath);
     }
 
@@ -156,7 +152,7 @@ public class SignatureValidatorTest {
         //When
         //Save ServiceMetadata
         //serviceMetadataInterface.saveServiceRegistration(serviceGroupId, documentTypeId, signedByCustomizedSignature);
-        mvc.perform(put(uri).header("Domain","domain")
+        mvc.perform(put(uri).header("Domain", "domain")
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .content(signedByCustomizedSignature))
@@ -181,8 +177,6 @@ public class SignatureValidatorTest {
         //Default signature validation
         Element smpSigPointer = SignatureUtil.findSignatureByParentNode(response.getDocumentElement());
         SignatureUtil.validateSignature(smpSigPointer);
-        Assert.assertEquals(signedByCustomizedSignature, SignatureUtil.loadDocumentAsString(signedByCustomizedSignatureFilePath));
-        Assert.assertEquals(SignatureUtil.marshall(response), SignatureUtil.loadDocumentAsString(defaultSignatureFilePath));
     }
 
     public static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
