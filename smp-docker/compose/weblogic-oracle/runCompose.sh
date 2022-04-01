@@ -2,27 +2,37 @@
 
 WORKING_DIR="$(dirname $0)"
 SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
-SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
+#SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
+SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql"
+
 # soap ui data
 PREFIX="smp-wls-orcl"
+# TODO sync with build script
+ORA_VERSION="11.2.0.2"
+ORA_EDITION="xe"
+ORA_SERVICE="xe"
 
 
-
+SMP_VERSION=
 echo "Working Directory: ${WORKING_DIR}"
 cd "$WORKING_DIR"
 # clear volume and containers - to run  restart from strach 
 
 
 # READ argumnets 
-while getopts i: option
+while getopts i:v: option
 do
   case "${option}"
   in
     i) SMP_INIT_DATABASE_DATA=${OPTARG};;
+    v) SMP_VERSION=${OPTARG};;
   esac
 done
 
-
+export SMP_VERSION
+export ORA_VERSION
+export ORA_EDITION
+export ORA_SERVICE
 # create  database init script from 
 echo "CONNECT smp/test@//localhost:1521/xe;" > ./properties/db-scripts/02_oracle10g.sql
 cat  "${SMP_INIT_DATABASE}" >> ./properties/db-scripts/02_oracle10g.sql
