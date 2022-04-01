@@ -24,6 +24,10 @@ public class SMPAuthority implements GrantedAuthority {
     public static final SMPAuthority S_AUTHORITY_SERVICE_GROUP = new SMPAuthority(SMPRole.SERVICE_GROUP_ADMIN.getCode());
     public static final SMPAuthority S_AUTHORITY_ANONYMOUS = new SMPAuthority(SMPRole.ANONYMOUS.getCode());
 
+    public static final SMPAuthority S_AUTHORITY_WS_SYSTEM_ADMIN = new SMPAuthority(SMPRole.WS_SYSTEM_ADMIN.getCode());
+    public static final SMPAuthority S_AUTHORITY_WS_SMP_ADMIN = new SMPAuthority(SMPRole.WS_SMP_ADMIN.getCode());
+    public static final SMPAuthority S_AUTHORITY_WS_SERVICE_GROUP = new SMPAuthority(SMPRole.WS_SERVICE_GROUP_ADMIN.getCode());
+
     String role;
 
     public SMPAuthority(String role) {

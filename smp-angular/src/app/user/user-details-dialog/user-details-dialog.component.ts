@@ -23,7 +23,7 @@ import {Observable, of} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {UserDetailsService} from "./user-details.service";
 import {MatSlideToggleChange} from "@angular/material/slide-toggle";
-import {AccessTokenRo} from "../access-token-ro.model";
+import {AccessTokenRo} from "../../common/access-token-generation-dialog/access-token-ro.model";
 
 @Component({
   selector: 'user-details-dialog',
@@ -41,7 +41,7 @@ export class UserDetailsDialogComponent {
 
   mode: UserDetailsDialogMode;
   editMode: boolean;
-  userId: number;
+  userId: string;
   userRoles = [];
   certificateValidationMessage: string = null;
   isCertificateInvalid: boolean = true;
@@ -50,6 +50,7 @@ export class UserDetailsDialogComponent {
   current: UserRo;
   tempStoreForCertificate: CertificateRo = this.newCertificateRo();
   tempStoreForUser: UserRo = this.newUserRo();
+  newCertFile:File=null;
 
   private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
     const userToggle = control.get('userToggle');
@@ -86,25 +87,7 @@ export class UserDetailsDialogComponent {
     && listIds.includes(certificateId.value) && this.current.certificate && certificateId.value !== this.current.certificate.certificateId ? {certificateIdExists: true} : null;
   };
 
-  private asyncPasswordValidator: AsyncValidatorFn = (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-    if (this.isPreferencesMode()) {
-      const userToggle = control.get('userToggle');
-      const passwordToggle = control.get('passwordToggle');
-      const password = control.get('password');
-      const confirmation = control.get('confirmation');
 
-      if (userToggle && passwordToggle && password
-        && this.userId && userToggle.value && passwordToggle.value && password.value) {
-        return this.userDetailsService.isSamePreviousPasswordUsed$(this.userId, password.value).pipe(
-          map(previousPasswordUsed => previousPasswordUsed ? {previousPasswordUsed: true} : null),
-          catchError(() => {
-            this.alertService.error("Error occurred while validating the password against the previously chosen one!");
-            return of(null);
-          }));
-      }
-    }
-    return of(null);
-  };
 
   notInList(list: string[]) {
     return (c: AbstractControl): { [key: string]: any } => {
@@ -125,7 +108,7 @@ export class UserDetailsDialogComponent {
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
     this.mode = data.mode;
-    this.userId = data.row && data.row.id;
+    this.userId = data.row && data.row.userId;
     this.editMode = this.mode !== UserDetailsDialogMode.NEW_MODE;
 
     this.current = this.editMode
@@ -195,8 +178,7 @@ export class UserDetailsDialogComponent {
         this.atLeastOneToggleCheckedValidator,
         this.certificateValidator,
         this.certificateExistValidator,
-      ],
-      asyncValidator: this.asyncPasswordValidator,
+      ]
     });
     // bind values to form! not property
     this.userForm.controls['active'].setValue(this.current.active);
@@ -233,6 +215,7 @@ export class UserDetailsDialogComponent {
   }
 
   regenerateAccessToken() {
+    /*
     let accessTokenPromise: Promise<AccessTokenRo> = this.userDetailsService.regenerateAccessToken(this.userId, "AccessPassword");
     accessTokenPromise.then(response => {
       this.alertService.success("Token with\n id: " + response.identifier + " and\nvalue: " + response.value + " was generated!")
@@ -240,12 +223,13 @@ export class UserDetailsDialogComponent {
         'accessTokenId': response.identifier})
     }, err => {
       this.alertService.error("Failed to generated access token. Please try again. If this happens again please contact Administrator!")
-    });
+    });*/
   }
 
   uploadCertificate(event) {
+    this.newCertFile=null;
     const file = event.target.files[0];
-    this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
+    this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
         if (res && res.certificateId) {
           this.userForm.patchValue({
             'subject': res.subject,
@@ -260,7 +244,7 @@ export class UserDetailsDialogComponent {
           });
           this.certificateValidationMessage = res.invalidReason;
           this.isCertificateInvalid = res.invalid;
-
+          this.newCertFile=file;
         } else {
           this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
         }

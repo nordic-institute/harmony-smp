@@ -18,11 +18,11 @@ export class SmlIntegrationService {
 
   registerDomainToSML$(domainCode): Observable<SMLResult> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<SMLResult>(`${SmpConstants.REST_DOMAIN}/${currentUser.id}/smlregister/${domainCode}`, {});
+    return this.http.put<SMLResult>(`${SmpConstants.REST_INTERNAL_DOMAIN_MANAGE}/${currentUser.userId}/sml-register/${domainCode}`, {});
   }
 
   unregisterDomainToSML$(domainCode): Observable<SMLResult> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<SMLResult>(`${SmpConstants.REST_DOMAIN}/${currentUser.id}/smlunregister/${domainCode}`, {});
+    return this.http.put<SMLResult>(`${SmpConstants.REST_INTERNAL_DOMAIN_MANAGE}/${currentUser.userId}/sml-unregister/${domainCode}`, {});
   }
 }

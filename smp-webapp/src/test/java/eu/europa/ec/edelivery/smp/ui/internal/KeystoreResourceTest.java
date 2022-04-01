@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.ui;
+package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_KEYSTORE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -62,10 +63,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:webapp_integration_test_data.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class KeystoreResourceTest {
-    private static final String PATH = "/ui/rest/keystore";
-
+    private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
     Path keystore = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
-
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -83,8 +82,6 @@ public class KeystoreResourceTest {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
-
-
         initServletContext();
         uiKeystoreService.refreshData();
     }

@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -23,15 +24,20 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
 
     @Override
     public UserRO convert(DBUser source) {
+
         UserRO target = new UserRO();
         target.setEmailAddress(source.getEmailAddress());
         target.setUsername(source.getUsername());
         target.setRole(source.getRole());
         target.setPassword(source.getPassword());
         target.setAccessTokenId(source.getAccessTokenIdentifier());
+        target.setPasswordExpireOn(source.getPasswordExpireOn());
+        target.setAccessTokenExpireOn(source.getAccessTokenExpireOn());
         target.setPasswordExpired(isPasswordExpired(source));
+
         target.setActive(source.isActive());
-        target.setId(source.getId());
+        // do not expose internal id
+        target.setUserId(SessionSecurityUtils.encryptedEntityId(source.getId()));
         if (source.getCertificate() != null) {
             CertificateRO certificateRO = conversionService.convert(source.getCertificate(), CertificateRO.class);
             target.setCertificate(certificateRO);
@@ -44,6 +50,7 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         }
         return target;
     }
+
 
     private boolean isPasswordExpired(DBUser source) {
         return StringUtils.isNotEmpty(source.getPassword())

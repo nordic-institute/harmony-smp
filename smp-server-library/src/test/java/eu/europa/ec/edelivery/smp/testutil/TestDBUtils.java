@@ -102,6 +102,7 @@ public class TestDBUtils {
     public static DBUser createDBUserByCertificate(String certId) {
         DBUser dbuser = new DBUser();
         dbuser.setRole("test");
+        dbuser.setUsername("test-"+certId);
 
         DBCertificate dbcert = new DBCertificate();
         dbcert.setCertificateId(certId);

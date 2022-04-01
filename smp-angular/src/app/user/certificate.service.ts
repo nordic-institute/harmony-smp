@@ -24,6 +24,19 @@ export class CertificateService {
       .set("Content-Type", "application/octet-stream");
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<CertificateRo>(`${SmpConstants.REST_USER}/${currentUser.id}/certdata`, payload, {headers});
+    return this.http.post<CertificateRo>(SmpConstants.REST_PUBLIC_TRUSTSTORE_VALIDATE_CERT.replace('{user-id}', currentUser.userId+""), payload, {headers});
+  }
+
+  validateCertificate(payload): Observable<CertificateRo> {
+    // The user identifier below belongs to the currently logged in user and it may or may not be the same as the
+    // identifier of the user being modified (e.g. a normal user editing his own details vs. a system administrator
+    // adding or editing another user)
+
+    // upload file as binary file
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/octet-stream");
+
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<CertificateRo>(SmpConstants.REST_PUBLIC_TRUSTSTORE_VALIDATE_CERT.replace('{user-id}', currentUser.userId+""), payload, {headers});
   }
 }

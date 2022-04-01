@@ -69,6 +69,23 @@ public class ConfigurationService {
     public String getParticipantIdentifierSchemeRexExpMessage() {
         return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP_MSG);
     }
+    public Pattern getPasswordPolicyRexExp() {
+        return (Pattern) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_REGULAR_EXPRESSION);
+    }
+    public String getPasswordPolicyRexExpPattern() {
+        return configurationDAO.getCachedProperty(PASSWORD_POLICY_REGULAR_EXPRESSION);
+    }
+
+    public String getPasswordPolicyValidationMessage() {
+        return configurationDAO.getCachedProperty(PASSWORD_POLICY_MESSAGE);
+    }
+
+    public Integer getPasswordPolicyValidDays() {
+        return (Integer) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_VALID_DAYS);
+    }
+    public Integer getAccessTokenPolicyValidDays() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_POLICY_VALID_DAYS);
+    }
 
     public Integer getHttpHeaderHstsMaxAge() {
         return (Integer) configurationDAO.getCachedPropertyValue(HTTP_HSTS_MAX_AGE);

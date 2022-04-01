@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.ui;
+package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,12 +7,15 @@ import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.error.UIErrorControllerAdvice;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
+import eu.europa.ec.edelivery.smp.ui.UserResourceTest;
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +36,17 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_TRUSTSTORE;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_TRUSTSTORE;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -51,17 +55,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class})
+        SpringSecurityConfig.class,
+        UIErrorControllerAdvice.class})
 @WebAppConfiguration
 @SqlConfig(encoding = "UTF-8")
 @Sql(scripts = {"classpath:cleanup-database.sql",
         "classpath:webapp_integration_test_data.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class TruststoreResourceTest {
-    private static final String PATH = "/ui/rest/truststore";
-
-    Path keystore = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
-
+public class TruststoreAdminResourceTest {
+    private static final String PATH_INTERNAL = CONTEXT_PATH_INTERNAL_TRUSTSTORE;
+    private static final String PATH_PUBLIC = CONTEXT_PATH_PUBLIC_TRUSTSTORE;
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -71,6 +74,8 @@ public class TruststoreResourceTest {
 
     private MockMvc mvc;
     private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+    private static final RequestPostProcessor SG_ADMIN_CREDENTIALS = httpBasic("sg_admin", "test123");
 
     @Before
     public void setup() throws IOException {
@@ -92,10 +97,78 @@ public class TruststoreResourceTest {
     }
 
     @Test
+    public void validateInvalidCertificate() throws Exception {
+        byte[] buff = (new String("Not a certficate :) ")).getBytes();
+
+        // given when
+        mvc.perform(post(PATH_PUBLIC + "/1098765430/validate-certificate")
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
+                .content(buff))
+                .andExpect(status().is5xxServerError())
+                .andExpect(content().string(CoreMatchers.containsString(" The certificate is not valid")));
+    }
+
+    @Test
+    public void validateCertificateSystemAdmin() throws Exception {
+        byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
+
+        // given when
+        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/1098765430/validate-certificate")
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
+                .content(buff))
+                .andExpect(status().isOk()).andReturn();
+
+        //then
+        ObjectMapper mapper = new ObjectMapper();
+        CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
+
+        assertNotNull(res);
+        assertEquals("CN=Intermediate CA,O=DIGIT,C=BE", res.getIssuer());
+        assertEquals("1.2.840.113549.1.9.1=#160c736d7040746573742e636f6d,CN=SMP test,O=DIGIT,C=BE", res.getSubject());
+        assertEquals("3", res.getSerialNumber());
+        assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
+        assertEquals("sno=3&subject=1.2.840.113549.1.9.1%3D%23160c736d7040746573742e636f6d%2CCN%3DSMP+test%2CO%3DDIGIT%2CC%3DBE&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=CN%3DIntermediate+CA%2CO%3DDIGIT%2CC%3DBE", res.getBlueCoatHeader());
+    }
+
+    @Test
+    public void validateCertificateIdWithEmailSerialNumberInSubjectCertIdTest() throws Exception {
+        String subject = "CN=common name,emailAddress=CEF-EDELIVERY-SUPPORT@ec.europa.eu,serialNumber=1,O=org,ST=My town,postalCode=2151, L=GreatTown,street=My Street. 20, C=BE";
+        String serialNumber = "1234321";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(serialNumber, subject);
+        byte[] buff = certificate.getEncoded();
+        // given when
+        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/1098765430/validate-certificate")
+                .with(SYSTEM_CREDENTIALS)
+                .with(csrf())
+                .content(buff))
+                .andExpect(status().isOk()).andReturn();
+
+        //them
+        ObjectMapper mapper = new ObjectMapper();
+        CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
+
+        assertEquals("CN=common name,O=org,C=BE:0000000001234321", res.getCertificateId());
+    }
+
+    @Test
+    public void uploadCertificateInvalidUser() throws Exception {
+        byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
+        // id and logged user not match
+        // given when
+        mvc.perform(post(PATH_PUBLIC + "/34556655/validate-certificate")
+                .with(ADMIN_CREDENTIALS)
+                .with(csrf())
+                .content(buff))
+                .andExpect(status().isUnauthorized()).andReturn();
+    }
+
+    @Test
     public void getCertificateList() throws Exception {
         // given when
         int countStart = uiTruststoreService.getCertificateROEntriesList().size();
-        MvcResult result = mvc.perform(get(PATH)
+        MvcResult result = mvc.perform(get(PATH_INTERNAL)
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
@@ -116,38 +189,12 @@ public class TruststoreResourceTest {
         });
     }
 
-
-
-    @Test
-    public void uploadCertificateSystemAdmin() throws Exception {
-        byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
-
-        int countStart =   uiTruststoreService.getNormalizedTrustedList().size();
-        // given when
-        MvcResult result = mvc.perform(post(PATH+"/3/certdata")
-                .with(SYSTEM_CREDENTIALS)
-                .with(csrf())
-                .content(buff))
-                .andExpect(status().isOk()).andReturn();
-
-        //then
-        ObjectMapper mapper = new ObjectMapper();
-        CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
-        assertEquals(countStart+1, uiTruststoreService.getNormalizedTrustedList().size());
-        assertNotNull(res);
-        assertEquals("CN=Intermediate CA,O=DIGIT,C=BE", res.getIssuer());
-        assertEquals("1.2.840.113549.1.9.1=#160c736d7040746573742e636f6d,CN=SMP test,O=DIGIT,C=BE", res.getSubject());
-        assertEquals("3", res.getSerialNumber());
-        assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
-        assertEquals("sno=3&subject=1.2.840.113549.1.9.1%3D%23160c736d7040746573742e636f6d%2CCN%3DSMP+test%2CO%3DDIGIT%2CC%3DBE&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=CN%3DIntermediate+CA%2CO%3DDIGIT%2CC%3DBE", res.getBlueCoatHeader());
-    }
-
     @Test
     public void deleteCertificateSystemAdmin() throws Exception {
         byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
 
-        int countStart =   uiTruststoreService.getNormalizedTrustedList().size();
-        MvcResult prepRes = mvc.perform(post(PATH+"/3/certdata")
+        int countStart = uiTruststoreService.getNormalizedTrustedList().size();
+        MvcResult prepRes = mvc.perform(post(PATH_INTERNAL + "/3/upload-certificate")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .content(buff))
@@ -158,10 +205,10 @@ public class TruststoreResourceTest {
         CertificateRO res = mapper.readValue(prepRes.getResponse().getContentAsString(), CertificateRO.class);
         assertNotNull(res);
         uiTruststoreService.refreshData();
-        assertEquals(countStart+1, uiTruststoreService.getNormalizedTrustedList().size());
+        assertEquals(countStart + 1, uiTruststoreService.getNormalizedTrustedList().size());
 
         // then
-        MvcResult result = mvc.perform(delete(PATH+"/3/delete/"+res.getAlias())
+        MvcResult result = mvc.perform(delete(PATH_INTERNAL + "/3/delete/" + res.getAlias())
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .content(buff))
@@ -213,7 +260,7 @@ public class TruststoreResourceTest {
 
     public List<CertificateRO> getCertificateFromEndpointList() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(PATH).with(SYSTEM_CREDENTIALS)).
+        MvcResult result = mvc.perform(get(PATH_INTERNAL).with(SYSTEM_CREDENTIALS)).
                 andExpect(status().isOk()).andReturn();
 
         //them

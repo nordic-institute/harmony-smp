@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import java.util.UUID;
+import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 
 /**
  * SMP security constants as secured endpoints, beans... etc
@@ -19,8 +19,7 @@ public class SMPSecurityConstants {
     public static final String SMP_CAS_KEY = "SMP_CAS_KEY_";
 
 
-
-    public static final String SMP_SECURITY_PATH = "/ui/rest/security";
-    public static final String SMP_SECURITY_PATH_AUTHENTICATE = SMP_SECURITY_PATH +"/authentication";
-    public static final String SMP_SECURITY_PATH_CAS_AUTHENTICATE = SMP_SECURITY_PATH +"/cas";
+    public static final String SMP_SECURITY_PATH = ResourceConstants.CONTEXT_PATH_PUBLIC + "security";
+    public static final String SMP_SECURITY_PATH_AUTHENTICATE = SMP_SECURITY_PATH + "/authentication";
+    public static final String SMP_SECURITY_PATH_CAS_AUTHENTICATE = SMP_SECURITY_PATH + "/cas";
 }

@@ -6,7 +6,7 @@ import {SmpConstants} from "../smp.constants";
 import {User} from "../security/user.model";
 import {AlertService} from "../alert/alert.service";
 import {SecurityService} from "../security/security.service";
-import {AccessTokenRo} from "./access-token-ro.model";
+import {AccessTokenRo} from "../common/access-token-generation-dialog/access-token-ro.model";
 
 @Injectable()
 export class UserService {
@@ -18,7 +18,7 @@ export class UserService {
   ) { }
 
   updateUser(user: User) {
-    this.http.put<string>(`${SmpConstants.REST_USER}/${user.id}`, user).subscribe(response => {
+    this.http.put<string>(SmpConstants.REST_PUBLIC_USER_UPDATE.replace('{user-id}', user.userId), user).subscribe(response => {
       this.securityService.updateUserDetails(response);
       this.alertService.success('The operation \'update user\' completed successfully.');
     }, err => {

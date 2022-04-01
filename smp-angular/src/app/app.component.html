@@ -77,9 +77,16 @@
         <mat-menu x-position="before" #settingsMenu="matMenu">
           <div *ngIf="currentUser">
 
+
             <button mat-menu-item id="currentuser_id" (click)="editCurrentUser()">
               <mat-icon>person</mat-icon>
               <span>{{currentUser}}</span>
+            </button>
+            <button mat-menu-item id="changePassword_id" (click)="changeCurrentUserPassword()">
+              <span>Change password</span>
+            </button>
+            <button mat-menu-item id="getAccessToken_id" (click)="regenerateAccesesToken()">
+              <span>Generated access token</span>
             </button>
 
             <hr/>

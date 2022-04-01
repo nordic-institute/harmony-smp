@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
+import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.UUID;
 
@@ -33,17 +36,16 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
  */
 public class ErrorResponseBuilder {
 
-    private static final Logger log = LoggerFactory.getLogger(ErrorResponseBuilder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ErrorResponseBuilder.class);
 
     public static final MediaType CONTENT_TYPE_TEXT_XML_UTF8 = MediaType.valueOf("text/xml; charset=UTF-8");
     private HttpStatus status = INTERNAL_SERVER_ERROR;
     private ErrorBusinessCode errorBusinessCode = TECHNICAL;
     private String strErrorDescription = "Unexpected technical error occurred.";
-    private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSz";
 
     private static String getErrorUniqueId() {
         StringBuilder errId = new StringBuilder();
-        errId.append(new SimpleDateFormat(TIMESTAMP_FORMAT).format(new Date()))
+        errId.append(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
                 .append(":")
                 .append(UUID.randomUUID());
         return String.valueOf(errId);
@@ -59,12 +61,20 @@ public class ErrorResponseBuilder {
         return new ErrorResponseBuilder(status);
     }
 
-    private ErrorResponse buildBody() {
+    public ErrorResponse buildBody() {
         ErrorResponse err = new ErrorResponse();
         err.setBusinessCode(errorBusinessCode.name());
         err.setErrorDescription(strErrorDescription);
         err.setErrorUniqueId(getErrorUniqueId());
 
+        return err;
+    }
+
+    public ErrorResponseRO buildJSonBody() {
+        ErrorResponseRO err = new ErrorResponseRO();
+        err.setBusinessCode(errorBusinessCode.name());
+        err.setErrorDescription(strErrorDescription);
+        err.setErrorUniqueId(getErrorUniqueId());
         return err;
     }
 
@@ -83,5 +93,12 @@ public class ErrorResponseBuilder {
                 .contentType(CONTENT_TYPE_TEXT_XML_UTF8)
                 .body(this.buildBody());
     }
+
+    public ResponseEntity buildJSon() {
+        return ResponseEntity.status(this.status)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(this.buildJSonBody());
+    }
+
 
 }

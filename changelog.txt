@@ -1,5 +1,7 @@
 eDelivery SMP 4.2
 - added new properties:
+    smp.passwordPolicy.validationRegex: Regular expression do define password minimum complexity rules!
+    smp.passwordPolicy.validationMessage: The error message shown to the user in case the password does not follow the regex put in the domibus.passwordPolicy.pattern property"
     smp.ui.authentication.types: Set list of '|' separated UI authentication types. Currently supported PASSWORD, SSO: ex. PASSWORD|SSO
     smp.automation.authentication.types: Set list of '|' separated automation authentication types (Web-Service integration). Currently supported PASSWORD, CERT: ex. PASSWORD|CERT
     smp.http.forwarded.headers.enabled to control usage of Forwarded parameters RP/LoadBalancer.

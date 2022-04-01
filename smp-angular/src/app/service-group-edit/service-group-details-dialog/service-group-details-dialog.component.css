@@ -12,3 +12,11 @@
   font-weight: bold;
   color:#c6c639;
 }
+
+
+.list-form-item  .mat-form-field-wrapper {
+  margin-bottom: -1.25em;
+  padding: 0;
+  margin: 0;
+}
+

@@ -27,7 +27,7 @@ public class SMPAuthenticationService {
     public Authentication authenticate(String username, String password) {
         LOG.debug("Authenticate: [{}]", username);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(token);
+        SMPAuthenticationToken authentication = (SMPAuthenticationToken)authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }

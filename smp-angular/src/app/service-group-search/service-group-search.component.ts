@@ -23,7 +23,7 @@ export class ServiceGroupSearchComponent implements OnInit {
   serviceGroupSearchController: ServiceGroupSearchController;
   filter: any = {};
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
-  baseUrl: string = SmpConstants.REST_SEARCH;
+  baseUrl: string = SmpConstants.REST_PUBLIC_SEARCH_SERVICE_GROUP;
 
   constructor(protected lookups: GlobalLookups, protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
 

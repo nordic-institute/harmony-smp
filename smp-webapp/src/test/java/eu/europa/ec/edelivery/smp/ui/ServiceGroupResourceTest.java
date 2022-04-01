@@ -62,7 +62,7 @@ public class ServiceGroupResourceTest {
     @Autowired
     ServiceGroupDao serviceGroupDao;
 
-    private static final String PATH = "/ui/rest/servicegroup";
+    private static final String PATH_PUBLIC = ResourceConstants.CONTEXT_PATH_PUBLIC_SERVICE_GROUP;
 
     private static final String PARTICIPANT_IDENTIFIER = "urn:australia:ncpb";
     private static final String PARTICIPANT_SCHEME = "ehealth-actorid-qns";
@@ -95,7 +95,7 @@ public class ServiceGroupResourceTest {
     @Test
     public void getServiceGroupListForSMPAdmin() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(PATH)
+        MvcResult result = mvc.perform(get(PATH_PUBLIC)
                 .with(SMP_ADMIN_CREDENTIALS).with(csrf())
         ).andExpect(status().isOk()).andReturn();
 
@@ -119,7 +119,7 @@ public class ServiceGroupResourceTest {
     @Test
     public void getServiceGroupListForServiceGroupAdmin() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(PATH)
+        MvcResult result = mvc.perform(get(PATH_PUBLIC)
                 .with(SG_ADMIN_CREDENTIALS).with(csrf())
         ).andExpect(status().isOk()).andReturn();
 
@@ -143,7 +143,7 @@ public class ServiceGroupResourceTest {
     public void getServiceGroupById() throws Exception {
 
         // given when
-        MvcResult result = mvc.perform(get(PATH + "/100000")
+        MvcResult result = mvc.perform(get(PATH_PUBLIC + "/100000")
                 .with(SMP_ADMIN_CREDENTIALS).with(csrf())).
                 andExpect(status().isOk()).andReturn();
 
@@ -172,7 +172,7 @@ public class ServiceGroupResourceTest {
         serviceGroupDao.update(sg);
 
         // given when
-        MvcResult result = mvc.perform(get(PATH + "/extension/100000")
+        MvcResult result = mvc.perform(get(PATH_PUBLIC + "/extension/100000")
                 .with(SMP_ADMIN_CREDENTIALS).with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
@@ -194,7 +194,7 @@ public class ServiceGroupResourceTest {
         validate.setExtension(validExtension + "<ADFA>sdfadsf");
 
         // given when
-        MvcResult result = mvc.perform(post(PATH + "/extension/validate")
+        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/extension/validate")
                 .with(SMP_ADMIN_CREDENTIALS)
                 .header("Content-Type","application/json")
                     .content(mapper.writeValueAsString(validate))

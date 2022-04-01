@@ -13,9 +13,9 @@ import org.springframework.security.core.AuthenticationException;
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpStatus.*;
 
-public class ErrorMappingControllerAdviceTest {
+public class ServiceErrorControllerAdviceTest {
 
-    ErrorMappingControllerAdvice testIntance = new ErrorMappingControllerAdvice();
+    ServiceErrorControllerAdvice testIntance = new ServiceErrorControllerAdvice();
 
     @Test
     public void handleRuntimeException() {
@@ -48,7 +48,7 @@ public class ErrorMappingControllerAdviceTest {
     @Test
     public void handleAuthenticationException() {
 
-        ResponseEntity re = testIntance.handleAuthenticationException(new AuthenticationException("AuthenticationException") {
+        ResponseEntity re = testIntance.handleRuntimeException(new AuthenticationException("AuthenticationException") {
             @Override
             public String getMessage() {
                 return super.getMessage();

@@ -38,7 +38,8 @@ export class SearchTableComponent implements OnInit {
   @Input() id: String = "";
   @Input() title: String = "";
   @Input() columnPicker: ColumnPicker;
-  @Input() url: string = '';
+  @Input() url: string = ''; // URL for query (and if manageUrl is null also for "managing")
+  @Input() manageUrl: string = ''; // (for "managing" the entities (add, update, remove) )
   @Input() searchTableController: SearchTableController;
   @Input() filter: any = {};
   @Input() showActionButtons: boolean = true;
@@ -294,7 +295,7 @@ export class SearchTableComponent implements OnInit {
           const modifiedRowEntities = this.rows.filter(el => el.status !== SearchTableEntityStatus.PERSISTED);
           // this.isBusy = true;
           this.showSpinner = true;
-          this.http.put(this.url, modifiedRowEntities).toPromise().then(res => {
+          this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(res => {
             this.showSpinner = false;
             // this.isBusy = false;
             // this.getUsers();
@@ -350,6 +351,10 @@ export class SearchTableComponent implements OnInit {
 
   get editButtonEnabled(): boolean {
     return this.selected && this.selected.length == 1 && !this.selected[0].deleted;
+  }
+
+  get managementUrl(): string {
+    return (this.manageUrl == null || this.manageUrl.length === 0)? this.url:this.manageUrl;
   }
 
   get deleteButtonEnabled(): boolean {

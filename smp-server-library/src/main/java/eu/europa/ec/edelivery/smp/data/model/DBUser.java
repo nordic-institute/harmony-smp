@@ -62,8 +62,8 @@ public class DBUser extends BaseEntity {
     @ColumnDescription(comment = "User email")
     private String emailAddress;
     // username
-    @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
-    @ColumnDescription(comment = "Login username")
+    @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true,  nullable = false)
+    @ColumnDescription(comment = "Unique username identifier. The Username must not be null")
     private String username;
     @Column(name = "PASSWORD", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
     @ColumnDescription(comment = "BCrypted password for username/password login")
@@ -71,16 +71,27 @@ public class DBUser extends BaseEntity {
     @Column(name = "PASSWORD_CHANGED")
     @ColumnDescription(comment = "Last date when password was changed")
     LocalDateTime passwordChanged;
-    // Personal access token
+
+    @Column(name = "PASSWORD_EXPIRE_ON")
+    @ColumnDescription(comment = "Date when password will expire")
+    LocalDateTime passwordExpireOn;
+
+        // Personal access token
     @Column(name = "ACCESS_TOKEN_ID", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
     @ColumnDescription(comment = "Personal access token id")
     private String accessTokenIdentifier;
     @Column(name = "ACCESS_TOKEN", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
     @ColumnDescription(comment = "BCrypted personal access token")
     private String accessToken;
-    @Column(name = "PAT_GENERATED")
+    @Column(name = "ACCESS_TOKEN_GENERATED_ON")
     @ColumnDescription(comment = "Date when personal access token was generated")
     LocalDateTime accessTokenGeneratedOn;
+
+    @Column(name = "ACCESS_TOKEN_EXPIRE_ON")
+    @ColumnDescription(comment = "Date when personal access token will expire")
+    LocalDateTime accessTokenExpireOn;
+
+
 
     @Column(name = "ACTIVE", nullable = false)
     @ColumnDescription(comment = "Is user active")
@@ -159,6 +170,22 @@ public class DBUser extends BaseEntity {
         this.accessTokenGeneratedOn = accessTokenGeneratedOn;
     }
 
+    public LocalDateTime getPasswordExpireOn() {
+        return passwordExpireOn;
+    }
+
+    public void setPasswordExpireOn(LocalDateTime passwordExpireOn) {
+        this.passwordExpireOn = passwordExpireOn;
+    }
+
+    public LocalDateTime getAccessTokenExpireOn() {
+        return accessTokenExpireOn;
+    }
+
+    public void setAccessTokenExpireOn(LocalDateTime accessTokenExpireOn) {
+        this.accessTokenExpireOn = accessTokenExpireOn;
+    }
+
     public String getRole() {
         return role;
     }
@@ -213,7 +240,7 @@ public class DBUser extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, username, certificate);
+        return Objects.hash(super.hashCode(), id, username);
     }
 
     @PrePersist

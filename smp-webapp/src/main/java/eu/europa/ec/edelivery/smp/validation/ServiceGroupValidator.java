@@ -50,6 +50,7 @@ public class ServiceGroupValidator {
 
         String scheme = serviceGroup.getParticipantIdentifier().getScheme();
         Pattern schemaPattern = configurationService.getParticipantIdentifierSchemeRexExp();
+
         if (!schemaPattern.matcher(scheme).matches()) {
             throw new BadRequestException(WRONG_FIELD, "Service Group scheme does not match allowed pattern: " + schemaPattern.pattern());
         }

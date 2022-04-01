@@ -2,8 +2,10 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,17 +18,18 @@ import static org.junit.Assert.assertTrue;
 
 public class SMPAuthorizationServiceTest {
 
-    DBUser mockUser = null;
+    DBUser user = null;
     SecurityContext mockSecurityContextSystemAdmin = null;
 
     SecurityContext mockSecurityContextSGAdmin = null;
 
     SMPAuthorizationService testInstance = new SMPAuthorizationService();
 
+
     @Before
     public void setup() {
 
-        DBUser user = new DBUser();
+        user = new DBUser();
         user.setId((long) 10);
 
 
@@ -74,13 +77,13 @@ public class SMPAuthorizationServiceTest {
         assertTrue(bVal);
     }
 
-    @Test
+    @Test(expected = BadCredentialsException.class)
     public void isCurrentlyLoggedInNotLogedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
 
-        boolean bVal = testInstance.isCurrentlyLoggedIn((long) 1);
-        assertFalse(bVal);
+        testInstance.isCurrentlyLoggedIn("Not logged In");
+
     }
 
     @Test
@@ -88,11 +91,7 @@ public class SMPAuthorizationServiceTest {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
         // when then
-        boolean bVal = testInstance.isCurrentlyLoggedIn((long) 10);
+        boolean bVal = testInstance.isCurrentlyLoggedIn(SessionSecurityUtils.encryptedEntityId(10L));
         assertTrue(bVal);
-    }
-
-    public void sanitize() {
-
     }
 }
