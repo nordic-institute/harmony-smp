@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainDeleteValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
+import eu.europa.ec.edelivery.smp.data.ui.DomainPublicRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
@@ -51,6 +52,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
         return super.getTableList(page, pageSize, sortField, sortOrder, filter);
     }
+
 
     @Transactional
     public void updateDomainList(List<DomainRO> lst) {

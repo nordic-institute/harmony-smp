@@ -233,7 +233,8 @@
     create table SMP_USER (
        ID bigint not null comment 'Unique user id',
         ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted personal access token',
-        PAT_GENERATED datetime comment 'Date when personal access token was generated',
+        ACCESS_TOKEN_EXPIRE_ON datetime comment 'Date when personal access token will expire',
+        ACCESS_TOKEN_GENERATED_ON datetime comment 'Date when personal access token was generated',
         ACCESS_TOKEN_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Personal access token id',
         ACTIVE bit not null comment 'Is user active',
         CREATED_ON datetime not null,
@@ -241,8 +242,9 @@
         LAST_UPDATED_ON datetime not null,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted password for username/password login',
         PASSWORD_CHANGED datetime comment 'Last date when password was changed',
+        PASSWORD_EXPIRE_ON datetime comment 'Date when password will expire',
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User role',
-        USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Login username',
+        USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
         primary key (ID)
     ) comment='SMP can handle multiple domains. This table contains domain specific data' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -251,7 +253,8 @@
         REV bigint not null,
         REVTYPE tinyint,
         ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PAT_GENERATED datetime,
+        ACCESS_TOKEN_EXPIRE_ON datetime,
+        ACCESS_TOKEN_GENERATED_ON datetime,
         ACCESS_TOKEN_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         ACTIVE bit,
         CREATED_ON datetime,
@@ -259,6 +262,7 @@
         LAST_UPDATED_ON datetime,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PASSWORD_CHANGED datetime,
+        PASSWORD_EXPIRE_ON datetime,
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID, REV)

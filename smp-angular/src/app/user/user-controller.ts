@@ -9,6 +9,8 @@ import {SearchTableValidationResult} from "../common/search-table/search-table-v
 import {SmpConstants} from "../smp.constants";
 import {HttpClient} from "@angular/common/http";
 import {CertificateRo} from "./certificate-ro.model";
+import {PasswordChangeDialogComponent} from "../common/password-change-dialog/password-change-dialog.component";
+import {AccessTokenGenerationDialogComponent} from "../common/access-token-generation-dialog/access-token-generation-dialog.component";
 
 export class UserController implements SearchTableController {
 
@@ -38,6 +40,14 @@ export class UserController implements SearchTableController {
 
   public newDialog(config?: MatDialogConfig): MatDialogRef<UserDetailsDialogComponent> {
     return this.dialog.open(UserDetailsDialogComponent, this.convertWithMode(config));
+  }
+
+  public changePasswordDialog(config?: MatDialogConfig): MatDialogRef<PasswordChangeDialogComponent> {
+    return this.dialog.open(PasswordChangeDialogComponent, this.convertWithMode(config));
+  }
+
+  public generateAccessTokenDialog(config?: MatDialogConfig): MatDialogRef<AccessTokenGenerationDialogComponent> {
+    return this.dialog.open(AccessTokenGenerationDialogComponent, this.convertWithMode(config));
   }
 
   private convertWithMode(config) {
@@ -71,7 +81,7 @@ export class UserController implements SearchTableController {
 
   validateDeleteOperation(rows: Array<SearchTableEntity>) {
     var deleteRowIds = rows.map(rows => rows.id);
-    return this.http.post<SearchTableValidationResult>(SmpConstants.REST_USER_VALIDATE_DELETE, deleteRowIds);
+    return this.http.post<SearchTableValidationResult>(SmpConstants.REST_INTERNAL_USER_VALIDATE_DELETE, deleteRowIds);
   }
 
   public newValidationResult(lst: Array<number>): SearchTableValidationResult {

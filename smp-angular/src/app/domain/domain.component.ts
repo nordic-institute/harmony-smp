@@ -1,4 +1,4 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 
@@ -23,17 +23,16 @@ import {SMLResult} from "./sml-result.model";
   templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css']
 })
-export class DomainComponent implements OnInit {
+export class DomainComponent implements AfterViewInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
-  @ViewChild('signKeyColumnTemplate') signKeyColumnTemplate: TemplateRef<any>;
-  @ViewChild('smlKeyColumnTemplate') smlKeyColumnTemplate: TemplateRef<any>;
+  @ViewChild('certificateAliasTemplate') certificateAliasColumn: TemplateRef<any>;
   @ViewChild('domainCodeColumnTemplate') domainCodeColumnTemplate: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
 
 
-  baseUrl = SmpConstants.REST_DOMAIN;
+  baseUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE;
   columnPicker: ColumnPicker = new ColumnPicker();
   domainController: DomainController;
   filter: any = {};
@@ -60,13 +59,14 @@ export class DomainComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.domainController = new DomainController(this.http, this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
       {
         name: 'Domain code',
         title: "Unique domain code.",
+        prop: 'domainCode',
         cellTemplate: this.domainCodeColumnTemplate,
         width: 250
 
@@ -80,7 +80,8 @@ export class DomainComponent implements OnInit {
       {
         name: 'Signature CertAlias',
         title: "Certificate for signing REST responses",
-        cellTemplate: this.signKeyColumnTemplate,
+        prop: 'signatureKeyAlias',
+        cellTemplate: this.certificateAliasColumn,
         width: 150
       },
 
@@ -92,7 +93,8 @@ export class DomainComponent implements OnInit {
       },
       {
         name: 'SML ClientCert Alias',
-        cellTemplate: this.smlKeyColumnTemplate,
+        prop: 'smlClientKeyAlias',
+        cellTemplate: this.certificateAliasColumn,
         width: 150
       },
       {
@@ -116,7 +118,6 @@ export class DomainComponent implements OnInit {
     if (alias) {
       return this.lookups.cachedCertificateAliasList.includes(alias);
     } else {
-
       return false;
     }
   }

@@ -19,10 +19,10 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProviderForUI;
 import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
+import eu.europa.ec.edelivery.smp.error.SMPSecurityExceptionHandler;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +57,12 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.*;
 
-/**
- * Created by gutowpa on 12/07/2017.
- */
 
+/**
+ * SMP Security configuration
+ * @author gutowpa
+ * @since 3.0
+ */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @ComponentScan("eu.europa.ec.edelivery.smp.auth")
@@ -73,6 +75,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     // Accounts supporting automated application functionalities
     ClientCertAuthenticationFilter clientCertAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
+    MDCLogRequestFilter mdcLogRequestFilter;
     // User account
     CasAuthenticationFilter casAuthenticationFilter;
     CasAuthenticationEntryPoint casAuthenticationEntryPoint;
@@ -87,19 +90,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${encodedSlashesAllowedInUrl:true}")
     boolean encodedSlashesAllowedInUrl;
 
-    /**
-     * Initialize beans. Use lazy initialization for filter to avoid circular dependencies
-     *
-     * @param smpAuthenticationProvider
-     * @param clientCertAuthenticationFilter
-     * @param x509AuthenticationFilter
-     */
     @Autowired
     public SpringSecurityConfig(SMPAuthenticationProvider smpAuthenticationProvider,
                                 SMPAuthenticationProviderForUI smpAuthenticationProviderForUI,
                                 ConfigurationService configurationService,
                                 @Lazy ClientCertAuthenticationFilter clientCertAuthenticationFilter,
                                 @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
+                                @Lazy MDCLogRequestFilter mdcLogRequestFilter,
                                 @Lazy CsrfTokenRepository csrfTokenRepository,
                                 @Lazy RequestMatcher csrfURLMatcher,
                                 @Lazy HttpFirewall httpFirewall,
@@ -116,6 +113,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         this.clientCertAuthenticationFilter = clientCertAuthenticationFilter;
         this.x509AuthenticationFilter = x509AuthenticationFilter;
         this.casAuthenticationFilter = casAuthenticationFilter;
+        this.mdcLogRequestFilter = mdcLogRequestFilter;
         this.casAuthenticationEntryPoint = casAuthenticationEntryPoint;
         this.csrfTokenRepository = csrfTokenRepository;
         this.csrfURLMatcher = csrfURLMatcher;
@@ -132,9 +130,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             LOG.debug("The CAS authentication is enabled. Set casAuthenticationEntryPoint!");
             exceptionHandlingConfigurer = exceptionHandlingConfigurer.defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint, new AntPathRequestMatcher(SMP_SECURITY_PATH_CAS_AUTHENTICATE));
         }
-        exceptionHandlingConfigurer.authenticationEntryPoint(new SpringSecurityExceptionHandler());
+
+        SMPSecurityExceptionHandler smpSecurityExceptionHandler = new SMPSecurityExceptionHandler();
+
+        exceptionHandlingConfigurer.authenticationEntryPoint(smpSecurityExceptionHandler);
         httpSecurity = exceptionHandlingConfigurer
-                .accessDeniedHandler(new SpringSecurityExceptionHandler())
+                .accessDeniedHandler(smpSecurityExceptionHandler)
+
                 .and()
                 .headers().frameOptions().deny()
                 .contentTypeOptions().and()
@@ -147,9 +149,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         }
 
 
-        httpSecurity.addFilter(clientCertAuthenticationFilter)
+        httpSecurity
+                .addFilterAfter(mdcLogRequestFilter, EDeliveryX509AuthenticationFilter.class)
+                .addFilter(clientCertAuthenticationFilter)
                 .addFilter(x509AuthenticationFilter)
-                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
+                .httpBasic().authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
@@ -211,11 +215,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .maxAgeInSeconds(maxAge)
                     .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
         }
-
+/*
         String contentSecurityPolicy = configurationService.getHttpHeaderContentSecurityPolicy();
         if (StringUtils.isNotBlank(contentSecurityPolicy)) {
             httpSecurity = httpSecurity.headers().contentSecurityPolicy(contentSecurityPolicy).and().and();
-        }
+        }*/
     }
 
     @Override
@@ -261,6 +265,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    public MDCLogRequestFilter getMDCLogRequestFilter() {
+        MDCLogRequestFilter filter=  new MDCLogRequestFilter();
+        return filter;
+    }
+
+    @Bean
     public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter(@Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager) {
         EDeliveryX509AuthenticationFilter x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
         x509AuthenticationFilter.setAuthenticationManager(authenticationManager);
@@ -284,7 +294,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
         requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
         // ignore for login and logout
-        requestMatcher.addIgnoreUrl("/ui/rest/security/authentication", HttpMethod.DELETE, HttpMethod.POST);
+        requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY+"/authentication", HttpMethod.DELETE, HttpMethod.POST);
 
         requestMatcher.addIgnoreUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE, HttpMethod.GET);
         // allow all gets

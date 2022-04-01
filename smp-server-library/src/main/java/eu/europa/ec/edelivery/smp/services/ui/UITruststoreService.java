@@ -165,7 +165,16 @@ public class UITruststoreService {
         return getCertificateData(buff, false);
     }
 
-    public CertificateRO getCertificateData(byte[] buff, boolean validate) throws CertificateException, IOException {
+    /**
+     * Validate certificate!
+     *
+     * @param buff - bytearray of the certificate (pem of or der)
+     * @param validate
+     * @return
+     * @throws CertificateException
+     * @throws IOException
+     */
+    public CertificateRO getCertificateData(byte[] buff, boolean validate) {
         X509Certificate cert = X509CertificateUtils.getX509Certificate(buff);
         CertificateRO cro = convertToRo(cert);
         if (validate) {
@@ -184,6 +193,8 @@ public class UITruststoreService {
                 cro.setInvalidReason("Certificate is revoked!");
             } catch (CertificateNotTrustedException ex) {
                 cro.setInvalidReason("Certificate is not trusted!");
+            } catch (CertificateException e) {
+                cro.setInvalidReason("Can not read the certificate!");
             }
         }
         return cro;

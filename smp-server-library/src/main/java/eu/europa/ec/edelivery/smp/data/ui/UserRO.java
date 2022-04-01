@@ -1,11 +1,15 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.utils.SMPConstants;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 
 
 /**
@@ -14,26 +18,37 @@ import java.util.Collection;
  */
 public class UserRO extends BaseRO implements UserDetails {
 
-    private static final long serialVersionUID = 2821447495333163882L;
+    static final long serialVersionUID = 2821447495333163882L;
 
-    private String username;
-    private String password;
-    private String accessTokenId;
-    private String emailAddress;
-    private Collection<SMPAuthority> authorities;
-    private boolean active = true;
-    private String role;
-    private Long id;
-    private CertificateRO certificate;
-    private int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
-    private boolean passwordExpired;
+    String username;
 
-    public Long getId() {
-        return id;
+    String password;
+    @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
+    LocalDateTime passwordExpireOn;
+    String accessTokenId;
+    @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
+    LocalDateTime accessTokenExpireOn;
+    String emailAddress;
+    Collection<SMPAuthority> authorities;
+    boolean active = true;
+    String role;
+    String userId;
+    CertificateRO certificate;
+    int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
+    boolean passwordExpired;
+
+    /**
+     * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
+     * expose internal database user identity
+     *
+     * @return hash value of database user entity.
+     */
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -82,6 +97,22 @@ public class UserRO extends BaseRO implements UserDetails {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public LocalDateTime getPasswordExpireOn() {
+        return passwordExpireOn;
+    }
+
+    public void setPasswordExpireOn(LocalDateTime passwordExpireOn) {
+        this.passwordExpireOn = passwordExpireOn;
+    }
+
+    public LocalDateTime getAccessTokenExpireOn() {
+        return accessTokenExpireOn;
+    }
+
+    public void setAccessTokenExpireOn(LocalDateTime accessTokenExpireOn) {
+        this.accessTokenExpireOn = accessTokenExpireOn;
     }
 
     public String getRole() {

@@ -44,8 +44,6 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
      * @param sortOrder
      * @return
      */
-
-    @Transactional
     public ServiceResult<R> getTableList(int page, int pageSize,
                                          String sortField,
                                          String sortOrder,

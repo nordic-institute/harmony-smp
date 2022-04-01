@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.ui;
+package eu.europa.ec.edelivery.smp.ui.external;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
@@ -9,41 +9,43 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupSearchService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
+
 /**
+ * Purpose of the SearchResource is to provide search method public participant capabilities
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
-
 @RestController
-@RequestMapping(value = "/ui/rest/search")
+@RequestMapping(value = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)
 public class SearchResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SearchResource.class);
 
-    @Autowired
-    private UIServiceGroupSearchService uiServiceGroupService;
-    @Autowired
-    private DomainDao domainDao;
+    final UIServiceGroupSearchService uiServiceGroupService;
+    final DomainDao domainDao;
 
+    public SearchResource(UIServiceGroupSearchService uiServiceGroupService, DomainDao domainDao) {
+        this.uiServiceGroupService = uiServiceGroupService;
+        this.domainDao = domainDao;
+    }
 
-    @PutMapping(produces = {"application/json"})
-    @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
     public ServiceResult<ServiceGroupSearchRO> getServiceGroupList(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-            @RequestParam(value = "orderBy", required = false) String orderBy,
-            @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = "participantIdentifier", required = false) String participantIdentifier,
-            @RequestParam(value = "participantScheme", required = false) String participantScheme,
-            @RequestParam(value = "domain", required = false) String domainCode
-    ) {
+            @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
+            @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
+            @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
+            @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
+            @RequestParam(value = PARAM_QUERY_PARTC_ID, required = false) String participantIdentifier,
+            @RequestParam(value = PARAM_QUERY_PARTC_SCHEME, required = false) String participantScheme,
+            @RequestParam(value = PARAM_QUERY_DOMAIN_CODE, required = false) String domainCode) {
 
         String participantIdentifierDecoded = decodeUrlToUTF8(participantIdentifier);
         String participantSchemeDecoded = decodeUrlToUTF8(participantScheme);

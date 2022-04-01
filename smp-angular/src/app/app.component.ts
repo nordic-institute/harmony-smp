@@ -59,6 +59,24 @@ export class AppComponent {
     });
   }
 
+  changeCurrentUserPassword() {
+    const formRef: MatDialogRef<any> = this.userController.changePasswordDialog({
+      data: this.securityService.getCurrentUser()
+    });
+  }
+
+  regenerateAccesesToken() {
+    const formRef: MatDialogRef<any> = this.userController.generateAccessTokenDialog({
+      data: this.securityService.getCurrentUser()
+    });
+    formRef.afterClosed().subscribe(result => {
+      /*if (result) {
+        const user = {...formRef.componentInstance.getCurrent(), status: SearchTableEntityStatus.UPDATED};
+        this.userService.updateUser(user);
+      }*/
+    });
+  }
+
   get currentUser(): string {
     let user = this.securityService.getCurrentUser();
     return user ? user.username : "";
