@@ -21,7 +21,7 @@
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.2-SNAPSHOT</version>
+        <version>4.1.2</version>
         <relativePath>./smp-parent-pom/pom.xml</relativePath>
     </parent>
 
@@ -58,7 +58,7 @@
 
     <scm>
         <developerConnection>scm:git:https://ec.europa.eu/digital-building-blocks/code/scm/edelivery/smp.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>4.1.2</tag>
     </scm>
 
 
