@@ -35,6 +35,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
@@ -131,7 +132,13 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
         assertEquals(1, docIdsAfter.size());
         assertEquals(DOC_ID.getValue().toLowerCase(), docIdsAfter.get(0).getValue()); // normalized
         assertEquals(DOC_ID.getScheme().toLowerCase(), docIdsAfter.get(0).getScheme()); // normalized
-        assertTrue(Arrays.equals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toByteArray(outServiceMetadataDoc)));
+        assertEquals("SignedServiceMetadata", outServiceMetadataDoc.getDocumentElement().getTagName());
+        // has signature
+        assertEquals(1, outServiceMetadataDoc.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#","Signature").getLength());
+        // has service metadata
+        NodeList serviceMetadata = outServiceMetadataDoc.getElementsByTagNameNS("http://docs.oasis-open.org/bdxr/ns/SMP/2016/05","ServiceMetadata");
+        assertEquals(1, serviceMetadata.getLength());
+   //        assertArrayEquals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toByteArray(outServiceMetadataDoc));
     }
 
     @Test
