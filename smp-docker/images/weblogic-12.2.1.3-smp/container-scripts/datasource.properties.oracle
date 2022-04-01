@@ -1,6 +1,6 @@
-dsname=cipaeDeliveryDs
+dsname=smpDatasource
 dsdbname=default;create=true
-dsjndiname=jdbc/cipaeDeliveryDs
+dsjndiname=jdbc/smpDatasource
 dsdriver=oracle.jdbc.OracleDriver
 dsurl=jdbc:oracle:thin:@//database:1521/xe
 dsusername=smp

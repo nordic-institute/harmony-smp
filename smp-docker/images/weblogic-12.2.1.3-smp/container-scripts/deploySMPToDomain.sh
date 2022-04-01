@@ -10,7 +10,7 @@ fi
 
 # create smp property file
 echo "hibernate.dialect=org.hibernate.dialect.Oracle10gDialect" > "$DOMAIN_HOME/classes/smp.config.properties"
-echo "\ndatasource.jndi=jdbc/cipaeDeliveryDs" >> "$DOMAIN_HOME/classes/smp.config.properties"
+echo "\ndatasource.jndi=jdbc/smpDatasource" >> "$DOMAIN_HOME/classes/smp.config.properties"
 echo "\nauthentication.blueCoat.enabled=true" >> "$DOMAIN_HOME/classes/smp.config.properties"
 echo "\nsmp.truststore.password={DEC}{test123}" >> "$DOMAIN_HOME/classes/smp.config.properties"
 echo "\nsmp.keystore.password={DEC}{test123}" >> "$DOMAIN_HOME/classes/smp.config.properties"
