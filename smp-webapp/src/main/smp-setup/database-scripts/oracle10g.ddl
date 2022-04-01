@@ -313,6 +313,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     create table SMP_USER (
        ID number(19,0) not null,
+        ACCESS_TOKEN varchar2(256 char),
+        PAT_GENERATED timestamp,
+        ACCESS_TOKEN_ID varchar2(256 char),
         ACTIVE number(1,0) not null,
         CREATED_ON timestamp not null,
         EMAIL varchar2(256 char),
@@ -329,6 +332,15 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     comment on column SMP_USER.ID is
         'Unique user id';
+
+    comment on column SMP_USER.ACCESS_TOKEN is
+        'BCrypted personal access token';
+
+    comment on column SMP_USER.PAT_GENERATED is
+        'Date when personal access token was generated';
+
+    comment on column SMP_USER.ACCESS_TOKEN_ID is
+        'Personal access token id';
 
     comment on column SMP_USER.ACTIVE is
         'Is user active';
@@ -352,6 +364,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
+        ACCESS_TOKEN varchar2(256 char),
+        PAT_GENERATED timestamp,
+        ACCESS_TOKEN_ID varchar2(256 char),
         ACTIVE number(1,0),
         CREATED_ON timestamp,
         EMAIL varchar2(256 char),
@@ -381,6 +396,9 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
     alter table SMP_SERVICE_METADATA 
        add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME);
+
+    alter table SMP_USER 
+       add constraint UK_tk9bjsmd2mevgt3b997i6pl27 unique (ACCESS_TOKEN_ID);
 
     alter table SMP_USER 
        add constraint UK_rt1f0anklfo05lt0my05fqq6 unique (USERNAME);

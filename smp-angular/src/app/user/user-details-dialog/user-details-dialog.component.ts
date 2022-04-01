@@ -1,5 +1,5 @@
 import {Component, Inject, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 import {
   AbstractControl,
@@ -23,6 +23,7 @@ import {Observable, of} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {UserDetailsService} from "./user-details.service";
 import {MatSlideToggleChange} from "@angular/material/slide-toggle";
+import {AccessTokenRo} from "../access-token-ro.model";
 
 @Component({
   selector: 'user-details-dialog',
@@ -114,6 +115,7 @@ export class UserDetailsDialogComponent {
     }
   }
 
+
   constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
               private lookups: GlobalLookups,
               private certificateService: CertificateService,
@@ -129,19 +131,19 @@ export class UserDetailsDialogComponent {
     this.current = this.editMode
       ? {
         ...data.row,
-
         password: '', // ensures the user password is cleared before editing
         confirmation: '',
-        certificate: data.row.certificate? {...data.row.certificate}  : this.newCertificateRo()
+        certificate: data.row.certificate ? {...data.row.certificate} : this.newCertificateRo()
       } : {
         active: true,
         username: '',
+        accessTokenId: '',
         emailAddress: '',
         password: '',
         confirmation: '',
         role: '',
-        encodedValue:'',
-        crlUrl:'',
+        encodedValue: '',
+        crlUrl: '',
         status: SearchTableEntityStatus.NEW,
         statusPassword: SearchTableEntityStatus.NEW,
         certificate: this.newCertificateRo(),
@@ -175,8 +177,7 @@ export class UserDetailsDialogComponent {
       // improve notInList validator
       'password': new FormControl({value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
         [Validators.required, Validators.pattern(this.passwordPattern)]),
-      'confirmation': new FormControl({value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
-        Validators.pattern(this.passwordPattern)),
+      'accessTokenId': new FormControl({value: ''}),
       // certificate authentication
       'certificateToggle': new FormControl(this.current && this.current.certificate && !!this.current.certificate.certificateId),
       'subject': new FormControl({value: '', disabled: true}, Validators.required),
@@ -204,6 +205,7 @@ export class UserDetailsDialogComponent {
     // username/password authentication
     this.userForm.controls['username'].setValue(this.current.username);
     this.userForm.controls['password'].setValue(this.current.password);
+    this.userForm.controls['accessTokenId'].setValue(this.current.accessTokenId);
     // certificate authentication
     this.userForm.controls['subject'].setValue(this.current.certificate.subject);
     this.userForm.controls['validFrom'].setValue(this.current.certificate.validFrom);
@@ -216,8 +218,8 @@ export class UserDetailsDialogComponent {
     this.userForm.controls['isCertificateValid'].setValue(!this.current.certificate.invalid);
 
 
-    this.certificateValidationMessage =this.current.certificate.invalidReason;
-    this.isCertificateInvalid= this.current.certificate.invalid;
+    this.certificateValidationMessage = this.current.certificate.invalidReason;
+    this.isCertificateInvalid = this.current.certificate.invalid;
 
     // if edit mode and user is given - toggle is disabled
     // username should not be changed.!
@@ -228,6 +230,17 @@ export class UserDetailsDialogComponent {
 
   submitForm() {
     this.dialogRef.close(true);
+  }
+
+  regenerateAccessToken() {
+    let accessTokenPromise: Promise<AccessTokenRo> = this.userDetailsService.regenerateAccessToken(this.userId, "AccessPassword");
+    accessTokenPromise.then(response => {
+      this.alertService.success("Token with\n id: " + response.identifier + " and\nvalue: " + response.value + " was generated!")
+      this.userForm.patchValue({
+        'accessTokenId': response.identifier})
+    }, err => {
+      this.alertService.error("Failed to generated access token. Please try again. If this happens again please contact Administrator!")
+    });
   }
 
   uploadCertificate(event) {
@@ -272,7 +285,7 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['encodedValue'].setValue(this.tempStoreForCertificate.encodedValue);
       this.userForm.controls['crlUrl'].setValue(this.tempStoreForCertificate.crlUrl);
       this.certificateValidationMessage = this.tempStoreForCertificate.invalidReason;
-      this.isCertificateInvalid= this.tempStoreForCertificate.invalid;
+      this.isCertificateInvalid = this.tempStoreForCertificate.invalid;
 
     } else {
       // store data to temp, set values to null
@@ -299,7 +312,7 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['isCertificateValid'].setValue("true");
 
       this.certificateValidationMessage = null;
-      this.isCertificateInvalid= false;
+      this.isCertificateInvalid = false;
     }
   }
 
@@ -341,6 +354,7 @@ export class UserDetailsDialogComponent {
     this.current.active = this.userForm.get('active').value;
     this.current.emailAddress = this.userForm.get('emailAddress').value;
     this.current.role = this.userForm.get('role').value;
+    this.current.accessTokenId = this.userForm.controls['accessTokenId'].value;
     // certificate data
     if (this.userForm.get('certificateToggle')) {
       this.current.certificate.certificateId = this.userForm.controls['certificateId'].value;
@@ -395,8 +409,8 @@ export class UserDetailsDialogComponent {
       serialNumber: '',
       certificateId: '',
       fingerprints: '',
-      crlUrl:'',
-      encodedValue:'',
+      crlUrl: '',
+      encodedValue: '',
     }
   }
 
@@ -405,6 +419,7 @@ export class UserDetailsDialogComponent {
       id: null,
       index: null,
       username: '',
+      accessTokenId: '',
       emailAddress: '',
       role: '',
       active: true,

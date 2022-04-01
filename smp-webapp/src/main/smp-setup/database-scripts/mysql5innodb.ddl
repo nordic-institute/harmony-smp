@@ -232,6 +232,9 @@
 
     create table SMP_USER (
        ID bigint not null comment 'Unique user id',
+        ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted personal access token',
+        PAT_GENERATED datetime comment 'Date when personal access token was generated',
+        ACCESS_TOKEN_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Personal access token id',
         ACTIVE bit not null comment 'Is user active',
         CREATED_ON datetime not null,
         EMAIL varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User email',
@@ -247,6 +250,9 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
+        ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PAT_GENERATED datetime,
+        ACCESS_TOKEN_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         ACTIVE bit,
         CREATED_ON datetime,
         EMAIL varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -282,6 +288,9 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
     alter table SMP_SERVICE_METADATA 
        add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME);
+
+    alter table SMP_USER 
+       add constraint UK_tk9bjsmd2mevgt3b997i6pl27 unique (ACCESS_TOKEN_ID);
 
     alter table SMP_USER 
        add constraint UK_rt1f0anklfo05lt0my05fqq6 unique (USERNAME);

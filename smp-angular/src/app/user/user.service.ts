@@ -6,6 +6,7 @@ import {SmpConstants} from "../smp.constants";
 import {User} from "../security/user.model";
 import {AlertService} from "../alert/alert.service";
 import {SecurityService} from "../security/security.service";
+import {AccessTokenRo} from "./access-token-ro.model";
 
 @Injectable()
 export class UserService {
@@ -24,4 +25,5 @@ export class UserService {
       this.alertService.exception('The operation \'update user\' not completed successfully.', err);
     });
   }
+
 }

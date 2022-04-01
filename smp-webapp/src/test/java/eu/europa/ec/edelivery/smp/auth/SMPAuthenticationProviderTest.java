@@ -35,11 +35,9 @@ public class SMPAuthenticationProviderTest {
         UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken("User", "User");
         DBUser user = new DBUser();
         user.setId(1L);
-
-        user.setUsername("User");
-        user.setPassword(BCrypt.hashpw("InvalidPassword", BCrypt.gensalt()));
+        user.setAccessTokenIdentifier("User");
+        user.setAccessToken(BCrypt.hashpw("InvalidPassword", BCrypt.gensalt()));
         user.setRole("MY_ROLE");
-
 
         doReturn(Optional.of(user)).when(mockUserDao).findUserByIdentifier(any());
         int count = 100;

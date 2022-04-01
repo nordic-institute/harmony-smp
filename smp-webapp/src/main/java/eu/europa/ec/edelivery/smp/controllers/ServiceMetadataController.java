@@ -72,8 +72,10 @@ public class ServiceMetadataController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
-            " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
+    /// @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR  @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
+    @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN,  " +
+            " T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_WS_SMP_ADMIN) " +
+            " OR @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
     public ResponseEntity saveServiceMetadata(HttpServletRequest httpReq,
                                               @PathVariable String serviceGroupId,
                                               @PathVariable String serviceMetadataId,
@@ -94,8 +96,9 @@ public class ServiceMetadataController {
     }
 
     @DeleteMapping
-    @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN) OR" +
-            " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
+    @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_SMP_ADMIN,  " +
+            " T(eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority).S_AUTHORITY_TOKEN_WS_SMP_ADMIN) " +
+            " OR @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
     public ResponseEntity deleteServiceMetadata(HttpServletRequest httpReq,
                                                 @PathVariable String serviceGroupId,
                                                 @PathVariable String serviceMetadataId,

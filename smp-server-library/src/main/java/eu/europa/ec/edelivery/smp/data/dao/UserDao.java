@@ -79,12 +79,33 @@ public class UserDao extends BaseDao<DBUser> {
      */
     public Optional<DBUser> findUserByIdentifier(String identifier) {
 
-        Optional<DBUser>  usr = findUserByUsername(identifier);
+        Optional<DBUser>  usr = findUserByAuthenticationToken(identifier);
         if (!usr.isPresent()){ // try to retrieve by identifier
             usr = findUserByCertificateId(identifier);
         }
-
         return usr;
+    }
+
+    /**
+     * Method finds user by user authentication token identifier. If user identity token not exist
+     * Optional  with isPresent - false is returned.
+     * @param tokeIdentifier
+     * @return returns Optional DBUser for username
+     */
+    public Optional<DBUser> findUserByAuthenticationToken(String tokeIdentifier) {
+        // check if blank
+        if (StringUtils.isBlank(tokeIdentifier)){
+            return  Optional.empty();
+        }
+        try {
+            TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUserByPatId", DBUser.class);
+            query.setParameter("patId", tokeIdentifier.trim());
+            return Optional.of(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, tokeIdentifier);
+        }
     }
 
     /**

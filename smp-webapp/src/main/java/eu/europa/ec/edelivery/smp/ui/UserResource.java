@@ -1,13 +1,10 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
@@ -99,14 +96,21 @@ public class UserResource {
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
     public CertificateRO uploadCertificate(@PathVariable("id") Long id, @RequestBody byte[] data) {
         LOG.info("Got certificate data size: {}", data.length);
-
-
         try {
             return uiTruststoreService.getCertificateData(data, true);
         } catch (IOException | CertificateException e) {
             LOG.error("Error occurred while parsing certificate.", e);
         }
         return null;
+    }
+
+    @PostMapping(value = "/{userId}/generate-access-token" ,produces = {"application/json"})
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
+    public AccessTokenRO generateAccessToken(@PathVariable("userId") Long userId,@RequestBody String password) {
+        AccessTokenRO accessToken = uiUserService.generateAccessTokenForUser(userId);
+        LOG.debug("Access token generated [{}]", accessToken.getIdentifier());
+        accessToken.setGeneratedOn(null);
+        return accessToken;
     }
 
     @PostMapping(path = "/{id}/samePreviousPasswordUsed", produces = {"application/json"})

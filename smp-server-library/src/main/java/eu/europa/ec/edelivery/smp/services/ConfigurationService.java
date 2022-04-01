@@ -74,6 +74,10 @@ public class ConfigurationService {
         return (Integer) configurationDAO.getCachedPropertyValue(HTTP_HSTS_MAX_AGE);
     }
 
+    public String getHttpHeaderContentSecurityPolicy() {
+        return configurationDAO.getCachedProperty(HTTP_HEADER_SEC_POLICY);
+    }
+
     public String getHttpProxyHost() {
         return configurationDAO.getCachedProperty(HTTP_PROXY_HOST);
     }

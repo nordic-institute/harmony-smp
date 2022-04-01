@@ -16,11 +16,13 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProviderForUI;
 import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,11 +68,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(SpringSecurityConfig.class);
 
     SMPAuthenticationProvider smpAuthenticationProvider;
+    SMPAuthenticationProviderForUI smpAuthenticationProviderForUI;
     CasAuthenticationProvider casAuthenticationProvider;
-    ClientCertAuthenticationFilter ClientCertAuthenticationFilter;
+    // Accounts supporting automated application functionalities
+    ClientCertAuthenticationFilter clientCertAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
+    // User account
     CasAuthenticationFilter casAuthenticationFilter;
     CasAuthenticationEntryPoint casAuthenticationEntryPoint;
+
     CsrfTokenRepository csrfTokenRepository;
     HttpFirewall httpFirewall;
     RequestMatcher csrfURLMatcher;
@@ -85,13 +91,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      * Initialize beans. Use lazy initialization for filter to avoid circular dependencies
      *
      * @param smpAuthenticationProvider
-     * @param ClientCertAuthenticationFilter
+     * @param clientCertAuthenticationFilter
      * @param x509AuthenticationFilter
      */
     @Autowired
     public SpringSecurityConfig(SMPAuthenticationProvider smpAuthenticationProvider,
+                                SMPAuthenticationProviderForUI smpAuthenticationProviderForUI,
                                 ConfigurationService configurationService,
-                                @Lazy ClientCertAuthenticationFilter ClientCertAuthenticationFilter,
+                                @Lazy ClientCertAuthenticationFilter clientCertAuthenticationFilter,
                                 @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
                                 @Lazy CsrfTokenRepository csrfTokenRepository,
                                 @Lazy RequestMatcher csrfURLMatcher,
@@ -104,8 +111,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         super(false);
         this.configurationService = configurationService;
         this.smpAuthenticationProvider = smpAuthenticationProvider;
+        this.smpAuthenticationProviderForUI = smpAuthenticationProviderForUI;
         this.casAuthenticationProvider = casAuthenticationProvider;
-        this.ClientCertAuthenticationFilter = ClientCertAuthenticationFilter;
+        this.clientCertAuthenticationFilter = clientCertAuthenticationFilter;
         this.x509AuthenticationFilter = x509AuthenticationFilter;
         this.casAuthenticationFilter = casAuthenticationFilter;
         this.casAuthenticationEntryPoint = casAuthenticationEntryPoint;
@@ -116,15 +124,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                //on authentication, a new HTTP Session is created, the old one is invalidated and the attributes from the old session are copied over.
-                .sessionFixation().migrateSession()
-                //In order to force only one  concurrent sessions for the same user,
-                .maximumSessions(1).and()
-                .and();
+
+        configureSecurityHeaders(httpSecurity);
 
         ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer = httpSecurity.exceptionHandling();
         if (configurationService.isSSOEnabledForUserAuthentication()) {
@@ -132,7 +133,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             exceptionHandlingConfigurer = exceptionHandlingConfigurer.defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint, new AntPathRequestMatcher(SMP_SECURITY_PATH_CAS_AUTHENTICATE));
         }
         exceptionHandlingConfigurer.authenticationEntryPoint(new SpringSecurityExceptionHandler());
-
         httpSecurity = exceptionHandlingConfigurer
                 .accessDeniedHandler(new SpringSecurityExceptionHandler())
                 .and()
@@ -145,6 +145,51 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             LOG.debug("The CAS authentication is enabled. Add CAS filter!");
             httpSecurity = httpSecurity.addFilter(casAuthenticationFilter);
         }
+
+
+        httpSecurity.addFilter(clientCertAuthenticationFilter)
+                .addFilter(x509AuthenticationFilter)
+                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
+                .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
+                .antMatchers(HttpMethod.POST, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
+                .antMatchers(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE).authenticated()
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
+                SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN,
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
+                SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN,
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.GET).permitAll().and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
+                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+        ;
+    }
+
+    protected void configureSecurityHeaders(HttpSecurity httpSecurity) throws Exception {
+        // configure session and csrf headers
+        httpSecurity
+                .csrf().csrfTokenRepository(csrfTokenRepository).requireCsrfProtectionMatcher(csrfURLMatcher).and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                //on authentication, a new HTTP Session is created, the old one is invalidated and the attributes from the old session are copied over.
+                .sessionFixation().migrateSession()
+                //In order to force only one  concurrent sessions for the same user,
+                .maximumSessions(1).and()
+                .and();
+
         // set HstsMAxAge
         Integer maxAge = configurationService.getHttpHeaderHstsMaxAge();
         if (maxAge == null || maxAge < 0) {
@@ -167,31 +212,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
         }
 
-        httpSecurity.addFilter(ClientCertAuthenticationFilter)
-                .addFilter(x509AuthenticationFilter)
-                .httpBasic().authenticationEntryPoint(new SpringSecurityExceptionHandler()).and() // username
-                .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
-                .antMatchers(HttpMethod.POST, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
-                .antMatchers(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE).authenticated()
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.GET).permitAll().and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/ui/").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-        ;
+        String contentSecurityPolicy = configurationService.getHttpHeaderContentSecurityPolicy();
+        if (StringUtils.isNotBlank(contentSecurityPolicy)) {
+            httpSecurity = httpSecurity.headers().contentSecurityPolicy(contentSecurityPolicy).and().and();
+        }
     }
 
     @Override
@@ -207,7 +231,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             LOG.info("[CAS] Authentication Provider enabled");
             auth.authenticationProvider(casAuthenticationProvider);
         }
+        // add UI authentication provider
+        auth.authenticationProvider(smpAuthenticationProviderForUI);
+        // fallback automation user token authentication
         auth.authenticationProvider(smpAuthenticationProvider);
+
+
     }
 
     @Override
