@@ -331,7 +331,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
         // then
         assertNotNull(sg.getErrorMessage());
-        assertThat(sg.getErrorMessage(), containsString(" Invalid content was found starting with element 'ExtensionID'."));
+        assertThat(sg.getErrorMessage(), containsString("SAXParseException: cvc-complex-type.2.4.a: Invalid content was found starting with element '{\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\":ExtensionID}'."));
         assertNotNull(sg.getExtension());
     }
 

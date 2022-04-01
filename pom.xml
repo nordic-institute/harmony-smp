@@ -23,7 +23,7 @@
     <modules>
         <module>smp-parent-pom</module>
         <module>smp-api</module>
-        <module>smp-angular</module>
+        <!-- module>smp-angular</module -->
         <module>smp-server-library</module>
         <module>smp-webapp</module>
     </modules>
@@ -189,7 +189,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>5.1.0</version>
+                        <version>6.5.3</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
