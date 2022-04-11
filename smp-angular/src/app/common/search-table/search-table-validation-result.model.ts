@@ -4,6 +4,6 @@ export interface SearchTableValidationResult{
   validOperation: boolean;
   stringMessage?: string;
 
-  listId?: Array<number>;
+  listId?: Array<string>;
   listDeleteNotPermitedId?: Array<number>;
 }
