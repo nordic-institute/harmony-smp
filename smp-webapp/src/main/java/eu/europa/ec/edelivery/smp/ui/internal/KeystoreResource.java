@@ -53,9 +53,9 @@ public class KeystoreResource {
         return sg;
     }
 
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
-    @PostMapping(path = "/{id}/upload/{keystoreType}/{password}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_OCTET_STREAM_VALUE)
-    public KeystoreImportResult uploadKeystore(@PathVariable("id") Long id,
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
+    @PostMapping(path = "/{user-enc-id}/upload/{keystoreType}/{password}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_OCTET_STREAM_VALUE)
+    public KeystoreImportResult uploadKeystore(@PathVariable("user-enc-id") String userEncId,
                                                @PathVariable("keystoreType") String keystoreType,
                                                @PathVariable("password") String password,
                                                @RequestBody byte[] fileBytes) {
@@ -77,11 +77,11 @@ public class KeystoreResource {
         return keystoreImportResult;
     }
 
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
-    @DeleteMapping(value = "/{id}/delete/{alias}", produces = APPLICATION_JSON_VALUE)
-    public KeystoreImportResult deleteCertificate(@PathVariable("id") Long id,
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
+    @DeleteMapping(value = "/{user-enc-id}/delete/{alias}", produces = APPLICATION_JSON_VALUE)
+    public KeystoreImportResult deleteCertificate(@PathVariable("user-enc-id") String userEncId,
                                                   @PathVariable("alias") String alias) {
-        LOG.info("Remove alias by user id {}, alias {}.", id, alias);
+        LOG.info("Remove alias by user id {}, alias {}.", userEncId, alias);
         KeystoreImportResult keystoreImportResult = new KeystoreImportResult();
         try {
             uiKeystoreService.deleteKey(alias);

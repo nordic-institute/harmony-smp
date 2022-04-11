@@ -96,32 +96,6 @@
           </mat-form-field>
         </div>
       </mat-card-content>
-
-      <mat-card-title>
-        <mat-slide-toggle mat-no-ink class="mat-primary" [formControl]="userForm.controls['userToggle']"
-                          (change)="onUserToggleChanged($event)" id="userAccessToken_id">
-          User access token authentication
-        </mat-slide-toggle>
-        <div *ngIf="userForm.errors?.userDetailsOrCertificateRequired && (userForm.get('userToggle').dirty || userForm.get('certificateToggle').dirty)"
-             class="has-error">You need to generate access token
-        </div>
-        <button mat-raised-button color="primary" (click)="regenerateAccessToken()">
-          <mat-icon>check_circle</mat-icon>
-          <span>Regenerate access token</span>
-        </button>
-      </mat-card-title>
-
-      <mat-card-content>
-        <div class="panel" class="user-panel">
-          <mat-form-field class="username">
-            <input matInput placeholder="accessToken" [formControl]="userForm.controls['accessTokenId']"
-                   id="accessToken_id" maxlength="255" />
-
-          </mat-form-field>
-        </div>
-      </mat-card-content>
-
-
     </mat-card>
     <mat-card fxFlex="60">
       <mat-card-title>

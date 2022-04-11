@@ -214,18 +214,6 @@ export class UserDetailsDialogComponent {
     this.dialogRef.close(true);
   }
 
-  regenerateAccessToken() {
-    /*
-    let accessTokenPromise: Promise<AccessTokenRo> = this.userDetailsService.regenerateAccessToken(this.userId, "AccessPassword");
-    accessTokenPromise.then(response => {
-      this.alertService.success("Token with\n id: " + response.identifier + " and\nvalue: " + response.value + " was generated!")
-      this.userForm.patchValue({
-        'accessTokenId': response.identifier})
-    }, err => {
-      this.alertService.error("Failed to generated access token. Please try again. If this happens again please contact Administrator!")
-    });*/
-  }
-
   uploadCertificate(event) {
     this.newCertFile=null;
     const file = event.target.files[0];
