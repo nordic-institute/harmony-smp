@@ -15,6 +15,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.UserFilter;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_USER;
 
@@ -78,8 +80,9 @@ public class UserAdminResource {
     @PutMapping(produces = {"application/json"})
     @RequestMapping(path = "validate-delete", method = RequestMethod.POST)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public DeleteEntityValidation validateDeleteUsers(@RequestBody List<Long> query) {
+    public DeleteEntityValidation validateDeleteUsers(@RequestBody List<String> queryEncIds) {
         DBUser user = getCurrentUser();
+        List<Long> query = queryEncIds.stream().map(SessionSecurityUtils::decryptEntityId).collect(Collectors.toList());
         DeleteEntityValidation dres = new DeleteEntityValidation();
         if (query.contains(user.getId())) {
             dres.setValidOperation(false);

@@ -65,6 +65,7 @@ export class UserController implements SearchTableController {
   public newRow(): UserRo {
     return {
       id: null,
+      userId:null,
       index: null,
       username: '',
       emailAddress: '',
@@ -79,12 +80,12 @@ export class UserController implements SearchTableController {
     this.lookups.refreshUserLookup();
   }
 
-  validateDeleteOperation(rows: Array<SearchTableEntity>) {
-    var deleteRowIds = rows.map(rows => rows.id);
+  validateDeleteOperation(rows: Array<UserRo>) {
+    var deleteRowIds = rows.map(rows => rows.userId);
     return this.http.post<SearchTableValidationResult>(SmpConstants.REST_INTERNAL_USER_VALIDATE_DELETE, deleteRowIds);
   }
 
-  public newValidationResult(lst: Array<number>): SearchTableValidationResult {
+  public newValidationResult(lst: Array<string>): SearchTableValidationResult {
     return {
       validOperation: false,
       stringMessage: null,
