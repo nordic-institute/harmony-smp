@@ -120,7 +120,6 @@ export class UserDetailsDialogComponent {
       } : {
         active: true,
         username: '',
-        accessTokenId: '',
         emailAddress: '',
         password: '',
         confirmation: '',
@@ -160,7 +159,7 @@ export class UserDetailsDialogComponent {
       // improve notInList validator
       'password': new FormControl({value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
         [Validators.required, Validators.pattern(this.passwordPattern)]),
-      'accessTokenId': new FormControl({value: ''}),
+      'confirmation': new FormControl({value: ''}),
       // certificate authentication
       'certificateToggle': new FormControl(this.current && this.current.certificate && !!this.current.certificate.certificateId),
       'subject': new FormControl({value: '', disabled: true}, Validators.required),
@@ -187,7 +186,6 @@ export class UserDetailsDialogComponent {
     // username/password authentication
     this.userForm.controls['username'].setValue(this.current.username);
     this.userForm.controls['password'].setValue(this.current.password);
-    this.userForm.controls['accessTokenId'].setValue(this.current.accessTokenId);
     // certificate authentication
     this.userForm.controls['subject'].setValue(this.current.certificate.subject);
     this.userForm.controls['validFrom'].setValue(this.current.certificate.validFrom);
@@ -326,7 +324,6 @@ export class UserDetailsDialogComponent {
     this.current.active = this.userForm.get('active').value;
     this.current.emailAddress = this.userForm.get('emailAddress').value;
     this.current.role = this.userForm.get('role').value;
-    this.current.accessTokenId = this.userForm.controls['accessTokenId'].value;
     // certificate data
     if (this.userForm.get('certificateToggle')) {
       this.current.certificate.certificateId = this.userForm.controls['certificateId'].value;
@@ -391,7 +388,6 @@ export class UserDetailsDialogComponent {
       id: null,
       index: null,
       username: '',
-      accessTokenId: '',
       emailAddress: '',
       role: '',
       active: true,
