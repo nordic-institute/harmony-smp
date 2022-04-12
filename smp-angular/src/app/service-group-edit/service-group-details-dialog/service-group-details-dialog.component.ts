@@ -112,7 +112,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
         this.current.status === SearchTableEntityStatus.NEW ?
           [Validators.required, Validators.pattern(this.participantSchemePattern)] : null),
       'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1),
-        this.multiDomainOn(this.lookups.cachedApplicationInfo.smlParticipantMultiDomainOn)]),
+        this.multiDomainOn(this.lookups.cachedApplicationConfig.smlParticipantMultiDomainOn)]),
       'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
       'extension': new FormControl({value: ''}, []),
 
@@ -130,7 +130,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     // retrieve xml extension for this service group
     if (this.current.status !== SearchTableEntityStatus.NEW && !this.current.extension) {
       // init domains
-      this.extensionObserver = this.http.get<ServiceGroupValidationRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION + '/' + this.current.id);
+      this.extensionObserver = this.http.get<ServiceGroupValidationRo>(SmpConstants.REST_PUBLIC_SERVICE_GROUP_ENTITY_EXTENSION.replace('{service-group-id}',this.current.id+""));
       this.extensionObserver.subscribe((res: ServiceGroupValidationRo) => {
         this.dialogForm.get('extension').setValue(res.extension);
         this.current.extension = res.extension;
@@ -159,7 +159,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     if (!domain.signatureKeyAlias) {
       msg = "The domain should have a defined signature CertAlias."
     }
-    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
+    if (this.lookups.cachedApplicationConfig.smlIntegrationOn) {
       if( !domain.smlSmpId || !domain.smlClientCertHeader ){
         msg = (!msg?"": msg+" ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
       }

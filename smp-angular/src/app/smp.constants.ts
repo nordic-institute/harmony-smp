@@ -19,9 +19,11 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_SECURITY_USER = SmpConstants.REST_PUBLIC + 'security/user';
 
   public static readonly REST_PUBLIC_SERVICE_GROUP = SmpConstants.REST_PUBLIC + 'service-group';
+  public static readonly REST_PUBLIC_SERVICE_GROUP_ENTITY = SmpConstants.REST_PUBLIC_SERVICE_GROUP + '/{service-group-id}';
+  public static readonly REST_PUBLIC_SERVICE_GROUP_ENTITY_EXTENSION = SmpConstants.REST_PUBLIC_SERVICE_GROUP_ENTITY + '/extension';
+  // service group extension tools
   public static readonly REST_SERVICE_GROUP_EXTENSION = `${SmpConstants.REST_PUBLIC_SERVICE_GROUP}/extension`;
   public static readonly REST_SERVICE_GROUP_EXTENSION_VALIDATE = `${SmpConstants.REST_SERVICE_GROUP_EXTENSION}/validate`;
-  public static readonly REST_SERVICE_GROUP_EXTENSION_FORMAT = `${SmpConstants.REST_SERVICE_GROUP_EXTENSION}/format`;
 
   public static readonly REST_METADATA = SmpConstants.REST_PUBLIC +'service-metadata';
   public static readonly REST_METADATA_VALIDATE = `${SmpConstants.REST_METADATA}/validate`;

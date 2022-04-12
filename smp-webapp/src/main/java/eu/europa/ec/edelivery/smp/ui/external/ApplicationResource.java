@@ -18,7 +18,7 @@ import java.util.TimeZone;
  * @since 4.1
  */
 @RestController
-@RequestMapping(value = ResourceConstants.CONTEXT_PATH_PUBLIC_APPLICATION)
+@RequestMapping(path = ResourceConstants.CONTEXT_PATH_PUBLIC_APPLICATION)
 public class ApplicationResource {
 
     @Autowired
@@ -49,8 +49,6 @@ public class ApplicationResource {
     public SmpInfoRO getApplicationInfo() {
         SmpInfoRO info = new SmpInfoRO();
         info.setVersion(getDisplayVersion());
-        info.setSmlIntegrationOn(configurationService.isSMLIntegrationEnabled());
-        info.setSmlParticipantMultiDomainOn(configurationService.isSMLMultiDomainEnabled());
         info.setAuthTypes(configurationService.getUIAuthenticationTypes());
         info.setSsoAuthenticationLabel(configurationService.getCasUILabel());
         info.setContextPath(getRootContext());

@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.ui;
+package eu.europa.ec.edelivery.smp.ui.external;
 
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
@@ -13,18 +13,21 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
+import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
+
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
 /**
  * @author Joze Rihtarsic
@@ -42,25 +45,17 @@ public class ServiceGroupResource {
     @Autowired
     private DomainDao domainDao;
 
-    @PostConstruct
-    protected void init() {
-
-    }
-
-    @PutMapping(produces = {"application/json"})
-    @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public ServiceResult<ServiceGroupRO> getServiceGroupList(
             HttpServletRequest request,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-            @RequestParam(value = "orderBy", required = false) String orderBy,
-            @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = "participantIdentifier", required = false) String participantIdentifier,
-            @RequestParam(value = "participantScheme", required = false) String participantScheme,
-            @RequestParam(value = "domain", required = false) String domainCode
-    ) {
+            @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
+            @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
+            @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
+            @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
+            @RequestParam(value = PARAM_QUERY_PARTC_ID, required = false) String participantIdentifier,
+            @RequestParam(value = PARAM_QUERY_PARTC_SCHEME, required = false) String participantScheme,
+            @RequestParam(value = PARAM_QUERY_DOMAIN_CODE, required = false) String domainCode) {
 
         String participantIdentifierDecoded = decodeUrlToUTF8(participantIdentifier);
         String participantSchemeDecoded = decodeUrlToUTF8(participantScheme);
@@ -87,39 +82,31 @@ public class ServiceGroupResource {
         return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, sgf);
     }
 
-    @ResponseBody
-    @PutMapping(produces = {"application/json"})
-    @RequestMapping(method = RequestMethod.GET, path = "{serviceGroupId}")
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @GetMapping( path = "{serviceGroupId}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public ServiceGroupRO getServiceGroupById(@PathVariable Long serviceGroupId) {
+        LOG.info("Get service group [{}]", serviceGroupId);
         return uiServiceGroupService.getServiceGroupById(serviceGroupId);
     }
 
-    @ResponseBody
-    @PutMapping(produces = {"application/json"})
-    @RequestMapping(method = RequestMethod.GET, path = "extension/{serviceGroupId}")
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
-    public ServiceGroupValidationRO getExtensionServiceGroupById(@PathVariable Long serviceGroupId) {
-        return uiServiceGroupService.getServiceGroupExtensionById(serviceGroupId);
+    @GetMapping(path = "{service-group-id}/extension", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    public ServiceGroupValidationRO getExtensionServiceGroupById(@PathVariable("service-group-id") Long sgId) {
+        LOG.info("Get service group extension [{}]", sgId);
+        return uiServiceGroupService.getServiceGroupExtensionById(sgId);
     }
 
-    @RequestMapping(path = "extension/validate", method = RequestMethod.POST)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
-    public ServiceGroupValidationRO getExtensionServiceGroupById(@RequestBody(required = true) ServiceGroupValidationRO sg) {
+    @PostMapping(path = "extension/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    public ServiceGroupValidationRO getValidateExtensionService(@RequestBody ServiceGroupValidationRO sg) {
+        LOG.info("Validate service group extension");
+        LOG.debug("Extension: [{}]", sg.getExtension());
         return uiServiceGroupService.validateServiceGroup(sg);
     }
 
-    @RequestMapping(path = "extension/format", method = RequestMethod.POST)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
-    public ServiceGroupValidationRO formatExtension(@RequestBody(required = true) ServiceGroupValidationRO sg) {
-        return uiServiceGroupService.formatExtension(sg);
-    }
-
-
-    @PutMapping(produces = {"application/json"})
-    @RequestMapping(method = RequestMethod.PUT)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
-    public void updateDomainList(@RequestBody(required = true) ServiceGroupRO[] updateEntities) {
+    @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    public void updateServiceGroupList(@RequestBody ServiceGroupRO[] updateEntities) {
         LOG.info("Update ServiceGroupRO count: " + updateEntities.length);
         uiServiceGroupService.updateServiceGroupList(Arrays.asList(updateEntities));
     }

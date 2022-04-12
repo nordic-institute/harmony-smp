@@ -32,7 +32,7 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPE
  */
 @Configuration
 @ComponentScan(basePackages = {
-        "eu.europa.ec"})
+        "eu.europa.ec.edelivery.smp"})
 @PropertySources({
         @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })

@@ -32,13 +32,14 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
+import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntityId;
 
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
 @RestController
-@RequestMapping(value = CONTEXT_PATH_PUBLIC_USER)
+@RequestMapping(path = CONTEXT_PATH_PUBLIC_USER)
 public class UserResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserResource.class);
@@ -50,7 +51,7 @@ public class UserResource {
 
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
-    @PostMapping(value = "/{user-id}/generate-access-token", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{user-id}/generate-access-token", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public AccessTokenRO generateAccessToken(@PathVariable("user-id") String userId, @RequestBody String password) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Generated access token for user:[{}] with id:[{}] ", userId, entityId);
@@ -84,14 +85,5 @@ public class UserResource {
         UserRO userRO = uiUserService.convertToRo(updatedUser);
 
         return authorizationService.sanitize(userRO);
-    }
-
-    public Long decryptEntityId(String userId){
-        try{
-            return SessionSecurityUtils.decryptEntityId(userId);
-        } catch (RuntimeException runtimeException) {
-            LOG.error("Error occurred while decryption entityId ["+userId+"]!", runtimeException );
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Invalid userId!");
-        }
     }
 }

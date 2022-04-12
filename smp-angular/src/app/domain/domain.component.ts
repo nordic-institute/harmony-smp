@@ -48,11 +48,7 @@ export class DomainComponent implements AfterViewInit {
               public dialog: MatDialog) {
 
     // check application settings
-    this.smpInfoService.getSmpInfo().subscribe((smpInfo: SmpInfo) => {
-        this.isSMPIntegrationOn = smpInfo.smlIntegrationOn;
-      }
-    );
-
+    this.isSMPIntegrationOn = this.lookups.cachedApplicationConfig.smlIntegrationOn
     // if system admin refresh certificate list!
     if (this.securityService.isCurrentUserSystemAdmin()) {
       this.lookups.refreshCertificateLookup();
@@ -151,7 +147,7 @@ export class DomainComponent implements AfterViewInit {
     if (!domain.signatureKeyAlias) {
       msg = "The domain should have a defined signature CertAlias."
     }
-    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
+    if (this.lookups.cachedApplicationConfig.smlIntegrationOn) {
       if( !domain.smlSmpId || !domain.smlClientCertHeader){
         msg = (!msg?"": msg+" ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
       }
