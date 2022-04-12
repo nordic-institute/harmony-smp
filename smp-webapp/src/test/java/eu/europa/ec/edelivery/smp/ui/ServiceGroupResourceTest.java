@@ -172,7 +172,7 @@ public class ServiceGroupResourceTest {
         serviceGroupDao.update(sg);
 
         // given when
-        MvcResult result = mvc.perform(get(PATH_PUBLIC + "/extension/100000")
+        MvcResult result = mvc.perform(get(PATH_PUBLIC + "/100000/extension")
                 .with(SMP_ADMIN_CREDENTIALS).with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
