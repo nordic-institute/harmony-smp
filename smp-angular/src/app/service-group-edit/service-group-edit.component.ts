@@ -25,7 +25,7 @@ export class ServiceGroupEditComponent implements OnInit {
   columnPicker: ColumnPicker = new ColumnPicker();
   serviceGroupEditController: ServiceGroupEditController;
   filter: any = {};
-  baseUrl: string = SmpConstants.REST_PUBLIC_SERVICE_GROUP;
+  baseUrl: string;
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
 
   constructor(public securityService: SecurityService,
@@ -40,6 +40,7 @@ export class ServiceGroupEditComponent implements OnInit {
       this.lookups.refreshUserLookup();
       this.lookups.refreshApplicationConfiguration();
     }
+    this.baseUrl = SmpConstants.REST_PUBLIC_SERVICE_GROUP;
   }
 
   ngOnInit() {

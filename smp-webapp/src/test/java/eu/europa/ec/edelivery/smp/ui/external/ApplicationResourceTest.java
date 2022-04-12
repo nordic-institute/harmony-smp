@@ -102,7 +102,6 @@ public class ApplicationResourceTest {
         SmpInfoRO info = mapper.readValue(value, SmpInfoRO.class);
 
         assertEquals("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00|Central European Time]", info.getVersion());
-        assertEquals(false, info.isSmlIntegrationOn());
         assertEquals("/", info.getContextPath());
     }
 }

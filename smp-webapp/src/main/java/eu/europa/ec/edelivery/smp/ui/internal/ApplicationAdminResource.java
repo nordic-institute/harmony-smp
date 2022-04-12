@@ -22,7 +22,7 @@ import java.util.TimeZone;
  * @since 4.1
  */
 @RestController
-@RequestMapping(value = ResourceConstants.CONTEXT_PATH_INTERNAL_APPLICATION)
+@RequestMapping(path = ResourceConstants.CONTEXT_PATH_INTERNAL_APPLICATION)
 public class ApplicationAdminResource {
 
     final ConfigurationService configurationService;

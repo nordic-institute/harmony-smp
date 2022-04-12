@@ -16,13 +16,9 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_PUBLIC_APPLICATION = CONTEXT_PATH_PUBLIC + "application";
     public static final String CONTEXT_PATH_PUBLIC_USER = CONTEXT_PATH_PUBLIC + "user";
     public static final String CONTEXT_PATH_PUBLIC_TRUSTSTORE = CONTEXT_PATH_PUBLIC + "truststore";
-
     public static final String CONTEXT_PATH_PUBLIC_SERVICE_GROUP = CONTEXT_PATH_PUBLIC + "service-group";
     public static final String CONTEXT_PATH_PUBLIC_SERVICE_METADATA = CONTEXT_PATH_PUBLIC + "service-metadata";
-
-
     public static final String CONTEXT_PATH_PUBLIC_SECURITY = CONTEXT_PATH_PUBLIC + "security";
-
 
     //internal
     public static final String CONTEXT_PATH_INTERNAL_DOMAIN = CONTEXT_PATH_INTERNAL + "domain";

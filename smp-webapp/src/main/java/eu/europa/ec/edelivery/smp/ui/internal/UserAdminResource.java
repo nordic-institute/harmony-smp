@@ -22,6 +22,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -40,17 +41,17 @@ public class UserAdminResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserAdminResource.class);
 
-    @Autowired
-    private UIUserService uiUserService;
-
-    @Autowired
-    private UITruststoreService uiTruststoreService;
-
-    @Autowired
+    protected UIUserService uiUserService;
+    protected UITruststoreService uiTruststoreService;
     protected SMPAuthorizationService authorizationService;
 
-    @PutMapping(produces = {"application/json"})
-    @RequestMapping(method = RequestMethod.GET)
+    public UserAdminResource(UIUserService uiUserService, UITruststoreService uiTruststoreService, SMPAuthorizationService authorizationService) {
+        this.uiUserService = uiUserService;
+        this.uiTruststoreService = uiTruststoreService;
+        this.authorizationService = authorizationService;
+    }
+
+    @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -64,12 +65,10 @@ public class UserAdminResource {
             filter = new UserFilter();
             filter.setRoleList(Arrays.asList(roleList.split(",")));
         }
-
         return uiUserService.getTableList(page, pageSize, orderBy, orderType, filter);
     }
 
-
-    @PutMapping(produces = {"application/json"})
+    @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public void updateUserList(@RequestBody UserRO[] updateEntities) {
         LOG.info("Update user list, count: {}", updateEntities.length);
@@ -77,8 +76,7 @@ public class UserAdminResource {
         uiUserService.updateUserList(Arrays.asList(updateEntities), null);
     }
 
-    @PutMapping(produces = {"application/json"})
-    @RequestMapping(path = "validate-delete", method = RequestMethod.POST)
+    @PostMapping(value = "validate-delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public DeleteEntityValidation validateDeleteUsers(@RequestBody List<String> queryEncIds) {
         DBUser user = getCurrentUser();
@@ -97,14 +95,5 @@ public class UserAdminResource {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SMPAuthenticationToken authToken = (SMPAuthenticationToken) authentication;
         return authToken.getUser();
-    }
-
-    public Long decryptEntityId(String userId) {
-        try {
-            return SessionSecurityUtils.decryptEntityId(userId);
-        } catch (RuntimeException runtimeException) {
-            LOG.error("Error occurred while decryption entityId [" + userId + "]!", runtimeException);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Invalid userId!");
-        }
     }
 }

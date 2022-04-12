@@ -24,7 +24,7 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
  * @since 4.1
  */
 @RestController
-@RequestMapping(value = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)
+@RequestMapping(path = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)
 public class SearchResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SearchResource.class);
@@ -37,7 +37,7 @@ public class SearchResource {
         this.domainDao = domainDao;
     }
 
-    @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
+    @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public ServiceResult<ServiceGroupSearchRO> getServiceGroupList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
