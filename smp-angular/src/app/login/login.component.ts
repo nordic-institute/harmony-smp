@@ -54,20 +54,19 @@ export class LoginComponent implements OnInit, OnDestroy {
         const HTTP_NOTFOUND = 404;
         const HTTP_GATEWAY_TIMEOUT = 504;
         const USER_INACTIVE = 'Inactive';
-        const USER_SUSPENDED = 'Suspended';
         switch (error.status) {
           case HTTP_UNAUTHORIZED:
+            message =error.error.errorDescription;
+            this.model.password = '';
+            break;
           case HTTP_FORBIDDEN:
             const forbiddenCode = error.message;
             switch (forbiddenCode) {
               case USER_INACTIVE:
                 message = 'The user is inactive. Please contact your administrator.';
                 break;
-              case USER_SUSPENDED:
-                message = 'The user is suspended. Please try again later or contact your administrator.';
-                break;
               default:
-                message = 'The username/password combination you provided are not valid. Please try again or contact your administrator.';
+                message = error.status + ' The username/password combination you provided are not valid. Please try again or contact your administrator.';
                 // clear the password
                 this.model.password = '';
                 break;

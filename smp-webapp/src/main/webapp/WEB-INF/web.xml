@@ -64,7 +64,8 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+            eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
+            eu.europa.ec.edelivery.smp.config.UISecurityConfigurerAdapter;
             eu.europa.ec.edelivery.smp.config.SmpAppConfig;
             eu.europa.ec.edelivery.smp.config.PropertiesConfig
         </param-value>

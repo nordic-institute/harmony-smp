@@ -87,6 +87,22 @@ public class ConfigurationService {
         return (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_POLICY_VALID_DAYS);
     }
 
+
+    public Integer getLoginMaxAttempts() {
+        return (Integer) configurationDAO.getCachedPropertyValue(USER_MAX_FAILED_ATTEMPTS);
+    }
+    public Integer getLoginSuspensionTimeInSeconds() {
+        return (Integer) configurationDAO.getCachedPropertyValue(USER_SUSPENSION_TIME);
+    }
+
+
+    public Integer getAccessTokenLoginMaxAttempts() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_MAX_FAILED_ATTEMPTS);
+    }
+    public Integer getAccessTokenLoginSuspensionTimeInSeconds() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_SUSPENSION_TIME);
+    }
+
     public Integer getHttpHeaderHstsMaxAge() {
         return (Integer) configurationDAO.getCachedPropertyValue(HTTP_HSTS_MAX_AGE);
     }

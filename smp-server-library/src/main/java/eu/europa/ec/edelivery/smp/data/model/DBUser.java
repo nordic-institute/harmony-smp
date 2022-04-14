@@ -33,7 +33,7 @@ import java.util.Objects;
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
-                resultSetMapping="DBUserDeleteValidationMapping",
+                resultSetMapping = "DBUserDeleteValidationMapping",
                 query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
                         "    C.CERTIFICATE_ID as certificateId, COUNT(S.ID) as  ownedCount  FROM " +
                         " SMP_USER S LEFT JOIN SMP_CERTIFICATE C ON (S.ID=C.ID) " +
@@ -41,19 +41,19 @@ import java.util.Objects;
                         " WHERE S.ID IN (:idList)" +
                         " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID"),
 })
-@SqlResultSetMapping(name="DBUserDeleteValidationMapping", classes = {
+@SqlResultSetMapping(name = "DBUserDeleteValidationMapping", classes = {
         @ConstructorResult(targetClass = DBUserDeleteValidation.class,
-                columns = {@ColumnResult(name="id" , type=Long.class),
-                        @ColumnResult(name="username",type=String.class),
-                        @ColumnResult(name="certificateId",type=String.class),
-                        @ColumnResult(name="ownedCount",type=Integer.class)})
+                columns = {@ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "username", type = String.class),
+                        @ColumnResult(name = "certificateId", type = String.class),
+                        @ColumnResult(name = "ownedCount", type = Integer.class)})
 })
 
 public class DBUser extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "usr_generator", sequenceName = "SMP_USER_SEQ",allocationSize = 1 )
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usr_generator" )
+    @SequenceGenerator(name = "usr_generator", sequenceName = "SMP_USER_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usr_generator")
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique user id")
     Long id;
@@ -62,7 +62,7 @@ public class DBUser extends BaseEntity {
     @ColumnDescription(comment = "User email")
     private String emailAddress;
     // username
-    @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true,  nullable = false)
+    @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true, nullable = false)
     @ColumnDescription(comment = "Unique username identifier. The Username must not be null")
     private String username;
     @Column(name = "PASSWORD", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
@@ -71,12 +71,17 @@ public class DBUser extends BaseEntity {
     @Column(name = "PASSWORD_CHANGED")
     @ColumnDescription(comment = "Last date when password was changed")
     LocalDateTime passwordChanged;
-
     @Column(name = "PASSWORD_EXPIRE_ON")
     @ColumnDescription(comment = "Date when password will expire")
     LocalDateTime passwordExpireOn;
+    @Column(name = "LOGIN_FAILURE_COUNT")
+    @ColumnDescription(comment = "Sequential login failure count")
+    Integer sequentialLoginFailureCount;
+    @Column(name = "LAST_FAILED_LOGIN_ON")
+    @ColumnDescription(comment = "Last failed login attempt")
+    LocalDateTime lastFailedLoginAttempt;
 
-        // Personal access token
+    // Personal access token
     @Column(name = "ACCESS_TOKEN_ID", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
     @ColumnDescription(comment = "Personal access token id")
     private String accessTokenIdentifier;
@@ -86,12 +91,15 @@ public class DBUser extends BaseEntity {
     @Column(name = "ACCESS_TOKEN_GENERATED_ON")
     @ColumnDescription(comment = "Date when personal access token was generated")
     LocalDateTime accessTokenGeneratedOn;
-
     @Column(name = "ACCESS_TOKEN_EXPIRE_ON")
     @ColumnDescription(comment = "Date when personal access token will expire")
     LocalDateTime accessTokenExpireOn;
-
-
+    @Column(name = "AT_LOGIN_FAILURE_COUNT")
+    @ColumnDescription(comment = "Sequential token login failure count")
+    Integer sequentialTokenLoginFailureCount;
+    @Column(name = "AT_LAST_FAILED_LOGIN_ON")
+    @ColumnDescription(comment = "Last failed token login attempt")
+    LocalDateTime lastTokenFailedLoginAttempt;
 
     @Column(name = "ACTIVE", nullable = false)
     @ColumnDescription(comment = "Is user active")
@@ -105,7 +113,7 @@ public class DBUser extends BaseEntity {
             orphanRemoval = true)
     private DBCertificate certificate;
 
-    @Column(name = "CREATED_ON" , nullable = false)
+    @Column(name = "CREATED_ON", nullable = false)
     LocalDateTime createdOn;
     @Column(name = "LAST_UPDATED_ON", nullable = false)
     LocalDateTime lastUpdatedOn;
@@ -144,6 +152,22 @@ public class DBUser extends BaseEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public LocalDateTime getLastFailedLoginAttempt() {
+        return lastFailedLoginAttempt;
+    }
+
+    public void setLastFailedLoginAttempt(LocalDateTime lastFailedLoginAttempt) {
+        this.lastFailedLoginAttempt = lastFailedLoginAttempt;
+    }
+
+    public LocalDateTime getLastTokenFailedLoginAttempt() {
+        return lastTokenFailedLoginAttempt;
+    }
+
+    public void setLastTokenFailedLoginAttempt(LocalDateTime lastTokenFailedLoginAttempt) {
+        this.lastTokenFailedLoginAttempt = lastTokenFailedLoginAttempt;
     }
 
     public String getAccessTokenIdentifier() {
@@ -186,6 +210,22 @@ public class DBUser extends BaseEntity {
         this.accessTokenExpireOn = accessTokenExpireOn;
     }
 
+    public Integer getSequentialLoginFailureCount() {
+        return sequentialLoginFailureCount;
+    }
+
+    public void setSequentialLoginFailureCount(Integer sequentialLoginFailureCount) {
+        this.sequentialLoginFailureCount = sequentialLoginFailureCount;
+    }
+
+    public Integer getSequentialTokenLoginFailureCount() {
+        return sequentialTokenLoginFailureCount;
+    }
+
+    public void setSequentialTokenLoginFailureCount(Integer sequentialTokenLoginFailureCount) {
+        this.sequentialTokenLoginFailureCount = sequentialTokenLoginFailureCount;
+    }
+
     public String getRole() {
         return role;
     }
@@ -203,14 +243,15 @@ public class DBUser extends BaseEntity {
             if (this.certificate != null) {
                 this.certificate.setDbUser(null);
             }
-        }
-        else {
+        } else {
             certificate.setDbUser(this);
         }
         this.certificate = certificate;
     }
 
-    public String getEmailAddress() {        return emailAddress;    }
+    public String getEmailAddress() {
+        return emailAddress;
+    }
 
     public void setEmailAddress(String email) {
         this.emailAddress = email;
@@ -245,7 +286,7 @@ public class DBUser extends BaseEntity {
 
     @PrePersist
     public void prePersist() {
-        if(createdOn == null) {
+        if (createdOn == null) {
             createdOn = LocalDateTime.now();
         }
         lastUpdatedOn = LocalDateTime.now();

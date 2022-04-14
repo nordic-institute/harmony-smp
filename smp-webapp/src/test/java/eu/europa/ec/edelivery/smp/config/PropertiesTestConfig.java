@@ -13,10 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import java.util.Properties;
@@ -31,6 +28,7 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
         @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
         @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
+@ComponentScan(basePackages = "eu.europa.ec.edelivery.smp")
 public class PropertiesTestConfig {
 
     @Bean

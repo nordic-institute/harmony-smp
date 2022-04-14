@@ -11,8 +11,8 @@ public class DeleteEntityValidation implements Serializable {
 
     boolean validOperation;
     String stringMessage;
-    List<Long> listIds= new ArrayList<>();
-    List<Long> listDeleteNotPermitedIds = new ArrayList<>();
+    List<String> listIds= new ArrayList<>();
+    List<String> listDeleteNotPermitedIds = new ArrayList<>();
 
     public boolean isValidOperation() {
         return validOperation;
@@ -30,12 +30,12 @@ public class DeleteEntityValidation implements Serializable {
         this.stringMessage = stringMessage;
     }
 
-    public List<Long> getListIds() {
+    public List<String> getListIds() {
         return listIds;
     }
 
 
-    public List<Long> getListDeleteNotPermitedIds() {
+    public List<String> getListDeleteNotPermitedIds() {
         return listDeleteNotPermitedIds;
     }
 

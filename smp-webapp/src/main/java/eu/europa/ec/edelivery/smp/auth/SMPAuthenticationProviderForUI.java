@@ -1,38 +1,32 @@
 package eu.europa.ec.edelivery.smp.auth;
 
-import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
-import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateRevokedException;
-import java.security.cert.X509Certificate;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static java.util.Locale.US;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Authentication provider for the UI authentication.
@@ -40,7 +34,6 @@ import static java.util.Locale.US;
  * @author Joze Rihtarsic
  * @since 4.2
  */
-@Import({SmpAppConfig.class})
 @Component
 public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
 
@@ -96,13 +89,20 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
             throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
 
         }
+
+        validateIfUserAccountIsSuspended(user);
+
         String role = user.getRole();
         SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(username, userCredentialToken, Collections.singletonList(new SMPAuthority(role)), user);
         try {
             if (!BCrypt.checkpw(userCredentialToken, user.getPassword())) {
+                user.setSequentialLoginFailureCount(user.getSequentialLoginFailureCount() != null ? user.getSequentialLoginFailureCount() + 1 : 1);
+                user.setLastFailedLoginAttempt(LocalDateTime.now());
+                mUserDao.update(user);
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, username);
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
+            user.setSequentialLoginFailureCount(0);
         } catch (IllegalArgumentException ex) {
             // password is not hashed;
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, username);
@@ -110,6 +110,46 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         }
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, username, role);
         return smpAuthenticationToken;
+    }
+
+
+    /**
+     * Method tests if user account Suspended
+     *
+     * @param user
+     */
+    public void validateIfUserAccountIsSuspended(DBUser user) {
+        if (user.getSequentialLoginFailureCount() == null
+                || user.getSequentialLoginFailureCount() < 0) {
+            LOG.trace("User has no previous failed attempts");
+            return;
+        }
+        if (configurationService.getLoginMaxAttempts() == null
+                || configurationService.getLoginMaxAttempts() < 0) {
+            LOG.warn("Max login attempts [{}] is not set", SMPPropertyEnum.USER_MAX_FAILED_ATTEMPTS.getProperty());
+            return;
+        }
+
+        if (user.getLastFailedLoginAttempt() == null) {
+            LOG.warn("User [{}] has failed attempts [{}] but null last Failed login attempt!", user.getUsername(), user.getLastFailedLoginAttempt());
+            return;
+        }
+        // check if the last failed attempt is already expired. If yes just clear the attepmts
+        if  (configurationService.getLoginSuspensionTimeInSeconds() !=null && configurationService.getLoginSuspensionTimeInSeconds() > 0
+             && ChronoUnit.SECONDS.between(LocalDateTime.now(), user.getLastFailedLoginAttempt()) > configurationService.getLoginSuspensionTimeInSeconds()){
+            LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
+            user.setLastFailedLoginAttempt(null);
+            user.setSequentialLoginFailureCount(0);
+            mUserDao.update(user);
+            return;
+        }
+
+        if (user.getSequentialLoginFailureCount() < configurationService.getLoginMaxAttempts()) {
+            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialLoginFailureCount() , configurationService.getLoginMaxAttempts());
+            return;
+        }
+        LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
+        throw new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
     }
 
     @Override
