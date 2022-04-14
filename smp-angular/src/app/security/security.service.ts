@@ -34,7 +34,6 @@ export class SecurityService {
           this.updateUserDetails(response);
         },
         (error: any) => {
-          alert("Error: " + error)
           this.securityEventService.notifyLoginErrorEvent(error);
         });
   }
