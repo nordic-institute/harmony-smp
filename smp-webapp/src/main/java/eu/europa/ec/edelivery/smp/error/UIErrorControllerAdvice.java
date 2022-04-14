@@ -51,8 +51,7 @@ public class UIErrorControllerAdvice extends AbstractErrorControllerAdvice {
                 .buildJSon();
 
         String errorUniqueId = ((ErrorResponseRO) response.getBody()).getErrorUniqueId();
-        String logMsg = format("Error unique ID: %s", errorUniqueId);
-
+        String logMsg = format("UI Error unique ID: %s", errorUniqueId);
         LOG.warn(logMsg, exception);
         return response;
     }

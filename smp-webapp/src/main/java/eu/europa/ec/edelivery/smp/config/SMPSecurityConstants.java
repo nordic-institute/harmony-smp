@@ -11,6 +11,7 @@ import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 public class SMPSecurityConstants {
 
     public static final String SMP_AUTHENTICATION_MANAGER_BEAN = "smpAuthenticationManager";
+    public static final String SMP_UI_AUTHENTICATION_MANAGER_BEAN = "smpUIAuthenticationManager";
     // must be "forwardedHeaderTransformer" see the documentation for the ForwardedHeaderTransformer
     public static final String SMP_FORWARDED_HEADER_TRANSFORMER_BEAN = "forwardedHeaderTransformer";
     // CAS BEANS

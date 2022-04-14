@@ -1,9 +1,6 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.config.*;
 import eu.europa.ec.edelivery.smp.error.ServiceErrorControllerAdvice;
 import eu.europa.ec.edelivery.smp.error.UIErrorControllerAdvice;
 import org.junit.Before;
@@ -39,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class,
+        UISecurityConfigurerAdapter.class,
         UIErrorControllerAdvice.class,
         ServiceErrorControllerAdvice.class})
 @WebAppConfiguration
@@ -62,8 +59,6 @@ public class AuthenticationResourceTest {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
-
-
         initServletContext();
     }
 
@@ -92,7 +87,6 @@ public class AuthenticationResourceTest {
     @Test
     @Ignore
     public void authenticateInvalidPasswordTest() throws Exception {
-
         // given when then
         mvc.perform(post(PATH)
                 .header("Content-Type", "application/json")

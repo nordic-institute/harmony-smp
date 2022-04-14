@@ -20,7 +20,7 @@ public class SMPAuthenticationService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationService.class);
 
     @Autowired
-    @Qualifier(SMPSecurityConstants.SMP_AUTHENTICATION_MANAGER_BEAN)
+    @Qualifier(SMPSecurityConstants.SMP_UI_AUTHENTICATION_MANAGER_BEAN)
     private AuthenticationManager authenticationManager;
 
     @Transactional(noRollbackFor = AuthenticationException.class)

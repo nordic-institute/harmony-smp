@@ -7,6 +7,7 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
@@ -30,22 +31,23 @@ import java.security.cert.CertificateRevokedException;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static java.util.Locale.US;
 
 /**
- * Authentication provider for the Accounts supporting automated application functionalities. The account are used in SMP for
- * webservice access as application to application integration with SMP. Authentication provider supports following
+ * An AuthenticationProvider is an abstraction for fetching user information from a specific repository
+ * (like a database, LDAP, custom third party source, etc. ). It uses the fetched user information to validate the supplied credentials.
+ * The current Authentication provider is intented for the accounts supporting automated application functionalities .
+ * The account are used in SMP for webservice access as application to application integration with SMP. Authentication provider supports following
  *  {@link org.springframework.security.core.Authentication} implementation:
  *      - {@link org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken} implementation using
- *
- *
  *
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@Import({SmpAppConfig.class})
 @Component
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
@@ -200,6 +202,45 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
     }
 
 
+    /**
+     * Method tests if user account Suspended
+     *
+     * @param user
+     */
+    public void validateIfTokenIsSuspended(DBUser user) {
+        if (user.getSequentialTokenLoginFailureCount() == null
+                || user.getSequentialTokenLoginFailureCount() < 0) {
+            LOG.trace("User has no previous failed attempts");
+            return;
+        }
+        if (configurationService.getAccessTokenLoginMaxAttempts() == null
+                || configurationService.getAccessTokenLoginMaxAttempts() < 0) {
+            LOG.warn("Max login attempts [{}] is not set", SMPPropertyEnum.ACCESS_TOKEN_MAX_FAILED_ATTEMPTS.getProperty());
+            return;
+        }
+
+        if (user.getLastFailedLoginAttempt() == null) {
+            LOG.warn("Access token [{}] has failed attempts [{}] but null last Failed login attempt!", user.getUsername(), user.getLastFailedLoginAttempt());
+            return;
+        }
+        // check if the last failed attempt is already expired. If yes just clear the attepmts
+        if  (configurationService.getAccessTokenLoginSuspensionTimeInSeconds() !=null && configurationService.getAccessTokenLoginSuspensionTimeInSeconds() > 0
+                && ChronoUnit.SECONDS.between(LocalDateTime.now(), user.getLastTokenFailedLoginAttempt()) > configurationService.getAccessTokenLoginSuspensionTimeInSeconds()){
+            LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
+            user.setLastTokenFailedLoginAttempt(null);
+            user.setSequentialTokenLoginFailureCount(0);
+            mUserDao.update(user);
+            return;
+        }
+
+        if (user.getSequentialTokenLoginFailureCount() < configurationService.getAccessTokenLoginMaxAttempts()) {
+            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialTokenLoginFailureCount() , configurationService.getAccessTokenLoginMaxAttempts());
+            return;
+        }
+        LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
+        throw new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
+    }
+
     public Authentication authenticateByUsernameToken(UsernamePasswordAuthenticationToken auth)
             throws AuthenticationException {
 
@@ -209,8 +250,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         DBUser user;
         try {
             Optional<DBUser> oUsr = mUserDao.findUserByAuthenticationToken(authenticationTokenId);
-
-            if (!oUsr.isPresent()) {
+            if (!oUsr.isPresent() || !oUsr.get().isActive()) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, authenticationTokenId);
                 //run validation on dummy password to achieve similar response time
                 // as it would be if the password is invalid
@@ -220,7 +260,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
-
             user = oUsr.get();
         } catch (AuthenticationException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
@@ -229,10 +268,15 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
             throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
-
         }
+
+        validateIfTokenIsSuspended(user);
+
         try {
             if (!BCrypt.checkpw(authenticationTokenValue, user.getAccessToken())) {
+                user.setSequentialTokenLoginFailureCount(user.getSequentialTokenLoginFailureCount()!=null?user.getSequentialTokenLoginFailureCount()+1:1);
+                user.setLastTokenFailedLoginAttempt(LocalDateTime.now());
+                mUserDao.update(user);
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, authenticationTokenId);
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
