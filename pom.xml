@@ -97,6 +97,7 @@
             **/smp/data/ui/enums/*,
             **/to_be_removed/*
         </sonar.exclusions>
+        <sonar.projectKey>eu.europa.ec:smp-modules</sonar.projectKey>
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
