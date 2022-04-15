@@ -65,12 +65,20 @@ public enum SMPPropertyEnum {
             "The error message shown to the user in case the password does not follow the regex put in the domibus.passwordPolicy.pattern property", false, false,false, STRING),
     PASSWORD_POLICY_VALID_DAYS("smp.passwordPolicy.validDays","90",
             "Number of days password is valid", false, false,false, INTEGER),
+    USER_MAX_FAILED_ATTEMPTS("smp.user.login.maximum.attempt","5",
+            "Number of console login attempt before the user is deactivated", false, false,false, INTEGER),
+    USER_SUSPENSION_TIME("smp.user.login.suspension.time","3600",
+            "Time in seconds for a suspended user to be reactivated. (if 0 the user will not be reactivated)", false, false,false, INTEGER),
 
     ACCESS_TOKEN_POLICY_VALID_DAYS("smp.accessToken.validDays","60",
             "Number of days access token is valid is valid", false, false,false, INTEGER),
+    ACCESS_TOKEN_MAX_FAILED_ATTEMPTS("smp.accessToken.login.maximum.attempt","10",
+            "Number of accessToken login attempt before the accessToken is deactivated", false, false,false, INTEGER),
+    ACCESS_TOKEN_SUSPENSION_TIME("smp.accessToken.login.suspension.time","3600",
+            "Time in seconds for a suspended accessToken to be reactivated. (if 0 the user will not be reactivated)", false, false,false, INTEGER),
 
 
-        // authentication
+    // authentication
     UI_AUTHENTICATION_TYPES("smp.ui.authentication.types", "PASSWORD", "Set list of '|' separated authentication types: PASSWORD|SSO.", false, false, false, LIST_STRING),
     AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "PASSWORD|CERTIFICATE", "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported PASSWORD, CERT: ex. PASSWORD|CERT", false, false, false, LIST_STRING),
     // SSO configuration

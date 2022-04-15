@@ -45,8 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpAppConfig.class,
         SmpWebAppConfig.class,
         DatabaseConfig.class,
-        SpringSecurityConfig.class,
-        SpringSecurityTestConfig.class,
+        WSSecurityConfigurerAdapter.class,
 })
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")

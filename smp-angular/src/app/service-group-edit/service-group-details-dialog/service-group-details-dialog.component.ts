@@ -228,12 +228,12 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   }
 
 
-  compareTableItemById(item1, item2): boolean {
-    return item1.id === item2.id;
+  compareUserByUserId(item1, item2): boolean {
+    return item1.userId === item2.userId;
   }
 
   compareDomain(domain: DomainRo, serviceGroupDomain: ServiceGroupDomainEditRo): boolean {
-    return domain.id === serviceGroupDomain.domainId;
+    return domain.domainCode === serviceGroupDomain.domainCode;
   }
 
 

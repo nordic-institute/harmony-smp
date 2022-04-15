@@ -14,6 +14,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -36,6 +37,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class UIUserService extends UIServiceBase<DBUser, UserRO> {
@@ -268,12 +270,13 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
 
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
-        List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(dev.getListIds());
+        List<Long> idList = dev.getListIds().stream().map(encId->SessionSecurityUtils.decryptEntityId(encId)).collect(Collectors.toList());
+        List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(idList);
         dev.setValidOperation(lstMessages.isEmpty());
         StringWriter sw = new StringWriter();
         sw.write("Could not delete user with ownerships! ");
         lstMessages.forEach(msg -> {
-            dev.getListDeleteNotPermitedIds().add(msg.getId());
+            dev.getListDeleteNotPermitedIds().add(SessionSecurityUtils.encryptedEntityId(msg.getId()));
             sw.write("User: ");
             sw.write(StringUtils.isBlank(msg.getUsername()) ? msg.getCertificateId() : msg.getUsername());
             sw.write(" owns SG count: ");

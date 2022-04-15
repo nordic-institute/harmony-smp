@@ -320,11 +320,15 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         ACTIVE number(1,0) not null,
         CREATED_ON timestamp not null,
         EMAIL varchar2(256 char),
+        LAST_FAILED_LOGIN_ON timestamp,
+        AT_LAST_FAILED_LOGIN_ON timestamp,
         LAST_UPDATED_ON timestamp not null,
         PASSWORD varchar2(256 char),
         PASSWORD_CHANGED timestamp,
         PASSWORD_EXPIRE_ON timestamp,
         ROLE varchar2(256 char),
+        LOGIN_FAILURE_COUNT number(10,0),
+        AT_LOGIN_FAILURE_COUNT number(10,0),
         USERNAME varchar2(256 char) not null,
         primary key (ID)
     );
@@ -353,6 +357,12 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_USER.EMAIL is
         'User email';
 
+    comment on column SMP_USER.LAST_FAILED_LOGIN_ON is
+        'Last failed login attempt';
+
+    comment on column SMP_USER.AT_LAST_FAILED_LOGIN_ON is
+        'Last failed token login attempt';
+
     comment on column SMP_USER.PASSWORD is
         'BCrypted password for username/password login';
 
@@ -364,6 +374,12 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     comment on column SMP_USER.ROLE is
         'User role';
+
+    comment on column SMP_USER.LOGIN_FAILURE_COUNT is
+        'Sequential login failure count';
+
+    comment on column SMP_USER.AT_LOGIN_FAILURE_COUNT is
+        'Sequential token login failure count';
 
     comment on column SMP_USER.USERNAME is
         'Unique username identifier. The Username must not be null';
@@ -379,11 +395,15 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         ACTIVE number(1,0),
         CREATED_ON timestamp,
         EMAIL varchar2(256 char),
+        LAST_FAILED_LOGIN_ON timestamp,
+        AT_LAST_FAILED_LOGIN_ON timestamp,
         LAST_UPDATED_ON timestamp,
         PASSWORD varchar2(256 char),
         PASSWORD_CHANGED timestamp,
         PASSWORD_EXPIRE_ON timestamp,
         ROLE varchar2(256 char),
+        LOGIN_FAILURE_COUNT number(10,0),
+        AT_LOGIN_FAILURE_COUNT number(10,0),
         USERNAME varchar2(256 char),
         primary key (ID, REV)
     );

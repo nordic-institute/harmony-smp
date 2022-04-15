@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpAppConfig.class,
         SmpWebAppConfig.class,
         DatabaseConfig.class,
-        SpringSecurityConfig.class,
+        WSSecurityConfigurerAdapter.class,
         SpringSecurityTestConfig.class
 })
 @WebAppConfiguration
