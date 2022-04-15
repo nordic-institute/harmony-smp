@@ -78,7 +78,7 @@ public class DomainAdminResource {
 
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     @PutMapping(value = "validate-delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public DeleteEntityValidation validateDeleteDomain(@RequestBody List<Long> listOfDomainIds) {
+    public DeleteEntityValidation validateDeleteDomain(@RequestBody List<String> listOfDomainIds) {
 
         DeleteEntityValidation dres = new DeleteEntityValidation();
         dres.getListIds().addAll(listOfDomainIds);

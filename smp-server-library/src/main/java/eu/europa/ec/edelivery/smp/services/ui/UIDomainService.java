@@ -12,6 +12,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
@@ -80,13 +82,14 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     }
 
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
-        List<DBDomainDeleteValidation> lstMessages = domainDao.validateDomainsForDelete(dev.getListIds());
+        List<Long> idList = dev.getListIds().stream().map(encId-> Long.parseLong(encId)).collect(Collectors.toList());
+        List<DBDomainDeleteValidation> lstMessages = domainDao.validateDomainsForDelete(idList);
         dev.setValidOperation(lstMessages.isEmpty());
         if (!dev.isValidOperation()) {
             StringWriter sw = new StringWriter();
             sw.write("Could not delete domains used by Service groups! ");
             lstMessages.forEach(msg -> {
-                dev.getListDeleteNotPermitedIds().add(msg.getId());
+                dev.getListDeleteNotPermitedIds().add(msg.getId()+"");
                 sw.write("Domain: ");
                 sw.write(msg.getDomainCode());
                 sw.write(" (");

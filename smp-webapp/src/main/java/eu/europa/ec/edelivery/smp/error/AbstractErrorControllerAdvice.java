@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.TECHNICAL;
@@ -28,6 +29,9 @@ abstract class AbstractErrorControllerAdvice {
             SMPResponseStatusException ex = (SMPResponseStatusException)runtimeException;
             response = buildAndLog(ex.getStatus(), ex.getErrorBusinessCode(), ex.getMessage(), ex);
         } else if (runtimeException instanceof AuthenticationException ){
+            AuthenticationException ex = (AuthenticationException)runtimeException;
+            response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
+        }else if (runtimeException instanceof AccessDeniedException){
             AuthenticationException ex = (AuthenticationException)runtimeException;
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
         }

@@ -13,22 +13,21 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.edelivery.smp.AbstractTest;
 import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class,
+        WSSecurityConfigurerAdapter.class,
         UIKeystoreService.class
 })
 @WebAppConfiguration

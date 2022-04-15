@@ -3,9 +3,8 @@ package eu.europa.ec.edelivery.smp.monitor;
 import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
 import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
-import eu.europa.ec.edelivery.smp.monitor.MonitorResource;
 import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class})
+        WSSecurityConfigurerAdapter.class})
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")

@@ -239,11 +239,15 @@
         ACTIVE bit not null comment 'Is user active',
         CREATED_ON datetime not null,
         EMAIL varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User email',
+        LAST_FAILED_LOGIN_ON datetime comment 'Last failed login attempt',
+        AT_LAST_FAILED_LOGIN_ON datetime comment 'Last failed token login attempt',
         LAST_UPDATED_ON datetime not null,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted password for username/password login',
         PASSWORD_CHANGED datetime comment 'Last date when password was changed',
         PASSWORD_EXPIRE_ON datetime comment 'Date when password will expire',
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User role',
+        LOGIN_FAILURE_COUNT integer comment 'Sequential login failure count',
+        AT_LOGIN_FAILURE_COUNT integer comment 'Sequential token login failure count',
         USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
         primary key (ID)
     ) comment='SMP can handle multiple domains. This table contains domain specific data' ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -259,11 +263,15 @@
         ACTIVE bit,
         CREATED_ON datetime,
         EMAIL varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        LAST_FAILED_LOGIN_ON datetime,
+        AT_LAST_FAILED_LOGIN_ON datetime,
         LAST_UPDATED_ON datetime,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PASSWORD_CHANGED datetime,
         PASSWORD_EXPIRE_ON datetime,
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        LOGIN_FAILURE_COUNT integer,
+        AT_LOGIN_FAILURE_COUNT integer,
         USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

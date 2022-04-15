@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class})
+        WSSecurityConfigurerAdapter.class})
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")

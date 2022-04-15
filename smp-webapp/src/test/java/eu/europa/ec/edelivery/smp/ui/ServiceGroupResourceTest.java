@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
@@ -32,7 +32,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 
 import java.io.IOException;
 
@@ -52,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class})
+        WSSecurityConfigurerAdapter.class})
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")
@@ -135,7 +134,7 @@ public class ServiceGroupResourceTest {
             assertNotNull(sgro.getParticipantScheme());
             assertNotNull(sgro.getParticipantIdentifier());
             assertEquals(1, sgro.getUsers().size());
-            assertEquals("sg_admin", sgro.getUsers().get(0).getUsername());
+            assertNotNull(sgro.getUsers().get(0).getUserId());
         });
     }
 
@@ -156,7 +155,7 @@ public class ServiceGroupResourceTest {
         assertEquals(PARTICIPANT_IDENTIFIER, res.getParticipantIdentifier());
         assertEquals(PARTICIPANT_SCHEME, res.getParticipantScheme());
         assertEquals(1, res.getUsers().size());
-        assertEquals("test_user_hashed_pass", res.getUsers().get(0).getUsername());
+        assertNotNull(res.getUsers().get(0).getUserId());
 
         assertEquals(1, res.getServiceGroupDomains().size());
         assertEquals(1, res.getServiceMetadata().size());
