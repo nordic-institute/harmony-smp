@@ -26,7 +26,7 @@
         <module>smp-server-library</module>
         <module>smp-angular</module>
         <module>smp-webapp</module>
-        <module>smp-soapui-tests</module>
+        <!-- module>smp-soapui-tests</module -->
     </modules>
 
     <properties>
