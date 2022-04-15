@@ -134,7 +134,7 @@ public class ServiceGroupResourceTest {
             assertNotNull(sgro.getParticipantScheme());
             assertNotNull(sgro.getParticipantIdentifier());
             assertEquals(1, sgro.getUsers().size());
-            assertEquals("sg_admin", sgro.getUsers().get(0).getUsername());
+            assertNotNull(sgro.getUsers().get(0).getUserId());
         });
     }
 
@@ -155,7 +155,7 @@ public class ServiceGroupResourceTest {
         assertEquals(PARTICIPANT_IDENTIFIER, res.getParticipantIdentifier());
         assertEquals(PARTICIPANT_SCHEME, res.getParticipantScheme());
         assertEquals(1, res.getUsers().size());
-        assertEquals("test_user_hashed_pass", res.getUsers().get(0).getUsername());
+        assertNotNull(res.getUsers().get(0).getUserId());
 
         assertEquals(1, res.getServiceGroupDomains().size());
         assertEquals(1, res.getServiceMetadata().size());

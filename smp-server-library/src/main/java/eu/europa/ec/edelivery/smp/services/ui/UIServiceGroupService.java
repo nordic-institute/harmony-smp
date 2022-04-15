@@ -16,6 +16,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -38,9 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_INVALID_EXTENSION;
-import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_OK;
-import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_SERVICE_GROUP_EXISTS;
+import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 
 @Service
@@ -467,28 +466,6 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     }
 
     /**
-     * Method validates if domain list in consistent - code and sml subdomain are used only oncet
-     *
-     * @param serviceGroupRO
-     * @return
-     *
-    protected List<ServiceGroupDomainRO> validateDomainList(ServiceGroupRO serviceGroupRO) {
-        List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
-        // validate (if domains are added only once) and  create domain list for service group.
-        serviceGroupDomainROList.forEach(dro -> {
-            List<ServiceGroupDomainRO> result = serviceGroupDomainROList.stream()
-                    .filter(domainToAdd -> Objects.equals(domainToAdd.getDomainCode(), dro.getDomainCode())
-                            || Objects.equals(domainToAdd.getSmlSubdomain(), dro.getSmlSubdomain()))
-                    .collect(Collectors.toList());
-            if (result.size() != 1) {
-                throw new SMPRuntimeException(DUPLICATE_DOMAIN_FOR_SG, serviceGroupRO.getParticipantIdentifier(),
-                        serviceGroupRO.getParticipantScheme(), dro.getDomainCode(), dro.getSmlSubdomain());
-            }
-        });
-        return serviceGroupDomainROList;
-    }*/
-
-    /**
      * Update users on service group. Method is OK for update and add new domain
      *
      * @param serviceGroupRO
@@ -499,7 +476,8 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         dbServiceGroup.getUsers().clear();
         List<UserRO> lstUsers = serviceGroupRO.getUsers();
         for (UserRO userRO : lstUsers) {
-            Optional<DBUser> optUser = userDao.findUserByUsername(userRO.getUsername());
+            Long userid = SessionSecurityUtils.decryptEntityId(userRO.getUserId());
+            Optional<DBUser> optUser = userDao.findUser(userid);
             if (!optUser.isPresent()) {
                 throw new SMPRuntimeException(INTERNAL_ERROR,
                         "Database changed",  "User "+userRO.getUsername()+ " not exists! (Refresh data)");
@@ -586,14 +564,10 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             //also add domain to service group
             serviceGroupRo.getServiceGroupDomains().add(servGrpDomain);
         });
-        // add users
+        // add users add just encrypted ID
         dbServiceGroup.getUsers().forEach(usr -> {
             UserRO userRO = new UserRO();
-            userRO.setUserId(usr.getId()+"");
-            userRO.setUsername(usr.getUsername());
-            userRO.setActive(usr.isActive());
-            userRO.setEmailAddress(usr.getEmailAddress());
-            userRO.setRole(usr.getRole());
+            userRO.setUserId(SessionSecurityUtils.encryptedEntityId(usr.getId()));
             serviceGroupRo.getUsers().add(userRO);
         });
         // do not add service extension to gain performance.
