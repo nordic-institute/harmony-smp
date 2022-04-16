@@ -32,7 +32,7 @@
                         <artifactId>soapui-pro-maven-plugin</artifactId>
                         <version>5.1.2</version>
                         <configuration>
-                            <outputFolder>${build.directory}/soapui</outputFolder>
+                            <outputFolder>${build.directory}/soapui-reports/</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
                             <settingsFile>${basedir}/soapui/soapui-settings.xml</settingsFile>
@@ -70,26 +70,78 @@
                                 </goals>
                             </execution>
                         </executions>
-
                     </plugin>
-
+                    <!-- extract classes so that JACOCO plugin can find the classes
+                    to generate a report (use this option to get Code coverage report for SOAPUI project)
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>smp-api</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>smp-server-library</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>smp</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>war</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <includes>eu/europa/ec/edelivery/smp/**/*.class</includes>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- dump jacoco.exec from remote agent and generate report  -->
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>${jacoco.maven.plugin.version}</version>
+                        <configuration>
+                            <classDumpDir>${project.build.outputDirectory}</classDumpDir>
+                        </configuration>
                         <executions>
-                            <execution>
-                                <phase>post-integration-test</phase>
-
+                            <!-- execution>
+                                <id>jacoco-agent</id>
+                                <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>dump</goal>
+                                    <goal>prepare-agent</goal>
                                 </goals>
                                 <configuration>
-                                    <destFile>${sonar.jacoco.reportPaths}</destFile>
+                                    <destFile>${jacoco.reportPath}</destFile>
+                                    <propertyName>jacoco.agent.itArgLine</propertyName>
+                                </configuration>
+                            </execution -->
+
+                            <execution>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>dump</goal>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- dataFile>${project.build.directory}/jacoco.exec</dataFile -->
                                     <address>${sonar.jacoco.remoteAddress}</address>
                                     <port>${sonar.jacoco.remotePort}</port>
-                                    <reset>false</reset>
-                                    <append>true</append>
                                 </configuration>
                             </execution>
                         </executions>
