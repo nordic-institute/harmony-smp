@@ -69,9 +69,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void testGetTableListEmpty() {
-
         // given
-
         //when
         ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1, -1, null, null, null);
         // then

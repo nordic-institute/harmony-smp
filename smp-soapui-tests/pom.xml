@@ -85,7 +85,7 @@
                                     <goal>dump</goal>
                                 </goals>
                                 <configuration>
-                                    <destFile>${sonar.jacoco.reportPath}</destFile>
+                                    <destFile>${sonar.jacoco.reportPaths}</destFile>
                                     <address>${sonar.jacoco.remoteAddress}</address>
                                     <port>${sonar.jacoco.remotePort}</port>
                                     <reset>false</reset>
