@@ -21,7 +21,7 @@ public class SMPAuthorityDeserializerTest {
 
     @Test
     public void deserialize() throws IOException {
-        String value = "{\"username\":\"smp\",\"password\":null,\"emailAddress\":null,\"authorities\":[\"ROLE_SMP_ADMIN\"],\"active\":true,\"role\":\"SMP_ADMIN\",\"id\":8,\"certificate\":null,\"statusPassword\":0,\"passwordExpired\":true}";
+        String value = "{\"username\":\"smp\",\"password\":null,\"emailAddress\":null,\"authorities\":[\"ROLE_SMP_ADMIN\"],\"active\":true,\"role\":\"SMP_ADMIN\",\"certificate\":null,\"statusPassword\":0,\"passwordExpired\":true}";
         ObjectMapper mapper = new ObjectMapper();
         UserRO userRO = mapper.readValue(value, UserRO.class);
 

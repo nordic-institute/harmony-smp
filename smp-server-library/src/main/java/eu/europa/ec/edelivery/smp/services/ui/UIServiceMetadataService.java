@@ -25,10 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 
+/**
+ * Serives for managing the Service metadata
+ */
 @Service
 public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, ServiceMetadataRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceMetadataService.class);
@@ -69,8 +73,8 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
         try {
             return new String(extension, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            LOG.error("Error converting the servicemetadata to utf-8 String for id:" + id, e);
-            return null;
+            LOG.error("Can not convert ServiceMetadata bytearray to 'UTF-8'", e);
+            throw new IllegalCharsetNameException("UTF-8");
         }
 
     }

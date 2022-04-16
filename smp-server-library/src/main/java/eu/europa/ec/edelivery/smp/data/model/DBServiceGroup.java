@@ -1,3 +1,4 @@
+package eu.europa.ec.edelivery.smp.data.model;
 /*
  * Copyright 2017 European Commission | CEF eDelivery
  *
@@ -10,8 +11,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-
-package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +43,7 @@ public class DBServiceGroup extends BaseEntity {
 
     @Id
     @SequenceGenerator(name = "sg_generator", sequenceName = "SMP_SERVICE_GROUP_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sg_generator" )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sg_generator")
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique Servicegroup id")
     Long id;
@@ -55,7 +54,7 @@ public class DBServiceGroup extends BaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    List<DBServiceGroupDomain> serviceGroupDomains= new ArrayList<>();
+    List<DBServiceGroupDomain> serviceGroupDomains;
 
 
     // fetch in on demand - reduce performance issue on big SG table (set it better option)
@@ -78,14 +77,10 @@ public class DBServiceGroup extends BaseEntity {
     @OneToOne(mappedBy = "dbServiceGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private DBServiceGroupExtension serviceGroupExtension;
 
-    @Column(name = "CREATED_ON" , nullable = false)
+    @Column(name = "CREATED_ON", nullable = false)
     LocalDateTime createdOn;
     @Column(name = "LAST_UPDATED_ON", nullable = false)
     LocalDateTime lastUpdatedOn;
-
-
-    public DBServiceGroup() {
-    }
 
     @Override
     public Long getId() {
@@ -141,37 +136,36 @@ public class DBServiceGroup extends BaseEntity {
     }
 
     public List<DBServiceGroupDomain> getServiceGroupDomains() {
+        if (serviceGroupDomains == null) {
+            serviceGroupDomains = new ArrayList<>();
+        }
         return serviceGroupDomains;
-    }
-
-    public void setServiceGroupDomains(List<DBServiceGroupDomain> serviceGroupDomains) {
-        this.serviceGroupDomains = serviceGroupDomains;
     }
 
 
     public DBServiceGroupDomain addDomain(DBDomain domain) {
         DBServiceGroupDomain sgd = new DBServiceGroupDomain(this, domain);
-        serviceGroupDomains.add(sgd);
+        getServiceGroupDomains().add(sgd);
         return sgd;
     }
 
     public void removeDomain(String domainCode) {
         // find connecting object
-        Optional<DBServiceGroupDomain> osgd =  serviceGroupDomains.stream()
+        Optional<DBServiceGroupDomain> osgd = getServiceGroupDomains().stream()
                 .filter(psgd -> domainCode.equals(psgd.getDomain().getDomainCode())).findFirst();
-        if (osgd.isPresent()){
+        if (osgd.isPresent()) {
             DBServiceGroupDomain dsg = osgd.get();
-            serviceGroupDomains.remove(dsg);
+            getServiceGroupDomains().remove(dsg);
             dsg.setDomain(null);
             dsg.setServiceGroup(null);
         }
     }
 
-    public Optional<DBServiceGroupDomain> findServiceGroupDomainForMetadata(String docId, String docSch){
-        for (DBServiceGroupDomain serviceGroupDomain : serviceGroupDomains) {
+    public Optional<DBServiceGroupDomain> findServiceGroupDomainForMetadata(String docId, String docSch) {
+        for (DBServiceGroupDomain serviceGroupDomain : getServiceGroupDomains()) {
             for (DBServiceMetadata dbServiceMetadata : serviceGroupDomain.getServiceMetadata()) {
                 if (Objects.equals(docId, dbServiceMetadata.getDocumentIdentifier())
-                        && Objects.equals(docId, dbServiceMetadata.getDocumentIdentifier()) ) {
+                        && Objects.equals(docSch, dbServiceMetadata.getDocumentIdentifierScheme())) {
                     return Optional.of(serviceGroupDomain);
                 }
             }
@@ -180,11 +174,10 @@ public class DBServiceGroup extends BaseEntity {
     }
 
 
-
     @Transient
     public Optional<DBServiceGroupDomain> getServiceGroupForDomain(String domainCode) {
         // find connecting object
-        return StringUtils.isBlank(domainCode)?Optional.empty():serviceGroupDomains.stream()
+        return StringUtils.isBlank(domainCode) ? Optional.empty() : getServiceGroupDomains().stream()
                 .filter(psgd -> domainCode.equals(psgd.getDomain().getDomainCode())).findFirst();
     }
 
@@ -207,8 +200,6 @@ public class DBServiceGroup extends BaseEntity {
             this.serviceGroupExtension.setExtension(extension);
         }
     }
-
-
 
 
     /**
@@ -236,7 +227,7 @@ public class DBServiceGroup extends BaseEntity {
 
     @PrePersist
     public void prePersist() {
-        if(createdOn == null) {
+        if (createdOn == null) {
             createdOn = LocalDateTime.now();
         }
         lastUpdatedOn = LocalDateTime.now();
