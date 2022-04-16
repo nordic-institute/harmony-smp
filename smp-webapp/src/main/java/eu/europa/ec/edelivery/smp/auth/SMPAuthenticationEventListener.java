@@ -65,7 +65,6 @@ public class SMPAuthenticationEventListener implements ApplicationListener<Authe
             || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_WS_SYSTEM_ADMIN.getAuthority())
             || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_WS_SMP_ADMIN.getAuthority())
         );
-        LOG.debug("has role [{}]", ((GrantedAuthority)Arrays.stream(authorities.toArray()).findFirst().get()).getAuthority());
         LOG.debug("has admin role [{}]", hasAdminRole);
         LOG.debug("configurationService [{}]", configurationService);
         return hasAdminRole ? configurationService.getSessionIdleTimeoutForAdmin() :
