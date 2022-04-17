@@ -50,14 +50,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBusdoxParticipantId;
@@ -364,7 +360,7 @@ public class SmlConnector implements ApplicationContextAware {
         TLSClientParameters tlsParams = new TLSClientParameters();
         tlsParams.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
         tlsParams.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
-        tlsParams.setCertConstraints(createCertConstraint(configurationService.getSMLIntegrationServerCertSubjectRegExp()));
+        tlsParams.setCertConstraints(createCertConstraint(configurationService.getSMLIntegrationServerCertSubjectRegExpPattern()));
         tlsParams.setDisableCNCheck(configurationService.smlDisableCNCheck());
 
         if (!blueCoatAuthentication) {

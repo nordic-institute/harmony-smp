@@ -89,16 +89,6 @@ public enum SMPPropertyEnum {
     SSO_CAS_TOKEN_VALIDATION_URLPATH("smp.sso.cas.token.validation.urlpath", "http://localhost:8080/cas/", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.token.validation}.", false, false, true, STRING),
     SSO_CAS_TOKEN_VALIDATION_PARAMS("smp.sso.cas.token.validation.params", "acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP", "The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'", false, false, true, MAP_STRING),
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.", false, false, true, LIST_STRING),
-
-    //deprecated properties
-    SML_KEYSTORE_PASSWORD("bdmsl.integration.keystore.password", "", "Deprecated", false, false, false, STRING),
-    SML_KEYSTORE_PATH("bdmsl.integration.keystore.path", "", "Deprecated", false, false, false, STRING),
-    SIGNATURE_KEYSTORE_PASSWORD("xmldsig.keystore.password", "", "Deprecated", false, false, false, STRING),
-    SIGNATURE_KEYSTORE_PATH("xmldsig.keystore.classpath", "", "Deprecated", false, false, false, STRING),
-    SML_PROXY_HOST("bdmsl.integration.proxy.server", "", "Deprecated", false, false, false, STRING),
-    SML_PROXY_PORT("bdmsl.integration.proxy.port", "", "Deprecated", false, false, false, INTEGER),
-    SML_PROXY_USER("bdmsl.integration.proxy.user", "", "Deprecated", false, false, false, STRING),
-    SML_PROXY_PASSWORD("bdmsl.integration.proxy.password", "", "Deprecated", false, false, false, STRING),
     ;
 
 

@@ -149,7 +149,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             isRefreshProcess = true;
             DatabaseProperties newProperties = new DatabaseProperties(memEManager);
             // first update deprecated values
-            updateDeprecatedValues(newProperties);
+
             Map<String, Object> resultProperties;
             try {
                 resultProperties = validateConfiguration(newProperties);
@@ -358,17 +358,5 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
     }
 
-    public void updateDeprecatedValues(Properties properties) {
-        // update deprecated properties from 4.1.1
-        updateDeprecatedProperty(properties, HTTP_PROXY_HOST, SML_PROXY_HOST);
-        updateDeprecatedProperty(properties, HTTP_PROXY_PORT, SML_PROXY_PORT);
-        updateDeprecatedProperty(properties, HTTP_PROXY_USER, SML_PROXY_USER);
-        updateDeprecatedProperty(properties, HTTP_PROXY_PASSWORD, SML_PROXY_PASSWORD);
-    }
 
-    public void updateDeprecatedProperty(Properties properties, SMPPropertyEnum newProperty, SMPPropertyEnum deprecatedProperty) {
-        if (!properties.containsKey(newProperty.getProperty()) && properties.containsKey(deprecatedProperty.getProperty())) {
-            properties.setProperty(newProperty.getProperty(), properties.getProperty(deprecatedProperty.getProperty()));
-        }
-    }
 }

@@ -95,11 +95,11 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         String propertyValue = "TestUser";
         String propertyDesc = "Test description";
         //WHEN
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.SML_PROXY_USER,
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_PROXY_USER,
                 propertyValue, propertyDesc);
 
         //THEN
-        Optional<DBConfiguration> configuration = configurationDao.getConfigurationEntityFromDatabase(SMPPropertyEnum.SML_PROXY_USER);
+        Optional<DBConfiguration> configuration = configurationDao.getConfigurationEntityFromDatabase(SMPPropertyEnum.HTTP_PROXY_USER);
         assertTrue(configuration.isPresent());
         assertEquals(propertyValue, configuration.get().getValue());
         assertEquals(propertyDesc, configuration.get().getDescription());
@@ -114,14 +114,14 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         String propertyValue2 = "TestUser2";
         String propertyDesc = "Test description";
         String propertyDesc2 = "Test description2";
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.SML_PROXY_USER,
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_PROXY_USER,
                 propertyValue, propertyDesc);
 
         // when
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.SML_PROXY_USER,
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_PROXY_USER,
                 propertyValue2, propertyDesc2);
         //then
-        Optional<DBConfiguration> configuration = configurationDao.getConfigurationEntityFromDatabase(SMPPropertyEnum.SML_PROXY_USER);
+        Optional<DBConfiguration> configuration = configurationDao.getConfigurationEntityFromDatabase(SMPPropertyEnum.HTTP_PROXY_USER);
         assertTrue(configuration.isPresent());
         assertEquals(propertyValue2, configuration.get().getValue());
         assertEquals(propertyDesc2, configuration.get().getDescription());
@@ -135,17 +135,17 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         LocalDateTime lastUpdate = configurationDao.getLastUpdate();
         String propertyValue = "TestUser";
         String propertyDesc = "Test description";
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.SML_PROXY_USER,
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_PROXY_USER,
                 propertyValue, propertyDesc);
-        Optional<DBConfiguration> configuration = configurationDao.getConfigurationEntityFromDatabase(SMPPropertyEnum.SML_PROXY_USER);
+        Optional<DBConfiguration> configuration = configurationDao.getConfigurationEntityFromDatabase(SMPPropertyEnum.HTTP_PROXY_USER);
         assertTrue(configuration.isPresent());
         assertEquals(propertyValue, configuration.get().getValue());
         // when
-        configurationDao.deletePropertyFromDatabase(SMPPropertyEnum.SML_PROXY_USER);
+        configurationDao.deletePropertyFromDatabase(SMPPropertyEnum.HTTP_PROXY_USER);
 
 
         //then
-        Optional<DBConfiguration> result = configurationDao.getConfigurationEntityFromDatabase(SMPPropertyEnum.SML_PROXY_USER);
+        Optional<DBConfiguration> result = configurationDao.getConfigurationEntityFromDatabase(SMPPropertyEnum.HTTP_PROXY_USER);
         assertFalse(result.isPresent());
     }
 
@@ -259,7 +259,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         String password = "TEST11002password1@!." + System.currentTimeMillis();
 
         // when
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.SML_KEYSTORE_PASSWORD, password, f);
+        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
@@ -275,7 +275,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         expectedException.expectMessage("Error occurred while encrypting the property:");
 
         // when
-        configurationDao.encryptString(SMPPropertyEnum.SML_KEYSTORE_PASSWORD, password, f);
+        configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
     }
 
     @Test
@@ -283,10 +283,10 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         // given
         File f = SecurityUtilsTest.generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.SML_KEYSTORE_PASSWORD, password, f);
+        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
 
         // when
-        String decPassword = configurationDao.decryptString(SMPPropertyEnum.SML_KEYSTORE_PASSWORD, encPassword, f);
+        String decPassword = configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, f);
         //then
         assertNotNull(decPassword);
         assertEquals(password, decPassword);
@@ -298,13 +298,13 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         File f = SecurityUtilsTest.generateRandomPrivateKey();
         File fErr = new File("no.key");
         String password = "TEST11002password1@!." + System.currentTimeMillis();
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.SML_KEYSTORE_PASSWORD, password, f);
+        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
 
         // then
         expectedException.expect(SMPRuntimeException.class);
         expectedException.expectMessage("Error occurred while decrypting the property:");
         // when
-        configurationDao.decryptString(SMPPropertyEnum.SML_KEYSTORE_PASSWORD, encPassword, fErr);
+        configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, fErr);
 
     }
 
@@ -315,8 +315,8 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         String password = "test123";
 
         // when
-        String encPassword = configurationDao.encryptString(SMPPropertyEnum.SML_KEYSTORE_PASSWORD, password, keyFile);
-        String decPassword = configurationDao.decryptString(SMPPropertyEnum.SML_KEYSTORE_PASSWORD, encPassword, keyFile);
+        String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, keyFile);
+        String decPassword = configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, encPassword, keyFile);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
@@ -415,24 +415,5 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.TRUSTSTORE_PASSWORD, dbTruststorePassword, encryptionKey));
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.HTTP_PROXY_PASSWORD, dbProxyPassword, encryptionKey));
 
-    }
-
-    @Test
-    public void testUpdateDeprecatedValues() {
-        // given
-        Properties properties = new Properties();
-        properties.setProperty(SML_PROXY_HOST.getProperty(), UUID.randomUUID().toString());
-        properties.setProperty(SML_PROXY_PORT.getProperty(), UUID.randomUUID().toString());
-        properties.setProperty(SML_PROXY_USER.getProperty(), UUID.randomUUID().toString());
-        properties.setProperty(SML_PROXY_PASSWORD.getProperty(), UUID.randomUUID().toString());
-
-        //when
-        configurationDao.updateDeprecatedValues(properties);
-
-        // then
-        assertEquals(properties.getProperty(HTTP_PROXY_HOST.getProperty()), properties.getProperty(SML_PROXY_HOST.getProperty()));
-        assertEquals(properties.getProperty(HTTP_PROXY_PORT.getProperty()), properties.getProperty(SML_PROXY_PORT.getProperty()));
-        assertEquals(properties.getProperty(HTTP_PROXY_USER.getProperty()), properties.getProperty(SML_PROXY_USER.getProperty()));
-        assertEquals(properties.getProperty(HTTP_PROXY_PASSWORD.getProperty()), properties.getProperty(SML_PROXY_PASSWORD.getProperty()));
     }
 }

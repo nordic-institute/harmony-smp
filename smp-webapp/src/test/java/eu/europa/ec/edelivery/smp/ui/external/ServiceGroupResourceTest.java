@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.ui;
+package eu.europa.ec.edelivery.smp.ui.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
@@ -10,6 +10,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
