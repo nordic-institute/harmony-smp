@@ -47,6 +47,8 @@ public enum ErrorCode {
     INVALID_SMD_XML (400,"SMP:143",ErrorBusinessCode.XSD_INVALID,"Invalid service metada. Error: %s"),
     INVALID_SMD_DOCUMENT_DATA(400,"SMP:143",ErrorBusinessCode.INVALID_INPUT_DATA,"XML serviceMetadata document (doc. id: '%s', doc. sch.: '%s') " +
             "do not match metadata request (doc. id: '%s', doc. sch.: '%s')."),
+    ILLEGAL_STATE_SMD_ON_MULTIPLE_SGD (500,"SMP:144",ErrorBusinessCode.TECHNICAL,"Found than one service group domain for metadata id [%s] and user id [%s]!"),
+
 
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),

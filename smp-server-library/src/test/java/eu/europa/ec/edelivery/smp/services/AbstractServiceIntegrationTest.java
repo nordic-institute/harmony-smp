@@ -105,8 +105,10 @@ public abstract class AbstractServiceIntegrationTest {
 
         DBUser u1 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
         DBUser u2 = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_2);
+        DBUser u3 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_2);
         userDao.persistFlushDetach(u1);
         userDao.persistFlushDetach(u2);
+        userDao.persistFlushDetach(u3);
 
         DBServiceGroup sg1d1 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         DBServiceMetadata sg1md1 = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
@@ -143,7 +145,6 @@ public abstract class AbstractServiceIntegrationTest {
      *      - Metadata: /
      *
      */
-
     public void prepareDatabaseForMultipeDomainEnv() {
 
         prepareDatabaseForSingleDomainEnv();
@@ -155,7 +156,6 @@ public abstract class AbstractServiceIntegrationTest {
         DBServiceGroup sg2d2 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_3, TEST_SG_SCHEMA_1);
         sg2d2.getUsers().add(u1);
         serviceGroupDao.update(sg2d2);
-
     }
 
 

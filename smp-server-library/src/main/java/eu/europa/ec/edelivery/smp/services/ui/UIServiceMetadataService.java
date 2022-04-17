@@ -145,7 +145,6 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
                 return serviceMetadataRO;
             }
         }
-
         return serviceMetadataRO;
     }
 

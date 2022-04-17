@@ -10,6 +10,7 @@ import eu.europa.ec.edelivery.smp.services.ui.UIServiceMetadataService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,11 +25,14 @@ public class ServiceMetadataResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceMetadataResource.class);
 
-    @Autowired
-    private UIServiceMetadataService uiServiceMetadataService;
+    final private UIServiceMetadataService uiServiceMetadataService;
+
+    public ServiceMetadataResource(UIServiceMetadataService uiServiceMetadataService) {
+        this.uiServiceMetadataService = uiServiceMetadataService;
+    }
 
     @GetMapping(path = "{serviceMetadataId}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @PreAuthorize("@smpAuthorizationService.isAuthorizedForManagingTheServiceMetadataGroup(#serviceMetadataId)")
     public ServiceMetadataRO getServiceGroupMetadataById(@PathVariable Long serviceMetadataId) {
         LOG.info("Get service group metadata [{}]", serviceMetadataId);
         return uiServiceMetadataService.getServiceMetadataXMLById(serviceMetadataId);

@@ -222,6 +222,16 @@ public class ServiceGroupService {
 
     /**
      * Method validates if user owner with identifier is owner of servicegroup
+     * @param  userId
+     * @param serviceMetadataID
+     */
+    @Transactional
+    public boolean isServiceGroupOwnerForMetadataID(long userId, long serviceMetadataID ){
+        return serviceGroupDao.findServiceGroupDomainForUserIdAndMetadataId(userId, serviceMetadataID).isPresent();
+    }
+
+    /**
+     * Method validates if user owner with identifier is owner of servicegroup
      * @param  ownerIdentifier
      * @param serviceGroupIdentifier
      */

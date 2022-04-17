@@ -15,9 +15,7 @@ package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
@@ -66,6 +64,33 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         prepareDatabaseForSingleDomainEnv();
         setDatabaseProperty(SMPPropertyEnum.SML_ENABLED,"false");
     }
+
+    @Test
+    public void isServiceGroupOwnerForMetadataID(){
+        // given
+        DBUser user = userDao.findUserByUsername(USERNAME_1).get();
+        DBServiceMetadata metadata = serviceMetadataDao.findServiceMetadata(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1).get();
+        // when
+        Optional<DBServiceGroupDomain> result = serviceGroupDao.findServiceGroupDomainForUserIdAndMetadataId(user.getId(), metadata.getId());
+        // then
+        assertTrue(result.isPresent());
+    }
+
+    @Test
+    public void isServiceGroupOwnerForMetadataIDFailed(){
+        // given
+        DBUser user = userDao.findUserByUsername(USERNAME_2).get();
+        DBServiceMetadata metadata = serviceMetadataDao.findServiceMetadata(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1).get();
+        // when
+        Optional<DBServiceGroupDomain> result = serviceGroupDao.findServiceGroupDomainForUserIdAndMetadataId(user.getId(), metadata.getId());
+        // then
+        assertFalse(result.isPresent());
+    }
+
+
+
     @Test
     public void createAndReadPositiveScenarioForNullDomain() throws IOException {
         // given
@@ -270,7 +295,6 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
 
     @Test
     public void urlsAreHandledByWebLayer() throws Throwable {
-
         //when
         ParticipantIdentifierType pt = new ParticipantIdentifierType();
         pt.setValue(TEST_SG_ID_2);

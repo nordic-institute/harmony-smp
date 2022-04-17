@@ -22,7 +22,7 @@
     <version>4.2-SNAPSHOT</version>
 
     <modules>
-        <module>smp-angular</module>
+        <!-- module>smp-angular</module -->
         <module>smp-api</module>
         <module>smp-server-library</module>
         <module>smp-webapp</module>
@@ -66,7 +66,7 @@
         <jaxb.version>2.2.11</jaxb.version>
         <jaxb2-basics.version>1.11.1</jaxb2-basics.version>
         <jstl.version>1.2</jstl.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.2</junit.version>
         <junitparams.version>1.0.5</junitparams.version>
         <logback.version>1.2.10</logback.version>
         <metro.version>2.2.1-1</metro.version>

@@ -10,6 +10,7 @@ import java.util.Objects;
 
 /**
  * Service group domain
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -19,14 +20,20 @@ import java.util.Objects;
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBServiceGroupDomain.getServiceGroupDomain", query = "SELECT sgd.* FROM SMP_DOMAIN dmn  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.FK_DOMAIN_ID = dmn.id " +
                 " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID " +
-                " where sg.PARTICIPANT_IDENTIFIER = :participantIdentifier AND sg.PARTICIPANT_SCHEME=:participantScheme and dmn.DOMAIN_CODE =:domainCode", resultClass=DBServiceGroupDomain.class)
+                " where sg.PARTICIPANT_IDENTIFIER = :participantIdentifier AND sg.PARTICIPANT_SCHEME=:participantScheme and dmn.DOMAIN_CODE =:domainCode", resultClass = DBServiceGroupDomain.class),
+        @NamedNativeQuery(name = "DBServiceGroupDomain.getOwnedServiceGroupDomainForUserIdAndServiceMetadataId",
+                query = "SELECT sgd.* FROM SMP_SERVICE_GROUP_DOMAIN sgd" +
+                        "   INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID " +
+                        "   INNER JOIN SMP_OWNERSHIP join_u_sg  ON join_u_sg.FK_SG_ID = sg.ID" +
+                        "   INNER JOIN SMP_SERVICE_METADATA md  ON md.FK_SG_DOM_ID = sgd.ID" +
+                        " where join_u_sg.FK_USER_ID = :userId " +
+                        "   AND md.ID=:serviceMetadataId",
+                resultClass = DBServiceGroupDomain.class)
 })
 public class DBServiceGroupDomain extends BaseEntity {
 
-
-
     @Id
-    @SequenceGenerator(name = "sgd_generator", sequenceName = "SMP_SERVICE_GROUP_DOMAIN_SEQ",allocationSize = 1)
+    @SequenceGenerator(name = "sgd_generator", sequenceName = "SMP_SERVICE_GROUP_DOMAIN_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgd_generator")
     @Column(name = "ID")
     Long id;
@@ -55,7 +62,7 @@ public class DBServiceGroupDomain extends BaseEntity {
     @Column(name = "SML_REGISTERED", nullable = false)
     private boolean smlRegistered = false;
 
-    @Column(name = "CREATED_ON" , nullable = false)
+    @Column(name = "CREATED_ON", nullable = false)
     LocalDateTime createdOn;
     @Column(name = "LAST_UPDATED_ON", nullable = false)
     LocalDateTime lastUpdatedOn;
@@ -70,7 +77,6 @@ public class DBServiceGroupDomain extends BaseEntity {
         this.domain = domain;
         this.serviceGroup = serviceGroup;
     }
-
 
 
     @Override
@@ -118,8 +124,8 @@ public class DBServiceGroupDomain extends BaseEntity {
     }
 
     public DBServiceMetadata removeServiceMetadata(String docId, String docSch) {
-        DBServiceMetadata dbServiceMetadata =  getServiceMetadata(docId,docSch );
-        if (dbServiceMetadata!=null) {
+        DBServiceMetadata dbServiceMetadata = getServiceMetadata(docId, docSch);
+        if (dbServiceMetadata != null) {
             removeServiceMetadata(dbServiceMetadata);
         }
         return dbServiceMetadata;
@@ -132,6 +138,7 @@ public class DBServiceGroupDomain extends BaseEntity {
 
     /**
      * Method return metadata by documentIdentifier and document schema. Method is case sensitive!
+     *
      * @param docId
      * @param docSch
      * @return DBServiceMetadata or null if not found!
@@ -172,7 +179,7 @@ public class DBServiceGroupDomain extends BaseEntity {
 
     @PrePersist
     public void prePersist() {
-        if(createdOn == null) {
+        if (createdOn == null) {
             createdOn = LocalDateTime.now();
         }
         lastUpdatedOn = LocalDateTime.now();

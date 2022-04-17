@@ -20,4 +20,15 @@ eDelivery SMP 4.2
     smp.sso.cas.token.validation.groups:  The '|' separated CAS groups user must belong to.
     smp.http.httpStrictTransportSecurity.maxAge: How long(in seconds) HSTS should last in the browser's cache(default one year)
     smp.http.header.security.policy: Http header content security policy
+
+ - removed deprecated properties
+    bdmsl.integration.keystore.password
+    bdmsl.integration.keystore.path
+    xmldsig.keystore.password
+    xmldsig.keystore.classpath
+    bdmsl.integration.proxy.server
+    bdmsl.integration.proxy.port
+    bdmsl.integration.proxy.user
+    bdmsl.integration.proxy.password
+
     

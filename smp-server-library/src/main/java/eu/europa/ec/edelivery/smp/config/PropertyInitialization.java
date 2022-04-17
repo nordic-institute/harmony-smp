@@ -168,28 +168,6 @@ public class PropertyInitialization {
         em.getTransaction().commit();
     }
 
-    /**
-     * Settings folder is where keystore is located.
-     *
-     * @param fileProperties
-     * @return
-     */
-    protected File calculateSettingsPath(Properties fileProperties) {
-
-
-        String sigPath = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty());
-
-        if (sigPath == null) {
-            sigPath = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty());
-        }
-        File settingsFolder = null;
-        if (sigPath != null) {
-            settingsFolder = new File(sigPath).getParentFile();
-        } else {
-            settingsFolder = new File(CONFIGURATION_DIR.getDefValue());
-        }
-        return settingsFolder;
-    }
 
     public void initTruststore(String absolutePath, File fEncryption, EntityManager em, Properties properties,Properties fileProperties) {
         LOG.info("Start generating new truststore.");
@@ -268,47 +246,11 @@ public class PropertyInitialization {
         initProperties.setProperty(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty(), keystore.getName());
 
 
-        String sigKeystorePath = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty(), null);
-        String smlKeystorePath = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty(), null);
 
         try (FileOutputStream out = new FileOutputStream(keystore)) {
             KeyStore newKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
             // initialize keystore
             newKeystore.load(null, newKeyPassword.toCharArray());
-            // merge keys from signature keystore
-            if (!StringUtils.isBlank(sigKeystorePath)) {
-                LOG.info("Import keys from keystore for signature: " + sigKeystorePath);
-                String keypasswd = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PASSWORD.getProperty());
-                try (FileInputStream fis = new FileInputStream(sigKeystorePath)) {
-                    KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
-                    sourceKeystore.load(fis, keypasswd.toCharArray());
-                    SecurityUtils.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
-                    // if there is only one certificate - update null signature aliases
-                    if (sourceKeystore.size() == 1) {
-                        String alias = sourceKeystore.aliases().nextElement();
-                        updateAlias(em, "DBDomain.updateNullSignAlias", alias);
-                        if (StringUtils.equalsIgnoreCase(smlKeystorePath, sigKeystorePath)) {
-                            updateAlias(em, "DBDomain.updateNullSMLAlias", alias);
-                        }
-                    }
-                }
-            }
-
-            // merge keys from integration keystore
-            if (!StringUtils.isBlank(smlKeystorePath) && !StringUtils.equalsIgnoreCase(smlKeystorePath, sigKeystorePath)) {
-                LOG.info("Import keys from keystore for sml integration: " + smlKeystorePath);
-                String keypasswd = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PASSWORD.getProperty());
-                try (FileInputStream fis = new FileInputStream(smlKeystorePath)) {
-                    KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
-                    sourceKeystore.load(fis, keypasswd.toCharArray());
-
-                    SecurityUtils.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
-                    // if there is only one cetificate - update null signature aliases
-                    if (sourceKeystore.size() == 1) {
-                        updateAlias(em, "DBDomain.updateNullSMLAlias", sourceKeystore.aliases().nextElement());
-                    }
-                }
-            }
             // check if keystore is empty then generate cert for user
             if (newKeystore.size() == 0) {
                 X509CertificateUtils.createAndAddTextCertificate("CN=SMP_TEST-PRE-SET-EXAMPLE, OU=eDelivery, O=DIGITAL, C=BE", newKeystore, newKeyPassword);
@@ -357,10 +299,9 @@ public class PropertyInitialization {
         if (fileProperties.containsKey(CONFIGURATION_DIR.getProperty())){
             absolutePath = fileProperties.getProperty(CONFIGURATION_DIR.getProperty());
         } else {
-            File settingsFolder = calculateSettingsPath(fileProperties);
+            File settingsFolder = new File("/");
             // set absolute path
-
-            absolutePath = settingsFolder.getAbsolutePath();
+            absolutePath =  new File("/").getAbsolutePath();
         }
 
         File confFolder = new File(absolutePath);

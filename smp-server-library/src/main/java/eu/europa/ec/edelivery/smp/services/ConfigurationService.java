@@ -26,13 +26,22 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 
 @Service
 public class ConfigurationService {
+    // set encrypted log value: do not reveal the real value to logs!
+    private static final String ENCRYPTED_LOG_VALUE="*******";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationService.class);
 
-    @Autowired
-    private ConfigurationDao configurationDAO;
+
+    private final ConfigurationDao configurationDAO;
+
+    public ConfigurationService(ConfigurationDao configurationDAO) {
+        this.configurationDAO = configurationDAO;
+    }
 
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
+        LOG.info("Save property [{}] with value [{}] and desc [{}]", key,
+                (key.isEncrypted()? value:ENCRYPTED_LOG_VALUE), description);
+
         String finalValue = StringUtils.trimToNull(value);
         if (finalValue == null) {
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Property: " + key.getProperty() + " cannot be null or empty!");
@@ -53,7 +62,7 @@ public class ConfigurationService {
         }
         DBConfiguration res = configurationDAO.setPropertyToDatabase(key, finalValue, description);
         if (key.isEncrypted()) {
-            res.setValue("*******");
+            res.setValue(ENCRYPTED_LOG_VALUE);
         }
         return res;
     }
@@ -67,7 +76,7 @@ public class ConfigurationService {
     }
 
     public String getParticipantIdentifierSchemeRexExpMessage() {
-        return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP_MSG);
+        return (String)configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP_MSG);
     }
     public Pattern getPasswordPolicyRexExp() {
         return (Pattern) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_REGULAR_EXPRESSION);
@@ -95,7 +104,6 @@ public class ConfigurationService {
         return (Integer) configurationDAO.getCachedPropertyValue(USER_SUSPENSION_TIME);
     }
 
-
     public Integer getAccessTokenLoginMaxAttempts() {
         return (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_MAX_FAILED_ATTEMPTS);
     }
@@ -108,7 +116,7 @@ public class ConfigurationService {
     }
 
     public String getHttpHeaderContentSecurityPolicy() {
-        return configurationDAO.getCachedProperty(HTTP_HEADER_SEC_POLICY);
+        return (String) configurationDAO.getCachedPropertyValue(HTTP_HEADER_SEC_POLICY);
     }
 
     public String getHttpProxyHost() {
@@ -194,9 +202,14 @@ public class ConfigurationService {
         return (List<String>) configurationDAO.getCachedPropertyValue(CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS);
     }
 
-    public String getSMLIntegrationServerCertSubjectRegExp() {
+    public String getSMLIntegrationServerCertSubjectRegExpPattern() {
         return configurationDAO.getCachedProperty(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
     }
+
+    public Pattern getSMLIntegrationServerCertSubjectRegExp() {
+        return (Pattern)configurationDAO.getCachedPropertyValue(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
+    }
+
 
     public boolean smlDisableCNCheck() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_DISABLE_CN_CHECK);
