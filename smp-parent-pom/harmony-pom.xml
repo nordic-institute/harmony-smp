@@ -16,7 +16,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.niis</groupId>
     <artifactId>harmonysmp-parent-pom</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>pom</packaging>
     <name>smp-parent-pom</name>
     <description>Harmony SMP</description>
