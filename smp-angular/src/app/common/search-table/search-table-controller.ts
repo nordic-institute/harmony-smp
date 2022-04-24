@@ -19,4 +19,6 @@ export interface SearchTableController {
    */
   isRowExpanderDisabled(row: SearchTableEntity): boolean;
 
+
+
 }

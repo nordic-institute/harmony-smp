@@ -4,7 +4,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import {CertificateService} from "../../user/certificate.service";
 import {CertificateRo} from "../../user/certificate-ro.model";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {ServiceMetadataWizardRo} from "./service-metadata-wizard-edit-ro.model";
 
 @Component({
@@ -29,7 +29,7 @@ export class ServiceMetadataWizardDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient,
     private dialogRef: MatDialogRef<ServiceMetadataWizardDialogComponent>,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     private dialogFormBuilder: FormBuilder,
     private certificateService: CertificateService,
   ) {

@@ -1,9 +1,6 @@
 package eu.europa.ec.edelivery.smp.config;
 
 
-import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
-import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProviderForUI;
 import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
@@ -15,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
@@ -25,7 +21,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,7 +32,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -49,6 +43,7 @@ import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.*;
 
 /**
  * SMP UI Security configuration
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -75,15 +70,15 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public UISecurityConfigurerAdapter(SMPAuthenticationProviderForUI smpAuthenticationProviderForUI,
-                                ConfigurationService configurationService,
-                                @Lazy MDCLogRequestFilter mdcLogRequestFilter,
-                                @Lazy CsrfTokenRepository csrfTokenRepository,
-                                @Lazy RequestMatcher csrfURLMatcher,
-                                @Lazy HttpFirewall httpFirewall,
-                                // optional cas authentication configuration
-                                @Lazy CasAuthenticationProvider casAuthenticationProvider,
-                                @Lazy @Qualifier(SMP_CAS_FILTER_BEAN) CasAuthenticationFilter casAuthenticationFilter,
-                                @Lazy CasAuthenticationEntryPoint casAuthenticationEntryPoint
+                                       ConfigurationService configurationService,
+                                       @Lazy MDCLogRequestFilter mdcLogRequestFilter,
+                                       @Lazy CsrfTokenRepository csrfTokenRepository,
+                                       @Lazy RequestMatcher csrfURLMatcher,
+                                       @Lazy HttpFirewall httpFirewall,
+                                       // optional cas authentication configuration
+                                       @Lazy CasAuthenticationProvider casAuthenticationProvider,
+                                       @Lazy @Qualifier(SMP_CAS_FILTER_BEAN) CasAuthenticationFilter casAuthenticationFilter,
+                                       @Lazy CasAuthenticationEntryPoint casAuthenticationEntryPoint
     ) {
         super(false);
         this.configurationService = configurationService;
@@ -127,7 +122,7 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 
         httpSecurity
-                .addFilterAfter(mdcLogRequestFilter,  BasicAuthenticationFilter.class)
+                .addFilterAfter(mdcLogRequestFilter, BasicAuthenticationFilter.class)
                 .httpBasic().authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests()
@@ -216,7 +211,7 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     @Bean
     public MDCLogRequestFilter getMDCLogRequestFilter() {
-        MDCLogRequestFilter filter=  new MDCLogRequestFilter();
+        MDCLogRequestFilter filter = new MDCLogRequestFilter();
         return filter;
     }
 
@@ -237,7 +232,7 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
         requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
         // ignore for login and logout
-        requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY+"/authentication", HttpMethod.DELETE, HttpMethod.POST);
+        requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY + "/authentication", HttpMethod.DELETE, HttpMethod.POST);
 
         requestMatcher.addIgnoreUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE, HttpMethod.GET);
         // allow all gets

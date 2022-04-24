@@ -3,6 +3,10 @@
 -- ------------------------------------------------------------------------
 
 
+    alter table SMP_ALERT_AUD 
+       drop 
+       foreign key FKrw0qnto448ojlirpfmfntd8v2;
+
     alter table SMP_CERTIFICATE 
        drop 
        foreign key FKayqgpj5ot3o8vrpduul7sstta;
@@ -10,6 +14,10 @@
     alter table SMP_CERTIFICATE_AUD 
        drop 
        foreign key FKnrwm8en8vv10li8ihwnurwd9e;
+
+    alter table SMP_CONFIGURATION_AUD 
+       drop 
+       foreign key FKd4yhbdlusovfbdti1fjkuxp9m;
 
     alter table SMP_DOMAIN_AUD 
        drop 
@@ -71,11 +79,17 @@
        drop 
        foreign key FK2786r5minnkai3d22b191iiiq;
 
+    drop table if exists SMP_ALERT;
+
+    drop table if exists SMP_ALERT_AUD;
+
     drop table if exists SMP_CERTIFICATE;
 
     drop table if exists SMP_CERTIFICATE_AUD;
 
     drop table if exists SMP_CONFIGURATION;
+
+    drop table if exists SMP_CONFIGURATION_AUD;
 
     drop table if exists SMP_DOMAIN;
 

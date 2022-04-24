@@ -1,16 +1,12 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +16,10 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -39,7 +33,9 @@ import java.util.UUID;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_USER;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY;
 import static org.junit.Assert.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,17 +43,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        WSSecurityConfigurerAdapter.class
-        })
+@RunWith(SpringRunner.class)
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
-@SqlConfig(encoding = "UTF-8")
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data.sql"},
+        executionPhase = BEFORE_TEST_METHOD)
 public class UserResourceTest {
 
     private static final String PATH_PUBLIC = ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
@@ -67,13 +59,12 @@ public class UserResourceTest {
     private WebApplicationContext webAppContext;
 
     private MockMvc mvc;
-    private static final String SMP_ADMIN_USERNAME="smp_admin";
-    private static final String SMP_ADMIN_PASSWD="test123";
-    private static final String SYS_ADMIN_USERNAME="sys_admin";
-    private static final String SYS_ADMIN_PASSWD="test123";
-    private static final String SG_ADMIN_USERNAME="sg_admin";
-    private static final String SG_ADMIN_PASSWD="test123";
-
+    private static final String SMP_ADMIN_USERNAME = "smp_admin";
+    private static final String SMP_ADMIN_PASSWD = "test123";
+    private static final String SYS_ADMIN_USERNAME = "sys_admin";
+    private static final String SYS_ADMIN_PASSWD = "test123";
+    private static final String SG_ADMIN_USERNAME = "sg_admin";
+    private static final String SG_ADMIN_PASSWD = "test123";
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -250,7 +241,7 @@ public class UserResourceTest {
                 .content("[\"" + userRO.getUserId() + "\"]"))
                 .andExpect(status().isOk()).andReturn();
 
-        DeleteEntityValidation  dev = mapper.readValue(resultDelete.getResponse().getContentAsString(), DeleteEntityValidation.class);
+        DeleteEntityValidation dev = mapper.readValue(resultDelete.getResponse().getContentAsString(), DeleteEntityValidation.class);
 
         assertFalse(dev.getListIds().isEmpty());
         assertTrue(dev.getListDeleteNotPermitedIds().isEmpty());
@@ -274,7 +265,7 @@ public class UserResourceTest {
                 .with(csrf())
                 .session(session)
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .content("[\""+userRO.getUserId()+"\"]"))
+                .content("[\"" + userRO.getUserId() + "\"]"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -287,6 +278,7 @@ public class UserResourceTest {
 
     /**
      * Login with the username and data
+     *
      * @param username
      * @param password
      * @return
@@ -295,7 +287,7 @@ public class UserResourceTest {
     public MockHttpSession loginWithCredentials(String username, String password) throws Exception {
         MvcResult result = mvc.perform(post(PATH_AUTHENTICATION)
                 .header(HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-                .content("{\"username\":\""+username+"\",\"password\":\""+password+"\"}"))
+                .content("{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"))
                 .andExpect(status().isOk()).andReturn();
         // assert successful login
         UserRO userRO = mapper.readValue(result.getResponse().getContentAsString(), UserRO.class);
@@ -305,12 +297,13 @@ public class UserResourceTest {
 
     /**
      * Return currently logged in data for the session
+     *
      * @param session
      * @return
      * @throws Exception
      */
     public UserRO getLoggedUserData(MockHttpSession session) throws Exception {
-        MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY+"/user")
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY + "/user")
                 .session(session)
                 .with(csrf()))
                 .andExpect(status().isOk()).andReturn();

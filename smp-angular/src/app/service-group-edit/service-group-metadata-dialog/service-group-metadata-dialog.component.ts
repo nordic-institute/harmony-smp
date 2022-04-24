@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {ServiceMetadataEditRo} from "../service-metadata-edit-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
@@ -41,7 +41,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
               protected http: HttpClient,
               public lookups: GlobalLookups,
               private dialogRef: MatDialogRef<ServiceGroupMetadataDialogComponent>,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
 

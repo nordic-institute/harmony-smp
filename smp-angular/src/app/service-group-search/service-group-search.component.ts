@@ -2,7 +2,7 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
-import {AlertService} from '../alert/alert.service';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {ServiceGroupSearchController} from './service-group-search-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
@@ -25,7 +25,7 @@ export class ServiceGroupSearchComponent implements OnInit {
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
   baseUrl: string = SmpConstants.REST_PUBLIC_SEARCH_SERVICE_GROUP;
 
-  constructor(protected lookups: GlobalLookups, protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
+  constructor(protected lookups: GlobalLookups, protected http: HttpClient, protected alertService: AlertMessageService, public dialog: MatDialog) {
 
   }
 
@@ -42,27 +42,31 @@ export class ServiceGroupSearchComponent implements OnInit {
         name: 'Metadata size',
         prop: 'serviceMetadata.length',
         width: 80,
-        maxWidth: 120
+        maxWidth: 120,
+        showInitially: true,
       },
       {
         name: 'Participant scheme',
         prop: 'participantScheme',
-        maxWidth: 300
+        maxWidth: 300,
+        showInitially: true,
       },
       {
         name: 'Participant identifier',
         prop: 'participantIdentifier',
+        showInitially: true,
       },
       {
         cellTemplate: this.rowSMPUrlLinkAction,
         name: 'OASIS ServiceGroup URL',
         width: 150,
         maxWidth: 250,
-        sortable: false
+        sortable: false,
+        showInitially: true,
       },
     ];
 
-
+    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
       return ["Metadata size", "Participant scheme", "Participant identifier", "OASIS ServiceGroup URL"].indexOf(col.name) != -1
     });

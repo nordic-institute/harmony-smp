@@ -2,7 +2,7 @@ import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 
-import {AlertService} from '../alert/alert.service';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {DomainController} from './domain-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
@@ -44,7 +44,7 @@ export class DomainComponent implements AfterViewInit {
               protected smlIntegrationService: SmlIntegrationService,
               protected lookups: GlobalLookups,
               protected http: HttpClient,
-              protected alertService: AlertService,
+              protected alertService: AlertMessageService,
               public dialog: MatDialog) {
 
     // check application settings

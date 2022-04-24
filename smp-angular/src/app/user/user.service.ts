@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {Role} from '../security/role.model';
 import {SmpConstants} from "../smp.constants";
 import {User} from "../security/user.model";
-import {AlertService} from "../alert/alert.service";
+import {AlertMessageService} from "../common/alert-message/alert-message.service";
 import {SecurityService} from "../security/security.service";
 import {AccessTokenRo} from "../common/access-token-generation-dialog/access-token-ro.model";
 
@@ -14,7 +14,7 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private securityService: SecurityService,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
   ) { }
 
   updateUser(user: User) {

@@ -14,7 +14,10 @@
 package eu.europa.ec.cipa.smp.server.security;
 
 import eu.europa.ec.edelivery.exception.BlueCoatParseException;
-import eu.europa.ec.edelivery.smp.config.*;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
+import org.apache.commons.text.matcher.StringMatcher;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,55 +27,52 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
+
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by gutowpa on 20/02/2017.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        DatabaseConfig.class,
-        WSSecurityConfigurerAdapter.class,
-})
+@RunWith(SpringRunner.class)
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data.sql"},
+        executionPhase = BEFORE_TEST_METHOD)
 public class SecurityConfigurationTest {
 
     public static final String RETURN_LOGGED_USER_PATH = "/getLoggedUsername";
-
     public static final String TEST_USERNAME_DB_CLEAR_PASS = "test_pat_clear_pass";
     public static final String TEST_USERNAME_DB_HASHED_PASS = "test_pat_hashed_pass";
     public static final String PASSWORD = "123456";
-    public static final String BLUE_COAT_VALID_HEADER = "sno=bb66&subject=C=BE,O=org,CN=common name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
-    public static final String BLUE_COAT_VALID_HEADER_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=common name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
-    public static final String TEST_USERNAME_BLUE_COAT = "CN=common name,O=org,C=BE:000000000000bb66";
-    public static final String BLUE_COAT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=CN=common name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
-    public static final String TEST_USERNAME_BLUE_COAT__DB_UPPER_SN = "CN=common name UPPER database SN,O=org,C=BE:000000000000bb66";
-
-    public static final String BLUE_COAT_NOT_AUTHORIZED_HEADER = "sno=bb61&subject=C=BE,O=org,CN=common name not exists&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String CLIENT_CERT_VALID_HEADER = "sno=bb66&subject=C=BE,O=org,CN=common name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String CLIENT_CERT_VALID_HEADER_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=common name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String TEST_USERNAME_CLIENT_CERT = "CN=common name,O=org,C=BE:000000000000bb66";
+    public static final String CLIENT_CERT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=CN=common name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
+    public static final String TEST_USERNAME_CLIENT_CERT__DB_UPPER_SN = "CN=common name UPPER database SN,O=org,C=BE:000000000000bb66";
+    public static final String CLIENT_CERT_NOT_AUTHORIZED_HEADER = "sno=bb61&subject=C=BE,O=org,CN=common name not exists&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
 
     @Autowired
     private WebApplicationContext context;
-
     MockMvc mvc;
 
     @Before
-    public void setup() {
-
+    public void setup() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
@@ -84,7 +84,7 @@ public class SecurityConfigurationTest {
         mvc.perform(MockMvcRequestBuilders.get(RETURN_LOGGED_USER_PATH)
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("anonymousUser"));
+                .andExpect(content().string(containsString("anonymousUser")));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class SecurityConfigurationTest {
                 .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(TEST_USERNAME_DB_HASHED_PASS));
+                .andExpect(content().string(containsString(TEST_USERNAME_DB_HASHED_PASS)));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class SecurityConfigurationTest {
 
 
     @Test(expected = BlueCoatParseException.class)
-    public void malformedBlueCoatHeaderNotAuthorizedTest() throws Exception {
+    public void malformedClientCertHeaderNotAuthorizedTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", "malformed header value");
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
@@ -140,20 +140,21 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void validBlueCoatHeaderAuthorizedForPutTest() throws Exception {
+    public void validClientCertHeaderAuthorizedForPutTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Client-Cert", BLUE_COAT_VALID_HEADER);
+        headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(TEST_USERNAME_BLUE_COAT))
+                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT)))
                 .andReturn().getResponse().getContentAsString();
     }
+
     @Test
-    public void blueCoatHeaderNotAuthorizedForPutTest() throws Exception {
+    public void ClientCertHeaderNotAuthorizedForPutTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Client-Cert", BLUE_COAT_NOT_AUTHORIZED_HEADER);
+        headers.add("Client-Cert", CLIENT_CERT_NOT_AUTHORIZED_HEADER);
 
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers).with(csrf()))
@@ -161,52 +162,52 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTest() throws Exception {
+    public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Client-Cert", BLUE_COAT_VALID_HEADER);
+        headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
                 .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
+                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT)));
     }
 
     @Test
-    public void validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTestUpper() throws Exception {
+    public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpper() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_UPPER_SN);
+        headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
                 .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
+                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT)));
     }
 
 
     @Test
-    public void validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTestDBUpperSN() throws Exception {
+    public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestDBUpperSN() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_DB_UPPER_SN);
+        headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
                 .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(TEST_USERNAME_BLUE_COAT__DB_UPPER_SN));
+                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT__DB_UPPER_SN)));
     }
 
     @Test
-    public void validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTestUpperDBUpperSN() throws Exception {
+    public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpperDBUpperSN() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Client-Cert", BLUE_COAT_VALID_HEADER_DB_UPPER_SN);
+        headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
                 .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(TEST_USERNAME_BLUE_COAT__DB_UPPER_SN));
+                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT__DB_UPPER_SN)));
     }
 
 

@@ -14,7 +14,7 @@ import {GlobalLookups} from "../global-lookups";
 import {ErrorStateMatcher} from "@angular/material/core";
 import {UserDetailsService} from "../../user/user-details-dialog/user-details.service";
 import {CertificateRo} from "../../user/certificate-ro.model";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../alert-message/alert-message.service";
 import {ErrorResponseRO} from "../error/error-model";
 
 @Component({
@@ -38,7 +38,7 @@ export class PasswordChangeDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: User,
     private lookups: GlobalLookups,
     private userDetailsService: UserDetailsService,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     private fb: FormBuilder
   ) {
     this.current = {...data}

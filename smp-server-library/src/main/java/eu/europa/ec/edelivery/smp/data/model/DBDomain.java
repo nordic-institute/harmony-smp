@@ -82,11 +82,6 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "Signature key alias used for SML integration")
     String signatureKeyAlias;
 
-    @Column(name = "CREATED_ON", nullable = false)
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    LocalDateTime lastUpdatedOn;
-
     @Column(name = "SML_REGISTERED", nullable = false)
     @ColumnDescription(comment = "Flag for: Is domain registered in SML")
     private boolean smlRegistered = false;
@@ -94,10 +89,6 @@ public class DBDomain extends BaseEntity {
     @Column(name = "SML_BLUE_COAT_AUTH", nullable = false)
     @ColumnDescription(comment = "Flag for SML authentication type - use CLientCert header or  HTTPS ClientCertificate (key)")
     private boolean smlBlueCoatAuth = false;
-
-    public DBDomain() {
-
-    }
 
     @Override
     public Long getId() {
@@ -178,36 +169,5 @@ public class DBDomain extends BaseEntity {
 
     public void setSmlBlueCoatAuth(boolean smlBlueCoatAuth) {
         this.smlBlueCoatAuth = smlBlueCoatAuth;
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
     }
 }

@@ -73,7 +73,6 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
                 upd.setDomainCode(dRo.getDomainCode());
                 upd.setSignatureKeyAlias(dRo.getSignatureKeyAlias());
                 upd.setSmlBlueCoatAuth(dRo.isSmlBlueCoatAuth());
-                upd.setLastUpdatedOn(LocalDateTime.now());
                 domainDao.update(upd);
             } else if (dRo.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
                 domainDao.removeByDomainCode(dRo.getDomainCode());

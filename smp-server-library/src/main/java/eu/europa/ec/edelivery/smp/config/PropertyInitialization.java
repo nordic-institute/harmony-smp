@@ -403,8 +403,6 @@ public class PropertyInitialization {
         dcnew.setProperty(key);
         dcnew.setDescription(desc);
         dcnew.setValue(value);
-        dcnew.setLastUpdatedOn(LocalDateTime.now());
-        dcnew.setCreatedOn(LocalDateTime.now());
         return dcnew;
     }
 

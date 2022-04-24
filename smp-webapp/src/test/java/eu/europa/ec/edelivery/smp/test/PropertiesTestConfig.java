@@ -11,8 +11,9 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
+package eu.europa.ec.edelivery.smp.test;
 
+import eu.europa.ec.edelivery.smp.config.PropertiesConfig;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
@@ -28,7 +29,9 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
         @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
         @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
-@ComponentScan(basePackages = "eu.europa.ec.edelivery.smp")
+@ComponentScan(basePackages = "eu.europa.ec.edelivery.smp",
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = PropertiesConfig.class)})
 public class PropertiesTestConfig {
 
     @Bean
@@ -44,9 +47,10 @@ public class PropertiesTestConfig {
         localProps.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         localProps.setProperty("spring.jpa.generate-ddl", "true");
         localProps.setProperty("spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
-        localProps.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
-        localProps.setProperty(BLUE_COAT_ENABLED.getProperty(), "true");
 
+        localProps.setProperty("configuration.dir", "./target/");
+
+        localProps.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
         // even thought keystore is generated but secure password generation can be very slow on some server
         // create test password..
         localProps.setProperty(KEYSTORE_PASSWORD.getProperty(), "{DEC}{test123}");

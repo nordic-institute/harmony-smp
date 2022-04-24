@@ -33,8 +33,8 @@ import {HttpEventService} from './http/http-event.service';
 import {SecurityService} from './security/security.service';
 import {SecurityEventService} from './security/security-event.service';
 import {DomainService} from './security/domain.service';
-import {AlertComponent} from './alert/alert.component';
-import {AlertService} from './alert/alert.service';
+import {AlertMessageComponent} from './common/alert-message/alert-message.component';
+import {AlertMessageService} from './common/alert-message/alert-message.service';
 
 import {FooterComponent} from './footer/footer.component';
 import {SmpInfoService} from './app-info/smp-info.service';
@@ -83,6 +83,10 @@ import {TruststoreService} from "./user/truststore.service";
 import {SmlIntegrationService} from "./domain/sml-integration.service";
 import {PasswordChangeDialogComponent} from "./common/password-change-dialog/password-change-dialog.component";
 import {AccessTokenGenerationDialogComponent} from "./common/access-token-generation-dialog/access-token-generation-dialog.component";
+import {AlertComponent} from "./alert/alert.component";
+import {PropertyComponent} from "./property/property.component";
+import {PropertyDetailsDialogComponent} from "./property/property-details-dialog/property-details-dialog.component";
+import {MatCheckbox, MatCheckboxModule} from "@angular/material/checkbox";
 
 
 @NgModule({
@@ -92,10 +96,13 @@ import {AccessTokenGenerationDialogComponent} from "./common/access-token-genera
     HomeComponent,
     ServiceGroupEditComponent,
     ServiceGroupSearchComponent,
+    AlertComponent,
+    PropertyComponent,
+    PropertyDetailsDialogComponent,
     DomainComponent,
     DomainDetailsDialogComponent,
     UserComponent,
-    AlertComponent,
+    AlertMessageComponent,
     FooterComponent,
     SpinnerComponent,
     IsAuthorized,
@@ -140,6 +147,7 @@ import {AccessTokenGenerationDialogComponent} from "./common/access-token-genera
     NgxDatatableModule,
     MatButtonModule,
     MatCardModule,
+    MatCheckboxModule,
     MatDatepickerModule,
     MatDialogModule,
     MatTooltipModule,
@@ -168,7 +176,7 @@ import {AccessTokenGenerationDialogComponent} from "./common/access-token-genera
     SecurityEventService,
     DomainService,
     SmpInfoService,
-    AlertService,
+    AlertMessageService,
     DownloadService,
     CertificateService,
     KeystoreService,
