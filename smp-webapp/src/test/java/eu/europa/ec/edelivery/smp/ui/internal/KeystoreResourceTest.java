@@ -2,13 +2,12 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
-import eu.europa.ec.edelivery.smp.data.ui.*;
+import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
+import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,8 +16,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,38 +27,30 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_KEYSTORE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        WSSecurityConfigurerAdapter.class})
+@RunWith(SpringRunner.class)
 @WebAppConfiguration
-@SqlConfig(encoding = "UTF-8")
-@Sql(scripts = {"classpath:cleanup-database.sql",
-        "classpath:webapp_integration_test_data.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data.sql"},
+        executionPhase = BEFORE_TEST_METHOD)
 public class KeystoreResourceTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
-    Path keystore = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
+    Path keystore = Paths.get("src", "test", "resources", "keystores", "smp-keystore.jks");
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -116,7 +106,7 @@ public class KeystoreResourceTest {
     @Test
     public void uploadKeystoreFailed() throws Exception {
         // given when
-        MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/test123")
+        MvcResult result = mvc.perform(post(PATH + "/3/upload/JKS/test123")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .content("invalid keystore")).
@@ -134,10 +124,10 @@ public class KeystoreResourceTest {
     public void uploadKeystoreInvalidPassword() throws Exception {
 
         // given when
-        MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/NewPassword1234")
+        MvcResult result = mvc.perform(post(PATH + "/3/upload/JKS/NewPassword1234")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
-                .content(Files.readAllBytes(keystore)) )
+                .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
 
         //them
@@ -153,10 +143,10 @@ public class KeystoreResourceTest {
 
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         // given when
-        MvcResult result = mvc.perform(post(PATH+"/3/upload/JKS/test123")
+        MvcResult result = mvc.perform(post(PATH + "/3/upload/JKS/test123")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
-                .content(Files.readAllBytes(keystore)) )
+                .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
 
         //them
@@ -165,7 +155,7 @@ public class KeystoreResourceTest {
 
         assertNotNull(res);
         assertNull(res.getErrorMessage());
-        assertEquals(countStart+1, uiKeystoreService.getKeystoreEntriesList().size());
+        assertEquals(countStart + 1, uiKeystoreService.getKeystoreEntriesList().size());
     }
 
     @Test
@@ -173,10 +163,10 @@ public class KeystoreResourceTest {
 
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         // given when
-        MvcResult result = mvc.perform(delete(PATH+"/3/delete/second_domain_alias")
+        MvcResult result = mvc.perform(delete(PATH + "/3/delete/second_domain_alias")
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
-                .content(Files.readAllBytes(keystore)) )
+                .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
 
         //them
@@ -185,7 +175,7 @@ public class KeystoreResourceTest {
 
         assertNotNull(res);
         assertNull(res.getErrorMessage());
-        assertEquals(countStart-1, uiKeystoreService.getKeystoreEntriesList().size());
+        assertEquals(countStart - 1, uiKeystoreService.getKeystoreEntriesList().size());
     }
 
 }

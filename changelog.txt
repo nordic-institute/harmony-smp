@@ -20,8 +20,10 @@ eDelivery SMP 4.2
     smp.sso.cas.token.validation.groups:  The '|' separated CAS groups user must belong to.
     smp.http.httpStrictTransportSecurity.maxAge: How long(in seconds) HSTS should last in the browser's cache(default one year)
     smp.http.header.security.policy: Http header content security policy
+    contextPath.output - added now as database configuration option
+    smp.cluster.enabled: if smp is deployed on cluster. If property is not enabled then all properties are refreshed on SetProperty. Otherwise properties are refreshed by cron task for all nodes at the same time
 
- - removed deprecated properties
+- removed deprecated properties
     bdmsl.integration.keystore.password
     bdmsl.integration.keystore.path
     xmldsig.keystore.password
@@ -30,5 +32,7 @@ eDelivery SMP 4.2
     bdmsl.integration.proxy.port
     bdmsl.integration.proxy.user
     bdmsl.integration.proxy.password
+
+- added new table SMP_ALERT
 
     

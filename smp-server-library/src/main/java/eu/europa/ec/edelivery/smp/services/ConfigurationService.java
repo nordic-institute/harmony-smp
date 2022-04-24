@@ -11,7 +11,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -38,34 +37,6 @@ public class ConfigurationService {
         this.configurationDAO = configurationDAO;
     }
 
-    public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
-        LOG.info("Save property [{}] with value [{}] and desc [{}]", key,
-                (key.isEncrypted()? value:ENCRYPTED_LOG_VALUE), description);
-
-        String finalValue = StringUtils.trimToNull(value);
-        if (finalValue == null) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Property: " + key.getProperty() + " cannot be null or empty!");
-        }
-
-        if (!PropertyUtils.isValidProperty(key, value)) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, key.getPropertyType().getErrorMessage(key.getProperty()));
-        }
-        if (Objects.equals(key.getPropertyType(), SMPPropertyTypeEnum.BOOLEAN)) {
-            finalValue = finalValue.toLowerCase();
-        }
-
-        // encrypt file
-        if (key.isEncrypted() && !StringUtils.isEmpty(value)) {
-            File file = (File) configurationDAO.getCachedPropertyValue(ENCRYPTION_FILENAME);
-            finalValue = configurationDAO.encryptString(key, value, file);
-
-        }
-        DBConfiguration res = configurationDAO.setPropertyToDatabase(key, finalValue, description);
-        if (key.isEncrypted()) {
-            res.setValue(ENCRYPTED_LOG_VALUE);
-        }
-        return res;
-    }
 
     public Pattern getParticipantIdentifierSchemeRexExp() {
         return (Pattern) configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP);
@@ -173,6 +144,11 @@ public class ConfigurationService {
         return value == null || value;
     }
 
+    public boolean encodedSlashesAllowedInUrl() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(ENCODED_SLASHES_ALLOWED_IN_URL);
+        // by default is true - return false only in case is declared in configuration
+        return value == null || value;
+    }
     public String getSMLIntegrationSMPLogicalAddress() {
         return configurationDAO.getCachedProperty(SML_LOGICAL_ADDRESS);
     }
@@ -188,7 +164,7 @@ public class ConfigurationService {
     }
 
     public boolean isAuthenticationWithClientCertHeaderEnabled() {
-        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SMPPropertyEnum.BLUE_COAT_ENABLED);
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED);
         // by default is not forced -> if missing is false!
         return value != null && value;
     }

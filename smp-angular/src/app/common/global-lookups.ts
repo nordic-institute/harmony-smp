@@ -5,7 +5,7 @@ import {SmpConstants} from "../smp.constants";
 import {Observable} from "rxjs/internal/Observable";
 import {SecurityService} from "../security/security.service";
 import {Role} from "../security/role.model";
-import {AlertService} from "../alert/alert.service";
+import {AlertMessageService} from "./alert-message/alert-message.service";
 import {Subscription} from "rxjs/internal/Subscription";
 import {SmpInfo} from "../app-info/smp-info.model";
 import {SmpConfig} from "../app-config/smp-config.model";
@@ -36,7 +36,7 @@ export class GlobalLookups implements OnInit {
   logoutSubscription: Subscription;
 
 
-  constructor(protected alertService: AlertService,
+  constructor(protected alertService: AlertMessageService,
               protected securityService: SecurityService,
               protected http: HttpClient,
               private securityEventService: SecurityEventService) {
@@ -85,8 +85,10 @@ export class GlobalLookups implements OnInit {
   }
 
   public refreshApplicationConfiguration() {
+    console.log("Refresh application configuration ")
     // check if authenticated
     this.securityService.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
+      console.log("Refresh application configuration is authenticated " + isAuthenticated)
       if (isAuthenticated) {
         this.http.get<SmpConfig>(SmpConstants.REST_INTERNAL_APPLICATION_CONFIG)
           .subscribe((res: SmpConfig) => {

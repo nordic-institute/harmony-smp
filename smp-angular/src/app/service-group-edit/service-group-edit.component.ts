@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {AlertService} from '../alert/alert.service';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {ServiceGroupEditController} from './service-group-edit-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
@@ -31,7 +31,7 @@ export class ServiceGroupEditComponent implements OnInit {
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
               protected http: HttpClient,
-              protected alertService: AlertService,
+              protected alertService: AlertMessageService,
               public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef) {
 

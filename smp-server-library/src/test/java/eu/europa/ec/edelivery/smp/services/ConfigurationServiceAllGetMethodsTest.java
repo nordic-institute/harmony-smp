@@ -2,16 +2,12 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
-import org.springframework.beans.BeanUtils;
 
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -48,7 +44,7 @@ public class ConfigurationServiceAllGetMethodsTest {
     public static Collection<Object[]> data() {
         // set property values for property, set value, method name, value or property, value (true) or property (false)
         return Arrays.asList(new Object[][] {
-                {BLUE_COAT_ENABLED, Boolean.TRUE, "isAuthenticationWithClientCertHeaderEnabled", true},
+                {CLIENT_CERT_HEADER_ENABLED, Boolean.TRUE, "isAuthenticationWithClientCertHeaderEnabled", true},
                 {OUTPUT_CONTEXT_PATH, Boolean.FALSE, "isUrlContextEnabled", true},
                 //{HTTP_FORWARDED_HEADERS_ENABLED, Boolean.TRUE, "", true},
                 {HTTP_HSTS_MAX_AGE, 1234, "getHttpHeaderHstsMaxAge", true},

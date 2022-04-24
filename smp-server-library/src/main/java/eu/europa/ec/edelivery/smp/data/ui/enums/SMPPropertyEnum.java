@@ -3,16 +3,20 @@ package eu.europa.ec.edelivery.smp.data.ui.enums;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum.*;
 
 public enum SMPPropertyEnum {
-    BLUE_COAT_ENABLED("authentication.blueCoat.enabled", "false", "Authentication with Blue Coat means that all HTTP requests " +
+    CLIENT_CERT_HEADER_ENABLED("authentication.blueCoat.enabled", "false", "Authentication with Blue Coat means that all HTTP requests " +
             "having 'Client-Cert' header will be authenticated as username placed in the header.Never expose SMP to the WEB " +
             "without properly configured reverse-proxy and active blue coat.", false, false, false, BOOLEAN),
 
     OUTPUT_CONTEXT_PATH("contextPath.output", "true", "This property controls pattern of URLs produced by SMP in GET ServiceGroup responses.", true, false, true, BOOLEAN),
+    ENCODED_SLASHES_ALLOWED_IN_URL("encodedSlashesAllowedInUrl", "true", "Allow encoded slashes in context path. Set to true if slashes are are part of identifiers.", false, false, true, BOOLEAN),
+
     HTTP_FORWARDED_HEADERS_ENABLED("smp.http.forwarded.headers.enabled", "false", "Use (value true) or remove (value false) forwarded headers! There are security considerations for forwarded headers since an application cannot know if the headers were added by a proxy, as intended, or by a malicious client.", false, false, false, BOOLEAN),
     HTTP_HSTS_MAX_AGE("smp.http.httpStrictTransportSecurity.maxAge", "31536000", "How long(in seconds) HSTS should last in the browser's cache(default one year)", false, false, true, INTEGER),
     HTTP_HEADER_SEC_POLICY("smp.http.header.security.policy", "default-src 'self'; script-src 'self'; child-src 'none'; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'; form-action 'self';", "Content Security Policy (CSP)", false, false, true, STRING),
@@ -57,6 +61,7 @@ public enum SMPPropertyEnum {
     UI_COOKIE_SESSION_PATH("smp.ui.session.path", "", "A path that must exist in the requested URL, or the browser won't send the Cookie header.  Null/Empty value sets the authentication requests context by default. The forward slash (/) character is interpreted as a directory separator, and subdirectories will be matched as well: for Path=/docs, /docs, /docs/Web/, and /docs/Web/HTTP will all match", false, false, false, STRING),
     UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN("smp.ui.session.idle_timeout.admin", "300", "Specifies the time, in seconds, between client requests before the SMP will invalidate session for ADMIN users (System)!", false, false, false, INTEGER),
     UI_COOKIE_SESSION_IDLE_TIMEOUT_USER("smp.ui.session.idle_timeout.user", "1800", "Specifies the time, in seconds, between client requests before the SMP will invalidate session for users (Service group, SMP Admin)", false, false, false, INTEGER),
+    SMP_CLUSTER_ENABLED("smp.cluster.enabled", "false", "Define if application is set in cluster. In not cluster environment, properties are updated on setProperty.", false, false,false, BOOLEAN),
 
     PASSWORD_POLICY_REGULAR_EXPRESSION("smp.passwordPolicy.validationRegex","^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,32}$",
             "Password minimum complexity rules!", false, false,false, REGEXP),
@@ -89,6 +94,13 @@ public enum SMPPropertyEnum {
     SSO_CAS_TOKEN_VALIDATION_URLPATH("smp.sso.cas.token.validation.urlpath", "http://localhost:8080/cas/", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.token.validation}.", false, false, true, STRING),
     SSO_CAS_TOKEN_VALIDATION_PARAMS("smp.sso.cas.token.validation.params", "acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP", "The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'", false, false, true, MAP_STRING),
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.", false, false, true, LIST_STRING),
+
+    MAIL_SERVER_HOST("mail.smtp.host", "mail.server.com", "Email server - configuration for submitting the emails.", false,false, false, STRING),
+    MAIL_SERVER_PORT("mail.smtp.port", "25", "Smtp mail port - configuration for submitting the emails.", false,false, false,INTEGER),
+    MAIL_SERVER_PROTOCOL("mail.smtp.protocol", "smtp", "smtp mail protocol- configuration for submitting the emails.", false,false,false, STRING),
+    MAIL_SERVER_USERNAME("mail.smtp.username", "", "smtp mail protocol- username for submitting the emails.", false,false,false, STRING),
+    MAIL_SERVER_PASSWORD("mail.smtp.password", "", "smtp mail protocol - encrypted password for submitting the emails.", false,true,false, STRING),
+    MAIL_SERVER_PROPERTIES("mail.smtp.properties", "", " key:value properties separated with '|'.Ex: mail.smtp.auth:true|mail.smtp.starttls.enable:true|mail.smtp.quitwait:false.", false, false,false, MAP_STRING),
     ;
 
 
@@ -127,6 +139,10 @@ public enum SMPPropertyEnum {
         return isEncrypted;
     }
 
+    public boolean isRestartNeeded() {
+        return restartNeeded;
+    }
+
     public boolean isMandatory() {
         return isMandatory;
     }
@@ -141,6 +157,10 @@ public enum SMPPropertyEnum {
             return Optional.empty();
         }
         return Arrays.asList(values()).stream().filter(val -> val.getProperty().equalsIgnoreCase(keyTrim)).findAny();
+    }
+
+    public static List<SMPPropertyEnum> getRestartOnChangeProperties() {
+        return Arrays.asList(values()).stream().filter(val -> val.isRestartNeeded()).collect(Collectors.toList());
     }
 }
 

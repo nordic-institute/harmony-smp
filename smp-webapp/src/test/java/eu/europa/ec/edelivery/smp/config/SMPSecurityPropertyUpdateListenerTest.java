@@ -1,42 +1,69 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
-import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.config.properties.SMPSecurityPropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static org.junit.Assert.*;
+
 public class SMPSecurityPropertyUpdateListenerTest {
 
 
-
-    ClientCertAuthenticationFilter ClientCertAuthenticationFilter = Mockito.mock(ClientCertAuthenticationFilter.class);
-    ConfigurationDao configurationDao = Mockito.mock(ConfigurationDao.class);
+    WSSecurityConfigurerAdapter wsSecurityConfigurerAdapter = Mockito.mock(WSSecurityConfigurerAdapter.class);
     ForwardedHeaderTransformer forwardedHeaderTransformer = Mockito.mock(ForwardedHeaderTransformer.class);
-    SMPSecurityPropertyUpdateListener testInstance = new SMPSecurityPropertyUpdateListener(ClientCertAuthenticationFilter,configurationDao,forwardedHeaderTransformer );
+    SMPSecurityPropertyUpdateListener testInstance = new SMPSecurityPropertyUpdateListener(wsSecurityConfigurerAdapter, forwardedHeaderTransformer);
 
     @Test
-    public void testInit() {
-        testInstance.init();
-        Mockito.verify(configurationDao, Mockito.times(1)).addPropertyUpdateListener(testInstance);
+    public void testPropertiesUpdateClientCertTrue() {
+        Map<SMPPropertyEnum, Object> prop = new HashMap();
+        prop.put(CLIENT_CERT_HEADER_ENABLED, TRUE);
+        testInstance.updateProperties(prop);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setClientCertAuthenticationEnabled(true);
+        Mockito.verify(forwardedHeaderTransformer, Mockito.times(0)).setRemoveOnly(false);
     }
 
     @Test
-    public void propertiesUpdateTrue() {
-        Mockito.doReturn(Boolean.TRUE ).when(configurationDao).getCachedPropertyValue(SMPPropertyEnum.BLUE_COAT_ENABLED);
-        Mockito.doReturn(Boolean.TRUE ).when(configurationDao).getCachedPropertyValue(SMPPropertyEnum.HTTP_FORWARDED_HEADERS_ENABLED);
-        testInstance.propertiesUpdate();
-        Mockito.verify(ClientCertAuthenticationFilter, Mockito.times(1)).setClientCertAuthenticationEnabled(true);
+    public void testPropertiesUpdateForwardedHeadersTrue() {
+        Map<SMPPropertyEnum, Object> prop = new HashMap();
+        prop.put(HTTP_FORWARDED_HEADERS_ENABLED, TRUE);
+        testInstance.updateProperties(prop);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setClientCertAuthenticationEnabled(true);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(false);
     }
 
     @Test
-    public void propertiesUpdateFalse() {
-        Mockito.doReturn(Boolean.FALSE ).when(configurationDao).getCachedPropertyValue(SMPPropertyEnum.BLUE_COAT_ENABLED);
-        Mockito.doReturn(Boolean.FALSE ).when(configurationDao).getCachedPropertyValue(SMPPropertyEnum.HTTP_FORWARDED_HEADERS_ENABLED);
-        testInstance.propertiesUpdate();
-        Mockito.verify(ClientCertAuthenticationFilter, Mockito.times(1)).setClientCertAuthenticationEnabled(false);
+    public void testPropertiesUpdateFalse() {
+        Map<SMPPropertyEnum, Object> prop = new HashMap();
+        prop.put(CLIENT_CERT_HEADER_ENABLED, FALSE);
+        prop.put(HTTP_FORWARDED_HEADERS_ENABLED, FALSE);
+        testInstance.updateProperties(prop);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setClientCertAuthenticationEnabled(false);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(true);
+    }
+
+    @Test
+    public void testHandledProperties() {
+        Map<SMPPropertyEnum, Object> prop = new HashMap();
+        List<SMPPropertyEnum> result = testInstance.handledProperties();
+        assertEquals(2, result.size());
+        assertTrue(result.contains(CLIENT_CERT_HEADER_ENABLED));
+        assertTrue(result.contains(HTTP_FORWARDED_HEADERS_ENABLED));
+    }
+
+    @Test
+    public void testHandleProperty() {
+        boolean resultTrue = testInstance.handlesProperty(HTTP_FORWARDED_HEADERS_ENABLED);
+        assertTrue(resultTrue);
+        boolean resultFalse = testInstance.handlesProperty(HTTP_PROXY_HOST);
+        assertFalse(resultFalse);
     }
 }

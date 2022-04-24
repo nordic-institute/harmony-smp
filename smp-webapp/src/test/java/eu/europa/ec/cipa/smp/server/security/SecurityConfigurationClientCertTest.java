@@ -14,8 +14,8 @@
 package eu.europa.ec.cipa.smp.server.security;
 
 
-import eu.europa.ec.edelivery.smp.config.*;
-import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -40,7 +40,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,18 +51,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(Parameterized.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        DatabaseConfig.class,
-        WSSecurityConfigurerAdapter.class,
-        SpringSecurityTestConfig.class
-})
 @WebAppConfiguration
-@Sql(scripts = {"classpath:/cleanup-database.sql",
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
-        statements = "insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('authentication.blueCoat.enabled', 'true',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());")
+        executionPhase = BEFORE_TEST_METHOD)
 public class SecurityConfigurationClientCertTest {
 
     //Jul++9+23:59:00+2019+GMT"
@@ -120,12 +116,10 @@ public class SecurityConfigurationClientCertTest {
                 },
                 {
                         "Test with Utf8 chars - in url encoded",
-                        "CN=GRP:TEST_\\+\\,& \\=eau!,O=European Commission,C=BE:0000000000001234",
+                        "CN=GRP:TEST_\\\\+\\\\,& \\\\=eau!,O=European Commission,C=BE:0000000000001234",
                         "C%3DBE%2C+O%3DEuropean+Commission%2C+OU%3DCEF_eDelivery.europa.eu%2C+OU%3Dtestabc%2C+OU%3DSMP%2C+CN%3DGRP%3ATEST_%2B%2C%26+%3D%5CxC3%5CxA9%5CxC3%5CxA1%5CxC5%5CxB1%21%2FemailAddress%3DCEF-EDELIVERY-SUPPORT%40ec.europa.eu",
                         "1234",
                 },
-
-
                 {
                         "Issue test one",
                         "CN=ncp.fi.ehealth.testa.eu,O=Kansanelakelaitos,C=FI:f71ee8b11cb3b787",
@@ -153,9 +147,7 @@ public class SecurityConfigurationClientCertTest {
     @Autowired
     private WebApplicationContext context;
 
-
     MockMvc mvc;
-
 
     @Before
     public void setup() throws IOException {
@@ -178,7 +170,7 @@ public class SecurityConfigurationClientCertTest {
     public String serialNumber;
 
     @Test
-    public void validBlueCoatHeaderAuthorizedForPutTest() throws Exception {
+    public void validClientCertHeaderAuthorizedForPutTest() throws Exception {
         System.out.println("Test: " + testName);
         String clientCert = buildClientCert(serialNumber, certificateDn);
         System.out.println("Client-Cert: " + clientCert);
@@ -188,7 +180,7 @@ public class SecurityConfigurationClientCertTest {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers).with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(expectedCertificateId))
+                .andExpect(content().string(containsString(expectedCertificateId)))
                 .andReturn().getResponse().getContentAsString();
     }
 

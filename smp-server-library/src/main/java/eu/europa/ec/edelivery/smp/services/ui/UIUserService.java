@@ -238,7 +238,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 dbCertificate.setSubject(certificateRO.getSubject());
                 dbCertificate.setIssuer(certificateRO.getIssuer());
             }
-            dbUser.setLastUpdatedOn(LocalDateTime.now());
             userDao.update(dbUser);
         } else if (userRO.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
             userDao.removeById(dbUser.getId());

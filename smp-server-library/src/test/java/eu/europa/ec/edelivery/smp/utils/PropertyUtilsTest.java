@@ -44,7 +44,7 @@ public class PropertyUtilsTest {
     private static final Object[] testParsePropertiesToType() {
         return new Object[][]{
 
-                {BLUE_COAT_ENABLED, "true", Boolean.class},
+                {CLIENT_CERT_HEADER_ENABLED, "true", Boolean.class},
                 {OUTPUT_CONTEXT_PATH, "true", Boolean.class},
                 {PARTC_SCH_REGEXP, ".*", Pattern.class},
                 {CS_PARTICIPANTS, "casesensitive-participant-scheme1|casesensitive-participant-scheme2", List.class},

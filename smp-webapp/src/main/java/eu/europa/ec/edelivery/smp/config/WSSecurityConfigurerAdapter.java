@@ -18,15 +18,16 @@ import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SMPSecurityExceptionHandler;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,6 +51,7 @@ import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.*;
 
 /**
  * SMP Security configuration
+ *
  * @author gutowpa
  * @since 3.0
  */
@@ -60,9 +62,6 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(WSSecurityConfigurerAdapter.class);
 
     SMPAuthenticationProvider smpAuthenticationProvider;
-    // Accounts supporting automated application functionalities
-    ClientCertAuthenticationFilter clientCertAuthenticationFilter;
-    EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
     MDCLogRequestFilter mdcLogRequestFilter;
 
     CsrfTokenRepository csrfTokenRepository;
@@ -70,16 +69,13 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     RequestMatcher csrfURLMatcher;
     ConfigurationService configurationService;
 
-    @Value("${authentication.blueCoat.enabled:false}")
-    boolean clientCertEnabled;
-    @Value("${encodedSlashesAllowedInUrl:true}")
-    boolean encodedSlashesAllowedInUrl;
+    // Accounts supporting automated application functionalities
+    ClientCertAuthenticationFilter clientCertAuthenticationFilter;
+    EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
 
     @Autowired
     public WSSecurityConfigurerAdapter(SMPAuthenticationProvider smpAuthenticationProvider,
                                        ConfigurationService configurationService,
-                                       @Lazy ClientCertAuthenticationFilter clientCertAuthenticationFilter,
-                                       @Lazy EDeliveryX509AuthenticationFilter x509AuthenticationFilter,
                                        @Lazy MDCLogRequestFilter mdcLogRequestFilter,
                                        @Lazy CsrfTokenRepository csrfTokenRepository,
                                        @Lazy RequestMatcher csrfURLMatcher,
@@ -88,8 +84,6 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         super(false);
         this.configurationService = configurationService;
         this.smpAuthenticationProvider = smpAuthenticationProvider;
-        this.clientCertAuthenticationFilter = clientCertAuthenticationFilter;
-        this.x509AuthenticationFilter = x509AuthenticationFilter;
         this.mdcLogRequestFilter = mdcLogRequestFilter;
         this.csrfTokenRepository = csrfTokenRepository;
         this.csrfURLMatcher = csrfURLMatcher;
@@ -116,8 +110,8 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
         httpSecurity
                 .addFilterAfter(mdcLogRequestFilter, EDeliveryX509AuthenticationFilter.class)
-                .addFilter(clientCertAuthenticationFilter)
-                .addFilter(x509AuthenticationFilter)
+                .addFilter(getClientCertAuthenticationFilter())
+                .addFilter(getEDeliveryX509AuthenticationFilter())
                 .httpBasic().authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests()
@@ -190,6 +184,7 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    @Primary
     @Bean(name = {BeanIds.AUTHENTICATION_MANAGER, SMP_AUTHENTICATION_MANAGER_BEAN})
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
@@ -198,23 +193,37 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     @Bean
     public HttpFirewall smpHttpFirewall() {
         DefaultHttpFirewall firewall = new DefaultHttpFirewall();
-        firewall.setAllowUrlEncodedSlash(encodedSlashesAllowedInUrl);
+        firewall.setAllowUrlEncodedSlash(configurationService.encodedSlashesAllowedInUrl());
         return firewall;
     }
 
-    @Bean
-    public ClientCertAuthenticationFilter getClientCertAuthenticationFilter(@Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager) {
-        ClientCertAuthenticationFilter ClientCertAuthenticationFilter = new ClientCertAuthenticationFilter();
-        ClientCertAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        ClientCertAuthenticationFilter.setClientCertAuthenticationEnabled(clientCertEnabled);
-        return ClientCertAuthenticationFilter;
+
+    public ClientCertAuthenticationFilter getClientCertAuthenticationFilter() throws Exception {
+        if (clientCertAuthenticationFilter == null) {
+            clientCertAuthenticationFilter = new ClientCertAuthenticationFilter();
+            clientCertAuthenticationFilter.setAuthenticationManager(authenticationManager());
+            clientCertAuthenticationFilter.setClientCertAuthenticationEnabled(configurationService.isAuthenticationWithClientCertHeaderEnabled());
+        }
+        return clientCertAuthenticationFilter;
     }
 
-    @Bean
-    public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter(@Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager) {
-        EDeliveryX509AuthenticationFilter x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
-        x509AuthenticationFilter.setAuthenticationManager(authenticationManager);
+
+    public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter() throws Exception {
+        if (x509AuthenticationFilter == null) {
+            x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
+            x509AuthenticationFilter.setAuthenticationManager(authenticationManager());
+
+        }
         return x509AuthenticationFilter;
+    }
+
+
+    public void setClientCertAuthenticationEnabled(boolean clientCertEnabled) {
+        try {
+            getClientCertAuthenticationFilter().setClientCertAuthenticationEnabled(clientCertEnabled);
+        } catch (Exception e) {
+            new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + clientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
+        }
     }
 
 

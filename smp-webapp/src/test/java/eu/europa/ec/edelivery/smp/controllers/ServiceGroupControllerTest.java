@@ -13,9 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.edelivery.smp.config.*;
-import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +23,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -37,7 +35,6 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
 import java.io.IOException;
 
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.*;
@@ -45,6 +42,7 @@ import static java.lang.String.format;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,19 +50,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by gutowpa on 02/08/2017.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        WSSecurityConfigurerAdapter.class,
-        UIKeystoreService.class,
-        ForwardedHeaderTransformer.class
-})
+@RunWith(SpringRunner.class)
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
-@SqlConfig(encoding = "UTF-8")
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data.sql"},
+        executionPhase = BEFORE_TEST_METHOD)
 public class ServiceGroupControllerTest {
 
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
@@ -204,7 +196,7 @@ public class ServiceGroupControllerTest {
                         "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
                         "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
                         "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
                         "</ServiceMetadataReferenceCollection></ServiceGroup>"));
     }
 
@@ -222,7 +214,7 @@ public class ServiceGroupControllerTest {
                         "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
                         "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
                         "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
                         "</ServiceMetadataReferenceCollection></ServiceGroup>"));
     }
 
@@ -240,7 +232,7 @@ public class ServiceGroupControllerTest {
                         "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
                         "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
                         "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
                         "</ServiceMetadataReferenceCollection></ServiceGroup>"));
     }
 
@@ -259,7 +251,7 @@ public class ServiceGroupControllerTest {
                         "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
                         "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
                         "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
                         "</ServiceMetadataReferenceCollection></ServiceGroup>"));
     }
 
@@ -278,9 +270,10 @@ public class ServiceGroupControllerTest {
                         "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
                         "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
                         "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
                         "</ServiceMetadataReferenceCollection></ServiceGroup>"));
     }
+
     @Test
     public void getExistingServiceMetadatWithReverseProxySkipDefaultPortHttp() throws Exception {
         //given
@@ -296,7 +289,7 @@ public class ServiceGroupControllerTest {
                         "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
                         "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
                         "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
                         "</ServiceMetadataReferenceCollection></ServiceGroup>"));
     }
 
@@ -315,7 +308,7 @@ public class ServiceGroupControllerTest {
                         "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
                         "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
                         "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
                         "</ServiceMetadataReferenceCollection></ServiceGroup>"));
     }
 

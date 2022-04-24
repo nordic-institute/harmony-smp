@@ -1,4 +1,17 @@
-﻿<div *ngIf="message" [ngClass]="{ 'alert': message, 'alert-success': message.type === 'success', 'alert-error': message.type === 'error' }" id="alertmessage_id">
-  <span class="closebtn" (click)="clearAlert()">&times;</span>
-  {{message.text}}
-</div>
+﻿<smp-search-table
+  #searchTable
+  page_id='alert_id'
+  [title]="'Alerts'"
+  [columnPicker]="columnPicker"
+  [url]="baseUrl"
+  [additionalToolButtons]="additionalToolButtons"
+  [searchTableController]="alertController"
+  [showSearchPanel]="false"
+  [filter]="filter"
+  [allowNewItems]="false"
+  [allowDeleteItems]="securityService.isCurrentUserSystemAdmin()"
+>
+  <ng-template #additionalToolButtons>
+    <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
+  </ng-template>
+</smp-search-table>
