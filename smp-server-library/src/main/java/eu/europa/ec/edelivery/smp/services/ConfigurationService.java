@@ -163,8 +163,14 @@ public class ConfigurationService {
         return value != null && value;
     }
 
-    public boolean isAuthenticationWithClientCertHeaderEnabled() {
-        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED);
+    public boolean isExternalTLSAuthenticationWithClientCertHeaderEnabled() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED);
+        // by default is not forced -> if missing is false!
+        return value != null && value;
+    }
+
+    public boolean isExternalTLSAuthenticationWithSSLClientCertHeaderEnabled() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED);
         // by default is not forced -> if missing is false!
         return value != null && value;
     }

@@ -13,11 +13,9 @@
 
 package eu.europa.ec.cipa.smp.server.security;
 
-import eu.europa.ec.edelivery.exception.BlueCoatParseException;
+import eu.europa.ec.edelivery.exception.ClientCertParseException;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
-import org.apache.commons.text.matcher.StringMatcher;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -130,7 +128,7 @@ public class SecurityConfigurationTest {
     }
 
 
-    @Test(expected = BlueCoatParseException.class)
+    @Test(expected = ClientCertParseException.class)
     public void malformedClientCertHeaderNotAuthorizedTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", "malformed header value");

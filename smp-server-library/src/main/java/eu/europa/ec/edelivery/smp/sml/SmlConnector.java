@@ -263,7 +263,7 @@ public class SmlConnector implements ApplicationContextAware {
     private IManageParticipantIdentifierWS getParticipantWSClient(DBDomain domain) {
 
         IManageParticipantIdentifierWS iManageServiceMetadataWS = ctx.getBean(IManageParticipantIdentifierWS.class, getSmlClientKeyAliasForDomain(domain),
-                domain.getSmlClientCertHeader(), domain.isSmlBlueCoatAuth());
+                domain.getSmlClientCertHeader(), domain.isSmlClientCertAuth());
         // configure connection
         configureClient(PARTICIPANT_IDENTIFIER_CONTEXT, iManageServiceMetadataWS, domain);
 
@@ -274,7 +274,7 @@ public class SmlConnector implements ApplicationContextAware {
 
 
         IManageServiceMetadataWS iManageServiceMetadataWS = ctx.getBean(IManageServiceMetadataWS.class,
-                getSmlClientKeyAliasForDomain(domain), domain.getSmlClientCertHeader(), domain.isSmlBlueCoatAuth());
+                getSmlClientKeyAliasForDomain(domain), domain.getSmlClientCertHeader(), domain.isSmlClientCertAuth());
         // configure value connection
         configureClient(SERVICE_METADATA_CONTEXT, iManageServiceMetadataWS, domain);
 
@@ -289,7 +289,7 @@ public class SmlConnector implements ApplicationContextAware {
 
     protected String getSmlClientKeyAliasForDomain(DBDomain domain) {
         String alias = domain.getSmlClientKeyAlias();
-        if (!domain.isSmlBlueCoatAuth() && StringUtils.isBlank(alias)) {
+        if (!domain.isSmlClientCertAuth() && StringUtils.isBlank(alias)) {
             List<CertificateRO> list = keystoreService.getKeystoreEntriesList();
             // if there is only one certificate than choose the one
             if (list.size() == 1) {
@@ -304,7 +304,7 @@ public class SmlConnector implements ApplicationContextAware {
 
         String clientKeyAlias = getSmlClientKeyAliasForDomain(domain);
         String clientCertHttpHeader = domain.getSmlClientCertHeader();
-        boolean blueCoatAuthentication = domain.isSmlBlueCoatAuth();
+        boolean clientCertAuthentication = domain.isSmlClientCertAuth();
 
         Client client = ClientProxy.getClient(smlPort);
         URL url = configurationService.getSMLIntegrationUrl();
@@ -323,7 +323,7 @@ public class SmlConnector implements ApplicationContextAware {
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlSMPManagment.toString());
 
         // check if there is only one cert in  keystore
-        if (!blueCoatAuthentication && StringUtils.isBlank(clientKeyAlias)) {
+        if (!clientCertAuthentication && StringUtils.isBlank(clientKeyAlias)) {
             List<CertificateRO> list = keystoreService.getKeystoreEntriesList();
             if (list.size() == 1) {
                 // set the default alias
@@ -335,23 +335,23 @@ public class SmlConnector implements ApplicationContextAware {
             }
         }
 
-        if (!blueCoatAuthentication && !useTLS) {
+        if (!clientCertAuthentication && !useTLS) {
             LOG.warn("SML integration is wrongly configured. Uses 2-way-SSL HTTPS but URL is not HTTPS! Url: {}.", urlSMPManagment.toString());
         }
 
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
 
         configureClientAuthentication(httpConduit, requestContext,
-                blueCoatAuthentication ? clientCertHttpHeader : clientKeyAlias,
-                blueCoatAuthentication, useTLS);
+                clientCertAuthentication ? clientCertHttpHeader : clientKeyAlias,
+                clientCertAuthentication, useTLS);
         configureFaultHandling(requestContext);
         configureProxy(httpConduit, urlSMPManagment);
         configurePayloadLogging(client);
     }
 
 
-    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientAuthentication, boolean blueCoatAuthentication, boolean useTLS) {
-        LOG.info("Connect to SML (smlClientAuthentication: {} use Client-CertHeader: {})", smlClientAuthentication, blueCoatAuthentication);
+    public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientAuthentication, boolean clientCertAuthentication, boolean useTLS) {
+        LOG.info("Connect to SML (smlClientAuthentication: {} use Client-CertHeader: {})", smlClientAuthentication, clientCertAuthentication);
         if (StringUtils.isBlank(smlClientAuthentication)) {
             throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
@@ -363,7 +363,7 @@ public class SmlConnector implements ApplicationContextAware {
         tlsParams.setCertConstraints(createCertConstraint(configurationService.getSMLIntegrationServerCertSubjectRegExpPattern()));
         tlsParams.setDisableCNCheck(configurationService.smlDisableCNCheck());
 
-        if (!blueCoatAuthentication) {
+        if (!clientCertAuthentication) {
             LOG.info("SML X509 certificate authentication with alias  {}.", smlClientAuthentication);
             tlsParams.setCertAlias(smlClientAuthentication);
             tlsParams.setKeyManagers(keystoreService.getKeyManagers());
