@@ -98,7 +98,7 @@ public class KeystoreResourceTest {
             CertificateRO cert = mapper.convertValue(sgMap, CertificateRO.class);
             assertNotNull(cert.getAlias());
             assertNotNull(cert.getCertificateId());
-            assertNotNull(cert.getBlueCoatHeader());
+            assertNotNull(cert.getClientCertHeader());
             assertNull(cert.getEncodedValue()); // submit only metadata
         });
     }

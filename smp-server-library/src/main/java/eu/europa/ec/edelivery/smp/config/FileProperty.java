@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED_DEPRECATED;
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 public class FileProperty {
@@ -81,6 +83,23 @@ public class FileProperty {
             LOG.error("IOException occurred while reading properties", e);
             throw new SMPRuntimeException(INTERNAL_ERROR, e, "Error occurred  while reading properties.", e.getMessage());
         }
-        return connectionProp;
+        // update deprecated values and return properties:
+        return updateDeprecatedValues(connectionProp);
     }
+    /**
+     * Method validates if new value for deprecated value is already set. If not it set the value from deprecated property if exists!
+     * @param properties
+     * @return
+     */
+    public static Properties updateDeprecatedValues(Properties properties){
+        if (!properties.containsKey(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty())
+                && properties.containsKey(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty())){
+
+            properties.setProperty(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty(),
+                    properties.getProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty()) );
+        }
+
+        return properties;
+    }
+
 }

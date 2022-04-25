@@ -17,7 +17,6 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 /**
  * Created by gutowpa on 16/01/2018.
@@ -73,7 +72,7 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "Reqular expresion for participant ids")
     String smlParticipantIdentifierRegExp;
     @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
-    @ColumnDescription(comment = "Client-Cert header used behind RP - BlueCoat for SML integration")
+    @ColumnDescription(comment = "Client-Cert header used behind RP - ClientCertHeader for SML integration")
     String smlClientCertHeader;
     @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Client key alias used for SML integration")
@@ -87,8 +86,8 @@ public class DBDomain extends BaseEntity {
     private boolean smlRegistered = false;
 
     @Column(name = "SML_BLUE_COAT_AUTH", nullable = false)
-    @ColumnDescription(comment = "Flag for SML authentication type - use CLientCert header or  HTTPS ClientCertificate (key)")
-    private boolean smlBlueCoatAuth = false;
+    @ColumnDescription(comment = "Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)")
+    private boolean smlClientCertAuth = false;
 
     @Override
     public Long getId() {
@@ -163,11 +162,11 @@ public class DBDomain extends BaseEntity {
         this.smlRegistered = smlRegistered;
     }
 
-    public boolean isSmlBlueCoatAuth() {
-        return smlBlueCoatAuth;
+    public boolean isSmlClientCertAuth() {
+        return smlClientCertAuth;
     }
 
-    public void setSmlBlueCoatAuth(boolean smlBlueCoatAuth) {
-        this.smlBlueCoatAuth = smlBlueCoatAuth;
+    public void setSmlClientCertAuth(boolean smlClientCertAuth) {
+        this.smlClientCertAuth = smlClientCertAuth;
     }
 }

@@ -29,7 +29,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CertificateROToDBCertificateConverter.class);
 
-    private static final String S_BLUECOAT_DATEFORMAT = "MMM dd HH:mm:ss yyyy";
+    private static final String S_CLIENT_CERT_DATEFORMAT = "MMM dd HH:mm:ss yyyy";
 
     @Override
     public CertificateRO convert(X509Certificate cert) {
@@ -57,8 +57,8 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
                     "Error occured while decoding certificate " + subject, cex.getMessage(), cex);
 
         }
-        // generate bluecoat header
-        SimpleDateFormat sdf = new SimpleDateFormat(S_BLUECOAT_DATEFORMAT);
+        // generate clientCertHeader header
+        SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT);
         StringWriter sw = new StringWriter();
         sw.write("sno=");
         sw.write(serial.toString(16));
@@ -70,7 +70,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         sw.write(urlEncodeString(sdf.format(cert.getNotAfter()) + " GMT"));
         sw.write("&issuer=");
         sw.write(urlEncodeString(issuer));
-        cro.setBlueCoatHeader(sw.toString());
+        cro.setClientCertHeader(sw.toString());
         return cro;
     }
 
