@@ -5,37 +5,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_KEYSTORE;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,31 +55,22 @@ public class KeystoreResourceTest {
     private UIKeystoreService uiKeystoreService;
 
     private MockMvc mvc;
-    private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
 
     @Before
     public void setup() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
 
-        mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-        initServletContext();
+        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
         uiKeystoreService.refreshData();
-    }
-
-    private void initServletContext() {
-        MockServletContext sc = new MockServletContext("");
-        ServletContextListener listener = new ContextLoaderListener(webAppContext);
-        ServletContextEvent event = new ServletContextEvent(sc);
     }
 
     @Test
     public void getKeyCertificateList() throws Exception {
         // given when
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH)
-                .with(SYSTEM_CREDENTIALS)
+                .session(session)
                 .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
@@ -106,8 +93,11 @@ public class KeystoreResourceTest {
     @Test
     public void uploadKeystoreFailed() throws Exception {
         // given when
-        MvcResult result = mvc.perform(post(PATH + "/3/upload/JKS/test123")
-                .with(SYSTEM_CREDENTIALS)
+        // login
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/test123")
+                .session(session)
                 .with(csrf())
                 .content("invalid keystore")).
                 andExpect(status().isOk()).andReturn();
@@ -122,10 +112,12 @@ public class KeystoreResourceTest {
 
     @Test
     public void uploadKeystoreInvalidPassword() throws Exception {
-
+        // login
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
         // given when
-        MvcResult result = mvc.perform(post(PATH + "/3/upload/JKS/NewPassword1234")
-                .with(SYSTEM_CREDENTIALS)
+        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/NewPassword1234")
+                .session(session)
                 .with(csrf())
                 .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
@@ -141,10 +133,12 @@ public class KeystoreResourceTest {
     @Test
     public void uploadKeystoreOK() throws Exception {
 
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         // given when
-        MvcResult result = mvc.perform(post(PATH + "/3/upload/JKS/test123")
-                .with(SYSTEM_CREDENTIALS)
+        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/test123")
+                .session(session)
                 .with(csrf())
                 .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
@@ -160,11 +154,12 @@ public class KeystoreResourceTest {
 
     @Test
     public void deleteKeystoreEntryOK() throws Exception {
-
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         // given when
-        MvcResult result = mvc.perform(delete(PATH + "/3/delete/second_domain_alias")
-                .with(SYSTEM_CREDENTIALS)
+        MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/delete/second_domain_alias")
+                .session(session)
                 .with(csrf())
                 .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
@@ -175,6 +170,7 @@ public class KeystoreResourceTest {
 
         assertNotNull(res);
         assertNull(res.getErrorMessage());
+        uiKeystoreService.refreshData();
         assertEquals(countStart - 1, uiKeystoreService.getKeystoreEntriesList().size());
     }
 
