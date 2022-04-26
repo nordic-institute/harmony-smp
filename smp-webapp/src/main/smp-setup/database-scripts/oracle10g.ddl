@@ -167,7 +167,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         'Signature key alias used for SML integration';
 
     comment on column SMP_DOMAIN.SML_BLUE_COAT_AUTH is
-        'Flag for SML authentication type - use CLientCert header or  HTTPS ClientCertificate (key)';
+        'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)';
 
     comment on column SMP_DOMAIN.SML_CLIENT_CERT_HEADER is
         'Client-Cert header used behind RP - ClientCertHeader for SML integration';
