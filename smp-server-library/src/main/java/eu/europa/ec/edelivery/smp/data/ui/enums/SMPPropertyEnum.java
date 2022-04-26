@@ -107,9 +107,7 @@ public enum SMPPropertyEnum {
     MAIL_SERVER_PASSWORD("mail.smtp.password", "", "smtp mail protocol - encrypted password for submitting the emails.", false,true,false, STRING),
     MAIL_SERVER_PROPERTIES("mail.smtp.properties", "", " key:value properties separated with '|'.Ex: mail.smtp.auth:true|mail.smtp.starttls.enable:true|mail.smtp.quitwait:false.", false, false,false, MAP_STRING),
 
-    CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Authentication with Client cert means that all HTTP requests " +
-                                                  "having 'Client-Cert' header will be authenticated as username placed in the header. Do not enable this feature " +
-                                                  "without properly configured reverse-proxy!", false, false, false, BOOLEAN),
+    CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled\"", false, false, false, BOOLEAN),
     ;
 
     String property;
