@@ -15,6 +15,7 @@ package eu.europa.ec.cipa.smp.server.security;
 
 import eu.europa.ec.edelivery.exception.ClientCertParseException;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -71,9 +72,7 @@ public class SecurityConfigurationTest {
     @Before
     public void setup() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
-        mvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
+        mvc = MockMvcUtils.initializeMockMvc(context);
     }
 
 
