@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
@@ -42,8 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
-        "classpath:/webapp_integration_test_data.sql"},
-        executionPhase = BEFORE_TEST_METHOD)
+        "classpath:/webapp_integration_test_data.sql"})
 public class KeystoreResourceTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
     Path keystore = Paths.get("src", "test", "resources", "keystores", "smp-keystore.jks");
@@ -53,14 +53,16 @@ public class KeystoreResourceTest {
 
     @Autowired
     private UIKeystoreService uiKeystoreService;
+    @Autowired
+    private ConfigurationDao configurationDao;
 
     private MockMvc mvc;
 
     @Before
     public void setup() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
-
         mvc = MockMvcUtils.initializeMockMvc(webAppContext);
+        configurationDao.reloadPropertiesFromDatabase();
         uiKeystoreService.refreshData();
     }
 
@@ -156,12 +158,13 @@ public class KeystoreResourceTest {
     public void deleteKeystoreEntryOK() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
+
+
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         // given when
         MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/delete/second_domain_alias")
                 .session(session)
-                .with(csrf())
-                .content(Files.readAllBytes(keystore)))
+                .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
         //them
