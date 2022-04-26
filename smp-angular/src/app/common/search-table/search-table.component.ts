@@ -49,7 +49,7 @@ export class SearchTableComponent implements AfterViewInit {
   @Input() showSearchPanel: boolean = true;
   @Input() showIndexColumn: boolean = false;
   @Input() allowNewItems: boolean = false;
-  @Input() allowEditItems: boolean = false;
+  @Input() allowEditItems: boolean = true;
   @Input() allowDeleteItems: boolean = false;
 
   loading = false;
