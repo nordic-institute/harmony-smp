@@ -51,6 +51,8 @@ import static java.util.Locale.US;
 @Component
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
+    public static final String LOGIN_FAILED_MESSAGE="Login failed; Invalid userID or password";
+
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);
     /**
      * thread safe validator
@@ -136,7 +138,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, userToken);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
-                throw new BadCredentialsException("Login failed; Invalid userID or password");
+                throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
             }
             user = oUsr.get();
         } catch (AuthenticationException ex) {
@@ -258,7 +260,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
-                throw new BadCredentialsException("Login failed; Invalid userID or password");
+                throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
             }
             user = oUsr.get();
         } catch (AuthenticationException ex) {
@@ -278,12 +280,12 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 user.setLastTokenFailedLoginAttempt(LocalDateTime.now());
                 mUserDao.update(user);
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, authenticationTokenId);
-                throw new BadCredentialsException("Login failed; Invalid userID or password");
+                throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
             }
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed;
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, authenticationTokenId);
-            throw new BadCredentialsException("Login failed; Invalid userID or password");
+            throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
         }
         String role = "WS_"+user.getRole();
         SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(authenticationTokenId, authenticationTokenValue, Collections.singletonList(new SMPAuthority(role)), user);
