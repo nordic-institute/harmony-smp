@@ -20,7 +20,7 @@ public class CertificateRO extends BaseRO {
     private String serialNumber;
     private String crlUrl;
     private String encodedValue;
-    private String blueCoatHeader;
+    private String clientCertHeader;
     private boolean isInvalid;
     private String invalidReason;
 
@@ -101,12 +101,12 @@ public class CertificateRO extends BaseRO {
         this.encodedValue = encodedValue;
     }
 
-    public String getBlueCoatHeader() {
-        return blueCoatHeader;
+    public String getClientCertHeader() {
+        return clientCertHeader;
     }
 
-    public void setBlueCoatHeader(String blueCoatHeader) {
-        this.blueCoatHeader = blueCoatHeader;
+    public void setClientCertHeader(String clientCertHeader) {
+        this.clientCertHeader = clientCertHeader;
     }
 
     public String getCrlUrl() {

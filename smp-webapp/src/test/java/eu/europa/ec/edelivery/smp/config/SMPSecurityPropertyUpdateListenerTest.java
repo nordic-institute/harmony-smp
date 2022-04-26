@@ -25,28 +25,42 @@ public class SMPSecurityPropertyUpdateListenerTest {
     @Test
     public void testPropertiesUpdateClientCertTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
-        prop.put(CLIENT_CERT_HEADER_ENABLED, TRUE);
+        prop.put(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, TRUE);
         testInstance.updateProperties(prop);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setClientCertAuthenticationEnabled(true);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(true);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
+        Mockito.verify(forwardedHeaderTransformer, Mockito.times(0)).setRemoveOnly(false);
+    }
+
+    @Test
+    public void testPropertiesUpdateSSLClientCertTrue() {
+        Map<SMPPropertyEnum, Object> prop = new HashMap();
+        prop.put(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, TRUE);
+        testInstance.updateProperties(prop);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(true);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(0)).setRemoveOnly(false);
     }
 
     @Test
     public void testPropertiesUpdateForwardedHeadersTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
-        prop.put(HTTP_FORWARDED_HEADERS_ENABLED, TRUE);
+        prop.put(HTTP_FORWARDED_HEADERS_ENABLED, FALSE);
         testInstance.updateProperties(prop);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setClientCertAuthenticationEnabled(true);
-        Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(false);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(0)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
+        Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(TRUE);
     }
 
     @Test
     public void testPropertiesUpdateFalse() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
-        prop.put(CLIENT_CERT_HEADER_ENABLED, FALSE);
+        prop.put(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, FALSE);
+        prop.put(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, FALSE);
         prop.put(HTTP_FORWARDED_HEADERS_ENABLED, FALSE);
         testInstance.updateProperties(prop);
-        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setClientCertAuthenticationEnabled(false);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setExternalTlsAuthenticationWithClientCertHeaderEnabled(false);
+        Mockito.verify(wsSecurityConfigurerAdapter, Mockito.times(1)).setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(false);
         Mockito.verify(forwardedHeaderTransformer, Mockito.times(1)).setRemoveOnly(true);
     }
 
@@ -54,8 +68,9 @@ public class SMPSecurityPropertyUpdateListenerTest {
     public void testHandledProperties() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         List<SMPPropertyEnum> result = testInstance.handledProperties();
-        assertEquals(2, result.size());
-        assertTrue(result.contains(CLIENT_CERT_HEADER_ENABLED));
+        assertEquals(3, result.size());
+        assertTrue(result.contains(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED));
+        assertTrue(result.contains(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED));
         assertTrue(result.contains(HTTP_FORWARDED_HEADERS_ENABLED));
     }
 

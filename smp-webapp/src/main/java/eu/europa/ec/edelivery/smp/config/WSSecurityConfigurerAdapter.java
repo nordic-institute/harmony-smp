@@ -202,7 +202,7 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         if (clientCertAuthenticationFilter == null) {
             clientCertAuthenticationFilter = new ClientCertAuthenticationFilter();
             clientCertAuthenticationFilter.setAuthenticationManager(authenticationManager());
-            clientCertAuthenticationFilter.setClientCertAuthenticationEnabled(configurationService.isAuthenticationWithClientCertHeaderEnabled());
+            clientCertAuthenticationFilter.setClientCertAuthenticationEnabled(configurationService.isExternalTLSAuthenticationWithClientCertHeaderEnabled());
         }
         return clientCertAuthenticationFilter;
     }
@@ -212,17 +212,26 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         if (x509AuthenticationFilter == null) {
             x509AuthenticationFilter = new EDeliveryX509AuthenticationFilter();
             x509AuthenticationFilter.setAuthenticationManager(authenticationManager());
+            x509AuthenticationFilter.setHttpHeaderAuthenticationEnabled(configurationService.isExternalTLSAuthenticationWithSSLClientCertHeaderEnabled());
 
         }
         return x509AuthenticationFilter;
     }
 
 
-    public void setClientCertAuthenticationEnabled(boolean clientCertEnabled) {
+    public void setExternalTlsAuthenticationWithClientCertHeaderEnabled(boolean clientCertEnabled) {
         try {
             getClientCertAuthenticationFilter().setClientCertAuthenticationEnabled(clientCertEnabled);
         } catch (Exception e) {
             new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + clientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    public void setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(boolean sslClientCertEnabled) {
+        try {
+            getEDeliveryX509AuthenticationFilter().setHttpHeaderAuthenticationEnabled(sslClientCertEnabled);
+        } catch (Exception e) {
+            new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + sslClientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

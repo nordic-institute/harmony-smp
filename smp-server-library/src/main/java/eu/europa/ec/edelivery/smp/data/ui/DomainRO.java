@@ -19,7 +19,7 @@ public class DomainRO extends BaseRO {
     String smlClientCertHeader;
     String smlClientKeyAlias;
     String signatureKeyAlias;
-    boolean smlBlueCoatAuth;
+    boolean smlClientCertAuth;
     boolean smlRegistered;
 
     public Long getId() {
@@ -86,12 +86,12 @@ public class DomainRO extends BaseRO {
         this.signatureKeyAlias = signatureKeyAlias;
     }
 
-    public boolean isSmlBlueCoatAuth() {
-        return smlBlueCoatAuth;
+    public boolean isSmlClientCertAuth() {
+        return smlClientCertAuth;
     }
 
-    public void setSmlBlueCoatAuth(boolean smlBlueCoatAuth) {
-        this.smlBlueCoatAuth = smlBlueCoatAuth;
+    public void setSmlClientCertAuth(boolean smlClientCertAuth) {
+        this.smlClientCertAuth = smlClientCertAuth;
     }
 
     public boolean isSmlRegistered() {

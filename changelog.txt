@@ -22,6 +22,9 @@ eDelivery SMP 4.2
     smp.http.header.security.policy: Http header content security policy
     contextPath.output - added now as database configuration option
     smp.cluster.enabled: if smp is deployed on cluster. If property is not enabled then all properties are refreshed on SetProperty. Otherwise properties are refreshed by cron task for all nodes at the same time
+    authentication.blueCoat.enabled - deprecated and replaced with smp.automation.authentication.external.tls.clientCert.enabled
+    smp.automation.authentication.external.tls.SSLClientCert.enabled Authentication with external module as: reverse proxy. Authenticated certificate is send to application using  'SSLClientCert' HTTP header. Do not enable this feature without properly configured reverse-proxy!
+
 
 - removed deprecated properties
     bdmsl.integration.keystore.password

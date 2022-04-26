@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.config;
 
 public class AuthenticationTestDataHolder {
     String alias;
-    String blueCoatHeader;
+    String clientCertHeader;
 
     public String getAlias() {
         return alias;
@@ -12,11 +12,11 @@ public class AuthenticationTestDataHolder {
         this.alias = alias;
     }
 
-    public String getBlueCoatHeader() {
-        return blueCoatHeader;
+    public String getClientCertHeader() {
+        return clientCertHeader;
     }
 
-    public void setBlueCoatHeader(String blueCoatHeader) {
-        this.blueCoatHeader = blueCoatHeader;
+    public void setClientCertHeader(String clientCertHeader) {
+        this.clientCertHeader = clientCertHeader;
     }
 }

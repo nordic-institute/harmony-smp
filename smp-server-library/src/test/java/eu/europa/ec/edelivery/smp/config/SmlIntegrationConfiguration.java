@@ -48,16 +48,16 @@ public class SmlIntegrationConfiguration {
         defaultDomain.setDomainCode("default_domain_id");
         defaultDomain.setSmlSmpId("SAMPLE-SMP-ID");
         defaultDomain.setSmlRegistered(false);
-        defaultDomain.setSmlBlueCoatAuth(false);
+        defaultDomain.setSmlClientCertAuth(false);
         defaultDomain.setSmlClientKeyAlias("clientAlias");
-        defaultDomain.setSmlClientCertHeader("blueCoatClientHeader");
+        defaultDomain.setSmlClientCertHeader("clientCertClientHeader");
         setThrowExceptionAfterParticipantCallCount(-1);
         setThrowException(null);
     }
 
     @Bean
     @Scope(SCOPE_PROTOTYPE)
-    public IManageServiceMetadataWS smpManagerClient(String clientKeyAlias, String clientCertHttpHeader, boolean authBlueCoat) throws BadRequestFault, UnauthorizedFault, InternalErrorFault, NotFoundFault {
+    public IManageServiceMetadataWS smpManagerClient(String clientKeyAlias, String clientCertHttpHeader, boolean authClientCert) throws BadRequestFault, UnauthorizedFault, InternalErrorFault, NotFoundFault {
 
 
 
@@ -71,7 +71,7 @@ public class SmlIntegrationConfiguration {
 
         AuthenticationTestDataHolder dh = new AuthenticationTestDataHolder();
         dh.setAlias(clientKeyAlias);
-        dh.setBlueCoatHeader(clientCertHttpHeader);
+        dh.setClientCertHeader(clientCertHttpHeader);
         smpManagerClientMocks.add(clientMock);
         smpManagerClientMocksData.put(clientMock, dh);
         return clientMock;
@@ -79,7 +79,7 @@ public class SmlIntegrationConfiguration {
 
     @Bean
     @Scope(SCOPE_PROTOTYPE)
-    public IManageParticipantIdentifierWS smpParticipantClient(String clientKeyAlias, String clientCertHttpHeader,boolean authBlueCoat) throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public IManageParticipantIdentifierWS smpParticipantClient(String clientKeyAlias, String clientCertHttpHeader,boolean authClientCert) throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
 
 
         if (throwExceptionAfterParticipantCallCount >0 &&  throwExceptionAfterParticipantCallCount  <= smlClientMocks.size()){
@@ -99,7 +99,7 @@ public class SmlIntegrationConfiguration {
 
         AuthenticationTestDataHolder dh = new AuthenticationTestDataHolder();
         dh.setAlias(clientKeyAlias);
-        dh.setBlueCoatHeader(clientCertHttpHeader);
+        dh.setClientCertHeader(clientCertHttpHeader);
         smlClientMocks.add(clientMock);
         smlClientMocksData.put(clientMock, dh);
         return clientMock;
