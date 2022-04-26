@@ -10,10 +10,6 @@ import java.util.stream.Collectors;
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum.*;
 
 public enum SMPPropertyEnum {
-    CLIENT_CERT_HEADER_ENABLED("authentication.blueCoat.enabled", "false", "Authentication with Blue Coat means that all HTTP requests " +
-            "having 'Client-Cert' header will be authenticated as username placed in the header.Never expose SMP to the WEB " +
-            "without properly configured reverse-proxy and active blue coat.", false, false, false, BOOLEAN),
-
     OUTPUT_CONTEXT_PATH("contextPath.output", "true", "This property controls pattern of URLs produced by SMP in GET ServiceGroup responses.", true, false, true, BOOLEAN),
     ENCODED_SLASHES_ALLOWED_IN_URL("encodedSlashesAllowedInUrl", "true", "Allow encoded slashes in context path. Set to true if slashes are are part of identifiers.", false, false, true, BOOLEAN),
 
@@ -85,7 +81,16 @@ public enum SMPPropertyEnum {
 
     // authentication
     UI_AUTHENTICATION_TYPES("smp.ui.authentication.types", "PASSWORD", "Set list of '|' separated authentication types: PASSWORD|SSO.", false, false, false, LIST_STRING),
-    AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "PASSWORD|CERTIFICATE", "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported PASSWORD, CERT: ex. PASSWORD|CERT", false, false, false, LIST_STRING),
+    AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "PASSWORD|CERTIFICATE",
+            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported PASSWORD, CERTIFICATE: ex. PASSWORD|CERTIFICATE", false, false, false, LIST_STRING),
+
+    EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",
+            "Authentication with external module as: reverse proxy. Authenticated data are send send to application using 'Client-Cert' HTTP header. Do not enable this feature " +
+            "without properly configured reverse-proxy!", false, false, false, BOOLEAN),
+    EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED("smp.automation.authentication.external.tls.SSLClientCert.enabled", "false",
+            "Authentication with external module as: reverse proxy. Authenticated certificate is send to application using  'SSLClientCert' HTTP header. Do not enable this feature " +
+            "without properly configured reverse-proxy!", false, false, false, BOOLEAN),
+
     // SSO configuration
     SSO_CAS_UI_LABEL("smp.sso.cas.ui.label", "EU Login", "The SSO service provider label.", false, false, true, STRING),
     SSO_CAS_URL("smp.sso.cas.url", "http://localhost:8080/cas/", "The SSO CAS URL enpoint", false, false, true, URL),
@@ -101,8 +106,11 @@ public enum SMPPropertyEnum {
     MAIL_SERVER_USERNAME("mail.smtp.username", "", "smtp mail protocol- username for submitting the emails.", false,false,false, STRING),
     MAIL_SERVER_PASSWORD("mail.smtp.password", "", "smtp mail protocol - encrypted password for submitting the emails.", false,true,false, STRING),
     MAIL_SERVER_PROPERTIES("mail.smtp.properties", "", " key:value properties separated with '|'.Ex: mail.smtp.auth:true|mail.smtp.starttls.enable:true|mail.smtp.quitwait:false.", false, false,false, MAP_STRING),
-    ;
 
+    CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Authentication with Client cert means that all HTTP requests " +
+                                                  "having 'Client-Cert' header will be authenticated as username placed in the header. Do not enable this feature " +
+                                                  "without properly configured reverse-proxy!", false, false, false, BOOLEAN),
+    ;
 
     String property;
     String defValue;

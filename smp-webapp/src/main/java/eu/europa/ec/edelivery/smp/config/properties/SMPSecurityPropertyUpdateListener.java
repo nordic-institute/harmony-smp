@@ -13,8 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.HTTP_FORWARDED_HEADERS_ENABLED;
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 
 
 /**
@@ -38,16 +37,20 @@ public class SMPSecurityPropertyUpdateListener implements PropertyUpdateListener
 
     @Override
     public void updateProperties(Map<SMPPropertyEnum, Object> properties) {
-        setClientCertAuthentication((Boolean) properties.get(CLIENT_CERT_HEADER_ENABLED));
+        setExternalTlsAuthenticationWithClientCertHeaderEnabled((Boolean) properties.get(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED));
+        setExternalTlsAuthenticationWithX509CertificateHeaderEnabled((Boolean) properties.get(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED));
         setForwardHeadersEnabled((Boolean) properties.get(HTTP_FORWARDED_HEADERS_ENABLED));
     }
 
     @Override
     public List<SMPPropertyEnum> handledProperties() {
-        return Arrays.asList(CLIENT_CERT_HEADER_ENABLED, HTTP_FORWARDED_HEADERS_ENABLED);
+        return Arrays.asList(
+                EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED,
+                EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED,
+                HTTP_FORWARDED_HEADERS_ENABLED);
     }
 
-    public void setClientCertAuthentication(Boolean clientCertEnabled) {
+    public void setExternalTlsAuthenticationWithClientCertHeaderEnabled(Boolean clientCertEnabled) {
         if (clientCertEnabled == null) {
             LOG.debug("Skip setting null client-cert");
             return;
@@ -56,7 +59,19 @@ public class SMPSecurityPropertyUpdateListener implements PropertyUpdateListener
         if (clientCertEnabled) {
             LOG.warn("Set Client-Cert HTTP header enabled: [true]. Do not enable this option when using SMP without reverse-proxy and HTTP header protection!");
         }
-        wsSecurityConfigurerAdapter.setClientCertAuthenticationEnabled(clientCertEnabled);
+        wsSecurityConfigurerAdapter.setExternalTlsAuthenticationWithClientCertHeaderEnabled(clientCertEnabled);
+    }
+
+    public void setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(Boolean clientCertEnabled) {
+        if (clientCertEnabled == null) {
+            LOG.debug("Skip setting null SSLClientCert");
+            return;
+        }
+        LOG.info("Set SSLClientCert headers  enabled: [{}]." , clientCertEnabled);
+        if (clientCertEnabled) {
+            LOG.warn("Set SSLClientCert HTTP header enabled: [true]. Do not enable this option when using SMP without reverse-proxy and HTTP header protection!");
+        }
+        wsSecurityConfigurerAdapter.setExternalTlsAuthenticationWithX509CertificateHeaderEnabled(clientCertEnabled);
     }
 
     public void setForwardHeadersEnabled(Boolean forwardHeadersEnabled) {

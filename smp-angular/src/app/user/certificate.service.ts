@@ -24,7 +24,7 @@ export class CertificateService {
       .set("Content-Type", "application/octet-stream");
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<CertificateRo>(SmpConstants.REST_PUBLIC_TRUSTSTORE_VALIDATE_CERT.replace('{user-id}', currentUser.userId+""), payload, {headers});
+    return this.http.post<CertificateRo>(SmpConstants.REST_PUBLIC_USER_CERT_VALIDATE.replace('{user-id}', currentUser.userId), payload, {headers});
   }
 
   validateCertificate(payload): Observable<CertificateRo> {
@@ -37,6 +37,6 @@ export class CertificateService {
       .set("Content-Type", "application/octet-stream");
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<CertificateRo>(SmpConstants.REST_PUBLIC_TRUSTSTORE_VALIDATE_CERT.replace('{user-id}', currentUser.userId+""), payload, {headers});
+    return this.http.post<CertificateRo>(SmpConstants.REST_PUBLIC_USER_CERT_VALIDATE.replace('{user-id}', currentUser.userId), payload, {headers});
   }
 }

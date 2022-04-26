@@ -18,12 +18,9 @@ import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.message.Message;
-import org.apache.cxf.transport.http.HTTPConduit;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,15 +32,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.X509KeyManager;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +74,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientCertHeader(CLIENT_CERT_HTTP_HEADER);
-        domain.setSmlBlueCoatAuth(true);
+        domain.setSmlClientCertAuth(true);
         // when
         testInstance.configureClient("manageparticipantidentifier", client, domain);
 
@@ -107,7 +97,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientCertHeader(CLIENT_CERT_HTTP_HEADER);
-        domain.setSmlBlueCoatAuth(true);
+        domain.setSmlClientCertAuth(true);
         // when
         testInstance.configureClient("manageservicemetadata", client, domain);
 
@@ -130,7 +120,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
-        domain.setSmlBlueCoatAuth(true);
+        domain.setSmlClientCertAuth(true);
 
         expectedEx.expect(IllegalStateException.class);
         expectedEx.expectMessage("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");

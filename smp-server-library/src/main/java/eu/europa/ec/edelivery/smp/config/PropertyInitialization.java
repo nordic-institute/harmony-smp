@@ -29,16 +29,16 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
@@ -48,11 +48,11 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
  * Created by Flavio Santos
  * Class read properties from configuration file if exists. Than it use datasource (default by JNDI
  * if not defined in property file jdbc/smpDatasource) to read application properties. Because this class is
- * invoked before datasource is initialiyzed by default - it creates it's own database connection.
+ * invoked before datasource is initialized by default - it creates it's own database connection.
  * Also it uses hibernate to handle dates  for Configuration table.
  */
 public class PropertyInitialization {
-    // application priperties contains build data and are set at build time.
+    // application properties contains build data and are set at build time.
     private static final String FILE_APPLICATION_PROPERTIES = "/application.properties";
 
     private static final String PROP_BUILD_NAME = "smp.artifact.name";
@@ -82,15 +82,9 @@ public class PropertyInitialization {
         }
     }
 
-    public Properties getFileProperties() {
-        return FileProperty.getFileProperties();
-    }
-
     protected Properties getDatabaseProperties(Properties fileProperties) {
-
-
         String dialect = fileProperties.getProperty(FileProperty.PROPERTY_DB_DIALECT);
-        if (StringUtils.isBlank(dialect)){
+        if (StringUtils.isBlank(dialect)) {
             LOG.warn("Attribute: {} is empty. Database might not initialize!", FileProperty.PROPERTY_DB_DIALECT);
         }
         // get datasource
@@ -111,12 +105,6 @@ public class PropertyInitialization {
             }
         }
         return prop;
-    }
-
-
-    protected Properties getDatabaseProperties() {
-        Properties fileProperties = FileProperty.getFileProperties();
-        return getDatabaseProperties(fileProperties);
     }
 
     /**
@@ -168,17 +156,16 @@ public class PropertyInitialization {
         em.getTransaction().commit();
     }
 
-
-    public void initTruststore(String absolutePath, File fEncryption, EntityManager em, Properties properties,Properties fileProperties) {
+    public void initTruststore(String absolutePath, File fEncryption, EntityManager em, Properties properties, Properties fileProperties) {
         LOG.info("Start generating new truststore.");
 
         String encTrustEncToken;
 
-        if ( fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty())){
+        if (fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty())) {
             LOG.info("get token from  properties");
             encTrustEncToken = SecurityUtils.encryptWrappedToken(fEncryption,
                     fileProperties.getProperty(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty()));
-        }else {
+        } else {
             // generate new token
             LOG.info("generate  token");
             String trustToken = SecurityUtils.generateAuthenticationToken();
@@ -191,13 +178,13 @@ public class PropertyInitialization {
         properties.setProperty(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty(), encTrustEncToken);
 
         LOG.info("Decode security token");
-        String trustToken = SecurityUtils.decrypt(fEncryption,encTrustEncToken);
+        String trustToken = SecurityUtils.decrypt(fEncryption, encTrustEncToken);
         LOG.info("Get keystore");
         File truststore;
-        if ( fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty())){
+        if (fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty())) {
             LOG.info("Get  truststore value from property file");
             truststore = new File(absolutePath, fileProperties.getProperty(
-                    SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty() ));
+                    SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty()));
 
         } else {
             LOG.info("Generate  truststore file ");
@@ -245,8 +232,6 @@ public class PropertyInitialization {
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_FILENAME, keystore.getName());
         initProperties.setProperty(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty(), keystore.getName());
 
-
-
         try (FileOutputStream out = new FileOutputStream(keystore)) {
             KeyStore newKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
             // initialize keystore
@@ -271,12 +256,13 @@ public class PropertyInitialization {
 
     public File initEncryptionKey(String absolutePath, EntityManager em, Properties initProperties, Properties fileProperties) {
         File fEncryption;
-        if (fileProperties.containsKey(ENCRYPTION_FILENAME.getProperty())){
-            fEncryption =new File(absolutePath,fileProperties.getProperty(ENCRYPTION_FILENAME.getProperty()) );
+        if (fileProperties.containsKey(ENCRYPTION_FILENAME.getProperty())) {
+            fEncryption = new File(absolutePath, fileProperties.getProperty(ENCRYPTION_FILENAME.getProperty()));
 
         } else {
             fEncryption = getNewFile(absolutePath, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
-        };
+        }
+        ;
         // if file is not existing yet - as is the case in getNewFile create file
         if (!fEncryption.exists()) {
             SecurityUtils.generatePrivateSymmetricKey(fEncryption);
@@ -296,12 +282,12 @@ public class PropertyInitialization {
      */
     protected File initNewValues(EntityManager em, Properties fileProperties, Properties initProperties) {
         String absolutePath;
-        if (fileProperties.containsKey(CONFIGURATION_DIR.getProperty())){
+        if (fileProperties.containsKey(CONFIGURATION_DIR.getProperty())) {
             absolutePath = fileProperties.getProperty(CONFIGURATION_DIR.getProperty());
         } else {
             File settingsFolder = new File("/");
             // set absolute path
-            absolutePath =  new File("/").getAbsolutePath();
+            absolutePath = new File("/").getAbsolutePath();
         }
 
         File confFolder = new File(absolutePath);
@@ -324,11 +310,6 @@ public class PropertyInitialization {
         initAndMergeKeystore(absolutePath, fEncryption, em, initProperties, fileProperties);
 
         return fEncryption;
-    }
-
-    public boolean isEncryptedProperty(String key) {
-        Optional<SMPPropertyEnum> propertyEnum = SMPPropertyEnum.getByProperty(key);
-        return propertyEnum.isPresent() && propertyEnum.get().isEncrypted();
     }
 
     public static File getNewFile(String folder, String fileName) {
@@ -413,12 +394,6 @@ public class PropertyInitialization {
     protected void storeDBEntry(EntityManager em, SMPPropertyEnum prop, String value) {
         DBConfiguration cnt = createDBEntry(prop.getProperty(), value, prop.getDesc());
         em.persist(cnt);
-    }
-
-    protected void updateAlias(EntityManager em, String namedQuery, String alias) {
-        Query query = em.createNamedQuery(namedQuery);
-        query.setParameter("alias", alias);
-        query.executeUpdate();
     }
 
     /**

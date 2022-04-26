@@ -293,8 +293,10 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         if (!lstMissingProperties.isEmpty()) {
             LOG.error("Missing mandatory properties: [{}]. Fix the SMP configuration!", lstMissingProperties);
         }
+        // update deprecated values
 
 
+        properties = updateDeprecatedValues(properties);
         Map<String, Object> propertyValues = parseProperties(properties);
 
         // property validation
@@ -359,6 +361,22 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Encryption file does not exists or is not a File! Value:  [%s]",
                     encryptionKeyFile.getAbsolutePath()));
         }
+    }
+
+    /**
+     * Method validates if new value for deprecated value is already set. If not it set the value from deprecated property if exists!
+     * @param properties
+     * @return
+     */
+    public Properties updateDeprecatedValues(Properties properties){
+        if (!properties.containsKey(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty())
+                && properties.containsKey(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty())){
+
+            properties.setProperty(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty(),
+                    properties.getProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty()) );
+        }
+
+        return properties;
     }
 
 
