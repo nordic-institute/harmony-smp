@@ -21,6 +21,7 @@ import eu.europa.ec.edelivery.smp.error.SMPSecurityExceptionHandler;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,11 +164,11 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                     .maxAgeInSeconds(maxAge)
                     .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
         }
-/*
+
         String contentSecurityPolicy = configurationService.getHttpHeaderContentSecurityPolicy();
         if (StringUtils.isNotBlank(contentSecurityPolicy)) {
-            httpSecurity = httpSecurity.headers().contentSecurityPolicy(contentSecurityPolicy).and().and();
-        }*/
+            httpSecurity.headers().contentSecurityPolicy(contentSecurityPolicy).and().and();
+        }
     }
 
     @Override
@@ -223,7 +224,7 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         try {
             getClientCertAuthenticationFilter().setClientCertAuthenticationEnabled(clientCertEnabled);
         } catch (Exception e) {
-            new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + clientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + clientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -231,7 +232,7 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         try {
             getEDeliveryX509AuthenticationFilter().setHttpHeaderAuthenticationEnabled(sslClientCertEnabled);
         } catch (Exception e) {
-            new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + sslClientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while setting the ClientCert feature (enable [" + sslClientCertEnabled + "])", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

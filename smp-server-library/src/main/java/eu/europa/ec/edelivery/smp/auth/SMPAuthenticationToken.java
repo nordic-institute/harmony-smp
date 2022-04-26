@@ -13,17 +13,17 @@ import java.util.Objects;
 
 public class SMPAuthenticationToken extends UsernamePasswordAuthenticationToken {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationToken.class);
-    DBUser user;
+    private final DBUser user;
     // session encryption key to encrypt sensitive data
     // at the moment used for UI sessions
-    SecurityUtils.Secret secret=null;
+    private SecurityUtils.Secret secret = null;
 
     public SMPAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
-        super(principal,credentials, authorities );
+        this(principal, credentials, authorities, null);
     }
 
     public SMPAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, DBUser user) {
-        super(principal,credentials, authorities );
+        super(principal, credentials, authorities);
         this.user = user;
     }
 
@@ -31,8 +31,8 @@ public class SMPAuthenticationToken extends UsernamePasswordAuthenticationToken 
         return user;
     }
 
-    public SecurityUtils.Secret getSecret(){
-        if (secret==null) {
+    public SecurityUtils.Secret getSecret() {
+        if (secret == null) {
             LOG.debug("Secret does not yet exist. Create user session secret!");
             secret = SecurityUtils.generatePrivateSymmetricKey();
             LOG.debug("User session secret created!");

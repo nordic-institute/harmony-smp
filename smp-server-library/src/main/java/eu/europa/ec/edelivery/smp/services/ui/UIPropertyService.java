@@ -66,7 +66,7 @@ public class UIPropertyService {
                 .collect(Collectors.toMap(DBConfiguration::getProperty, Function.identity()));
 
         List<PropertyRO> properties = filteredProperties.stream()
-                .skip(page * pageSize)
+                .skip( page * (long)pageSize)
                 .limit(pageSize)
                 .map(prop -> createProperty(prop, changedProps))
                 .collect(Collectors.toList());
