@@ -96,7 +96,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("second_domain_alias");
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
         // when
         testInstance.configureClient("manageparticipantidentifier", client, domain);
 
@@ -122,7 +122,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("second_domain_alias");
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
         // when
         testInstance.configureClient("manageservicemetadata", client, domain);
 
@@ -145,7 +145,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("single_domain_key");
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
         // when
         testInstance.configureClient("changedEndpoint", client, domain);
 
@@ -166,7 +166,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("single_domain_key");
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
         // when
         testInstance.configureClient("changedEndpoint", client, domain);
 
@@ -186,7 +186,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
 
         expectedEx.expect(IllegalStateException.class);
         expectedEx.expectMessage("More than one key in Keystore! Define alias for the domain SML authentication!");
@@ -204,7 +204,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
 
         expectedEx.expect(IllegalStateException.class);
         expectedEx.expectMessage("More than one key in Keystore! Define alias for the domain SML authentication!");
@@ -226,7 +226,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
 
         // when
         testInstance.configureClient("changedEndpoint", client, domain);

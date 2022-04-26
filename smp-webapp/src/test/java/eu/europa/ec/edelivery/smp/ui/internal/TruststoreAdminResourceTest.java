@@ -26,8 +26,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_TRUSTSTORE;
@@ -107,7 +105,7 @@ public class TruststoreAdminResourceTest {
         assertEquals("1.2.840.113549.1.9.1=#160c736d7040746573742e636f6d,CN=SMP test,O=DIGIT,C=BE", res.getSubject());
         assertEquals("3", res.getSerialNumber());
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
-        assertEquals("sno=3&subject=1.2.840.113549.1.9.1%3D%23160c736d7040746573742e636f6d%2CCN%3DSMP+test%2CO%3DDIGIT%2CC%3DBE&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=CN%3DIntermediate+CA%2CO%3DDIGIT%2CC%3DBE", res.getBlueCoatHeader());
+        assertEquals("sno=3&subject=1.2.840.113549.1.9.1%3D%23160c736d7040746573742e636f6d%2CCN%3DSMP+test%2CO%3DDIGIT%2CC%3DBE&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=CN%3DIntermediate+CA%2CO%3DDIGIT%2CC%3DBE", res.getClientCertHeader());
     }
 
     @Test
@@ -172,7 +170,7 @@ public class TruststoreAdminResourceTest {
             CertificateRO cert = mapper.convertValue(sgMap, CertificateRO.class);
             assertNotNull(cert.getAlias());
             assertNotNull(cert.getCertificateId());
-            assertNotNull(cert.getBlueCoatHeader());
+            assertNotNull(cert.getClientCertHeader());
             assertNull(cert.getEncodedValue()); // submit only metadata
         });
     }

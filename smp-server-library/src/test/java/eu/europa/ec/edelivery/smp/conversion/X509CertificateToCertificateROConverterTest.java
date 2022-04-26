@@ -1,24 +1,16 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.smp.api.Identifiers;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
-import javax.security.auth.x500.X500Principal;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.security.Security;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 
 import static org.junit.Assert.*;
 
@@ -33,7 +25,7 @@ public class X509CertificateToCertificateROConverterTest {
 
     private static final Object[] testCases() {
         return new Object[][]{
-                // filename, subject, issuer, serial number, blueCoatHeader, certificateId
+                // filename, subject, issuer, serial number, clientCertHeader, certificateId
                 {"cert-escaped-chars.pem", "CN=Escape characters \\,\\\\\\#\\+\\<\\>\\\"\\=,OU=CEF,O=DIGIT,C=BE", "CN=Escape characters \\,\\\\\\#\\+\\<\\>\\\"\\=,OU=CEF,O=DIGIT,C=BE","5c1bb275","sno=5c1bb275&subject=CN%3DEscape+characters+%5C%2C%5C%5C%5C%23%5C%2B%5C%3C%5C%3E%5C%22%5C%3D%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE&validfrom=Dec+20+16%3A17%3A09+2018+GMT&validto=Dec+17+16%3A17%3A09+2028+GMT&issuer=CN%3DEscape+characters+%5C%2C%5C%5C%5C%23%5C%2B%5C%3C%5C%3E%5C%22%5C%3D%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE","CN=Escape characters \\,\\\\\\#\\+\\<\\>\\\"\\=,O=DIGIT,C=BE:000000005c1bb275"},
                 {"cert-nonAscii.pem", "CN=NonAscii chars:  àøýßĉæãäħ,OU=CEF,O=DIGIT,C=BE", "CN=NonAscii chars:  àøýßĉæãäħ,OU=CEF,O=DIGIT,C=BE","5c1bb38d","sno=5c1bb38d&subject=CN%3DNonAscii+chars%3A++%C3%A0%C3%B8%C3%BD%C3%9F%C4%89%C3%A6%C3%A3%C3%A4%C4%A7%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE&validfrom=Dec+20+16%3A21%3A49+2018+GMT&validto=Dec+17+16%3A21%3A49+2028+GMT&issuer=CN%3DNonAscii+chars%3A++%C3%A0%C3%B8%C3%BD%C3%9F%C4%89%C3%A6%C3%A3%C3%A4%C4%A7%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE","CN=NonAscii chars:  aøyßcæaaħ,O=DIGIT,C=BE:000000005c1bb38d"},
                 {"cert-with-email.pem", "CN=Cert with email,OU=CEF,O=DIGIT,C=BE", "CN=Cert with email,OU=CEF,O=DIGIT,C=BE","5c1bb358","sno=5c1bb358&subject=CN%3DCert+with+email%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE&validfrom=Dec+20+16%3A20%3A56+2018+GMT&validto=Dec+17+16%3A20%3A56+2028+GMT&issuer=CN%3DCert+with+email%2COU%3DCEF%2CO%3DDIGIT%2CC%3DBE","CN=Cert with email,O=DIGIT,C=BE:000000005c1bb358"},
@@ -52,7 +44,7 @@ public class X509CertificateToCertificateROConverterTest {
                             String subject,
                             String issuer,
                             String serialNumber,
-                            String blueCoat,
+                            String clientCertHeader,
                             String certificateId) throws CertificateException {
 
 
@@ -68,7 +60,7 @@ public class X509CertificateToCertificateROConverterTest {
         assertEquals(subject, certRo.getSubject());
         assertEquals(issuer, certRo.getIssuer());
         assertEquals(serialNumber, certRo.getSerialNumber());
-        assertEquals(blueCoat, certRo.getBlueCoatHeader());
+        assertEquals(clientCertHeader, certRo.getClientCertHeader());
         assertEquals(certificateId, certRo.getCertificateId());
         assertNotNull(certRo.getEncodedValue());
         assertEquals(certificate.getNotBefore(), certRo.getValidFrom());
