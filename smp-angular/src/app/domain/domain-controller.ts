@@ -19,7 +19,7 @@ export class DomainController implements SearchTableController {
 
     let dialogRef: MatDialogRef<DomainDetailsDialogComponent> = this.dialog.open(DomainDetailsDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
-      //Todo:
+      console.log("Domain dialog is closed!");
     });
   }
 

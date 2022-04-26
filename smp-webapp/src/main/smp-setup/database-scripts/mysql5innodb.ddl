@@ -3,13 +3,41 @@
 -- ------------------------------------------------------------------------
 
 
+    create table SMP_ALERT (
+       ID bigint not null auto_increment comment 'Unique alert id',
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
+        ALERT_LEVEL varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROCESSED bit,
+        PROCESSED_TIME datetime,
+        REPORTING_TIME datetime,
+        primary key (ID)
+    ) comment='SMP alerts' ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_ALERT_AUD (
+       ID bigint not null,
+        REV bigint not null,
+        REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
+        ALERT_LEVEL varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROCESSED bit,
+        PROCESSED_TIME datetime,
+        REPORTING_TIME datetime,
+        primary key (ID, REV)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
     create table SMP_CERTIFICATE (
        ID bigint not null comment 'Shared primary key with master table SMP_USER',
-        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Formatted Certificate id using tags: cn, o, c:serialNumber',
         CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
+        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Formatted Certificate id using tags: cn, o, c:serialNumber',
         CRL_URL varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'URL to the certificate revocation list (CRL)',
         ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate issuer (canonical form)',
-        LAST_UPDATED_ON datetime not null,
         PEM_ENCODED_CERT longtext comment 'PEM encoded  certificate',
         SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate serial number',
         SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate subject (canonical form)',
@@ -22,11 +50,11 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
-        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
+        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         CRL_URL varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
-        LAST_UPDATED_ON datetime,
         PEM_ENCODED_CERT longtext,
         SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -37,21 +65,32 @@
 
     create table SMP_CONFIGURATION (
        PROPERTY varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Property name/key',
-        CREATED_ON datetime not null comment 'Row inserted on date',
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
         DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
-        LAST_UPDATED_ON datetime not null comment 'Row modified on date',
         VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property value',
         primary key (PROPERTY)
     ) comment='SMP user certificates' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+    create table SMP_CONFIGURATION_AUD (
+       PROPERTY varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        REV bigint not null,
+        REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
+        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        primary key (PROPERTY, REV)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
     create table SMP_DOMAIN (
        ID bigint not null comment 'Unique domain id',
         CREATED_ON datetime not null,
-        DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Domain code used as http parameter in rest webservices',
         LAST_UPDATED_ON datetime not null,
+        DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Domain code used as http parameter in rest webservices',
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Signature key alias used for SML integration',
         SML_BLUE_COAT_AUTH bit not null comment 'Flag for SML authentication type - use CLientCert header or  HTTPS ClientCertificate (key)',
-        SML_CLIENT_CERT_HEADER varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client-Cert header used behind RP - BlueCoat for SML integration',
+        SML_CLIENT_CERT_HEADER varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client-Cert header used behind RP - ClientCertHeader for SML integration',
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client key alias used for SML integration',
         SML_PARTC_IDENT_REGEXP varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Reqular expresion for participant ids',
         SML_REGISTERED bit not null comment 'Flag for: Is domain registered in SML',
@@ -65,8 +104,8 @@
         REV bigint not null,
         REVTYPE tinyint,
         CREATED_ON datetime,
-        DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         LAST_UPDATED_ON datetime,
+        DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_BLUE_COAT_AUTH bit,
         SML_CLIENT_CERT_HEADER varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -169,9 +208,9 @@
     create table SMP_SERVICE_METADATA (
        ID bigint not null comment 'Shared primary key with master table SMP_SERVICE_METADATA',
         CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
         DOCUMENT_IDENTIFIER varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin not null,
         DOCUMENT_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
-        LAST_UPDATED_ON datetime not null,
         FK_SG_DOM_ID bigint not null,
         primary key (ID)
     ) comment='Service metadata' ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -181,9 +220,9 @@
         REV bigint not null,
         REVTYPE tinyint,
         CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
         DOCUMENT_IDENTIFIER varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
         DOCUMENT_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
-        LAST_UPDATED_ON datetime,
         FK_SG_DOM_ID bigint,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -215,8 +254,8 @@
     create table SMP_SG_EXTENSION (
        ID bigint not null,
         CREATED_ON datetime not null,
-        EXTENSION longblob comment 'XML extension(s) for servicegroup ',
         LAST_UPDATED_ON datetime not null,
+        EXTENSION longblob comment 'XML extension(s) for servicegroup ',
         primary key (ID)
     ) comment='Service group extension blob' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -225,23 +264,23 @@
         REV bigint not null,
         REVTYPE tinyint,
         CREATED_ON datetime,
-        EXTENSION longblob,
         LAST_UPDATED_ON datetime,
+        EXTENSION longblob,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_USER (
        ID bigint not null comment 'Unique user id',
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
         ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted personal access token',
         ACCESS_TOKEN_EXPIRE_ON datetime comment 'Date when personal access token will expire',
         ACCESS_TOKEN_GENERATED_ON datetime comment 'Date when personal access token was generated',
         ACCESS_TOKEN_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Personal access token id',
         ACTIVE bit not null comment 'Is user active',
-        CREATED_ON datetime not null,
         EMAIL varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User email',
         LAST_FAILED_LOGIN_ON datetime comment 'Last failed login attempt',
         AT_LAST_FAILED_LOGIN_ON datetime comment 'Last failed token login attempt',
-        LAST_UPDATED_ON datetime not null,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted password for username/password login',
         PASSWORD_CHANGED datetime comment 'Last date when password was changed',
         PASSWORD_EXPIRE_ON datetime comment 'Date when password will expire',
@@ -256,16 +295,16 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
         ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         ACCESS_TOKEN_EXPIRE_ON datetime,
         ACCESS_TOKEN_GENERATED_ON datetime,
         ACCESS_TOKEN_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         ACTIVE bit,
-        CREATED_ON datetime,
         EMAIL varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         LAST_FAILED_LOGIN_ON datetime,
         AT_LAST_FAILED_LOGIN_ON datetime,
-        LAST_UPDATED_ON datetime,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PASSWORD_CHANGED datetime,
         PASSWORD_EXPIRE_ON datetime,
@@ -307,6 +346,11 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
     alter table SMP_USER 
        add constraint UK_rt1f0anklfo05lt0my05fqq6 unique (USERNAME);
 
+    alter table SMP_ALERT_AUD 
+       add constraint FKrw0qnto448ojlirpfmfntd8v2 
+       foreign key (REV) 
+       references SMP_REV_INFO (id);
+
     alter table SMP_CERTIFICATE 
        add constraint FKayqgpj5ot3o8vrpduul7sstta 
        foreign key (ID) 
@@ -314,6 +358,11 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
     alter table SMP_CERTIFICATE_AUD 
        add constraint FKnrwm8en8vv10li8ihwnurwd9e 
+       foreign key (REV) 
+       references SMP_REV_INFO (id);
+
+    alter table SMP_CONFIGURATION_AUD 
+       add constraint FKd4yhbdlusovfbdti1fjkuxp9m 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 

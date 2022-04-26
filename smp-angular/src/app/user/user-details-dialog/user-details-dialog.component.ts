@@ -14,7 +14,7 @@ import {
 import {Role} from '../../security/role.model';
 import {UserRo} from '../user-ro.model';
 import {SearchTableEntityStatus} from '../../common/search-table/search-table-entity-status.model';
-import {AlertService} from '../../alert/alert.service';
+import {AlertMessageService} from '../../common/alert-message/alert-message.service';
 import {CertificateService} from '../certificate.service';
 import {CertificateRo} from "../certificate-ro.model";
 import {DatePipe} from "../../custom-date/date.pipe";
@@ -103,7 +103,7 @@ export class UserDetailsDialogComponent {
               private lookups: GlobalLookups,
               private certificateService: CertificateService,
               private userDetailsService: UserDetailsService,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
               private datePipe: DatePipe,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {

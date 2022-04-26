@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder} from "@angular/forms";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {GlobalLookups} from "../../common/global-lookups";
 import {HttpClient} from "@angular/common/http";
 import {SecurityService} from "../../security/security.service";
@@ -28,7 +28,7 @@ export class KeystoreEditDialogComponent {
               public lookups: GlobalLookups,
               public dialog: MatDialog,
               private dialogRef: MatDialogRef<KeystoreEditDialogComponent>,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
     this.formTitle = "Keystore edit dialog";

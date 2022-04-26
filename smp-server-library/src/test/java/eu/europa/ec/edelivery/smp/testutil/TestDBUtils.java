@@ -1,6 +1,9 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
 import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -75,6 +78,16 @@ public class TestDBUtils {
 
     public static DBUser createDBUser(String username1) {
         return createDBUserByUsername(username1);
+    }
+    public static DBAlert createDBAlert() {
+        DBAlert dbalert = new DBAlert();
+        dbalert.setAlertLevel(AlertLevelEnum.MEDIUM);
+        dbalert.setAlertStatus(AlertStatusEnum.SUCCESS);
+        dbalert.setAlertType(AlertTypeEnum.PASSWORD_EXPIRED);
+        dbalert.setProcessed(true);
+        dbalert.setProcessedTime(LocalDateTime.now());
+        dbalert.setReportingTime(LocalDateTime.now());
+        return dbalert;
     }
 
     public static DBUser createDBUserByUsername(String userName) {

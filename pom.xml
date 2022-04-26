@@ -22,7 +22,7 @@
     <version>4.2-SNAPSHOT</version>
 
     <modules>
-        <!-- module>smp-angular</module -->
+        <module>smp-angular</module>
         <module>smp-api</module>
         <module>smp-server-library</module>
         <module>smp-webapp</module>
@@ -362,6 +362,12 @@
                 <groupId>org.apache.cxf.xjc-utils</groupId>
                 <artifactId>cxf-xjc-runtime</artifactId>
                 <version>${cxf-xjc-runtime.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>1.6.2</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>

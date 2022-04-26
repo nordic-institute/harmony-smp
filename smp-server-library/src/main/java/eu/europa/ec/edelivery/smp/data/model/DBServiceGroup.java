@@ -77,11 +77,6 @@ public class DBServiceGroup extends BaseEntity {
     @OneToOne(mappedBy = "dbServiceGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private DBServiceGroupExtension serviceGroupExtension;
 
-    @Column(name = "CREATED_ON", nullable = false)
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    LocalDateTime lastUpdatedOn;
-
     @Override
     public Long getId() {
         return id;
@@ -223,36 +218,5 @@ public class DBServiceGroup extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, participantIdentifier, participantScheme);
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
     }
 }

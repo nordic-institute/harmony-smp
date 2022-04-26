@@ -2,12 +2,12 @@
 import {Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 import {SecurityService} from '../security/security.service';
 import {ReplaySubject} from 'rxjs';
-import {AlertService} from "../alert/alert.service";
+import {AlertMessageService} from "../common/alert-message/alert-message.service";
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
 
-  constructor(private router: Router, private securityService: SecurityService, private alertService: AlertService) {
+  constructor(private router: Router, private securityService: SecurityService, private alertService: AlertMessageService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {

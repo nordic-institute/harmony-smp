@@ -202,7 +202,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
 
         DBDomain domain  = new DBDomain();
         domain.setSmlClientKeyAlias(UUID.randomUUID().toString());
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
 
         String alias = testInstance.getSmlClientKeyAliasForDomain(domain);
 
@@ -214,7 +214,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
 
         DBDomain domain  = new DBDomain();
         domain.setSmlClientKeyAlias(null);
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
 
         String alias = testInstance.getSmlClientKeyAliasForDomain(domain);
 

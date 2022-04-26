@@ -3,33 +3,15 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
-import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class PropertyInitializationTest {
 
@@ -40,9 +22,8 @@ public class PropertyInitializationTest {
     public ExpectedException expectedEx = ExpectedException.none();
 
 
-
     @Test
-    public void testValidateProperties(){
+    public void testValidateProperties() {
         // when
         Properties properties = new Properties();
 
@@ -53,7 +34,7 @@ public class PropertyInitializationTest {
     }
 
     @Test
-    public void getDatasourceWithoutConfiguration(){
+    public void getDatasourceWithoutConfiguration() {
         // when
         Properties properties = new Properties();
 
@@ -64,7 +45,7 @@ public class PropertyInitializationTest {
     }
 
     @Test
-    public void getDatasourceWithoutConfigurationWithJndi(){
+    public void getDatasourceWithoutConfigurationWithJndi() {
         // when
         Properties properties = new Properties();
         properties.setProperty(FileProperty.PROPERTY_DB_JNDI, "jdbc/notExists");
@@ -76,7 +57,7 @@ public class PropertyInitializationTest {
     }
 
     @Test
-    public void getDatasourceBadConfigurationWithUrl(){
+    public void getDatasourceBadConfigurationWithUrl() {
         // when
         Properties properties = new Properties();
         properties.setProperty(FileProperty.PROPERTY_DB_URL, "schema:/no@exists/db");
@@ -89,7 +70,7 @@ public class PropertyInitializationTest {
 
 
     @Test
-    public void getDatasourceByUrl(){
+    public void getDatasourceByUrl() {
         // when
         Properties properties = new Properties();
         properties.setProperty(FileProperty.PROPERTY_DB_URL, "jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");

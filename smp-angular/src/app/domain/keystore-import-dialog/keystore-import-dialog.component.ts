@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateService} from "../../user/certificate.service";
 import {CertificateRo} from "../../user/certificate-ro.model";
@@ -27,7 +27,7 @@ export class KeystoreImportDialogComponent {
               private http: HttpClient,
               public lookups: GlobalLookups,
               private dialogRef: MatDialogRef<KeystoreImportDialogComponent>,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
 

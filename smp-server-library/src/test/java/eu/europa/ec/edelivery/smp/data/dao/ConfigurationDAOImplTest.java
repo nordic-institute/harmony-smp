@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtilsTest;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
@@ -81,17 +83,17 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     @Test
     public void testLastUpdateOK() {
         //GIVE - WHEN
-        LocalDateTime lastUpdate = configurationDao.getLastUpdate();
+        OffsetDateTime lastUpdate = configurationDao.getLastUpdate();
 
         //THEN
         assertNotNull(lastUpdate);
-        assertTrue(LocalDateTime.now().isAfter(lastUpdate));
+        assertTrue(OffsetDateTime.now().isAfter(lastUpdate));
     }
 
     @Test
     public void testSetNewProperty() {
         // given
-        LocalDateTime lastUpdate = configurationDao.getLastUpdate();
+        OffsetDateTime lastUpdate = configurationDao.getLastUpdate();
         String propertyValue = "TestUser";
         String propertyDesc = "Test description";
         //WHEN
@@ -109,7 +111,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     @Test
     public void testUpdateProperty() {
         // given
-        LocalDateTime lastUpdate = configurationDao.getLastUpdate();
+        OffsetDateTime lastUpdate = configurationDao.getLastUpdate();
         String propertyValue = "TestUser";
         String propertyValue2 = "TestUser2";
         String propertyDesc = "Test description";
@@ -132,7 +134,6 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
     public void testDeleteProperty() {
         // given
-        LocalDateTime lastUpdate = configurationDao.getLastUpdate();
         String propertyValue = "TestUser";
         String propertyDesc = "Test description";
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_PROXY_USER,
@@ -170,7 +171,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         // give
         String path = configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR);
         Object objPath = configurationDao.getCachedPropertyValue(SMPPropertyEnum.CONFIGURATION_DIR);
-        LocalDateTime localDateTime = configurationDao.getLastUpdate();
+        OffsetDateTime localDateTime = configurationDao.getLastUpdate();
         // set new value
         String pathNew = Paths.get("src", "test", "resources", "keystores").toFile().getAbsolutePath();
         assertNotEquals(path, pathNew);
@@ -194,7 +195,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         // give
         String path = configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR);
         Object objPath = configurationDao.getCachedPropertyValue(SMPPropertyEnum.CONFIGURATION_DIR);
-        LocalDateTime localDateTime = configurationDao.getLastUpdate();
+        OffsetDateTime localDateTime = configurationDao.getLastUpdate();
         // set new value
         String pathNew = Paths.get("src", "test", "resources", "keystores").toFile().getAbsolutePath();
         assertNotEquals(path, pathNew);
@@ -219,13 +220,10 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         // give
         String newTestPassword = UUID.randomUUID().toString();
         String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.KEYSTORE_PASSWORD,
-                newDBTestPassword + "", "");
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.TRUSTSTORE_PASSWORD,
-                newDBTestPassword + "", "");
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_PROXY_PASSWORD,
-                newDBTestPassword + "", "");
 
+        updateOrCreatePropertyToDB(KEYSTORE_PASSWORD,newDBTestPassword );
+        updateOrCreatePropertyToDB(TRUSTSTORE_PASSWORD,newDBTestPassword );
+        updateOrCreatePropertyToDB(HTTP_PROXY_PASSWORD,newDBTestPassword );
         // when
         configurationDao.refreshAndUpdateProperties();
         // read properties again from database!
@@ -344,13 +342,9 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         // given
         String newTestPassword = UUID.randomUUID().toString();
         String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.KEYSTORE_PASSWORD,
-                newDBTestPassword + "", "");
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.TRUSTSTORE_PASSWORD,
-                newDBTestPassword + "", "");
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_PROXY_PASSWORD,
-                newDBTestPassword + "", "");
-
+        updateOrCreatePropertyToDB(KEYSTORE_PASSWORD,newDBTestPassword );
+        updateOrCreatePropertyToDB(TRUSTSTORE_PASSWORD,newDBTestPassword );
+        updateOrCreatePropertyToDB(HTTP_PROXY_PASSWORD,newDBTestPassword );
 
         configurationDao.reloadPropertiesFromDatabase();
 
@@ -382,7 +376,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     public void testUpdateEncryptedValues() {
         // given
         String newTestPassword = UUID.randomUUID().toString();
-        String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
+        String newDBTestPassword = newTestPassword;
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.KEYSTORE_PASSWORD,
                 newDBTestPassword + "", "");
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.TRUSTSTORE_PASSWORD,
@@ -414,6 +408,19 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, dbKeystorePassword, encryptionKey));
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.TRUSTSTORE_PASSWORD, dbTruststorePassword, encryptionKey));
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.HTTP_PROXY_PASSWORD, dbProxyPassword, encryptionKey));
+    }
 
+    public void updateOrCreatePropertyToDB(SMPPropertyEnum propertyEnum,  String value){
+        Optional<DBConfiguration> prop = configurationDao.findConfigurationProperty(propertyEnum.getProperty());
+        DBConfiguration dbProp;
+        if (prop.isPresent()){
+            dbProp = prop.get();
+        } else {
+            dbProp = new DBConfiguration();
+            dbProp.setProperty(propertyEnum.getProperty());
+            dbProp.setDescription(propertyEnum.getDesc());
+        }
+        dbProp.setValue(value);
+        configurationDao.update(dbProp);
     }
 }

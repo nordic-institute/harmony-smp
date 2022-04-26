@@ -17,6 +17,7 @@ import eu.europa.ec.edelivery.smp.config.DatabaseProperties;
 import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -25,13 +26,18 @@ import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStoppedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
 import java.io.File;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
@@ -41,16 +47,18 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
 public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
-
-
-    List<PropertyUpdateListener> updateListenerList = new ArrayList<>();
-
     boolean isRefreshProcess = false;
     final Properties cachedProperties = new Properties();
+    Map<String, Object> cachedPropertyValues = new HashMap();
+    OffsetDateTime lastUpdate = null;
+    OffsetDateTime initiateDate = null;
+    boolean applicationInitialized = false;
+    ApplicationContext applicationContext;
+    boolean serverRestartNeeded = false;
 
-    HashMap cachedPropertyValues = new HashMap();
-
-    LocalDateTime lastUpdate = null;
+    public ConfigurationDao(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
 
     /**
@@ -70,29 +78,59 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     @Transactional
+    public DBConfiguration setPropertyToDatabase(String key, String value) {
+        Optional<SMPPropertyEnum> optionalSMPPropertyEnum = SMPPropertyEnum.getByProperty(key);
+        if (!optionalSMPPropertyEnum.isPresent()) {
+            LOG.warn("Property: [{}] is not SMP property and it is ignored!", key);
+            return null;
+        }
+        return setPropertyToDatabase(optionalSMPPropertyEnum.get(), value, null);
+    }
+
+    @Transactional
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
+
+        if (!PropertyUtils.isValidProperty(key, value)) {
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, key.getPropertyType().getErrorMessage(key.getProperty()));
+        }
+
         Optional<DBConfiguration> result = getConfigurationEntityFromDatabase(key);
         DBConfiguration configurationEntity;
         if (!result.isPresent()) {
             configurationEntity = new DBConfiguration();
             configurationEntity.setProperty(key.getProperty());
-            configurationEntity.setValue(value);
+            configurationEntity.setValue(prepareValue(key, value));
             configurationEntity.setDescription(StringUtils.isBlank(description) ? key.getDesc() : description);
-            configurationEntity.setCreatedOn(LocalDateTime.now());
-            configurationEntity.setLastUpdatedOn(LocalDateTime.now());
             memEManager.persist(configurationEntity);
 
         } else {
             configurationEntity = result.get();
-            configurationEntity.setValue(value);
+            configurationEntity.setValue(prepareValue(key, value));
             // set default  for null value
             if (description != null) {
                 configurationEntity.setDescription(description);
             }
-            configurationEntity.setLastUpdatedOn(LocalDateTime.now());
             configurationEntity = memEManager.merge(configurationEntity);
         }
+
+        if (key.isRestartNeeded()) {
+            // set flag that server restart is needed
+            LOG.warn("Property [{}] changed and server restart is needed!", key.getProperty());
+            serverRestartNeeded = true;
+        }
         return configurationEntity;
+    }
+
+    private String prepareValue(SMPPropertyEnum prop, String value) {
+
+        if (Objects.equals(prop.getPropertyType(), SMPPropertyTypeEnum.BOOLEAN)) {
+            return value.toLowerCase();
+        }
+
+        if (prop.isEncrypted() && !StringUtils.isBlank(value)) {
+            return encryptString(prop, value);
+        }
+        return value;
     }
 
     @Transactional
@@ -124,7 +162,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     @Transactional
     public void refreshAndUpdateProperties() {
         // get update
-        LocalDateTime lastUpdateFromDB = getLastUpdate();
+        OffsetDateTime lastUpdateFromDB = getLastUpdate();
         if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
             reloadPropertiesFromDatabase();
             // check and update non encrypted tokens
@@ -136,7 +174,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     public void refreshProperties() {
         // get update
-        LocalDateTime lastUpdateFromDB = getLastUpdate();
+        OffsetDateTime lastUpdateFromDB = getLastUpdate();
         if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
             reloadPropertiesFromDatabase();
         } else {
@@ -154,7 +192,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             try {
                 resultProperties = validateConfiguration(newProperties);
             } catch (SMPRuntimeException ex) {
-                LOG.error("Throwable error occurred while refreshing configuration. Configuration was not changed!  Error: {} ", ex.getMessage(), ex);
+                LOG.error("Throwable error occurred while refreshing configuration. Configuration was not changed!  Error: [{}]", ExceptionUtils.getRootCauseMessage(ex));
                 isRefreshProcess = false;
                 return;
             }
@@ -170,25 +208,76 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             } finally {
                 isRefreshProcess = false;
             }
-
             // update all listeners
-            updateListenerList.forEach(PropertyUpdateListener::propertiesUpdate);
+            updatePropertyListeners();
         } else {
             LOG.warn("Refreshing of database properties is already in process!");
         }
     }
 
-    public void addPropertyUpdateListener(PropertyUpdateListener listener) {
-        updateListenerList.add(listener);
+    /**
+     * Application event when an {@code ApplicationContext} gets initialized or refreshed
+     */
+    @EventListener({ContextRefreshedEvent.class})
+    void contextRefreshedEvent() {
+        applicationInitialized = true;
+        initiateDate = OffsetDateTime.now();
+        updatePropertyListeners();
     }
 
-    public boolean removePropertyUpdateListener(PropertyUpdateListener listener) {
-        return updateListenerList.remove(listener);
+    @EventListener({ContextStoppedEvent.class})
+    void contextStopEvent() {
+        applicationInitialized = false;
     }
 
-    public LocalDateTime getLastUpdate() {
-        TypedQuery<LocalDateTime> query = memEManager.createNamedQuery("DBConfiguration.maxUpdateDate", LocalDateTime.class);
+    private void updatePropertyListeners() {
+        // wait to get all property listener beans to avoid cyclic initialization
+        // some beans are using ConfigurationService also are in PropertyUpdateListener
+        // for listener to update properties
+        if (!applicationInitialized) {
+            LOG.debug("Application is not started. The PropertyUpdateEvent is not triggered");
+            return;
+        }
+
+        Map<String, PropertyUpdateListener> updateListenerList = getPropertyUpdateListener();
+        if (updateListenerList != null) {
+            updateListenerList.forEach(this::updateListener);
+        }
+    }
+
+    /**
+     * To avoid circular dependencies (some update PropertyUpdateListener can use objects with ConfigurationService )
+     */
+    public Map<String, PropertyUpdateListener> getPropertyUpdateListener() {
+        return applicationContext.getBeansOfType(PropertyUpdateListener.class);
+    }
+
+    private void updateListener(String name, PropertyUpdateListener listener) {
+        LOG.debug("updateListener [{}]", name);
+        Map<SMPPropertyEnum, Object> mapProp = new HashMap<>();
+        listener.handledProperties().forEach(prop -> mapProp.put(prop, cachedPropertyValues.get(prop.getProperty())));
+        listener.updateProperties(mapProp);
+    }
+
+    public OffsetDateTime getLastUpdate() {
+        TypedQuery<OffsetDateTime> query = memEManager.createNamedQuery("DBConfiguration.maxUpdateDate", OffsetDateTime.class);
         return query.getSingleResult();
+    }
+
+    /**
+     * Method returns all properties which were changed in database and not yet updated in application by the cron job
+     *
+     * @return List of changed properties.
+     */
+    public List<DBConfiguration> getPendingUpdateProperties() {
+        if (lastUpdate == null) {
+            LOG.debug("The properties were not yet loaded. Skip pending properties");
+            return Collections.emptyList();
+        }
+        TypedQuery<DBConfiguration> query = memEManager.createNamedQuery("DBConfiguration.getPendingProperties",
+                DBConfiguration.class);
+        query.setParameter("updateDate", lastUpdate);
+        return query.getResultList();
     }
 
     public Map<String, Object> validateConfiguration(Properties properties) {
@@ -204,8 +293,10 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         if (!lstMissingProperties.isEmpty()) {
             LOG.error("Missing mandatory properties: [{}]. Fix the SMP configuration!", lstMissingProperties);
         }
+        // update deprecated values
 
 
+        properties = updateDeprecatedValues(properties);
         Map<String, Object> propertyValues = parseProperties(properties);
 
         // property validation
@@ -233,8 +324,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             String value = getProperty(cachedProperties, prop);
             if (prop.isEncrypted() && !StringUtils.isBlank(value) && value.startsWith(SecurityUtils.DECRYPTED_TOKEN_PREFIX)) {
                 String valToEncrypt = SecurityUtils.getNonEncryptedValue(value);
-                String encVal = encryptString(prop, valToEncrypt, encryptionKey);
-                setPropertyToDatabase(prop, encVal, prop.getDesc());
+                setPropertyToDatabase(prop, valToEncrypt, prop.getDesc());
             }
         }
     }
@@ -271,6 +361,22 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Encryption file does not exists or is not a File! Value:  [%s]",
                     encryptionKeyFile.getAbsolutePath()));
         }
+    }
+
+    /**
+     * Method validates if new value for deprecated value is already set. If not it set the value from deprecated property if exists!
+     * @param properties
+     * @return
+     */
+    public Properties updateDeprecatedValues(Properties properties){
+        if (!properties.containsKey(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty())
+                && properties.containsKey(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty())){
+
+            properties.setProperty(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty(),
+                    properties.getProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty()) );
+        }
+
+        return properties;
     }
 
 
@@ -315,7 +421,6 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return propertyValues;
     }
 
-
     private static void validateIfExists(Map<String, Object> propertyValues, SMPPropertyEnum key) {
         Object value = propertyValues.get(key.getProperty());
         if (value == null) {
@@ -358,5 +463,32 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
     }
 
+    public String encryptString(SMPPropertyEnum key, String value) {
+        File encryptionKey = (File) cachedPropertyValues.get(ENCRYPTION_FILENAME.getProperty());
+        return encryptString(key, value, encryptionKey);
+    }
 
+    public List<DBConfiguration> getPendingRestartProperties() {
+
+        if (initiateDate == null) {
+            LOG.warn("No pending restart properties because application is not yet initialized!");
+            return Collections.emptyList();
+        }
+        TypedQuery<DBConfiguration> query = memEManager.createNamedQuery("DBConfiguration.getPendingRestartProperties",
+                DBConfiguration.class);
+        query.setParameter("serverStartedDate", initiateDate);
+        query.setParameter("restartPropertyList", SMPPropertyEnum.getRestartOnChangeProperties().stream().map(SMPPropertyEnum::getProperty).collect(Collectors.toList()));
+
+        return query.getResultList();
+    }
+
+    public boolean isServerRestartNeeded() {
+        List<DBConfiguration> restartPendingProperties = getPendingRestartProperties();
+        boolean restartNeeded = !restartPendingProperties.isEmpty();
+        if (restartNeeded) {
+            LOG.warn("Server restart is needed! Pending properties [{}]",
+                    restartPendingProperties.stream().map(DBConfiguration::getProperty).collect(Collectors.toList()));
+        }
+        return restartNeeded;
+    }
 }

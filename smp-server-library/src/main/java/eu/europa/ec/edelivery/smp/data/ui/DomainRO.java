@@ -1,14 +1,12 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-import java.io.Serializable;
-
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
 
-public class DomainRO extends BaseRO  {
+public class DomainRO extends BaseRO {
 
 
     private static final long serialVersionUID = -9008583888835630560L;
@@ -21,13 +19,8 @@ public class DomainRO extends BaseRO  {
     String smlClientCertHeader;
     String smlClientKeyAlias;
     String signatureKeyAlias;
-    boolean smlBlueCoatAuth;
+    boolean smlClientCertAuth;
     boolean smlRegistered;
-
-
-    public DomainRO() {
-
-    }
 
     public Long getId() {
         return id;
@@ -93,12 +86,12 @@ public class DomainRO extends BaseRO  {
         this.signatureKeyAlias = signatureKeyAlias;
     }
 
-    public boolean isSmlBlueCoatAuth() {
-        return smlBlueCoatAuth;
+    public boolean isSmlClientCertAuth() {
+        return smlClientCertAuth;
     }
 
-    public void setSmlBlueCoatAuth(boolean smlBlueCoatAuth) {
-        this.smlBlueCoatAuth = smlBlueCoatAuth;
+    public void setSmlClientCertAuth(boolean smlClientCertAuth) {
+        this.smlClientCertAuth = smlClientCertAuth;
     }
 
     public boolean isSmlRegistered() {

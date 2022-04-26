@@ -2,7 +2,7 @@
 import {Router, ActivatedRoute} from '@angular/router';
 import {SecurityService} from '../security/security.service';
 import {HttpEventService} from '../http/http-event.service';
-import {AlertService} from '../alert/alert.service';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
 import {MatDialogRef, MatDialog} from '@angular/material/dialog';
@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               public lookups: GlobalLookups,
               private securityService: SecurityService,
               private httpEventService: HttpEventService,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
               private securityEventService: SecurityEventService,
               private dialog: MatDialog) {
   }
@@ -102,10 +102,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   isUserAuthSSOEnabled(): boolean {
-     return this.lookups.cachedApplicationInfo.authTypes.includes('SSO');
+     return this.lookups.cachedApplicationInfo?.authTypes.includes('SSO');
   }
 
   isUserAuthPasswdEnabled():boolean {
-    return this.lookups.cachedApplicationInfo.authTypes.includes('PASSWORD');
+    return this.lookups.cachedApplicationInfo?.authTypes.includes('PASSWORD');
   }
 }

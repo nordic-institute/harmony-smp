@@ -3,7 +3,7 @@ import {Router, NavigationStart, NavigationEnd} from '@angular/router';
 import {Observable, Subject} from 'rxjs';
 
 @Injectable()
-export class AlertService {
+export class AlertMessageService {
   private subject = new Subject<any>();
   private previousRoute: string;
 

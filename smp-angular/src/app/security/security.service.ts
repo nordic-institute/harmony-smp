@@ -5,8 +5,7 @@ import {SecurityEventService} from './security-event.service';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
-import {HttpEventService} from "../http/http-event.service";
-import {AlertService} from "../alert/alert.service";
+import {AlertMessageService} from "../common/alert-message/alert-message.service";
 
 @Injectable()
 export class SecurityService {
@@ -15,7 +14,7 @@ export class SecurityService {
 
   constructor (
     private http: HttpClient,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     private securityEventService: SecurityEventService,
   ) {
     this.securityEventService.onLogoutSuccessEvent().subscribe(() => window.location.reload());

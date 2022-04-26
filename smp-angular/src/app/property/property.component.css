@@ -1,0 +1,62 @@
+.alert-message {
+  padding: 5px;
+  color: white;
+  background-color: red;
+  opacity: 1;
+  transition: opacity 0.6s;
+  margin-bottom: 15px;
+}
+
+/* --- Select ---*/
+.mat-select{
+  padding:20px 0;
+}
+
+/* --- Button  ---*/
+.group-btn {
+   margin-top:20px;
+ }
+
+#hiddenButtonId {
+  position: fixed;
+}
+
+::ng-deep .missingKey {
+  text-decoration: line-through !important;
+  font-weight: bold;
+  color:red;
+}
+
+::ng-deep .domainWarning {
+  text-decoration: line-through !important;
+  font-weight: bold;
+  color:#c6c639;
+}
+
+::ng-deep .deleted  {
+  text-decoration: line-through !important;
+  font-weight: bold;
+}
+::ng-deep .table-row-new  {
+
+  color: darkgreen !important;
+  font-weight: bold;
+}
+::ng-deep .table-row-updated  {
+  font-weight: bold;
+}
+::ng-deep .table-row  {
+  font-weight: normal;
+}
+
+.row-action-list button {
+  padding: 0;
+  margin: 0;
+  min-width:32px;
+  width:32px;
+}
+
+.table-row-pending {
+  color: darkorange !important;
+  font-weight: bold;
+}
