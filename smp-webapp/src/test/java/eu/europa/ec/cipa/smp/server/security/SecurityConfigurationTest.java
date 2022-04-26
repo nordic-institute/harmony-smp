@@ -14,6 +14,7 @@
 package eu.europa.ec.cipa.smp.server.security;
 
 import eu.europa.ec.edelivery.exception.ClientCertParseException;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
@@ -33,6 +34,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.security.auth.login.Configuration;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.containsString;
@@ -67,12 +69,17 @@ public class SecurityConfigurationTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    @Autowired
+    private ConfigurationDao configurationDao;
+
     MockMvc mvc;
 
     @Before
     public void setup() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcUtils.initializeMockMvc(context);
+        configurationDao.reloadPropertiesFromDatabase();
     }
 
 
