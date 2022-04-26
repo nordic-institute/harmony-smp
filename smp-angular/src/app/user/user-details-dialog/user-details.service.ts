@@ -3,14 +3,14 @@ import {HttpClient} from "@angular/common/http";
 import {SmpConstants} from "../../smp.constants";
 import {Observable} from "rxjs";
 import {AccessTokenRo} from "../../common/access-token-generation-dialog/access-token-ro.model";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 
 @Injectable()
 export class UserDetailsService {
 
   constructor(
     private http: HttpClient,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
   ) {
   }
 

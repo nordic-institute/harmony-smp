@@ -1,11 +1,12 @@
 {
   "name": "smp-web",
-  "version": "4.0.0",
-  "license": "MIT",
+  "version": "4.2.0",
+  "license": "EUPL 1.2",
   "angular-cli": {},
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy-config.json",
+    "start:dev": "ng serve -c dev --proxy-config proxy-config.json",
     "build": "ng build --dev --base-href /smp/",
     "prod": "ng build --configuration production --output-path=./src/main/resources/META-INF/resources/ui/",
     "test": "ng test",

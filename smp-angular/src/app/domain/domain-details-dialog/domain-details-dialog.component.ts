@@ -2,7 +2,7 @@ import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../domain-ro.model";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
@@ -42,7 +42,7 @@ export class DomainDetailsDialogComponent {
     public dialog: MatDialog,
     public lookups: GlobalLookups,
     private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private fb: FormBuilder) {
 

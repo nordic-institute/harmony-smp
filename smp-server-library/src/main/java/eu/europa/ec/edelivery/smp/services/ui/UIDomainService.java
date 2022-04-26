@@ -5,20 +5,17 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainDeleteValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
-import eu.europa.ec.edelivery.smp.data.ui.DomainPublicRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
-import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.StringWriter;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,8 +69,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
                 upd.setSmlSubdomain(dRo.getSmlSubdomain());
                 upd.setDomainCode(dRo.getDomainCode());
                 upd.setSignatureKeyAlias(dRo.getSignatureKeyAlias());
-                upd.setSmlBlueCoatAuth(dRo.isSmlBlueCoatAuth());
-                upd.setLastUpdatedOn(LocalDateTime.now());
+                upd.setSmlClientCertAuth(dRo.isSmlClientCertAuth());
                 domainDao.update(upd);
             } else if (dRo.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
                 domainDao.removeByDomainCode(dRo.getDomainCode());

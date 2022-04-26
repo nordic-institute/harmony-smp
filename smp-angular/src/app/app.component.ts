@@ -2,7 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {SecurityService} from './security/security.service';
 import {Router} from '@angular/router';
 import {Authority} from "./security/authority.model";
-import {AlertService} from "./alert/alert.service";
+import {AlertMessageService} from "./common/alert-message/alert-message.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {GlobalLookups} from "./common/global-lookups";
 import {UserController} from "./user/user-controller";
@@ -24,7 +24,7 @@ export class AppComponent {
   userController: UserController;
 
   constructor(
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     private securityService: SecurityService,
     private router: Router,
     private http: HttpClient,

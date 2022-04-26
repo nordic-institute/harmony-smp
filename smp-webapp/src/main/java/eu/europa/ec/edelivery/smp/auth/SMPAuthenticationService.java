@@ -3,7 +3,6 @@ package eu.europa.ec.edelivery.smp.auth;
 import eu.europa.ec.edelivery.smp.config.SMPSecurityConstants;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.ui.AuthenticationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +26,7 @@ public class SMPAuthenticationService {
     public Authentication authenticate(String username, String password) {
         LOG.debug("Authenticate: [{}]", username);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-        SMPAuthenticationToken authentication = (SMPAuthenticationToken)authenticationManager.authenticate(token);
+        SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }

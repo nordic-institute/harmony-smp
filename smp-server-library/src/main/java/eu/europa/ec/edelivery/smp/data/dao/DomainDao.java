@@ -31,7 +31,8 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
 /**
- * Created by gutowpa on 16/01/2018.
+ * @author gutowpa
+ * @since 3.0
  */
 @Repository
 public class DomainDao extends BaseDao<DBDomain> {

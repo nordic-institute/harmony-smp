@@ -1,12 +1,9 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,8 +13,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -33,21 +29,19 @@ import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        WSSecurityConfigurerAdapter.class})
+@RunWith(SpringRunner.class)
 @WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
-@SqlConfig(encoding = "UTF-8")
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data.sql"},
+        executionPhase = BEFORE_TEST_METHOD)
 public class DomainAdminResourceTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
 
@@ -76,32 +70,31 @@ public class DomainAdminResourceTest {
     }
 
 
-
     @Test
     public void updateDomainListOkDelete() throws Exception {
 // given when
         assertEquals("CEF-SMP-002", domainDao.getDomainByCode("domainTwo").get().getSmlSmpId());
 
-        MvcResult result = mvc.perform(put(PATH )
+        MvcResult result = mvc.perform(put(PATH)
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json")
-                .content("[{\"status\":3,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false,\"deleted\":true}]")) // delete domain with id 2
+                .content("[{\"status\":3,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
 
         // check if exists
         assertFalse(domainDao.getDomainByCode("domainTwo").isPresent());
- }
+    }
 
 
     @Test
     public void updateDomainListNotExists() throws Exception {
 // given when
-        MvcResult result = mvc.perform(put(PATH )
+        MvcResult result = mvc.perform(put(PATH)
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json")
-                .content("[{\"status\":3,\"index\":9,\"id\":10,\"domainCode\":\"domainTwoNotExist\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false,\"deleted\":true}]")) // delete domain with id 2
+                .content("[{\"status\":3,\"index\":9,\"id\":10,\"domainCode\":\"domainTwoNotExist\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
     }
 
@@ -131,16 +124,17 @@ public class DomainAdminResourceTest {
 // given when
         assertEquals("CEF-SMP-002", domainDao.getDomainByCode("domainTwo").get().getSmlSmpId());
 
-        MvcResult result = mvc.perform(put(PATH )
+        MvcResult result = mvc.perform(put(PATH)
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json")
-                .content("[{\"status\":1,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false,\"deleted\":true}]")) // delete domain with id 2
+                .content("[{\"status\":1,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
 
         // check if exists
         assertEquals("CEF-SMP-010", domainDao.getDomainByCode("domainTwo").get().getSmlSmpId());
     }
+
     @Test
     public void validateDeleteDomainFalse() throws Exception {
         // given when
@@ -159,7 +153,7 @@ public class DomainAdminResourceTest {
         assertEquals(1, res.getListDeleteNotPermitedIds().size());
         assertEquals(1, res.getListIds().size());
         assertEquals(false, res.isValidOperation());
-        assertEquals("Could not delete domains used by Service groups! Domain: domain (domain ) uses by:2 SG.",res.getStringMessage());
+        assertEquals("Could not delete domains used by Service groups! Domain: domain (domain ) uses by:2 SG.", res.getStringMessage());
     }
 
     @Test

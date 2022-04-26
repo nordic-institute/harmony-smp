@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient} from "@angular/common/http";
 import {SmpConstants} from "../../smp.constants";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {ServiceGroupEditRo} from "../service-group-edit-ro.model";
@@ -67,7 +67,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
               public dialog: MatDialog,
               protected http: HttpClient,
               public dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent>,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
               public lookups: GlobalLookups,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private dialogFormBuilder: FormBuilder,
@@ -145,7 +145,6 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     //
     this.changeDetector.detectChanges()
   }
-
 
   getDomainCodeClass(domain) {
     let domainWarning = this.getDomainConfigurationWarning(domain);

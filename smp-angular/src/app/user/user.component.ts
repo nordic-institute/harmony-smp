@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {AlertService} from '../alert/alert.service';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {UserController} from './user-controller';
 import {HttpClient} from '@angular/common/http';
 import {SearchTableComponent} from "../common/search-table/search-table.component";
@@ -31,7 +31,7 @@ export class UserComponent implements AfterViewInit {
   constructor(private lookups: GlobalLookups,
               public securityService: SecurityService,
               protected http: HttpClient,
-              protected alertService: AlertService,
+              protected alertService: AlertMessageService,
               public dialog: MatDialog) {
   }
 

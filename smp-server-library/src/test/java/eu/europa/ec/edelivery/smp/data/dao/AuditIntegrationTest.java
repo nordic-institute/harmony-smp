@@ -14,6 +14,8 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.junit.Assert;
@@ -64,6 +66,7 @@ public class AuditIntegrationTest {
         assertTrue(ar.isEntityClassAudited(DBUser.class));
         assertTrue(ar.isEntityClassAudited(DBCertificate.class));
         assertTrue(ar.isEntityClassAudited(DBServiceGroupExtension.class));
+        assertTrue(ar.isEntityClassAudited(DBAlert.class));
     }
 
     @Test
@@ -79,6 +82,16 @@ public class AuditIntegrationTest {
         testAuditEntity(domain, alterVal);
     }
 
+    @Test
+    public void testAuditDBAlert() {
+
+        DBAlert dbAlert = createDBAlert();
+        Map<String, Object> alterVal = new HashMap<>();
+        alterVal.put("processed", false);
+        alterVal.put("alertType", AlertTypeEnum.CERT_EXPIRED);
+        alterVal.put("alertStatus", AlertStatusEnum.FAILED);
+        testAuditEntity(dbAlert, alterVal);
+    }
 
     @Test
     public void testAuditDBUser() {
@@ -88,7 +101,6 @@ public class AuditIntegrationTest {
         alterVal.put("password", UUID.randomUUID().toString());
         alterVal.put("role", UUID.randomUUID().toString());
         alterVal.put("passwordChanged", LocalDateTime.now());
-
         testAuditEntity(dbuser, alterVal);
     }
 
@@ -102,17 +114,12 @@ public class AuditIntegrationTest {
         alterValCert.put("certificateId", UUID.randomUUID().toString());
         alterValCert.put("validFrom", LocalDateTime.now());
         alterValCert.put("validTo", LocalDateTime.now());
-
-
         testAuditSubEntity(dbuser, dbuser.getCertificate(), alterValCert);
     }
 
     @Test
     public void testAuditDBServiceGroup() {
-
         DBServiceGroup grp = createDBServiceGroup();
-
-        EntityManager em = emf.createEntityManager();
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("extension", UUID.randomUUID().toString().getBytes());
         testAuditSubEntity(grp, grp.getServiceGroupExtension(), alterVal);
@@ -136,7 +143,7 @@ public class AuditIntegrationTest {
         md.setServiceGroupDomain(serviceGroupDomain);
 
         Map<String, Object> alterVal = new HashMap<>();
-        alterVal.put("XmlContent", UUID.randomUUID().toString().getBytes());
+        alterVal.put("xmlContent", UUID.randomUUID().toString().getBytes());
 
         testAuditSubEntity(md, md.getServiceMetadataXml(), alterVal);
     }
@@ -172,7 +179,7 @@ public class AuditIntegrationTest {
         // update
         if (alterValues != null && !alterValues.isEmpty()) { // set value to detail
             alterValues.forEach((prop, val) -> {
-                ReflectionTestUtils.invokeSetterMethod(subEntity, prop, val, val.getClass());
+                ReflectionTestUtils.setField(subEntity, prop, val, val.getClass());
             });
             update(em, entity); // master
             Assert.assertEquals(++iRevSize, ar.getRevisions(subEntity.getClass(), dbId).size());

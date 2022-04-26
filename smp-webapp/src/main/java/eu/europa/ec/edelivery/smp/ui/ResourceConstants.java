@@ -19,9 +19,12 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_PUBLIC_SERVICE_GROUP = CONTEXT_PATH_PUBLIC + "service-group";
     public static final String CONTEXT_PATH_PUBLIC_SERVICE_METADATA = CONTEXT_PATH_PUBLIC + "service-metadata";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY = CONTEXT_PATH_PUBLIC + "security";
+    public static final String CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION = CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";
 
     //internal
+    public static final String CONTEXT_PATH_INTERNAL_ALERT = CONTEXT_PATH_INTERNAL + "alert";
     public static final String CONTEXT_PATH_INTERNAL_DOMAIN = CONTEXT_PATH_INTERNAL + "domain";
+    public static final String CONTEXT_PATH_INTERNAL_PROPERTY = CONTEXT_PATH_INTERNAL + "property";
     public static final String CONTEXT_PATH_INTERNAL_APPLICATION = CONTEXT_PATH_INTERNAL + "application";
     public static final String CONTEXT_PATH_INTERNAL_USER = CONTEXT_PATH_INTERNAL + "user";
     public static final String CONTEXT_PATH_INTERNAL_KEYSTORE = CONTEXT_PATH_INTERNAL + "keystore";
@@ -40,5 +43,6 @@ public class ResourceConstants {
     public static final String PARAM_QUERY_PARTC_SCHEME="participantScheme";
     public static final String PARAM_QUERY_DOMAIN_CODE ="domainCode";
     public static final String PARAM_QUERY_USER ="user";
+    public static final String PARAM_QUERY_PROPERTY ="property";
 
 }

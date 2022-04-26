@@ -34,12 +34,16 @@ public class SMPAuthorizationService {
 
     public boolean isSystemAdministrator() {
         SMPAuthenticationToken authentication = getAndValidateSessionAuthentication();
-        return hasSessionUserRole(S_AUTHORITY_TOKEN_SYSTEM_ADMIN, authentication);
+        boolean hasSystemRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SYSTEM_ADMIN, authentication);
+        LOG.debug("Logged user [{}] is system administrator role [{}]", authentication.getUser().getUsername(), hasSystemRole);
+        return hasSystemRole;
     }
 
     public boolean isSMPAdministrator() {
         SMPAuthenticationToken authentication = getAndValidateSessionAuthentication();
-        return hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, authentication);
+        boolean hasSystemRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, authentication);
+        LOG.debug("Logged user [{}] is SMP administrator role [{}]", authentication.getUser().getUsername(), hasSystemRole);
+        return hasSystemRole;
     }
 
     public boolean isCurrentlyLoggedIn(String userId) {

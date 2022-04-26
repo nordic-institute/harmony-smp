@@ -22,15 +22,25 @@
     </button>
     <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']" *ngIf="isCurrentUserSystemAdmin()"
             id="sidebar_domain_id">
-      <mat-icon matTooltip="Domain" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">domain</mat-icon>
-      <span>Domain</span>
+      <mat-icon matTooltip="Domains" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">domain</mat-icon>
+      <span>Domains</span>
     </button>
-
     <!-- button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id" -->
     <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="isCurrentUserSystemAdmin()"
             id="sidebar_user_id">
       <mat-icon matTooltip="Users" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">people</mat-icon>
       <span>Users</span>
+    </button>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/alert']" *ngIf="isCurrentUserSystemAdmin()"
+            id="sidebar_alert_id">
+      <mat-icon matTooltip="Alerts" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">add_alert</mat-icon>
+      <span>Alerts</span>
+    </button>
+
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/property']" *ngIf="isCurrentUserSystemAdmin()"
+            id="sidebar_property_id">
+      <mat-icon matTooltip="Properties" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">settings</mat-icon>
+      <span>Properties</span>
     </button>
 
     <div class="collapse-button">

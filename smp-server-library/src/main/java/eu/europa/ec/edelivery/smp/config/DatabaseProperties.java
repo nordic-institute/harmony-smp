@@ -7,6 +7,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,7 +15,7 @@ public class DatabaseProperties extends Properties {
     SMPLogger LOG = SMPLoggerFactory.getLogger(DatabaseProperties.class);
     private static final long serialVersionUID = 1L;
 
-    private LocalDateTime lastUpdate;
+    private OffsetDateTime lastUpdate;
 
     public DatabaseProperties(EntityManager em) {
         super();
@@ -30,7 +31,7 @@ public class DatabaseProperties extends Properties {
         }
     }
 
-    public LocalDateTime getLastUpdate() {
+    public OffsetDateTime getLastUpdate() {
         return lastUpdate;
     }
 }

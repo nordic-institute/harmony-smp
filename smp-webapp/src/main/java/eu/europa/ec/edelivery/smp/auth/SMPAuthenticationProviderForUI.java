@@ -1,19 +1,21 @@
 package eu.europa.ec.edelivery.smp.auth;
 
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
+import eu.europa.ec.edelivery.smp.services.AlertService;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,12 +45,18 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
     final CRLVerifierService crlVerifierService;
     final UITruststoreService truststoreService;
     final ConfigurationService configurationService;
+    final AlertService alertService;
 
 
     @Autowired
-    public SMPAuthenticationProviderForUI(UserDao mUserDao, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService) {
+    public SMPAuthenticationProviderForUI(UserDao mUserDao,
+                                          CRLVerifierService crlVerifierService,
+                                          AlertService alertService,
+                                          UITruststoreService truststoreService,
+                                          ConfigurationService configurationService) {
         this.mUserDao = mUserDao;
         this.crlVerifierService = crlVerifierService;
+        this.alertService = alertService;
         this.truststoreService = truststoreService;
         this.configurationService = configurationService;
     }
@@ -112,6 +120,12 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         return smpAuthenticationToken;
     }
 
+    public void alertFailedLogin() {
+
+        alertService.alertUserAccountSuspended();
+
+    }
+
 
     /**
      * Method tests if user account Suspended
@@ -135,8 +149,8 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
             return;
         }
         // check if the last failed attempt is already expired. If yes just clear the attepmts
-        if  (configurationService.getLoginSuspensionTimeInSeconds() !=null && configurationService.getLoginSuspensionTimeInSeconds() > 0
-             && ChronoUnit.SECONDS.between(LocalDateTime.now(), user.getLastFailedLoginAttempt()) > configurationService.getLoginSuspensionTimeInSeconds()){
+        if (configurationService.getLoginSuspensionTimeInSeconds() != null && configurationService.getLoginSuspensionTimeInSeconds() > 0
+                && ChronoUnit.SECONDS.between(LocalDateTime.now(), user.getLastFailedLoginAttempt()) > configurationService.getLoginSuspensionTimeInSeconds()) {
             LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
             user.setLastFailedLoginAttempt(null);
             user.setSequentialLoginFailureCount(0);
@@ -145,7 +159,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         }
 
         if (user.getSequentialLoginFailureCount() < configurationService.getLoginMaxAttempts()) {
-            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialLoginFailureCount() , configurationService.getLoginMaxAttempts());
+            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialLoginFailureCount(), configurationService.getLoginMaxAttempts());
             return;
         }
         LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
