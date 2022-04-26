@@ -44,7 +44,8 @@ public class ConfigurationServiceAllGetMethodsTest {
     public static Collection<Object[]> data() {
         // set property values for property, set value, method name, value or property, value (true) or property (false)
         return Arrays.asList(new Object[][] {
-                {CLIENT_CERT_HEADER_ENABLED, Boolean.TRUE, "isAuthenticationWithClientCertHeaderEnabled", true},
+                {EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, Boolean.TRUE, "isExternalTLSAuthenticationWithClientCertHeaderEnabled", true},
+                {EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, Boolean.TRUE, "isExternalTLSAuthenticationWithSSLClientCertHeaderEnabled", true},
                 {OUTPUT_CONTEXT_PATH, Boolean.FALSE, "isUrlContextEnabled", true},
                 //{HTTP_FORWARDED_HEADERS_ENABLED, Boolean.TRUE, "", true},
                 {HTTP_HSTS_MAX_AGE, 1234, "getHttpHeaderHstsMaxAge", true},

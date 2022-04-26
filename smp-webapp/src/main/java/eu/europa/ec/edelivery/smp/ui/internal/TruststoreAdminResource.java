@@ -53,7 +53,7 @@ public class TruststoreAdminResource {
     }
 
 
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator")
+    @PreAuthorize("@smpAuthorizationService.isSystemAdministrator and @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PostMapping(value = "/{user-id}/upload-certificate", consumes = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public CertificateRO uploadCertificate(@PathVariable("user-id") String userId,
                                            @RequestBody byte[] fileBytes) {
@@ -80,7 +80,7 @@ public class TruststoreAdminResource {
 
 
     @DeleteMapping(value = "/{id}/delete/{alias}", produces = {"application/json"})
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator && @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     public KeystoreImportResult deleteCertificate(@PathVariable("id") String userId,
                                                @PathVariable("alias") String alias) {
         LOG.info("Remove alias by user id {}, alias {}.", userId, alias);

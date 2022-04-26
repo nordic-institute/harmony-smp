@@ -79,7 +79,7 @@ public class DomainAdminResourceTest {
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json")
-                .content("[{\"status\":3,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
+                .content("[{\"status\":3,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
 
         // check if exists
@@ -94,7 +94,7 @@ public class DomainAdminResourceTest {
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json")
-                .content("[{\"status\":3,\"index\":9,\"id\":10,\"domainCode\":\"domainTwoNotExist\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
+                .content("[{\"status\":3,\"index\":9,\"id\":10,\"domainCode\":\"domainTwoNotExist\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
     }
 
@@ -128,7 +128,7 @@ public class DomainAdminResourceTest {
                 .with(SYSTEM_CREDENTIALS)
                 .with(csrf())
                 .header("Content-Type", " application/json")
-                .content("[{\"status\":1,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlBlueCoatAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
+                .content("[{\"status\":1,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
 
         // check if exists
