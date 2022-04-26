@@ -53,7 +53,7 @@ public class KeystoreResource {
         return sg;
     }
 
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator AND @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
     @PostMapping(path = "/{user-enc-id}/upload/{keystoreType}/{password}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_OCTET_STREAM_VALUE)
     public KeystoreImportResult uploadKeystore(@PathVariable("user-enc-id") String userEncId,
                                                @PathVariable("keystoreType") String keystoreType,
@@ -77,7 +77,7 @@ public class KeystoreResource {
         return keystoreImportResult;
     }
 
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator AND @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
     @DeleteMapping(value = "/{user-enc-id}/delete/{alias}", produces = APPLICATION_JSON_VALUE)
     public KeystoreImportResult deleteCertificate(@PathVariable("user-enc-id") String userEncId,
                                                   @PathVariable("alias") String alias) {
