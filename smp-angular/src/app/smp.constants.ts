@@ -13,9 +13,11 @@ export class SmpConstants {
   // user public services
   public static readonly REST_PUBLIC_USER = SmpConstants.REST_PUBLIC + 'user';
   public static readonly REST_PUBLIC_USER_UPDATE = SmpConstants.REST_PUBLIC_USER + "/" + SmpConstants.PATH_PARAM_ENC_USER_ID + "/";
-  public static readonly REST_PUBLIC_USER_CERT_VALIDATE = SmpConstants.REST_PUBLIC_USER_UPDATE + 'validate-certificate';
   public static readonly REST_PUBLIC_USER_GENERATE_ACCESS_TOKEN = SmpConstants.REST_PUBLIC_USER_UPDATE + 'generate-access-token';
   public static readonly REST_PUBLIC_USER_CHANGE_PASSWORD = SmpConstants.REST_PUBLIC_USER_UPDATE + 'change-password';
+  // truststore public services
+  public static readonly REST_PUBLIC_TRUSTSTORE = SmpConstants.REST_PUBLIC +"truststore/"+ "/" + SmpConstants.PATH_PARAM_ENC_USER_ID + "/";
+  public static readonly REST_PUBLIC_TRUSTSTORE_CERT_VALIDATE = SmpConstants.REST_PUBLIC_TRUSTSTORE + 'validate-certificate';
 
   // public authentication services
   public static readonly REST_PUBLIC_SECURITY = SmpConstants.REST_PUBLIC + 'security/';

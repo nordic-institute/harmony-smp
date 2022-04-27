@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
@@ -15,12 +15,12 @@ import {SecurityService} from "../security/security.service";
   templateUrl: './service-group-edit.component.html',
   styleUrls: ['./service-group-edit.component.css']
 })
-export class ServiceGroupEditComponent implements OnInit {
+export class ServiceGroupEditComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('rowMetadataAction' , { static: true }) rowMetadataAction: TemplateRef<any>
-  @ViewChild('rowActions' , { static: true }) rowActions: TemplateRef<any>;
-  @ViewChild('rowSMPUrlLinkAction', { static: true }) rowSMPUrlLinkAction: TemplateRef<any>;
-  @ViewChild('searchTable', { static: true }) searchTable: SearchTableComponent;
+  @ViewChild('rowMetadataAction', {static: true}) rowMetadataAction: TemplateRef<any>
+  @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
+  @ViewChild('rowSMPUrlLinkAction', {static: true}) rowSMPUrlLinkAction: TemplateRef<any>;
+  @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
   serviceGroupEditController: ServiceGroupEditController;
@@ -43,20 +43,22 @@ export class ServiceGroupEditComponent implements OnInit {
     this.baseUrl = SmpConstants.REST_PUBLIC_SERVICE_GROUP;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.serviceGroupEditController = new ServiceGroupEditController(this.dialog);
 
     this.columnPicker.allColumns = [
       {
         name: 'Metadata size',
         prop: 'serviceMetadata.length',
+        showInitially: true,
         width: 120,
         maxWidth: 120,
-        resizable: "false"
+        resizable: "false",
       },
       {
         name: 'Owners size',
         prop: 'users.length',
+        showInitially: true,
         width: 120,
         maxWidth: 120,
         resizable: "false"
@@ -64,6 +66,7 @@ export class ServiceGroupEditComponent implements OnInit {
       {
         name: 'Participant scheme',
         prop: 'participantScheme',
+        showInitially: true,
         width: 300,
         maxWidth: 300,
         resizable: "false"
@@ -71,21 +74,23 @@ export class ServiceGroupEditComponent implements OnInit {
       {
         name: 'Participant identifier',
         prop: 'participantIdentifier',
+        showInitially: true,
       },
       {
         cellTemplate: this.rowSMPUrlLinkAction,
         name: 'OASIS ServiceGroup URL',
+        showInitially: true,
         width: 250,
         maxWidth: 250,
         resizable: "false",
         sortable: false
       },
-
     ];
+  }
 
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Metadata size", 'Owners size', "Participant scheme", "Participant identifier", "OASIS ServiceGroup URL"].indexOf(col.name) != -1
-    });
+  ngAfterViewInit(): void {
+    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+    this.searchTable.tableColumnInit();
   }
 
   details(row: any) {
@@ -121,7 +126,7 @@ export class ServiceGroupEditComponent implements OnInit {
     };
   }
 
-  onEditMetadataRow(serviceGroupRow: any,metaDataRow: any) {
+  onEditMetadataRow(serviceGroupRow: any, metaDataRow: any) {
     let metadataRowNumber = serviceGroupRow.serviceMetadata.indexOf(metaDataRow);
 
     const formRef: MatDialogRef<any> = this.serviceGroupEditController.newMetadataDialog({
@@ -131,21 +136,21 @@ export class ServiceGroupEditComponent implements OnInit {
       if (result) {
 
         // method isServiceMetaDataChanged must be called before getCurrent!
-        let isChanged=formRef.componentInstance.isServiceMetaDataChanged();
-        if (!isChanged ){
+        let isChanged = formRef.componentInstance.isServiceMetaDataChanged();
+        if (!isChanged) {
           // nothing to save
           return;
         }
 
-        let statusMetadata =metaDataRow.status === SearchTableEntityStatus.PERSISTED
+        let statusMetadata = metaDataRow.status === SearchTableEntityStatus.PERSISTED
           ? SearchTableEntityStatus.UPDATED
           : metaDataRow;
 
 
         metaDataRow.status = statusMetadata;
-        metaDataRow  = {...formRef.componentInstance.getCurrent()};
+        metaDataRow = {...formRef.componentInstance.getCurrent()};
 
-        serviceGroupRow.serviceMetadata [metadataRowNumber] = {...metaDataRow };
+        serviceGroupRow.serviceMetadata [metadataRowNumber] = {...metaDataRow};
         // change reference to fire table update
         serviceGroupRow.serviceMetadata = [...serviceGroupRow.serviceMetadata]
 
@@ -182,18 +187,17 @@ export class ServiceGroupEditComponent implements OnInit {
   }
 
 
-
   // for dirty guard...
-  isDirty (): boolean {
+  isDirty(): boolean {
     return this.searchTable.isDirty();
   }
 
-  createServiceGroupURL(row: any){
-    return encodeURIComponent((!row.participantScheme? '' : row.participantScheme)+'::'+row.participantIdentifier);
+  createServiceGroupURL(row: any) {
+    return encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
   }
 
-  createServiceMetadataURL(serviceGroupRow: any, rowSMD: any){
-    return encodeURIComponent((!serviceGroupRow.participantScheme? '': serviceGroupRow.participantScheme)+'::'+serviceGroupRow.participantIdentifier)+'/services/'+ encodeURIComponent((!rowSMD.documentIdentifierScheme?'':rowSMD.documentIdentifierScheme)+'::'+rowSMD.documentIdentifier);
+  createServiceMetadataURL(serviceGroupRow: any, rowSMD: any) {
+    return encodeURIComponent((!serviceGroupRow.participantScheme ? '' : serviceGroupRow.participantScheme) + '::' + serviceGroupRow.participantIdentifier) + '/services/' + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
 
   onActivateServiceMetadata(serviceGroupRow: any, event) {
