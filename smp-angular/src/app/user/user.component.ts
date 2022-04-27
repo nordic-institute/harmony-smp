@@ -42,24 +42,25 @@ export class UserComponent implements AfterViewInit {
       {
         name: 'Username',
         prop: 'username',
+        showInitially: true,
         canAutoResize: true
       },
       {
         name: 'Certificate',
         prop: 'certificate',
+        showInitially: true,
         cellTemplate: this.certificateTemplate,
         canAutoResize: true
       },
       {
         name: 'Role',
         prop: 'role',
+        showInitially: true,
         canAutoResize: true
       },
     ];
-
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ['Username', 'Certificate', 'Role'].indexOf(col.name) != -1
-    });
+    this.searchTable.tableColumnInit();
+    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
 
     // if system admin refresh trust certificate list!
     if (this.securityService.isCurrentUserSystemAdmin()) {

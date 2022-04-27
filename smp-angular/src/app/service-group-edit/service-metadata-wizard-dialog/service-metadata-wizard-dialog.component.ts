@@ -73,7 +73,7 @@ export class ServiceMetadataWizardDialogComponent {
 
   uploadCertificate(event) {
     const file = event.target.files[0];
-    this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
+    this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
         if (res && res.certificateId) {
 
           this.dialogForm.patchValue({
@@ -96,7 +96,7 @@ export class ServiceMetadataWizardDialogComponent {
 
   onUpload() {
     // this.http is the injected HttpClient
-    this.certificateService.uploadCertificate$(this.selectedFile)
+    this.certificateService.validateCertificate(this.selectedFile)
       .subscribe(event => {
         console.log(event); // handle event here
       });

@@ -63,6 +63,7 @@ export class DomainComponent implements AfterViewInit {
         name: 'Domain code',
         title: "Unique domain code.",
         prop: 'domainCode',
+        showInitially: true,
         cellTemplate: this.domainCodeColumnTemplate,
         width: 250
 
@@ -71,12 +72,13 @@ export class DomainComponent implements AfterViewInit {
         name: 'SML Domain',
         title: "Informative: SML domain name.",
         prop: 'smlSubdomain',
-
+        showInitially: true,
       },
       {
         name: 'Signature CertAlias',
         title: "Certificate for signing REST responses",
         prop: 'signatureKeyAlias',
+        showInitially: true,
         cellTemplate: this.certificateAliasColumn,
         width: 150
       },
@@ -85,29 +87,31 @@ export class DomainComponent implements AfterViewInit {
         name: 'SML SMP Id',
         title: "SMP identifier for SML integration",
         prop: 'smlSmpId',
+        showInitially: true,
         width: 150
       },
       {
         name: 'SML ClientCert Alias',
         prop: 'smlClientKeyAlias',
+        showInitially: true,
         cellTemplate: this.certificateAliasColumn,
         width: 150
       },
       {
         name: 'Is SML Registered',
         prop: 'smlRegistered',
+        showInitially: true,
         width: 120
       },
       {
         name: 'SML BueCoat Auth.',
         prop: 'smlBlueCoatAuth',
+        showInitially: true,
         width: 130
       },
     ];
-
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ['Domain code', 'SML Domain', 'Signature CertAlias', 'SML SMP Id', 'SML ClientCert Alias', 'Is SML Registered', 'SML BueCoat Auth.'].indexOf(col.name) != -1
-    });
+    this.searchTable.tableColumnInit();
+    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
   }
 
   certificateAliasExists(alias: string): boolean {

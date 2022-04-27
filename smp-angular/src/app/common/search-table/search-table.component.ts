@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterContentInit, AfterViewInit, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
 import {Observable} from 'rxjs';
 import {AlertMessageService} from '../alert-message/alert-message.service';
@@ -25,7 +25,7 @@ import ObjectUtils from "../utils/object-utils";
   templateUrl: './search-table.component.html',
   styleUrls: ['./search-table.component.css']
 })
-export class SearchTableComponent implements AfterViewInit {
+export class SearchTableComponent implements OnInit {
   @ViewChild('searchTable', {static: true}) searchTable: any;
   @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
@@ -80,7 +80,7 @@ export class SearchTableComponent implements AfterViewInit {
               private router: Router, private authenticatedGuard: AuthenticatedGuard) {
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.columnIndex = {
       cellTemplate: this.rowIndex,
       name: 'Index',
@@ -106,15 +106,18 @@ export class SearchTableComponent implements AfterViewInit {
     };
   }
 
+
   tableColumnInit(){
     // Add actions to last column
     if (this.columnPicker) {
       // prepend columns
       if (!!this.tableRowDetailContainer) {
+        console.log("show table row details!")
         this.columnPicker.allColumns.unshift(this.columnExpandDetails);
         this.columnPicker.selectedColumns.unshift(this.columnExpandDetails);
       }
       if (this.showIndexColumn) {
+        console.log("show table index!")
         this.columnPicker.allColumns.unshift(this.columnIndex);
         this.columnPicker.selectedColumns.unshift(this.columnIndex);
       }
