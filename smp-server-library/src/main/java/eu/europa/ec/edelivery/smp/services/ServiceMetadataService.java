@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.toSignedServiceMetadatadaDocument;
+import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.toSignedServiceMetadataDocument;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.METADATA_NOT_EXISTS;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SG_NOT_EXISTS;
 
@@ -75,7 +75,7 @@ public class ServiceMetadataService {
         }
         DBServiceMetadata smd = osmd.get();
 
-        Document signedServiceMetadata = toSignedServiceMetadatadaDocument(smd.getXmlContent());
+        Document signedServiceMetadata = toSignedServiceMetadataDocument(smd.getXmlContent());
         String sigCertAlias = smd.getServiceGroupDomain().getDomain().getSignatureKeyAlias();
 
         signer.sign(signedServiceMetadata, sigCertAlias);

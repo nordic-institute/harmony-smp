@@ -40,6 +40,7 @@ public class ApplicationAdminResource {
         info.setSmlParticipantMultiDomainOn(configurationService.isSMLMultiDomainEnabled());
         info.setParticipantSchemaRegExp(configurationService.getParticipantIdentifierSchemeRexExpPattern());
         info.setParticipantSchemaRegExpMessage(configurationService.getParticipantIdentifierSchemeRexExpMessage());
+        info.setConcatEBCorePartyId(configurationService.getForceConcatenateEBCorePartyId());
 
         info.setPasswordValidationRegExp(configurationService.getPasswordPolicyRexExpPattern());
         info.setPasswordValidationRegExpMessage(configurationService.getPasswordPolicyValidationMessage());

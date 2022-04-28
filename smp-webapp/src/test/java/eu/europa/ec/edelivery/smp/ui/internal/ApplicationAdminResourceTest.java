@@ -126,6 +126,7 @@ public class ApplicationAdminResourceTest {
         assertNotNull(res);
         assertEquals("Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9].", res.getParticipantSchemaRegExpMessage());
         assertEquals("^((?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)|urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$)", res.getParticipantSchemaRegExp());
+        assertTrue(res.isConcatEBCorePartyId());
         assertFalse(res.isSmlIntegrationOn());
         assertFalse(res.isSmlParticipantMultiDomainOn());
     }
