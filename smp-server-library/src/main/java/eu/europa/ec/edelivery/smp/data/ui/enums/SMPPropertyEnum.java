@@ -26,8 +26,12 @@ public enum SMPPropertyEnum {
     PARTC_SCH_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^((?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)|urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$)", "Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false, false, REGEXP),
     PARTC_SCH_REGEXP_MSG("identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
             "Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9].", "Error message for UI", false, false, false, STRING),
+    PARTC_EBCOREPARTYID_CONCATENATE("identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate",
+            "true", "Concatenate ebCore party id in XML responses <ParticipantIdentifier >urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>", false, false, false, BOOLEAN),
+
     CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes", "sensitive-participant-sc1|sensitive-participant-sc2", "Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.", false, false, false, LIST_STRING),
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes", "casesensitive-doc-scheme1|casesensitive-doc-scheme2", "Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.", false, false, false, LIST_STRING),
+
     // SML integration!
     SML_ENABLED("bdmsl.integration.enabled", "false", "BDMSL (SML) integration ON/OFF switch", false, false, false, BOOLEAN),
     SML_PARTICIPANT_MULTIDOMAIN("bdmsl.participant.multidomain.enabled", "false", "Set to true if SML support participant on multidomain", false, false, true, BOOLEAN),

@@ -46,6 +46,10 @@ public class ConfigurationService {
     public String getParticipantIdentifierSchemeRexExpMessage() {
         return (String)configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP_MSG);
     }
+    public Boolean getForceConcatenateEBCorePartyId() {
+        return (Boolean)configurationDAO.getCachedPropertyValue(PARTC_EBCOREPARTYID_CONCATENATE);
+    }
+
     public Pattern getPasswordPolicyRexExp() {
         return (Pattern) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_REGULAR_EXPRESSION);
     }
