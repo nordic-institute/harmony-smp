@@ -240,7 +240,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         'Service group data - Identifier and scheme';
 
     comment on column SMP_SERVICE_GROUP.ID is
-        'Unique Servicegroup id';
+        'Unique ServiceGroup id';
 
     create table SMP_SERVICE_GROUP_AUD (
        ID number(19,0) not null,

@@ -14,6 +14,7 @@ package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -52,8 +53,8 @@ import java.util.Objects;
 public class DBUser extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "usr_generator", sequenceName = "SMP_USER_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usr_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_USER_SEQ")
+    @GenericGenerator(name = "SMP_USER_SEQ", strategy = "native")
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique user id")
     Long id;

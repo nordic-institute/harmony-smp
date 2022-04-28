@@ -14,6 +14,7 @@ package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -42,10 +43,10 @@ import java.util.*;
 public class DBServiceGroup extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "sg_generator", sequenceName = "SMP_SERVICE_GROUP_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sg_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SERVICE_GROUP_SEQ")
+    @GenericGenerator(name = "SMP_SERVICE_GROUP_SEQ", strategy = "native")
     @Column(name = "ID")
-    @ColumnDescription(comment = "Unique Servicegroup id")
+    @ColumnDescription(comment = "Unique ServiceGroup id")
     Long id;
 
 

@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -33,8 +34,8 @@ import java.util.Objects;
 public class DBServiceGroupDomain extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "sgd_generator", sequenceName = "SMP_SERVICE_GROUP_DOMAIN_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgd_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SERVICE_GROUP_DOMAIN_SEQ")
+    @GenericGenerator(name = "SMP_SERVICE_GROUP_DOMAIN_SEQ", strategy = "native")
     @Column(name = "ID")
     Long id;
 
