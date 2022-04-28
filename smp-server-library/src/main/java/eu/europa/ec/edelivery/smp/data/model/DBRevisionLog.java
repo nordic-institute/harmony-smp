@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.data.model;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.SMPRevisionListener;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
@@ -20,10 +21,9 @@ import java.time.LocalDateTime;
 @RevisionEntity(SMPRevisionListener.class)
 public class DBRevisionLog {
 
-
     @Id
-    @SequenceGenerator(name="revision_generator", sequenceName = "SMP_REVISION_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "revision_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_REVISION_SEQ")
+    @GenericGenerator(name = "SMP_REVISION_SEQ", strategy = "native")
     @RevisionNumber
     private long id;
 

@@ -95,15 +95,11 @@
 
     drop table if exists SMP_DOMAIN_AUD;
 
-    drop table if exists SMP_DOMAIN_SEQ;
-
     drop table if exists SMP_OWNERSHIP;
 
     drop table if exists SMP_OWNERSHIP_AUD;
 
     drop table if exists SMP_REV_INFO;
-
-    drop table if exists SMP_REVISION_SEQ;
 
     drop table if exists SMP_SERVICE_GROUP;
 
@@ -113,15 +109,9 @@
 
     drop table if exists SMP_SERVICE_GROUP_DOMAIN_AUD;
 
-    drop table if exists SMP_SERVICE_GROUP_DOMAIN_SEQ;
-
-    drop table if exists SMP_SERVICE_GROUP_SEQ;
-
     drop table if exists SMP_SERVICE_METADATA;
 
     drop table if exists SMP_SERVICE_METADATA_AUD;
-
-    drop table if exists SMP_SERVICE_METADATA_SEQ;
 
     drop table if exists SMP_SERVICE_METADATA_XML;
 
@@ -134,5 +124,3 @@
     drop table if exists SMP_USER;
 
     drop table if exists SMP_USER_AUD;
-
-    drop table if exists SMP_USER_SEQ;

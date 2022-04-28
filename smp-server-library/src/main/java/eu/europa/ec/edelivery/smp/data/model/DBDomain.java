@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -53,8 +54,8 @@ import javax.persistence.*;
 public class DBDomain extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "domain_generator", sequenceName = "SMP_DOMAIN_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "domain_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOMAIN_SEQ")
+    @GenericGenerator(name = "SMP_DOMAIN_SEQ", strategy = "native")
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique domain id")
     Long id;

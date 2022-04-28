@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -44,8 +45,8 @@ import java.util.Objects;
 public class DBServiceMetadata extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ",allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgmd_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SERVICE_METADATA_SEQ")
+    @GenericGenerator(name = "SMP_SERVICE_METADATA_SEQ", strategy = "native")
     @Column(name = "ID")
     @ColumnDescription(comment = "Shared primary key with master table SMP_SERVICE_METADATA")
     Long id;
