@@ -4,12 +4,12 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * Database optimization: load xmlContent only when needed and
  * keep blobs/clobs in separate table!
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */

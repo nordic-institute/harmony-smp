@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -34,11 +33,10 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
@@ -189,17 +187,17 @@ public class SecurityConfigurationClientCertTest {
     }
 
     public static String buildClientCert(String serial, String subject) {
-        LocalDateTime from = LocalDateTime.now().minusYears(1);
-        LocalDateTime to = LocalDateTime.now().plusYears(1);
+        OffsetDateTime from = OffsetDateTime.now().minusYears(1);
+        OffsetDateTime to = OffsetDateTime.now().plusYears(1);
         return buildClientCert(serial, subject, "C=x,O=y,CN=z", from, to);
     }
 
-    public static String buildClientCert(String serial, String subject, String issuer, LocalDateTime from, LocalDateTime to) {
+    public static String buildClientCert(String serial, String subject, String issuer, OffsetDateTime from, OffsetDateTime to) {
 
         return String.format(CLIENT_CERT_FORMAT, serial, subject, formatToGMTString(from), formatToGMTString(to), issuer);
     }
 
-    public static String formatToGMTString(LocalDateTime time) {
+    public static String formatToGMTString(OffsetDateTime time) {
         return DATE_FORMATTER.format(time);
     }
 

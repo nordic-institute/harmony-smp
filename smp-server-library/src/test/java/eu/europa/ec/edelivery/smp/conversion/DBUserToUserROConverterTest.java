@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.ConversionService;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -77,14 +77,14 @@ public class DBUserToUserROConverterTest {
 
     private void givenAnExistingUserHavingAPasswordThatChangedNoLongerThanThreeMonthsAgo() {
         // some month has less than 29 days -therefore -27
-        givenAnExistingUser("password", LocalDateTime.now().minusMonths(2).minusDays(27), null);
+        givenAnExistingUser("password", OffsetDateTime.now().minusMonths(2).minusDays(27), null);
     }
 
     private void givenAnExistingUserHavingAPasswordThatChangedMoreThanThreeMonthsAgo() {
-        givenAnExistingUser("password", LocalDateTime.now().minusMonths(3).minusDays(10), null);
+        givenAnExistingUser("password", OffsetDateTime.now().minusMonths(3).minusDays(10), null);
     }
 
-    private void givenAnExistingUser(String password, LocalDateTime passwordChange, DBCertificate certificate) {
+    private void givenAnExistingUser(String password, OffsetDateTime passwordChange, DBCertificate certificate) {
         source = new DBUser();
         source.setCertificate(certificate);
         source.setPassword(password);

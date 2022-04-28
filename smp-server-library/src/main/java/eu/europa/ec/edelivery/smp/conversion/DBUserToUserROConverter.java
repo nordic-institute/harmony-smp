@@ -10,7 +10,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 
 /**
@@ -41,7 +41,7 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         if (source.getCertificate() != null) {
             CertificateRO certificateRO = conversionService.convert(source.getCertificate(), CertificateRO.class);
             target.setCertificate(certificateRO);
-            if(StringUtils.equalsIgnoreCase(source.getCertificate().getCertificateId(), source.getUsername())) {
+            if (StringUtils.equalsIgnoreCase(source.getCertificate().getCertificateId(), source.getUsername())) {
                 // clear username if is the same as certificate id.
                 // username as cert id is set to database to force unique users
                 // and to fix issue with mysql - where null value is also unique...
@@ -62,6 +62,6 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
     }
 
     private boolean isPasswordChangedLongerThanThreeMonthsAgo(DBUser source) {
-        return LocalDateTime.now().minusMonths(3).isAfter(source.getPasswordChanged());
+        return OffsetDateTime.now().minusMonths(3).isAfter(source.getPasswordChanged());
     }
 }

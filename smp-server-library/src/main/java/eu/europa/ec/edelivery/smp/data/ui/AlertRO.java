@@ -5,7 +5,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * @author Joze Rihtarsic
@@ -18,9 +18,9 @@ public class AlertRO extends BaseRO {
     // session id
     private String sid;
     private Boolean processed;
-    private LocalDateTime processedTime;
+    private OffsetDateTime processedTime;
     private AlertTypeEnum alertType;
-    private LocalDateTime reportingTime;
+    private OffsetDateTime reportingTime;
     private AlertStatusEnum alertStatus;
     private AlertLevelEnum alertLevel;
 
@@ -40,11 +40,11 @@ public class AlertRO extends BaseRO {
         this.processed = processed;
     }
 
-    public LocalDateTime getProcessedTime() {
+    public OffsetDateTime getProcessedTime() {
         return processedTime;
     }
 
-    public void setProcessedTime(LocalDateTime processedTime) {
+    public void setProcessedTime(OffsetDateTime processedTime) {
         this.processedTime = processedTime;
     }
 
@@ -56,11 +56,11 @@ public class AlertRO extends BaseRO {
         this.alertType = alertType;
     }
 
-    public LocalDateTime getReportingTime() {
+    public OffsetDateTime getReportingTime() {
         return reportingTime;
     }
 
-    public void setReportingTime(LocalDateTime reportingTime) {
+    public void setReportingTime(OffsetDateTime reportingTime) {
         this.reportingTime = reportingTime;
     }
 

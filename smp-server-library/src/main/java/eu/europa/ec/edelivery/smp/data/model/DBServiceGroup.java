@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -47,7 +46,6 @@ public class DBServiceGroup extends BaseEntity {
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique Servicegroup id")
     Long id;
-
 
     @OneToMany(
             mappedBy = "serviceGroup",

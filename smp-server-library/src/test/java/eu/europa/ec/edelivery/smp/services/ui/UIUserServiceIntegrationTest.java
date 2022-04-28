@@ -17,23 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 /**
- *  Purpose of class is to test ServiceGroupService base methods
+ * Purpose of class is to test ServiceGroupService base methods
  *
  * @author Joze Rihtarsic
  * @since 4.1
@@ -99,7 +91,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testAddUserWithoutCertificate() {
         // given
         insertDataObjects(15);
-        long  iCnt = userDao.getDataListCount(null);
+        long iCnt = userDao.getDataListCount(null);
 
         UserRO user = new UserRO();
         user.setPassword(UUID.randomUUID().toString());
@@ -112,9 +104,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
-        long  iCntNew  = userDao.getDataListCount(null);
-        assertEquals(iCnt+1, iCntNew);
-        Optional<DBUser> oUsr =  userDao.findUserByUsername(user.getUsername());
+        long iCntNew = userDao.getDataListCount(null);
+        assertEquals(iCnt + 1, iCntNew);
+        Optional<DBUser> oUsr = userDao.findUserByUsername(user.getUsername());
         assertTrue(oUsr.isPresent());
         assertTrue(BCrypt.checkpw(user.getPassword(), oUsr.get().getPassword())); // password must be encrypted
         assertEquals(user.getUsername(), oUsr.get().getUsername());
@@ -127,12 +119,12 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testAddUserWithCertificate() {
         // given
         insertDataObjects(15);
-        long  iCnt = userDao.getDataListCount(null);
+        long iCnt = userDao.getDataListCount(null);
 
         Calendar calTo = Calendar.getInstance();
         calTo.add(Calendar.YEAR, 1);
         Date now = Calendar.getInstance().getTime();
-        Date future =calTo.getTime();
+        Date future = calTo.getTime();
 
         UserRO user = new UserRO();
         user.setPassword(UUID.randomUUID().toString());
@@ -154,9 +146,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
-        long  iCntNew  = userDao.getDataListCount(null);
-        assertEquals(iCnt+1, iCntNew);
-        Optional<DBUser> oUsr =  userDao.findUserByUsername(user.getUsername());
+        long iCntNew = userDao.getDataListCount(null);
+        assertEquals(iCnt + 1, iCntNew);
+        Optional<DBUser> oUsr = userDao.findUserByUsername(user.getUsername());
         assertTrue(oUsr.isPresent());
         assertTrue(BCrypt.checkpw(user.getPassword(), oUsr.get().getPassword())); // password must be encrypted
         assertEquals(user.getUsername(), oUsr.get().getUsername());
@@ -175,12 +167,12 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testAddUserWithOnlyCertificate() {
         // given
         insertDataObjects(15);
-        long  iCnt = userDao.getDataListCount(null);
+        long iCnt = userDao.getDataListCount(null);
 
         Calendar calTo = Calendar.getInstance();
         calTo.add(Calendar.YEAR, 1);
         Date now = Calendar.getInstance().getTime();
-        Date future =calTo.getTime();
+        Date future = calTo.getTime();
 
         UserRO user = new UserRO();
 
@@ -200,9 +192,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
-        long  iCntNew  = userDao.getDataListCount(null);
-        assertEquals(iCnt+1, iCntNew);
-        Optional<DBUser> oUsr =  userDao.findUserByIdentifier(user.getCertificate().getCertificateId());
+        long iCntNew = userDao.getDataListCount(null);
+        assertEquals(iCnt + 1, iCntNew);
+        Optional<DBUser> oUsr = userDao.findUserByIdentifier(user.getCertificate().getCertificateId());
         assertTrue(oUsr.isPresent());
         assertEquals(user.getRole(), oUsr.get().getRole());
         assertEquals(user.getEmailAddress(), oUsr.get().getEmailAddress());
@@ -219,8 +211,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     @Test
     public void testUserRemoveCertificate() {
         // given
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        LocalDateTime future =now.plusYears(1);
+        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        OffsetDateTime future = now.plusYears(1);
 
         DBUser user = new DBUser();
         user.setPassword(UUID.randomUUID().toString());
@@ -236,7 +228,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         cert.setValidTo(future);
         user.setCertificate(cert);
         userDao.persistFlushDetach(user);
-        ServiceResult<UserRO> urTest  =  testInstance.getTableList(-1,-1,null, null, null);
+        ServiceResult<UserRO> urTest = testInstance.getTableList(-1, -1, null, null, null);
         assertEquals(1, urTest.getServiceEntities().size());
         UserRO userRO = urTest.getServiceEntities().get(0);
         assertNotNull(userRO.getCertificate());
@@ -248,7 +240,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         testInstance.updateUserList(Collections.singletonList(userRO), null);
 
         // then
-        ServiceResult<UserRO> res  =  testInstance.getTableList(-1,-1,null, null, null);
+        ServiceResult<UserRO> res = testInstance.getTableList(-1, -1, null, null, null);
         assertEquals(1, urTest.getServiceEntities().size());
         UserRO userResRO = urTest.getServiceEntities().get(0);
         assertNull(userResRO.getCertificate());
@@ -259,7 +251,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testDeleteUser() {
         // given
         insertDataObjects(15);
-        ServiceResult<UserRO> urTest  =  testInstance.getTableList(-1,-1,null, null, null);
+        ServiceResult<UserRO> urTest = testInstance.getTableList(-1, -1, null, null, null);
         assertEquals(15, urTest.getServiceEntities().size());
 
         UserRO user = urTest.getServiceEntities().get(0);
@@ -269,10 +261,10 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
-        long  iCntNew  = userDao.getDataListCount(null);
+        long iCntNew = userDao.getDataListCount(null);
         Optional<DBUser> rmUsr = userDao.findUserByUsername(user.getUsername());
 
-        assertEquals( urTest.getServiceEntities().size()-1, iCntNew);
+        assertEquals(urTest.getServiceEntities().size() - 1, iCntNew);
         assertFalse(rmUsr.isPresent());
 
     }

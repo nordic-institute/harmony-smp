@@ -9,13 +9,12 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.scheduling.support.CronExpression;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -26,9 +25,9 @@ public class PropertyUtils {
 
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyUtils.class);
-    private static final String REG_EXP_SEPARATOR="\\|";
+    private static final String REG_EXP_SEPARATOR = "\\|";
 
-    private static UrlValidator urlValidator =  new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
+    private static UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
 
 
     public static Object parseProperty(SMPPropertyEnum prop, String value, File rootFolder) {
@@ -71,6 +70,8 @@ public class PropertyUtils {
                 } catch (PatternSyntaxException exception) {
                     return false;
                 }
+            case CRON_EXPRESSION:
+                return CronExpression.isValidExpression(value);
             case INTEGER:
                 try {
                     Integer.parseInt(value);
@@ -82,9 +83,10 @@ public class PropertyUtils {
                 File f = new File(value);
                 if (!f.exists()) {
                     LOG.warn("Folder {} not exists. Try to create the folder.", f.getAbsolutePath());
-                    if (f.mkdirs()){
+                    if (f.mkdirs()) {
                         LOG.info("Folder {} created.", f.getAbsolutePath());
-                    };
+                    }
+                    ;
                 }
                 return f.exists() && f.isDirectory();
             }
@@ -124,9 +126,10 @@ public class PropertyUtils {
                 }
             case LIST_STRING: {
                 return Arrays.asList(value.split(REG_EXP_SEPARATOR));
-            }case MAP_STRING: {
+            }
+            case MAP_STRING: {
                 return Arrays.asList(value.split(REG_EXP_SEPARATOR)).stream().collect(Collectors.toMap(
-                        val -> trim(substringBefore(val,":")), val-> trim(substringAfter(val,":"))));
+                        val -> trim(substringBefore(val, ":")), val -> trim(substringAfter(val, ":"))));
             }
             case PATH: {
                 return new File(value);

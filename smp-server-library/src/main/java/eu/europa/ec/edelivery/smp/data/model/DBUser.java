@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Entity
@@ -30,6 +30,47 @@ import java.util.Objects;
         @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
         @NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.accessTokenIdentifier = :patId"),
         @NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.certificate.certificateId) = lower(:certificateId)"),
+        @NamedQuery(name = "DBUser.getUsersForBeforePasswordExpireAlerts",
+                query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
+                        " AND u.passwordExpireOn <= :startAlertDate " +
+                        " AND u.passwordExpireOn > :expireDate" +
+                        " AND (u.passwordExpireAlertOn IS NULL OR u.passwordExpireAlertOn < :lastSendAlertDate )"),
+        @NamedQuery(name = "DBUser.getUsersForPasswordExpiredAlerts",
+                query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
+                        " AND u.passwordExpireOn > :endAlertDate " +
+                        " AND u.passwordExpireOn <= :expireDate" +
+                        " AND (u.passwordExpireAlertOn IS NULL " +
+                        "   OR u.passwordExpireAlertOn <= u.passwordExpireOn " +
+                        "   OR u.passwordExpireAlertOn < :lastSendAlertDate )"),
+
+        @NamedQuery(name = "DBUser.getUsersForBeforeAccessTokenExpireAlerts",
+                query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
+                        " AND u.accessTokenExpireOn <= :startAlertDate " +
+                        " AND u.accessTokenExpireOn > :expireDate" +
+                        " AND (u.accessTokenExpireAlertOn IS NULL OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
+        @NamedQuery(name = "DBUser.getUsersForAccessTokenExpiredAlerts",
+                query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
+                        " AND u.accessTokenExpireOn > :endAlertDate " +
+                        " AND u.accessTokenExpireOn <= :expireDate" +
+                        " AND (u.accessTokenExpireAlertOn IS NULL " +
+                        "   OR u.accessTokenExpireAlertOn <= u.accessTokenExpireOn " +
+                        "   OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
+
+        @NamedQuery(name = "DBUser.getUsersForBeforeCertificateExpireAlerts",
+                query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
+                        " AND u.certificate.validTo IS NOT NULL " +
+                        " AND u.certificate.validTo <= :startAlertDate " +
+                        " AND u.certificate.validTo > :expireDate" +
+                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )"),
+        @NamedQuery(name = "DBUser.getUsersForCertificateExpiredAlerts",
+                query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
+                        " AND u.certificate.validTo IS NOT NULL " +
+                        " AND u.certificate.validTo > :endAlertDate " +
+                        " AND u.certificate.validTo <= :expireDate" +
+                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
+                        "     OR u.certificate.certificateLastExpireAlertOn <= u.certificate.validTo " +
+                        "     OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )")
+
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
@@ -70,16 +111,21 @@ public class DBUser extends BaseEntity {
     private String password;
     @Column(name = "PASSWORD_CHANGED")
     @ColumnDescription(comment = "Last date when password was changed")
-    LocalDateTime passwordChanged;
+    OffsetDateTime passwordChanged;
     @Column(name = "PASSWORD_EXPIRE_ON")
     @ColumnDescription(comment = "Date when password will expire")
-    LocalDateTime passwordExpireOn;
+    OffsetDateTime passwordExpireOn;
+    @Column(name = "PASSWORD_LAST_ALERT_ON")
+    @ColumnDescription(comment = "Generated last password expire alert")
+    OffsetDateTime passwordExpireAlertOn;
+
+
     @Column(name = "LOGIN_FAILURE_COUNT")
     @ColumnDescription(comment = "Sequential login failure count")
     Integer sequentialLoginFailureCount;
     @Column(name = "LAST_FAILED_LOGIN_ON")
     @ColumnDescription(comment = "Last failed login attempt")
-    LocalDateTime lastFailedLoginAttempt;
+    OffsetDateTime lastFailedLoginAttempt;
 
     // Personal access token
     @Column(name = "ACCESS_TOKEN_ID", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
@@ -90,16 +136,19 @@ public class DBUser extends BaseEntity {
     private String accessToken;
     @Column(name = "ACCESS_TOKEN_GENERATED_ON")
     @ColumnDescription(comment = "Date when personal access token was generated")
-    LocalDateTime accessTokenGeneratedOn;
+    OffsetDateTime accessTokenGeneratedOn;
     @Column(name = "ACCESS_TOKEN_EXPIRE_ON")
     @ColumnDescription(comment = "Date when personal access token will expire")
-    LocalDateTime accessTokenExpireOn;
+    OffsetDateTime accessTokenExpireOn;
+    @Column(name = "ACCESS_TOKEN_LAST_ALERT_ON")
+    @ColumnDescription(comment = "Generated last access token expire alert")
+    OffsetDateTime accessTokenExpireAlertOn;
     @Column(name = "AT_LOGIN_FAILURE_COUNT")
     @ColumnDescription(comment = "Sequential token login failure count")
     Integer sequentialTokenLoginFailureCount;
     @Column(name = "AT_LAST_FAILED_LOGIN_ON")
     @ColumnDescription(comment = "Last failed token login attempt")
-    LocalDateTime lastTokenFailedLoginAttempt;
+    OffsetDateTime lastTokenFailedLoginAttempt;
 
     @Column(name = "ACTIVE", nullable = false)
     @ColumnDescription(comment = "Is user active")
@@ -146,19 +195,19 @@ public class DBUser extends BaseEntity {
         this.active = active;
     }
 
-    public LocalDateTime getLastFailedLoginAttempt() {
+    public OffsetDateTime getLastFailedLoginAttempt() {
         return lastFailedLoginAttempt;
     }
 
-    public void setLastFailedLoginAttempt(LocalDateTime lastFailedLoginAttempt) {
+    public void setLastFailedLoginAttempt(OffsetDateTime lastFailedLoginAttempt) {
         this.lastFailedLoginAttempt = lastFailedLoginAttempt;
     }
 
-    public LocalDateTime getLastTokenFailedLoginAttempt() {
+    public OffsetDateTime getLastTokenFailedLoginAttempt() {
         return lastTokenFailedLoginAttempt;
     }
 
-    public void setLastTokenFailedLoginAttempt(LocalDateTime lastTokenFailedLoginAttempt) {
+    public void setLastTokenFailedLoginAttempt(OffsetDateTime lastTokenFailedLoginAttempt) {
         this.lastTokenFailedLoginAttempt = lastTokenFailedLoginAttempt;
     }
 
@@ -178,27 +227,27 @@ public class DBUser extends BaseEntity {
         this.accessToken = accessToken;
     }
 
-    public LocalDateTime getAccessTokenGeneratedOn() {
+    public OffsetDateTime getAccessTokenGeneratedOn() {
         return accessTokenGeneratedOn;
     }
 
-    public void setAccessTokenGeneratedOn(LocalDateTime accessTokenGeneratedOn) {
+    public void setAccessTokenGeneratedOn(OffsetDateTime accessTokenGeneratedOn) {
         this.accessTokenGeneratedOn = accessTokenGeneratedOn;
     }
 
-    public LocalDateTime getPasswordExpireOn() {
+    public OffsetDateTime getPasswordExpireOn() {
         return passwordExpireOn;
     }
 
-    public void setPasswordExpireOn(LocalDateTime passwordExpireOn) {
+    public void setPasswordExpireOn(OffsetDateTime passwordExpireOn) {
         this.passwordExpireOn = passwordExpireOn;
     }
 
-    public LocalDateTime getAccessTokenExpireOn() {
+    public OffsetDateTime getAccessTokenExpireOn() {
         return accessTokenExpireOn;
     }
 
-    public void setAccessTokenExpireOn(LocalDateTime accessTokenExpireOn) {
+    public void setAccessTokenExpireOn(OffsetDateTime accessTokenExpireOn) {
         this.accessTokenExpireOn = accessTokenExpireOn;
     }
 
@@ -249,14 +298,29 @@ public class DBUser extends BaseEntity {
         this.emailAddress = email;
     }
 
-    public LocalDateTime getPasswordChanged() {
+    public OffsetDateTime getPasswordChanged() {
         return passwordChanged;
     }
 
-    public void setPasswordChanged(LocalDateTime passwordChanged) {
+    public void setPasswordChanged(OffsetDateTime passwordChanged) {
         this.passwordChanged = passwordChanged;
     }
 
+    public OffsetDateTime getPasswordExpireAlertOn() {
+        return passwordExpireAlertOn;
+    }
+
+    public void setPasswordExpireAlertOn(OffsetDateTime passwordExpireAlertOn) {
+        this.passwordExpireAlertOn = passwordExpireAlertOn;
+    }
+
+    public OffsetDateTime getAccessTokenExpireAlertOn() {
+        return accessTokenExpireAlertOn;
+    }
+
+    public void setAccessTokenExpireAlertOn(OffsetDateTime accessTokenExpireAlertOn) {
+        this.accessTokenExpireAlertOn = accessTokenExpireAlertOn;
+    }
 
     @Override
     public boolean equals(Object o) {

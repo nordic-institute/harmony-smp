@@ -9,7 +9,10 @@
         LAST_UPDATED_ON datetime not null,
         ALERT_LEVEL varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         ALERT_STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_STATUS_DESC varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         ALERT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        MAIL_SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROCESSED bit,
         PROCESSED_TIME datetime,
         REPORTING_TIME datetime,
@@ -24,10 +27,35 @@
         LAST_UPDATED_ON datetime,
         ALERT_LEVEL varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         ALERT_STATUS varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ALERT_STATUS_DESC varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         ALERT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        MAIL_SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROCESSED bit,
         PROCESSED_TIME datetime,
         REPORTING_TIME datetime,
+        primary key (ID, REV)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_ALERT_PROPERTY (
+       ID bigint not null auto_increment comment 'Unique alert property id',
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
+        PROPERTY varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FK_ALERT_ID bigint,
+        primary key (ID)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_ALERT_PROPERTY_AUD (
+       ID bigint not null,
+        REV bigint not null,
+        REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
+        PROPERTY varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
+        VALUE varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FK_ALERT_ID bigint,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -36,6 +64,7 @@
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Formatted Certificate id using tags: cn, o, c:serialNumber',
+        EXPIRE_LAST_ALERT_ON datetime comment 'Generated last expire alert',
         CRL_URL varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'URL to the certificate revocation list (CRL)',
         ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Certificate issuer (canonical form)',
         PEM_ENCODED_CERT longtext comment 'PEM encoded  certificate',
@@ -53,6 +82,7 @@
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
         CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
+        EXPIRE_LAST_ALERT_ON datetime,
         CRL_URL varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         PEM_ENCODED_CERT longtext,
@@ -274,6 +304,7 @@
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted personal access token',
+        ACCESS_TOKEN_LAST_ALERT_ON datetime comment 'Generated last access token expire alert',
         ACCESS_TOKEN_EXPIRE_ON datetime comment 'Date when personal access token will expire',
         ACCESS_TOKEN_GENERATED_ON datetime comment 'Date when personal access token was generated',
         ACCESS_TOKEN_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Personal access token id',
@@ -283,6 +314,7 @@
         AT_LAST_FAILED_LOGIN_ON datetime comment 'Last failed token login attempt',
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted password for username/password login',
         PASSWORD_CHANGED datetime comment 'Last date when password was changed',
+        PASSWORD_LAST_ALERT_ON datetime comment 'Generated last password expire alert',
         PASSWORD_EXPIRE_ON datetime comment 'Date when password will expire',
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User role',
         LOGIN_FAILURE_COUNT integer comment 'Sequential login failure count',
@@ -298,6 +330,7 @@
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
         ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ACCESS_TOKEN_LAST_ALERT_ON datetime,
         ACCESS_TOKEN_EXPIRE_ON datetime,
         ACCESS_TOKEN_GENERATED_ON datetime,
         ACCESS_TOKEN_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -307,6 +340,7 @@
         AT_LAST_FAILED_LOGIN_ON datetime,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PASSWORD_CHANGED datetime,
+        PASSWORD_LAST_ALERT_ON datetime,
         PASSWORD_EXPIRE_ON datetime,
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         LOGIN_FAILURE_COUNT integer,
@@ -348,6 +382,16 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
     alter table SMP_ALERT_AUD 
        add constraint FKrw0qnto448ojlirpfmfntd8v2 
+       foreign key (REV) 
+       references SMP_REV_INFO (id);
+
+    alter table SMP_ALERT_PROPERTY 
+       add constraint FK15r37w3r5ty5f6074ykr2o4i6 
+       foreign key (FK_ALERT_ID) 
+       references SMP_ALERT (ID);
+
+    alter table SMP_ALERT_PROPERTY_AUD 
+       add constraint FKod33qjx87ih1a0skxl2sgddar 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 

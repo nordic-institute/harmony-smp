@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
+import eu.europa.ec.edelivery.smp.config.ServicesBeansConfiguration;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -44,7 +45,9 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
         ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class,
         UITruststoreService.class, UIKeystoreService.class, ConversionTestConfig.class, SMLIntegrationService.class,
-        CRLVerifierService.class, ConfigurationService.class})
+        CRLVerifierService.class,
+        ConfigurationService.class,
+        ServicesBeansConfiguration.class})
 @Sql(scripts = {"classpath:cleanup-database.sql",
         "classpath:basic_conf_data-h2.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig

@@ -1,11 +1,8 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
-import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -25,7 +22,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Optional;
@@ -104,13 +101,11 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(username, userCredentialToken, Collections.singletonList(new SMPAuthority(role)), user);
         try {
             if (!BCrypt.checkpw(userCredentialToken, user.getPassword())) {
-                user.setSequentialLoginFailureCount(user.getSequentialLoginFailureCount() != null ? user.getSequentialLoginFailureCount() + 1 : 1);
-                user.setLastFailedLoginAttempt(LocalDateTime.now());
-                mUserDao.update(user);
-                LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, username);
-                throw new BadCredentialsException("Login failed; Invalid userID or password");
+                loginAttemptForUserFailed(user);
             }
             user.setSequentialLoginFailureCount(0);
+            user.setLastFailedLoginAttempt(null);
+            mUserDao.update(user);
         } catch (IllegalArgumentException ex) {
             // password is not hashed;
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, username);
@@ -120,12 +115,17 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         return smpAuthenticationToken;
     }
 
-    public void alertFailedLogin() {
-
-        alertService.alertUserAccountSuspended();
-
+    public void loginAttemptForUserFailed(DBUser user) {
+        user.setSequentialLoginFailureCount(user.getSequentialLoginFailureCount() != null ? user.getSequentialLoginFailureCount() + 1 : 1);
+        user.setLastFailedLoginAttempt(OffsetDateTime.now());
+        mUserDao.update(user);
+        LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getUsername());
+        if (user.getSequentialLoginFailureCount() >= configurationService.getLoginMaxAttempts()) {
+            LOG.info("User [{}] failed sequential attempt exceeded the max allowed attempts [{}]!", user.getUsername(), configurationService.getLoginMaxAttempts());
+            alertService.alertUsernamePasswordCredentialsSuspended(user);
+        }
+        throw new BadCredentialsException("Login failed; Invalid userID or password");
     }
-
 
     /**
      * Method tests if user account Suspended
@@ -148,9 +148,9 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
             LOG.warn("User [{}] has failed attempts [{}] but null last Failed login attempt!", user.getUsername(), user.getLastFailedLoginAttempt());
             return;
         }
-        // check if the last failed attempt is already expired. If yes just clear the attepmts
+        // check if the last failed attempt is already expired. If yes just clear the attempts
         if (configurationService.getLoginSuspensionTimeInSeconds() != null && configurationService.getLoginSuspensionTimeInSeconds() > 0
-                && ChronoUnit.SECONDS.between(LocalDateTime.now(), user.getLastFailedLoginAttempt()) > configurationService.getLoginSuspensionTimeInSeconds()) {
+                && ChronoUnit.SECONDS.between(OffsetDateTime.now(), user.getLastFailedLoginAttempt()) > configurationService.getLoginSuspensionTimeInSeconds()) {
             LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
             user.setLastFailedLoginAttempt(null);
             user.setSequentialLoginFailureCount(0);

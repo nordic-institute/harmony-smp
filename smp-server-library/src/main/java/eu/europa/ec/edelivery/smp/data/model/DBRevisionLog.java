@@ -7,7 +7,7 @@ import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * Implementation of hibernate envers Revision log entity.
@@ -22,7 +22,7 @@ public class DBRevisionLog {
 
 
     @Id
-    @SequenceGenerator(name="revision_generator", sequenceName = "SMP_REVISION_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "revision_generator", sequenceName = "SMP_REVISION_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "revision_generator")
     @RevisionNumber
     private long id;
@@ -38,7 +38,7 @@ public class DBRevisionLog {
      * Date of the modification.
      */
     @Column(name = "REVISION_DATE")
-    private LocalDateTime revisionDate;
+    private OffsetDateTime revisionDate;
 
 
     public String getUserName() {
@@ -49,11 +49,11 @@ public class DBRevisionLog {
         this.userName = userName;
     }
 
-    public LocalDateTime getRevisionDate() {
+    public OffsetDateTime getRevisionDate() {
         return revisionDate;
     }
 
-    public void setRevisionDate(LocalDateTime revisionDate) {
+    public void setRevisionDate(OffsetDateTime revisionDate) {
         this.revisionDate = revisionDate;
     }
 
@@ -75,19 +75,19 @@ public class DBRevisionLog {
     }
 
     public boolean equals(Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
-        } else if(!(o instanceof DBRevisionLog)) {
+        } else if (!(o instanceof DBRevisionLog)) {
             return false;
         } else {
-            DBRevisionLog that = (DBRevisionLog)o;
+            DBRevisionLog that = (DBRevisionLog) o;
             return this.id == that.id && this.timestamp == that.timestamp;
         }
     }
 
     public int hashCode() {
-        int result = (int)this.id;
-        result = 31 * result + (int)(this.timestamp ^ this.timestamp >>> 32);
+        int result = (int) this.id;
+        result = 31 * result + (int) (this.timestamp ^ this.timestamp >>> 32);
         return result;
     }
 

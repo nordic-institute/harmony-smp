@@ -7,9 +7,8 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.utils.SMPConstants;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 
 /**
@@ -24,10 +23,10 @@ public class UserRO extends BaseRO implements UserDetails {
 
     String password;
     @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
-    LocalDateTime passwordExpireOn;
+    OffsetDateTime passwordExpireOn;
     String accessTokenId;
     @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
-    LocalDateTime accessTokenExpireOn;
+    OffsetDateTime accessTokenExpireOn;
     String emailAddress;
     Collection<SMPAuthority> authorities;
     boolean active = true;
@@ -99,19 +98,19 @@ public class UserRO extends BaseRO implements UserDetails {
         this.active = active;
     }
 
-    public LocalDateTime getPasswordExpireOn() {
+    public OffsetDateTime getPasswordExpireOn() {
         return passwordExpireOn;
     }
 
-    public void setPasswordExpireOn(LocalDateTime passwordExpireOn) {
+    public void setPasswordExpireOn(OffsetDateTime passwordExpireOn) {
         this.passwordExpireOn = passwordExpireOn;
     }
 
-    public LocalDateTime getAccessTokenExpireOn() {
+    public OffsetDateTime getAccessTokenExpireOn() {
         return accessTokenExpireOn;
     }
 
-    public void setAccessTokenExpireOn(LocalDateTime accessTokenExpireOn) {
+    public void setAccessTokenExpireOn(OffsetDateTime accessTokenExpireOn) {
         this.accessTokenExpireOn = accessTokenExpireOn;
     }
 
