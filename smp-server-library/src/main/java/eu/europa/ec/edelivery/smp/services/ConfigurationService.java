@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -25,11 +26,7 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 
 @Service
 public class ConfigurationService {
-    // set encrypted log value: do not reveal the real value to logs!
-    private static final String ENCRYPTED_LOG_VALUE="*******";
-
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationService.class);
-
 
     private final ConfigurationDao configurationDAO;
 
@@ -144,11 +141,21 @@ public class ConfigurationService {
         return value == null || value;
     }
 
+    public boolean isClusterEnabled() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SMP_CLUSTER_ENABLED);
+        return value != null && value;
+    }
+
     public boolean encodedSlashesAllowedInUrl() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(ENCODED_SLASHES_ALLOWED_IN_URL);
         // by default is true - return false only in case is declared in configuration
         return value == null || value;
     }
+
+    public String getTargetServerForCredentialValidation() {
+        return (String) configurationDAO.getCachedPropertyValue(SMP_ALERT_CREDENTIALS_SERVER);
+    }
+
     public String getSMLIntegrationSMPLogicalAddress() {
         return configurationDAO.getCachedProperty(SML_LOGICAL_ADDRESS);
     }
@@ -284,4 +291,126 @@ public class ConfigurationService {
     public List<String> getAutomationAuthenticationTypes() {
         return (List<String>) configurationDAO.getCachedPropertyValue(AUTOMATION_AUTHENTICATION_TYPES);
     }
+
+    //-----------------------
+    // before password expire
+    public Boolean getAlertBeforeExpirePasswordEnabled() {
+        return (Boolean) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_BEFORE_EXPIRATION_ENABLED);
+    }
+    public Integer getAlertBeforeExpirePasswordPeriod() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_BEFORE_EXPIRATION_PERIOD);
+    }
+    public Integer getAlertBeforeExpirePasswordInterval() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_BEFORE_EXPIRATION_INTERVAL);
+    }
+    public AlertLevelEnum getAlertBeforeExpirePasswordLevel() {
+        String level = (String) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_BEFORE_EXPIRATION_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+
+    public String getAlertBeforeExpirePasswordMailSubject() {
+        return (String) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_BEFORE_EXPIRATION_MAIL_SUBJECT);
+    }
+
+    // expired passwords
+    public Boolean getAlertExpiredPasswordEnabled() {
+        return (Boolean) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_EXPIRED_ENABLED);
+    }
+    public Integer getAlertExpiredPasswordPeriod() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_EXPIRED_PERIOD);
+    }
+    public Integer getAlertExpiredPasswordInterval() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_EXPIRED_INTERVAL);
+    }
+    public AlertLevelEnum getAlertExpiredPasswordLevel() {
+        String level = (String) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_EXPIRED_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+
+    public String getAlertExpiredPasswordMailSubject() {
+        return (String) configurationDAO.getCachedPropertyValue(ALERT_PASSWORD_EXPIRED_MAIL_SUBJECT);
+    }
+
+    //-----------------------
+    // before access token expire
+    public Boolean getAlertBeforeExpireAccessTokenEnabled() {
+        return (Boolean) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_ENABLED);
+    }
+    public Integer getAlertBeforeExpireAccessTokenPeriod() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_PERIOD);
+    }
+    public Integer getAlertBeforeExpireAccessTokenInterval() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_INTERVAL);
+    }
+    public AlertLevelEnum getAlertBeforeExpireAccessTokenLevel() {
+        String level = (String) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+    public String getAlertBeforeExpireAccessTokenMailSubject() {
+        return (String) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_MAIL_SUBJECT);
+    }
+    // expired access token alerts
+    public Boolean getAlertExpiredAccessTokenEnabled() {
+        return (Boolean) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_EXPIRED_ENABLED);
+    }
+    public Integer getAlertExpiredAccessTokenPeriod() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_EXPIRED_PERIOD);
+    }
+    public Integer getAlertExpiredAccessTokenInterval() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_EXPIRED_INTERVAL);
+    }
+    public AlertLevelEnum getAlertExpiredAccessTokenLevel() {
+        String level = (String) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_EXPIRED_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+    public String getAlertExpiredAccessTokenMailSubject() {
+        return (String) configurationDAO.getCachedPropertyValue(ALERT_ACCESS_TOKEN_EXPIRED_MAIL_SUBJECT);
+    }
+
+    //-----------------------
+    // before certificate expire
+    public Boolean getAlertBeforeExpireCertificateEnabled() {
+        return (Boolean) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_BEFORE_EXPIRATION_ENABLED);
+    }
+    public Integer getAlertBeforeExpireCertificatePeriod() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_BEFORE_EXPIRATION_PERIOD);
+    }
+    public Integer getAlertBeforeExpireCertificateInterval() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_BEFORE_EXPIRATION_INTERVAL);
+    }
+    public AlertLevelEnum getAlertBeforeExpireCertificateLevel() {
+        String level = (String) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_BEFORE_EXPIRATION_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+    public String getAlertBeforeExpireCertificateMailSubject() {
+        return (String) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_BEFORE_EXPIRATION_MAIL_SUBJECT);
+    }
+    // expired access token alerts
+    public Boolean getAlertExpiredCertificateEnabled() {
+        return (Boolean) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_ENABLED);
+    }
+    public Integer getAlertExpiredCertificatePeriod() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_PERIOD);
+    }
+    public Integer getAlertExpiredCertificateInterval() {
+        return (Integer) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_INTERVAL);
+    }
+    public AlertLevelEnum getAlertExpiredCertificateLevel() {
+        String level = (String) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_LEVEL);
+        return AlertLevelEnum.valueOf(level);
+    }
+    public String getAlertExpiredCertificateMailSubject() {
+        return (String) configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_MAIL_SUBJECT);
+    }
+
+
+    public Integer getAlertCredentialsBatchSize() {
+        return (Integer) configurationDAO.getCachedPropertyValue(SMP_ALERT_BATCH_SIZE);
+    }
+
+    public String getAlertEmailFrom() {
+        return (String) configurationDAO.getCachedPropertyValue(SMP_ALERT_MAIL_FROM);
+    }
+
+
 }

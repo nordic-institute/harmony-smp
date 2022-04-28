@@ -17,7 +17,6 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 
@@ -36,21 +35,21 @@ import java.util.Objects;
         @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifierAndSMDdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID \n" +
                 " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID\n" +
                 " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch" +
-                " AND md.DOCUMENT_IDENTIFIER=:docId AND (:docSch IS NULL OR md.DOCUMENT_SCHEME=:docSch)", resultClass=DBServiceMetadata.class),
+                " AND md.DOCUMENT_IDENTIFIER=:docId AND (:docSch IS NULL OR md.DOCUMENT_SCHEME=:docSch)", resultClass = DBServiceMetadata.class),
         @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID \n" +
                 " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID\n" +
-                " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch", resultClass=DBServiceMetadata.class)
+                " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch", resultClass = DBServiceMetadata.class)
 })
 public class DBServiceMetadata extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ",allocationSize = 1)
+    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgmd_generator")
     @Column(name = "ID")
     @ColumnDescription(comment = "Shared primary key with master table SMP_SERVICE_METADATA")
     Long id;
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "FK_SG_DOM_ID", nullable = false)
     })
@@ -64,7 +63,7 @@ public class DBServiceMetadata extends BaseEntity {
     String documentIdentifierScheme;
 
     @OneToOne(mappedBy = "serviceMetadata",
-            cascade=CascadeType.ALL,
+            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true)
     private DBServiceMetadataXml serviceMetadataXml;
@@ -112,8 +111,7 @@ public class DBServiceMetadata extends BaseEntity {
             if (this.serviceMetadataXml != null) {
                 this.serviceMetadataXml.setServiceMetadata(null);
             }
-        }
-        else {
+        } else {
             if (this.serviceMetadataXml == null) {
                 this.serviceMetadataXml = new DBServiceMetadataXml();
                 this.serviceMetadataXml.setServiceMetadata(this);

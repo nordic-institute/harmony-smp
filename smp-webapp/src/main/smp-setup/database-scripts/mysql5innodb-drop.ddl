@@ -7,6 +7,14 @@
        drop 
        foreign key FKrw0qnto448ojlirpfmfntd8v2;
 
+    alter table SMP_ALERT_PROPERTY 
+       drop 
+       foreign key FK15r37w3r5ty5f6074ykr2o4i6;
+
+    alter table SMP_ALERT_PROPERTY_AUD 
+       drop 
+       foreign key FKod33qjx87ih1a0skxl2sgddar;
+
     alter table SMP_CERTIFICATE 
        drop 
        foreign key FKayqgpj5ot3o8vrpduul7sstta;
@@ -82,6 +90,10 @@
     drop table if exists SMP_ALERT;
 
     drop table if exists SMP_ALERT_AUD;
+
+    drop table if exists SMP_ALERT_PROPERTY;
+
+    drop table if exists SMP_ALERT_PROPERTY_AUD;
 
     drop table if exists SMP_CERTIFICATE;
 

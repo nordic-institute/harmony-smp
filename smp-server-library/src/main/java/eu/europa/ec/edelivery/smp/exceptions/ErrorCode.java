@@ -64,6 +64,9 @@ public enum ErrorCode {
     CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error %s.  Error: %s!"),
     CONFIGURATION_ERROR (500,"SMP:516",ErrorBusinessCode.TECHNICAL, "Configuration error: %s!"),
 
+
+    MAIL_SUBMISSION_ERROR (500,"SMP:550",ErrorBusinessCode.TECHNICAL, "Mail submission error: %s!"),
+
     //
     ;
 

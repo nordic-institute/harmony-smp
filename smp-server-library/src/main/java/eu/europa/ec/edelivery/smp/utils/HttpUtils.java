@@ -4,6 +4,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 
 public class HttpUtils {
@@ -36,6 +37,18 @@ public class HttpUtils {
         }
         LOG.debug(" host:'" + uriHost + "' : DEFAULT  (no match of " + Arrays.toString(nonProxyHosts) + " non proxy host)");
         return false;
+    }
+
+
+    public static String getServerAddress() {
+        String serverAddress;
+        try {
+            serverAddress = InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            serverAddress = StringUtils.EMPTY;
+        }
+        return serverAddress;
     }
 
 }

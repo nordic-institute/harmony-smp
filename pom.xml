@@ -53,6 +53,7 @@
         <cxf.version>3.4.5</cxf.version>
         <dnsjava.version>2.1.7</dnsjava.version>
         <ehcache.version>2.10.6</ehcache.version>
+        <freemarker.version>2.3.31</freemarker.version>
         <h2.version>1.4.187</h2.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
         <hibernate-jpa.version>1.0.2.Final</hibernate-jpa.version>
@@ -191,7 +192,11 @@
                 <artifactId>httpclient</artifactId>
                 <version>${httpclient.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemarker.version}</version>
+            </dependency>
             <dependency>
                 <groupId>eu.europa.ec.cipa</groupId>
                 <artifactId>cipa-edelivery-common</artifactId>

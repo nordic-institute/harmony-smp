@@ -2,7 +2,6 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.security.cert.CertificateValidator;
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
@@ -11,13 +10,13 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
+import eu.europa.ec.edelivery.smp.services.AlertService;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -31,7 +30,7 @@ import java.security.cert.CertificateRevokedException;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -42,8 +41,8 @@ import static java.util.Locale.US;
  * (like a database, LDAP, custom third party source, etc. ). It uses the fetched user information to validate the supplied credentials.
  * The current Authentication provider is intented for the accounts supporting automated application functionalities .
  * The account are used in SMP for webservice access as application to application integration with SMP. Authentication provider supports following
- *  {@link org.springframework.security.core.Authentication} implementation:
- *      - {@link org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken} implementation using
+ * {@link org.springframework.security.core.Authentication} implementation:
+ * - {@link org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken} implementation using
  *
  * @author Joze Rihtarsic
  * @since 4.1
@@ -51,7 +50,7 @@ import static java.util.Locale.US;
 @Component
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
-    public static final String LOGIN_FAILED_MESSAGE="Login failed; Invalid userID or password";
+    public static final String LOGIN_FAILED_MESSAGE = "Login failed; Invalid userID or password";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);
     /**
@@ -68,15 +67,21 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
     final CRLVerifierService crlVerifierService;
     final UITruststoreService truststoreService;
     final ConfigurationService configurationService;
+    final AlertService alertService;
 
     @Autowired
-    public SMPAuthenticationProvider(UserDao mUserDao, CRLVerifierService crlVerifierService, UITruststoreService truststoreService, ConfigurationService configurationService) {
+    public SMPAuthenticationProvider(UserDao mUserDao,
+                                     CRLVerifierService crlVerifierService,
+                                     UITruststoreService truststoreService,
+                                     ConfigurationService configurationService,
+                                     AlertService alertService) {
         this.dummyPassword = UUID.randomUUID().toString();
         this.dummyPasswordHash = BCrypt.hashpw(dummyPassword, BCrypt.gensalt());
         this.mUserDao = mUserDao;
         this.crlVerifierService = crlVerifierService;
         this.truststoreService = truststoreService;
         this.configurationService = configurationService;
+        this.alertService = alertService;
     }
 
     @Override
@@ -195,7 +200,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             }
         }
         // get role
-        String role = "WS_"+user.getRole();
+        String role = "WS_" + user.getRole();
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, userToken, role);
         SMPCertificateAuthentication authentication = new SMPCertificateAuthentication(principal, Collections.singletonList(new SMPAuthority(role)), user);
 
@@ -226,8 +231,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             return;
         }
         // check if the last failed attempt is already expired. If yes just clear the attepmts
-        if  (configurationService.getAccessTokenLoginSuspensionTimeInSeconds() !=null && configurationService.getAccessTokenLoginSuspensionTimeInSeconds() > 0
-                && ChronoUnit.SECONDS.between(LocalDateTime.now(), user.getLastTokenFailedLoginAttempt()) > configurationService.getAccessTokenLoginSuspensionTimeInSeconds()){
+        if (configurationService.getAccessTokenLoginSuspensionTimeInSeconds() != null && configurationService.getAccessTokenLoginSuspensionTimeInSeconds() > 0
+                && ChronoUnit.SECONDS.between(OffsetDateTime.now(), user.getLastTokenFailedLoginAttempt()) > configurationService.getAccessTokenLoginSuspensionTimeInSeconds()) {
             LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
             user.setLastTokenFailedLoginAttempt(null);
             user.setSequentialTokenLoginFailureCount(0);
@@ -236,7 +241,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         }
 
         if (user.getSequentialTokenLoginFailureCount() < configurationService.getAccessTokenLoginMaxAttempts()) {
-            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialTokenLoginFailureCount() , configurationService.getAccessTokenLoginMaxAttempts());
+            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialTokenLoginFailureCount(), configurationService.getAccessTokenLoginMaxAttempts());
             return;
         }
         LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
@@ -276,22 +281,39 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
         try {
             if (!BCrypt.checkpw(authenticationTokenValue, user.getAccessToken())) {
-                user.setSequentialTokenLoginFailureCount(user.getSequentialTokenLoginFailureCount()!=null?user.getSequentialTokenLoginFailureCount()+1:1);
-                user.setLastTokenFailedLoginAttempt(LocalDateTime.now());
-                mUserDao.update(user);
-                LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, authenticationTokenId);
-                throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
+                loginAttemptForAccessTokenFailed(user);
             }
+            user.setSequentialTokenLoginFailureCount(0);
+            user.setLastTokenFailedLoginAttempt(null);
+            mUserDao.update(user);
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed;
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, authenticationTokenId);
             throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
         }
-        String role = "WS_"+user.getRole();
+        String role = "WS_" + user.getRole();
         SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(authenticationTokenId, authenticationTokenValue, Collections.singletonList(new SMPAuthority(role)), user);
 
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, authenticationTokenId, role);
         return smpAuthenticationToken;
+    }
+
+    public void loginAttemptForAccessTokenFailed(DBUser user) {
+
+        user.setSequentialTokenLoginFailureCount(user.getSequentialTokenLoginFailureCount() != null ? user.getSequentialTokenLoginFailureCount() + 1 : 1);
+        user.setLastTokenFailedLoginAttempt(OffsetDateTime.now());
+        mUserDao.update(user);
+        LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getAccessTokenIdentifier());
+
+        user.setSequentialLoginFailureCount(user.getSequentialLoginFailureCount() != null ? user.getSequentialLoginFailureCount() + 1 : 1);
+        user.setLastFailedLoginAttempt(OffsetDateTime.now());
+        mUserDao.update(user);
+        LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getUsername());
+        if (user.getSequentialTokenLoginFailureCount() >= configurationService.getAccessTokenLoginMaxAttempts()) {
+            LOG.info("User access token [{}] failed sequential attempt exceeded the max allowed attempts [{}]!", user.getAccessToken(), configurationService.getAccessTokenLoginMaxAttempts());
+            alertService.alertAccessTokenCredentialsSuspended(user);
+        }
+        throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
     }
 
     @Override

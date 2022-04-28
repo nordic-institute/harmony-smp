@@ -13,11 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import freemarker.cache.ClassTemplateLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 /**
  * Created by gutowpa on 12/07/2017.
@@ -32,8 +34,4 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @Import(DatabaseConfig.class)
 public class SmpAppConfig {
 
-    @Bean
-    public JavaMailSenderImpl javaMailSender() {
-        return new JavaMailSenderImpl();
-    }
 }

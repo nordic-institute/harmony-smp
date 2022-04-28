@@ -22,10 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.TECHNICAL;
@@ -45,13 +43,14 @@ public class ErrorResponseBuilder {
 
     private static String getErrorUniqueId() {
         StringBuilder errId = new StringBuilder();
-        errId.append(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
+        errId.append(OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
                 .append(":")
                 .append(UUID.randomUUID());
         return String.valueOf(errId);
     }
 
-    public ErrorResponseBuilder() {}
+    public ErrorResponseBuilder() {
+    }
 
     private ErrorResponseBuilder(HttpStatus status) {
         this.status = status;
