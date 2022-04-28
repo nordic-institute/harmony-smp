@@ -76,9 +76,9 @@
         <slf4j.version>1.7.32</slf4j.version>
         <soapui.plugin.version>5.1.2</soapui.plugin.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring.boot.version>2.6.3</spring.boot.version>
-        <spring.security.version>5.6.1</spring.security.version>
-        <spring.version>5.3.18</spring.version>
+        <spring.boot.version>2.6.7</spring.boot.version>
+        <spring.security.version>5.6.3</spring.security.version>
+        <spring.version>5.3.19</spring.version>
         <xmlunit.version>2.5.1</xmlunit.version>
 
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
