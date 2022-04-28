@@ -47,7 +47,9 @@ public class ConfigurationService {
         return (String)configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP_MSG);
     }
     public Boolean getForceConcatenateEBCorePartyId() {
-        return (Boolean)configurationDAO.getCachedPropertyValue(PARTC_EBCOREPARTYID_CONCATENATE);
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(PARTC_EBCOREPARTYID_CONCATENATE);
+        // true by default
+        return value == null || value;
     }
 
     public Pattern getPasswordPolicyRexExp() {
