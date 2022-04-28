@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_EXTENSION_FOR_SG;
+import static eu.europa.ec.smp.api.Identifiers.EBCORE_IDENTIFIER_PREFIX;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -101,8 +102,8 @@ public class ServiceGroupConverter {
             if (serviceGroup!=null && serviceGroup.getParticipantIdentifier()!=null
             && StringUtils.isBlank(serviceGroup.getParticipantIdentifier().getScheme())
             && StringUtils.startsWithAny(serviceGroup.getParticipantIdentifier().getValue(),
-                    Identifiers.EBCORE_IDENTIFIER_PREFIX,
-                    "::"+Identifiers.EBCORE_IDENTIFIER_PREFIX)){
+                    EBCORE_IDENTIFIER_PREFIX,
+                    "::"+ EBCORE_IDENTIFIER_PREFIX)){
                 // normalize participant identifier
                 LOG.info("Normalize ebCore identifier: " + serviceGroup.getParticipantIdentifier().getValue());
                 ParticipantIdentifierType participantIdentifierType = Identifiers.asParticipantId(serviceGroup.getParticipantIdentifier().getValue());
@@ -122,14 +123,20 @@ public class ServiceGroupConverter {
      * @param dsg - database service group entity
      * @return Oasis ServiceGroup entity or null if parameter is null
      */
-    public static ServiceGroup toServiceGroup(DBServiceGroup dsg){
+    public static ServiceGroup toServiceGroup(DBServiceGroup dsg, boolean concatenateEBCoreID){
 
         if (dsg==null){
             return null;
         }
 
         ServiceGroup serviceGroup = new ServiceGroup();
-        ParticipantIdentifierType identifier = new ParticipantIdentifierType(dsg.getParticipantIdentifier(), dsg.getParticipantScheme());
+        String schema  = dsg.getParticipantScheme();
+        String value  = dsg.getParticipantIdentifier();
+        if (concatenateEBCoreID && StringUtils.startsWithIgnoreCase(schema, EBCORE_IDENTIFIER_PREFIX) ){
+            value = schema + ":" + value;
+            schema = null;
+        }
+        ParticipantIdentifierType identifier = new ParticipantIdentifierType(value, schema);
         serviceGroup.setParticipantIdentifier(identifier);
         if (dsg.getExtension()!=null){
             try {

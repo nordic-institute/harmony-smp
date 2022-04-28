@@ -82,7 +82,7 @@ public class ServiceMetadataConverter {
      * @param serviceMetadataXml
      * @return w3d dom element
      */
-    public static Document toSignedServiceMetadatadaDocument(byte[] serviceMetadataXml)  {
+    public static Document toSignedServiceMetadataDocument(byte[] serviceMetadataXml)  {
         try {
             Document docServiceMetadata = parse(serviceMetadataXml);
             Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY.getBytes());
