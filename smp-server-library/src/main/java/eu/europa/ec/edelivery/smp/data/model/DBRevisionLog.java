@@ -8,7 +8,7 @@ import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * Implementation of hibernate envers Revision log entity.
@@ -38,7 +38,7 @@ public class DBRevisionLog {
      * Date of the modification.
      */
     @Column(name = "REVISION_DATE")
-    private LocalDateTime revisionDate;
+    private OffsetDateTime revisionDate;
 
 
     public String getUserName() {
@@ -49,11 +49,11 @@ public class DBRevisionLog {
         this.userName = userName;
     }
 
-    public LocalDateTime getRevisionDate() {
+    public OffsetDateTime getRevisionDate() {
         return revisionDate;
     }
 
-    public void setRevisionDate(LocalDateTime revisionDate) {
+    public void setRevisionDate(OffsetDateTime revisionDate) {
         this.revisionDate = revisionDate;
     }
 
