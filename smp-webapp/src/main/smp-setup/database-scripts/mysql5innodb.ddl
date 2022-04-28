@@ -114,7 +114,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_DOMAIN (
-       ID bigint not null comment 'Unique domain id',
+       ID bigint not null auto_increment comment 'Unique domain id',
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Domain code used as http parameter in rest webservices',
@@ -147,12 +147,6 @@
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_DOMAIN_SEQ (
-       next_val bigint
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    insert into SMP_DOMAIN_SEQ values ( 1 );
-
     create table SMP_OWNERSHIP (
        FK_SG_ID bigint not null,
         FK_USER_ID bigint not null,
@@ -168,21 +162,15 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_REV_INFO (
-       id bigint not null,
+       id bigint not null auto_increment,
         REVISION_DATE datetime,
         timestamp bigint not null,
         USERNAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_REVISION_SEQ (
-       next_val bigint
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    insert into SMP_REVISION_SEQ values ( 1 );
-
     create table SMP_SERVICE_GROUP (
-       ID bigint not null comment 'Unique Servicegroup id',
+       ID bigint not null auto_increment comment 'Unique ServiceGroup id',
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         PARTICIPANT_IDENTIFIER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
@@ -202,7 +190,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_SERVICE_GROUP_DOMAIN (
-       ID bigint not null,
+       ID bigint not null auto_increment,
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         SML_REGISTERED bit not null,
@@ -223,20 +211,8 @@
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_SERVICE_GROUP_DOMAIN_SEQ (
-       next_val bigint
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    insert into SMP_SERVICE_GROUP_DOMAIN_SEQ values ( 1 );
-
-    create table SMP_SERVICE_GROUP_SEQ (
-       next_val bigint
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    insert into SMP_SERVICE_GROUP_SEQ values ( 1 );
-
     create table SMP_SERVICE_METADATA (
-       ID bigint not null comment 'Shared primary key with master table SMP_SERVICE_METADATA',
+       ID bigint not null auto_increment comment 'Shared primary key with master table SMP_SERVICE_METADATA',
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         DOCUMENT_IDENTIFIER varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin not null,
@@ -256,12 +232,6 @@
         FK_SG_DOM_ID bigint,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    create table SMP_SERVICE_METADATA_SEQ (
-       next_val bigint
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    insert into SMP_SERVICE_METADATA_SEQ values ( 1 );
 
     create table SMP_SERVICE_METADATA_XML (
        ID bigint not null,
@@ -300,7 +270,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_USER (
-       ID bigint not null comment 'Unique user id',
+       ID bigint not null auto_increment comment 'Unique user id',
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         ACCESS_TOKEN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'BCrypted personal access token',
@@ -348,12 +318,6 @@
         USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    create table SMP_USER_SEQ (
-       next_val bigint
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    insert into SMP_USER_SEQ values ( 1 );
 
     alter table SMP_CERTIFICATE 
        add constraint UK_3x3rvf6hkim9fg16caurkgg6f unique (CERTIFICATE_ID);

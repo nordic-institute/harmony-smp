@@ -2,12 +2,13 @@ package eu.europa.ec.edelivery.smp.data.model;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.SMPRevisionListener;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
 import javax.persistence.*;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 /**
  * Implementation of hibernate envers Revision log entity.
@@ -20,10 +21,9 @@ import java.time.OffsetDateTime;
 @RevisionEntity(SMPRevisionListener.class)
 public class DBRevisionLog {
 
-
     @Id
-    @SequenceGenerator(name = "revision_generator", sequenceName = "SMP_REVISION_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "revision_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_REVISION_SEQ")
+    @GenericGenerator(name = "SMP_REVISION_SEQ", strategy = "native")
     @RevisionNumber
     private long id;
 
@@ -38,7 +38,7 @@ public class DBRevisionLog {
      * Date of the modification.
      */
     @Column(name = "REVISION_DATE")
-    private OffsetDateTime revisionDate;
+    private LocalDateTime revisionDate;
 
 
     public String getUserName() {
@@ -49,11 +49,11 @@ public class DBRevisionLog {
         this.userName = userName;
     }
 
-    public OffsetDateTime getRevisionDate() {
+    public LocalDateTime getRevisionDate() {
         return revisionDate;
     }
 
-    public void setRevisionDate(OffsetDateTime revisionDate) {
+    public void setRevisionDate(LocalDateTime revisionDate) {
         this.revisionDate = revisionDate;
     }
 
@@ -75,19 +75,19 @@ public class DBRevisionLog {
     }
 
     public boolean equals(Object o) {
-        if (this == o) {
+        if(this == o) {
             return true;
-        } else if (!(o instanceof DBRevisionLog)) {
+        } else if(!(o instanceof DBRevisionLog)) {
             return false;
         } else {
-            DBRevisionLog that = (DBRevisionLog) o;
+            DBRevisionLog that = (DBRevisionLog)o;
             return this.id == that.id && this.timestamp == that.timestamp;
         }
     }
 
     public int hashCode() {
-        int result = (int) this.id;
-        result = 31 * result + (int) (this.timestamp ^ this.timestamp >>> 32);
+        int result = (int)this.id;
+        result = 31 * result + (int)(this.timestamp ^ this.timestamp >>> 32);
         return result;
     }
 

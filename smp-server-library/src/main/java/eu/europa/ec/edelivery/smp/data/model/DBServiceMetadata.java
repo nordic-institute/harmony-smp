@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -32,19 +33,19 @@ import java.util.Objects;
         @NamedQuery(name = "DBServiceMetadata.deleteById", query = "DELETE FROM DBServiceMetadata d WHERE d.id = :id"),
 })
 @NamedNativeQueries({
-        @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifierAndSMDdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID \n" +
+        @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifierAndSMDdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID " +
                 " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID\n" +
-                " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch" +
+                " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch " +
                 " AND md.DOCUMENT_IDENTIFIER=:docId AND (:docSch IS NULL OR md.DOCUMENT_SCHEME=:docSch)", resultClass = DBServiceMetadata.class),
-        @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID \n" +
-                " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID\n" +
+        @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID " +
+                " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID " +
                 " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch", resultClass = DBServiceMetadata.class)
 })
 public class DBServiceMetadata extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgmd_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SERVICE_METADATA_SEQ")
+    @GenericGenerator(name = "SMP_SERVICE_METADATA_SEQ", strategy = "native")
     @Column(name = "ID")
     @ColumnDescription(comment = "Shared primary key with master table SMP_SERVICE_METADATA")
     Long id;
