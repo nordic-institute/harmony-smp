@@ -23,13 +23,13 @@ export class SecurityService {
 
   login(username: string, password: string) {
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post<string>(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION,
+    return this.http.post<User>(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION,
       JSON.stringify({
         username: username,
         password: password
       }),
       { headers })
-      .subscribe((response: string) => {
+      .subscribe((response: User) => {
           this.updateUserDetails(response);
         },
         (error: any) => {
@@ -38,9 +38,10 @@ export class SecurityService {
   }
 
   refreshLoggedUserFromServer() {
-    let subject = new ReplaySubject<string>();
+    let subject = new ReplaySubject<User>();
 
-    this.getCurrentUsernameFromServer().subscribe((res: string) => {
+    this.getCurrentUsernameFromServer().subscribe((res: User) => {
+
         this.updateUserDetails(res);
       }, (error: any) => {
         //console.log('getCurrentUsernameFromServer:' + error);
@@ -50,22 +51,27 @@ export class SecurityService {
 
   logout() {
     this.http.delete(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
-        this.clearLocalStorage();
-        this.securityEventService.notifyLogoutSuccessEvent(res);
+        this.finalizeLogout(res);
       },
       (error) => {
         this.securityEventService.notifyLogoutErrorEvent(error);
       });
   }
 
+  finalizeLogout(res){
+    this.clearLocalStorage();
+    this.securityEventService.notifyLogoutSuccessEvent(res);
+  }
+
+
   getCurrentUser(): User {
     return JSON.parse(this.readLocalStorage());
   }
 
-  private getCurrentUsernameFromServer(): Observable<string> {
-    let subject = new ReplaySubject<string>();
-    this.http.get<string>(SmpConstants.REST_PUBLIC_SECURITY_USER)
-      .subscribe((res: string) => {
+  private getCurrentUsernameFromServer(): Observable<User> {
+    let subject = new ReplaySubject<User>();
+    this.http.get<User>(SmpConstants.REST_PUBLIC_SECURITY_USER)
+      .subscribe((res: User) => {
         subject.next(res);
       }, (error: any) => {
         //console.log('getCurrentUsernameFromServer:' + error);
@@ -78,7 +84,7 @@ export class SecurityService {
     let subject = new ReplaySubject<boolean>();
     if (callServer) {
       //we get the username from the server to trigger the redirection to the login screen in case the user is not authenticated
-      this.getCurrentUsernameFromServer().subscribe((user: string) => {
+      this.getCurrentUsernameFromServer().subscribe((user: User) => {
           if(!user) {
             this.clearLocalStorage();
           }
@@ -130,9 +136,9 @@ export class SecurityService {
     return subject.asObservable();
   }
 
-  updateUserDetails(userDetails) {
-    this.populateLocalStorage(JSON.stringify(userDetails));
-    this.securityEventService.notifyLoginSuccessEvent(userDetails);
+  updateUserDetails(userDetails:User) {
+      this.populateLocalStorage(JSON.stringify(userDetails));
+      this.securityEventService.notifyLoginSuccessEvent(userDetails);
   }
 
   private populateLocalStorage(userDetails: string) {

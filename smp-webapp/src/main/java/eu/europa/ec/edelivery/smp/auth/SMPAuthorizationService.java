@@ -85,7 +85,9 @@ public class SMPAuthorizationService {
         userRO.setPassword("");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        userRO.setAuthorities(authentication.getAuthorities().stream().map(val -> (SMPAuthority) val).collect(Collectors.toList()));
+        if (authentication!=null ){
+            userRO.setAuthorities(authentication.getAuthorities().stream().map(val -> (SMPAuthority) val).collect(Collectors.toList()));
+        }
         return userRO;
     }
 

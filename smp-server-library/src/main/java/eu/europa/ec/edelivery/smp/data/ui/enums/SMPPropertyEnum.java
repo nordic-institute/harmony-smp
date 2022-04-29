@@ -70,6 +70,12 @@ public enum SMPPropertyEnum {
             "The error message shown to the user in case the password does not follow the regex put in the domibus.passwordPolicy.pattern property", false, false,false, STRING),
     PASSWORD_POLICY_VALID_DAYS("smp.passwordPolicy.validDays","90",
             "Number of days password is valid", false, false,false, INTEGER),
+    PASSWORD_POLICY_UIWARNING_DAYS_BEFORE_EXPIRE("smp.passwordPolicy.warning.beforeExpiration","15",
+            "How many days before expiration should the UI warn users at login", false, false,false, INTEGER),
+
+    PASSWORD_POLICY_FORCE_CHANGE_EXPIRED("smp.passwordPolicy.expired.forceChange","true",
+            "Force change password at UI login if expired", false, false,false, BOOLEAN),
+
     USER_MAX_FAILED_ATTEMPTS("smp.user.login.maximum.attempt","5",
             "Number of console login attempt before the user is deactivated", false, false,false, INTEGER),
     USER_SUSPENSION_TIME("smp.user.login.suspension.time","3600",
@@ -111,6 +117,22 @@ public enum SMPPropertyEnum {
     MAIL_SERVER_PASSWORD("mail.smtp.password", "", "smtp mail protocol - encrypted password for submitting the emails.", false,true,false, STRING),
     MAIL_SERVER_PROPERTIES("mail.smtp.properties", "", " key:value properties separated with '|'.Ex: mail.smtp.auth:true|mail.smtp.starttls.enable:true|mail.smtp.quitwait:false.", false, false,false, MAP_STRING),
 
+    ALERT_USER_LOGIN_FAILURE_ENABLED("smp.alert.user.login_failure.enabled",
+            "false", "Enable/disable the login failure alert of the authentication module.", false, false,false, BOOLEAN),
+    ALERT_USER_LOGIN_FAILURE_LEVEL("smp.alert.user.login_failure.level",
+            "LOW", "Alert level for login failure.", false, false,false, STRING),
+    ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT("smp.alert.user.login_failure.mail.subject",
+            "Login failure", "Login failure mail subject. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+
+    ALERT_USER_SUSPENDED_ENABLED("smp.alert.user.suspended.enabled",
+            "true", "Enable/disable the login suspended alert of the authentication module.", false, false,false, BOOLEAN),
+    ALERT_USER_SUSPENDED_LEVEL("smp.alert.user.suspended.level",
+            "HIGH", "Alert level for login suspended. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+    ALERT_USER_SUSPENDED_MAIL_SUBJECT("smp.alert.user.suspended.mail.subject",
+            "Login credentials suspended", "Login suspended mail subject.", false, false,false, STRING),
+    ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
+            "WHEN_BLOCKED", "#When should the account disabled alert be triggered. Values: AT_LOGON: An alert will be triggered each time a user tries to login to a disabled account. WHEN_BLOCKED: An alert will be triggered once when the account got suspended.", false, false,false, STRING),
+
     ALERT_PASSWORD_BEFORE_EXPIRATION_ENABLED("smp.alert.password.imminent_expiration.enabled",
             "true", "Enable/disable the imminent password expiration alert", false, false,false, BOOLEAN),
     ALERT_PASSWORD_BEFORE_EXPIRATION_PERIOD("smp.alert.password.imminent_expiration.delay_days",
@@ -118,8 +140,8 @@ public enum SMPPropertyEnum {
     ALERT_PASSWORD_BEFORE_EXPIRATION_INTERVAL("smp.alert.password.imminent_expiration.frequency_days",
             "5", "Interval between alerts.", false, false,false, INTEGER),
     ALERT_PASSWORD_BEFORE_EXPIRATION_LEVEL("smp.alert.password.imminent_expiration.level",
-            "LOW", "Password imminent expiration alert level.", false, false,false, STRING),
-    ALERT_PASSWORD_BEFORE_EXPIRATION_MAIL_SUBJECT("ssmp.alert.password.imminent_expiration.mail.subject",
+            "LOW", "Password imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+    ALERT_PASSWORD_BEFORE_EXPIRATION_MAIL_SUBJECT("smp.alert.password.imminent_expiration.mail.subject",
             "Password imminent expiration", "Password imminent expiration mail subject.", false, false,false, STRING),
 
     ALERT_PASSWORD_EXPIRED_ENABLED("smp.alert.password.expired.enabled",
@@ -129,7 +151,7 @@ public enum SMPPropertyEnum {
     ALERT_PASSWORD_EXPIRED_INTERVAL("smp.alert.password.expired.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_PASSWORD_EXPIRED_LEVEL("smp.alert.password.expired.level",
-            "LOW", "Password expiration alert level.", false, false,false, STRING),
+            "LOW", "Password expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
     ALERT_PASSWORD_EXPIRED_MAIL_SUBJECT("smp.alert.password.expired.mail.subject",
             "Password expired", "Password expiration mail subject.", false, false,false, STRING),
 
@@ -140,8 +162,8 @@ public enum SMPPropertyEnum {
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_INTERVAL("smp.alert.accessToken.imminent_expiration.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_LEVEL("smp.alert.accessToken.imminent_expiration.level",
-            "LOW", "AccessToken imminent expiration alert level.", false, false,false, STRING),
-    ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_MAIL_SUBJECT("ssmp.alert.accessToken.imminent_expiration.mail.subject",
+            "LOW", "AccessToken imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+    ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_MAIL_SUBJECT("smp.alert.accessToken.imminent_expiration.mail.subject",
             "Access token imminent expiration", "accessToken imminent expiration mail subject.", false, false,false, STRING),
 
     ALERT_ACCESS_TOKEN_EXPIRED_ENABLED("smp.alert.accessToken.expired.enabled",
@@ -151,7 +173,7 @@ public enum SMPPropertyEnum {
     ALERT_ACCESS_TOKEN_EXPIRED_INTERVAL("smp.alert.accessToken.expired.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_ACCESS_TOKEN_EXPIRED_LEVEL("smp.alert.accessToken.expired.level",
-            "LOW", "Access Token expiration alert level.", false, false,false, STRING),
+            "LOW", "Access Token expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
     ALERT_ACCESS_TOKEN_EXPIRED_MAIL_SUBJECT("smp.alert.accessToken.expired.mail.subject",
             "Access token expired", "Password expiration mail subject.", false, false,false, STRING),
 
@@ -162,8 +184,8 @@ public enum SMPPropertyEnum {
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_INTERVAL("smp.alert.certificate.imminent_expiration.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_LEVEL("smp.alert.certificate.imminent_expiration.level",
-            "LOW", "certificate imminent expiration alert level.", false, false,false, STRING),
-    ALERT_CERTIFICATE_BEFORE_EXPIRATION_MAIL_SUBJECT("ssmp.alert.certificate.imminent_expiration.mail.subject",
+            "LOW", "certificate imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+    ALERT_CERTIFICATE_BEFORE_EXPIRATION_MAIL_SUBJECT("smp.alert.certificate.imminent_expiration.mail.subject",
             "Certificate imminent expiration", "Certificate imminent expiration mail subject.", false, false,false, STRING),
 
     ALERT_CERTIFICATE_EXPIRED_ENABLED("smp.alert.certificate.expired.enabled",
@@ -173,7 +195,7 @@ public enum SMPPropertyEnum {
     ALERT_CERTIFICATE_EXPIRED_INTERVAL("smp.alert.certificate.expired.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_CERTIFICATE_EXPIRED_LEVEL("smp.alert.certificate.expired.level",
-            "LOW", "Certificate expiration alert level.", false, false,false, STRING),
+            "LOW", "Certificate expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
     ALERT_CERTIFICATE_EXPIRED_MAIL_SUBJECT("smp.alert.certificate.expired.mail.subject",
             "Certificate expired", "Password expiration mail subject.", false, false,false, STRING),
 

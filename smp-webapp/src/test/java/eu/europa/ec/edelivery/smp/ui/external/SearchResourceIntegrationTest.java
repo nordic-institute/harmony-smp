@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-public class SearchResourceTest {
+public class SearchResourceIntegrationTest {
 
     @Autowired
     private WebApplicationContext webAppContext;
