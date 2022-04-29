@@ -131,7 +131,7 @@ public class ServiceMetadataConverterTest {
         byte[]  inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
 
         //when
-        Document signedServiceMetadataDoc = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(inputDoc);
+        Document signedServiceMetadataDoc = ServiceMetadataConverter.toSignedServiceMetadataDocument(inputDoc);
 
         //then
         Element root = signedServiceMetadataDoc.getDocumentElement();
@@ -150,7 +150,7 @@ public class ServiceMetadataConverterTest {
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(Matchers.startsWith("Invalid service metada. Error:"));
         //when
-        ServiceMetadataConverter.toSignedServiceMetadatadaDocument("this is malformed XML body".getBytes());
+        ServiceMetadataConverter.toSignedServiceMetadataDocument("this is malformed XML body".getBytes());
     }
 
     @Test

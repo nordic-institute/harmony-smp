@@ -125,6 +125,6 @@ public class SMPSchemaGeneratorTest {
         // given when
         List<Class> result =  testInstance.getAllEntityClasses(ENTITY_PACKAGE);
 
-        assertEquals(15, result.size());
+        assertEquals(16, result.size());
     }
 }

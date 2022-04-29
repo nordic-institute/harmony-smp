@@ -6,7 +6,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Properties;

@@ -45,8 +45,6 @@ public class BCryptPasswordHashTest {
     public void generatedHashIsValidTest() {
         //when
         String hash = BCryptPasswordHash.hashPassword(PASSWORD);
-        System.out.println("************: " + BCryptPasswordHash.hashPassword("123456"));
-
         //then
         assertTrue(BCrypt.checkpw(PASSWORD, hash));
     }

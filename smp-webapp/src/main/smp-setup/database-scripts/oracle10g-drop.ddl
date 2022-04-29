@@ -7,6 +7,10 @@
 
     drop table SMP_ALERT_AUD cascade constraints;
 
+    drop table SMP_ALERT_PROPERTY cascade constraints;
+
+    drop table SMP_ALERT_PROPERTY_AUD cascade constraints;
+
     drop table SMP_CERTIFICATE cascade constraints;
 
     drop table SMP_CERTIFICATE_AUD cascade constraints;
@@ -48,6 +52,8 @@
     drop table SMP_USER cascade constraints;
 
     drop table SMP_USER_AUD cascade constraints;
+
+    drop sequence SMP_ALERT_PROP_SEQ;
 
     drop sequence SMP_ALERT_SEQ;
 
