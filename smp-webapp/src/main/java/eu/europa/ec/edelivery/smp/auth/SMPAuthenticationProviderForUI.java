@@ -3,6 +3,8 @@ package eu.europa.ec.edelivery.smp.auth;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -83,7 +85,6 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider");
                 return null;
             }
-
             user = oUsr.get();
         } catch (AuthenticationException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
@@ -122,7 +123,9 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getUsername());
         if (user.getSequentialLoginFailureCount() >= configurationService.getLoginMaxAttempts()) {
             LOG.info("User [{}] failed sequential attempt exceeded the max allowed attempts [{}]!", user.getUsername(), configurationService.getLoginMaxAttempts());
-            alertService.alertUsernamePasswordCredentialsSuspended(user);
+            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.USERNAME_PASSWORD);
+        } else {
+            alertService.alertCredentialVerificationFailed(user, CredentialTypeEnum.USERNAME_PASSWORD);
         }
         throw new BadCredentialsException("Login failed; Invalid userID or password");
     }
@@ -161,6 +164,9 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         if (user.getSequentialLoginFailureCount() < configurationService.getLoginMaxAttempts()) {
             LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialLoginFailureCount(), configurationService.getLoginMaxAttempts());
             return;
+        }
+        if (configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
+            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.USERNAME_PASSWORD);
         }
         LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
         throw new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
