@@ -1,106 +1,93 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
-import org.junit.Before;
-import org.junit.Ignore;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
+import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
+import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
+import org.mockito.Mockito;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpSession;
+import java.time.OffsetDateTime;
 
-import static org.junit.Assert.assertNotNull;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
-@RunWith(SpringRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
-@Sql(scripts = {
-        "classpath:/cleanup-database.sql",
-        "classpath:/webapp_integration_test_data.sql"},
-        executionPhase = BEFORE_TEST_METHOD)
 public class AuthenticationResourceTest {
 
+    SMPAuthenticationService authenticationService = Mockito.mock(SMPAuthenticationService.class);
+    SMPAuthorizationService authorizationService = Mockito.mock(SMPAuthorizationService.class);
+    ConversionService conversionService = Mockito.mock(ConversionService.class);
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    SMPCookieWriter smpCookieWriter = Mockito.mock(SMPCookieWriter.class);
+    CsrfTokenRepository csrfTokenRepository = Mockito.mock(CsrfTokenRepository.class);
+    UIUserService uiUserService = Mockito.mock(UIUserService.class);
 
-    private static final String PATH = ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";
-
-    @Autowired
-    private WebApplicationContext webAppContext;
-
-    private MockMvc mvc;
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
-
-    @Before
-    public void setup() {
-        mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-        initServletContext();
-    }
-
-    private void initServletContext() {
-        MockServletContext sc = new MockServletContext("");
-        ServletContextListener listener = new ContextLoaderListener(webAppContext);
-        ServletContextEvent event = new ServletContextEvent(sc);
-    }
-
-
+    AuthenticationResource testInstance= new AuthenticationResource(authenticationService,
+            authorizationService,
+            conversionService,
+            configurationService,
+            smpCookieWriter,
+            csrfTokenRepository,
+            uiUserService);
     @Test
-    public void authenticateSuccessTest() throws Exception {
+    public void testGetUpdatedUserData() {
+        UserRO user  = new UserRO();
+        user.setPasswordExpireOn(OffsetDateTime.now().minusDays(1));
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+        Mockito.doReturn(user).when(authorizationService).sanitize(Mockito.any());
 
-        // given when
-        HttpSession session = mvc.perform(post(PATH)
-                .header("Content-Type", "application/json")
-                .content("{\"username\":\"smp_admin\",\"password\":\"test123\"}"))
-                .andExpect(status().isOk()).andReturn()
-                .getRequest()
-                .getSession();
+        user = testInstance.getUpdatedUserData(user);
 
-        assertNotNull(session);
-    }
-
-
-    @Test
-    @Ignore
-    public void authenticateInvalidPasswordTest() throws Exception {
-        // given when then
-        mvc.perform(post(PATH)
-                .header("Content-Type", "application/json")
-                .content("{\"username\":\"smp_admin\",\"password\":\"test1235\"}"))
-                .andExpect(status().isForbidden()).andReturn()
-                .getRequest()
-                .getSession();
+        Assert.assertTrue(user.isShowPasswordExpirationWarning());
+        Assert.assertFalse(user.isForceChangeExpiredPassword());
+        Assert.assertFalse(user.isPasswordExpired());
     }
 
     @Test
-    @Ignore
-    public void authenticateInvalidUsernameTest() throws Exception {
+    public void testGetUpdatedUserDataDoNotShowWarning() {
+        UserRO user  = new UserRO();
+        user.setPasswordExpireOn(OffsetDateTime.now().minusDays(11));
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+        Mockito.doReturn(user).when(authorizationService).sanitize(Mockito.any());
 
-        // given when
-        mvc.perform(post(PATH)
-                .header("Content-Type", "application/json")
-                .content("{\"username\":\"smp_admin1\",\"password\":\"test123\"}"))
-                .andExpect(status().isForbidden()).andReturn()
-                .getRequest()
-                .getSession();
+        user = testInstance.getUpdatedUserData(user);
 
+        Assert.assertFalse(user.isShowPasswordExpirationWarning());
+        Assert.assertFalse(user.isForceChangeExpiredPassword());
+        Assert.assertFalse(user.isPasswordExpired());
+    }
 
+    @Test
+    public void testGetUpdatedUserDataForceChange() {
+        UserRO user  = new UserRO();
+        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
+        user.setPasswordExpired(true);
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(true).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+        Mockito.doReturn(user).when(authorizationService).sanitize(Mockito.any());
+
+        user = testInstance.getUpdatedUserData(user);
+
+        Assert.assertTrue(user.isForceChangeExpiredPassword());
+        Assert.assertTrue(user.isPasswordExpired());
+    }
+
+    @Test
+    public void testGetUpdatedUserDataForceChangeFalse() {
+        UserRO user  = new UserRO();
+        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
+        user.setPasswordExpired(true);
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+        Mockito.doReturn(user).when(authorizationService).sanitize(Mockito.any());
+
+        user = testInstance.getUpdatedUserData(user);
+
+        Assert.assertFalse(user.isForceChangeExpiredPassword());
+        Assert.assertTrue(user.isPasswordExpired());
     }
 }

@@ -8,7 +8,7 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
-import eu.europa.ec.edelivery.smp.ui.UserResourceTest;
+import eu.europa.ec.edelivery.smp.ui.external.UserResourceIntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-public class TruststoreAdminResourceTest {
+public class TruststoreAdminResourceIntegrationTest {
     private static final String PATH_INTERNAL = CONTEXT_PATH_INTERNAL_TRUSTSTORE;
     private static final String PATH_PUBLIC = CONTEXT_PATH_PUBLIC_TRUSTSTORE;
 
@@ -84,7 +84,7 @@ public class TruststoreAdminResourceTest {
 
     @Test
     public void validateCertificateSystemAdmin() throws Exception {
-        byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
         // login
         MockHttpSession session = loginWithSMPAdmin(mvc);
         // when update data
@@ -135,7 +135,7 @@ public class TruststoreAdminResourceTest {
 
     @Test
     public void uploadCertificateInvalidUser() throws Exception {
-        byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
         // id and logged user not match
         // given when
         mvc.perform(post(PATH_PUBLIC + "/34556655/validate-certificate")
@@ -181,7 +181,7 @@ public class TruststoreAdminResourceTest {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
 
-        byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
 
         int countStart = uiTruststoreService.getNormalizedTrustedList().size();
         MvcResult prepRes = mvc.perform(post(PATH_INTERNAL + "/" + userRO.getUserId() + "/upload-certificate")

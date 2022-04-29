@@ -34,7 +34,9 @@ public class UserRO extends BaseRO implements UserDetails {
     String userId;
     CertificateRO certificate;
     int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
-    boolean passwordExpired;
+    boolean passwordExpired = false;
+    boolean showPasswordExpirationWarning  = false;
+    boolean forceChangeExpiredPassword =false;
 
     /**
      * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
@@ -145,6 +147,22 @@ public class UserRO extends BaseRO implements UserDetails {
 
     public void setStatusPassword(int statusPassword) {
         this.statusPassword = statusPassword;
+    }
+
+    public boolean isShowPasswordExpirationWarning() {
+        return showPasswordExpirationWarning;
+    }
+
+    public void setShowPasswordExpirationWarning(boolean showPasswordExpirationWarning) {
+        this.showPasswordExpirationWarning = showPasswordExpirationWarning;
+    }
+
+    public boolean isForceChangeExpiredPassword() {
+        return forceChangeExpiredPassword;
+    }
+
+    public void setForceChangePassword(boolean forceChangeExpiredPassword) {
+        this.forceChangeExpiredPassword = forceChangeExpiredPassword;
     }
 
     @Override
