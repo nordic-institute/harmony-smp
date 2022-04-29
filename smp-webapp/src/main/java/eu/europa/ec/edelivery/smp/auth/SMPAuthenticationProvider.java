@@ -6,6 +6,8 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -244,6 +246,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialTokenLoginFailureCount(), configurationService.getAccessTokenLoginMaxAttempts());
             return;
         }
+        if (configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
+            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
+        }
         LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
         throw new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
     }
@@ -311,7 +316,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getUsername());
         if (user.getSequentialTokenLoginFailureCount() >= configurationService.getAccessTokenLoginMaxAttempts()) {
             LOG.info("User access token [{}] failed sequential attempt exceeded the max allowed attempts [{}]!", user.getAccessToken(), configurationService.getAccessTokenLoginMaxAttempts());
-            alertService.alertAccessTokenCredentialsSuspended(user);
+            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
+        } else {
+            alertService.alertCredentialVerificationFailed(user, CredentialTypeEnum.ACCESS_TOKEN);
         }
         throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
     }

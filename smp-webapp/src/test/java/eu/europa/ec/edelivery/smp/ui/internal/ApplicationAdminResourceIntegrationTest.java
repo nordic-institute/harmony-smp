@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "smp.artifact.version=TestApplicationVersion",
         "smp.artifact.build.time=2018-11-27 00:00:00",
 })
-public class ApplicationAdminResourceTest {
+public class ApplicationAdminResourceIntegrationTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_APPLICATION;
     private static final RequestPostProcessor SMP_ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
     private static final RequestPostProcessor SG_ADMIN_CREDENTIALS = httpBasic("sg_admin", "test123");
@@ -126,6 +126,7 @@ public class ApplicationAdminResourceTest {
         assertNotNull(res);
         assertEquals("Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9].", res.getParticipantSchemaRegExpMessage());
         assertEquals("^((?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)|urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$)", res.getParticipantSchemaRegExp());
+        assertTrue(res.isConcatEBCorePartyId());
         assertFalse(res.isSmlIntegrationOn());
         assertFalse(res.isSmlParticipantMultiDomainOn());
     }

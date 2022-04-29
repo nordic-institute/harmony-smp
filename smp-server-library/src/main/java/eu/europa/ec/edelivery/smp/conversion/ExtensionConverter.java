@@ -39,7 +39,7 @@ import java.util.List;
  * Created by migueti on 13/02/2017.
  */
 public class ExtensionConverter {
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupConverter.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ExtensionConverter.class);
    // private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
     private static final byte[] WRAPPED_FORMAT_START = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">".getBytes();
     private static final byte[] WRAPPED_FORMAT_END = "</ExtensionsWrapper>".getBytes();
