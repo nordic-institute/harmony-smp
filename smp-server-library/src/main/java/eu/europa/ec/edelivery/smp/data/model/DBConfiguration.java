@@ -17,8 +17,6 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -40,7 +38,7 @@ import java.util.Objects;
         ),
 })
 @org.hibernate.annotations.Table(appliesTo = "SMP_CONFIGURATION", comment = "SMP user certificates")
-public class DBConfiguration  extends BaseEntity  {
+public class DBConfiguration extends BaseEntity {
 
     @Id
     @Column(name = "PROPERTY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512, nullable = false, unique = true)

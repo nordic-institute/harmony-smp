@@ -10,7 +10,7 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMLAction;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMLStatusEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -169,12 +169,12 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             return;
         }
         for (ParticipantSMLRecord record: lstRecords){
-            if (record.getStatus()== SMLAction.REGISTER){
+            if (record.getStatus()== SMLStatusEnum.REGISTER){
                 boolean result = smlIntegrationService.registerParticipantToSML(record.getParticipantIdentifier(),
                         record.getParticipantScheme(), record.getDomain());
 
                 updateServiceGroupDomainStatus(result, record);
-            }else if (record.getStatus()== SMLAction.UNREGISTER){
+            }else if (record.getStatus()== SMLStatusEnum.UNREGISTER){
                 boolean result = smlIntegrationService.unregisterParticipantFromSML(record.getParticipantIdentifier(),
                         record.getParticipantScheme(), record.getDomain());
                 // no need to update database because record is deleted
@@ -209,7 +209,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         // first update domains
         List<DBServiceGroupDomain> dbServiceGroupDomainList = dbServiceGroup.getServiceGroupDomains();
         dbServiceGroupDomainList.forEach(dro -> {
-                participantSMLRecordList.add( new ParticipantSMLRecord(SMLAction.UNREGISTER, dro.getServiceGroup().getParticipantIdentifier(),
+                participantSMLRecordList.add( new ParticipantSMLRecord(SMLStatusEnum.UNREGISTER, dro.getServiceGroup().getParticipantIdentifier(),
                         dro.getServiceGroup().getParticipantScheme(),dro.getDomain()));
         });
         serviceGroupDao.removeServiceGroup(dbServiceGroup);
@@ -291,7 +291,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             Optional<DBDomain> dmn = domainDao.getDomainByCode(dro.getDomainCode());
             if (dmn.isPresent()) {
                 DBServiceGroupDomain domain =  dbServiceGroup.addDomain(dmn.get());
-                participantSMLRecordList.add( new ParticipantSMLRecord(SMLAction.REGISTER,
+                participantSMLRecordList.add( new ParticipantSMLRecord(SMLStatusEnum.REGISTER,
                         serviceGroupRO.getParticipantIdentifier(),
                         serviceGroupRO.getParticipantScheme(),
                         domain.getDomain()));
@@ -443,7 +443,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 if (dmn.isPresent()) {
 
                     DBServiceGroupDomain sgd =  dbServiceGroup.addDomain(dmn.get());
-                    participantSMLRecordList.add(new ParticipantSMLRecord( SMLAction.REGISTER,
+                    participantSMLRecordList.add(new ParticipantSMLRecord( SMLStatusEnum.REGISTER,
                             sgd.getServiceGroup().getParticipantIdentifier(),
                             sgd.getServiceGroup().getParticipantScheme(),
                             sgd.getDomain()));
@@ -454,7 +454,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         });
         // remove old domains
         lstOldSGDomains.forEach(dbServiceGroupDomain -> {
-            participantSMLRecordList.add(new ParticipantSMLRecord( SMLAction.UNREGISTER,
+            participantSMLRecordList.add(new ParticipantSMLRecord( SMLStatusEnum.UNREGISTER,
                     dbServiceGroupDomain.getServiceGroup().getParticipantIdentifier(),
                     dbServiceGroupDomain.getServiceGroup().getParticipantScheme(),
                     dbServiceGroupDomain.getDomain()));

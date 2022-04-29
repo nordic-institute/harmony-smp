@@ -24,6 +24,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,24 +37,31 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USER
 @Repository
 public class UserDao extends BaseDao<DBUser> {
 
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_START_DATE="startAlertDate";
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_END_DATE="endAlertDate";
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE="expireDate";
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE="lastSendAlertDate";
+
+
     /**
      * Persists the user to the database. Before that test if user has identifiers. Usernames are saved to database in lower caps
+     *
      * @param user
      */
     @Override
     @Transactional
     public void persistFlushDetach(DBUser user) {
-        if (  StringUtils.isBlank(user.getUsername())
-                && (user.getCertificate() == null || StringUtils.isBlank(user.getCertificate().getCertificateId() )) ) {
+        if (StringUtils.isBlank(user.getUsername())
+                && (user.getCertificate() == null || StringUtils.isBlank(user.getCertificate().getCertificateId()))) {
             throw new SMPRuntimeException(ErrorCode.INVALID_USER_NO_IDENTIFIERS);
         }
         // update username to lower caps
-        if (!StringUtils.isBlank(user.getUsername())){
+        if (!StringUtils.isBlank(user.getUsername())) {
             user.setUsername(user.getUsername().toLowerCase());
         }
         // if certificate id is null/empty then do not store certificate object to database
         // because of unique constraint  and empty value in mysql is also subject to the constraint!
-        if (user.getCertificate() != null &&  StringUtils.isBlank(user.getCertificate().getCertificateId() )) {
+        if (user.getCertificate() != null && StringUtils.isBlank(user.getCertificate().getCertificateId())) {
             user.setCertificate(null);
         }
 
@@ -74,13 +82,14 @@ public class UserDao extends BaseDao<DBUser> {
     /**
      * Finds a user by identifier. User identifier is username or certificateId. First it tries to find user by username
      * and than by certificate id. If user does not exists Optional with isPresent - false is returned.
+     *
      * @param identifier
      * @return resturns Optional DBUser for identifier
      */
     public Optional<DBUser> findUserByIdentifier(String identifier) {
 
-        Optional<DBUser>  usr = findUserByAuthenticationToken(identifier);
-        if (!usr.isPresent()){ // try to retrieve by identifier
+        Optional<DBUser> usr = findUserByAuthenticationToken(identifier);
+        if (!usr.isPresent()) { // try to retrieve by identifier
             usr = findUserByCertificateId(identifier);
         }
         return usr;
@@ -89,13 +98,14 @@ public class UserDao extends BaseDao<DBUser> {
     /**
      * Method finds user by user authentication token identifier. If user identity token not exist
      * Optional  with isPresent - false is returned.
+     *
      * @param tokeIdentifier
      * @return returns Optional DBUser for username
      */
     public Optional<DBUser> findUserByAuthenticationToken(String tokeIdentifier) {
         // check if blank
-        if (StringUtils.isBlank(tokeIdentifier)){
-            return  Optional.empty();
+        if (StringUtils.isBlank(tokeIdentifier)) {
+            return Optional.empty();
         }
         try {
             TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUserByPatId", DBUser.class);
@@ -111,13 +121,14 @@ public class UserDao extends BaseDao<DBUser> {
     /**
      * Method finds user by username.If user does not exist
      * Optional  with isPresent - false is returned.
+     *
      * @param username
      * @return returns Optional DBUser for username
      */
     public Optional<DBUser> findUserByUsername(String username) {
         // check if blank
-        if (StringUtils.isBlank(username)){
-            return  Optional.empty();
+        if (StringUtils.isBlank(username)) {
+            return Optional.empty();
         }
         try {
             TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUserByUsernameInsensitive", DBUser.class);
@@ -130,9 +141,91 @@ public class UserDao extends BaseDao<DBUser> {
         }
     }
 
+    public List<DBUser> getBeforePasswordExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
+        OffsetDateTime expireDate = OffsetDateTime.now();
+        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
+        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+
+        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforePasswordExpireAlerts", DBUser.class);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setMaxResults(maxAlertsInBatch);
+        return query.getResultList();
+    }
+
+    public List<DBUser> getPasswordExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
+        OffsetDateTime expireDate = OffsetDateTime.now();
+        // the alert period must be less then expire day
+        OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
+        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+
+        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForPasswordExpiredAlerts", DBUser.class);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setMaxResults(maxAlertsInBatch);
+        return query.getResultList();
+    }
+
+    public List<DBUser> getBeforeAccessTokenExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
+        OffsetDateTime expireDate = OffsetDateTime.now();
+        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
+        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+
+        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforeAccessTokenExpireAlerts", DBUser.class);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setMaxResults(maxAlertsInBatch);
+        return query.getResultList();
+    }
+
+    public List<DBUser> getAccessTokenExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
+        OffsetDateTime expireDate = OffsetDateTime.now();
+        // the alert period must be less then expire day
+        OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
+        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+
+        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForAccessTokenExpiredAlerts", DBUser.class);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setMaxResults(maxAlertsInBatch);
+        return query.getResultList();
+    }
+
+    public List<DBUser> getBeforeCertificateExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
+        OffsetDateTime expireDate = OffsetDateTime.now();
+        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
+        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+
+        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforeCertificateExpireAlerts", DBUser.class);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setMaxResults(maxAlertsInBatch);
+        return query.getResultList();
+    }
+
+    public List<DBUser> getCertificateExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
+        OffsetDateTime expireDate = OffsetDateTime.now();
+        // the alert period must be less then expire day
+        OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
+        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+
+        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForCertificateExpiredAlerts", DBUser.class);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
+        query.setMaxResults(maxAlertsInBatch);
+        return query.getResultList();
+    }
+
     /**
      * Method finds user by certificateId. If user does not exist
      * Optional  with isPresent - false is returned.
+     *
      * @param certificateId
      * @return returns Optional DBUser for certificateID
      */
@@ -143,13 +236,14 @@ public class UserDao extends BaseDao<DBUser> {
     /**
      * Method finds user by certificateId. If user does not exist
      * Optional  with isPresent - false is returned.
+     *
      * @param certificateId
      * @param caseInsensitive
      * @return returns Optional DBUser for certificateID
      */
     public Optional<DBUser> findUserByCertificateId(String certificateId, boolean caseInsensitive) {
         try {
-            String namedQuery = caseInsensitive?"DBUser.getUserByCertificateIdCaseInsensitive":"DBUser.getUserByCertificateId";
+            String namedQuery = caseInsensitive ? "DBUser.getUserByCertificateIdCaseInsensitive" : "DBUser.getUserByCertificateId";
             TypedQuery<DBUser> query = memEManager.createNamedQuery(namedQuery, DBUser.class);
             query.setParameter("certificateId", certificateId);
             return Optional.of(query.getSingleResult());
@@ -162,10 +256,11 @@ public class UserDao extends BaseDao<DBUser> {
 
     /**
      * Validation report for users which owns service group
+     *
      * @param userIds
      * @return
      */
-    public List<DBUserDeleteValidation> validateUsersForDelete(List<Long> userIds){
+    public List<DBUserDeleteValidation> validateUsersForDelete(List<Long> userIds) {
         TypedQuery<DBUserDeleteValidation> query = memEManager.createNamedQuery("DBUserDeleteValidation.validateUsersForOwnership",
                 DBUserDeleteValidation.class);
         query.setParameter("idList", userIds);

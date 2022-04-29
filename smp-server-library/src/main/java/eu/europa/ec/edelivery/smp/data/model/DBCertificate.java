@@ -16,7 +16,7 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -41,10 +41,13 @@ public class DBCertificate extends BaseEntity {
     private String certificateId;
     @Column(name = "VALID_FROM")
     @ColumnDescription(comment = "Certificate valid from date.")
-    private LocalDateTime validFrom;
+    private OffsetDateTime validFrom;
     @Column(name = "VALID_TO")
     @ColumnDescription(comment = "Certificate valid to date.")
-    private LocalDateTime validTo;
+    private OffsetDateTime validTo;
+    @Column(name = "EXPIRE_LAST_ALERT_ON")
+    @ColumnDescription(comment = "Generated last expire alert")
+    private OffsetDateTime certificateLastExpireAlertOn;
     @Column(name = "SUBJECT", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     @ColumnDescription(comment = "Certificate subject (canonical form)")
     private String subject;
@@ -86,20 +89,28 @@ public class DBCertificate extends BaseEntity {
         this.certificateId = certificateId;
     }
 
-    public LocalDateTime getValidFrom() {
+    public OffsetDateTime getValidFrom() {
         return validFrom;
     }
 
-    public void setValidFrom(LocalDateTime validFrom) {
+    public void setValidFrom(OffsetDateTime validFrom) {
         this.validFrom = validFrom;
     }
 
-    public LocalDateTime getValidTo() {
+    public OffsetDateTime getValidTo() {
         return validTo;
     }
 
-    public void setValidTo(LocalDateTime validTo) {
+    public void setValidTo(OffsetDateTime validTo) {
         this.validTo = validTo;
+    }
+
+    public OffsetDateTime getCertificateLastExpireAlertOn() {
+        return certificateLastExpireAlertOn;
+    }
+
+    public void setCertificateLastExpireAlertOn(OffsetDateTime certificateLastExpireAlertOn) {
+        this.certificateLastExpireAlertOn = certificateLastExpireAlertOn;
     }
 
     public DBUser getDbUser() {

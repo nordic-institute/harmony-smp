@@ -31,7 +31,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.List;
@@ -114,7 +114,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         // setup new daes
         AccessTokenRO token = SecurityUtils.generateAccessToken();
-        LocalDateTime generatedTime = token.getGeneratedOn();
+        OffsetDateTime generatedTime = token.getGeneratedOn();
         token.setExpireOn(generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
         dbUser.setAccessTokenIdentifier(token.getIdentifier());
         dbUser.setAccessToken(BCryptPasswordHash.hashPassword(token.getValue()));
@@ -147,14 +147,14 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
         dbUser.setPassword(BCryptPasswordHash.hashPassword(newPassword));
-        LocalDateTime currentTime = LocalDateTime.now();
+        OffsetDateTime currentTime = OffsetDateTime.now();
         dbUser.setPasswordChanged(currentTime);
         dbUser.setPasswordExpireOn(currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
         return true;
     }
 
     @Transactional
-    public void updateUserList(List<UserRO> lst, LocalDateTime passwordChange) {
+    public void updateUserList(List<UserRO> lst, OffsetDateTime passwordChange) {
         for (UserRO userRO : lst) {
             createOrUpdateUser(userRO, passwordChange);
         }
@@ -172,8 +172,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         if (user.getCertificate() != null && (dbUser.getCertificate() == null
                 || !StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId()))) {
             CertificateRO certRo = user.getCertificate();
-            LOG.info(certRo.getEncodedValue() );
-            if (user.getCertificate().getEncodedValue()!=null ){
+            LOG.info(certRo.getEncodedValue());
+            if (user.getCertificate().getEncodedValue() != null) {
                 X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
                 String certificateAlias;
                 try {
@@ -190,7 +190,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
     }
 
-    protected void createOrUpdateUser(UserRO userRO, LocalDateTime passwordChange) {
+    protected void createOrUpdateUser(UserRO userRO, OffsetDateTime passwordChange) {
         if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
             DBUser dbUser = convertFromRo(userRO);
             if (!StringUtils.isBlank(userRO.getPassword())) {
@@ -228,10 +228,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 DBCertificate dbCertificate = dbUser.getCertificate() != null ? dbUser.getCertificate() : new DBCertificate();
                 dbUser.setCertificate(dbCertificate);
                 if (certificateRO.getValidFrom() != null) {
-                    dbCertificate.setValidFrom(LocalDateTime.ofInstant(certificateRO.getValidFrom().toInstant(), ZoneId.systemDefault()));
+                    dbCertificate.setValidFrom(OffsetDateTime.ofInstant(certificateRO.getValidFrom().toInstant(), ZoneId.systemDefault()));
                 }
                 if (certificateRO.getValidTo() != null) {
-                    dbCertificate.setValidTo(LocalDateTime.ofInstant(certificateRO.getValidTo().toInstant(), ZoneId.systemDefault()));
+                    dbCertificate.setValidTo(OffsetDateTime.ofInstant(certificateRO.getValidTo().toInstant(), ZoneId.systemDefault()));
                 }
                 dbCertificate.setCertificateId(certificateRO.getCertificateId());
                 dbCertificate.setSerialNumber(certificateRO.getSerialNumber());
@@ -269,7 +269,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
 
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
-        List<Long> idList = dev.getListIds().stream().map(encId->SessionSecurityUtils.decryptEntityId(encId)).collect(Collectors.toList());
+        List<Long> idList = dev.getListIds().stream().map(encId -> SessionSecurityUtils.decryptEntityId(encId)).collect(Collectors.toList());
         List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(idList);
         dev.setValidOperation(lstMessages.isEmpty());
         StringWriter sw = new StringWriter();

@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {
   AbstractControl,
   FormBuilder,
@@ -16,6 +16,8 @@ import {UserDetailsService} from "../../user/user-details-dialog/user-details.se
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {AlertMessageService} from "../alert-message/alert-message.service";
 import {ErrorResponseRO} from "../error/error-model";
+import {SecurityService} from "../../security/security.service";
+import {InformationDialogComponent} from "../information-dialog/information-dialog.component";
 
 @Component({
   selector: 'smp-password-change-dialog',
@@ -32,6 +34,7 @@ export class PasswordChangeDialogComponent {
   current: User;
   message: string;
   messageType: string = "alert-error";
+  forceChange:boolean=false;
 
   constructor(
     public dialogRef: MatDialogRef<PasswordChangeDialogComponent>,
@@ -39,9 +42,16 @@ export class PasswordChangeDialogComponent {
     private lookups: GlobalLookups,
     private userDetailsService: UserDetailsService,
     private alertService: AlertMessageService,
+    private securityService: SecurityService,
+    public dialog: MatDialog,
     private fb: FormBuilder
   ) {
+    // disable close of focus lost
+    dialogRef.disableClose = true;
+
     this.current = {...data}
+
+    this.forceChange = this.current.forceChangeExpiredPassword;
 
     let currentPasswdFormControl: FormControl = new FormControl({value: null, readonly: false}, [Validators.required]);
     let newPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
@@ -83,13 +93,27 @@ export class PasswordChangeDialogComponent {
     this.userDetailsService.changePassword(this.current.userId,
       this.dialogForm.controls['new-password'].value,
       this.dialogForm.controls['current-password'].value).subscribe((res: boolean) => {
-        this.showSuccessMessage("Password has been changed!")
+        this.showPassChangeDialog();
+        close()
       },
       (err) => {
         this.showErrorMessage(err.error.errorDescription);
       }
     );
   }
+  showPassChangeDialog(){
+    this.dialog.open(InformationDialogComponent, {
+      data: {
+        title: "Password changed!",
+        description: "Password has been successfully changed. Login again to the application with the new password!"
+      }
+    }).afterClosed().subscribe(result => {
+      // no need to logout because service itself logouts
+      this.securityService.finalizeLogout(result);
+      close();
+    })
+  }
+
   showSuccessMessage(value: string) {
     this.message = value;
     this.messageType = "success";

@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-public class ServiceGroupResourceTest {
+public class ServiceGroupResourceIntegrationTest {
 
     @Autowired
     ServiceGroupDao serviceGroupDao;
@@ -75,7 +75,7 @@ public class ServiceGroupResourceTest {
                 .build();
 
         initServletContext();
-        validExtension = new String(IOUtils.toByteArray(ServiceGroupResourceTest.class.getResourceAsStream("/input/extensionMarshal.xml")));
+        validExtension = new String(IOUtils.toByteArray(ServiceGroupResourceIntegrationTest.class.getResourceAsStream("/input/extensionMarshal.xml")));
     }
 
     private void initServletContext() {

@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.services.AlertService;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
@@ -26,8 +27,13 @@ public class SMPAuthenticationProviderTest {
     CRLVerifierService mockCrlVerifierService = Mockito.mock(CRLVerifierService.class);
     UITruststoreService mockTruststoreService = Mockito.mock(UITruststoreService.class);
     ConfigurationService mockConfigurationService = Mockito.mock(ConfigurationService.class);
+    AlertService mocAlertService = Mockito.mock(AlertService.class);
 
-    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockUserDao, mockCrlVerifierService, mockTruststoreService, mockConfigurationService);
+    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockUserDao,
+            mockCrlVerifierService,
+            mockTruststoreService,
+            mockConfigurationService,
+            mocAlertService);
 
     @Test
     // response time for existing and non existing user should be "approx. equal"

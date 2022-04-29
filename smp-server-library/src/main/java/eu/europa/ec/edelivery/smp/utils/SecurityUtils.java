@@ -17,7 +17,7 @@ import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.spec.AlgorithmParameterSpec;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Enumeration;
@@ -145,7 +145,7 @@ public class SecurityUtils {
 
     public static AccessTokenRO generateAccessToken() {
         AccessTokenRO accessToken = new AccessTokenRO();
-        accessToken.setGeneratedOn(LocalDateTime.now());
+        accessToken.setGeneratedOn(OffsetDateTime.now());
         accessToken.setIdentifier(generateAuthenticationTokenIdentifier());
         accessToken.setValue(generateAuthenticationToken());
         return accessToken;

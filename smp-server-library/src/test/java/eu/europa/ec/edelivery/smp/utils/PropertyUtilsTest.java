@@ -143,7 +143,7 @@ public class PropertyUtilsTest {
                 Assert.assertEquals(Boolean.class, value.getClass());
                 break;
             case EMAIL:
-                Assert.assertEquals(Boolean.class, value.getClass());
+                Assert.assertEquals(String.class, value.getClass());
                 break;
             case REGEXP:
                 Assert.assertEquals(Pattern.class, value.getClass());

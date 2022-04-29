@@ -30,7 +30,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -88,7 +88,7 @@ public class AuditIntegrationTest {
         DBAlert dbAlert = createDBAlert();
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("processed", false);
-        alterVal.put("alertType", AlertTypeEnum.CERT_EXPIRED);
+        alterVal.put("alertType", AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION);
         alterVal.put("alertStatus", AlertStatusEnum.FAILED);
         testAuditEntity(dbAlert, alterVal);
     }
@@ -100,7 +100,7 @@ public class AuditIntegrationTest {
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("password", UUID.randomUUID().toString());
         alterVal.put("role", UUID.randomUUID().toString());
-        alterVal.put("passwordChanged", LocalDateTime.now());
+        alterVal.put("passwordChanged", OffsetDateTime.now());
         testAuditEntity(dbuser, alterVal);
     }
 
@@ -112,8 +112,8 @@ public class AuditIntegrationTest {
         dbuser.setCertificate(cert);
         Map<String, Object> alterValCert = new HashMap<>();
         alterValCert.put("certificateId", UUID.randomUUID().toString());
-        alterValCert.put("validFrom", LocalDateTime.now());
-        alterValCert.put("validTo", LocalDateTime.now());
+        alterValCert.put("validFrom", OffsetDateTime.now());
+        alterValCert.put("validTo", OffsetDateTime.now());
         testAuditSubEntity(dbuser, dbuser.getCertificate(), alterValCert);
     }
 

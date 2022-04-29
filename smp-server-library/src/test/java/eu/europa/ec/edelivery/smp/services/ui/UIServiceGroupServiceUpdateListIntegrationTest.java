@@ -9,12 +9,9 @@ import eu.europa.ec.edelivery.smp.data.ui.ParticipantSMLRecord;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupDomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMLAction;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMLStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
@@ -22,15 +19,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -104,8 +97,8 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         List<ParticipantSMLRecord> lst = testInstance.addNewServiceGroup(serviceGroupRO);
         // then
         assertEquals(2, lst.size());
-        assertEquals(SMLAction.REGISTER, lst.get(0).getStatus());
-        assertEquals(SMLAction.REGISTER, lst.get(1).getStatus());
+        assertEquals(SMLStatusEnum.REGISTER, lst.get(0).getStatus());
+        assertEquals(SMLStatusEnum.REGISTER, lst.get(1).getStatus());
         assertEquals(dbDomain1, lst.get(0).getDomain());
         assertEquals(dbDomain2, lst.get(1).getDomain());
         assertEquals(lst.get(0).getParticipantIdentifier(), lst.get(1).getParticipantIdentifier());
@@ -127,7 +120,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         // then
         assertEquals(roToDelete.getServiceGroupDomains().size(), lst.size());
         lst.forEach(val -> {
-            assertEquals(SMLAction.UNREGISTER, val.getStatus());
+            assertEquals(SMLStatusEnum.UNREGISTER, val.getStatus());
         });
 
     }
@@ -149,7 +142,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         List<ParticipantSMLRecord> lst = testInstance.updateServiceGroup(roToUpdate);
         // then
         assertEquals(1, lst.size());
-        assertEquals(SMLAction.UNREGISTER, lst.get(0).getStatus());
+        assertEquals(SMLStatusEnum.UNREGISTER, lst.get(0).getStatus());
         assertEquals(dro.getDomainCode(), lst.get(0).getDomain().getDomainCode());
         assertEquals(roToUpdate.getParticipantIdentifier(), lst.get(0).getParticipantIdentifier());
         assertEquals(roToUpdate.getParticipantScheme(), lst.get(0).getParticipantScheme());
@@ -175,7 +168,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         List<ParticipantSMLRecord> lst = testInstance.updateServiceGroup(roToUpdate);
         // then
         assertEquals(1, lst.size());
-        assertEquals(SMLAction.REGISTER, lst.get(0).getStatus());
+        assertEquals(SMLStatusEnum.REGISTER, lst.get(0).getStatus());
         assertEquals(sgr.getDomainCode(), lst.get(0).getDomain().getDomainCode());
         assertEquals(roToUpdate.getParticipantIdentifier(), lst.get(0).getParticipantIdentifier());
     }

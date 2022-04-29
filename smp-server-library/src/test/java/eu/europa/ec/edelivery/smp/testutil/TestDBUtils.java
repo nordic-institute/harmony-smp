@@ -5,7 +5,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_DOCUMENT_XML;
@@ -25,7 +25,6 @@ public class TestDBUtils {
         return domain;
     }
 
-
     public static DBDomain createDBDomain() {
         return createDBDomain(TestConstants.TEST_DOMAIN_CODE_1);
     }
@@ -35,24 +34,26 @@ public class TestDBUtils {
     }
 
     public static DBServiceMetadata createDBServiceMetadata(String partcId, String partcSch) {
-        return createDBServiceMetadata(partcId,partcSch, UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()  );
+        return createDBServiceMetadata(partcId, partcSch, UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString());
     }
-    public static DBServiceMetadata createDBServiceMetadata(String partcId, String partcSch, String docId, String docSch ) {
-        return createDBServiceMetadata(partcId,partcSch, docId, docSch, UUID.randomUUID().toString()  );
+
+    public static DBServiceMetadata createDBServiceMetadata(String partcId, String partcSch, String docId, String docSch) {
+        return createDBServiceMetadata(partcId, partcSch, docId, docSch, UUID.randomUUID().toString());
     }
 
     public static DBServiceMetadata createDBServiceMetadata(String partcId, String partcSch, String docId, String docSch, String desc) {
         DBServiceMetadata grp = new DBServiceMetadata();
         grp.setDocumentIdentifier(docId);
         grp.setDocumentIdentifierScheme(docSch);
-        grp.setXmlContent(generateDocumentSample(partcId, partcSch,docId, docSch, desc));
+        grp.setXmlContent(generateDocumentSample(partcId, partcSch, docId, docSch, desc));
         return grp;
     }
 
-    public static  byte[]  generateDocumentSample(String partcId, String partcSch, String docId, String docSch, String desc){
-        return String.format(SIMPLE_DOCUMENT_XML,partcSch, partcId,docSch, docId, desc).getBytes();
+    public static byte[] generateDocumentSample(String partcId, String partcSch, String docId, String docSch, String desc) {
+        return String.format(SIMPLE_DOCUMENT_XML, partcSch, partcId, docSch, docId, desc).getBytes();
     }
-    public static byte[] generateExtension(){
+
+    public static byte[] generateExtension() {
         return String.format(SIMPLE_EXTENSION_XML, UUID.randomUUID().toString()).getBytes();
     }
 
@@ -75,18 +76,18 @@ public class TestDBUtils {
     }
 
 
-
     public static DBUser createDBUser(String username1) {
         return createDBUserByUsername(username1);
     }
+
     public static DBAlert createDBAlert() {
         DBAlert dbalert = new DBAlert();
         dbalert.setAlertLevel(AlertLevelEnum.MEDIUM);
         dbalert.setAlertStatus(AlertStatusEnum.SUCCESS);
-        dbalert.setAlertType(AlertTypeEnum.PASSWORD_EXPIRED);
+        dbalert.setAlertType(AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION);
         dbalert.setProcessed(true);
-        dbalert.setProcessedTime(LocalDateTime.now());
-        dbalert.setReportingTime(LocalDateTime.now());
+        dbalert.setProcessedTime(OffsetDateTime.now());
+        dbalert.setReportingTime(OffsetDateTime.now());
         return dbalert;
     }
 
@@ -95,7 +96,7 @@ public class TestDBUtils {
         dbuser.setUsername(userName);
         dbuser.setRole("test");
         dbuser.setEmailAddress("test@test.eu");
-        dbuser.setPasswordChanged(LocalDateTime.now());
+        dbuser.setPasswordChanged(OffsetDateTime.now());
         dbuser.setPassword(UUID.randomUUID().toString());
         dbuser.setAccessTokenIdentifier(userName);
         dbuser.setAccessToken(UUID.randomUUID().toString());
@@ -105,69 +106,34 @@ public class TestDBUtils {
     public static DBCertificate createDBCertificate() {
         return createDBCertificate(TestConstants.USER_CERT_1);
     }
+
     public static DBCertificate createDBCertificate(String certId) {
+        return createDBCertificate(certId, OffsetDateTime.now().minusDays(5), OffsetDateTime.now().plusDays(5));
+    }
+
+    public static DBCertificate createDBCertificate(String certId, OffsetDateTime validFrom, OffsetDateTime validTo) {
         DBCertificate dbcert = new DBCertificate();
         dbcert.setCertificateId(certId);
-        dbcert.setValidFrom(LocalDateTime.now());
-        dbcert.setValidTo(LocalDateTime.now());
+        dbcert.setValidFrom(validFrom);
+        dbcert.setValidTo(validTo);
         return dbcert;
     }
-    public static DBUser createDBUserByCertificate(String certId) {
-        DBUser dbuser = new DBUser();
-        dbuser.setRole("test");
-        dbuser.setUsername("test-"+certId);
 
-        DBCertificate dbcert = new DBCertificate();
-        dbcert.setCertificateId(certId);
-        dbcert.setValidFrom(LocalDateTime.now());
-        dbcert.setValidTo(LocalDateTime.now());
-        dbuser.setCertificate(dbcert);
-        return dbuser;
+    public static DBUser createDBUserByCertificate(String certId) {
+        return createDBUserByCertificate(certId, OffsetDateTime.now().minusDays(5), OffsetDateTime.now().plusDays(5));
+    }
+
+    public static DBUser createDBUserByCertificate(String certId, OffsetDateTime validFrom, OffsetDateTime validTo) {
+        return createDBUser("test-" + certId, certId, validFrom,validTo);
     }
 
     public static DBUser createDBUser(String userName, String certId) {
-        DBUser dbuser =createDBUserByUsername(userName);
-        DBCertificate dbcert =createDBCertificate(certId);
-        dbuser.setCertificate(dbcert);
+        return createDBUser(userName, certId, OffsetDateTime.now().minusDays(5), OffsetDateTime.now().plusDays(5));
+    }
+
+    public static DBUser createDBUser(String userName, String certId, OffsetDateTime validFrom, OffsetDateTime validTo) {
+        DBUser dbuser = createDBUserByUsername(userName);
+        dbuser.setCertificate(createDBCertificate(certId, validFrom, validTo));
         return dbuser;
     }
-
-
-    /*
-    public static DBOwnership createDBOwnership(){
-        DBServiceGroup grp = createDBServiceGroup();
-
-        DBUser dbuser = createDBUser();
-
-        DBOwnershipId ownID = new DBOwnershipId();
-        ownID.setBusinessIdentifier(grp.getId().getBusinessIdentifier());
-        ownID.setBusinessIdentifierScheme(grp.getId().getBusinessIdentifierScheme());
-        ownID.setUsername(dbuser.getUsername());
-
-        DBOwnership own = new DBOwnership();
-        own.setId(ownID);
-        own.setServiceGroup(grp);
-        own.setUser(dbuser);
-        return own;
-    }
-
-    public static DBServiceMetadata createDBServiceMetadata(){
-        DBServiceGroup grp = createDBServiceGroup();
-
-
-        DBServiceMetadataId smdId = new DBServiceMetadataId();
-        smdId.setBusinessIdentifier(grp.getId().getBusinessIdentifier());
-        smdId.setBusinessIdentifierScheme(grp.getId().getBusinessIdentifierScheme());
-        smdId.setDocumentIdentifier(REVISION_DOCUMENT_ID);
-        smdId.setDocumentIdentifierScheme(REVISION_DOCUMENT_SCH);
-
-        DBServiceMetadata smd = new DBServiceMetadata();
-        smd.setId(smdId);
-        smd.setServiceGroup(grp);
-        smd.setXmlContent(UUID.randomUUID().toString());
-
-
-        return smd;
-    }
-    */
 }
