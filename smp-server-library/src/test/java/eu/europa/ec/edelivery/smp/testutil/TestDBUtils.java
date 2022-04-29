@@ -25,7 +25,6 @@ public class TestDBUtils {
         return domain;
     }
 
-
     public static DBDomain createDBDomain() {
         return createDBDomain(TestConstants.TEST_DOMAIN_CODE_1);
     }
@@ -85,7 +84,7 @@ public class TestDBUtils {
         DBAlert dbalert = new DBAlert();
         dbalert.setAlertLevel(AlertLevelEnum.MEDIUM);
         dbalert.setAlertStatus(AlertStatusEnum.SUCCESS);
-        dbalert.setAlertType(AlertTypeEnum.CREDENTIALS_IMMINENT_EXPIRATION);
+        dbalert.setAlertType(AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION);
         dbalert.setProcessed(true);
         dbalert.setProcessedTime(OffsetDateTime.now());
         dbalert.setReportingTime(OffsetDateTime.now());

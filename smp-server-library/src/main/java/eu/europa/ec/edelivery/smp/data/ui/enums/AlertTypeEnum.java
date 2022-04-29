@@ -8,11 +8,11 @@ package eu.europa.ec.edelivery.smp.data.ui.enums;
  */
 public enum AlertTypeEnum {
     TEST_ALERT("test_mail.ftl"),
-    CREDENTIALS_IMMINENT_EXPIRATION("credentials_imminent_expiration.ftl"),
-    CREDENTIALS_EXPIRED("credentials_expired.ftl"),
-    ACCOUNT_SUSPENDED("account_suspended.ftl"),
+    CREDENTIAL_IMMINENT_EXPIRATION("credential_imminent_expiration.ftl"),
+    CREDENTIAL_EXPIRED("credential_expired.ftl"),
+    CREDENTIAL_SUSPENDED("credential_suspended.ftl"),
+    CREDENTIAL_VERIFICATION_FAILED("credential_verification_failed.ftl"),
     ;
-
 
     private final String template;
 
