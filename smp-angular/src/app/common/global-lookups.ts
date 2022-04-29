@@ -10,7 +10,6 @@ import {Subscription} from "rxjs/internal/Subscription";
 import {SmpInfo} from "../app-info/smp-info.model";
 import {SmpConfig} from "../app-config/smp-config.model";
 import {SecurityEventService} from "../security/security-event.service";
-import {ExpiredPasswordDialogComponent} from "./expired-password-dialog/expired-password-dialog.component";
 
 /**
  * Purpose of object is to fetch lookups as domains and users

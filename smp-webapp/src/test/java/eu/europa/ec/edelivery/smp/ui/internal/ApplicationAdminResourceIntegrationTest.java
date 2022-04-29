@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "smp.artifact.version=TestApplicationVersion",
         "smp.artifact.build.time=2018-11-27 00:00:00",
 })
-public class ApplicationAdminResourceTest {
+public class ApplicationAdminResourceIntegrationTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_APPLICATION;
     private static final RequestPostProcessor SMP_ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
     private static final RequestPostProcessor SG_ADMIN_CREDENTIALS = httpBasic("sg_admin", "test123");
