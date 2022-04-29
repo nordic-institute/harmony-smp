@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"})
-public class KeystoreResourceTest {
+public class KeystoreResourceIntegrationTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
     Path keystore = Paths.get("src", "test", "resources", "keystores", "smp-keystore.jks");
 

@@ -8,4 +8,7 @@ export interface User {
   accessTokenExpireOn?: Date;
   authorities: Array<Authority>;
   defaultPasswordUsed: boolean;
+  forceChangeExpiredPassword?:boolean;
+  showPasswordExpirationWarning?:boolean;
+  passwordExpireOn?: Date;
 }

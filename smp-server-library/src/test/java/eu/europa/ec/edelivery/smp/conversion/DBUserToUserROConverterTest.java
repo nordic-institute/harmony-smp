@@ -46,7 +46,8 @@ public class DBUserToUserROConverterTest {
 
         whenConvertingTheExistingUser();
 
-        thenThePasswordIsMarkedAsExpired("The passwords should be marked as expired when converting users having passwords that have been reset by SystemAdministrators");
+        thenThePasswordIsMarkedAsExpired("The passwords should be marked as expired when converting users" +
+                " having passwords that have been reset by SystemAdministrators");
     }
 
     @Test
@@ -89,6 +90,7 @@ public class DBUserToUserROConverterTest {
         source.setCertificate(certificate);
         source.setPassword(password);
         source.setPasswordChanged(passwordChange);
+        source.setPasswordExpireOn(passwordChange!=null?passwordChange.plusMonths(3):null);
     }
 
     private void whenConvertingTheExistingUser() {

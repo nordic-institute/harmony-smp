@@ -183,12 +183,32 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
     });
   }
 
+  getParticipantElementXML(): string {
+    let schema = this.dialogForm.controls['participantScheme'].value;
+    let value= this.dialogForm.controls['participantIdentifier'].value;
+    if (!!schema && this.lookups.cachedApplicationConfig.concatEBCorePartyId &&
+      schema.startsWith(ServiceMetadataWizardDialogComponent.EBCORE_IDENTIFIER_PREFIX) ) {
+      value = schema + ":" +  value;
+      schema =null;
+    }
+
+    return  '<ParticipantIdentifier ' +
+      (!schema?'': 'scheme="' + this.xmlSpecialChars(schema) + '"')+ '>'
+      + this.xmlSpecialChars(value)+ '</ParticipantIdentifier>';
+  }
+
+  getDocumentElementXML(): string {
+    return  ' <DocumentIdentifier ' +
+      (!this.dialogForm.controls['documentIdentifierScheme'].value?'': 'scheme="'
+        + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '"') +
+      '>' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>';
+  }
+
   onGenerateSimpleXML() {
     let exampleXML = '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">' +
       '\n    <ServiceInformation>' +
-      '\n        <ParticipantIdentifier scheme="' + this.xmlSpecialChars(this.dialogForm.controls['participantScheme'].value) + '">' + this.xmlSpecialChars(this.dialogForm.controls['participantIdentifier'].value) + '</ParticipantIdentifier>' +
-      '\n        <DocumentIdentifier ' +
-      ( !this.dialogForm.controls['documentIdentifierScheme'].value ?'': 'scheme="' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) +'"') + ' >' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>' +
+      '\n        ' + this.getParticipantElementXML() +
+      '\n        ' + this.getDocumentElementXML() +
       '\n        <ProcessList>' +
       '\n            <Process>' +
       '\n                <ProcessIdentifier scheme="[enterProcessType]">[enterProcessName]</ProcessIdentifier>' +

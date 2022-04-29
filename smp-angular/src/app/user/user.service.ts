@@ -18,7 +18,7 @@ export class UserService {
   ) { }
 
   updateUser(user: User) {
-    this.http.put<string>(SmpConstants.REST_PUBLIC_USER_UPDATE.replace('{user-id}', user.userId), user).subscribe(response => {
+    this.http.put<User>(SmpConstants.REST_PUBLIC_USER_UPDATE.replace('{user-id}', user.userId), user).subscribe(response => {
       this.securityService.updateUserDetails(response);
       this.alertService.success('The operation \'update user\' completed successfully.');
     }, err => {

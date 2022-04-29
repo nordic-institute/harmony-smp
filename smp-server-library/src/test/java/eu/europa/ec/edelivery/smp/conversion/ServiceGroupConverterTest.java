@@ -48,10 +48,36 @@ public class ServiceGroupConverterTest {
         DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
 
         //when
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg);
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, false);
         assertNotNull(serviceGroup);
         assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
         assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
+        assertEquals(1, serviceGroup.getExtensions().size());
+    }
+
+    @Test
+    public void toServiceGroupTestEBCorePartyIDNotContact() {
+        // set
+
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup("0088:123456789","urn:oasis:names:tc:ebcore:partyid-type:iso6523");
+
+        //when
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, false);
+        assertNotNull(serviceGroup);
+        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
+        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
+        assertEquals(1, serviceGroup.getExtensions().size());
+    }
+
+    @Test
+    public void toServiceGroupTestEBCorePartyIDContact() {
+        // set
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup("0088:123456789","urn:oasis:names:tc:ebcore:partyid-type:iso6523");
+        //when
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, true);
+        assertNotNull(serviceGroup);
+        assertEquals(sg.getParticipantScheme() +":" + sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
+        assertNull(serviceGroup.getParticipantIdentifier().getScheme());
         assertEquals(1, serviceGroup.getExtensions().size());
     }
 
@@ -62,7 +88,7 @@ public class ServiceGroupConverterTest {
         sg.setExtension(ExtensionConverter.concatByteArrays(TestDBUtils.generateExtension(), TestDBUtils.generateExtension()));
 
         //when-then
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg);
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, false);
         assertNotNull(serviceGroup);
         assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
         assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
@@ -73,7 +99,7 @@ public class ServiceGroupConverterTest {
     public void toServiceGroupTestIsEmpty() {
         // set
         //when
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(null);
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(null, false);
         assertNull(serviceGroup);
     }
 
@@ -87,7 +113,7 @@ public class ServiceGroupConverterTest {
         expectedExeption.expectMessage(Matchers.startsWith("Invalid extension for service group"));
 
         //when-then
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg);
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, false);
     }
 
 

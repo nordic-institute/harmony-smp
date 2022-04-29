@@ -10,6 +10,10 @@ import {DefaultPasswordDialogComponent} from 'app/security/default-password-dial
 import {Subscription} from 'rxjs';
 import {ExpiredPasswordDialogComponent} from '../common/expired-password-dialog/expired-password-dialog.component';
 import {GlobalLookups} from "../common/global-lookups";
+import {PasswordChangeDialogComponent} from "../common/password-change-dialog/password-change-dialog.component";
+import {UserDetailsDialogMode} from "../user/user-details-dialog/user-details-dialog.component";
+import {InformationDialogComponent} from "../common/information-dialog/information-dialog.component";
+import {DatePipe, formatDate} from "@angular/common";
 
 @Component({
   moduleId: module.id,
@@ -22,6 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   loading = false;
   returnUrl: string;
   sub: Subscription;
+
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -37,9 +42,17 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
     this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(
-      data => {
-        if (data && data.passwordExpired) {
-          this.dialog.open(ExpiredPasswordDialogComponent).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
+      user => {
+        if (user && user.passwordExpired) {
+          if (user.forceChangeExpiredPassword) {
+            this.dialog.open(PasswordChangeDialogComponent, {data: user}).afterClosed().subscribe(res =>
+              this.securityService.finalizeLogout(res)
+            );
+          } else {
+            this.dialog.open(ExpiredPasswordDialogComponent).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
+          }
+        } else if (user?.showPasswordExpirationWarning) {
+          this.showWarningBeforeExpire(user);
         } else {
           this.router.navigate([this.returnUrl]);
         }
@@ -56,7 +69,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         const USER_INACTIVE = 'Inactive';
         switch (error.status) {
           case HTTP_UNAUTHORIZED:
-            message =error.error.errorDescription;
+            message = error.error.errorDescription;
             this.model.password = '';
             break;
           case HTTP_FORBIDDEN:
@@ -90,6 +103,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.securityService.login(this.model.username, this.model.password);
   }
 
+  showWarningBeforeExpire(user: User) {
+    this.dialog.open(InformationDialogComponent, {
+      data: {
+        title: "Warning! Your password is about to expire!",
+        description: "Your password is about to expire on " + formatDate(user.passwordExpireOn,"longDate","en-US")+"! Please change the password before the expiration date!"
+      }
+    }).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
+  }
+
   verifyDefaultLoginUsed() {
     const currentUser: User = this.securityService.getCurrentUser();
     if (currentUser.defaultPasswordUsed) {
@@ -97,15 +119,27 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
+  private convertWithMode(config) {
+    return (config && config.data)
+      ? {
+        ...config,
+        data: {
+          ...config.data,
+          mode: config.data.mode || (config.data.edit ? UserDetailsDialogMode.EDIT_MODE : UserDetailsDialogMode.NEW_MODE)
+        }
+      }
+      : config;
+  }
+
   ngOnDestroy(): void {
     this.sub.unsubscribe();
   }
 
   isUserAuthSSOEnabled(): boolean {
-     return this.lookups.cachedApplicationInfo?.authTypes.includes('SSO');
+    return this.lookups.cachedApplicationInfo?.authTypes.includes('SSO');
   }
 
-  isUserAuthPasswdEnabled():boolean {
+  isUserAuthPasswdEnabled(): boolean {
     return this.lookups.cachedApplicationInfo?.authTypes.includes('PASSWORD');
   }
 }
