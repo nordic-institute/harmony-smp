@@ -25,6 +25,9 @@ eDelivery SMP 4.2
     authentication.blueCoat.enabled - deprecated and replaced with smp.automation.authentication.external.tls.clientCert.enabled
     smp.automation.authentication.external.tls.SSLClientCert.enabled Authentication with external module as: reverse proxy. Authenticated certificate is send to application using  'SSLClientCert' HTTP header. Do not enable this feature without properly configured reverse-proxy!
     identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate: Concatenate ebCore party id in XML responses <ParticipantIdentifier >urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>
+    smp.passwordPolicy.expired.forceChange: Force change password at UI login if expired
+    smp.passwordPolicy.warning.beforeExpiration: How many days before expiration should the UI warn users at login
+
 
 - removed deprecated properties
     bdmsl.integration.keystore.password

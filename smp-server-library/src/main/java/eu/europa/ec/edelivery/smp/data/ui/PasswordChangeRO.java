@@ -10,8 +10,17 @@ import java.io.Serializable;
  * @since 4.2
  */
 public class PasswordChangeRO implements Serializable  {
+    String username;
     String currentPassword;
     String newPassword;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getCurrentPassword() {
         return currentPassword;

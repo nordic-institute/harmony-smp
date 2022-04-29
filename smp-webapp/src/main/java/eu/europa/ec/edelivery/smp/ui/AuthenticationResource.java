@@ -5,7 +5,6 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.ErrorRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -15,14 +14,9 @@ import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +25,9 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.OffsetDateTime;
 
 import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.*;
-import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.CSRF_COOKIE_NAME;
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 
 /**
@@ -87,23 +81,14 @@ public class AuthenticationResource {
         csrfTokenRepository.saveToken(csfrToken, request, response);
 
         SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
-        UserRO userRO = conversionService.convert(authentication.getUser(), UserRO.class);
-        return authorizationService.sanitize(userRO);
+        DBUser user = authentication.getUser();
+        return getUserData(user);
     }
 
     @DeleteMapping(value = "authentication")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null) {
-            LOG.debug("Cannot perform logout: no user is authenticated");
-            return;
-        }
-
-        LOG.info("Logging out user [{}]", auth.getName());
-        new CookieClearingLogoutHandler(SESSION_COOKIE_NAME, CSRF_COOKIE_NAME).logout(request, response, null);
-        LOG.info("Cleared cookies");
-        new SecurityContextLogoutHandler().logout(request, response, auth);
-        LOG.info("Logged out");
+        LOG.info("Logging out user for the session");
+        authenticationService.logout(request, response);
     }
 
     /**
@@ -123,11 +108,11 @@ public class AuthenticationResource {
 
     @GetMapping(value = "user")
     @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
-    public UserRO getUser() {
+    public UserRO getUser(HttpServletRequest request, HttpServletResponse response) {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserRO) {
-            return (UserRO) principal;
+            return getUpdatedUserData((UserRO) principal);
         }
 
         String username = (String) principal;
@@ -138,8 +123,27 @@ public class AuthenticationResource {
             LOG.warn("User: [{}] does not exists anymore or is not active.", username);
             return null;
         }
+        return getUserData(user);
+    }
 
+    protected UserRO getUserData(DBUser user) {
         UserRO userRO = conversionService.convert(user, UserRO.class);
+        return getUpdatedUserData(userRO);
+    }
+
+    /**
+     * Method updates data with "show expire dialog" flag, forces the password change flag and
+     * sanitize ui data/
+     * @param userRO
+     * @return updated user data according to SMP configuration
+     */
+    protected UserRO getUpdatedUserData(UserRO userRO) {
+        userRO.setShowPasswordExpirationWarning(userRO.getPasswordExpireOn() != null &&
+                OffsetDateTime.now()
+                        .minusDays(configurationService.getPasswordPolicyUIWarningDaysBeforeExpire())
+                        .isBefore(userRO.getPasswordExpireOn()));
+
+        userRO.setForceChangePassword(userRO.isPasswordExpired() && configurationService.getPasswordPolicyForceChangeIfExpired()) ;
         return authorizationService.sanitize(userRO);
     }
 

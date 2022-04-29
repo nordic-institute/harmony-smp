@@ -66,10 +66,16 @@ public class ConfigurationService {
     public Integer getPasswordPolicyValidDays() {
         return (Integer) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_VALID_DAYS);
     }
+    public Integer getPasswordPolicyUIWarningDaysBeforeExpire() {
+        return (Integer) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_UIWARNING_DAYS_BEFORE_EXPIRE);
+    }
+    public Boolean getPasswordPolicyForceChangeIfExpired() {
+        return (Boolean) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_FORCE_CHANGE_EXPIRED);
+    }
+
     public Integer getAccessTokenPolicyValidDays() {
         return (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_POLICY_VALID_DAYS);
     }
-
 
     public Integer getLoginMaxAttempts() {
         return (Integer) configurationDAO.getCachedPropertyValue(USER_MAX_FAILED_ATTEMPTS);

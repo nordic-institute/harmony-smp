@@ -70,6 +70,12 @@ public enum SMPPropertyEnum {
             "The error message shown to the user in case the password does not follow the regex put in the domibus.passwordPolicy.pattern property", false, false,false, STRING),
     PASSWORD_POLICY_VALID_DAYS("smp.passwordPolicy.validDays","90",
             "Number of days password is valid", false, false,false, INTEGER),
+    PASSWORD_POLICY_UIWARNING_DAYS_BEFORE_EXPIRE("smp.passwordPolicy.warning.beforeExpiration","15",
+            "How many days before expiration should the UI warn users at login", false, false,false, INTEGER),
+
+    PASSWORD_POLICY_FORCE_CHANGE_EXPIRED("smp.passwordPolicy.expired.forceChange","true",
+            "Force change password at UI login if expired", false, false,false, BOOLEAN),
+
     USER_MAX_FAILED_ATTEMPTS("smp.user.login.maximum.attempt","5",
             "Number of console login attempt before the user is deactivated", false, false,false, INTEGER),
     USER_SUSPENSION_TIME("smp.user.login.suspension.time","3600",

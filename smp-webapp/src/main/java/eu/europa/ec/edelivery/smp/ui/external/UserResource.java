@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
@@ -13,6 +14,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
 import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntityId;
 
@@ -25,12 +29,15 @@ import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntit
 public class UserResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserResource.class);
-
-    @Autowired
-    private UIUserService uiUserService;
-    @Autowired
+    protected UIUserService uiUserService;
     protected SMPAuthorizationService authorizationService;
+    protected SMPAuthenticationService authenticationService;
 
+    public UserResource(UIUserService uiUserService, SMPAuthorizationService authorizationService, SMPAuthenticationService authenticationService) {
+        this.uiUserService = uiUserService;
+        this.authorizationService = authorizationService;
+        this.authenticationService = authenticationService;
+    }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PostMapping(path = "/{user-id}/generate-access-token", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -43,10 +50,15 @@ public class UserResource {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(path = "/{user-id}/change-password", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public boolean changePassword(@PathVariable("user-id") String userId, @RequestBody PasswordChangeRO newPassword) {
+    public boolean changePassword(@PathVariable("user-id") String userId, @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
-        return uiUserService.updateUserPassword(entityId, newPassword.getCurrentPassword(), newPassword.getNewPassword());
+        boolean result = uiUserService.updateUserPassword(entityId, newPassword.getCurrentPassword(), newPassword.getNewPassword());
+        if (result){
+            LOG.info("Password successfully changed. Logout the user, to be able to login with the new password!");
+            authenticationService.logout(request, response);
+        }
+        return result;
     }
 
     /**
