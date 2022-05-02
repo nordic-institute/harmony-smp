@@ -13,6 +13,8 @@
 
 package eu.europa.ec.edelivery.smp;
 
+import org.apache.commons.lang3.StringUtils;
+
 import static java.lang.String.format;
 
 /**
@@ -28,11 +30,12 @@ public class ServiceGroupBodyUtil {
     }
 
     public static String getSampleServiceGroupBody(String scheme, String identifier) {
-        return format("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">\n" +
-                "   <ParticipantIdentifier scheme=\"%s\">%s</ParticipantIdentifier>\n" +
+        return "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">\n" +
+                "   <ParticipantIdentifier"+(scheme!=null?" scheme=\""+scheme+"\"":"")+">"+identifier+"</ParticipantIdentifier>\n" +
                 "   <ServiceMetadataReferenceCollection/>\n" +
-                " </ServiceGroup>", scheme, identifier);
+                " </ServiceGroup>";
     }
+
 
     public static  String generateServiceMetadata(String partcId, String partcSch, String docId, String docSch, String desc){
         return String.format(SIMPLE_DOCUMENT_XML,partcSch, partcId,docSch, docId, desc);

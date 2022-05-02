@@ -95,10 +95,12 @@ public class ServiceGroupConverter {
      * @return
      */
     public static ServiceGroup unmarshal(byte[] serviceGroupXml) {
+
         try {
             System.out.println("UNMARSHAL SERVICE GROUP " + new String(serviceGroupXml));
             Document serviceGroupDoc = parse(serviceGroupXml);
             ServiceGroup serviceGroup =  getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
+            /*
             if (serviceGroup!=null && serviceGroup.getParticipantIdentifier()!=null
             && StringUtils.isBlank(serviceGroup.getParticipantIdentifier().getScheme())
             && StringUtils.startsWithAny(serviceGroup.getParticipantIdentifier().getValue(),
@@ -106,9 +108,9 @@ public class ServiceGroupConverter {
                     "::"+ EBCORE_IDENTIFIER_PREFIX)){
                 // normalize participant identifier
                 LOG.info("Normalize ebCore identifier: " + serviceGroup.getParticipantIdentifier().getValue());
-                ParticipantIdentifierType participantIdentifierType = Identifiers.asParticipantId(serviceGroup.getParticipantIdentifier().getValue());
+                ParticipantIdentifierType participantIdentifierType = Identifiers.asParticipantId(serviceGroup.getParticipantIdentifier().getValue(), allowNullPartcScheme);
                 serviceGroup.setParticipantIdentifier(participantIdentifierType);
-            }
+            }*/
             return serviceGroup;
         } catch (ParserConfigurationException | IOException | SAXException | JAXBException ex) {
             throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION,ex,ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));

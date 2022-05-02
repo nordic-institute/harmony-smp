@@ -126,6 +126,16 @@ public abstract class AbstractServiceIntegrationTest {
         sg2d1.getUsers().add(u1);
         sg2d1.addDomain(testDomain01);
         serviceGroupDao.update(sg2d1);
+
+
+        DBServiceGroup sg2NoScheme = TestDBUtils.createDBServiceGroup(TEST_SG_ID_NO_SCHEME, null);
+        DBServiceMetadata sg1mdNoScheme = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_NO_SCHEME, null,
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
+        sg2NoScheme.addDomain(testDomain01);
+        sg2NoScheme.getServiceGroupDomains().get(0).addServiceMetadata(sg1mdNoScheme);
+        sg2NoScheme.getUsers().add(u1);
+        sg2NoScheme.getUsers().add(u2);
+        serviceGroupDao.persistFlushDetach(sg2NoScheme);
     }
 
     /**

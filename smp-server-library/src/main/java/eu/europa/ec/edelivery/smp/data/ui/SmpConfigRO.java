@@ -8,6 +8,7 @@ public class SmpConfigRO implements Serializable {
     boolean smlIntegrationOn;
     boolean smlParticipantMultiDomainOn;
     boolean concatEBCorePartyId;
+    boolean partyIDSchemeMandatory;
     String participantSchemaRegExp;
     String participantSchemaRegExpMessage;
 
@@ -54,6 +55,14 @@ public class SmpConfigRO implements Serializable {
 
     public void setParticipantSchemaRegExpMessage(String participantSchemaRegExpMessage) {
         this.participantSchemaRegExpMessage = participantSchemaRegExpMessage;
+    }
+
+    public boolean isPartyIDSchemeMandatory() {
+        return partyIDSchemeMandatory;
+    }
+
+    public void setPartyIDSchemeMandatory(boolean partyIDSchemeMandatory) {
+        this.partyIDSchemeMandatory = partyIDSchemeMandatory;
     }
 
     public String getPasswordValidationRegExp() {

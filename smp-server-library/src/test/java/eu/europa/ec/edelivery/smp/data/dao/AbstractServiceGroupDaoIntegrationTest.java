@@ -22,7 +22,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  * @since 4.1
  */
 
-public abstract class ServiceGroupDaoIntegrationBase extends AbstractBaseDao{
+public abstract class AbstractServiceGroupDaoIntegrationTest extends AbstractBaseDao{
     @Autowired
     ServiceGroupDao testInstance;
 
