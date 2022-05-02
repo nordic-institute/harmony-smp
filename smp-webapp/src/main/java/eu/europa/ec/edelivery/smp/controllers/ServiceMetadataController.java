@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -21,6 +22,7 @@ import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.apache.commons.lang3.StringUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,15 +49,17 @@ public class ServiceMetadataController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);
 
-    @Autowired
-    private ServiceMetadataValidator serviceMetadataValidator;
+    protected final  ServiceMetadataValidator serviceMetadataValidator;
+    protected final  ServiceMetadataService serviceMetadataService;
+    protected final  SmpUrlBuilder pathBuilder;
+    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
 
-    @Autowired
-    private ServiceMetadataService serviceMetadataService;
-
-
-    @Autowired
-    private SmpUrlBuilder pathBuilder;
+    public ServiceMetadataController(ServiceMetadataValidator serviceMetadataValidator, ServiceMetadataService serviceMetadataService, SmpUrlBuilder pathBuilder, CaseSensitivityNormalizer caseSensitivityNormalizer) {
+        this.serviceMetadataValidator = serviceMetadataValidator;
+        this.serviceMetadataService = serviceMetadataService;
+        this.pathBuilder = pathBuilder;
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+    }
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
     public String getServiceMetadata(HttpServletRequest httpReq,
@@ -64,8 +68,8 @@ public class ServiceMetadataController {
 
         String host = httpReq.getRemoteHost();
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_METADATA, host, serviceGroupId, serviceMetadataId);
-
-        Document serviceMetadata = serviceMetadataService.getServiceMetadataDocument(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        Document serviceMetadata = serviceMetadataService.getServiceMetadataDocument(participantIdentifierType, asDocumentId(serviceMetadataId));
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_SERVICE_METADATA, host, serviceGroupId, serviceMetadataId);
         return ServiceMetadataConverter.toString(serviceMetadata);
@@ -87,8 +91,8 @@ public class ServiceMetadataController {
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
-
-        boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(domain, participantIdentifierType, asDocumentId(serviceMetadataId), body);
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_END_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId, newServiceMetadataCreated);
 
@@ -108,8 +112,8 @@ public class ServiceMetadataController {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
-
-        serviceMetadataService.deleteServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        serviceMetadataService.deleteServiceMetadata(domain, participantIdentifierType, asDocumentId(serviceMetadataId));
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
         return ok().build();

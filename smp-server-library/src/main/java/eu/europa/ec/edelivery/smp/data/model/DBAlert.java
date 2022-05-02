@@ -166,11 +166,6 @@ public class DBAlert extends BaseEntity {
         return properties;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), id, alertType, reportingTime, alertStatus, alertLevel);
-    }
-
     @PreUpdate
     @PrePersist
     public void prePersistUpdate() {

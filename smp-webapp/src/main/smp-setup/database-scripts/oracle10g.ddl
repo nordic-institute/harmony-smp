@@ -269,7 +269,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
         PARTICIPANT_IDENTIFIER varchar2(256 char) not null,
-        PARTICIPANT_SCHEME varchar2(256 char) not null,
+        PARTICIPANT_SCHEME varchar2(256 char),
         primary key (ID)
     );
 

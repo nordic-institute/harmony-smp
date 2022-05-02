@@ -99,7 +99,7 @@ public class ServiceMetadataConverter {
         try {
             Document serviceMetadataDoc = parse(serviceMetadataXml);
             ServiceMetadata serviceMetadata = getUnmarshaller().unmarshal(serviceMetadataDoc, ServiceMetadata.class).getValue();
-
+/*
             if (serviceMetadata!=null
                     && serviceMetadata.getServiceInformation()!=null
                     && serviceMetadata.getServiceInformation().getParticipantIdentifier()!=null
@@ -109,9 +109,11 @@ public class ServiceMetadataConverter {
                     "::"+Identifiers.EBCORE_IDENTIFIER_PREFIX)){
                 // normalize participant identifier
                 LOG.info("Normalize ebCore identifier: " + serviceMetadata.getServiceInformation().getParticipantIdentifier().getValue());
-                ParticipantIdentifierType participantIdentifierType = Identifiers.asParticipantId(serviceMetadata.getServiceInformation().getParticipantIdentifier().getValue());
+                ParticipantIdentifierType participantIdentifierType = Identifiers.asParticipantId(
+                        serviceMetadata.getServiceInformation().getParticipantIdentifier().getValue(),allowEmptyParticipantScheme);
+
                 serviceMetadata.getServiceInformation().setParticipantIdentifier(participantIdentifierType);
-            }
+            }*/
 
             return serviceMetadata;
         } catch (SAXException | IOException | ParserConfigurationException | JAXBException ex) {

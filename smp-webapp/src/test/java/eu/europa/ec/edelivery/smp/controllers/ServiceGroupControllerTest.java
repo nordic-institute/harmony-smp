@@ -66,9 +66,11 @@ public class ServiceGroupControllerTest {
     private static final String DOCUMENT_ID = "invoice";
 
     private static final String URL_PATH = format("/%s::%s", PARTICIPANT_SCHEME, PARTICIPANT_ID);
+    private static final String URL_PATH_NULL_SCHEME = format("/%s", PARTICIPANT_ID);
     private static final String URL_DOC_PATH = format("%s/services/%s::%s", URL_PATH, DOCUMENT_SCHEME, DOCUMENT_ID);
 
-    private static final String SERVICE_GROUP_INPUT_BODY = getSampleServiceGroupBodyWithScheme(PARTICIPANT_SCHEME);
+    private static final String SERVICE_GROUP_INPUT = getSampleServiceGroupBodyWithScheme(PARTICIPANT_SCHEME);
+    private static final String SERVICE_GROUP_INPUT_NULL_SCHEME = getSampleServiceGroupBodyWithScheme(null);
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
     private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
     private static final String HTTP_DOMAIN_VALUE = "domain";
@@ -116,7 +118,19 @@ public class ServiceGroupControllerTest {
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void adminCanCreateServiceGroupNullScheme() throws Exception {
+        // make sure identifiersBehaviour.scheme.allowNull is set to true in db script
+        // set identifiersBehaviour.scheme.mandatory to false
+        mvc.perform(put(URL_PATH_NULL_SCHEME)
+                .with(ADMIN_CREDENTIALS)
+                .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
+                .contentType(APPLICATION_XML_VALUE)
+                .content(SERVICE_GROUP_INPUT_NULL_SCHEME))
                 .andExpect(status().isCreated());
     }
 
@@ -126,14 +140,14 @@ public class ServiceGroupControllerTest {
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isCreated());
 
         mvc.perform(put(URL_PATH)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isOk());
     }
 
@@ -143,11 +157,11 @@ public class ServiceGroupControllerTest {
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isCreated());
 
         mvc.perform(get(URL_PATH))
-                .andExpect(content().xml(SERVICE_GROUP_INPUT_BODY));
+                .andExpect(content().xml(SERVICE_GROUP_INPUT));
 
     }
 
@@ -317,7 +331,7 @@ public class ServiceGroupControllerTest {
         mvc.perform(put(URL_PATH)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isUnauthorized());
 
         mvc.perform(get(URL_PATH))
@@ -330,7 +344,7 @@ public class ServiceGroupControllerTest {
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isCreated());
 
         mvc.perform(delete(URL_PATH)
@@ -370,7 +384,7 @@ public class ServiceGroupControllerTest {
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_DOMAIN, "not-existing-domain")
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(stringContainsInOrder("FORMAT_ERROR")));
     }
@@ -381,7 +395,7 @@ public class ServiceGroupControllerTest {
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_DOMAIN, "notExistingDomain")
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(stringContainsInOrder("NOT_FOUND")));
     }
@@ -393,7 +407,7 @@ public class ServiceGroupControllerTest {
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME_URL_ENCODED)
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isCreated());
     }
 
@@ -404,7 +418,7 @@ public class ServiceGroupControllerTest {
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, "not-existing-user")
-                .content(SERVICE_GROUP_INPUT_BODY))
+                .content(SERVICE_GROUP_INPUT))
                 .andExpect(status().isBadRequest());
     }
 

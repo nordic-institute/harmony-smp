@@ -38,9 +38,9 @@ public class CaseSensitivityNormalizerTest {
 
     @Before
     public void init() {
-        normalizer = new CaseSensitivityNormalizer();
         ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
-        ReflectionTestUtils.setField(normalizer, "configurationService", configurationService);
+        normalizer = new CaseSensitivityNormalizer(configurationService);
+
         Mockito.doReturn(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"})).when(configurationService).getCaseSensitiveDocumentScheme();
         Mockito.doReturn(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"})).when(configurationService).getCaseSensitiveParticipantScheme();
 

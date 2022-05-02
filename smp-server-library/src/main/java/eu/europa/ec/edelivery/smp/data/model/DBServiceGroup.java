@@ -31,9 +31,10 @@ import java.util.*;
 @org.hibernate.annotations.Table(appliesTo = "SMP_SERVICE_GROUP", comment = "Service group data - Identifier and scheme")
 @NamedQueries({
         @NamedQuery(name = "DBServiceGroup.getServiceGroupByID", query = "SELECT d FROM DBServiceGroup d WHERE d.id = :id"),
-        @NamedQuery(name = "DBServiceGroup.getServiceGroup", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier and d.participantScheme = :participantScheme"),
-        @NamedQuery(name = "DBServiceGroup.getServiceGroupList", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier and d.participantScheme = :participantScheme"),
-        @NamedQuery(name = "DBServiceGroup.deleteById", query = "DELETE FROM DBServiceGroup d WHERE d.id = :id"),
+        @NamedQuery(name = "DBServiceGroup.getServiceGroupByIdentifier", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier " +
+                " AND (:participantScheme IS NULL AND d.participantScheme IS NULL " +
+                " OR d.participantScheme = :participantScheme)"),
+       @NamedQuery(name = "DBServiceGroup.deleteById", query = "DELETE FROM DBServiceGroup d WHERE d.id = :id"),
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBServiceGroup.deleteAllOwnerships", query = "DELETE FROM SMP_OWNERSHIP WHERE FK_SG_ID=:serviceGroupId")
@@ -69,7 +70,7 @@ public class DBServiceGroup extends BaseEntity {
     @Column(name = "PARTICIPANT_IDENTIFIER", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH, nullable = false)
     String participantIdentifier;
 
-    @Column(name = "PARTICIPANT_SCHEME", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH, nullable = false)
+    @Column(name = "PARTICIPANT_SCHEME", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH)
     String participantScheme;
 
 
@@ -212,6 +213,15 @@ public class DBServiceGroup extends BaseEntity {
 
                 Objects.equals(participantIdentifier, that.participantIdentifier) &&
                 Objects.equals(participantScheme, that.participantScheme);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", DBServiceGroup.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("participantIdentifier='" + participantIdentifier + "'")
+                .add("participantScheme='" + participantScheme + "'")
+                .toString();
     }
 
     @Override

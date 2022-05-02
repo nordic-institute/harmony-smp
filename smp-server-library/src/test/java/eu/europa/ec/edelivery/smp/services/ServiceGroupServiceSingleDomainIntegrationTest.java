@@ -167,7 +167,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(SG_NOT_EXISTS.getMessage("service-group", "not-existing"));
         // when-then
-        testInstance.getServiceGroup(asParticipantId("not-existing::service-group") );
+        testInstance.getServiceGroup(asParticipantId("not-existing::service-group", false) );
     }
 
     @Test
