@@ -49,7 +49,7 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
 
 
         try {
-            TypedQuery<DBServiceGroup> query = memEManager.createNamedQuery("DBServiceGroup.getServiceGroup", DBServiceGroup.class);
+            TypedQuery<DBServiceGroup> query = memEManager.createNamedQuery("DBServiceGroup.getServiceGroupByIdentifier", DBServiceGroup.class);
             query.setParameter("participantIdentifier", participantId);
             query.setParameter("participantScheme", schema);
             DBServiceGroup res = query.getSingleResult();

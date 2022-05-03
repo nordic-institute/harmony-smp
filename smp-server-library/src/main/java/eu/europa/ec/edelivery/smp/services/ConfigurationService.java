@@ -133,6 +133,10 @@ public class ConfigurationService {
         return (List<String>) configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
     }
 
+    public Boolean getParticipantSchemeMandatory() {
+        return (Boolean) configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
+    }
+
     public boolean isProxyEnabled() {
         String proxyHost = configurationDAO.getCachedProperty(HTTP_PROXY_HOST);
         return !StringUtils.isBlank(proxyHost);

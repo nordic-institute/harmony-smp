@@ -13,23 +13,28 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
+import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.apache.commons.lang3.StringUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Document;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_DOMAIN;
@@ -47,15 +52,23 @@ public class ServiceMetadataController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);
 
-    @Autowired
-    private ServiceMetadataValidator serviceMetadataValidator;
+    protected final ServiceMetadataValidator serviceMetadataValidator;
+    protected final ServiceMetadataService serviceMetadataService;
+    protected final SmpUrlBuilder pathBuilder;
+    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final PayloadValidatorService payloadValidatorService;
 
-    @Autowired
-    private ServiceMetadataService serviceMetadataService;
-
-
-    @Autowired
-    private SmpUrlBuilder pathBuilder;
+    public ServiceMetadataController(ServiceMetadataValidator serviceMetadataValidator,
+                                     ServiceMetadataService serviceMetadataService,
+                                     SmpUrlBuilder pathBuilder,
+                                     CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                     PayloadValidatorService payloadValidatorService) {
+        this.serviceMetadataValidator = serviceMetadataValidator;
+        this.serviceMetadataService = serviceMetadataService;
+        this.pathBuilder = pathBuilder;
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.payloadValidatorService = payloadValidatorService;
+    }
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
     public String getServiceMetadata(HttpServletRequest httpReq,
@@ -64,8 +77,8 @@ public class ServiceMetadataController {
 
         String host = httpReq.getRemoteHost();
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_METADATA, host, serviceGroupId, serviceMetadataId);
-
-        Document serviceMetadata = serviceMetadataService.getServiceMetadataDocument(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        Document serviceMetadata = serviceMetadataService.getServiceMetadataDocument(participantIdentifierType, asDocumentId(serviceMetadataId));
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_SERVICE_METADATA, host, serviceGroupId, serviceMetadataId);
         return ServiceMetadataConverter.toString(serviceMetadata);
@@ -85,10 +98,12 @@ public class ServiceMetadataController {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
+        // validate payload
+        payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(body), MimeTypeUtils.APPLICATION_XML_VALUE);
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
-
-        boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(domain, participantIdentifierType, asDocumentId(serviceMetadataId), body);
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_END_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId, newServiceMetadataCreated);
 
@@ -108,8 +123,8 @@ public class ServiceMetadataController {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
-
-        serviceMetadataService.deleteServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        serviceMetadataService.deleteServiceMetadata(domain, participantIdentifierType, asDocumentId(serviceMetadataId));
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
         return ok().build();

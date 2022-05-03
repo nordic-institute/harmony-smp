@@ -2,12 +2,13 @@ package eu.europa.ec.edelivery.smp.config;
 
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProviderForUI;
-import eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher;
+import eu.europa.ec.edelivery.smp.auth.URLCsrfIgnoreMatcher;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SMPSecurityExceptionHandler;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,11 +180,11 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                     .maxAgeInSeconds(maxAge)
                     .requestMatcher(AnyRequestMatcher.INSTANCE).and().and();
         }
-/*
+
         String contentSecurityPolicy = configurationService.getHttpHeaderContentSecurityPolicy();
         if (StringUtils.isNotBlank(contentSecurityPolicy)) {
             httpSecurity = httpSecurity.headers().contentSecurityPolicy(contentSecurityPolicy).and().and();
-        }*/
+        }
     }
 
     @Override
@@ -223,19 +224,21 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     @Bean
     public RequestMatcher csrfURLMatcher() {
-        URLCsrfMatcher requestMatcher = new URLCsrfMatcher();
+        URLCsrfIgnoreMatcher requestMatcher = new URLCsrfIgnoreMatcher();
         // init pages
         requestMatcher.addIgnoreUrl("^$", HttpMethod.GET);
-        requestMatcher.addIgnoreUrl("^(/smp)?/$", HttpMethod.GET);
-        requestMatcher.addIgnoreUrl("/favicon(-[0-9x]{2,7})?.(png|ico)$", HttpMethod.GET);
+        //ignore CSRF for SMP rest API
+        requestMatcher.addIgnoreUrl("^/(?!ui/)[^/]*(/services/.*)?$", HttpMethod.GET,HttpMethod.PUT,HttpMethod.DELETE,HttpMethod.POST);
+
+        //requestMatcher.addIgnoreUrl("^(/smp)?/$", HttpMethod.GET);
+        //requestMatcher.addIgnoreUrl("/favicon(-[0-9x]{2,7})?.(png|ico)$", HttpMethod.GET);
         requestMatcher.addIgnoreUrl("^(/smp)?/(index.html|ui/(#/)?|)$", HttpMethod.GET);
         // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
-        requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
+        //requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
         // ignore for login and logout
         requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY + "/authentication", HttpMethod.DELETE, HttpMethod.POST);
-
         requestMatcher.addIgnoreUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE, HttpMethod.GET);
-        // allow all gets
+        // allow all gets except for rest services
         requestMatcher.addIgnoreUrl("/ui/.*", HttpMethod.GET);
         // monitor
         requestMatcher.addIgnoreUrl("/monitor/is-alive", HttpMethod.GET);

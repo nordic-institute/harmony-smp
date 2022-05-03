@@ -37,26 +37,25 @@ public class Identifiers {
     private static final String EMPTY_IDENTIFIER = "Null/Empty";
 
 
-    public static ParticipantIdentifierType asParticipantId(String participantIDentifier) {
-        String[] res = splitParticipantIdentifier(participantIDentifier);
+    public static ParticipantIdentifierType asParticipantId(String participantIdentifier, boolean schemeMandatory) {
+        String[] res = splitParticipantIdentifier(participantIdentifier, schemeMandatory);
         return new ParticipantIdentifierType(res[1], res[0]);
     }
 
     public static DocumentIdentifier asDocumentId(String doubleColonDelimitedId) {
-        String[] res = splitDoubleColonIdentifier(doubleColonDelimitedId);
+        String[] res = splitDoubleColonIdentifier(doubleColonDelimitedId, false);
         return new DocumentIdentifier(res[1], res[0]);
     }
 
     public static ProcessIdentifier asProcessId(String doubleColonDelimitedId) {
-        String[] res = splitDoubleColonIdentifier(doubleColonDelimitedId);
+        String[] res = splitDoubleColonIdentifier(doubleColonDelimitedId, false);
         return new ProcessIdentifier(res[1], res[0]);
     }
 
     public static String asString(ParticipantIdentifierType participantId) {
         if (StringUtils.isBlank(participantId.getScheme())) {
-            // if scheme is empty just return value (for OASIS SMP 1.0 must start with :: )
-            return (StringUtils.startsWithIgnoreCase(participantId.getScheme(), EBCORE_IDENTIFIER_PREFIX) ?
-                    "" : "::") + participantId.getValue();
+            // if scheme is empty just return value (see section 3.4.1 of [SMP-v1.0]) MUST include neither an {identifier scheme} nor the :: separator )
+            return participantId.getValue();
         }
         String format =
                 StringUtils.startsWithIgnoreCase(participantId.getScheme(), EBCORE_IDENTIFIER_PREFIX) ?
@@ -81,7 +80,7 @@ public class Identifiers {
         return UriUtils.encode(s, UTF_8.name());
     }
 
-    private static String[] splitParticipantIdentifier(String participantIdentifier) {
+    private static String[] splitParticipantIdentifier(String participantIdentifier, boolean schemeMandatory) {
 
         String[] idResult;
         if (StringUtils.isBlank(participantIdentifier)) {
@@ -92,7 +91,7 @@ public class Identifiers {
                 || identifier.startsWith("::" + EBCORE_IDENTIFIER_PREFIX)) {
             idResult = splitEbCoreIdentifier(identifier);
         } else {
-            idResult = splitDoubleColonIdentifier(identifier);
+            idResult = splitDoubleColonIdentifier(identifier, schemeMandatory);
         }
 
         return idResult;
@@ -107,7 +106,7 @@ public class Identifiers {
      * @return array with two elements. First is schema and second is id
      */
 
-    private static String[] splitDoubleColonIdentifier(String doubleColonDelimitedId) {
+    private static String[] splitDoubleColonIdentifier(String doubleColonDelimitedId, boolean schemeMandatory) {
         if (StringUtils.isBlank(doubleColonDelimitedId)) {
             throw new MalformedIdentifierException(EMPTY_IDENTIFIER, null);
         }
@@ -115,18 +114,16 @@ public class Identifiers {
         String[] idResult = new String[2];
 
         int delimiterIndex = doubleColonDelimitedId.indexOf("::");
-        if (delimiterIndex < 0) {
+        if (schemeMandatory && delimiterIndex < 0) {
             throw new MalformedIdentifierException(doubleColonDelimitedId, null);
         }
-        idResult[0] = delimiterIndex == 0 ? null : doubleColonDelimitedId.substring(0, delimiterIndex);
-        idResult[1] = doubleColonDelimitedId.substring(delimiterIndex + 2);
+        idResult[0] = delimiterIndex <= 0 ? null : doubleColonDelimitedId.substring(0, delimiterIndex);
+        idResult[1] = doubleColonDelimitedId.substring(delimiterIndex + (delimiterIndex < 0?1:2));
 
         if (StringUtils.isBlank(idResult[1])) {
             throw new MalformedIdentifierException(doubleColonDelimitedId, null);
         }
-
         return idResult;
-
     }
 
     public static String[] splitEbCoreIdentifier(final String partyId) {

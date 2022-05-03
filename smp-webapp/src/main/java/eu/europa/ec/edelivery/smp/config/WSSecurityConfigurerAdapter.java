@@ -206,8 +206,7 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
             clientCertAuthenticationFilter.setClientCertAuthenticationEnabled(configurationService.isExternalTLSAuthenticationWithClientCertHeaderEnabled());
         }
         return clientCertAuthenticationFilter;
-    }
-
+   }
 
     public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter() throws Exception {
         if (x509AuthenticationFilter == null) {
@@ -218,7 +217,6 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         }
         return x509AuthenticationFilter;
     }
-
 
     public void setExternalTlsAuthenticationWithClientCertHeaderEnabled(boolean clientCertEnabled) {
         try {

@@ -17,6 +17,7 @@ public class TestConstants {
     public static final String TEST_SG_ID_2 = "urn:eu:ncpb:utest";
     public static final String TEST_SG_ID_3 = "0007:002:utest";
     public static final String TEST_SG_ID_4 = "0007:004:utest";
+    public static final String TEST_SG_ID_NO_SCHEME = "No-Scheme-Party-Id";
     public static final String TEST_SG_ID_PL= "urn:poland:ncpb:utest";
     public static final String TEST_SG_ID_PL2= "urn:Poland:ncpb";
 
@@ -51,7 +52,7 @@ public class TestConstants {
     public static final String SERVICE_METADATA_XML_PATH = "/examples/services/ServiceMetadataPoland.xml";
     public static final String SIGNED_SERVICE_METADATA_XML_PATH = "/examples/services/SignedServiceMetadataPoland.xml";
 
-    public static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:eu:ncpb");
+    public static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:eu:ncpb",false);
 
     public static final String ADMIN_USERNAME = "test_admin";
     public static final String CERT_USER="CN=common name,O=org,C=BE:0000000000000066";

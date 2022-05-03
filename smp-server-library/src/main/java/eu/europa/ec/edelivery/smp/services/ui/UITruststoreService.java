@@ -139,7 +139,7 @@ public class UITruststoreService {
                     try {
                         x509Certificate.checkValidity();
                     } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
-                        LOG.warn("Certificate: '{}' from truststore is not valid anymore!");
+                        LOG.warn("Certificate: [{}] from truststore is not valid anymore!", alias);
                     }
                 }
 

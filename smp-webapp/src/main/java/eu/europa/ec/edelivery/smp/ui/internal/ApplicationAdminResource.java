@@ -2,20 +2,13 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import eu.europa.ec.edelivery.smp.data.ui.SmpConfigRO;
-import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.TimeZone;
 
 /**
  * @author Joze Rihtarsic
@@ -41,6 +34,7 @@ public class ApplicationAdminResource {
         info.setParticipantSchemaRegExp(configurationService.getParticipantIdentifierSchemeRexExpPattern());
         info.setParticipantSchemaRegExpMessage(configurationService.getParticipantIdentifierSchemeRexExpMessage());
         info.setConcatEBCorePartyId(configurationService.getForceConcatenateEBCorePartyId());
+        info.setPartyIDSchemeMandatory(configurationService.getParticipantSchemeMandatory());
 
         info.setPasswordValidationRegExp(configurationService.getPasswordPolicyRexExpPattern());
         info.setPasswordValidationRegExpMessage(configurationService.getPasswordPolicyValidationMessage());
