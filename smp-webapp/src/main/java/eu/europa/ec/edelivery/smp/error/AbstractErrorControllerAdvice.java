@@ -32,7 +32,7 @@ abstract class AbstractErrorControllerAdvice {
             AuthenticationException ex = (AuthenticationException)runtimeException;
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
         }else if (runtimeException instanceof AccessDeniedException){
-            AuthenticationException ex = (AuthenticationException)runtimeException;
+            AccessDeniedException ex = (AccessDeniedException)runtimeException;
             response = buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
         }
         else {

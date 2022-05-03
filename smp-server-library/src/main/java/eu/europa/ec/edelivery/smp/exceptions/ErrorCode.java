@@ -59,7 +59,7 @@ public enum ErrorCode {
 
     JAXB_INITIALIZATION (500,"SMP:511",ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class %s!"),
     XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for %s.  Error: %s!"),
-    INVALID_REQUEST(500,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request %s.  Error: %s!"),
+    INVALID_REQUEST(400,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request %s.  Error: %s!"),
     INTERNAL_ERROR (500,"SMP:514",ErrorBusinessCode.TECHNICAL, "Internal error %s.  Error: %s!"),
     CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error %s.  Error: %s!"),
     CONFIGURATION_ERROR (500,"SMP:516",ErrorBusinessCode.TECHNICAL, "Configuration error: %s!"),

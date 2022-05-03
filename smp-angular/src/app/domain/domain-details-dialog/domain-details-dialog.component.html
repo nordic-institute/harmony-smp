@@ -25,7 +25,7 @@
             <input matInput placeholder="SML domain"
                    name="smlSubdomain" id="smldomain_id"
                    [formControl]="domainForm.controls['smlSubdomain']" maxlength="63" >
-            <mat-hint align="end">Part of DNS Zone (e.g. for eHealth: 'ehealth', for peppol: '', ..</mat-hint>
+            <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: informative value.</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
               &&  domainForm.controls['smlSubdomain'].hasError('pattern')"

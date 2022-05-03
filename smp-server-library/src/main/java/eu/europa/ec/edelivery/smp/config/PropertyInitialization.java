@@ -52,35 +52,8 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
  * Also it uses hibernate to handle dates  for Configuration table.
  */
 public class PropertyInitialization {
-    // application properties contains build data and are set at build time.
-    private static final String FILE_APPLICATION_PROPERTIES = "/application.properties";
-
-    private static final String PROP_BUILD_NAME = "smp.artifact.name";
-    private static final String PROP_BUILD_VERSION = "smp.artifact.version";
-    private static final String PROP_BUILD_TIME = "smp.artifact.build.time";
-
 
     SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyInitialization.class);
-
-
-    public void logBuildProperties() {
-        InputStream is = PropertyInitialization.class.getResourceAsStream(FILE_APPLICATION_PROPERTIES);
-        if (is != null) {
-            Properties applProp = new Properties();
-            try {
-                applProp.load(is);
-                LOG.info("*****************************************************************************************");
-                LOG.info("Start application: name: {}, version: {}, build time: {}.", applProp.getProperty(PROP_BUILD_NAME)
-                        , applProp.getProperty(PROP_BUILD_VERSION)
-                        , applProp.getProperty(PROP_BUILD_TIME));
-                LOG.info("*****************************************************************************************");
-            } catch (IOException e) {
-                LOG.error("Error occurred  while reading application properties. Is file " + FILE_APPLICATION_PROPERTIES + " included in war!", e);
-            }
-        } else {
-            LOG.error("Not found application build properties: {}!", FILE_APPLICATION_PROPERTIES);
-        }
-    }
 
     protected Properties getDatabaseProperties(Properties fileProperties) {
         String dialect = fileProperties.getProperty(FileProperty.PROPERTY_DB_DIALECT);
