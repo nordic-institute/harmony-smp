@@ -98,6 +98,7 @@ public class ServiceGroupControllerTest {
     public void setup() throws IOException {
         forwardedHeaderTransformer.setRemoveOnly(false);
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", null);
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.PARTC_SCH_MANDATORY, "true", null);
         X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcUtils.initializeMockMvc(webAppContext);
     }
