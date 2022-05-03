@@ -13,7 +13,10 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,24 +89,17 @@ public class ServiceGroupControllerTest {
     @Autowired
     ForwardedHeaderTransformer forwardedHeaderTransformer;
 
+    @Autowired
+    ConfigurationDao configurationDao;
+
     private MockMvc mvc;
 
     @Before
     public void setup() throws IOException {
         forwardedHeaderTransformer.setRemoveOnly(false);
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", null);
         X509CertificateTestUtils.reloadKeystores();
-        mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-
-        initServletContext();
-    }
-
-    private void initServletContext() {
-        MockServletContext sc = new MockServletContext("");
-        ServletContextListener listener = new ContextLoaderListener(webAppContext);
-        ServletContextEvent event = new ServletContextEvent(sc);
-        listener.contextInitialized(event);
+        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
     }
 
     @Test
