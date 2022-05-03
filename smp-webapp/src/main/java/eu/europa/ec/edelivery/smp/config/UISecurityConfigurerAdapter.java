@@ -238,7 +238,7 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         // ignore for login and logout
         requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY + "/authentication", HttpMethod.DELETE, HttpMethod.POST);
         requestMatcher.addIgnoreUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE, HttpMethod.GET);
-        // allow all gets
+        // allow all gets except for rest services
         requestMatcher.addIgnoreUrl("/ui/.*", HttpMethod.GET);
         // monitor
         requestMatcher.addIgnoreUrl("/monitor/is-alive", HttpMethod.GET);
