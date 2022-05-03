@@ -101,6 +101,7 @@ public class ServiceGroupControllerTest {
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.PARTC_SCH_MANDATORY, "false", null);
         X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcUtils.initializeMockMvc(webAppContext);
+        configurationDao.reloadPropertiesFromDatabase();
     }
 
     @Test
