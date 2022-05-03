@@ -5,8 +5,6 @@ import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -22,7 +20,7 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class ServiceGroupDaoOwnershipIntegrationTest extends ServiceGroupDaoIntegrationBase {
+public class ServiceGroupDaoOwnershipIntegrationTest extends AbstractServiceGroupDaoIntegrationTest {
 
 
     @Test

@@ -25,10 +25,16 @@
           </mat-form-field>
 
           <mat-form-field style="width:100%">
-            <input matInput placeholder="Participant scheme" name="participantScheme"
-                   id="participantScheme_id"
+            <input *ngIf="lookups.cachedApplicationConfig.partyIDSchemeMandatory  else notRequired"
+                   matInput placeholder="Participant scheme" name="participantScheme"
+                   id="participantSchemeMandatory_id"
                    [formControl]="dialogForm.controls['participantScheme']"
                    maxlength="255" required>
+            <input #notRequired
+                   matInput placeholder="Participant scheme" name="participantScheme"
+                   id="participantScheme_id"
+                   [formControl]="dialogForm.controls['participantScheme']"
+                   maxlength="255" >
             <div
               *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&  dialogForm.controls['participantScheme'].hasError('required')"
               style="color:red; font-size: 70%">

@@ -228,11 +228,12 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             return;
         }
 
-        if (user.getLastFailedLoginAttempt() == null) {
+        if (user.getLastTokenFailedLoginAttempt() == null) {
             LOG.warn("Access token [{}] has failed attempts [{}] but null last Failed login attempt!", user.getUsername(), user.getLastFailedLoginAttempt());
             return;
         }
-        // check if the last failed attempt is already expired. If yes just clear the attepmts
+
+        // check if the last failed attempt is already expired. If yes just clear the attempts
         if (configurationService.getAccessTokenLoginSuspensionTimeInSeconds() != null && configurationService.getAccessTokenLoginSuspensionTimeInSeconds() > 0
                 && ChronoUnit.SECONDS.between(OffsetDateTime.now(), user.getLastTokenFailedLoginAttempt()) > configurationService.getAccessTokenLoginSuspensionTimeInSeconds()) {
             LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());

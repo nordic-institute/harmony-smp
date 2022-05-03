@@ -38,6 +38,7 @@
     </appender>
 
     <logger name="eu.europa.ec.edelivery" level="DEBUG" />
+    <logger name="eu.europa.ec.smp" level="DEBUG" />
     <logger name="org.springframework.security.cas" level="DEBUG" />
     <root level="WARN">
         <appender-ref ref="file"/>

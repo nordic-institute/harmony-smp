@@ -131,14 +131,13 @@ public class DomainServiceSMLTest extends AbstractServiceIntegrationTest {
          * Users: USERNAME_1, USER_CERT_2
          * ServiceGroup1: TEST_SG_ID_1, TEST_SG_SCHEMA_1
          *    - Domain: TEST_DOMAIN_CODE_1
-         *    - Owners: USERNAME_1, USER_CERT_2
-         *    - Metadata:
-         *          - TEST_DOC_ID_1, TEST_DOC_SCHEMA_1
-         *
-         *
          * ServiceGroup2: TEST_SG_ID_2, TEST_SG_SCHEMA_2
          *    - Domain: TEST_DOMAIN_CODE_1
          *    - Owners: USERNAME_1
+         *    - Metadata: /
+         *  ServiceGroup3: TEST_SG_ID_NO_SCHEME, null
+         *    - Domain: TEST_DOMAIN_CODE_1
+         *    - Owners: USERNAME_1, USER_CERT_2
          *    - Metadata: /
          */
         DBDomain testDomain01 = domainDao.getDomainByCode(TestConstants.TEST_DOMAIN_CODE_1).get();
@@ -146,9 +145,12 @@ public class DomainServiceSMLTest extends AbstractServiceIntegrationTest {
                 TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1).get();
         DBServiceGroupDomain serviceGroupDomain2 = serviceGroupDao
                 .findServiceGroupDomain(TEST_SG_ID_2, TEST_SG_SCHEMA_2, TEST_DOMAIN_CODE_1).get();
+        DBServiceGroupDomain serviceGroupDomain3 = serviceGroupDao
+                .findServiceGroupDomain(TEST_SG_ID_NO_SCHEME, null, TEST_DOMAIN_CODE_1).get();
         assertFalse(testDomain01.isSmlRegistered());
         assertFalse(serviceGroupDomain.isSmlRegistered());
         assertFalse(serviceGroupDomain2.isSmlRegistered());
+        assertFalse(serviceGroupDomain3.isSmlRegistered());
 
         // when
         testInstance.registerDomainAndParticipants(testDomain01);
@@ -158,20 +160,24 @@ public class DomainServiceSMLTest extends AbstractServiceIntegrationTest {
                 TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1).get();
         serviceGroupDomain2 = serviceGroupDao
                 .findServiceGroupDomain(TEST_SG_ID_2, TEST_SG_SCHEMA_2, TEST_DOMAIN_CODE_1).get();
+        serviceGroupDomain3 = serviceGroupDao
+                .findServiceGroupDomain(TEST_SG_ID_NO_SCHEME, null, TEST_DOMAIN_CODE_1).get();
+
         assertTrue(testDomain01.isSmlRegistered());
         assertTrue(serviceGroupDomain.isSmlRegistered());
         assertTrue(serviceGroupDomain2.isSmlRegistered());
+        assertTrue(serviceGroupDomain3.isSmlRegistered());
 
         // one sml domain create and two participant create was called
         assertEquals(1, integrationMock.getSmpManagerClientMocks().size());
         verify(integrationMock.getSmpManagerClientMocks().get(0)).create(any());
         Mockito.verifyNoMoreInteractions(integrationMock.getSmpManagerClientMocks().toArray());
 
-        assertEquals(2, integrationMock.getParticipantManagmentClientMocks().size());
+        assertEquals(3, integrationMock.getParticipantManagmentClientMocks().size());
         verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
         verify(integrationMock.getParticipantManagmentClientMocks().get(1)).create(any());
+        verify(integrationMock.getParticipantManagmentClientMocks().get(2)).create(any());
         Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
-
     }
 
     @Test

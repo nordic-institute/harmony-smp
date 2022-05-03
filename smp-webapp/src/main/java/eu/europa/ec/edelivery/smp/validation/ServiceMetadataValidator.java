@@ -13,8 +13,10 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
@@ -28,7 +30,8 @@ import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.OUT_OF_RANGE;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.WRONG_FIELD;
-import static eu.europa.ec.smp.api.Identifiers.*;
+import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
+import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**
  * Created by gutowpa on 11/09/2017.
@@ -38,67 +41,65 @@ public class ServiceMetadataValidator {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceMetadataValidator.class);
 
+    protected final ConfigurationService configurationService;
+    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+
+    public ServiceMetadataValidator(ConfigurationService configurationService,
+                                    CaseSensitivityNormalizer caseSensitivityNormalizer) {
+        this.configurationService = configurationService;
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+    }
+
     public void validate(String serviceGroupIdStr,
                          String serviceMetadataIdStr,
                          byte[] serviceMetadataBody
     ) throws XmlInvalidAgainstSchemaException {
-
-        BdxSmpOasisValidator.validateXSD(serviceMetadataBody);
-
-        ParticipantIdentifierType serviceGroupId = asParticipantId(serviceGroupIdStr);
+        ServiceInformationType serviceInformation = validate(serviceGroupIdStr, serviceMetadataBody);
         DocumentIdentifier serviceMetadataId = asDocumentId(serviceMetadataIdStr);
-        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(serviceMetadataBody);
 
-        ServiceInformationType serviceInformation = serviceMetadata.getServiceInformation();
-
-        if (serviceInformation == null) {
-            return;
-        }
-
-        if (!serviceGroupId.equals(serviceInformation.getParticipantIdentifier())) {
-            String errorMessage = String.format("Save service metadata was called with bad Participant ID parameters. Message body param: %s URL param: %s",
-                    asString(serviceInformation.getParticipantIdentifier()),
-                    asString(serviceGroupId));
-            log.info(errorMessage);
-            throw new BadRequestException(WRONG_FIELD, errorMessage);
-        }
-
-        if (!serviceMetadataId.equals(serviceInformation.getDocumentIdentifier())) {
+        if (serviceInformation != null && !serviceMetadataId.equals(serviceInformation.getDocumentIdentifier())) {
             String errorMessage = String.format("Save service metadata was called with bad Document ID parameters. Message body param: %s URL param: %s",
                     asString(serviceInformation.getDocumentIdentifier()),
                     asString(serviceMetadataId));
             log.info(errorMessage);
             throw new BadRequestException(WRONG_FIELD, errorMessage);
         }
-
-        validateServiceInformation(serviceInformation);
     }
 
     public ServiceInformationType validate(String serviceGroupIdStr,
-                         byte[] serviceMetadataBody
+                                           byte[] serviceMetadataBody
     ) throws XmlInvalidAgainstSchemaException {
 
         BdxSmpOasisValidator.validateXSD(serviceMetadataBody);
 
-        ParticipantIdentifierType serviceGroupId = asParticipantId(serviceGroupIdStr);
+        final ParticipantIdentifierType serviceGroupId = caseSensitivityNormalizer.normalizeParticipant(serviceGroupIdStr);
         ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(serviceMetadataBody);
         ServiceInformationType serviceInformation = serviceMetadata.getServiceInformation();
+
+
+        if (serviceInformation == null && serviceMetadata.getRedirect() != null) {
+            return null;
+        }
 
         if (serviceInformation == null) {
             String errorMessage = "Missing service information";
             throw new BadRequestException(WRONG_FIELD, errorMessage);
         }
 
+        final ParticipantIdentifierType serviceGroupParticipantId = caseSensitivityNormalizer.normalize(
+                serviceInformation.getParticipantIdentifier());
 
 
-        if (!serviceGroupId.equals(serviceInformation.getParticipantIdentifier())) {
+        if (!serviceGroupId.equals(serviceGroupParticipantId)) {
             String errorMessage = String.format("Save service metadata was called with bad Participant ID parameters. Message body param: %s URL param: %s",
                     asString(serviceInformation.getParticipantIdentifier()),
                     asString(serviceGroupId));
             log.info(errorMessage);
             throw new BadRequestException(WRONG_FIELD, errorMessage);
         }
-        validateServiceInformation(serviceInformation);
+        if (serviceInformation != null) {
+            validateServiceInformation(serviceInformation);
+        }
         return serviceInformation;
     }
 

@@ -27,6 +27,8 @@ eDelivery SMP 4.2
     identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate: Concatenate ebCore party id in XML responses <ParticipantIdentifier >urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>
     smp.passwordPolicy.expired.forceChange: Force change password at UI login if expired
     smp.passwordPolicy.warning.beforeExpiration: How many days before expiration should the UI warn users at login
+- new application configuration property
+    libraries.folder: add external SPI beans libraries folder loaded at the startup of the SMP!
 
 
 - removed deprecated properties

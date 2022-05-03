@@ -110,7 +110,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
         this.current.status === SearchTableEntityStatus.NEW ? Validators.required : null),
       'participantScheme': new FormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
         this.current.status === SearchTableEntityStatus.NEW ?
-          [Validators.required, Validators.pattern(this.participantSchemePattern)] : null),
+          [Validators.pattern(this.participantSchemePattern)] : null),
       'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1),
         this.multiDomainOn(this.lookups.cachedApplicationConfig.smlParticipantMultiDomainOn)]),
       'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
@@ -118,6 +118,10 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
 
 
     });
+    if (!!lookups.cachedApplicationConfig.partyIDSchemeMandatory && this.current.status == SearchTableEntityStatus.NEW){
+      this.dialogForm.controls['participantScheme'].addValidators(Validators.required) ;
+    }
+
     // update values
     this.dialogForm.controls['participantIdentifier'].setValue(this.current.participantIdentifier);
     this.dialogForm.controls['participantScheme'].setValue(this.current.participantScheme);

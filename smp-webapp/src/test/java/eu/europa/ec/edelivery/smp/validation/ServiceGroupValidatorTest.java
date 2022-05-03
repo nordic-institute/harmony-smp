@@ -13,84 +13,101 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
-import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
-import static java.util.Arrays.asList;
 
 /**
  * Created by gutowpa on 02/08/2017.
  */
+@RunWith(Parameterized.class)
 public class ServiceGroupValidatorTest {
 
-    private static final String ALLOWED_SCHEME_REGEXP = "^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)";
+    private static final String ALLOWED_SCHEME_REGEXP = "^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$";
 
     private ServiceGroupValidator validator;
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    CaseSensitivityNormalizer normalizer = new CaseSensitivityNormalizer(configurationService);
+
+    @Parameterized.Parameters(name = "{index}: {0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+
+                {"Good peppol schema", "good6-scheme4-ok", "urn:poland:ncpb", false, true, null, null},
+                {"Allowed null schema", null, "urn:poland:ncpb", false, false, null, null},
+                {"Length exceeded", "ength-exceeeeeedsTheCharacters-25chars", "urn:poland:ncpb", true, true, BadRequestException.class, "Service Group scheme does not match allowed pattern:"},
+                {"Too many parts", "too-many-segments-inside", "urn:poland:ncpb", true, true, BadRequestException.class, "Service Group scheme does not match allowed pattern:"},
+                {"Missing parts", "only-two", "urn:poland:ncpb", true, true, BadRequestException.class, "Service Group scheme does not match allowed pattern:"},
+                {"Null not allowed", null, "urn:poland:ncpb", true, true, MalformedIdentifierException.class, "Malformed identifier, scheme and id should be delimited by double colon"},
+                {"EBCorePartyId Oasis", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088", "123456", false, true, null, null},
+                {"EBCorePartyId eDelivery", null, "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088:123456", false, true, null, null},
+        });
+    }
 
     @Before
     public void init() {
-        validator = new ServiceGroupValidator();
-        ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
-        ReflectionTestUtils.setField(validator, "configurationService",configurationService );
         Mockito.doReturn(Pattern.compile(ALLOWED_SCHEME_REGEXP)).when(configurationService).getParticipantIdentifierSchemeRexExp();
+        validator = new ServiceGroupValidator(configurationService, normalizer);
     }
+
+    @Parameterized.Parameter
+    public String caseName;
+    @Parameterized.Parameter(1)
+    public String schema;
+    @Parameterized.Parameter(2)
+    public String value;
+    @Parameterized.Parameter(3)
+    public boolean expectedThrowError;
+    @Parameterized.Parameter(4)
+    public boolean mandatoryScheme;
+    @Parameterized.Parameter(5)
+    public Class errorClass;
+    @Parameterized.Parameter(6)
+    public String errorMessage;
+
 
     @Test
-    public void testPositiveGoodScheme() throws Throwable {
-        validateBadScheme("good6-scheme4-ok");
+    public void testServiceGroupIdentifier() {
+        Mockito.doReturn(mandatoryScheme).when(configurationService).getParticipantSchemeMandatory();
+
+        validateScheme(schema, value);
     }
 
-    @Test(expected = BadRequestException.class)
-    public void testServiceGroupIdentifierSchemeValidationTooLong() throws Throwable {
-        validateBadScheme("length-exceeeeeeds-25chars");
-    }
-
-    @Test(expected = BadRequestException.class)
-    public void testServiceGroupIdentifierSchemeValidationNotBuiltWithThreeSegments() throws Throwable {
-        validateBadScheme("too-many-segments-inside");
-    }
-
-    @Test(expected = BadRequestException.class)
-    public void testServiceGroupIdentifierSchemeValidationTooLittleSegments() throws Throwable {
-        validateBadScheme("only-two");
-    }
-
-    @Test(expected = BadRequestException.class)
-    public void testServiceGroupIdentifierSchemeValidationIllegalChar() throws Throwable {
-        validateBadScheme("illegal-char-here:");
-    }
-
-    private void validateBadScheme(String scheme) throws Throwable {
+    private void validateScheme(String scheme, String value) {
         ServiceGroup sg = new ServiceGroup();
-        ParticipantIdentifierType id = new ParticipantIdentifierType("urn:poland:ncpb", scheme);
+        ParticipantIdentifierType id = new ParticipantIdentifierType(value, scheme);
         sg.setParticipantIdentifier(id);
 
-        validator.validate(asString(id), sg);
+        try {
+            validator.validate(asString(id), sg);
+            if (expectedThrowError) {
+                Assert.fail();
+            }
+        } catch (RuntimeException exc) {
+            if (!expectedThrowError) {
+                Assert.fail();
+            }
+            Assert.assertEquals(errorClass, exc.getClass());
+            MatcherAssert.assertThat(exc.getMessage(), CoreMatchers.startsWith(errorMessage));
+        }
     }
 
-    @Test(expected = BadRequestException.class)
-    public void testServiceGroupWithReference() throws Throwable {
-        //given
-        ServiceMetadataReferenceType ref = new ServiceMetadataReferenceType("http://poland.pl");
-        ServiceMetadataReferenceCollectionType references = new ServiceMetadataReferenceCollectionType(asList(ref));
 
-        ParticipantIdentifierType id = new ParticipantIdentifierType("urn:poland:ncpb", "correct-scheme-ok");
-        ServiceGroup sg = new ServiceGroup();
-        sg.setServiceMetadataReferenceCollection(references);
-        sg.setParticipantIdentifier(id);
-
-        //when-then
-        validator.validate(asString(id), sg);
-    }
 }

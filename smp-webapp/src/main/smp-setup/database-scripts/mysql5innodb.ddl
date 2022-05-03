@@ -174,7 +174,7 @@
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         PARTICIPANT_IDENTIFIER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
-        PARTICIPANT_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        PARTICIPANT_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID)
     ) comment='Service group data - Identifier and scheme' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

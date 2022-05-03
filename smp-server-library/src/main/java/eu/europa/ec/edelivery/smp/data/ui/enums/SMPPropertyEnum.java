@@ -15,7 +15,7 @@ public enum SMPPropertyEnum {
 
     HTTP_FORWARDED_HEADERS_ENABLED("smp.http.forwarded.headers.enabled", "false", "Use (value true) or remove (value false) forwarded headers! There are security considerations for forwarded headers since an application cannot know if the headers were added by a proxy, as intended, or by a malicious client.", false, false, false, BOOLEAN),
     HTTP_HSTS_MAX_AGE("smp.http.httpStrictTransportSecurity.maxAge", "31536000", "How long(in seconds) HSTS should last in the browser's cache(default one year)", false, false, true, INTEGER),
-    HTTP_HEADER_SEC_POLICY("smp.http.header.security.policy", "default-src 'self'; script-src 'self'; child-src 'none'; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'; form-action 'self';", "Content Security Policy (CSP)", false, false, true, STRING),
+    HTTP_HEADER_SEC_POLICY("smp.http.header.security.policy", "", "Content Security Policy (CSP) default-src 'self'; script-src 'self';  connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'; form-action 'self';", false, false, true, STRING),
     // http proxy configuration
     HTTP_PROXY_HOST("smp.proxy.host", "", "The http proxy host", false, false, false, STRING),
     HTTP_NO_PROXY_HOSTS("smp.noproxy.hosts", "localhost|127.0.0.1", "list of nor proxy hosts. Ex.: localhost|127.0.0.1", false, false, false, STRING),
@@ -23,11 +23,13 @@ public enum SMPPropertyEnum {
     HTTP_PROXY_PORT("smp.proxy.port", "80", "The http proxy port", false, false, false, INTEGER),
     HTTP_PROXY_USER("smp.proxy.user", "", "The proxy user", false, false, false, STRING),
 
-    PARTC_SCH_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^((?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)|urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$)", "Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false, false, REGEXP),
+    PARTC_SCH_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$", "Participant Identifier Schema of each PUT ServiceGroup request is validated against this schema.", false, false, false, REGEXP),
     PARTC_SCH_REGEXP_MSG("identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
             "Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9].", "Error message for UI", false, false, false, STRING),
+    PARTC_SCH_MANDATORY("identifiersBehaviour.scheme.mandatory", "true", "Scheme for participant identifier is mandatory", false, false, false, BOOLEAN),
+
     PARTC_EBCOREPARTYID_CONCATENATE("identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate",
-            "true", "Concatenate ebCore party id in XML responses <ParticipantIdentifier>urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>", false, false, false, BOOLEAN),
+            "false", "Concatenate ebCore party id in XML responses <ParticipantIdentifier>urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>", false, false, false, BOOLEAN),
 
     CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes", "sensitive-participant-sc1|sensitive-participant-sc2", "Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.", false, false, false, LIST_STRING),
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes", "casesensitive-doc-scheme1|casesensitive-doc-scheme2", "Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.", false, false, false, LIST_STRING),

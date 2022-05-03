@@ -13,11 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
+import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
@@ -33,9 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_DOMAIN;
@@ -55,18 +59,26 @@ public class ServiceGroupController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);
 
-    @Autowired
-    private ServiceGroupValidator serviceGroupValidator;
+    protected final ServiceGroupValidator serviceGroupValidator;
+    protected final SmpUrlBuilder pathBuilder;
+    protected final ServiceGroupService serviceGroupService;
+    protected final ServiceMetadataService serviceMetadataService;
+    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final PayloadValidatorService payloadValidatorService;
 
-    @Autowired
-    private SmpUrlBuilder pathBuilder;
-
-    @Autowired
-    private ServiceGroupService serviceGroupService;
-
-    @Autowired
-    private ServiceMetadataService serviceMetadataService;
-
+    public ServiceGroupController(ServiceGroupValidator serviceGroupValidator,
+                                  SmpUrlBuilder pathBuilder,
+                                  ServiceGroupService serviceGroupService,
+                                  ServiceMetadataService serviceMetadataService,
+                                  CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                  PayloadValidatorService payloadValidatorService) {
+        this.serviceGroupValidator = serviceGroupValidator;
+        this.pathBuilder = pathBuilder;
+        this.serviceGroupService = serviceGroupService;
+        this.serviceMetadataService = serviceMetadataService;
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.payloadValidatorService = payloadValidatorService;
+    }
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
     public ServiceGroup getServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
@@ -75,7 +87,8 @@ public class ServiceGroupController {
         String host = httpReq.getRemoteHost();
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_GROUP, host, serviceGroupId);
 
-        ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(asParticipantId(serviceGroupId));
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(participantIdentifierType);
         addReferences(serviceGroup);
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_SERVICE_GROUP, host, serviceGroupId);
@@ -94,7 +107,8 @@ public class ServiceGroupController {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP, authentUser, host, serviceGroupOwner, domain, serviceGroupId);
-
+        // validate payload
+        payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(body), MimeTypeUtils.APPLICATION_XML_VALUE);
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
         final ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(body);
@@ -114,9 +128,8 @@ public class ServiceGroupController {
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_GROUP, authentUser, host, serviceGroupId);
 
-
-        final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(serviceGroupId);
-        serviceGroupService.deleteServiceGroup(aServiceGroupID);
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        serviceGroupService.deleteServiceGroup(participantIdentifierType);
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_GROUP, authentUser, host, serviceGroupId);
         return ok().build();

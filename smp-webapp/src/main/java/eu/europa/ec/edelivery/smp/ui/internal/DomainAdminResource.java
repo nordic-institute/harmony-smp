@@ -87,7 +87,7 @@ public class DomainAdminResource {
 
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(value = "/{user-id}/sml-register/{domain-code}")
-    public SMLIntegrationResult registerDomainAndParticipants(@PathVariable("user-id") Long userId,
+    public SMLIntegrationResult registerDomainAndParticipants(@PathVariable("user-id") String userId,
                                                               @PathVariable("domain-code") String domainCode
     ) {
         LOG.info("SML register domain code: {}, user user-id {}", domainCode, userId);
@@ -106,7 +106,7 @@ public class DomainAdminResource {
 
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(value = "/{user-id}/sml-unregister/{domain-code}")
-    public SMLIntegrationResult unregisterDomainAndParticipants(@PathVariable("user-id") Long userId,
+    public SMLIntegrationResult unregisterDomainAndParticipants(@PathVariable("user-id") String userId,
                                                                 @PathVariable("domain-code") String domainCode) {
         LOG.info("SML unregister domain code: {}, user id {}", domainCode, userId);
         // try to open keystore
