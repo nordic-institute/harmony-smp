@@ -133,8 +133,10 @@ public class ConfigurationService {
         return (List<String>) configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
     }
 
-    public Boolean getParticipantSchemeMandatory() {
-        return (Boolean) configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
+    public boolean getParticipantSchemeMandatory() {
+        // not mandatory by default
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
+        return value != null && value;
     }
 
     public boolean isProxyEnabled() {

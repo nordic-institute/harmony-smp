@@ -15,6 +15,8 @@ package eu.europa.ec.edelivery.smp.validation;
 
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -33,7 +35,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 @Component
 public class ServiceGroupValidator {
-
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupValidator.class);
 
     protected final ConfigurationService configurationService;
     protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
@@ -45,9 +47,10 @@ public class ServiceGroupValidator {
     }
 
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {
+        boolean schemeMandatory = configurationService.getParticipantSchemeMandatory();
+        LOG.debug("Parse service group [{}] with [{}] scheme", serviceGroupId, (schemeMandatory?"mandatory":"optional"));
 
-        final ParticipantIdentifierType participantId = caseSensitivityNormalizer.normalize(
-                Identifiers.asParticipantId(serviceGroupId, configurationService.getParticipantSchemeMandatory()));
+        final ParticipantIdentifierType participantId = caseSensitivityNormalizer.normalize(Identifiers.asParticipantId(serviceGroupId, schemeMandatory));
         final ParticipantIdentifierType serviceGroupParticipantId =  caseSensitivityNormalizer.normalize(
                 serviceGroup.getParticipantIdentifier());
 
