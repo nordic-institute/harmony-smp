@@ -18,6 +18,7 @@ import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
+import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
@@ -27,11 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Document;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_DOMAIN;
@@ -49,16 +52,22 @@ public class ServiceMetadataController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);
 
-    protected final  ServiceMetadataValidator serviceMetadataValidator;
-    protected final  ServiceMetadataService serviceMetadataService;
-    protected final  SmpUrlBuilder pathBuilder;
+    protected final ServiceMetadataValidator serviceMetadataValidator;
+    protected final ServiceMetadataService serviceMetadataService;
+    protected final SmpUrlBuilder pathBuilder;
     protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final PayloadValidatorService payloadValidatorService;
 
-    public ServiceMetadataController(ServiceMetadataValidator serviceMetadataValidator, ServiceMetadataService serviceMetadataService, SmpUrlBuilder pathBuilder, CaseSensitivityNormalizer caseSensitivityNormalizer) {
+    public ServiceMetadataController(ServiceMetadataValidator serviceMetadataValidator,
+                                     ServiceMetadataService serviceMetadataService,
+                                     SmpUrlBuilder pathBuilder,
+                                     CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                     PayloadValidatorService payloadValidatorService) {
         this.serviceMetadataValidator = serviceMetadataValidator;
         this.serviceMetadataService = serviceMetadataService;
         this.pathBuilder = pathBuilder;
         this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.payloadValidatorService = payloadValidatorService;
     }
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
@@ -89,6 +98,8 @@ public class ServiceMetadataController {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_METADATA, authentUser, host, domain, serviceGroupId, serviceMetadataId);
+        // validate payload
+        payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(body), MimeTypeUtils.APPLICATION_XML_VALUE);
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
         ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);

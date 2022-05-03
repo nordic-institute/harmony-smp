@@ -19,6 +19,7 @@ import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
+import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
@@ -34,9 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_DOMAIN;
@@ -61,13 +64,20 @@ public class ServiceGroupController {
     protected final ServiceGroupService serviceGroupService;
     protected final ServiceMetadataService serviceMetadataService;
     protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final PayloadValidatorService payloadValidatorService;
 
-    public ServiceGroupController(ServiceGroupValidator serviceGroupValidator, SmpUrlBuilder pathBuilder, ServiceGroupService serviceGroupService, ServiceMetadataService serviceMetadataService, CaseSensitivityNormalizer caseSensitivityNormalizer) {
+    public ServiceGroupController(ServiceGroupValidator serviceGroupValidator,
+                                  SmpUrlBuilder pathBuilder,
+                                  ServiceGroupService serviceGroupService,
+                                  ServiceMetadataService serviceMetadataService,
+                                  CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                  PayloadValidatorService payloadValidatorService) {
         this.serviceGroupValidator = serviceGroupValidator;
         this.pathBuilder = pathBuilder;
         this.serviceGroupService = serviceGroupService;
         this.serviceMetadataService = serviceMetadataService;
         this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.payloadValidatorService = payloadValidatorService;
     }
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
@@ -97,7 +107,8 @@ public class ServiceGroupController {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP, authentUser, host, serviceGroupOwner, domain, serviceGroupId);
-
+        // validate payload
+        payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(body), MimeTypeUtils.APPLICATION_XML_VALUE);
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
         final ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(body);

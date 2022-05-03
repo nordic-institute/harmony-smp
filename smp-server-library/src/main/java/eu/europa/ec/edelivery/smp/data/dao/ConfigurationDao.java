@@ -219,15 +219,21 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
      * Application event when an {@code ApplicationContext} gets initialized or refreshed
      */
     @EventListener({ContextRefreshedEvent.class})
-    void contextRefreshedEvent() {
+    protected void contextRefreshedEvent() {
+        LOG.debug("Application context is initialized: triggered  refresh  to update all property listeners");
         applicationInitialized = true;
         initiateDate = OffsetDateTime.now();
-        updatePropertyListeners();
+        reloadPropertiesFromDatabase();
     }
 
+    /**
+     * Application event when an application stops {@code ApplicationContext}
+     */
     @EventListener({ContextStoppedEvent.class})
-    void contextStopEvent() {
+    protected void contextStopEvent() {
+        LOG.debug("Application context is stopped!");
         applicationInitialized = false;
+        initiateDate =null;
     }
 
     private void updatePropertyListeners() {
@@ -238,10 +244,14 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             LOG.debug("Application is not started. The PropertyUpdateEvent is not triggered");
             return;
         }
-
+        LOG.debug("Update all property listeners");
         Map<String, PropertyUpdateListener> updateListenerList = getPropertyUpdateListener();
         if (updateListenerList != null) {
-            updateListenerList.forEach(this::updateListener);
+            for (Map.Entry<String, PropertyUpdateListener> entry : updateListenerList.entrySet()) {
+                String key = entry.getKey();
+                PropertyUpdateListener value = entry.getValue();
+                updateListener(key, value);
+            }
         }
     }
 
@@ -255,7 +265,18 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     private void updateListener(String name, PropertyUpdateListener listener) {
         LOG.debug("updateListener [{}]", name);
         Map<SMPPropertyEnum, Object> mapProp = new HashMap<>();
-        listener.handledProperties().forEach(prop -> mapProp.put(prop, cachedPropertyValues.get(prop.getProperty())));
+        for (SMPPropertyEnum prop : listener.handledProperties()) {
+            LOG.debug("Put property [{}]", prop.getProperty());
+            if (this.cachedPropertyValues == null) {
+                LOG.error("cachedPropertyValues is FOR SOME REASON NULL ");
+            }
+            if (this.cachedPropertyValues != null && this.cachedPropertyValues.containsKey(prop.getProperty())) {
+                LOG.debug("Put property [{}] value [{}]", prop.getProperty(), this.cachedPropertyValues.get(prop.getProperty()));
+                mapProp.put(prop, this.cachedPropertyValues.get(prop.getProperty()));
+            } else {
+                LOG.debug("Property [{}] does not exist in cached map!", prop.getProperty());
+            }
+        }
         listener.updateProperties(mapProp);
     }
 
@@ -281,7 +302,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     public Map<String, Object> validateConfiguration(Properties properties) {
-
+        LOG.debug("Validate configuration properties.");
         // test if all mandatory properties exists
         List<String> lstMissingProperties = new ArrayList<>();
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
@@ -294,8 +315,6 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             LOG.error("Missing mandatory properties: [{}]. Fix the SMP configuration!", lstMissingProperties);
         }
         // update deprecated values
-
-
         properties = updateDeprecatedValues(properties);
         Map<String, Object> propertyValues = parseProperties(properties);
 
@@ -319,7 +338,6 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     @Transactional
     public void updateCurrentEncryptedValues() {
-        File encryptionKey = (File) cachedPropertyValues.get(ENCRYPTION_FILENAME.getProperty());
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
             String value = getProperty(cachedProperties, prop);
             if (prop.isEncrypted() && !StringUtils.isBlank(value) && value.startsWith(SecurityUtils.DECRYPTED_TOKEN_PREFIX)) {
@@ -331,6 +349,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
 
     protected void validateBasicProperties(Properties properties) {
+        LOG.debug("Validated the basic configuration properties.");
         // retrieve and validate  configuration dir and encryption filename
         // because they are important for 'parsing and validating' other parameters
         String configurationDir = getProperty(properties, CONFIGURATION_DIR);
@@ -365,15 +384,16 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     /**
      * Method validates if new value for deprecated value is already set. If not it set the value from deprecated property if exists!
+     *
      * @param properties
      * @return
      */
-    public Properties updateDeprecatedValues(Properties properties){
+    public Properties updateDeprecatedValues(Properties properties) {
         if (!properties.containsKey(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty())
-                && properties.containsKey(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty())){
+                && properties.containsKey(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty())) {
 
             properties.setProperty(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty(),
-                    properties.getProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty()) );
+                    properties.getProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty()));
         }
 
         return properties;
@@ -381,7 +401,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
 
     protected Map<String, Object> parseProperties(Properties properties) {
-
+        LOG.debug("Parse configuration properties.");
         // retrieve and validate  configuration dir and encryption filename
         // because they are important for 'parsing and validating' other parameters
         validateBasicProperties(properties);
@@ -391,7 +411,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         File configFolder = new File(configurationDir);
         File encryptionKeyFile = new File(configurationDir, encryptionKeyFilename);
 
-        HashMap propertyValues = new HashMap();
+        HashMap<String, Object> propertyValues = new HashMap();
         // put the first two values
         propertyValues.put(CONFIGURATION_DIR.getProperty(), configFolder);
         propertyValues.put(ENCRYPTION_FILENAME.getProperty(), encryptionKeyFile);
@@ -418,6 +438,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
             }
             propertyValues.put(prop.getProperty(), parsedProperty);
         }
+        LOG.debug("Parsed [{}] configuration properties.", propertyValues.size());
         return propertyValues;
     }
 

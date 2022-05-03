@@ -7,15 +7,16 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -33,8 +34,14 @@ public class TruststoreAdminResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(TruststoreAdminResource.class);
 
-    @Autowired
-    private UITruststoreService uiTruststoreService;
+
+    private final UITruststoreService uiTruststoreService;
+    private final PayloadValidatorService payloadValidatorService;
+
+    public TruststoreAdminResource(UITruststoreService uiTruststoreService, PayloadValidatorService payloadValidatorService) {
+        this.uiTruststoreService = uiTruststoreService;
+        this.payloadValidatorService = payloadValidatorService;
+    }
 
     @PutMapping(produces = {"application/json"})
     @RequestMapping(method = RequestMethod.GET)
@@ -57,7 +64,10 @@ public class TruststoreAdminResource {
     @PostMapping(value = "/{user-id}/upload-certificate", consumes = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public CertificateRO uploadCertificate(@PathVariable("user-id") String userId,
                                            @RequestBody byte[] fileBytes) {
-        LOG.info("Got truststore cert size: {}", fileBytes.length);
+        LOG.info("Got certificate cert size: {}", fileBytes.length);
+
+        // validate content
+        payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(fileBytes), MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
 
         X509Certificate x509Certificate;
         CertificateRO certificateRO=null;
