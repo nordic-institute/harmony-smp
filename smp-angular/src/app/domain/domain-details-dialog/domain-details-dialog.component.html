@@ -3,11 +3,12 @@
   <form [formGroup]="domainForm">
     <mat-card>
       <mat-card-title>Domain properties</mat-card-title>
-      <mat-card-content >
+      <mat-card-content>
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
             <input matInput placeholder="Domain Code" name="domainCode"
                    id="domainCode_id"
+                   matTooltip="The SMP's domain code. The code is used in HTTP header 'Domain' when adding service group using the webservice API"
                    [formControl]="domainForm.controls['domainCode']" maxlength="63" required>
             <mat-hint align="end">For WS API integration: the Domain property</mat-hint>
             <div
@@ -23,9 +24,10 @@
           </mat-form-field>
           <mat-form-field style="width:100%">
             <input matInput placeholder="SML domain"
+                   matTooltip="The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: has informative value only, SML DNS zone used for publishing is based on SML configuration."
                    name="smlSubdomain" id="smldomain_id"
-                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="63" >
-            <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: informative value.</mat-hint>
+                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="63">
+            <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone).</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
               &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
@@ -54,7 +56,8 @@
                 {{cert.alias}} ({{cert.certificateId}})
               </mat-option>
             </mat-select>
-            <mat-hint align="end">Empty value will cause that ServiceMetadata response will not be signed by SMP!</mat-hint>
+            <mat-hint align="end">Empty value will cause that ServiceMetadata response will not be signed by SMP!
+            </mat-hint>
           </mat-form-field>
         </fieldset>
       </mat-card-content>
@@ -64,7 +67,8 @@
       <mat-card-content>
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
-            <input matInput placeholder="SML SMP identifier" name="smlSmpId" id="smlSMPId_id"
+            <input matInput placeholder="SML SMP identifier" name="smlSmpId"
+                   id="smlSMPId_id"
                    [formControl]="domainForm.controls['smlSmpId']" maxlength="63">
             <mat-hint align="end">SMP ID used for SML</mat-hint>
             <div
@@ -80,7 +84,8 @@
             </div>
           </mat-form-field>
 
-          <mat-form-field style="width:100%" matTooltip="Client Certificate used for SML authentication. The SML Client-Cert http Header is also generated from the certificate">
+          <mat-form-field style="width:100%"
+                          matTooltip="Client Certificate used for SML authentication. The SML Client-Cert http Header is also generated from the certificate">
 
             <mat-select [(value)]="selectedSMLCert"
                         placeholder="SML ClientCert Alias"
@@ -94,7 +99,8 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field style="width:100%"  matTooltip="SML Client-Cert http Header used for SML authentication. The header is generated from chosen  SML ClientCert Alias">
+          <mat-form-field style="width:100%"
+                          matTooltip="SML Client-Cert http Header used for SML authentication. The header is generated from chosen  SML ClientCert Alias">
             <input matInput placeholder="SML ClientCert Header" name="Client certificate" id="smlClientHeader_id"
                    [value]="selectedSMLCert?.blueCoatHeader" maxlength="2000" readonly="true">
           </mat-form-field>
