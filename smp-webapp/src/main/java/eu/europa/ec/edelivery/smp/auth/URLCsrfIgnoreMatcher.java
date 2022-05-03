@@ -20,7 +20,7 @@ public class URLCsrfIgnoreMatcher implements RequestMatcher {
 
     private static final Logger LOG = SMPLoggerFactory.getLogger(
             URLCsrfIgnoreMatcher.class);
-    private List<RequestMatcher> unprotectedMatcherList = new ArrayList<>();
+    private List<RegexRequestMatcher> unprotectedMatcherList = new ArrayList<>();
 
     public URLCsrfIgnoreMatcher() {
         this(null, null);
@@ -35,9 +35,9 @@ public class URLCsrfIgnoreMatcher implements RequestMatcher {
 
     @Override
     public boolean matches(HttpServletRequest request) {
-        Optional<RequestMatcher> unprotectedMatcher = unprotectedMatcherList.stream().filter(requestMatcher -> requestMatcher.matches(request)).findFirst();
+        Optional<RegexRequestMatcher> unprotectedMatcher = unprotectedMatcherList.stream().filter(requestMatcher -> requestMatcher.matches(request)).findFirst();
         if (unprotectedMatcher.isPresent()) {
-            LOG.debug("Ignore CSRF for: [{}] - [{}]!", request.getMethod(), request.getRequestURI());
+            LOG.debug("Ignore CSRF for: [{}] - [{}] with matcher [{}]!", request.getMethod(), request.getRequestURI(),unprotectedMatcher.get().toString());
         }
         return !unprotectedMatcher.isPresent();
     }

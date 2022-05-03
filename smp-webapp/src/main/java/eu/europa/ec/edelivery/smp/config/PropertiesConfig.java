@@ -24,15 +24,15 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.CONFIGURA
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 
 /**
- * Created by Flavio Santos
- * Class read properties from configuration file if exists. Than it use datasource (default by JNDI
- * if not defined in property file jdbc/smpDatasource) to read application properties. Because this class is
- * invoked before datasource is initialized by default - it creates it's own database connection.
- * Also it uses hibernate to handle dates  for Configuration table.
+ * SMP application initializer. Purpose of the class is to set SMP application configuration, reads the smp properties
+ * and load classes from external libraries!
+ *
+ * @author Joze Rihtarsic
+ * @since 4.2
  */
 @Configuration
 @ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp"})
+        "eu.europa.ec.edelivery.smp","eu.europa.ec.smp"})
 @PropertySources({
         @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
@@ -40,6 +40,7 @@ public class PropertiesConfig {
 
     private static PropertyInitialization PROP_INIT_TOOLS = new PropertyInitialization();
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertiesConfig.class);
+
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -54,18 +55,10 @@ public class PropertiesConfig {
         // add properties from database - add override from the database properties
         fileProperties.putAll(prop);
 
-        // log application properties
-        PROP_INIT_TOOLS.logBuildProperties();
-        // update log configuration
-        FileProperty.updateLogConfiguration(fileProperties.getProperty(FileProperty.PROPERTY_LOG_FOLDER),
-                fileProperties.getProperty(FileProperty.PROPERTY_LOG_PROPERTIES), prop.getProperty(CONFIGURATION_DIR.getProperty())
-        );
 
         propertiesConfig.setProperties(fileProperties);
         propertiesConfig.setLocalOverride(true);
         LOG.debug("Properties are initialized");
-
-
         return propertiesConfig;
     }
 }

@@ -24,9 +24,11 @@
     <modules>
         <module>smp-angular</module>
         <module>smp-api</module>
+        <module>smp-spi</module>
         <module>smp-server-library</module>
         <module>smp-webapp</module>
         <module>smp-soapui-tests</module>
+        <module>smp-examples</module>
     </modules>
 
     <properties>

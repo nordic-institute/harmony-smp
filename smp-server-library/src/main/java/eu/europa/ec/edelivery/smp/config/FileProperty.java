@@ -31,9 +31,7 @@ public class FileProperty {
     public static final String PROPERTY_DB_URL = "jdbc.url";
     public static final String PROPERTY_DB_JNDI = "datasource.jndi";
     public static final String PROPERTY_DB_DIALECT = "hibernate.dialect";
-
-    private FileProperty() {
-    }
+    public static final String PROPERTY_LIB_FOLDER = "libraries.folder";
 
     public static void updateLogConfiguration(String logFileFolder, String logPropertyFile, String configurationFolder) {
 
