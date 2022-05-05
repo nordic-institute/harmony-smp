@@ -3,4 +3,5 @@ export interface SmpInfo {
   contextPath?: string;
   authTypes?: string[];
   ssoAuthenticationLabel?: string;
+  ssoAuthenticationURI?: string;
 }

@@ -66,6 +66,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
 
         Authentication authentication = null;
         // PreAuthentication token for the rest service certificate authentication
+        LOG.debug("Authenticate authentication token type: [{}]", authenticationToken.getClass());
         if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
             authentication = authenticateByUsernamePassword((UsernamePasswordAuthenticationToken) authenticationToken);
         }
