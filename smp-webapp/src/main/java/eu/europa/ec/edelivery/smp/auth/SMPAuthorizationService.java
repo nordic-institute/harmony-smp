@@ -9,6 +9,7 @@ import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
@@ -91,7 +92,7 @@ public class SMPAuthorizationService {
         return userRO;
     }
 
-    private SMPAuthenticationToken getSessionAuthentication() {
+    private Authentication getSessionAuthentication() {
         if (SecurityContextHolder.getContext() == null) {
             LOG.warn("No users is logged-in! Session security context is null!");
             return null;
@@ -101,15 +102,16 @@ public class SMPAuthorizationService {
             LOG.warn("No users is logged-in! Authentication is null or not authenticated!");
             return null;
         }
-        if (!(authentication instanceof SMPAuthenticationToken)) {
+        if (!(authentication instanceof SMPAuthenticationToken
+                || authentication instanceof CasAuthenticationToken)) {
             LOG.warn("User is logged and authenticated with not supported Authentication [{}]!", authentication.getClass());
             return null;
         }
-        return (SMPAuthenticationToken) authentication;
+        return authentication;
     }
 
-    private SMPAuthenticationToken getAndValidateSessionAuthentication() {
-        SMPAuthenticationToken authentication = getSessionAuthentication();
+    private Authentication getAndValidateSessionAuthentication() {
+        Authentication authentication = getSessionAuthentication();
         if (authentication == null) {
             throw new SessionAuthenticationException(ERR_INVALID_OR_NULL);
         }

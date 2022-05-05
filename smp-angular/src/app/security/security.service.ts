@@ -17,7 +17,6 @@ export class SecurityService {
     private http: HttpClient,
     private alertService: AlertMessageService,
     private securityEventService: SecurityEventService,
-    private lookups: GlobalLookups
   ) {
     this.securityEventService.onLogoutSuccessEvent().subscribe(() => window.location.reload());
     this.securityEventService.onLogoutErrorEvent().subscribe((error) => this.alertService.error(error));
