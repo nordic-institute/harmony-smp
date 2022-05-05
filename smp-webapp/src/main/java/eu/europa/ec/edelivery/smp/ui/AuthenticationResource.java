@@ -103,7 +103,7 @@ public class AuthenticationResource {
     public RedirectView authenticateCAS() {
         LOG.debug("Authenticating cas");
         // if user was able to access resource - redirect back to main page
-        return new RedirectView("../../#/");
+        return new RedirectView("../../../#/");
     }
 
     @GetMapping(value = "user")
@@ -134,6 +134,7 @@ public class AuthenticationResource {
     /**
      * Method updates data with "show expire dialog" flag, forces the password change flag and
      * sanitize ui data/
+     *
      * @param userRO
      * @return updated user data according to SMP configuration
      */
@@ -143,7 +144,7 @@ public class AuthenticationResource {
                         .minusDays(configurationService.getPasswordPolicyUIWarningDaysBeforeExpire())
                         .isBefore(userRO.getPasswordExpireOn()));
 
-        userRO.setForceChangePassword(userRO.isPasswordExpired() && configurationService.getPasswordPolicyForceChangeIfExpired()) ;
+        userRO.setForceChangePassword(userRO.isPasswordExpired() && configurationService.getPasswordPolicyForceChangeIfExpired());
         return authorizationService.sanitize(userRO);
     }
 

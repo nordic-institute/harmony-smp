@@ -287,6 +287,10 @@ public class ConfigurationService {
         return (java.net.URL) configurationDAO.getCachedPropertyValue(SSO_CAS_CALLBACK_URL);
     }
 
+    public String getCasSMPLoginRelativePath() {
+        return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_SMP_LOGIN_URI);
+    }
+
     public String getCasURLPathLogin() {
         return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_URLPATH_LOGIN);
     }

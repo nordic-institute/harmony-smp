@@ -28,7 +28,7 @@ export class GlobalLookups implements OnInit {
   cachedCertificateList: Array<any> = [];
   cachedCertificateAliasList: Array<String> = [];
   cachedApplicationInfo: SmpInfo;
-  cachedApplicationConfig: SmpConfig;
+  cachedApplicationConfig?: SmpConfig;
   cachedTrustedCertificateList: Array<any> = [];
 
   loginSubscription: Subscription;
@@ -40,22 +40,47 @@ export class GlobalLookups implements OnInit {
               protected http: HttpClient,
               private securityEventService: SecurityEventService) {
     securityService.refreshLoggedUserFromServer();
-    this.refreshDomainLookup();
+    this.refreshApplicationInfo();
+    this.refreshDomainLookupFromPublic();
+
+    securityEventService.onLoginSuccessEvent().subscribe(value => {
+        this.refreshLookupsOnLogin();
+      }
+    );
+
+    securityEventService.onLogoutSuccessEvent().subscribe(value => {
+        this.clearCachedLookups();
+      }
+    );
+  }
+
+  ngOnInit() {
+
+  }
+
+  public refreshLookupsOnLogin() {
+    this.refreshDomainLookupForLoggedUser();
     this.refreshCertificateLookup();
     this.refreshApplicationInfo();
     this.refreshApplicationConfiguration();
     this.refreshTrustedCertificateLookup();
   }
 
-  ngOnInit() {
+  public refreshDomainLookupFromPublic(){
+      let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN_SEARCH;
+      this.refreshDomainLookup(domainUrl);
   }
 
-  public refreshDomainLookup() {
+  public refreshDomainLookupForLoggedUser() {
     let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN_SEARCH;
     // for authenticated admin use internal url which returns more data!
     if (this.securityService.isCurrentUserSMPAdmin() || this.securityService.isCurrentUserSystemAdmin()) {
       domainUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE;
     }
+    this.refreshDomainLookup(domainUrl);
+  }
+
+  public refreshDomainLookup(domainUrl: string) {
     let params: HttpParams = new HttpParams()
       .set('page', '-1')
       .set('pageSize', '-1');
@@ -70,6 +95,7 @@ export class GlobalLookups implements OnInit {
         });
     });
   }
+
 
   public refreshApplicationInfo() {
 
@@ -127,7 +153,15 @@ export class GlobalLookups implements OnInit {
         console.log("Error occurred while loading user owners lookup [" + error + "]");
       });
     }
+  }
 
+  public clearCachedLookups() {
+    this.cachedCertificateList = [];
+    this.cachedTrustedCertificateList = [];
+    this.cachedServiceGroupOwnerList = [];
+    this.cachedApplicationConfig = null;
+    this.cachedDomainList = [];
+    this.refreshDomainLookupFromPublic();
   }
 
   public refreshCertificateLookup() {

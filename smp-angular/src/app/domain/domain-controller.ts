@@ -49,7 +49,7 @@ export class DomainController implements SearchTableController {
     }
   }
   public dataSaved() {
-    this.lookups.refreshDomainLookup();
+    this.lookups.refreshDomainLookupForLoggedUser();
   }
 
   validateDeleteOperation(rows: Array<SearchTableEntity>){

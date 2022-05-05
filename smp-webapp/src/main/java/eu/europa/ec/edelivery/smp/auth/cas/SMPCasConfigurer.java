@@ -82,7 +82,7 @@ public class SMPCasConfigurer {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
         entryPoint.setLoginUrl(casUrlLogin);
         entryPoint.setServiceProperties(serviceProperties);
-        LOG.info("Configured CAS Login Url: " + entryPoint.getLoginUrl());
+        LOG.info("Configured CAS CasAuthenticationEntryPoint Url: " + entryPoint.getLoginUrl());
         return entryPoint;
     }
 
@@ -99,6 +99,7 @@ public class SMPCasConfigurer {
 
         String casUrl = configService.getCasURL().toString();
         String casTokenValidationSuffix = configService.getCasURLTokenValidation();
+        LOG.debug("Create Bean SMPCas20ServiceTicketValidator with cas URL [{}] and token suffix [{}]!", casUrl,casTokenValidationSuffix );
         SMPCas20ServiceTicketValidator validator = new SMPCas20ServiceTicketValidator(casUrl, casTokenValidationSuffix);
         validator.setCustomParameters(getCustomParameters(configService));
         validator.setRenew(false);
@@ -140,6 +141,7 @@ public class SMPCasConfigurer {
             return null;
         }
 
+        LOG.debug("Configure Bean [CasAuthenticationProvider:{}]!", SMP_CAS_PROPERTIES_BEAN);
         CasAuthenticationProvider provider = new CasAuthenticationProvider();
         provider.setServiceProperties(serviceProperties);
         provider.setTicketValidator(serviceTicketValidator);
@@ -164,6 +166,7 @@ public class SMPCasConfigurer {
 
         CasAuthenticationFilter filter = new CasAuthenticationFilter();
         filter.setFilterProcessesUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE + "/login");
+        //filter.setFilterProcessesUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE);
         filter.setServiceProperties(casServiceProperties);
         filter.setAuthenticationManager(authenticationManager);
         LOG.info("Created CAS Filter: " + filter.getClass().getSimpleName() + "with the properties: " + casServiceProperties.getArtifactParameter());

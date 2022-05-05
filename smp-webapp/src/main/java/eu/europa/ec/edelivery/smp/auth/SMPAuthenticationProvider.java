@@ -100,6 +100,11 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 LOG.warn("Unknown or null PreAuthenticatedAuthenticationToken principal type: " + principal);
             }
         } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
+            LOG.info("try to authentication Token: [{}] with user:[{}]" , authenticationToken.getClass(), authenticationToken.getPrincipal());
+            if ("_cas_stateful_".equalsIgnoreCase((String)authenticationToken.getPrincipal())){
+                LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
+                return null;
+            }
             authentication = authenticateByUsernameToken((UsernamePasswordAuthenticationToken) authenticationToken);
         }
 

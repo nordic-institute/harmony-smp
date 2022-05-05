@@ -61,6 +61,7 @@ public class SMPCasUserService implements AuthenticationUserDetailsService<CasAs
 			throw new UsernameNotFoundException("User with the username ["+username+"] is not registered in SMP", ex);
 		}
 		UserRO userRo = uiUserService.convertToRo(dbuser);
+		userRo.setCasAuthenticated(true);
 		userRo.setPassword(null);
 		userRo.setAuthorities(Collections.singletonList(new SMPAuthority(userRo.getRole())));
 		return userRo;

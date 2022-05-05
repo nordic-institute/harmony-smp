@@ -27,7 +27,7 @@ import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
@@ -216,10 +216,10 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     /**
-     * Application event when an {@code ApplicationContext} gets initialized or refreshed
+     * Application event when an {@code ApplicationContext} gets initialized or start
      */
-    @EventListener({ContextRefreshedEvent.class})
-    protected void contextRefreshedEvent() {
+    @EventListener({ContextStartedEvent.class})
+    public void contextRefreshedEvent() {
         LOG.debug("Application context is initialized: triggered  refresh  to update all property listeners");
         applicationInitialized = true;
         initiateDate = OffsetDateTime.now();
@@ -233,7 +233,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     protected void contextStopEvent() {
         LOG.debug("Application context is stopped!");
         applicationInitialized = false;
-        initiateDate =null;
+        initiateDate = null;
     }
 
     private void updatePropertyListeners() {

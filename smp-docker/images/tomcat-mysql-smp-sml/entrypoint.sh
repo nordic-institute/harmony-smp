@@ -30,6 +30,12 @@ init_tomcat() {
   fi
   # add allow encoded slashes and disable scheme for proxy
   JAVA_OPTS="$JAVA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true -Djdk.http.auth.tunneling.disabledSchemes="
+  # add truststore for eulogin
+  if [ -e /tmp/keystores/smp-eulogin-mock.p12 ]; then
+      echo "add eulogin trustStore: /tmp/keystores/smp-eulogin-mock.p12"
+      JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/tmp/keystores/smp-eulogin-mock.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=test123"
+   fi
+
   export  JAVA_OPTS
 
   echo "[INFO] init tomcat folders: $tfile"
@@ -177,9 +183,7 @@ addOrReplaceProperties() {
   if [ -n "$INIT_PROPERTIES" ]; then
     echo "Parse init properties: $INIT_PROPERTIES"
     # add delimiter also to end :)
-
     s="$INIT_PROPERTIES$INIT_PROPERTY_DELIMITER"
-
 
     array=()
     while [[ $s ]]; do
@@ -191,15 +195,15 @@ addOrReplaceProperties() {
     IFS='='
     for property in "${array[@]}"; do
       read -r key value <<<"$property"
-      # escape regex chars ..
-      keyRE="$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|]/\\&/g')"
-      propertyRE="$(printf '%s' "$property" | sed 's/[.[\*^$()+?{|/]/\\&/g')"
+      # escape regex chars and remove trailing and leading spaces..
+      keyRE="$(printf '%s' "${key// }" | sed 's/[.[\*^$()+?{|]/\\&/g')"
+      propertyRE="$(printf '%s' "${property// }" | sed 's/[.[\*^$()+?{|/]/\\&/g')"
 
-      echo "replace or add property: $property"
+      echo "replace or add property: [$keyRE] with value [$propertyRE]"
       # replace key line and commented #key line with new property
       sed -i "s/^$keyRE=.*/$propertyRE/;s/^#$keyRE=.*/$propertyRE/" $PROP_FILE
       # test if replaced if the line not exists add in on the end
-      grep -qF -- "$property" "$PROP_FILE" || echo "$property" >>"$PROP_FILE"
+      grep -qF -- "$propertyRE" "$PROP_FILE" || echo "$propertyRE" >>"$PROP_FILE"
     done
 
   fi

@@ -26,12 +26,16 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.cas.authentication.CasAuthenticationProvider;
+import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
+import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -44,6 +48,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -56,7 +61,7 @@ import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.*;
  * @author gutowpa
  * @since 3.0
  */
-@Order(2)
+@Order(1)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
@@ -73,6 +78,10 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     // Accounts supporting automated application functionalities
     ClientCertAuthenticationFilter clientCertAuthenticationFilter;
     EDeliveryX509AuthenticationFilter x509AuthenticationFilter;
+    // cas authentication
+    CasAuthenticationProvider casAuthenticationProvider;
+    CasAuthenticationFilter casAuthenticationFilter;
+    CasAuthenticationEntryPoint casAuthenticationEntryPoint;
 
     @Autowired
     public WSSecurityConfigurerAdapter(SMPAuthenticationProvider smpAuthenticationProvider,
@@ -80,7 +89,11 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                                        @Lazy MDCLogRequestFilter mdcLogRequestFilter,
                                        @Lazy CsrfTokenRepository csrfTokenRepository,
                                        @Lazy RequestMatcher csrfURLMatcher,
-                                       @Lazy HttpFirewall httpFirewall
+                                       @Lazy HttpFirewall httpFirewall,
+                                       // optional cas authentication configuration
+                                       @Lazy CasAuthenticationProvider casAuthenticationProvider,
+                                       @Lazy @Qualifier(SMP_CAS_FILTER_BEAN) CasAuthenticationFilter casAuthenticationFilter,
+                                       @Lazy CasAuthenticationEntryPoint casAuthenticationEntryPoint
     ) {
         super(false);
         this.configurationService = configurationService;
@@ -89,18 +102,25 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         this.csrfTokenRepository = csrfTokenRepository;
         this.csrfURLMatcher = csrfURLMatcher;
         this.httpFirewall = httpFirewall;
+        this.casAuthenticationEntryPoint = casAuthenticationEntryPoint;
+        this.casAuthenticationProvider = casAuthenticationProvider;
+        this.casAuthenticationFilter = casAuthenticationFilter;
+
     }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-
         configureSecurityHeaders(httpSecurity);
-
         ExceptionHandlingConfigurer<HttpSecurity> exceptionHandlingConfigurer = httpSecurity.exceptionHandling();
-
         SMPSecurityExceptionHandler smpSecurityExceptionHandler = new SMPSecurityExceptionHandler();
+        //exceptionHandlingConfigurer.authenticationEntryPoint(smpSecurityExceptionHandler);
+        if (configurationService.isSSOEnabledForUserAuthentication()) {
+            String casEndpointAntPattern = SMP_SECURITY_PATH_CAS_AUTHENTICATE;
+            LOG.debug("The CAS authentication is enabled. Set casAuthenticationEntryPoint for endpoint [{}]!", casEndpointAntPattern);
+            exceptionHandlingConfigurer = exceptionHandlingConfigurer
+                    .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint, new AntPathRequestMatcher(casEndpointAntPattern));
+        }
 
-        exceptionHandlingConfigurer.authenticationEntryPoint(smpSecurityExceptionHandler);
         httpSecurity = exceptionHandlingConfigurer
                 .accessDeniedHandler(smpSecurityExceptionHandler)
                 .and()
@@ -109,11 +129,17 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .xssProtection().xssProtectionEnabled(true).and()
                 .and();
 
+        if (configurationService.isSSOEnabledForUserAuthentication()) {
+            LOG.debug("The CAS authentication is enabled. Add CAS filter!");
+            httpSecurity = httpSecurity.addFilter(casAuthenticationFilter);
+        }
         httpSecurity
                 .addFilterAfter(mdcLogRequestFilter, EDeliveryX509AuthenticationFilter.class)
                 .addFilter(getClientCertAuthenticationFilter())
-                .addFilter(getEDeliveryX509AuthenticationFilter())
-                .httpBasic().authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
+                .addFilter(getEDeliveryX509AuthenticationFilter());
+
+
+        httpSecurity.httpBasic().authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
                 .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
@@ -121,13 +147,13 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, SMP_SECURITY_PATH_CAS_AUTHENTICATE).authenticated()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
+                .regexMatchers(HttpMethod.DELETE, "^/(?!ui/)[^/]*(/services/.*)?$").hasAnyAuthority(
                 SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
                 SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN)
-                .antMatchers(HttpMethod.PUT).hasAnyAuthority(
+                .regexMatchers(HttpMethod.PUT, "^/(?!ui/)[^/]*(/services/.*)?$").hasAnyAuthority(
                 SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
                 SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN)
-                .antMatchers(HttpMethod.GET).permitAll().and()
+                .regexMatchers(HttpMethod.GET, "^/(?!ui/)[^/]*(/services/.*)?$").permitAll().and()
         ;
     }
 
@@ -180,6 +206,10 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         LOG.info("configureAuthenticationManagerBuilder, set SMP provider ");
+        if (configurationService.isSSOEnabledForUserAuthentication()) {
+            LOG.info("[CAS] Authentication Provider enabled");
+            auth.authenticationProvider(casAuthenticationProvider);
+        }
         // fallback automation user token authentication
         auth.authenticationProvider(smpAuthenticationProvider);
     }
@@ -206,7 +236,7 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
             clientCertAuthenticationFilter.setClientCertAuthenticationEnabled(configurationService.isExternalTLSAuthenticationWithClientCertHeaderEnabled());
         }
         return clientCertAuthenticationFilter;
-   }
+    }
 
     public EDeliveryX509AuthenticationFilter getEDeliveryX509AuthenticationFilter() throws Exception {
         if (x509AuthenticationFilter == null) {
