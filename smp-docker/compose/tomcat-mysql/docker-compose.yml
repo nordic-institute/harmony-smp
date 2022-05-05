@@ -3,6 +3,8 @@ services:
   tomcat-mysql:
     image: smp-tomcat-mysql:${SMP_VERSION}
     container_name: smp-tomcat-mysql
+    environment:
+      - SMP_INIT_PROPERTIES=smp.passwordPolicy.expired.forceChange=false||smp.cluster.enabled=false
     volumes:
       - ./properties/db-scripts:/tmp/custom-database-scripts/  # init script.
     ports:
