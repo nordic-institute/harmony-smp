@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.utils.SMPConstants;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -15,12 +14,11 @@ import java.util.Collection;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class UserRO extends BaseRO implements UserDetails {
+public class UserRO extends BaseRO {
 
     static final long serialVersionUID = 2821447495333163882L;
 
     String username;
-
     String password;
     @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
     OffsetDateTime passwordExpireOn;
@@ -133,7 +131,6 @@ public class UserRO extends BaseRO implements UserDetails {
         this.certificate = certificate;
     }
 
-    @Override
     public Collection<SMPAuthority> getAuthorities() {
         return authorities;
     }
@@ -172,29 +169,5 @@ public class UserRO extends BaseRO implements UserDetails {
 
     public void setCasAuthenticated(boolean casAuthenticated) {
         this.casAuthenticated = casAuthenticated;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isEnabled() {
-        return active;
     }
 }

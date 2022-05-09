@@ -20,12 +20,12 @@ package eu.europa.ec.edelivery.smp.services;
  */
 
 
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
-import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.helpers.IOUtils;
@@ -70,7 +70,7 @@ public class CRLVerifierService {
     ConfigurationService configurationService;
 
 
-    public void verifyCertificateCRLs(X509Certificate cert) throws CertificateRevokedException {
+    public void verifyCertificateCRLs(X509Certificate cert) throws CertificateRevokedException, CertificateParsingException {
 
         List<String> crlDistPoints = X509CertificateUtils.getCrlDistributionPoints(cert);
         if (crlDistPoints.isEmpty()) {
@@ -269,8 +269,6 @@ public class CRLVerifierService {
             throw new CertificateRevokedException(entry.getRevocationDate(),
                     entry.getRevocationReason() == null ? NULL_CRL_REASON : entry.getRevocationReason(),
                     entry.getCertificateIssuer() == null ? NULL_ISSUER : entry.getCertificateIssuer(), map);
-
         }
     }
-
 }

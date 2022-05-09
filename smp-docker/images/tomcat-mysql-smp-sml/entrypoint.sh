@@ -24,10 +24,14 @@ if [ ! -d ${DATA_DIR} ]; then
 fi
 
 init_tomcat() {
-  # add java code coverage angent to image
+  # add java code coverage agent to image
   if [ -e /opt/jacoco/jacoco-agent.jar ]; then
     JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901,includes=eu.europa.ec.edelivery.smp.* $JAVA_OPTS"
   fi
+
+  # for debugging
+  JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost"
+  JAVA_OPTS="$JAVA_OPTS -Xms512m -Xmx512m -server "
   # add allow encoded slashes and disable scheme for proxy
   JAVA_OPTS="$JAVA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true -Djdk.http.auth.tunneling.disabledSchemes="
   # add truststore for eulogin
@@ -36,7 +40,9 @@ init_tomcat() {
       JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/tmp/keystores/smp-eulogin-mock.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=test123"
    fi
 
+  echo "[INFO] init tomcat JAVA_OPTS: $JAVA_OPTS"
   export  JAVA_OPTS
+
 
   echo "[INFO] init tomcat folders: $tfile"
   if [ ! -d ${TOMCAT_DIR} ]; then
@@ -248,7 +254,7 @@ echo '[INFO] start running SMP'
 chmod u+x $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/*.sh
 cd $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/
 # run from this folder in order to be smp log in logs folder
-exec ./bin/catalina.sh run
+exec ./bin/catalina.sh jpda run
 
 
 

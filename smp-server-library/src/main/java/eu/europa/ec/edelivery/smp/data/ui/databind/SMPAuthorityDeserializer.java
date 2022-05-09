@@ -24,6 +24,6 @@ public class SMPAuthorityDeserializer extends StdDeserializer<SMPAuthority> {
     public SMPAuthority deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         String text = node.asText();
-        return new SMPAuthority(text.substring("ROLE_".length()));
+        return SMPAuthority.getAuthorityByRoleName(text.substring("ROLE_".length()));
     }
 }

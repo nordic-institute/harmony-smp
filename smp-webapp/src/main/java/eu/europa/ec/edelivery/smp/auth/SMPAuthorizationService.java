@@ -1,26 +1,31 @@
 package eu.europa.ec.edelivery.smp.auth;
 
+import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.*;
 
 /**
  * @author Sebastian-Ion TINCU
+ * @since 4.1
  */
 @Service("smpAuthorizationService")
 public class SMPAuthorizationService {
@@ -28,27 +33,36 @@ public class SMPAuthorizationService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthorizationService.class);
 
     final private ServiceGroupService serviceGroupService;
+    final private ConversionService conversionService;
+    final private ConfigurationService configurationService;
+    final private UserDao userDao;
 
-    public SMPAuthorizationService(ServiceGroupService serviceGroupService) {
+    public SMPAuthorizationService(ServiceGroupService serviceGroupService,
+                                   ConversionService conversionService,
+                                   ConfigurationService configurationService,
+                                   UserDao userDao) {
         this.serviceGroupService = serviceGroupService;
+        this.conversionService = conversionService;
+        this.configurationService=configurationService;
+        this.userDao = userDao;
     }
 
     public boolean isSystemAdministrator() {
-        SMPAuthenticationToken authentication = getAndValidateSessionAuthentication();
-        boolean hasSystemRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SYSTEM_ADMIN, authentication);
-        LOG.debug("Logged user [{}] is system administrator role [{}]", authentication.getUser().getUsername(), hasSystemRole);
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        boolean hasSystemRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SYSTEM_ADMIN, userDetails);
+        LOG.debug("Logged user [{}] is system administrator role [{}]", userDetails.getUsername(), hasSystemRole);
         return hasSystemRole;
     }
 
     public boolean isSMPAdministrator() {
-        SMPAuthenticationToken authentication = getAndValidateSessionAuthentication();
-        boolean hasSystemRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, authentication);
-        LOG.debug("Logged user [{}] is SMP administrator role [{}]", authentication.getUser().getUsername(), hasSystemRole);
-        return hasSystemRole;
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        boolean hasRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, userDetails);
+        LOG.debug("Logged user [{}] is SMP administrator role [{}]", userDetails.getUsername(), hasRole);
+        return hasRole;
     }
 
     public boolean isCurrentlyLoggedIn(String userId) {
-        SMPAuthenticationToken authentication = getAndValidateSessionAuthentication();
+        SMPUserDetails userDetails = getAndValidateUserDetails();
         Long entityId;
         try {
             entityId = SessionSecurityUtils.decryptEntityId(userId);
@@ -56,24 +70,30 @@ public class SMPAuthorizationService {
             LOG.error("Error occurred while decrypting user-id:[" + userId + "]", ex);
             throw new BadCredentialsException("Login failed; Invalid userID or password");
         }
-        Long loggedUserId = authentication.getUser().getId();
-        return entityId.equals(loggedUserId);
+        return entityId.equals(userDetails.getUser().getId());
 
     }
 
     public boolean isAuthorizedForManagingTheServiceMetadataGroup(Long serviceMetadataId) {
-        SMPAuthenticationToken authentication = getAndValidateSessionAuthentication();
-        if (hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, authentication)) {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        if (hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, userDetails)) {
             LOG.debug("SMP admin is authorized to manage service metadata: [{}]" + serviceMetadataId);
             return true;
 
         }
-        if (!hasSessionUserRole(S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN, authentication)) {
+        if (!hasSessionUserRole(S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN, userDetails)) {
             LOG.debug("User is Service group admin nor SMP admin. User is not allowed to manage service metadata: [{}]" + serviceMetadataId);
             return false;
         }
-        Long userId = authentication.getUser().getId();
+        Long userId = userDetails.getUser().getId();
         return serviceGroupService.isServiceGroupOwnerForMetadataID(userId, serviceMetadataId);
+    }
+
+
+    private boolean hasSessionUserRole(String role, SMPUserDetails userDetails) {
+        return userDetails.getAuthorities().stream().anyMatch(grantedAuthority ->
+                StringUtils.equals(role, grantedAuthority.getAuthority())
+        );
     }
 
     /**
@@ -86,41 +106,52 @@ public class SMPAuthorizationService {
         userRO.setPassword("");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication!=null ){
+        if (authentication != null) {
             userRO.setAuthorities(authentication.getAuthorities().stream().map(val -> (SMPAuthority) val).collect(Collectors.toList()));
         }
         return userRO;
     }
 
-    private Authentication getSessionAuthentication() {
-        if (SecurityContextHolder.getContext() == null) {
-            LOG.warn("No users is logged-in! Session security context is null!");
-            return null;
-        }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            LOG.warn("No users is logged-in! Authentication is null or not authenticated!");
-            return null;
-        }
-        if (!(authentication instanceof SMPAuthenticationToken
-                || authentication instanceof CasAuthenticationToken)) {
-            LOG.warn("User is logged and authenticated with not supported Authentication [{}]!", authentication.getClass());
-            return null;
-        }
-        return authentication;
-    }
-
-    private Authentication getAndValidateSessionAuthentication() {
-        Authentication authentication = getSessionAuthentication();
-        if (authentication == null) {
+    public SMPUserDetails getAndValidateUserDetails() {
+        SMPUserDetails userDetails = SessionSecurityUtils.getSessionUserDetails();
+        if (userDetails == null) {
             throw new SessionAuthenticationException(ERR_INVALID_OR_NULL);
         }
-        return authentication;
+        return userDetails;
     }
 
-    private boolean hasSessionUserRole(String role, SMPAuthenticationToken authentication) {
-        return authentication.getAuthorities().stream().anyMatch(grantedAuthority ->
-                StringUtils.equals(role, grantedAuthority.getAuthority())
-        );
+    public UserRO getLoggedUserData() {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        // refresh data from database!
+        DBUser dbUser =userDao.find(userDetails.getUser().getId());
+        if (dbUser == null || !dbUser.isActive()) {
+            LOG.warn("User: [{}] with id [{}] does not exists anymore or is not active.",
+                    userDetails.getUser().getId(),
+                    userDetails.getUser().getUsername());
+            return null;
+        }
+        return getUserData(userDetails.getUser());
+    }
+
+    public UserRO getUserData(DBUser user) {
+        UserRO userRO = conversionService.convert(user, UserRO.class);
+        return getUpdatedUserData(userRO);
+    }
+
+    /**
+     * Method updates data with "show expire dialog" flag, forces the password change flag and
+     * sanitize ui data/
+     *
+     * @param userRO
+     * @return updated user data according to SMP configuration
+     */
+    protected UserRO getUpdatedUserData(UserRO userRO) {
+        userRO.setShowPasswordExpirationWarning(userRO.getPasswordExpireOn() != null &&
+                OffsetDateTime.now()
+                        .minusDays(configurationService.getPasswordPolicyUIWarningDaysBeforeExpire())
+                        .isBefore(userRO.getPasswordExpireOn()));
+
+        userRO.setForceChangePassword(userRO.isPasswordExpired() && configurationService.getPasswordPolicyForceChangeIfExpired());
+        return sanitize(userRO);
     }
 }
