@@ -52,7 +52,6 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     Map<String, Object> cachedPropertyValues = new HashMap();
     OffsetDateTime lastUpdate = null;
     OffsetDateTime initiateDate = null;
-    boolean applicationInitialized = false;
     ApplicationContext applicationContext;
     boolean serverRestartNeeded = false;
 
@@ -221,8 +220,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     @EventListener({ContextStartedEvent.class})
     public void contextRefreshedEvent() {
         LOG.debug("Application context is initialized: triggered  refresh  to update all property listeners");
-        applicationInitialized = true;
-        initiateDate = OffsetDateTime.now();
+        setInitializedTime(OffsetDateTime.now());
         reloadPropertiesFromDatabase();
     }
 
@@ -232,15 +230,27 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     @EventListener({ContextStoppedEvent.class})
     protected void contextStopEvent() {
         LOG.debug("Application context is stopped!");
-        applicationInitialized = false;
-        initiateDate = null;
+        setInitializedTime(null);
+    }
+
+    protected void setInitializedTime(OffsetDateTime dateTime) {
+        initiateDate = dateTime;
+    }
+
+
+    public OffsetDateTime getInitiateDate() {
+        return initiateDate;
+    }
+
+    public boolean isApplicationInitialized() {
+        return initiateDate!=null;
     }
 
     private void updatePropertyListeners() {
         // wait to get all property listener beans to avoid cyclic initialization
         // some beans are using ConfigurationService also are in PropertyUpdateListener
         // for listener to update properties
-        if (!applicationInitialized) {
+        if (!isApplicationInitialized()) {
             LOG.debug("Application is not started. The PropertyUpdateEvent is not triggered");
             return;
         }
@@ -262,7 +272,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return applicationContext.getBeansOfType(PropertyUpdateListener.class);
     }
 
-    private void updateListener(String name, PropertyUpdateListener listener) {
+    protected void updateListener(String name, PropertyUpdateListener listener) {
         LOG.debug("updateListener [{}]", name);
         Map<SMPPropertyEnum, Object> mapProp = new HashMap<>();
         for (SMPPropertyEnum prop : listener.handledProperties()) {

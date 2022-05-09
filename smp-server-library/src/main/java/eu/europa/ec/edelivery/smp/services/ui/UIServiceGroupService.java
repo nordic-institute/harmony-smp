@@ -46,21 +46,19 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, ServiceGroupRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceGroupService.class);
 
-    @Autowired
-    DomainDao domainDao;
+    protected final DomainDao domainDao;
+    protected final ServiceGroupDao serviceGroupDao;
+    protected final UserDao userDao;
+    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final SMLIntegrationService smlIntegrationService;
 
-    @Autowired
-    ServiceGroupDao serviceGroupDao;
-
-    @Autowired
-    UserDao userDao;
-
-    @Autowired
-    CaseSensitivityNormalizer caseSensitivityNormalizer;
-
-    @Autowired
-    SMLIntegrationService smlIntegrationService;
-
+    public UIServiceGroupService(DomainDao domainDao, ServiceGroupDao serviceGroupDao, UserDao userDao, CaseSensitivityNormalizer caseSensitivityNormalizer, SMLIntegrationService smlIntegrationService) {
+        this.domainDao = domainDao;
+        this.serviceGroupDao = serviceGroupDao;
+        this.userDao = userDao;
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.smlIntegrationService = smlIntegrationService;
+    }
 
     @Override
     protected BaseDao<DBServiceGroup> getDatabaseDao() {
@@ -642,11 +640,12 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         } // if new check if service group already exist
 
         if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()){
-            ParticipantIdentifierType headerPI = caseSensitivityNormalizer.normalizeParticipantIdentifier(
+
+            ParticipantIdentifierType normalizedParticipant = caseSensitivityNormalizer.normalizeParticipantIdentifier(
                     serviceGroup.getParticipantScheme(),
                     serviceGroup.getParticipantIdentifier());
-            Optional<DBServiceGroup> sg= serviceGroupDao.findServiceGroup(serviceGroup.getParticipantIdentifier(),
-                    serviceGroup.getParticipantScheme());
+            Optional<DBServiceGroup> sg= serviceGroupDao.findServiceGroup(normalizedParticipant.getValue(),
+                    normalizedParticipant.getScheme());
             if (sg.isPresent()) {
                 serviceGroup.setErrorMessage("Service group: " +serviceGroup.getParticipantScheme()+ ":"+serviceGroup.getParticipantIdentifier()+
                         " already exists!");
@@ -656,7 +655,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         }
 
         if (StringUtils.isBlank(serviceGroup.getExtension())) {
-            // emtpy extension is also a valid extension;
+            // empty extension is also a valid extension
             serviceGroup.setErrorMessage(null);
         } else {
             try {
@@ -664,10 +663,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 ExtensionConverter.validateExtensionBySchema(buff); // validate by schema
                 serviceGroup.setErrorMessage(null);
                 serviceGroup.setErrorCode(ERROR_CODE_OK);
-            } catch (XmlInvalidAgainstSchemaException e) {
-                serviceGroup.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
-                serviceGroup.setErrorCode(ERROR_CODE_INVALID_EXTENSION);
-            } catch (UnsupportedEncodingException e) {
+            } catch (XmlInvalidAgainstSchemaException | UnsupportedEncodingException e) {
                 serviceGroup.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
                 serviceGroup.setErrorCode(ERROR_CODE_INVALID_EXTENSION);
             }
@@ -720,8 +716,6 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.transform(xmlInput, xmlOutput);
                 sgExtension.setExtension(xmlOutput.getWriter().toString());
-            } catch (TransformerConfigurationException e) {
-                sgExtension.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
             } catch (TransformerException e) {
                 sgExtension.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
             }
