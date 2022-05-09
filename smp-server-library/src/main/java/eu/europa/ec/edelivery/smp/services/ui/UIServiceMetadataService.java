@@ -20,7 +20,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,19 +36,17 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, ServiceMetadataRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceMetadataService.class);
 
-    @Autowired
-    DomainDao domainDao;
+    protected final DomainDao domainDao;
+    protected final ServiceMetadataDao serviceMetadataDao;
+    protected final UserDao userDao;
+    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
 
-    @Autowired
-    ServiceMetadataDao serviceMetadataDao;
-
-
-    @Autowired
-    UserDao userDao;
-
-    @Autowired
-    private CaseSensitivityNormalizer caseSensitivityNormalizer;
-
+    public UIServiceMetadataService(DomainDao domainDao, ServiceMetadataDao serviceMetadataDao, UserDao userDao, CaseSensitivityNormalizer caseSensitivityNormalizer) {
+        this.domainDao = domainDao;
+        this.serviceMetadataDao = serviceMetadataDao;
+        this.userDao = userDao;
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+    }
 
     @Override
     protected BaseDao<DBServiceMetadata> getDatabaseDao() {
@@ -65,11 +62,11 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
         serviceMetadataRO.setId(dbServiceMetadata.getId());
         serviceMetadataRO.setDocumentIdentifier(dbServiceMetadata.getDocumentIdentifier());
         serviceMetadataRO.setDocumentIdentifierScheme(dbServiceMetadata.getDocumentIdentifierScheme());
-        serviceMetadataRO.setXmlContent(getConvertServiceMetadataToString( serviceMetadataId, dbServiceMetadata.getXmlContent()));
+        serviceMetadataRO.setXmlContent(getConvertServiceMetadataToString(serviceMetadataId, dbServiceMetadata.getXmlContent()));
         return serviceMetadataRO;
     }
 
-    private String getConvertServiceMetadataToString(Long id,  byte[] extension){
+    private String getConvertServiceMetadataToString(Long id, byte[] extension) {
         try {
             return new String(extension, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -106,6 +103,15 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
                 return serviceMetadataRO;
             }
 
+
+            DocumentIdentifier headerDI = caseSensitivityNormalizer.normalizeDocumentIdentifier(
+                    serviceMetadataRO.getDocumentIdentifierScheme(),
+                    serviceMetadataRO.getDocumentIdentifier());
+            ParticipantIdentifierType headerPI = caseSensitivityNormalizer.normalizeParticipantIdentifier(
+                    serviceMetadataRO.getParticipantScheme(),
+                    serviceMetadataRO.getParticipantIdentifier());
+
+
             // validate by schema
             try {
                 BdxSmpOasisValidator.validateXSD(buff);
@@ -116,34 +122,37 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
 
             // validate data
             ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
-            DocumentIdentifier xmlDI = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
-            DocumentIdentifier headerDI = caseSensitivityNormalizer.normalizeDocumentIdentifier(serviceMetadataRO.getDocumentIdentifierScheme(),
-                    serviceMetadataRO.getDocumentIdentifier());
-            ParticipantIdentifierType xmlPI = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getParticipantIdentifier());
-            ParticipantIdentifierType headerPI = caseSensitivityNormalizer.normalizeParticipantIdentifier(
-                    serviceMetadataRO.getParticipantScheme(),
-                    serviceMetadataRO.getParticipantIdentifier());
+            if (smd.getRedirect() != null) {
+                if (StringUtils.isBlank(smd.getRedirect().getHref())) {
+                    serviceMetadataRO.setErrorMessage("Redirect URL must must be empty!");
+                    return serviceMetadataRO;
+                }
+            }
 
+            if (smd.getServiceInformation() != null) {
+                DocumentIdentifier xmlDI = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
+                ParticipantIdentifierType xmlPI = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getParticipantIdentifier());
+                if (!xmlDI.equals(headerDI)) {
+                    serviceMetadataRO.setErrorMessage("Document identifier and scheme do not match!");
+                    return serviceMetadataRO;
+                }
 
-            if (serviceMetadataRO.getStatusAction() == EntityROStatus.NEW.getStatusNumber()){
+                if (!xmlPI.equals(headerPI)) {
+                    serviceMetadataRO.setErrorMessage("Participant identifier and scheme do not match!");
+                    return serviceMetadataRO;
+                }
+            }
+
+            if (serviceMetadataRO.getStatusAction() == EntityROStatus.NEW.getStatusNumber()) {
                 // check if service metadata already exists
                 Optional<DBServiceMetadata> exists = serviceMetadataDao.findServiceMetadata(headerPI.getValue(), headerPI.getScheme(),
                         headerDI.getValue(), headerDI.getScheme());
-                if (exists.isPresent()){
+                if (exists.isPresent()) {
                     serviceMetadataRO.setErrorMessage("Document identifier and scheme already exist in database!");
                     return serviceMetadataRO;
                 }
             }
 
-            if (!xmlDI.equals(headerDI)) {
-                serviceMetadataRO.setErrorMessage("Document identifier and scheme do not match!");
-                return serviceMetadataRO;
-            }
-
-            if (!xmlPI.equals(headerPI)) {
-                serviceMetadataRO.setErrorMessage("Participant identifier and scheme do not match!");
-                return serviceMetadataRO;
-            }
         }
         return serviceMetadataRO;
     }

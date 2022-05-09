@@ -105,7 +105,7 @@ public class ServiceMetadataConverterTest {
     public void testUnmarshalMalformedInput() throws ParserConfigurationException, IOException, SAXException, JAXBException {
 
         expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metada. Error"));
+        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metadata. Error"));
         //when
         ServiceMetadataConverter.unmarshal("this is malformed XML body".getBytes());
     }
@@ -148,7 +148,7 @@ public class ServiceMetadataConverterTest {
     public void testToSignedServiceMetadataDocumentMalformedInput() throws ParserConfigurationException, IOException, SAXException, JAXBException {
 
         expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metada. Error:"));
+        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metadata. Error:"));
         //when
         ServiceMetadataConverter.toSignedServiceMetadataDocument("this is malformed XML body".getBytes());
     }
