@@ -18,6 +18,7 @@ import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
+import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
@@ -519,15 +520,24 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         } catch (UnsupportedEncodingException e) {
             throw new SMPRuntimeException(INVALID_ENCODING, "UTF-8");
         }
-        ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
-        DocumentIdentifier di = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
-        if (Objects.equals(di.getScheme(), serviceMetadataRO.getDocumentIdentifierScheme())
-                && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier())) {
-            return buff;
-        } else {
-            throw new SMPRuntimeException(INVALID_SMD_DOCUMENT_DATA, di.getValue(), di.getScheme(),
-                    serviceMetadataRO.getDocumentIdentifier(), serviceMetadataRO.getDocumentIdentifierScheme());
+        try {
+            BdxSmpOasisValidator.validateXSD(buff);
+        } catch (XmlInvalidAgainstSchemaException e) {
+            throw new SMPRuntimeException(INVALID_SMD_XML, ExceptionUtils.getRootCauseMessage(e));
         }
+
+        ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
+        if (smd.getServiceInformation()!=null) {
+            DocumentIdentifier di = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
+            if (Objects.equals(di.getScheme(), serviceMetadataRO.getDocumentIdentifierScheme())
+                    && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier())) {
+
+            } else {
+                throw new SMPRuntimeException(INVALID_SMD_DOCUMENT_DATA, di.getValue(), di.getScheme(),
+                        serviceMetadataRO.getDocumentIdentifier(), serviceMetadataRO.getDocumentIdentifierScheme());
+            }
+        }
+        return buff;
     }
 
 
@@ -640,7 +650,6 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         } // if new check if service group already exist
 
         if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()){
-
             ParticipantIdentifierType normalizedParticipant = caseSensitivityNormalizer.normalizeParticipantIdentifier(
                     serviceGroup.getParticipantScheme(),
                     serviceGroup.getParticipantIdentifier());
