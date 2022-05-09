@@ -7,12 +7,14 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,7 +31,10 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
+import java.util.Arrays;
 
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SERVICE_METADATA;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -65,30 +70,18 @@ public class ServiceGroupResourceIntegrationTest {
     private WebApplicationContext webAppContext;
 
     private MockMvc mvc;
-    private static final RequestPostProcessor SMP_ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
-    private static final RequestPostProcessor SG_ADMIN_CREDENTIALS = httpBasic("sg_admin", "test123");
-
     @Before
     public void setup() throws IOException {
-        mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-
-        initServletContext();
+        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
         validExtension = new String(IOUtils.toByteArray(ServiceGroupResourceIntegrationTest.class.getResourceAsStream("/input/extensionMarshal.xml")));
-    }
-
-    private void initServletContext() {
-        MockServletContext sc = new MockServletContext("");
-        ServletContextListener listener = new ContextLoaderListener(webAppContext);
-        ServletContextEvent event = new ServletContextEvent(sc);
     }
 
     @Test
     public void getServiceGroupListForSMPAdmin() throws Exception {
         // given when
+        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_PUBLIC)
-                .with(SMP_ADMIN_CREDENTIALS).with(csrf())
+                .session(sessionAdmin).with(csrf())
         ).andExpect(status().isOk()).andReturn();
 
         //them
@@ -111,8 +104,9 @@ public class ServiceGroupResourceIntegrationTest {
     @Test
     public void getServiceGroupListForServiceGroupAdmin() throws Exception {
         // given when
+        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_PUBLIC)
-                .with(SG_ADMIN_CREDENTIALS).with(csrf())
+                .session(sessionAdmin).with(csrf())
         ).andExpect(status().isOk()).andReturn();
 
         //them
@@ -120,12 +114,13 @@ public class ServiceGroupResourceIntegrationTest {
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
 
         assertNotNull(res);
-        assertEquals(1, res.getServiceEntities().size());
+        assertFalse(res.getServiceEntities().isEmpty());
         res.getServiceEntities().forEach(sgMap -> {
             ServiceGroupRO sgro = mapper.convertValue(sgMap, ServiceGroupRO.class);
             assertNotNull(sgro.getId());
             assertNotNull(sgro.getParticipantScheme());
             assertNotNull(sgro.getParticipantIdentifier());
+            assertTrue(Arrays.asList("urn:australia:ncpb","urn:brazil:ncpb").contains(sgro.getParticipantIdentifier()));
             assertEquals(1, sgro.getUsers().size());
             assertNotNull(sgro.getUsers().get(0).getUserId());
         });
@@ -133,10 +128,10 @@ public class ServiceGroupResourceIntegrationTest {
 
     @Test
     public void getServiceGroupById() throws Exception {
-
         // given when
+        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_PUBLIC + "/100000")
-                .with(SMP_ADMIN_CREDENTIALS).with(csrf())).
+                .session(sessionAdmin).with(csrf())).
                 andExpect(status().isOk()).andReturn();
 
         //them
@@ -164,8 +159,9 @@ public class ServiceGroupResourceIntegrationTest {
         serviceGroupDao.update(sg);
 
         // given when
+        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_PUBLIC + "/100000/extension")
-                .with(SMP_ADMIN_CREDENTIALS).with(csrf()))
+                .session(sessionAdmin).with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
         //them
@@ -180,14 +176,23 @@ public class ServiceGroupResourceIntegrationTest {
     }
 
     @Test
+    public void getExtensionServiceGroupByIdNotAuthorizedBasicAuthentication() throws Exception {
+        // given when
+        MvcResult result = mvc.perform(get(PATH_PUBLIC + "/100000/extension")
+                .with(getHttpBasicSMPAdminCredentials()).with(csrf()))
+                .andExpect(status().isUnauthorized()).andReturn();
+    }
+
+    @Test
     public void testValidateInvalid() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         ServiceGroupValidationRO validate = new ServiceGroupValidationRO();
         validate.setExtension(validExtension + "<ADFA>sdfadsf");
 
         // given when
+        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
         MvcResult result = mvc.perform(post(PATH_PUBLIC + "/extension/validate")
-                .with(SMP_ADMIN_CREDENTIALS)
+                .session(sessionAdmin)
                 .header("Content-Type","application/json")
                     .content(mapper.writeValueAsString(validate))
                 .with(csrf()))

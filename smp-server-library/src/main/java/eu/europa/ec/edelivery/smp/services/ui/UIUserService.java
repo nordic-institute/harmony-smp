@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
@@ -15,7 +16,6 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +39,10 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 @Service
 public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
@@ -174,9 +178,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             CertificateRO certRo = user.getCertificate();
             LOG.info(certRo.getEncodedValue());
             if (user.getCertificate().getEncodedValue() != null) {
-                X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
+
                 String certificateAlias;
                 try {
+                    X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
                     certificateAlias = truststoreService.addCertificate(certRo.getAlias(), x509Certificate);
                 } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
                     LOG.error("Error occurred while adding certificate to truststore.", e);

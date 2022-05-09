@@ -4,31 +4,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithSystemAdmin;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -52,31 +46,19 @@ public class DomainAdminResourceIntegrationTest {
     DomainDao domainDao;
 
     private MockMvc mvc;
-    private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
 
     @Before
     public void setup() {
-        mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-
-        initServletContext();
+        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
     }
-
-    private void initServletContext() {
-        MockServletContext sc = new MockServletContext("");
-        ServletContextListener listener = new ContextLoaderListener(webAppContext);
-        ServletContextEvent event = new ServletContextEvent(sc);
-    }
-
 
     @Test
     public void updateDomainListOkDelete() throws Exception {
 // given when
         assertEquals("CEF-SMP-002", domainDao.getDomainByCode("domainTwo").get().getSmlSmpId());
-
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(put(PATH)
-                .with(SYSTEM_CREDENTIALS)
+                .session(session)
                 .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[{\"status\":3,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
@@ -90,8 +72,9 @@ public class DomainAdminResourceIntegrationTest {
     @Test
     public void updateDomainListNotExists() throws Exception {
 // given when
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(put(PATH)
-                .with(SYSTEM_CREDENTIALS)
+                .session(session)
                 .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[{\"status\":3,\"index\":9,\"id\":10,\"domainCode\":\"domainTwoNotExist\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
@@ -101,8 +84,9 @@ public class DomainAdminResourceIntegrationTest {
     @Test
     public void validateDeleteDomainOK() throws Exception {
         // given when
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(put(PATH + "/validate-delete")
-                .with(SYSTEM_CREDENTIALS)
+                .session(session)
                 .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[2]")) // delete domain with id 2
@@ -123,9 +107,9 @@ public class DomainAdminResourceIntegrationTest {
     public void updateDomainListOkUpdate() throws Exception {
 // given when
         assertEquals("CEF-SMP-002", domainDao.getDomainByCode("domainTwo").get().getSmlSmpId());
-
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(put(PATH)
-                .with(SYSTEM_CREDENTIALS)
+                .session(session)
                 .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[{\"status\":1,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
@@ -138,8 +122,9 @@ public class DomainAdminResourceIntegrationTest {
     @Test
     public void validateDeleteDomainFalse() throws Exception {
         // given when
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(put(PATH + "/validate-delete")
-                .with(SYSTEM_CREDENTIALS)
+                .session(session)
                 .with(csrf())
                 .header("Content-Type", " application/json")
                 .content("[1]")) // delete domain with id 2
@@ -161,8 +146,9 @@ public class DomainAdminResourceIntegrationTest {
         // given when
         // 3- user id
         // domainTwo -  domain code
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         mvc.perform(put(PATH + "/3/sml-register/domainTwo")
-                .with(SYSTEM_CREDENTIALS)
+                .session(session)
                 .with(csrf())
                 .header("Content-Type", " application/json"))
                 .andExpect(status().isOk())
@@ -174,8 +160,9 @@ public class DomainAdminResourceIntegrationTest {
         // given when
         // 3- user id
         // domainTwo -  domain code
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         mvc.perform(put(PATH + "/3/sml-unregister/domainTwo")
-                .with(SYSTEM_CREDENTIALS)
+                .session(session)
                 .with(csrf())
                 .header("Content-Type", " application/json"))
                 .andExpect(status().isOk())

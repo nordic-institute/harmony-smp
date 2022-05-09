@@ -258,7 +258,7 @@ export class DomainComponent implements AfterViewInit {
         if (res) {
           if (res.success) {
             this.alertService.success("Domain " + domain.domainCode + " registered to sml!");
-            this.lookups.refreshDomainLookup();
+            this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = true;
           } else {
             this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, res.errorMessage);
@@ -281,7 +281,7 @@ export class DomainComponent implements AfterViewInit {
         if (res) {
           if (res.success) {
             this.alertService.success("Domain " + domain.domainCode + " unregistered from sml!");
-            this.lookups.refreshDomainLookup();
+            this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = false;
           } else {
             this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, res.errorMessage);

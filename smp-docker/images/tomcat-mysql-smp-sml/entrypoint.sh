@@ -24,13 +24,25 @@ if [ ! -d ${DATA_DIR} ]; then
 fi
 
 init_tomcat() {
-  # add java code coverage angent to image
+  # add java code coverage agent to image
   if [ -e /opt/jacoco/jacoco-agent.jar ]; then
     JAVA_OPTS="-javaagent:/opt/jacoco/jacoco-agent.jar=output=tcpserver,address=*,port=6901,includes=eu.europa.ec.edelivery.smp.* $JAVA_OPTS"
   fi
+
+  # for debugging
+  JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost"
+  JAVA_OPTS="$JAVA_OPTS -Xms512m -Xmx512m -server "
   # add allow encoded slashes and disable scheme for proxy
   JAVA_OPTS="$JAVA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true -Djdk.http.auth.tunneling.disabledSchemes="
+  # add truststore for eulogin
+  if [ -e /tmp/keystores/smp-eulogin-mock.p12 ]; then
+      echo "add eulogin trustStore: /tmp/keystores/smp-eulogin-mock.p12"
+      JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/tmp/keystores/smp-eulogin-mock.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=test123"
+   fi
+
+  echo "[INFO] init tomcat JAVA_OPTS: $JAVA_OPTS"
   export  JAVA_OPTS
+
 
   echo "[INFO] init tomcat folders: $tfile"
   if [ ! -d ${TOMCAT_DIR} ]; then
@@ -177,9 +189,7 @@ addOrReplaceProperties() {
   if [ -n "$INIT_PROPERTIES" ]; then
     echo "Parse init properties: $INIT_PROPERTIES"
     # add delimiter also to end :)
-
     s="$INIT_PROPERTIES$INIT_PROPERTY_DELIMITER"
-
 
     array=()
     while [[ $s ]]; do
@@ -191,15 +201,15 @@ addOrReplaceProperties() {
     IFS='='
     for property in "${array[@]}"; do
       read -r key value <<<"$property"
-      # escape regex chars ..
-      keyRE="$(printf '%s' "$key" | sed 's/[.[\*^$()+?{|]/\\&/g')"
-      propertyRE="$(printf '%s' "$property" | sed 's/[.[\*^$()+?{|/]/\\&/g')"
+      # escape regex chars and remove trailing and leading spaces..
+      keyRE="$(printf '%s' "${key// }" | sed 's/[.[\*^$()+?{|]/\\&/g')"
+      propertyRE="$(printf '%s' "${property// }" | sed 's/[.[\*^$()+?{|/]/\\&/g')"
 
-      echo "replace or add property: $property"
+      echo "replace or add property: [$keyRE] with value [$propertyRE]"
       # replace key line and commented #key line with new property
       sed -i "s/^$keyRE=.*/$propertyRE/;s/^#$keyRE=.*/$propertyRE/" $PROP_FILE
       # test if replaced if the line not exists add in on the end
-      grep -qF -- "$property" "$PROP_FILE" || echo "$property" >>"$PROP_FILE"
+      grep -qF -- "$propertyRE" "$PROP_FILE" || echo "$propertyRE" >>"$PROP_FILE"
     done
 
   fi
@@ -244,7 +254,7 @@ echo '[INFO] start running SMP'
 chmod u+x $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/*.sh
 cd $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/
 # run from this folder in order to be smp log in logs folder
-exec ./bin/catalina.sh run
+exec ./bin/catalina.sh jpda run
 
 
 

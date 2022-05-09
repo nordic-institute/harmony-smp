@@ -16,10 +16,10 @@
 package eu.europa.ec.edelivery.smp.utils;
 
 
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +36,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-
+/**
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 @RunWith(JUnitParamsRunner.class)
 public class X509CertificateUtilsTest {
 

@@ -15,6 +15,7 @@ package eu.europa.ec.cipa.smp.server.security;
 
 import eu.europa.ec.edelivery.exception.ClientCertParseException;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
@@ -78,10 +79,10 @@ public class SecurityConfigurationTest {
     @Before
     public void setup() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED,"true", null);
         mvc = MockMvcUtils.initializeMockMvc(context);
-        configurationDao.reloadPropertiesFromDatabase();
+        configurationDao.contextRefreshedEvent();
     }
-
 
     @Test
     public void getMethodAccessiblePubliclyTest() throws Exception {

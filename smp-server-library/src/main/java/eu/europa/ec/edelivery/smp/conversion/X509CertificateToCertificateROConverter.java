@@ -1,12 +1,12 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -23,6 +23,7 @@ import java.util.Base64;
 
 /**
  * @author Joze Rihtarsic
+ * @since 4.1
  */
 @Component
 public class X509CertificateToCertificateROConverter implements Converter<X509Certificate, CertificateRO> {
@@ -54,7 +55,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
             cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
         } catch (CertificateEncodingException cex) {
             throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
-                    "Error occured while decoding certificate " + subject, cex.getMessage(), cex);
+                    "Error occurred while decoding certificate " + subject, cex.getMessage(), cex);
 
         }
         // generate clientCertHeader header

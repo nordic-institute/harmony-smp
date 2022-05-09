@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,6 +28,7 @@ import javax.servlet.ServletContextListener;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SERVICE_METADATA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,30 +59,19 @@ public class ServiceMetadataResourceIntegrationTest {
     private WebApplicationContext webAppContext;
 
     private MockMvc mvc;
-    private static final RequestPostProcessor SMP_ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
-    private static final RequestPostProcessor SG_USER2_CREDENTIALS = httpBasic("test_user_hashed_pass", "test123");
     ObjectMapper mapper = new ObjectMapper();
 
     @Before
-    public void setup() throws IOException {
-        mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-
-        initServletContext();
-    }
-
-    private void initServletContext() {
-        MockServletContext sc = new MockServletContext("");
-        ServletContextListener listener = new ContextLoaderListener(webAppContext);
-        ServletContextEvent event = new ServletContextEvent(sc);
+    public void setup() {
+        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
     }
 
     @Test
     public void getServiceGroupMetadataById() throws Exception {
         // given when
+        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SERVICE_METADATA + "/" + SERVICE_METADATA_ID)
-                .with(SMP_ADMIN_CREDENTIALS).with(csrf())
+                .session(sessionAdmin).with(csrf())
         ).andExpect(status().isOk()).andReturn();
 
         //them
@@ -96,10 +88,18 @@ public class ServiceMetadataResourceIntegrationTest {
     @Test
     public void getServiceGroupMetadataByIdNotAuthorized() throws Exception {
         // given when
+        MockHttpSession session = loginWithServiceGroupUser2(mvc);
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SERVICE_METADATA + "/" + SERVICE_METADATA_ID)
-                .with(SG_USER2_CREDENTIALS).with(csrf())
+                .session(session).with(csrf())
         ).andExpect(status().isUnauthorized()).andReturn();
+    }
 
+    @Test
+    public void getServiceGroupMetadataByIdNotAuthorizedForBasicAuthentication() throws Exception {
+        // given when
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SERVICE_METADATA + "/" + SERVICE_METADATA_ID)
+                .with(getHttpBasicSMPAdminCredentials()).with(csrf())
+        ).andExpect(status().isUnauthorized()).andReturn();
     }
 
     @Test
@@ -127,8 +127,10 @@ public class ServiceMetadataResourceIntegrationTest {
         smv.setParticipantScheme("partSch");
         smv.setXmlContent("Invalid content");
 
+        MockHttpSession session = loginWithServiceGroupUser2(mvc);
+
         MvcResult result = mvc.perform(post(CONTEXT_PATH_PUBLIC_SERVICE_METADATA + "/validate")
-                .with(SG_USER2_CREDENTIALS)
+                .session(session)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(smv))

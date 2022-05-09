@@ -13,12 +13,13 @@ import eu.europa.ec.edelivery.smp.services.AlertService;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
+import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -41,6 +43,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProviderForUI.class);
 
     final UserDao mUserDao;
+    final ConversionService conversionService;
     final CRLVerifierService crlVerifierService;
     final UITruststoreService truststoreService;
     final ConfigurationService configurationService;
@@ -49,11 +52,13 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
 
     @Autowired
     public SMPAuthenticationProviderForUI(UserDao mUserDao,
+                                          ConversionService conversionService,
                                           CRLVerifierService crlVerifierService,
                                           AlertService alertService,
                                           UITruststoreService truststoreService,
                                           ConfigurationService configurationService) {
         this.mUserDao = mUserDao;
+        this.conversionService = conversionService;
         this.crlVerifierService = crlVerifierService;
         this.alertService = alertService;
         this.truststoreService = truststoreService;
@@ -66,14 +71,17 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
 
         Authentication authentication = null;
         // PreAuthentication token for the rest service certificate authentication
-        if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
-            authentication = authenticateByUsernamePassword((UsernamePasswordAuthenticationToken) authenticationToken);
+        LOG.debug("Authenticate authentication token type: [{}]", authenticationToken.getClass());
+        if (authenticationToken instanceof UILoginAuthenticationToken) {
+            authentication = authenticateByUsernamePassword((UILoginAuthenticationToken) authenticationToken);
         }
         return authentication;
     }
 
-    public Authentication authenticateByUsernamePassword(UsernamePasswordAuthenticationToken auth)
+    public Authentication authenticateByUsernamePassword(UILoginAuthenticationToken auth)
             throws AuthenticationException {
+
+        long startTime = Calendar.getInstance().getTimeInMillis();
 
         String username = auth.getName();
         String userCredentialToken = auth.getCredentials().toString();
@@ -83,7 +91,9 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
             Optional<DBUser> oUsr = mUserDao.findUserByUsername(username);
             if (!oUsr.isPresent()) {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider");
-                return null;
+                LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, "Username does not exits", username);
+                delayResponse(startTime);
+                throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
             user = oUsr.get();
         } catch (AuthenticationException ex) {
@@ -98,11 +108,18 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
 
         validateIfUserAccountIsSuspended(user);
 
+        SMPAuthority authority = SMPAuthority.getAuthorityByRoleName(user.getRole());
+        // the webservice authentication does not support session set the session secret is null!
+        SMPUserDetails userDetails = new SMPUserDetails(user,
+                SecurityUtils.generatePrivateSymmetricKey(),
+                Collections.singletonList(authority));
+
         String role = user.getRole();
-        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(username, userCredentialToken, Collections.singletonList(new SMPAuthority(role)), user);
+        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(username, userCredentialToken,
+                userDetails);
         try {
             if (!BCrypt.checkpw(userCredentialToken, user.getPassword())) {
-                loginAttemptForUserFailed(user);
+                loginAttemptForUserFailed(user, startTime);
             }
             user.setSequentialLoginFailureCount(0);
             user.setLastFailedLoginAttempt(null);
@@ -116,7 +133,20 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         return smpAuthenticationToken;
     }
 
-    public void loginAttemptForUserFailed(DBUser user) {
+    public void delayResponse(long startTime) {
+        int delayInMS = configurationService.getLoginFailDelayInMilliSeconds() - (int) (Calendar.getInstance().getTimeInMillis() - startTime);
+        if (delayInMS > 0) {
+            try {
+                LOG.debug("Delay response for [{}] ms to mask password/username login failures!", delayInMS);
+                Thread.sleep(delayInMS);
+            } catch (InterruptedException ie) {
+                LOG.debug("Thread interrupted during sleep.", ie);
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public void loginAttemptForUserFailed(DBUser user, long startTime) {
         user.setSequentialLoginFailureCount(user.getSequentialLoginFailureCount() != null ? user.getSequentialLoginFailureCount() + 1 : 1);
         user.setLastFailedLoginAttempt(OffsetDateTime.now());
         mUserDao.update(user);
@@ -127,6 +157,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         } else {
             alertService.alertCredentialVerificationFailed(user, CredentialTypeEnum.USERNAME_PASSWORD);
         }
+        delayResponse(startTime);
         throw new BadCredentialsException("Login failed; Invalid userID or password");
     }
 
@@ -175,7 +206,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> auth) {
         LOG.info("Support authentication: " + auth);
-        boolean supportAuthentication = auth.equals(UsernamePasswordAuthenticationToken.class);
+        boolean supportAuthentication = auth.equals(UILoginAuthenticationToken.class);
         if (!supportAuthentication) {
             LOG.warn("SMP does not support authentication type: " + auth);
         }

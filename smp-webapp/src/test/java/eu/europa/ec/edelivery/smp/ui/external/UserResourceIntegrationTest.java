@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -61,7 +62,6 @@ public class UserResourceIntegrationTest {
 
     @Test
     public void getUserList() throws Exception {
-
         MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(get(CONTEXT_PATH_INTERNAL_USER)
                 .session(session)
@@ -127,9 +127,11 @@ public class UserResourceIntegrationTest {
     public void testUpdateUserList() throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
+
+        SecurityMockMvcRequestPostProcessors.CsrfRequestPostProcessor csrf = csrf();
         MvcResult result = mvc.perform(get(CONTEXT_PATH_INTERNAL_USER)
                 .session(session)
-                .with(csrf()))
+                .with(csrf))
                 .andExpect(status().isOk()).andReturn();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         assertNotNull(res);
@@ -146,7 +148,7 @@ public class UserResourceIntegrationTest {
 
         mvc.perform(put(CONTEXT_PATH_INTERNAL_USER)
                 .session(session)
-                .with(csrf())
+                .with(csrf)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Arrays.asList(userRO)))
         ).andExpect(status().isOk());

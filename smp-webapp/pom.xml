@@ -103,10 +103,6 @@
             <artifactId>hamcrest-junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-cas</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

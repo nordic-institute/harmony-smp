@@ -13,13 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
-import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jndi.JndiObjectFactoryBean;
@@ -33,7 +33,6 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -54,6 +53,11 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 public class PropertyInitialization {
 
     SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyInitialization.class);
+    // if SMP is initialized without keystore - a demo keystore with test certificate is created
+    private static final String TEST_CERT_ISSUER_DN = "CN=rootCNTest,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE";
+    private static final String TEST_CERT_SUBJECT_DN = "CN=SMP_TEST-PRE-SET-EXAMPLE, OU=eDelivery, O=DIGITAL, C=BE";
+    private static final String TEST_CERT_ISSUER_ALIAS = "issuer";
+    private static final String TEST_CERT_CERT_ALIAS = "sample_key";
 
     protected Properties getDatabaseProperties(Properties fileProperties) {
         String dialect = fileProperties.getProperty(FileProperty.PROPERTY_DB_DIALECT);
@@ -211,7 +215,10 @@ public class PropertyInitialization {
             newKeystore.load(null, newKeyPassword.toCharArray());
             // check if keystore is empty then generate cert for user
             if (newKeystore.size() == 0) {
-                X509CertificateUtils.createAndAddTextCertificate("CN=SMP_TEST-PRE-SET-EXAMPLE, OU=eDelivery, O=DIGITAL, C=BE", newKeystore, newKeyPassword);
+                X509CertificateUtils.createAndStoreCertificateWithChain(
+                        new String []{TEST_CERT_ISSUER_DN, TEST_CERT_SUBJECT_DN},
+                        new String []{TEST_CERT_ISSUER_ALIAS, TEST_CERT_CERT_ALIAS},
+                        newKeystore, newKeyPassword);
             }
             newKeystore.store(out, newKeyPassword.toCharArray());
         } catch (IOException e) {

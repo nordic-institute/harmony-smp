@@ -50,7 +50,10 @@ public class ApplicationResource {
         SmpInfoRO info = new SmpInfoRO();
         info.setVersion(getDisplayVersion());
         info.setAuthTypes(configurationService.getUIAuthenticationTypes());
-        info.setSsoAuthenticationLabel(configurationService.getCasUILabel());
+        if (configurationService.getUIAuthenticationTypes().contains("SSO")){
+            info.setSsoAuthenticationLabel(configurationService.getCasUILabel());
+            info.setSsoAuthenticationURI(configurationService.getCasSMPLoginRelativePath());
+        }
         info.setContextPath(getRootContext());
         return info;
     }

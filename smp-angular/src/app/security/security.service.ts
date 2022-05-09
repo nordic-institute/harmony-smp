@@ -6,6 +6,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
+import {GlobalLookups} from "../common/global-lookups";
 
 @Injectable()
 export class SecurityService {
