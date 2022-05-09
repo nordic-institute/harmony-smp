@@ -1,43 +1,40 @@
 package eu.europa.ec.edelivery.smp.auth;
 
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collection;
 import java.util.Objects;
 
+/**
+ * UI and web service authentication token. The authentication is created by the authentication provider
+ *
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 public class SMPAuthenticationToken extends UsernamePasswordAuthenticationToken {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationToken.class);
-    private final DBUser user;
-    // session encryption key to encrypt sensitive data
-    // at the moment used for UI sessions
-    private SecurityUtils.Secret secret = null;
+    SMPUserDetails userDetails;
 
-    public SMPAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
-        this(principal, credentials, authorities, null);
-    }
-
-    public SMPAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, DBUser user) {
-        super(principal, credentials, authorities);
-        this.user = user;
-    }
-
-    public DBUser getUser() {
-        return user;
+    public SMPAuthenticationToken(Object principal, Object credentials, SMPUserDetails userDetails) {
+        super(principal, credentials, userDetails.getAuthorities());
+        setDetails(userDetails);
+        this.userDetails = userDetails;
     }
 
     public SecurityUtils.Secret getSecret() {
-        if (secret == null) {
-            LOG.debug("Secret does not yet exist. Create user session secret!");
-            secret = SecurityUtils.generatePrivateSymmetricKey();
-            LOG.debug("User session secret created!");
+
+        if (userDetails == null) {
+            LOG.warn("Can not retrieve security token for session. User details is null!");
+            return null;
         }
-        return secret;
+        return userDetails.getSessionSecret();
+    }
+
+    public SMPUserDetails getUserDetails() {
+        return userDetails;
     }
 
     @Override
@@ -47,11 +44,11 @@ public class SMPAuthenticationToken extends UsernamePasswordAuthenticationToken 
         if (!super.equals(o)) return false;
         SMPAuthenticationToken that = (SMPAuthenticationToken) o;
         // also check super equals (roles..) which is implemented in AbstractAuthenticationToken
-        return Objects.equals(user, that.user) && super.equals(that);
+        return Objects.equals(getDetails(), that.getDetails()) && super.equals(that);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), user);
+        return Objects.hash(super.hashCode(), getDetails());
     }
 }

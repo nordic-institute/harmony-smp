@@ -58,9 +58,9 @@ public class TruststoreAdminResourceIntegrationTest {
 
     @Before
     public void setup() throws IOException {
-        X509CertificateTestUtils.reloadKeystores();
         mvc = initializeMockMvc(webAppContext);
         uiTruststoreService.refreshData();
+        X509CertificateTestUtils.reloadKeystores();
     }
 
 
@@ -78,8 +78,8 @@ public class TruststoreAdminResourceIntegrationTest {
                 .session(session)
                 .with(csrf())
                 .content(buff))
-                .andExpect(status().is5xxServerError())
-                .andExpect(content().string(CoreMatchers.containsString(" The certificate is not valid")));
+                .andExpect(status().isOk())
+                .andExpect(content().string(CoreMatchers.containsString("Can not read the certificate!")));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -7,7 +8,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -41,6 +41,10 @@ import java.util.stream.Collectors;
 import static java.util.Collections.list;
 import static java.util.Locale.US;
 
+/**
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 @Service
 public class UITruststoreService {
 
@@ -168,15 +172,26 @@ public class UITruststoreService {
     /**
      * Validate certificate!
      *
-     * @param buff - bytearray of the certificate (pem of or der)
+     * @param buff     - bytearray of the certificate (pem of or der)
      * @param validate
      * @return
      * @throws CertificateException
      * @throws IOException
      */
     public CertificateRO getCertificateData(byte[] buff, boolean validate) {
-        X509Certificate cert = X509CertificateUtils.getX509Certificate(buff);
-        CertificateRO cro = convertToRo(cert);
+        X509Certificate cert = null;
+        CertificateRO cro = null;
+        try {
+            cert = X509CertificateUtils.getX509Certificate(buff);
+        } catch (CertificateException e) {
+            LOG.warn("Can not parse the certificate with error:[{}]!", ExceptionUtils.getRootCauseMessage(e));
+            cro = new CertificateRO();
+            cro.setInvalid(true);
+            cro.setInvalidReason("Can not read the certificate!");
+            return cro;
+        }
+
+        cro = convertToRo(cert);
         if (validate) {
             // first expect the worst
             cro.setInvalid(true);

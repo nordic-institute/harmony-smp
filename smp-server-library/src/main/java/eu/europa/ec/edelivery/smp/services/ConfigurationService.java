@@ -65,7 +65,7 @@ public class ConfigurationService {
     }
 
     public Integer getPasswordPolicyUIWarningDaysBeforeExpire() {
-        return (Integer) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_UIWARNING_DAYS_BEFORE_EXPIRE);
+        return (Integer) configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_WARNING_DAYS_BEFORE_EXPIRE);
     }
 
     public Boolean getPasswordPolicyForceChangeIfExpired() {
@@ -84,12 +84,22 @@ public class ConfigurationService {
         return (Integer) configurationDAO.getCachedPropertyValue(USER_SUSPENSION_TIME);
     }
 
+    public Integer getLoginFailDelayInMilliSeconds() {
+        Integer delay =(Integer) configurationDAO.getCachedPropertyValue(USER_LOGIN_FAIL_DELAY);
+        return delay==null? 1000:delay;
+    }
+
     public Integer getAccessTokenLoginMaxAttempts() {
         return (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_MAX_FAILED_ATTEMPTS);
     }
 
     public Integer getAccessTokenLoginSuspensionTimeInSeconds() {
         return (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_SUSPENSION_TIME);
+    }
+
+    public Integer getAccessTokenLoginFailDelayInMilliSeconds() {
+        Integer delay =(Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_FAIL_DELAY);
+        return delay==null? 1000:delay;
     }
 
     public Integer getHttpHeaderHstsMaxAge() {

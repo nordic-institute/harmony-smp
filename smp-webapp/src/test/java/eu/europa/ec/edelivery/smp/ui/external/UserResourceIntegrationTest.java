@@ -62,7 +62,6 @@ public class UserResourceIntegrationTest {
 
     @Test
     public void getUserList() throws Exception {
-
         MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(get(CONTEXT_PATH_INTERNAL_USER)
                 .session(session)
