@@ -123,9 +123,7 @@ validateAndPrepareArtefacts() {
     cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ./oracle/weblogic-12.2.1.3/
   fi
 
-  if [[ ! -d "./tomcat-mysql/artefacts/" ]]; then
-    mkdir -p "./tomcat-mysql/artefacts/"
-  fi
+
 
   if [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]; then
     mkdir -p "./tomcat-mysql-smp-sml/artefacts"
@@ -140,7 +138,6 @@ validateAndPrepareArtefacts() {
     # for weblogic
     cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-12.2.1.3-smp/smp.war
     # for mysql tomcat
-    cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql/artefacts/smp.war
     cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql-smp-sml/artefacts/smp.war
   fi
 
@@ -151,7 +148,6 @@ validateAndPrepareArtefacts() {
   else
     # copy artefact to docker build folder
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-12.2.1.3-smp/smp-setup.zip
-    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql/artefacts/smp-setup.zip
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
   fi
 
@@ -184,10 +180,6 @@ buildImages() {
 
   # build SMP deployment.
   docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2.1.3-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
-
-  # build tomcat mysql image  deployment.
-  docker build -t "smp-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql/ --build-arg SMP_VERSION=${SMP_VERSION}
-
   # build tomcat mysql image  deployment.
   docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
 
@@ -199,7 +191,6 @@ function pushImageToDockerhub() {
     # login to docker
     docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}" "${DOCKER_REGISTRY_HOST}"
     # push images
-    pushImageIfExisting "smp-tomcat-mysql:${SMP_VERSION}"
     pushImageIfExisting "smp-sml-tomcat-mysql:${SMP_VERSION}"
     pushImageIfExisting "smp-weblogic-122:${SMP_VERSION}"
     pushImageIfExisting "smp-oradb-11.2.0.2-xe:${SMP_VERSION}"
@@ -229,7 +220,6 @@ cleanArtefacts() {
   rm "./weblogic-12.2.1.3-smp/smp-setup.zip"
 
   # clear also the tomcat/mysql image
-  rm -rf "./tomcat-mysql/artefacts/*.*"
   rm -rf "./tomcat-mysql-smp-sml/artefacts/*.*"
 
   if [[ "V$SMP_ARTEFACTS_CLEAR" == "Vtrue" ]]; then

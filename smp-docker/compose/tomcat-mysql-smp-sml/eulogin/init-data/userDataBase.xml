@@ -1,0 +1,53 @@
+<userDataBase xmlns="https://ecas.ec.europa.eu/cas/schemas/mockup/db">
+	<user>
+		<authenticationCount>1</authenticationCount>
+		<badAuthenticationCount>0</badAuthenticationCount>
+		<email>Peter.PARKER@dummy-mail-not-exists.eu</email>
+		<firstName>Peter</firstName>
+		<goodAuthenticationCount>1</goodAuthenticationCount>
+		<lastName>Parker</lastName>
+		<objectStatus>a</objectStatus>
+		<organisation>eu.europa.ec</organisation>
+		<organisationUsername>user</organisationUsername>
+		<passwordChangeDn>uid=user,ou=people,dc=commission,dc=europa,dc=eu</passwordChangeDn>
+		<strongPasswordHash>123456</strongPasswordHash>
+		<passwordLastChangedTime></passwordLastChangedTime>
+		<uid>user</uid>
+		<cudGroups>DIGIT_SMP_USER</cudGroups>
+	</user>
+
+	<user>
+		<authenticationCount>1</authenticationCount>
+		<badAuthenticationCount>0</badAuthenticationCount>
+		<email>Tony.STARK@dummy-mail-not-exists.eu</email>
+		<firstName>Tony</firstName>
+		<goodAuthenticationCount>1</goodAuthenticationCount>
+		<lastName>Stark</lastName>
+		<objectStatus>a</objectStatus>
+		<organisation>eu.europa.ec</organisation>
+		<organisationUsername>smp</organisationUsername>
+		<passwordChangeDn>uid=smp,ou=people,dc=commission,dc=europa,dc=eu</passwordChangeDn>
+		<strongPasswordHash>123456</strongPasswordHash>
+		<passwordLastChangedTime></passwordLastChangedTime>
+		<uid>smp</uid>
+		<cudGroups>DIGIT_SMP_ADMIN</cudGroups>
+	</user>
+
+	<user>
+		<authenticationCount>1</authenticationCount>
+		<badAuthenticationCount>0</badAuthenticationCount>
+		<email>Bruce.BANNER@dummy-mail-not-exists.eu</email>
+		<firstName>Bruce</firstName>
+		<goodAuthenticationCount>1</goodAuthenticationCount>
+		<lastName>Banner</lastName>
+		<objectStatus>a</objectStatus>
+		<organisation>eu.europa.ec</organisation>
+		<organisationUsername>system</organisationUsername>
+		<passwordChangeDn>uid=system,ou=people,dc=commission,dc=europa,dc=eu</passwordChangeDn>
+		<strongPasswordHash>123456</strongPasswordHash>
+		<passwordLastChangedTime></passwordLastChangedTime>
+		<uid>system</uid>
+		<cudGroups>DIGIT_SMP_SYSTEM</cudGroups>
+	</user>
+
+</userDataBase>

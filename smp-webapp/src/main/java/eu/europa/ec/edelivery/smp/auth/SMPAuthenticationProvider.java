@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
@@ -19,7 +20,9 @@ import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.*;
+import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -60,12 +63,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      */
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US));
 
-    // generate dummyPassword hash just to mimic password validation to disable attacker to discover
-    // usernames because of different response times if password or username is wrong
-    private final String dummyPasswordHash;
-    private final String dummyPassword;
-
     final UserDao mUserDao;
+    final ConversionService conversionService;
     final CRLVerifierService crlVerifierService;
     final UITruststoreService truststoreService;
     final ConfigurationService configurationService;
@@ -73,13 +72,13 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     public SMPAuthenticationProvider(UserDao mUserDao,
+                                     ConversionService conversionService,
                                      CRLVerifierService crlVerifierService,
                                      UITruststoreService truststoreService,
                                      ConfigurationService configurationService,
                                      AlertService alertService) {
-        this.dummyPassword = UUID.randomUUID().toString();
-        this.dummyPasswordHash = BCrypt.hashpw(dummyPassword, BCrypt.gensalt());
         this.mUserDao = mUserDao;
+        this.conversionService = conversionService;
         this.crlVerifierService = crlVerifierService;
         this.truststoreService = truststoreService;
         this.configurationService = configurationService;
@@ -100,6 +99,12 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 LOG.warn("Unknown or null PreAuthenticatedAuthenticationToken principal type: " + principal);
             }
         } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
+            LOG.info("try to authentication Token: [{}] with user:[{}]" , authenticationToken.getClass(), authenticationToken.getPrincipal());
+            if (CasAuthenticationFilter.CAS_STATEFUL_IDENTIFIER.equalsIgnoreCase((String)authenticationToken.getPrincipal())
+             || CasAuthenticationFilter.CAS_STATELESS_IDENTIFIER.equalsIgnoreCase((String)authenticationToken.getPrincipal())){
+                LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
+                return null;
+            }
             authentication = authenticateByUsernameToken((UsernamePasswordAuthenticationToken) authenticationToken);
         }
 
@@ -122,7 +127,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      */
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
-
         KeyStore truststore = truststoreService.getTrustStore();
 
         DBUser user;
@@ -204,12 +208,26 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         // get role
         String role = "WS_" + user.getRole();
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, userToken, role);
-        SMPCertificateAuthentication authentication = new SMPCertificateAuthentication(principal, Collections.singletonList(new SMPAuthority(role)), user);
+        SMPCertificateAuthentication authentication = new SMPCertificateAuthentication(principal, Collections.singletonList(
+                SMPAuthority.getAuthorityByRoleName(role)), user);
 
         authentication.setAuthenticated(true);
         return authentication;
     }
 
+
+    public void delayResponse(long startTime) {
+        int delayInMS = configurationService.getAccessTokenLoginFailDelayInMilliSeconds() -  (int) (Calendar.getInstance().getTimeInMillis() - startTime);
+        if (delayInMS > 0) {
+            try {
+                LOG.debug("Delay response for [{}] ms to mask password/username login failures!", delayInMS);
+                Thread.sleep(delayInMS);
+            } catch (InterruptedException ie) {
+                LOG.debug("Thread interrupted during sleep.", ie);
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
 
     /**
      * Method tests if user account Suspended
@@ -259,18 +277,17 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
         String authenticationTokenId = auth.getName();
         String authenticationTokenValue = auth.getCredentials().toString();
+        long startTime = Calendar.getInstance().getTimeInMillis();
 
         DBUser user;
         try {
             Optional<DBUser> oUsr = mUserDao.findUserByAuthenticationToken(authenticationTokenId);
             if (!oUsr.isPresent() || !oUsr.get().isActive()) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, authenticationTokenId);
-                //run validation on dummy password to achieve similar response time
-                // as it would be if the password is invalid
-                BCrypt.checkpw(dummyPassword, dummyPasswordHash);
 
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
+                delayResponse(startTime);
                 throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
             }
             user = oUsr.get();
@@ -287,7 +304,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
         try {
             if (!BCrypt.checkpw(authenticationTokenValue, user.getAccessToken())) {
-                loginAttemptForAccessTokenFailed(user);
+                loginAttemptForAccessTokenFailed(user, startTime);
             }
             user.setSequentialTokenLoginFailureCount(0);
             user.setLastTokenFailedLoginAttempt(null);
@@ -297,14 +314,21 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, authenticationTokenId);
             throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
         }
-        String role = "WS_" + user.getRole();
-        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(authenticationTokenId, authenticationTokenValue, Collections.singletonList(new SMPAuthority(role)), user);
+        // the webservice authentication with corresponding web-service authority;
+        SMPAuthority authority = SMPAuthority.getAuthorityByRoleName("WS_" + user.getRole());
+        // the webservice authentication does not support session set the session secret is null!
+        SMPUserDetails userDetails = new SMPUserDetails(user, null,  Collections.singletonList(authority));
 
-        LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, authenticationTokenId, role);
+        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(authenticationTokenId,
+                authenticationTokenValue,
+                userDetails);
+
+        LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, authenticationTokenId, authority.getRole());
+
         return smpAuthenticationToken;
     }
 
-    public void loginAttemptForAccessTokenFailed(DBUser user) {
+    public void loginAttemptForAccessTokenFailed(DBUser user, long startTime) {
 
         user.setSequentialTokenLoginFailureCount(user.getSequentialTokenLoginFailureCount() != null ? user.getSequentialTokenLoginFailureCount() + 1 : 1);
         user.setLastTokenFailedLoginAttempt(OffsetDateTime.now());
@@ -321,6 +345,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         } else {
             alertService.alertCredentialVerificationFailed(user, CredentialTypeEnum.ACCESS_TOKEN);
         }
+        delayResponse(startTime);
         throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
     }
 

@@ -31,7 +31,10 @@ ENV SMP_HOME=/opt/smp  \
 # misc variables
    JACOCO_VERSION=0.8.4 \
    LANG=en_US.utf8  \
-   LD_LIBRARY_PATH=/usr/local/apr/lib
+   LD_LIBRARY_PATH=/usr/local/apr/lib \
+   # set debug
+   JPDA_ADDRESS="5005" \
+   JPDA_TRANSPORT="dt_socket"
 
 
 # Exposing ports used in entrypoint.sh ..
@@ -39,7 +42,8 @@ ENV SMP_HOME=/opt/smp  \
 # - 6901 JaCoCo port
 # - 8080 Tomcat port
 # - 53 dns port
-EXPOSE 3306 8080 6901 53
+# - JDPA debug port
+EXPOSE 3306 8080 6901 53 5005
 
 
 

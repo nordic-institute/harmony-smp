@@ -1,7 +1,9 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
@@ -9,85 +11,84 @@ import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.core.convert.ConversionService;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.servlet.view.RedirectView;
 
-import java.time.OffsetDateTime;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 
 public class AuthenticationResourceTest {
 
     SMPAuthenticationService authenticationService = Mockito.mock(SMPAuthenticationService.class);
     SMPAuthorizationService authorizationService = Mockito.mock(SMPAuthorizationService.class);
-    ConversionService conversionService = Mockito.mock(ConversionService.class);
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     SMPCookieWriter smpCookieWriter = Mockito.mock(SMPCookieWriter.class);
     CsrfTokenRepository csrfTokenRepository = Mockito.mock(CsrfTokenRepository.class);
     UIUserService uiUserService = Mockito.mock(UIUserService.class);
 
-    AuthenticationResource testInstance= new AuthenticationResource(authenticationService,
+    AuthenticationResource testInstance = new AuthenticationResource(authenticationService,
             authorizationService,
-            conversionService,
             configurationService,
             smpCookieWriter,
             csrfTokenRepository,
             uiUserService);
+
     @Test
-    public void testGetUpdatedUserData() {
-        UserRO user  = new UserRO();
-        user.setPasswordExpireOn(OffsetDateTime.now().minusDays(1));
-        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
-        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
-        Mockito.doReturn(user).when(authorizationService).sanitize(Mockito.any());
+    public void logout() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        Mockito.doNothing().when(authenticationService).logout(Mockito.any(), Mockito.any());
+        testInstance.logout(request, response);
 
-        user = testInstance.getUpdatedUserData(user);
-
-        Assert.assertTrue(user.isShowPasswordExpirationWarning());
-        Assert.assertFalse(user.isForceChangeExpiredPassword());
-        Assert.assertFalse(user.isPasswordExpired());
+        Mockito.verify(authenticationService, Mockito.times(1)).logout(request, response);
     }
 
     @Test
-    public void testGetUpdatedUserDataDoNotShowWarning() {
-        UserRO user  = new UserRO();
-        user.setPasswordExpireOn(OffsetDateTime.now().minusDays(11));
-        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
-        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
-        Mockito.doReturn(user).when(authorizationService).sanitize(Mockito.any());
+    public void authenticateCAS() {
 
-        user = testInstance.getUpdatedUserData(user);
-
-        Assert.assertFalse(user.isShowPasswordExpirationWarning());
-        Assert.assertFalse(user.isForceChangeExpiredPassword());
-        Assert.assertFalse(user.isPasswordExpired());
+        RedirectView result = testInstance.authenticateCAS();
+        Assert.assertNotNull(result);
+        Assert.assertEquals("../../../#/", result.getUrl());
     }
 
     @Test
-    public void testGetUpdatedUserDataForceChange() {
-        UserRO user  = new UserRO();
-        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
-        user.setPasswordExpired(true);
-        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
-        Mockito.doReturn(true).when(configurationService).getPasswordPolicyForceChangeIfExpired();
-        Mockito.doReturn(user).when(authorizationService).sanitize(Mockito.any());
-
-        user = testInstance.getUpdatedUserData(user);
-
-        Assert.assertTrue(user.isForceChangeExpiredPassword());
-        Assert.assertTrue(user.isPasswordExpired());
+    public void getUser() {
+        UserRO user = new UserRO();
+        Mockito.doReturn(user).when(authorizationService).getLoggedUserData();
+        UserRO result = testInstance.getUser();
+        Assert.assertEquals(user, result);
     }
 
     @Test
-    public void testGetUpdatedUserDataForceChangeFalse() {
-        UserRO user  = new UserRO();
-        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
-        user.setPasswordExpired(true);
-        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
-        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
-        Mockito.doReturn(user).when(authorizationService).sanitize(Mockito.any());
+    public void recreatedSessionCookie() {
+        String cookieName = SESSION_COOKIE_NAME;
+        String cookieValue = "CookieValue";
+        boolean sessionCookieSecure = true;
+        String sessionCookiePath = "getSessionCookiePath";
+        String sessionCookieSameSite = "getSessionCookieSameSite";
+        Integer sessionCookieMaxAge = 12;
 
-        user = testInstance.getUpdatedUserData(user);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.doReturn(session).when(request).getSession(Mockito.anyBoolean());
+        Mockito.doReturn(cookieValue).when(session).getId();
+        Mockito.doReturn(sessionCookieSecure).when(configurationService).getSessionCookieSecure();
+        Mockito.doReturn(sessionCookieMaxAge).when(configurationService).getSessionCookieMaxAge();
+        Mockito.doReturn(sessionCookiePath).when(configurationService).getSessionCookiePath();
+        Mockito.doReturn(sessionCookieSameSite).when(configurationService).getSessionCookieSameSite();
 
-        Assert.assertFalse(user.isForceChangeExpiredPassword());
-        Assert.assertTrue(user.isPasswordExpired());
+
+        Mockito.doNothing().when(smpCookieWriter).writeCookieToResponse(cookieName,
+                cookieValue, sessionCookieSecure, sessionCookieMaxAge, sessionCookiePath, sessionCookieSameSite, request, response);
+
+        testInstance.recreatedSessionCookie(request, response);
+
+        Mockito.verify(smpCookieWriter, Mockito.times(1)).writeCookieToResponse(cookieName,
+                cookieValue, sessionCookieSecure, sessionCookieMaxAge, sessionCookiePath, sessionCookieSameSite, request, response);
     }
 }

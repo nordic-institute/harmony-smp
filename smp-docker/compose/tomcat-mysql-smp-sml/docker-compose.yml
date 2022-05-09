@@ -3,12 +3,33 @@ services:
   tomcat-mysql-sml:
     image: smp-sml-tomcat-mysql:${SMP_VERSION}
     container_name: smp-sml-tomcat-mysql
+    hostname: eulogin.protected.smp.local
     environment:
-      - SMP_INIT_PROPERTIES=smp.passwordPolicy.expired.forceChange=false||smp.cluster.enabled=false
+      - SMP_INIT_PROPERTIES=smp.passwordPolicy.expired.forceChange=false
+        ||smp.cluster.enabled=false
+        ||smp.ui.authentication.types=PASSWORD|SSO
+        ||smp.sso.cas.url=https://eulogin-mock-server:7102/cas
+        ||smp.sso.cas.urlpath.login=login
+        ||smp.sso.cas.token.validation.urlpath=laxValidate
+        ||smp.sso.cas.callback.url=http://eulogin.protected.smp.local:8982/smp/ui/public/rest/security/cas
+
     volumes:
-      - ./properties/db-scripts:/tmp/custom-data/  # init script.
+      - ./properties/db-scripts:/tmp/custom-data/
+      - ./properties/keystores:/tmp/keystores/
     ports:
       - "3908:3306"
       - "8982:8080"
       - "6902:6901"
       - "8953:53"
+      - "5005:5005"
+
+  eulogin-mock-server:
+    image: edelivery-docker.devops.tech.ec.europa.eu/eulogin/mockserver:6.2.7
+    container_name: eulogin
+    hostname: eulogin-mock-server
+    volumes:
+        - ./eulogin/init-data:/resources/ecas-mock-server
+ # Map this folder to host to be able to change runtime data for manual testing!
+ #       - ./eulogin/ecas-mock-server:/data/ecas-mock-server
+    ports:
+      - "7102:7102"

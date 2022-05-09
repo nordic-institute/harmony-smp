@@ -56,7 +56,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         } else {
           this.router.navigate([this.returnUrl]);
         }
-        this.lookups.refreshApplicationConfiguration();
       });
 
     this.securityEventService.onLoginErrorEvent().subscribe(

@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
@@ -73,10 +74,10 @@ public class UserAdminResource {
     @PostMapping(value = "validate-delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public DeleteEntityValidation validateDeleteUsers(@RequestBody List<String> queryEncIds) {
-        DBUser user = getCurrentUser();
+        SMPUserDetails userDetails = getLoggedUserData();
         List<Long> query = queryEncIds.stream().map(SessionSecurityUtils::decryptEntityId).collect(Collectors.toList());
         DeleteEntityValidation dres = new DeleteEntityValidation();
-        if (query.contains(user.getId())) {
+        if (query.contains(userDetails.getUser().getId())) {
             dres.setValidOperation(false);
             dres.setStringMessage("Could not delete logged user!");
             return dres;
@@ -85,9 +86,7 @@ public class UserAdminResource {
         return uiUserService.validateDeleteRequest(dres);
     }
 
-    private DBUser getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SMPAuthenticationToken authToken = (SMPAuthenticationToken) authentication;
-        return authToken.getUser();
+    private SMPUserDetails getLoggedUserData() {
+        return authorizationService.getAndValidateUserDetails();
     }
 }

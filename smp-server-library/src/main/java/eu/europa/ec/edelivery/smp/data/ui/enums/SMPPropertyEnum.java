@@ -72,11 +72,14 @@ public enum SMPPropertyEnum {
             "The error message shown to the user in case the password does not follow the regex put in the domibus.passwordPolicy.pattern property", false, false,false, STRING),
     PASSWORD_POLICY_VALID_DAYS("smp.passwordPolicy.validDays","90",
             "Number of days password is valid", false, false,false, INTEGER),
-    PASSWORD_POLICY_UIWARNING_DAYS_BEFORE_EXPIRE("smp.passwordPolicy.warning.beforeExpiration","15",
+    PASSWORD_POLICY_WARNING_DAYS_BEFORE_EXPIRE("smp.passwordPolicy.warning.beforeExpiration","15",
             "How many days before expiration should the UI warn users at login", false, false,false, INTEGER),
 
     PASSWORD_POLICY_FORCE_CHANGE_EXPIRED("smp.passwordPolicy.expired.forceChange","true",
             "Force change password at UI login if expired", false, false,false, BOOLEAN),
+
+    USER_LOGIN_FAIL_DELAY("smp.user.login.fail.delay","1000",
+            "Delay in ms on invalid username or password", false, false,false, INTEGER),
 
     USER_MAX_FAILED_ATTEMPTS("smp.user.login.maximum.attempt","5",
             "Number of console login attempt before the user is deactivated", false, false,false, INTEGER),
@@ -89,7 +92,8 @@ public enum SMPPropertyEnum {
             "Number of accessToken login attempt before the accessToken is deactivated", false, false,false, INTEGER),
     ACCESS_TOKEN_SUSPENSION_TIME("smp.accessToken.login.suspension.time","3600",
             "Time in seconds for a suspended accessToken to be reactivated. (if 0 the user will not be reactivated)", false, false,false, INTEGER),
-
+    ACCESS_TOKEN_FAIL_DELAY("smp.accessToken.login.fail.delay","1000",
+            "Delay in ms on invalid token id or token", false, false,false, INTEGER),
 
     // authentication
     UI_AUTHENTICATION_TYPES("smp.ui.authentication.types", "PASSWORD", "Set list of '|' separated authentication types: PASSWORD|SSO.", false, false, false, LIST_STRING),
@@ -105,10 +109,11 @@ public enum SMPPropertyEnum {
 
     // SSO configuration
     SSO_CAS_UI_LABEL("smp.sso.cas.ui.label", "EU Login", "The SSO service provider label.", false, false, true, STRING),
-    SSO_CAS_URL("smp.sso.cas.url", "http://localhost:8080/cas/", "The SSO CAS URL enpoint", false, false, true, URL),
+    SSO_CAS_URL("smp.sso.cas.url", "http://localhost:8080/cas/", "The SSO CAS URL endpoint", false, false, true, URL),
     SSO_CAS_URLPATH_LOGIN("smp.sso.cas.urlpath.login", "login", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.login}.", false, false, true, STRING),
-    SSO_CAS_CALLBACK_URL("smp.sso.cas.callback.url", "http://localhost:8080/smp/ui/rest/security/cas", "The URL is the callback URL belonging to the local SMP Security System. If using RP make sure it target SMP path '/ui/rest/security/cas'", false, false, true, URL),
-    SSO_CAS_TOKEN_VALIDATION_URLPATH("smp.sso.cas.token.validation.urlpath", "http://localhost:8080/cas/", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.token.validation}.", false, false, true, STRING),
+    SSO_CAS_CALLBACK_URL("smp.sso.cas.callback.url", "http://localhost:8080/smp/ui/public/rest/security/cas", "The URL is the callback URL belonging to the local SMP Security System. If using RP make sure it target SMP path '/ui/public/rest/security/cas'", false, false, true, URL),
+    SSO_CAS_SMP_LOGIN_URI("smp.sso.cas.smp.uri", "/smp/ui/public/rest/security/cas", "SMP relative path which triggers CAS authentication", false, false, true, STRING),
+    SSO_CAS_TOKEN_VALIDATION_URLPATH("smp.sso.cas.token.validation.urlpath", "laxValidate", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath}.", false, false, true, STRING),
     SSO_CAS_TOKEN_VALIDATION_PARAMS("smp.sso.cas.token.validation.params", "acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP", "The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'", false, false, true, MAP_STRING),
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.", false, false, true, LIST_STRING),
 

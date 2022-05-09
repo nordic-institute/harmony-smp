@@ -1,44 +1,62 @@
 package eu.europa.ec.edelivery.smp.auth;
 
+import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
+
 public class SMPAuthorizationServiceTest {
 
-    DBUser user = null;
+    UserRO user = null;
     SecurityContext mockSecurityContextSystemAdmin = null;
     SecurityContext mockSecurityContextSMPAdmin = null;
     SecurityContext mockSecurityContextSGAdmin = null;
     ServiceGroupService serviceGroupService = Mockito.mock(ServiceGroupService.class);
+    ConversionService conversionService = Mockito.mock(ConversionService.class);
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    UserDao userDao = Mockito.mock(UserDao.class);
 
-    SMPAuthorizationService testInstance = new SMPAuthorizationService(serviceGroupService);
+    SMPAuthorizationService testInstance = new SMPAuthorizationService(serviceGroupService, conversionService,
+            configurationService, userDao);
 
 
     @Before
     public void setup() {
 
-        user = new DBUser();
-        user.setId((long) 10);
-
+        user = new UserRO();
+        SMPUserDetails sysUserDetails = new SMPUserDetails(new DBUser() {{
+            setId(10L);
+            setUsername("sys_admin");
+        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN));
+        SMPUserDetails smpUserDetails = new SMPUserDetails(new DBUser() {{
+            setUsername("smp_admin");
+        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SMP_ADMIN));
+        SMPUserDetails sgUserDetails = new SMPUserDetails(new DBUser() {{
+            setUsername("smp_admin");
+        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SERVICE_GROUP));
 
         mockSecurityContextSystemAdmin = new SecurityContext() {
-            SMPAuthenticationToken smpa = new SMPAuthenticationToken("sys_admin", "test123", Collections.singletonList(SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN), user);
+            SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", sysUserDetails);
 
             @Override
             public Authentication getAuthentication() {
@@ -50,7 +68,7 @@ public class SMPAuthorizationServiceTest {
             }
         };
         mockSecurityContextSMPAdmin = new SecurityContext() {
-            SMPAuthenticationToken smpa = new SMPAuthenticationToken("smp_admin", "test123", Collections.singletonList(SMPAuthority.S_AUTHORITY_SMP_ADMIN), user);
+            SMPAuthenticationToken smpa = new SMPAuthenticationToken("smp_admin", "test123", smpUserDetails);
 
             @Override
             public Authentication getAuthentication() {
@@ -62,7 +80,7 @@ public class SMPAuthorizationServiceTest {
             }
         };
         mockSecurityContextSGAdmin = new SecurityContext() {
-            SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", Collections.singletonList(SMPAuthority.S_AUTHORITY_SERVICE_GROUP), user);
+            SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", sgUserDetails);
 
             @Override
             public Authentication getAuthentication() {
@@ -126,6 +144,62 @@ public class SMPAuthorizationServiceTest {
         // when then system admin is not  authorized to manage SMP
         boolean bVal = testInstance.isAuthorizedForManagingTheServiceMetadataGroup(10L);
         assertFalse(bVal);
+    }
+
+    @Test
+    public void testGetUpdatedUserData() {
+        UserRO user = new UserRO();
+        user.setPasswordExpireOn(OffsetDateTime.now().minusDays(1));
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+
+        user = testInstance.getUpdatedUserData(user);
+
+        Assert.assertTrue(user.isShowPasswordExpirationWarning());
+        Assert.assertFalse(user.isForceChangeExpiredPassword());
+        Assert.assertFalse(user.isPasswordExpired());
+    }
+
+    @Test
+    public void testGetUpdatedUserDataDoNotShowWarning() {
+        UserRO user = new UserRO();
+        user.setPasswordExpireOn(OffsetDateTime.now().minusDays(11));
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+
+        user = testInstance.getUpdatedUserData(user);
+
+        Assert.assertFalse(user.isShowPasswordExpirationWarning());
+        Assert.assertFalse(user.isForceChangeExpiredPassword());
+        Assert.assertFalse(user.isPasswordExpired());
+    }
+
+    @Test
+    public void testGetUpdatedUserDataForceChange() {
+        UserRO user = new UserRO();
+        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
+        user.setPasswordExpired(true);
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(true).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+
+        user = testInstance.getUpdatedUserData(user);
+
+        Assert.assertTrue(user.isForceChangeExpiredPassword());
+        Assert.assertTrue(user.isPasswordExpired());
+    }
+
+    @Test
+    public void testGetUpdatedUserDataForceChangeFalse() {
+        UserRO user = new UserRO();
+        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
+        user.setPasswordExpired(true);
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+
+        user = testInstance.getUpdatedUserData(user);
+
+        Assert.assertFalse(user.isForceChangeExpiredPassword());
+        Assert.assertTrue(user.isPasswordExpired());
     }
 
 }

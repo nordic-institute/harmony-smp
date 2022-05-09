@@ -40,6 +40,9 @@ public class MockMvcUtils {
     private static final String SG_USER_USERNAME = "sg_admin";
     private static final String SG_USER_PASSWD = "test123";
 
+    private static final String SG_USER2_USERNAME = "test_user_hashed_pass";
+    private static final String SG_USER2_PASSWD = "test123";
+
 
     public static RequestPostProcessor getHttpBasicSystemAdminCredentials() {
         return httpBasic(SYS_ADMIN_USERNAME, SYS_ADMIN_PASSWD);
@@ -51,6 +54,10 @@ public class MockMvcUtils {
 
     public static RequestPostProcessor getHttpBasicServiceGroupUserCredentials() {
         return httpBasic(SG_USER_USERNAME, SG_USER_PASSWD);
+    }
+
+    public static RequestPostProcessor getHttpBasicServiceGroupUser2Credentials() {
+        return httpBasic(SG_USER2_USERNAME, SG_USER2_PASSWD);
     }
 
     /**
@@ -84,6 +91,10 @@ public class MockMvcUtils {
      */
     public static MockHttpSession loginWithServiceGroupUser(MockMvc mvc) throws Exception {
         return loginWithCredentials(mvc, SG_USER_USERNAME, SG_USER_PASSWD);
+    }
+
+    public static MockHttpSession loginWithServiceGroupUser2(MockMvc mvc) throws Exception {
+        return loginWithCredentials(mvc, SG_USER2_USERNAME, SG_USER2_PASSWD);
     }
 
     /**
