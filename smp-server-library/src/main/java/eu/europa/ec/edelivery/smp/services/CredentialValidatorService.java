@@ -67,7 +67,7 @@ public class CredentialValidatorService {
     }
 
     protected void validateCredentialsForExpiredUsernames() {
-        Boolean alertExpired = configurationService.getAlertBeforeExpirePasswordEnabled();
+        Boolean alertExpired = configurationService.getAlertExpiredPasswordEnabled();
         if (alertExpired == null || !alertExpired) {
             LOG.debug("Expire user password validation is disabled");
             return;
@@ -94,7 +94,7 @@ public class CredentialValidatorService {
     }
 
     protected void validateCredentialsForExpiredAccessToken() {
-        Boolean alertExpired = configurationService.getAlertBeforeExpireAccessTokenEnabled();
+        Boolean alertExpired = configurationService.getAlertExpiredAccessTokenEnabled();
         if (alertExpired == null || !alertExpired) {
             LOG.debug("Expire user AccessToken validation is disabled");
             return;
@@ -122,7 +122,7 @@ public class CredentialValidatorService {
     }
 
     protected void validateCredentialsForExpiredCertificate() {
-        Boolean alertExpired = configurationService.getAlertBeforeExpireCertificateEnabled();
+        Boolean alertExpired = configurationService.getAlertExpiredCertificateEnabled();
         if (alertExpired == null || !alertExpired) {
             LOG.debug("Expire user Certificate validation is disabled");
             return;

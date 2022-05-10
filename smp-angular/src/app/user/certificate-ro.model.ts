@@ -6,7 +6,7 @@ export interface CertificateRo {
   issuer: string;
   serialNumber: string;
   fingerprints: string;
-  blueCoatHeader?:string;
+  clientCertHeader?:string;
   encodedValue?:string;
   crlUrl?: String;
   alias?:string;
