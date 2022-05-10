@@ -85,8 +85,8 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
         assertFalse(dbsg.isPresent()); // test if exists - it must not :)
 
         // when
-        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, TEST_DOMAIN_CODE_2, TestConstants.USERNAME_1,
-                TestConstants.USERNAME_1);
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, TEST_DOMAIN_CODE_2, TestConstants.USERNAME_TOKEN_1,
+                TestConstants.USERNAME_TOKEN_1);
         Optional<DBServiceGroup> optRes = dbAssertion.findAndInitServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
 
         // then
@@ -111,8 +111,8 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
         assertNotEquals(extension, newExtension); // extension updated
 
         // when
-        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, TEST_DOMAIN_CODE_1, TestConstants.USERNAME_1,
-                TestConstants.USERNAME_1);
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, TEST_DOMAIN_CODE_1, ""+ TestConstants.USERNAME_TOKEN_1,
+                TestConstants.USERNAME_TOKEN_1);
         serviceGroupDao.clearPersistenceContext();
 
         Optional<DBServiceGroup> optRes = dbAssertion.findAndInitServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
