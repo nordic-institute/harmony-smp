@@ -351,7 +351,7 @@ public class ConfigurationService {
         return AlertLevelEnum.valueOf(level);
     }
 
-    public String getAlertBeforeUserSuspendedSubject() {
+    public String getAlertUserSuspendedSubject() {
         return (String) configurationDAO.getCachedPropertyValue(ALERT_USER_SUSPENDED_MAIL_SUBJECT);
     }
 

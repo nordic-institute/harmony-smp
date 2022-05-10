@@ -100,8 +100,8 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         DBDomain domain = domainDao.getTheOnlyDomain().get();
         assertNotNull(domain);
         // when
-        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_1,
-                TestConstants.USERNAME_1);
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_TOKEN_1,
+                TestConstants.USERNAME_TOKEN_1);
 
         Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
 
@@ -122,8 +122,8 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
        assertNotNull(domain);
 
        // when
-       boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_1,
-               TestConstants.USERNAME_1);
+       boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_TOKEN_1,
+               TestConstants.USERNAME_TOKEN_1);
 
 
        Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
@@ -148,8 +148,8 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         assertFalse(Arrays.equals(extension, newExtension)); // extension updated
 
         // when
-        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_1,
-                TestConstants.USERNAME_1);
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_TOKEN_1,
+                TestConstants.USERNAME_TOKEN_1);
 
 
         Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
@@ -174,8 +174,8 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
     public void saveAndDeletePositiveScenario() throws IOException {
         // given
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
-        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_1,
-                TestConstants.USERNAME_1);
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_TOKEN_1,
+                TestConstants.USERNAME_TOKEN_1);
         assertTrue(bCreated);
         serviceGroupDao.clearPersistenceContext();
 
@@ -277,7 +277,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         expectedExeption.expectMessage(DOMAIN_NOT_EXISTS.getMessage(domain));
 
         //execute
-        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_1, USERNAME_1);
+        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_TOKEN_1, USERNAME_TOKEN_1);
     }
 
     @Test
@@ -290,7 +290,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
                 DomainService.DOMAIN_ID_PATTERN.pattern()));
 
         //execute
-        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_1, USERNAME_1);
+        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_TOKEN_1, USERNAME_TOKEN_1);
     }
 
     @Test
