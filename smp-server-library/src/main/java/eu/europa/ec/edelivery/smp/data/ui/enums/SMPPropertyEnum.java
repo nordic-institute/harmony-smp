@@ -79,7 +79,7 @@ public enum SMPPropertyEnum {
             "Force change password at UI login if expired", false, false,false, BOOLEAN),
 
     USER_LOGIN_FAIL_DELAY("smp.user.login.fail.delay","1000",
-            "Delay in ms on invalid username or password", false, false,false, INTEGER),
+            "Delay response in ms on invalid username or password", false, false,false, INTEGER),
 
     USER_MAX_FAILED_ATTEMPTS("smp.user.login.maximum.attempt","5",
             "Number of console login attempt before the user is deactivated", false, false,false, INTEGER),

@@ -104,8 +104,8 @@ export class DomainComponent implements AfterViewInit {
         width: 120
       },
       {
-        name: 'SML BueCoat Auth.',
-        prop: 'smlBlueCoatAuth',
+        name: 'SML ClientCert Auth.',
+        prop: 'smlClientCertAuth',
         showInitially: true,
         width: 130
       },
@@ -174,10 +174,10 @@ export class DomainComponent implements AfterViewInit {
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
 
-    if (!domainRo.smlClientCertHeader && domainRo.smlBlueCoatAuth) {
+    if (!domainRo.smlClientCertHeader && domainRo.smlClientCertAuth) {
       return false;
     }
-    if (!domainRo.smlClientKeyAlias && !domainRo.smlBlueCoatAuth) {
+    if (!domainRo.smlClientKeyAlias && !domainRo.smlClientCertAuth) {
       return false;
     }
 
@@ -194,10 +194,10 @@ export class DomainComponent implements AfterViewInit {
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
 
-    if (!domainRo.smlClientCertHeader && domainRo.smlBlueCoatAuth) {
+    if (!domainRo.smlClientCertHeader && domainRo.smlClientCertAuth) {
       return false;
     }
-    if (!domainRo.smlClientKeyAlias && !domainRo.smlBlueCoatAuth) {
+    if (!domainRo.smlClientKeyAlias && !domainRo.smlClientCertAuth) {
       return false;
     }
 

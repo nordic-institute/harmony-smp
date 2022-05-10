@@ -102,13 +102,13 @@
           <mat-form-field style="width:100%"
                           matTooltip="SML Client-Cert http Header used for SML authentication. The header is generated from chosen  SML ClientCert Alias">
             <input matInput placeholder="SML ClientCert Header" name="Client certificate" id="smlClientHeader_id"
-                   [value]="selectedSMLCert?.blueCoatHeader" maxlength="2000" readonly="true">
+                   [value]="selectedSMLCert?.clientCertHeader" maxlength="2000" readonly="true">
           </mat-form-field>
 
           <mat-slide-toggle style="width:100%"
-                            mat-no-ink class="mat-primary" [formControl]="domainForm.controls['smlBlueCoatAuth']"
-                            id="smlBlueCoatAuth_id">
-            Use blueCoat http header authentication.
+                            mat-no-ink class="mat-primary" [formControl]="domainForm.controls['smlClientCertAuth']"
+                            id="smlClientCertHeaderAuth_id">
+            Use ClientCert http header authentication.
           </mat-slide-toggle>
 
         </fieldset>
