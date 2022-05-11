@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -20,6 +21,10 @@ import static org.junit.Assert.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class PropertyUtilsTest {
+
+    private static final List<SMPPropertyEnum> SENSITIVE_PROPERTIES = Arrays.asList(
+
+            HTTP_PROXY_PASSWORD, KEYSTORE_PASSWORD, TRUSTSTORE_PASSWORD, KEYSTORE_PASSWORD_DECRYPTED, TRUSTSTORE_PASSWORD_DECRYPTED, MAIL_SERVER_PASSWORD);
 
     private static final Object[] testTypeValues() {
         return new Object[][]{
@@ -169,6 +174,23 @@ public class PropertyUtilsTest {
                 break;
             default:
                 fail("Unknown property type");
+        }
+    }
+
+
+    @Test
+    public void testIsSensitiveData() {
+        for (SMPPropertyEnum smpPropertyEnum: SMPPropertyEnum.values()){
+            Assert.assertEquals(SENSITIVE_PROPERTIES.contains(smpPropertyEnum), PropertyUtils.isSensitiveData(smpPropertyEnum.getProperty()));
+        }
+    }
+
+    @Test
+    public void getMaskedData() {
+        String testValue = "TestValue";
+        for (SMPPropertyEnum smpPropertyEnum: SMPPropertyEnum.values()){
+            String expectedValue = SENSITIVE_PROPERTIES.contains(smpPropertyEnum)?"*******":testValue;
+            Assert.assertEquals(expectedValue, PropertyUtils.getMaskedData(smpPropertyEnum.getProperty(),testValue));
         }
     }
 }

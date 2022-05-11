@@ -12,6 +12,17 @@ services:
         ||smp.sso.cas.urlpath.login=login
         ||smp.sso.cas.token.validation.urlpath=laxValidate
         ||smp.sso.cas.callback.url=http://eulogin.protected.smp.local:8982/smp/ui/public/rest/security/cas
+        ||mail.smtp.host=mail-server.smp.local
+        ||mail.smtp.port=2500
+        ||smp.alert.user.login_failure.enabled=true
+        ||smp.alert.user.suspended.enabled=true
+        ||smp.alert.password.imminent_expiration.enabled=true
+        ||smp.alert.password.expired.enabled=true
+        ||smp.alert.accessToken.imminent_expiration.enabled=true
+        ||smp.alert.accessToken.expired.enabled=true
+        ||smp.alert.certificate.imminent_expiration.enabled=true
+        ||smp.alert.certificate.expired.enabled=true
+        ||smp.alert.accessToken.expired.enabled=true
 
     volumes:
       - ./properties/db-scripts:/tmp/custom-data/
@@ -33,3 +44,9 @@ services:
  #       - ./eulogin/ecas-mock-server:/data/ecas-mock-server
     ports:
       - "7102:7102"
+
+  mail-service:
+    image: inbucket/inbucket:3.0.0
+    hostname: mail-server.smp.local
+    ports:
+      - "9005:9000"

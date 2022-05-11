@@ -45,8 +45,11 @@ INSERT INTO bdmsl_certificate_domain(certificate, crl_url,  is_root_ca, fk_subdo
 ('CN=rootCNIsa,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE','',1, 3, NOW(), NOW(),1),
 ('CN=AdministratorSML,OU=B4,O=DIGIT,C=BE','',0, 2, NOW(), NOW(),1);
 
+INSERT INTO bdmsl_certificate (id, certificate_id, valid_from ,valid_until,created_on, last_updated_on ) VALUES
+(id, 'CN=SMP_TEST-PRE-SET-EXAMPLE,O=DIGITAL,C=BE:00000000000000000000000000000001',DATE_ADD(NOW(), INTERVAL -3 DAY),DATE_ADD(NOW(), INTERVAL 365 DAY), NOW(), NOW());
 
-
+INSERT INTO bdmsl_smp (smp_id, fk_certificate_id, fk_subdomain_id, endpoint_logical_address, endpoint_physical_address, created_on, last_updated_on ) VALUES
+('CEF-SMP-001', 1,1, 'http://localhost:8080/smp/','0.0.0.0',NOW(), NOW());
 
 
 
