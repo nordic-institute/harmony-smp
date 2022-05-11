@@ -15,6 +15,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 public class PropertyUtils {
 
 
+    private static final String MASKED_VALUE = "*******";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyUtils.class);
     private static final String REG_EXP_SEPARATOR = "\\|";
 
@@ -153,8 +155,33 @@ public class PropertyUtils {
             case STRING:
                 return value;
         }
-        // property va
-
         return null;
+    }
+
+
+    /**
+     * Return true for properties with sensitive data. For example the property value must not be logged
+     * or returned via WS!
+     *
+     * @param property - value to validate if contains sensitive data
+     * @return true if data is sensitive, else return false
+     */
+    public static boolean isSensitiveData(String property) {
+        Optional<SMPPropertyEnum> propOpt = SMPPropertyEnum.getByProperty(trim(property));
+        if (propOpt.isPresent()) {
+            return propOpt.get().isEncrypted() || property.toLowerCase().contains(".password.decrypted");
+        }
+        LOG.warn("Database property [{}] is not recognized by the SMP!", property);
+        return false;
+    }
+
+    /**
+     * Method returns 'masked' value for sensitive property data
+     * @param property
+     * @param value
+     * @return masked value for sensitive properties. Else it returns value!
+     */
+    public static String getMaskedData(String property, String value) {
+        return isSensitiveData(property) ? MASKED_VALUE : value;
     }
 }

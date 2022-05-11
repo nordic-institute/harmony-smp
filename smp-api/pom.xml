@@ -23,6 +23,7 @@
 
     <artifactId>smp-api</artifactId>
     <name>smp-api</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <!-- Generated equals() methods need it in runtime -->

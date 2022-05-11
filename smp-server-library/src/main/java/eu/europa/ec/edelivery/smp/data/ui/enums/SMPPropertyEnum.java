@@ -117,7 +117,7 @@ public enum SMPPropertyEnum {
     SSO_CAS_TOKEN_VALIDATION_PARAMS("smp.sso.cas.token.validation.params", "acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP", "The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'", false, false, true, MAP_STRING),
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.", false, false, true, LIST_STRING),
 
-    MAIL_SERVER_HOST("mail.smtp.host", "mail.server.com", "Email server - configuration for submitting the emails.", false,false, false, STRING),
+    MAIL_SERVER_HOST("mail.smtp.host", "", "Email server - configuration for submitting the emails.", false,false, false, STRING),
     MAIL_SERVER_PORT("mail.smtp.port", "25", "Smtp mail port - configuration for submitting the emails.", false,false, false,INTEGER),
     MAIL_SERVER_PROTOCOL("mail.smtp.protocol", "smtp", "smtp mail protocol- configuration for submitting the emails.", false,false,false, STRING),
     MAIL_SERVER_USERNAME("mail.smtp.username", "", "smtp mail protocol- username for submitting the emails.", false,false,false, STRING),
