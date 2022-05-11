@@ -51,7 +51,7 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
+                         AuthenticationException authException) throws IOException {
         String errorMsg = authException.getMessage();
         if(authException instanceof BadCredentialsException){
             errorMsg += " - Provided username/password or client certificate are invalid";
@@ -60,11 +60,11 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
     }
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         handle(response, accessDeniedException, accessDeniedException.getMessage());
     }
 
-    private void handle(HttpServletResponse response, RuntimeException exception, String errorMsg) throws IOException, ServletException {
+    private void handle(HttpServletResponse response, RuntimeException exception, String errorMsg) throws IOException {
         ResponseEntity respEntity = buildAndWarn(exception, errorMsg);
         String errorBody = marshall((ErrorResponse) respEntity.getBody());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

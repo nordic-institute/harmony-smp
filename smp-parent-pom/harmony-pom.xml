@@ -16,7 +16,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.niis</groupId>
     <artifactId>harmonysmp-parent-pom</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>pom</packaging>
     <name>smp-parent-pom</name>
     <description>Harmony SMP</description>
@@ -50,25 +50,26 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.26</slf4j.version>
-        <spring.version>5.1.9.RELEASE</spring.version>
-        <spring.security.version>5.1.6.RELEASE</spring.security.version>
-        <spring.boot.version>2.1.8.RELEASE</spring.boot.version>
+        <spring.version>5.3.18</spring.version>
+        <spring.security.version>5.6.1</spring.security.version>
+        <spring.boot.version>2.6.3</spring.boot.version>
         <!-- bdmsl.client.version>3.0.0</bdmsl.client.version -->
         <bdmsl.api.version>4.0.0</bdmsl.api.version>
 
-        <cxf.version>3.2.7</cxf.version>
-        <cxf-xjc-runtime.version>3.2.0</cxf-xjc-runtime.version>
-        <httpclient.version>4.5.9</httpclient.version>
+        <cxf.version>3.4.5</cxf.version>
+        <cxf-xjc-runtime.version>3.3.1</cxf-xjc-runtime.version>
+        <httpclient.version>4.5.13</httpclient.version>
         <build.helper.maven.version>1.9.1</build.helper.maven.version>
         <ehcache.version>2.10.6</ehcache.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <bouncycastle.version>1.69</bouncycastle.version>
+        <bouncycastle.version>1.70</bouncycastle.version>
         <dnsjava.version>2.1.7</dnsjava.version>
         <h2.version>1.4.187</h2.version>
         <jstl.version>1.2</jstl.version>
         <javaee-api.version>7.0</javaee-api.version>
-        <commons-lang3.version>3.4</commons-lang3.version>
-        <commons-validator.version>1.6</commons-validator.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-validator.version>1.7</commons-validator.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.23.4</mockito.version>
         <log4j.version>1.2.17</log4j.version>
@@ -81,7 +82,7 @@
         <!--https://hibernate.atlassian.net/browse/HHH-12436 Bug in OneToOne mapping
         (problem in test case:  ServiceGroupDaoMetadataIntegrationTest.addNewServiceMetadata) use  5.2.13.Final -->
         <!-- hibernate.version>5.3.7.Final</hibernate.version-->
-        <hibernate.version>5.4.4.Final</hibernate.version>
+        <hibernate.version>5.6.7.Final</hibernate.version>
         <hibernate-jpa.version>1.0.2.Final</hibernate-jpa.version>
         <hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
         <h2.version>1.4.187</h2.version>
@@ -94,7 +95,9 @@
         <junitparams.version>1.0.5</junitparams.version>
         <xmlunit.version>2.5.1</xmlunit.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.13.2</jackson.version>
+        <jackson-databind.version>2.13.2.2</jackson-databind.version>
+        <jackson.annotations.version>2.13.2</jackson.annotations.version>
 
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -377,7 +380,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-databind.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -387,7 +390,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson.annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -451,6 +454,11 @@
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
             </dependency>
 
             <dependency>
