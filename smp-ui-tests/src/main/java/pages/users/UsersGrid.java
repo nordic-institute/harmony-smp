@@ -72,25 +72,25 @@ public class UsersGrid extends BasicGrid {
 	public int scrollToUserWithRole(String role) {
 		PaginationControls pagination = new PaginationControls(driver);
 		pagination.skipToFirstPage();
+		List<UserRowInfo> rows;
+		int count = 0;
 
 		do {
-
-			List<UserRowInfo> rows = getRows();
+			if(count!=0){
+				pagination.goToNextPage();
+			}
+			rows = getRows();
 			for (int i = 0; i < rows.size(); i++) {
 				if (rows.get(i).getRole().equalsIgnoreCase(role)) {
 					return i;
 				}
 			}
+			count++;
 
-			try {
-				pagination.goToNextPage();
-			} catch (Exception e) {
-			}
-
-		} while (pagination.hasNextPage());
-
-		return -1;
+		    } while (pagination.hasNextPage());
+		      return -1;
+	     }
 	}
 
 
-}
+

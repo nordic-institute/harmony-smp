@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class SMPMessages {
 
-	public static final String MSG_1 = "The username/password combination you provided are not valid. Please try again or contact your administrator.";
+	public static final String MSG_1 = "Login failed; Invalid userID or password";
 	public static final String MSG_2 = "Too many invalid attempts to log in. Access has been temporarily\n" +
 										"suspended. Please try again later with the right credentials.";
 	public static final String MSG_3 = "To abandon all changes performed since last save, click on the \"Cancel\" button.\n" +
