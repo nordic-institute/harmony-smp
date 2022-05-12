@@ -2,11 +2,12 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
+import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIPropertyService;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.MimeTypeUtils;
@@ -27,13 +28,15 @@ public class PropertyResource {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyResource.class);
 
     final UIPropertyService uiPropertyService;
+    final ConfigurationService configurationService;
 
-    public PropertyResource(UIPropertyService uiPropertyService) {
+    public PropertyResource(UIPropertyService uiPropertyService, ConfigurationService configurationService) {
         this.uiPropertyService = uiPropertyService;
+        this.configurationService = configurationService;
     }
 
     @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
-    public ServiceResult<PropertyRO> geDomainList(
+    public ServiceResult<PropertyRO> gePropertyList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
@@ -50,6 +53,13 @@ public class PropertyResource {
         LOG.info("Update property list, count: {}", updateEntities.length);
         // Pass the users and mark the passwords of the ones being updated as expired by passing the passwordChange as null
         uiPropertyService.updatePropertyList(Arrays.asList(updateEntities));
+    }
+
+    @PostMapping(path = "/validate", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
+    public PropertyValidationRO validateProperty(@RequestBody PropertyRO propertyRO) {
+        LOG.info("Validate property: [{}]", propertyRO.getProperty());
+        return uiPropertyService.validateProperty(propertyRO);
     }
 
 }

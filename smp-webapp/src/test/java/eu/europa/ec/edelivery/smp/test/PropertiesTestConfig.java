@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.test;
 
+import eu.europa.ec.edelivery.smp.config.FileProperty;
 import eu.europa.ec.edelivery.smp.config.PropertiesConfig;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -34,17 +35,25 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = PropertiesConfig.class)})
 public class PropertiesTestConfig {
 
+    public static final String DATABASE_URL="jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE";
+    public static final String DATABASE_USERNAME="smp";
+    public static final String DATABASE_PASS="smp";
+    public static final String DATABASE_DRIVER="org.h2.Driver";
+    public static final String DATABASE_DIALECT="org.hibernate.dialect.H2Dialect";
+
+
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         // update keystore
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties localProps = new Properties();
-        localProps.setProperty("jdbc.driverClassName", "org.h2.Driver");
-        localProps.setProperty("jdbc.url", "jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
-        localProps.setProperty("jdbc.user", "smp");
-        localProps.setProperty("jdbc.pass", "smp");
-        localProps.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        localProps.setProperty(FileProperty.PROPERTY_DB_DIALECT, DATABASE_DIALECT);
+        localProps.setProperty(FileProperty.PROPERTY_DB_DRIVER, DATABASE_DRIVER);
+        localProps.setProperty(FileProperty.PROPERTY_DB_URL, DATABASE_URL);
+        localProps.setProperty(FileProperty.PROPERTY_DB_USER,DATABASE_USERNAME);
+        localProps.setProperty(FileProperty.PROPERTY_DB_TOKEN, DATABASE_PASS);
+        // create database objects if not exists for the test
         localProps.setProperty("spring.jpa.generate-ddl", "true");
         localProps.setProperty("spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
 

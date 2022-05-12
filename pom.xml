@@ -89,8 +89,22 @@
 
         <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
         <sonar.language>java</sonar.language>
+
+        <sonar.binaries>target/classes</sonar.binaries>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <jacoco.maven.plugin.version>0.8.6</jacoco.maven.plugin.version>
         <surefire.maven.plugin.version>2.22.2</surefire.maven.plugin.version>
+        <sonar.exclusions>
+            **/target/**,
+            **/smp-angular/node_modules/**,
+            **/swagger*.js,
+            **/web.xml,
+        </sonar.exclusions>
+        <sonar.coverage.exclusions>
+            **/*Entity.java,
+            **/*RO.java,
+            **/*Exception.java,
+        </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
     </properties>

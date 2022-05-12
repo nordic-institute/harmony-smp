@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.config.FileProperty;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
@@ -85,8 +86,8 @@ public class ConfigurationService {
     }
 
     public Integer getLoginFailDelayInMilliSeconds() {
-        Integer delay =(Integer) configurationDAO.getCachedPropertyValue(USER_LOGIN_FAIL_DELAY);
-        return delay==null? 1000:delay;
+        Integer delay = (Integer) configurationDAO.getCachedPropertyValue(USER_LOGIN_FAIL_DELAY);
+        return delay == null ? 1000 : delay;
     }
 
     public Integer getAccessTokenLoginMaxAttempts() {
@@ -98,8 +99,8 @@ public class ConfigurationService {
     }
 
     public Integer getAccessTokenLoginFailDelayInMilliSeconds() {
-        Integer delay =(Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_FAIL_DELAY);
-        return delay==null? 1000:delay;
+        Integer delay = (Integer) configurationDAO.getCachedPropertyValue(ACCESS_TOKEN_FAIL_DELAY);
+        return delay == null ? 1000 : delay;
     }
 
     public Integer getHttpHeaderHstsMaxAge() {
@@ -336,7 +337,7 @@ public class ConfigurationService {
         return AlertLevelEnum.valueOf(level);
     }
 
-    public String getAlertBeforeUserLoginFailureSubject() {
+    public String getAlertUserLoginFailureSubject() {
         return (String) configurationDAO.getCachedPropertyValue(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT);
     }
 
@@ -502,6 +503,14 @@ public class ConfigurationService {
 
     public String getAlertEmailFrom() {
         return (String) configurationDAO.getCachedPropertyValue(SMP_ALERT_MAIL_FROM);
+    }
+
+    /**
+     * Property is set in "file property configuration and can not be changed via database!
+     * @return true if smp server is started in development mode
+     */
+    public boolean isSMPStartupInDevMode() {
+        return Boolean.parseBoolean(configurationDAO.getCachedProperty(FileProperty.PROPERTY_SMP_MODE_DEVELOPMENT, "false"));
     }
 
 

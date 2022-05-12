@@ -23,6 +23,11 @@ public class FileProperty {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(FileProperty.class);
 
+    // the property file is set in the root fo the resources
+    public static final String PROPERTY_FILE = "/smp.config.properties";
+    // legacy configuration file
+    public static final String PROPERTY_FILE_BACKUP = "/config.properties";
+
     public static final String PROPERTY_LOG_FOLDER = "log.folder";
     public static final String PROPERTY_LOG_PROPERTIES = "log.configuration.file";
     public static final String PROPERTY_DB_DRIVER = "jdbc.driver";
@@ -32,6 +37,7 @@ public class FileProperty {
     public static final String PROPERTY_DB_JNDI = "datasource.jndi";
     public static final String PROPERTY_DB_DIALECT = "hibernate.dialect";
     public static final String PROPERTY_LIB_FOLDER = "libraries.folder";
+    public static final String PROPERTY_SMP_MODE_DEVELOPMENT = "smp.mode.development";
 
     public static void updateLogConfiguration(String logFileFolder, String logPropertyFile, String configurationFolder) {
 
@@ -58,7 +64,7 @@ public class FileProperty {
 
     public static void setLogConfiguration(File configurationFile) {
         try (InputStream configStream = new FileInputStream(configurationFile)) {
-                LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext(context);
             configurator.doConfigure(configStream); // loads logback file
@@ -68,11 +74,15 @@ public class FileProperty {
     }
 
     public static Properties getFileProperties() {
-        LOG.info("Start read file properties from '/smp.config.properties'");
-        InputStream is = PropertyInitialization.class.getResourceAsStream("/smp.config.properties");
+        return getFileProperties(PROPERTY_FILE);
+    }
+
+    public static Properties getFileProperties(String filename) {
+        LOG.info("Start read file properties from [{}]", filename);
+        InputStream is = PropertyInitialization.class.getResourceAsStream(filename);
         if (is == null) {
-            LOG.info("File '/smp.config.properties' not found in classpath, read '/config.properties'");
-            is = PropertyInitialization.class.getResourceAsStream("/config.properties");
+            LOG.info("File '[{}]' not found in classpath, read [{}].", filename, PROPERTY_FILE_BACKUP);
+            is = PropertyInitialization.class.getResourceAsStream(PROPERTY_FILE_BACKUP);
         }
         Properties connectionProp = new Properties();
         try {
@@ -84,17 +94,19 @@ public class FileProperty {
         // update deprecated values and return properties:
         return updateDeprecatedValues(connectionProp);
     }
+
     /**
      * Method validates if new value for deprecated value is already set. If not it set the value from deprecated property if exists!
+     *
      * @param properties
      * @return
      */
-    public static Properties updateDeprecatedValues(Properties properties){
+    public static Properties updateDeprecatedValues(Properties properties) {
         if (!properties.containsKey(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty())
-                && properties.containsKey(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty())){
+                && properties.containsKey(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty())) {
 
             properties.setProperty(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty(),
-                    properties.getProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty()) );
+                    properties.getProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty()));
         }
 
         return properties;

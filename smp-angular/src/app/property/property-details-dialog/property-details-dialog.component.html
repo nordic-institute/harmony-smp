@@ -13,12 +13,15 @@
           <mat-label>Property value:</mat-label>
           <input
             matInput type="{{ getInputType(propertyForm.controls['type'].value) }}" style="width: 100%;padding: 5px"
-            formControlName="value"/>
+            formControlName="value" [pattern]="propertyForm.controls['valuePattern'].value"/>
         </mat-form-field>
         <mat-checkbox *ngIf="propertyForm.controls['type'].value === 'BOOLEAN'"
                       formControlName="value" >
           {{ propertyForm.controls['property'].value }}
         </mat-checkbox>
+        <div *ngIf="propertyForm.controls['errorMessage'].value" class="alert-message-error">
+          {{ propertyForm.controls['errorMessage'].value}}
+        </div>
       </mat-card-content>
     </mat-card>
   </form>

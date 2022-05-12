@@ -74,7 +74,7 @@ public class DatabaseConfig {
     @Bean(name = "dataSource")
     public DataSource getDataSource() {
 
-        DataSource dataSource = null;
+        DataSource dataSource;
         if (!StringUtils.isBlank(url)) {
             LOG.info("create datasource with URL: " + url);
             DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();

@@ -52,7 +52,7 @@ public class SecurityUtilsTest {
     @Test
     public void testGenerateAccessToken(){
         // given-when
-        AccessTokenRO accessToken = SecurityUtils.generateAccessToken();
+        AccessTokenRO accessToken = SecurityUtils.generateAccessToken(true);
         // then
         assertNotNull(accessToken);
         assertNotNull(accessToken.getGeneratedOn());
