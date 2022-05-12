@@ -21,6 +21,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -34,10 +35,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
@@ -62,25 +61,33 @@ public class PropertyInitialization {
     protected Properties getDatabaseProperties(Properties fileProperties) {
         String dialect = fileProperties.getProperty(FileProperty.PROPERTY_DB_DIALECT);
         if (StringUtils.isBlank(dialect)) {
-            LOG.warn("Attribute: {} is empty. Database might not initialize!", FileProperty.PROPERTY_DB_DIALECT);
+            LOG.warn("The application property: {} is not set!. Database might not initialize!", FileProperty.PROPERTY_DB_DIALECT);
         }
         // get datasource
         DataSource dataSource = getDatasource(fileProperties);
         EntityManager em = null;
-        DatabaseProperties prop = null;
+        DatabaseProperties prop;
+        boolean devMode = Boolean.parseBoolean(fileProperties.getProperty(FileProperty.PROPERTY_SMP_MODE_DEVELOPMENT, "false"));
+        if (devMode) {
+            LOG.warn("***********************************************************************");
+            LOG.warn("WARNING: The SMP is started in DEVELOPMENT mode!");
+            LOG.warn("***********************************************************************");
+        }
         try {
             em = createEntityManager(dataSource, dialect);
             prop = new DatabaseProperties(em);
             if (prop.size() == 0) {
-                initializeProperties(em, fileProperties, prop);
+                initializeProperties(em, fileProperties, prop, devMode);
             } else {
-                validateProperties(em, fileProperties, prop);
+                validateProperties(em, fileProperties, prop, devMode);
             }
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
             }
         }
+
+        prop.setProperty(FileProperty.PROPERTY_SMP_MODE_DEVELOPMENT, Boolean.toString(devMode));
         return prop;
     }
 
@@ -96,10 +103,10 @@ public class PropertyInitialization {
      * @param em
      * @param fileProperties
      */
-    protected void initializeProperties(EntityManager em, Properties fileProperties, Properties initProperties) {
+    protected void initializeProperties(EntityManager em, Properties fileProperties, Properties initProperties, boolean testMode) {
         em.getTransaction().begin();
         LOG.warn("Database configuration table is empty! Initialize new values!");
-        File encFile = initNewValues(em, fileProperties, initProperties);
+        File encFile = initNewValues(em, fileProperties, initProperties, testMode);
 
         for (SMPPropertyEnum val : SMPPropertyEnum.values()) {
             DBConfiguration dbConf = null;
@@ -133,11 +140,9 @@ public class PropertyInitialization {
         em.getTransaction().commit();
     }
 
-    public void initTruststore(String absolutePath, File fEncryption, EntityManager em, Properties properties, Properties fileProperties) {
+    public void initTruststore(String absolutePath, File fEncryption, EntityManager em, Properties properties, Properties fileProperties, boolean testMode) {
         LOG.info("Start generating new truststore.");
-
         String encTrustEncToken;
-
         if (fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty())) {
             LOG.info("get token from  properties");
             encTrustEncToken = SecurityUtils.encryptWrappedToken(fEncryption,
@@ -145,7 +150,7 @@ public class PropertyInitialization {
         } else {
             // generate new token
             LOG.info("generate  token");
-            String trustToken = SecurityUtils.generateAuthenticationToken();
+            String trustToken = SecurityUtils.generateAuthenticationToken(testMode);
             storeDBEntry(em, SMPPropertyEnum.TRUSTSTORE_PASSWORD_DECRYPTED, trustToken);
             encTrustEncToken = SecurityUtils.encrypt(fEncryption, trustToken);
         }
@@ -167,6 +172,7 @@ public class PropertyInitialization {
             LOG.info("Generate  truststore file ");
             truststore = getNewFile(absolutePath, "smp-truststore.jks");
         }
+        LOG.info("Generate new truststore to file [{}]!", truststore.getAbsolutePath());
         // store file to database 
         storeDBEntry(em, SMPPropertyEnum.TRUSTSTORE_FILENAME, truststore.getName());
         properties.setProperty(SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty(), truststore.getName());
@@ -180,25 +186,17 @@ public class PropertyInitialization {
                 // init the truststore
                 newTrustStore.load(null, trustToken.toCharArray());
                 newTrustStore.store(out, trustToken.toCharArray());
-            } catch (IOException e) {
-                throw new SMPRuntimeException(INTERNAL_ERROR, e, "IOException occurred while creating truststore", e.getMessage());
-            } catch (CertificateException e) {
-                throw new SMPRuntimeException(INTERNAL_ERROR, e, "CertificateException occurred while creating truststore", e.getMessage());
-            } catch (NoSuchAlgorithmException e) {
-                throw new SMPRuntimeException(INTERNAL_ERROR, e, "NoSuchAlgorithmException occurred while creating truststore", e.getMessage());
-            } catch (KeyStoreException e) {
-                throw new SMPRuntimeException(INTERNAL_ERROR, e, "KeyStoreException occurred while creating truststore", e.getMessage());
             } catch (Exception e) {
-                throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating truststore", e.getMessage());
+                throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating truststore", ExceptionUtils.getRootCauseMessage(e));
             }
         }
     }
 
     public void initAndMergeKeystore(String absolutePath, File fEncryption, EntityManager em, Properties initProperties,
-                                     Properties fileProperties) {
-
+                                     Properties fileProperties, boolean testMode) {
+        LOG.info("Start generating new keystore.");
         // store keystore password  filename
-        String newKeyPassword = SecurityUtils.generateAuthenticationToken();
+        String newKeyPassword = SecurityUtils.generateAuthenticationToken(testMode);
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
         String encPasswd = SecurityUtils.encrypt(fEncryption, newKeyPassword);
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD, encPasswd);
@@ -216,41 +214,34 @@ public class PropertyInitialization {
             // check if keystore is empty then generate cert for user
             if (newKeystore.size() == 0) {
                 X509CertificateUtils.createAndStoreCertificateWithChain(
-                        new String []{TEST_CERT_ISSUER_DN, TEST_CERT_SUBJECT_DN},
-                        new String []{TEST_CERT_ISSUER_ALIAS, TEST_CERT_CERT_ALIAS},
+                        new String[]{TEST_CERT_ISSUER_DN, TEST_CERT_SUBJECT_DN},
+                        new String[]{TEST_CERT_ISSUER_ALIAS, TEST_CERT_CERT_ALIAS},
                         newKeystore, newKeyPassword);
             }
             newKeystore.store(out, newKeyPassword.toCharArray());
-        } catch (IOException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, e, "IOException occurred while creating keystore", e.getMessage());
-        } catch (CertificateException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, e, "CertificateException occurred while creating keystore", e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, e, "NoSuchAlgorithmException occurred while creating keystore", e.getMessage());
-        } catch (KeyStoreException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, e, "KeyStoreException occurred while creating keystore", e.getMessage());
         } catch (Exception e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating keystore", e.getMessage());
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating keystore", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
     public File initEncryptionKey(String absolutePath, EntityManager em, Properties initProperties, Properties fileProperties) {
+        LOG.info("Calculate encryption key [{}]. This could take some time!", absolutePath);
         File fEncryption;
         if (fileProperties.containsKey(ENCRYPTION_FILENAME.getProperty())) {
             fEncryption = new File(absolutePath, fileProperties.getProperty(ENCRYPTION_FILENAME.getProperty()));
 
         } else {
-            fEncryption = getNewFile(absolutePath, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
+            fEncryption = getNewFile(absolutePath, ENCRYPTION_FILENAME.getDefValue());
         }
-        ;
         // if file is not existing yet - as is the case in getNewFile create file
         if (!fEncryption.exists()) {
             SecurityUtils.generatePrivateSymmetricKey(fEncryption);
         }
 
         SecurityUtils.generatePrivateSymmetricKey(fEncryption);
-        storeDBEntry(em, SMPPropertyEnum.ENCRYPTION_FILENAME, fEncryption.getName());
-        initProperties.setProperty(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
+        LOG.info("Encryption key generated.");
+        storeDBEntry(em, ENCRYPTION_FILENAME, fEncryption.getName());
+        initProperties.setProperty(ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
         return fEncryption;
     }
 
@@ -260,34 +251,31 @@ public class PropertyInitialization {
      * @param em
      * @param fileProperties
      */
-    protected File initNewValues(EntityManager em, Properties fileProperties, Properties initProperties) {
+    protected File initNewValues(EntityManager em, Properties fileProperties, Properties initProperties, boolean testMode) {
         String absolutePath;
         if (fileProperties.containsKey(CONFIGURATION_DIR.getProperty())) {
             absolutePath = fileProperties.getProperty(CONFIGURATION_DIR.getProperty());
         } else {
-            File settingsFolder = new File("/");
             // set absolute path
-            absolutePath = new File("/").getAbsolutePath();
+            absolutePath = Paths.get(CONFIGURATION_DIR.getDefValue()).toFile().getAbsolutePath();
+            LOG.warn("The property [{}] Initialize SMP configuration files to folder [{}]!", CONFIGURATION_DIR.getProperty(), absolutePath);
         }
 
         File confFolder = new File(absolutePath);
         if (!confFolder.exists()) {
-            LOG.warn("Configuration folder {} not exists. Folder will be created!", confFolder.getAbsolutePath());
+            LOG.warn("Configuration folder [{}] not exists. Folder will be created!", confFolder.getAbsolutePath());
             confFolder.mkdirs();
         }
-
-        LOG.info("Generate new keystore to folder: " + absolutePath);
         // add configuration path
         storeDBEntry(em, CONFIGURATION_DIR, absolutePath);
         initProperties.setProperty(CONFIGURATION_DIR.getProperty(), absolutePath);
 
         // init encryption filename
-
         File fEncryption = initEncryptionKey(absolutePath, em, initProperties, fileProperties);
 
         // init truststore
-        initTruststore(absolutePath, fEncryption, em, initProperties, fileProperties);
-        initAndMergeKeystore(absolutePath, fEncryption, em, initProperties, fileProperties);
+        initTruststore(absolutePath, fEncryption, em, initProperties, fileProperties, testMode);
+        initAndMergeKeystore(absolutePath, fEncryption, em, initProperties, fileProperties, testMode);
 
         return fEncryption;
     }
@@ -323,7 +311,7 @@ public class PropertyInitialization {
      * @param em
      * @param fileProperties
      */
-    protected void validateProperties(EntityManager em, Properties fileProperties, Properties databaseProperties) {
+    protected void validateProperties(EntityManager em, Properties fileProperties, Properties databaseProperties, boolean devMode) {
         em.getTransaction().begin();
 
         if (!databaseProperties.containsKey(CONFIGURATION_DIR.getProperty())) {
@@ -353,7 +341,7 @@ public class PropertyInitialization {
 
         // init this one because it is new!
         if (!databaseProperties.containsKey(TRUSTSTORE_FILENAME.getProperty())) {
-            initTruststore(configurationDir, fEncryption, em, databaseProperties, fileProperties);
+            initTruststore(configurationDir, fEncryption, em, databaseProperties, fileProperties, devMode);
         }
         em.getTransaction().commit();
     }

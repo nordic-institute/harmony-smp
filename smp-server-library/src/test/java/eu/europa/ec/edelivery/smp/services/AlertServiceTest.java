@@ -247,7 +247,7 @@ public class AlertServiceTest {
 
     @Test
     public void alertUsernameCredentialVerificationFailed() {
-        DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
+        DBUser user = TestDBUtils.createDBUser("user");
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         user.setSequentialLoginFailureCount(5);
@@ -255,10 +255,10 @@ public class AlertServiceTest {
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserLoginFailureEnabled();
-        doReturn(mailSubject).when(configurationService).getAlertUserSuspendedSubject();
-        doReturn(alertLevel).when(configurationService).getAlertUserSuspendedLevel();
+        doReturn(mailSubject).when(configurationService).getAlertUserLoginFailureSubject();
+        doReturn(alertLevel).when(configurationService).getAlertUserLoginFailureLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
-        doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
+
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_VERIFICATION_FAILED;
         List<String> expectedTemplateProperties = Arrays.asList(CredentialVerificationFailedProperties.values()).stream()
                 .map(CredentialVerificationFailedProperties::name).collect(Collectors.toList());
@@ -270,8 +270,8 @@ public class AlertServiceTest {
                 expectedTemplateProperties);
 
         verify(configurationService, times(1)).getAlertUserLoginFailureEnabled();
-        verify(configurationService, times(1)).getAlertUserSuspendedSubject();
-        verify(configurationService, times(1)).getAlertUserSuspendedLevel();
+        verify(configurationService, times(1)).getAlertUserLoginFailureSubject();
+        verify(configurationService, times(1)).getAlertUserLoginFailureLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
 
@@ -285,10 +285,10 @@ public class AlertServiceTest {
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserLoginFailureEnabled();
-        doReturn(mailSubject).when(configurationService).getAlertUserSuspendedSubject();
-        doReturn(alertLevel).when(configurationService).getAlertUserSuspendedLevel();
+        doReturn(mailSubject).when(configurationService).getAlertUserLoginFailureSubject();
+        doReturn(alertLevel).when(configurationService).getAlertUserLoginFailureLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
-        doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
+        //doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_VERIFICATION_FAILED;
         List<String> expectedTemplateProperties = Arrays.asList(CredentialVerificationFailedProperties.values()).stream()
                 .map(CredentialVerificationFailedProperties::name).collect(Collectors.toList());
@@ -300,8 +300,8 @@ public class AlertServiceTest {
                 expectedTemplateProperties);
 
         verify(configurationService, times(1)).getAlertUserLoginFailureEnabled();
-        verify(configurationService, times(1)).getAlertUserSuspendedSubject();
-        verify(configurationService, times(1)).getAlertUserSuspendedLevel();
+        verify(configurationService, times(1)).getAlertUserLoginFailureSubject();
+        verify(configurationService, times(1)).getAlertUserLoginFailureLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
 

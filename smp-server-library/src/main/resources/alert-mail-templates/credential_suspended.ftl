@@ -59,7 +59,7 @@
                             <!-- TITLE -->
                             <tr>
                               <td valign="top" align="left" style=" font-size: 20px; font-family: Arial, Helvetica, sans-serif; color: #000;"><br/>
-                                Account is suspended</td>
+                                Account is temporarily suspended</td>
                             </tr>
                             <!-- / TITLE --> 
                             

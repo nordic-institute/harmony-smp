@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -22,27 +23,34 @@ import static org.junit.Assert.*;
 @RunWith(JUnitParamsRunner.class)
 public class PropertyUtilsTest {
 
-    private static final List<SMPPropertyEnum> SENSITIVE_PROPERTIES = Arrays.asList(
 
-            HTTP_PROXY_PASSWORD, KEYSTORE_PASSWORD, TRUSTSTORE_PASSWORD, KEYSTORE_PASSWORD_DECRYPTED, TRUSTSTORE_PASSWORD_DECRYPTED, MAIL_SERVER_PASSWORD);
+    private static final List<SMPPropertyEnum> SENSITIVE_PROPERTIES = Arrays.asList(
+            HTTP_PROXY_PASSWORD,
+            KEYSTORE_PASSWORD,
+            TRUSTSTORE_PASSWORD,
+            KEYSTORE_PASSWORD_DECRYPTED,
+            TRUSTSTORE_PASSWORD_DECRYPTED,
+            MAIL_SERVER_PASSWORD);
+    private static final File ROOT_FOLDER = Paths.get("target").toFile();
+
 
     private static final Object[] testTypeValues() {
         return new Object[][]{
-                {STRING, "this is a string", true, true},
-                {INTEGER, "1345", true, true},
-                {INTEGER, " 1e345", false, false},
-                {BOOLEAN, "true", true, true},
-                {BOOLEAN, "false", true, true},
-                {BOOLEAN, "fALse", true, true},
-                {BOOLEAN, "fale ", false, true},
-                {REGEXP, ".*", true, true},
-                {REGEXP, ".*(**]", false, false},
-                {EMAIL, "test@mail.com", true, true},
-                {EMAIL, "test@2222.comsfs", false, false},
-                {EMAIL, "test@coms.fs", false, false},
-                {FILENAME, "myfilename.txt", true, true},
-                {PATH, "./", true, true},
-                {PATH, "./notexits", true, true}, // path will be created
+                {STRING, "this is a string", true},
+                {INTEGER, "1345", true},
+                {INTEGER, " 1e345", false},
+                {BOOLEAN, "true", true},
+                {BOOLEAN, "false", true},
+                {BOOLEAN, "fALse", true},
+                {BOOLEAN, "fale ", false},
+                {REGEXP, ".*", true},
+                {REGEXP, ".*(**]", false},
+                {EMAIL, "test@mail.com", true},
+                {EMAIL, "test@2222.comsfs", false},
+                {EMAIL, "test@coms.fs", false},
+                {FILENAME, "myfilename.txt", true},
+                {PATH, "./", true},
+                {PATH, "./notexits", true}, // path will be created
         };
     }
 
@@ -80,20 +88,17 @@ public class PropertyUtilsTest {
     @Test
     @Parameters(method = "testParsePropertiesToType")
     public void testParsePropertiesToType(SMPPropertyEnum property, String value, Class cls) {
-        // given
-        File folder = new File("./target");
         //when then
-        Object obj = PropertyUtils.parseProperty(property, value, folder);
+        Object obj = PropertyUtils.parseProperty(property, value, ROOT_FOLDER);
         Assert.assertTrue(cls.isInstance(obj));
 
     }
 
     @Test
     @Parameters(method = "testTypeValues")
-    public void testIsValidPropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expected,
-                                        boolean isNotNull) {
+    public void testIsValidPropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expected) {
         //when
-        boolean result = PropertyUtils.isValidPropertyType(propertyType, value);
+        boolean result = PropertyUtils.isValidPropertyType(propertyType, value, ROOT_FOLDER);
 
         //then
         assertEquals(expected, result);
@@ -104,14 +109,15 @@ public class PropertyUtilsTest {
     public void testDefaultValues() {
 
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
-            assertTrue("Invalid: " + prop.getProperty() + " - " + prop.getDesc() + " value: " + prop.getDefValue(), PropertyUtils.isValidProperty(prop, prop.getDefValue()));
+            assertTrue( PropertyUtils.isValidProperty(prop, prop.getDefValue(), ROOT_FOLDER));
         }
     }
 
     @Test
     public void testParseDefaultValues() {
+
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
-            Object obj = PropertyUtils.parseProperty(prop, prop.getDefValue(), null);
+            Object obj = PropertyUtils.parseProperty(prop, prop.getDefValue(), ROOT_FOLDER);
             assertType(prop, obj);
         }
     }
@@ -119,31 +125,19 @@ public class PropertyUtilsTest {
 
     @Test
     @Parameters(method = "testTypeValues")
-    public void testParsePropertyType(SMPPropertyTypeEnum propertyType, String value, boolean isValid,
-                                      boolean isNotNull) {
-        // given
-        File folder = new File("./target");
-        //when then
-        Object obj = null;
-        try {
-            obj = PropertyUtils.parsePropertyType(propertyType, value, folder);
-            assertTrue(isNotNull);
-            assertNotNull(obj);
-        } catch (SMPRuntimeException ex) {
-            assertFalse(isNotNull);
-            assertNull(obj);
+    public void testParsePropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expectParseOk) {
+        if (expectParseOk) {
+            Object result = PropertyUtils.parsePropertyType(propertyType, value, ROOT_FOLDER);
+            assertNotNull(result);
+            assertType(propertyType, result);
+        }
+        else {
+            SMPRuntimeException exception = assertThrows(SMPRuntimeException.class, ()->PropertyUtils.parsePropertyType(propertyType, value, ROOT_FOLDER));
+            assertNotNull(exception.getErrorCode());
         }
     }
-
-
-    public static void assertType(SMPPropertyEnum prop, Object value) {
-        if (value == null) {
-            if (prop.isMandatory()) {
-                Assert.fail("Default value for property: " + prop.getProperty() + " must not be empty!");
-            }
-            return;
-        }
-        switch (prop.getPropertyType()) {
+    public static void assertType(SMPPropertyTypeEnum prop, Object value) {
+        switch (prop) {
             case BOOLEAN:
                 Assert.assertEquals(Boolean.class, value.getClass());
                 break;
@@ -177,6 +171,15 @@ public class PropertyUtilsTest {
         }
     }
 
+    public static void assertType(SMPPropertyEnum prop, Object value) {
+        if (value == null) {
+            if (prop.isMandatory()) {
+                Assert.fail("Default value for property: " + prop.getProperty() + " must not be empty!");
+            }
+            return;
+        }
+        assertType(prop.getPropertyType(), value);
+    }
 
     @Test
     public void testIsSensitiveData() {

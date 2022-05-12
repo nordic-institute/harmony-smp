@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.utils;
 
-import com.google.common.collect.Lists;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 
@@ -9,14 +8,15 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * @author Cosmin Baciu
  * @author Joze Rihtarsic
  * @since 4.2
- *
+ * <p>
  * ExtLibraryClassLoader extends URLClassLoader for loading the SMP's SPI extensions.
  * The class loader implementation is heavily inspired by the Domibus PluginClassLoader.
  */

@@ -2,6 +2,8 @@ package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -21,10 +23,12 @@ import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Enumeration;
+import java.util.Random;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 public class SecurityUtils {
+    public static final SMPLogger LOG = SMPLoggerFactory.getLogger(SecurityUtils.class);
 
     public static class Secret {
         final byte[] vector;
@@ -112,13 +116,13 @@ public class SecurityUtils {
         return newAlias;
     }
 
-    public static String generateAuthenticationToken() {
-        String newKeyPassword;
 
+    public static String generateAuthenticationToken(boolean devMode) {
+        String newKeyPassword;
         try {
             newKeyPassword = RandomStringUtils.random(DEFAULT_PASSWORD_LENGTH, 0, VALID_PW_CHARS.length(),
                     false, false,
-                    VALID_PW_CHARS.toCharArray(), SecureRandom.getInstanceStrong());
+                    VALID_PW_CHARS.toCharArray(), devMode ? new Random() : SecureRandom.getInstanceStrong());
 
         } catch (NoSuchAlgorithmException e) {
             String msg = "Error occurred while generation test password: No strong random algorithm. Error:"
@@ -143,11 +147,11 @@ public class SecurityUtils {
         return newKeyPassword;
     }
 
-    public static AccessTokenRO generateAccessToken() {
+    public static AccessTokenRO generateAccessToken(boolean testMode) {
         AccessTokenRO accessToken = new AccessTokenRO();
         accessToken.setGeneratedOn(OffsetDateTime.now());
         accessToken.setIdentifier(generateAuthenticationTokenIdentifier());
-        accessToken.setValue(generateAuthenticationToken());
+        accessToken.setValue(generateAuthenticationToken(testMode));
         return accessToken;
     }
 

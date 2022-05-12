@@ -12,6 +12,8 @@ services:
         ||smp.sso.cas.urlpath.login=login
         ||smp.sso.cas.token.validation.urlpath=laxValidate
         ||smp.sso.cas.callback.url=http://eulogin.protected.smp.local:8982/smp/ui/public/rest/security/cas
+        ||bdmsl.integration.enabled=true
+        ||bdmsl.integration.url=http://localhost:8080/edelivery-sml/
         ||mail.smtp.host=mail-server.smp.local
         ||mail.smtp.port=2500
         ||smp.alert.user.login_failure.enabled=true

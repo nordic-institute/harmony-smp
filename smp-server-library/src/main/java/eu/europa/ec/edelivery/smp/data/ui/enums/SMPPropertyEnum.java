@@ -217,13 +217,14 @@ public enum SMPPropertyEnum {
     String property;
     String defValue;
     String desc;
+    String valuePattern;
 
     boolean isEncrypted;
     boolean isMandatory;
     boolean restartNeeded;
     SMPPropertyTypeEnum propertyType;
 
-    SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded, SMPPropertyTypeEnum propertyType) {
+    SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded, SMPPropertyTypeEnum propertyType,String valuePattern) {
         this.property = property;
         this.defValue = defValue;
         this.desc = desc;
@@ -231,6 +232,12 @@ public enum SMPPropertyEnum {
         this.isMandatory = isMandatory;
         this.restartNeeded = restartNeeded;
         this.propertyType = propertyType;
+        this.valuePattern = valuePattern;
+    }
+
+    SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded, SMPPropertyTypeEnum propertyType) {
+        this(property, defValue, desc, isMandatory, isEncrypted, restartNeeded, propertyType, propertyType.errorTemplate);
+
     }
 
     public String getProperty() {
@@ -271,6 +278,10 @@ public enum SMPPropertyEnum {
 
     public static List<SMPPropertyEnum> getRestartOnChangeProperties() {
         return Arrays.asList(values()).stream().filter(val -> val.isRestartNeeded()).collect(Collectors.toList());
+    }
+
+    public String getValuePattern() {
+        return valuePattern;
     }
 }
 

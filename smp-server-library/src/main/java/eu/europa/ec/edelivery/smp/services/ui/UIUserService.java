@@ -116,14 +116,15 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         if (!BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
-        // setup new daes
-        AccessTokenRO token = SecurityUtils.generateAccessToken();
+        Boolean testMode = configurationService.isSMPStartupInDevMode();
+        AccessTokenRO token = SecurityUtils.generateAccessToken(testMode);
         OffsetDateTime generatedTime = token.getGeneratedOn();
         token.setExpireOn(generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
         dbUser.setAccessTokenIdentifier(token.getIdentifier());
         dbUser.setAccessToken(BCryptPasswordHash.hashPassword(token.getValue()));
         dbUser.setAccessTokenGeneratedOn(generatedTime);
-        dbUser.setPasswordExpireOn(token.getExpireOn());
+        dbUser.setAccessTokenExpireOn(token.getExpireOn());
+
         return token;
     }
 

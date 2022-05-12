@@ -11,7 +11,10 @@ docker-compose -f docker-compose.yml up -d
 
 
 ## SMP 
-url: http://localhost:8982/smp
+url: http://localhost:8982/smp/
+
+http://eulogin.protected.smp.local:8982/smp/
+eulogin.protected.smp.local
 
 ### MYSQL 
 Database client connection (for testing and debugging )
@@ -39,7 +42,9 @@ Users:
  - smp/123456
  - system/123456
 
- To use eulogin add the following hostname mappings (Linux: /etc/hosts)
+ To use eulogin add the following hostname mappings (Linux: /etc/hosts, windows: C:\Windows\System32\drivers\etc\hosts
+                                                                                 
+                                                                                 and add the lines )
  - 127.0.0.1 eulogin-mock-server
  - 127.0.0.1 eulogin.protected.smp.local
 

@@ -14,11 +14,17 @@ public class PropertyRO extends BaseRO{
     String newValue;
     boolean mandatory;
     boolean restartNeeded;
+    String valuePattern;
 
-    public PropertyRO() {
+    public PropertyRO(){}
+
+    public PropertyRO(String property, String value) {
+        this.property = property;
+        this.value = value;
     }
 
     public PropertyRO(String property, String value, String type, String desc) {
+        this(property, value);
         this.property = property;
         this.value = value;
         this.type = type;
@@ -95,5 +101,13 @@ public class PropertyRO extends BaseRO{
 
     public void setRestartNeeded(boolean restartNeeded) {
         this.restartNeeded = restartNeeded;
+    }
+
+    public String getValuePattern() {
+        return valuePattern;
+    }
+
+    public void setValuePattern(String valuePattern) {
+        this.valuePattern = valuePattern;
     }
 }

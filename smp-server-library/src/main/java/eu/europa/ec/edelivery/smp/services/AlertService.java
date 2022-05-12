@@ -165,8 +165,8 @@ public class AlertService {
         }
 
         String mailTo = user.getEmailAddress();
-        String mailSubject = configurationService.getAlertUserSuspendedSubject();
-        AlertLevelEnum alertLevel = configurationService.getAlertUserSuspendedLevel();
+        String mailSubject = configurationService.getAlertUserLoginFailureSubject();
+        AlertLevelEnum alertLevel = configurationService.getAlertUserLoginFailureLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_VERIFICATION_FAILED;
 
         Integer failureCount;
