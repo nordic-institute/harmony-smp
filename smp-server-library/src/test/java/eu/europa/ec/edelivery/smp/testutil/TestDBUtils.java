@@ -48,12 +48,25 @@ public class TestDBUtils {
         return grp;
     }
 
+    public static DBServiceMetadata createDBServiceMetadataRedirect(String docId, String docSch, String url) {
+        DBServiceMetadata grp = new DBServiceMetadata();
+        grp.setDocumentIdentifier(docId);
+        grp.setDocumentIdentifierScheme(docSch);
+        grp.setXmlContent(generateRedirectDocumentSample(url));
+        return grp;
+    }
+
     public static byte[] generateDocumentSample(String partcId, String partcSch, String docId, String docSch, String desc) {
         return String.format(SIMPLE_DOCUMENT_XML, partcSch, partcId, docSch, docId, desc).getBytes();
     }
 
     public static byte[] generateExtension() {
         return String.format(SIMPLE_EXTENSION_XML, UUID.randomUUID().toString()).getBytes();
+    }
+
+    public static byte[] generateRedirectDocumentSample(String url) {
+        return String.format(SIMPLE_REDIRECT_DOCUMENT_XML, url).getBytes();
+
     }
 
     public static DBServiceGroup createDBServiceGroup(String id, String sch) {
