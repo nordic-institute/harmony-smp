@@ -14,13 +14,19 @@ import static org.junit.Assert.*;
 
 public class DatabaseConfigTest {
 
+    public static final String DATABASE_DRIVER="org.h2.Driver";
+    public static final String DATABASE_DIALECT="org.hibernate.dialect.H2Dialect";
+    public static final String DATABASE_URL="jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE";
+    public static final String DATABASE_USERNAME="smp-dev";
+    public static final String DATABASE_PASS="smp-dev";
+
     DatabaseConfig testInstance = new DatabaseConfig(){{
         // test properties from persistence-test-h2.properties
         jndiDatasourceName =null;
-        driver = "org.h2.Driver";
-        url = "jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE";
-        username = "smp-dev";
-        password = "smp-dev";
+        driver = DATABASE_DRIVER;
+        url = DATABASE_URL;
+        username =DATABASE_USERNAME;
+        password =DATABASE_PASS;
     }};
 
     @Test

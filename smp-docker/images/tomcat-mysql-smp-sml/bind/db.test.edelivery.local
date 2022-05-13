@@ -12,3 +12,4 @@ test.edelivery.local	IN SOA	ns.test.edelivery.local. root.test.edelivery.local. 
 $ORIGIN test.edelivery.local.
 $TTL 60	; 1 minute
 ns			A	127.0.0.1
+CEF-SMP-002.publisher	60	IN	CNAME	localhost.

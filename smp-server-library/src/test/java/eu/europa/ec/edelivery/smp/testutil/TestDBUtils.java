@@ -107,10 +107,10 @@ public class TestDBUtils {
         DBUser dbuser = new DBUser();
         dbuser.setUsername(userName);
         dbuser.setRole("test");
-        dbuser.setEmailAddress("test@test.eu");
+        dbuser.setEmailAddress(userName + "@test.eu");
         dbuser.setPasswordChanged(OffsetDateTime.now());
         dbuser.setPassword(UUID.randomUUID().toString());
-        dbuser.setAccessTokenIdentifier(userName);
+        dbuser.setAccessTokenIdentifier(TOKEN_PREFIX + userName);
         dbuser.setAccessToken(UUID.randomUUID().toString());
         return dbuser;
     }
@@ -136,7 +136,7 @@ public class TestDBUtils {
     }
 
     public static DBUser createDBUserByCertificate(String certId, OffsetDateTime validFrom, OffsetDateTime validTo) {
-        return createDBUser("test-" + certId, certId, validFrom,validTo);
+        return createDBUser("test-" + certId, certId, validFrom, validTo);
     }
 
     public static DBUser createDBUser(String userName, String certId) {

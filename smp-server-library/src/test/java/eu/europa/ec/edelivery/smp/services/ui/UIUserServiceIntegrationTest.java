@@ -4,6 +4,7 @@ package eu.europa.ec.edelivery.smp.services.ui;
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
@@ -16,6 +17,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -37,6 +39,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Autowired
     protected UIUserService testInstance;
+
+
 
     protected void insertDataObjects(int size) {
         for (int i = 0; i < size; i++) {
@@ -266,7 +270,31 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         assertEquals(urTest.getServiceEntities().size() - 1, iCntNew);
         assertFalse(rmUsr.isPresent());
+    }
 
+    @Test
+    @Transactional
+    public void testGenerateAccessTokenForUser() {
+        String userPassword=UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+
+        AccessTokenRO token = testInstance.generateAccessTokenForUser(user.getId(), userPassword);
+
+        Optional<DBUser> optResult = userDao.findUserByAuthenticationToken(token.getIdentifier());
+        assertTrue(optResult.isPresent());
+        assertNotNull(token);
+        DBUser result = optResult.get();
+        assertEquals(user.getUsername(), result.getUsername());
+        assertEquals(result.getAccessTokenIdentifier(), token.getIdentifier());
+        assertTrue(BCrypt.checkpw(token.getValue(), result.getAccessToken()));
+        assertNotNull(result.getAccessTokenExpireOn());
+        assertNotNull(result.getAccessTokenGeneratedOn());
     }
 
 }

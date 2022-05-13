@@ -3,24 +3,31 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
 import java.util.Properties;
 
+import static eu.europa.ec.edelivery.smp.config.DatabaseConfigTest.*;
+import static eu.europa.ec.edelivery.smp.config.FileProperty.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class PropertyInitializationTest {
 
+public class PropertyInitializationTest {
 
     PropertyInitialization testInstance = new PropertyInitialization();
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
-
 
     @Test
     public void testValidateProperties() {
@@ -60,7 +67,7 @@ public class PropertyInitializationTest {
     public void getDatasourceBadConfigurationWithUrl() {
         // when
         Properties properties = new Properties();
-        properties.setProperty(FileProperty.PROPERTY_DB_URL, "schema:/no@exists/db");
+        properties.setProperty(PROPERTY_DB_URL, "schema:/no@exists/db");
 
         expectedEx.expect(IllegalArgumentException.class);
         expectedEx.expectMessage("Property 'driverClassName' must not be empty");
@@ -71,10 +78,7 @@ public class PropertyInitializationTest {
 
     @Test
     public void getDatasourceByUrl() {
-        // when
-        Properties properties = new Properties();
-        properties.setProperty(FileProperty.PROPERTY_DB_URL, "jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
-        properties.setProperty(FileProperty.PROPERTY_DB_DRIVER, "org.h2.Driver");
+        Properties properties =  getTestFileProperties();
 
         DataSource dataSource = testInstance.getDatasource(properties);
 
@@ -100,6 +104,30 @@ public class PropertyInitializationTest {
         assertEquals(SMPPropertyEnum.CS_DOCUMENTS.getProperty(), entry.getProperty());
         assertEquals("value", entry.getValue());
         assertEquals(SMPPropertyEnum.CS_DOCUMENTS.getDesc(), entry.getDescription());
+    }
+
+    @Test
+    public void getDatabaseProperties(){
+        Properties properties =  getTestFileProperties();
+
+        Properties databaseProperties = testInstance.getDatabaseProperties(properties);
+
+        assertNotNull(databaseProperties);
+
+    }
+
+    protected Properties getTestFileProperties(){
+        // create test database with SMP_CONFIGURATION TABLE
+        String url="jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'classpath:/create-configuration-table-h2.ddl'";
+        Properties properties = new Properties();
+        properties.setProperty(SMPPropertyEnum.CONFIGURATION_DIR.getProperty(), "./target/prop-init-test");
+        properties.setProperty(PROPERTY_DB_URL, url);
+        properties.setProperty(PROPERTY_DB_DIALECT, DATABASE_DIALECT);
+        properties.setProperty(FileProperty.PROPERTY_DB_DRIVER, DATABASE_DRIVER);
+        properties.setProperty(FileProperty.PROPERTY_DB_USER, DATABASE_USERNAME);
+        properties.setProperty(FileProperty.PROPERTY_DB_TOKEN, "");
+        properties.setProperty(FileProperty.PROPERTY_SMP_MODE_DEVELOPMENT, "true");
+        return properties;
     }
 
 }

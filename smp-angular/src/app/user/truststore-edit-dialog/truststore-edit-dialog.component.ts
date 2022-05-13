@@ -77,6 +77,7 @@ export class TruststoreEditDialogComponent {
     const file = event.target.files[0];
     this.truststoreService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
         if (res && res.certificateId) {
+          this.alertService.success("Certificate: " + res.certificateId + " is imported!");
           this.lookups.refreshTrustedCertificateLookup();
         } else {
           this.alertService.exception("Error occurred while uploading certificate.", "Check if uploaded file has valid certificate type.", false);

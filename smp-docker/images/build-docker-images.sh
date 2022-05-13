@@ -53,6 +53,7 @@ while getopts v:o:s:c:p: option; do
   esac
 done
 
+
 if [[ -z "${SMP_VERSION}" ]]; then
   # get version from setup file
   echo "Get version from the pom: $(pwd)"
@@ -65,11 +66,14 @@ if [[ -z "${SMP_VERSION}" ]]; then
 
 fi
 
+SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-example/target/smp-spi-example-$SMP_VERSION.jar"
+
 DIRNAME=$(dirname "$0")
 cd "$DIRNAME"
 DIRNAME="$(pwd -P)"
 echo "*****************************************************************"
 echo "* SMP artefact folders: $SMP_ARTEFACTS, (Clear folder after build: $SMP_ARTEFACTS_CLEAR )"
+echo "* Plugin example: $SMP_PLUGIN_EXAMPLE "
 echo "* Build SMP image for version $SMP_VERSION"
 echo "* Oracle artefact folders: $ORACLE_ARTEFACTS"
 echo "*****************************************************************"
@@ -151,6 +155,11 @@ validateAndPrepareArtefacts() {
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
   fi
 
+  if [[ ! -f "${SMP_PLUGIN_EXAMPLE}" ]]; then
+    echo "SMP SPI plugin  '${SMP_PLUGIN_EXAMPLE}' not found. Skip plugin!"
+  else
+    cp "${SMP_PLUGIN_EXAMPLE}" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
+  fi
 }
 
 # -----------------------------------------------------------------------------

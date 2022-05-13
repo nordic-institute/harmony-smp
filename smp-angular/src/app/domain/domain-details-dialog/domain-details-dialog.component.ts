@@ -77,7 +77,7 @@ export class DomainDetailsDialogComponent {
       'signatureKeyAlias': new FormControl({value: ''}, null),
 
       'smlRegistered': new FormControl({value: ''}, null),
-      'smlBlueCoatAuth': new FormControl({value: ''}, null),
+      'smlClientCertAuth': new FormControl({value: ''}, null),
 
     });
 
@@ -90,7 +90,7 @@ export class DomainDetailsDialogComponent {
     this.domainForm.controls['signatureKeyAlias'].setValue(this.current.signatureKeyAlias);
 
     this.domainForm.controls['smlRegistered'].setValue(this.current.smlRegistered);
-    this.domainForm.controls['smlBlueCoatAuth'].setValue(this.current.smlBlueCoatAuth);
+    this.domainForm.controls['smlClientCertAuth'].setValue(this.current.smlClientCertAuth);
 
     if (this.current.smlClientKeyAlias) {
       this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
@@ -145,13 +145,13 @@ export class DomainDetailsDialogComponent {
     this.current.smlClientCertHeader = this.domainForm.value['smlClientCertHeader'];
     if (this.domainForm.value['smlClientKeyCertificate']) {
       this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyCertificate'].alias;
-      this.current.smlClientCertHeader = this.domainForm.value['smlClientKeyCertificate'].blueCoatHeader;
+      this.current.smlClientCertHeader = this.domainForm.value['smlClientKeyCertificate'].clientCertHeader;
     } else {
       this.current.smlClientKeyAlias = '';
       this.current.smlClientCertHeader = '';
     }
     this.current.signatureKeyAlias = this.domainForm.value['signatureKeyAlias'];
-    this.current.smlBlueCoatAuth = this.domainForm.value['smlBlueCoatAuth'];
+    this.current.smlClientCertAuth = this.domainForm.value['smlClientCertAuth'];
 
     return this.current;
 

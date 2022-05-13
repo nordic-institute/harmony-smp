@@ -83,6 +83,8 @@ init_smp_properties() {
     echo "[INFO] init smp properties:"
 
     { echo "# SMP init parameters"
+      echo "libraries.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs"
+      echo "bdmsl.integration.logical.address=${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
       echo "authentication.blueCoat.enabled=true"
       echo "bdmsl.integration.enabled=true"
       echo "bdmsl.integration.physical.address=0.0.0.0"
@@ -202,8 +204,8 @@ addOrReplaceProperties() {
     for property in "${array[@]}"; do
       read -r key value <<<"$property"
       # escape regex chars and remove trailing and leading spaces..
-      keyRE="$(printf '%s' "${key// }" | sed 's/[.[\*^$()+?{|]/\\&/g')"
-      propertyRE="$(printf '%s' "${property// }" | sed 's/[.[\*^$()+?{|/]/\\&/g')"
+      keyRE="$(printf '%s' "${key// }" | sed 's/[[\*^$()+?{|]/\\&/g')"
+      propertyRE="$(printf '%s' "${property// }" | sed 's/[[\*^$()+?{|/]/\\&/g')"
 
       echo "replace or add property: [$keyRE] with value [$propertyRE]"
       # replace key line and commented #key line with new property
