@@ -57,6 +57,38 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
     }
 
     @Test
+    public void validateServiceMetadataRedirectValid() {
+        DBServiceMetadata md = TestDBUtils.createDBServiceMetadataRedirect("docId", "docSch", "http://10.1.1.10:1027/test-service-data");
+
+        ServiceMetadataValidationRO smv = new ServiceMetadataValidationRO();
+        smv.setDocumentIdentifier(md.getDocumentIdentifier());
+        smv.setDocumentIdentifierScheme(md.getDocumentIdentifierScheme());
+        smv.setParticipantIdentifier("partId");
+        smv.setParticipantScheme("partSch");
+        smv.setXmlContent(new String(md.getXmlContent()));
+
+        smv = testInstance.validateServiceMetadata(smv);
+        assertNull(smv.getErrorMessage());
+    }
+
+    @Test
+    public void validateServiceMetadataRedirectInvalid() {
+        DBServiceMetadata md = TestDBUtils.createDBServiceMetadataRedirect("docId", "docSch", "");
+
+        ServiceMetadataValidationRO smv = new ServiceMetadataValidationRO();
+        smv.setDocumentIdentifier(md.getDocumentIdentifier());
+        smv.setDocumentIdentifierScheme(md.getDocumentIdentifierScheme());
+        smv.setParticipantIdentifier("partId");
+        smv.setParticipantScheme("partSch");
+        smv.setXmlContent(new String(md.getXmlContent()));
+
+        smv = testInstance.validateServiceMetadata(smv);
+        assertNotNull(smv.getErrorMessage());
+        assertEquals("Redirect URL must must be empty!", smv.getErrorMessage());
+    }
+
+
+    @Test
     public void validateServiceMetadataParticipantNotMatch() {
         DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", "partSch");
 

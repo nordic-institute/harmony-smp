@@ -21,11 +21,9 @@ public class TestConstants {
     public static final String TEST_SG_ID_PL = "urn:poland:ncpb:utest";
     public static final String TEST_SG_ID_PL2 = "urn:Poland:ncpb";
 
-
     public static final String TEST_SG_SCHEMA_1 = "iso6523-actorid-upis";
     public static final String TEST_SG_SCHEMA_2 = "ehealth-actorid-qns";
     public static final String TEST_SG_SCHEMA_PL2 = "eHealth-participantId-qns";
-
 
     public static final String TEST_DOC_SCHEMA_1 = "busdox-docid-qns";
     public static final String TEST_DOC_SCHEMA_2 = "ehealth-resid-qns";
@@ -60,10 +58,16 @@ public class TestConstants {
     public static final String CERT_USER = "CN=common name,O=org,C=BE:0000000000000066";
     public static final String CERT_USER_ENCODED = "CN%3Dcommon%20name%2CO%3Dorg%2CC%3DBE%3A0000000000000066";
 
-    // parameter: custom string as conntent
-    public static final String SIMPLE_EXTENSION_XML = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension: %s</ex:dummynode></Extension>";
+    // parameter: custom string as content
+    public static final String SIMPLE_EXTENSION_XML ="<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension: %s</ex:dummynode></Extension>";
     //5 parameters: ParticipantScheme, ParticipantIdentifier, DocumentScheme, DocumentIdentifier, custom value
     public static final String SIMPLE_DOCUMENT_XML = "<ServiceMetadata xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ServiceInformation><ParticipantIdentifier scheme=\"%s\">%s</ParticipantIdentifier><DocumentIdentifier scheme=\"%s\">%s</DocumentIdentifier><ProcessList><Process><ProcessIdentifier scheme=\"cenbii-procid-ubl\">urn:www.cenbii.eu:profile:bii04:ver1.0</ProcessIdentifier><ServiceEndpointList><Endpoint transportProfile=\"bdxr-transport-ebms3-as4-v1p0\"><EndpointURI>http://localhost:8080/domibus-weblogic/services/msh</EndpointURI><RequireBusinessLevelSignature>true</RequireBusinessLevelSignature><ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate><ServiceExpirationDate>2099-05-01T00:00:00</ServiceExpirationDate>" +
             "<Certificate>VGhpcyBpcyB0ZXN0IGNlcnRpZmljYXRlIGlzIHlvdSBiZWxpZXZlIG9yIG5vdC4=</Certificate><ServiceDescription>Sample description of %s</ServiceDescription><TechnicalContactUrl>https://example.com</TechnicalContactUrl></Endpoint></ServiceEndpointList></Process></ProcessList></ServiceInformation></ServiceMetadata>";
+
+    public static final String SIMPLE_REDIRECT_DOCUMENT_XML ="<ServiceMetadata xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
+            "   <Redirect href=\"%s\">" +
+            "    <CertificateUID>smptest</CertificateUID>" +
+            "  </Redirect>" +
+            "</ServiceMetadata>";
 
 }
