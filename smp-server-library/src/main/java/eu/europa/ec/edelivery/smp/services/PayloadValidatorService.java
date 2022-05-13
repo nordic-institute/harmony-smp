@@ -53,7 +53,4 @@ public class PayloadValidatorService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Content validation failed", ExceptionUtils.getRootCauseMessage(e),e);
         }
     }
-
-    ;
-
 }

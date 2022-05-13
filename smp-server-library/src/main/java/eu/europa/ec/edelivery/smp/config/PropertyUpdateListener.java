@@ -37,6 +37,4 @@ public interface PropertyUpdateListener {
     default void updateProperty(SMPPropertyEnum property, Object value) {
         updateProperties(Collections.singletonMap(property, value));
     }
-
-    ;
 }
