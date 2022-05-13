@@ -18,6 +18,7 @@
         <SMPAdminUser></SMPAdminUser>
         <SMPAdminPassword></SMPAdminPassword>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     </properties>
 
     <profiles>
@@ -111,27 +112,15 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- dump jacoco.exec from remote agent and generate report  -->
+                    <!-- dump jacoco report from remote agent and generate report  -->
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>${jacoco.maven.plugin.version}</version>
                         <configuration>
-                            <classDumpDir>${project.build.outputDirectory}</classDumpDir>
+                            <classDumpDir>${project.build.outputDirectory}../target/</classDumpDir>
                         </configuration>
                         <executions>
-                            <!-- execution>
-                                <id>jacoco-agent</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                                <configuration>
-                                    <destFile>${jacoco.reportPath}</destFile>
-                                    <propertyName>jacoco.agent.itArgLine</propertyName>
-                                </configuration>
-                            </execution -->
-
                             <execution>
                                 <phase>post-integration-test</phase>
                                 <goals>

@@ -13,7 +13,7 @@ public class  ServiceResult<T> implements Serializable {
 
     private static final long serialVersionUID = -4971552086560325302L;
 
-    private Map<String, Object> filter; //NOSONAR
+    private String filter; //NOSONAR
     private List<T> serviceEntities; //NOSONAR
 
 
@@ -21,11 +21,11 @@ public class  ServiceResult<T> implements Serializable {
     private Integer page;
     private Integer pageSize;
 
-    public Map<String, Object> getFilter() {
+    public String getFilter() {
         return filter;
     }
 
-    public void setFilter(Map<String, Object> filter) {
+    public void setFilter(String filter) {
         this.filter = filter;
     }
 

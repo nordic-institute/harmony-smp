@@ -27,6 +27,7 @@ import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
@@ -88,8 +89,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     @Transactional
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
-
-        if (!PropertyUtils.isValidProperty(key, value)) {
+        File rootFolder = (File)getCachedPropertyValue(CONFIGURATION_DIR);
+        if (!PropertyUtils.isValidProperty(key, value, rootFolder)) {
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, key.getPropertyType().getErrorMessage(key.getProperty()));
         }
 
@@ -143,11 +144,15 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     public String getCachedProperty(SMPPropertyEnum key) {
+        return getCachedProperty(key.getProperty(), key.getDefValue());
+    }
+
+    public String getCachedProperty(String property,String defValue) {
         if (lastUpdate == null) {
             // init properties
             refreshProperties();
         }
-        return cachedProperties.getProperty(key.getProperty(), key.getDefValue());
+        return cachedProperties.getProperty(property, defValue);
     }
 
     public Object getCachedPropertyValue(SMPPropertyEnum key) {
@@ -217,7 +222,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     /**
      * Application event when an {@code ApplicationContext} gets initialized or start
      */
-    @EventListener({ContextStartedEvent.class})
+    @EventListener({ContextRefreshedEvent.class})
     public void contextRefreshedEvent() {
         LOG.debug("Application context is initialized: triggered  refresh  to update all property listeners");
         setInitializedTime(OffsetDateTime.now());

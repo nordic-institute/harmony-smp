@@ -27,7 +27,7 @@ public class SessionSecurityUtils {
      * '
      * Currently authentication tokens supported to create na UI session.
      */
-    public static final List<Class> sessionAuthenticationClasses = Arrays.asList(SMPAuthenticationToken.class,
+    protected static final List<Class> sessionAuthenticationClasses = Arrays.asList(SMPAuthenticationToken.class,
             CasAuthenticationToken.class);
 
     /**

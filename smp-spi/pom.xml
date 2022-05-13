@@ -20,24 +20,15 @@
         <version>4.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
     <artifactId>smp-spi</artifactId>
     <name>smp-spi</name>
     <description>SMP Service provider interface (SPI). The SMP SPI is an application interface intended to be implemented or extended
         by a third party as library. The libraries must be added to SMP library directory and are loaded at startup.</description>
+    <packaging>jar</packaging>
     <dependencies>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

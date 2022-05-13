@@ -59,7 +59,7 @@
                             <!-- TITLE -->
                             <tr>
                               <td valign="top" align="left" style=" font-size: 20px; font-family: Arial, Helvetica, sans-serif; color: #000;"><br/>
-                                Account is suspended</td>
+                                Account is temporarily suspended</td>
                             </tr>
                             <!-- / TITLE --> 
                             
@@ -83,7 +83,7 @@
                                   <p><strong>Failed login attempt count:</strong> ${FAILED_LOGIN_ATTEMPT}</p>
                                   <p><strong>Last failed login time:</strong> ${LAST_LOGIN_FAILURE_DATETIME}</p>
                                   <p><strong>Suspended util</strong> ${SUSPENDED_UNTIL_DATETIME}</p>
-                                  <p><strong>Reporting time:</strong> ${REPORTING_TIME}</p>
+                                  <p><strong>Reporting time:</strong> ${REPORTING_DATETIME}</p>
                                   <p><strong>Alert level:</strong> ${ALERT_LEVEL}</p>
                                   <p><strong>Server name:</strong> ${SERVER_NAME}</p>
                                 </td>

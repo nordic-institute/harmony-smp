@@ -4,6 +4,11 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {PropertyRo} from "../property-ro.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
+import {ServiceGroupValidationRo} from "../../service-group-edit/service-group-details-dialog/service-group-validation-edit-ro.model";
+import {SmpConstants} from "../../smp.constants";
+import {ServiceGroupValidationErrorCodeModel} from "../../service-group-edit/service-group-details-dialog/service-group-validation-error-code.model";
+import {PropertyValidationRo} from "../property-validate-ro.model";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'property-details-dialog',
@@ -21,10 +26,12 @@ export class PropertyDetailsDialogComponent implements OnInit {
   current: PropertyRo & { confirmation?: string };
   propertyForm: FormGroup;
   disabled: true;
+  showSpinner: boolean = false;
 
 
   constructor(
     public dialog: MatDialog,
+    protected http: HttpClient,
     private dialogRef: MatDialogRef<PropertyDetailsDialogComponent>,
     private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -50,6 +57,8 @@ export class PropertyDetailsDialogComponent implements OnInit {
       'desc': new FormControl({value: '', readonly: true}, null),
       'type': new FormControl({value: '', readonly: true}, null),
       'value': new FormControl({value: ''}),
+      'valuePattern': new FormControl({value: ''}),
+      'errorMessage': new FormControl({value: ''}),
 
     });
 
@@ -57,6 +66,9 @@ export class PropertyDetailsDialogComponent implements OnInit {
     this.propertyForm.controls['desc'].setValue(this.current.desc);
     this.propertyForm.controls['type'].setValue(this.current.type);
     this.propertyForm.controls['value'].setValue(this.valueFromPropertyStringValue(this.current.value, this.current.type));
+    this.propertyForm.controls['valuePattern'].setValue(this.current.valuePattern);
+
+    this.propertyForm.controls['errorMessage'].setValue('');
   }
 
   ngOnInit() {
@@ -64,9 +76,26 @@ export class PropertyDetailsDialogComponent implements OnInit {
   }
 
   submitForm() {
-    this.checkValidity(this.propertyForm)
-    this.dialogRef.close(true);
+    this.checkValidity(this.propertyForm);
 
+    let request =  this.getCurrent();
+    //
+    let validationObservable = this.http.post<PropertyValidationRo>(SmpConstants.REST_INTERNAL_PROPERTY_VALIDATE, request);
+    this.showSpinner = true;
+    validationObservable.toPromise().then((res: PropertyValidationRo) => {
+      this.showSpinner = false;
+
+      if (!res.propertyValid) {
+        this.propertyForm.controls['errorMessage'].setValue(res.errorMessage?res.errorMessage:'Invalid property');
+      } else {
+        this.propertyForm.controls['errorMessage'].setValue("");
+        // we can close the dialog
+        this.dialogRef.close(true);
+      }
+    }).catch((err) => {
+      this.alertService.error("Error occurred on Validation the property", err)
+      console.log("Error occurred on Validation the property: " + err);
+    });
   }
 
   checkValidity(g: FormGroup) {
@@ -115,7 +144,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
       case 'PATH':
         return 'text';
       case 'INTEGER':
-        return 'number';
+        return 'text';
       case 'BOOLEAN':
         return 'checkbox';
       case 'REGEXP':
@@ -126,6 +155,29 @@ export class PropertyDetailsDialogComponent implements OnInit {
         return 'url';
       default:
         return 'text';
+    }
+  }
+  getInputPatternType(propertyType: string) {
+    console.log("Get input pattern for row " + this.current.type)
+    switch (propertyType) {
+      case 'STRING':
+      case 'LIST_STRING':
+      case 'MAP_STRING':
+      case 'FILENAME':
+      case 'PATH':
+        return '';
+      case 'INTEGER':
+        return '[0-9]*';
+      case 'BOOLEAN':
+        return 'true/false';
+      case 'REGEXP':
+        return '';
+      case 'EMAIL':
+        return '';
+      case 'URL':
+        return '';
+      default:
+        return '';
     }
   }
 

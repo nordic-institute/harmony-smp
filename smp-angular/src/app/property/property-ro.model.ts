@@ -10,4 +10,5 @@ export interface PropertyRo extends SearchTableEntity {
   updateDate?: Date;
   mandatory?: boolean;
   restartNeeded? : boolean;
+  valuePattern?:string;
 }

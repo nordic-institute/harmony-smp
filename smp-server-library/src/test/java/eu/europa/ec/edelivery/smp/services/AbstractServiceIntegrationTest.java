@@ -11,6 +11,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.services.mail.MailService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
@@ -41,13 +42,14 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {H2JPATestConfig.class,
-        CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
+        CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class, MailService.class,
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
-        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class,
+        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class, AlertDao.class,
         UITruststoreService.class, UIKeystoreService.class, ConversionTestConfig.class, SMLIntegrationService.class,
         CRLVerifierService.class,
         ConfigurationService.class,
-        ServicesBeansConfiguration.class})
+        ServicesBeansConfiguration.class,
+        AlertService.class})
 @Sql(scripts = {"classpath:cleanup-database.sql",
         "classpath:basic_conf_data-h2.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
