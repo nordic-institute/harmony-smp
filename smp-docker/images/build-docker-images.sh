@@ -157,7 +157,7 @@ validateAndPrepareArtefacts() {
 
   if [[ ! -f "${SMP_PLUGIN_EXAMPLE}" ]]; then
     echo "SMP SPI plugin  '${SMP_PLUGIN_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
-    ls -ltr ${SMP_ARTEFACTS)
+    ls -ltr ${SMP_ARTEFACTS}
     cp "${SMP_ARTEFACTS}smp-spi-*.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
   else
     cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
