@@ -66,7 +66,7 @@ if [[ -z "${SMP_VERSION}" ]]; then
 
 fi
 
-SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-example/target/smp-spi-example-$SMP_VERSION.jar"
+SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-example/target/"
 
 DIRNAME=$(dirname "$0")
 cd "$DIRNAME"
@@ -147,7 +147,7 @@ validateAndPrepareArtefacts() {
 
   # SMP setup zip
   if [[ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]]; then
-    echo "SMP setup boundle  '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found. Was project built!"
+    echo "SMP setup bundle  '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found. Was project built!"
     exit 1
   else
     # copy artefact to docker build folder
@@ -156,9 +156,10 @@ validateAndPrepareArtefacts() {
   fi
 
   if [[ ! -f "${SMP_PLUGIN_EXAMPLE}" ]]; then
-    echo "SMP SPI plugin  '${SMP_PLUGIN_EXAMPLE}' not found. Skip plugin!"
+    echo "SMP SPI plugin  '${SMP_PLUGIN_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
+    cp "${SMP_ARTEFACTS}/smp-spi-example*.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
   else
-    cp "${SMP_PLUGIN_EXAMPLE}" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
+    cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
   fi
 }
 
