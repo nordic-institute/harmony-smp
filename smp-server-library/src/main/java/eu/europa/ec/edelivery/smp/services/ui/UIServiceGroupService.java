@@ -14,6 +14,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.SMLStatusEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
@@ -52,13 +53,20 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     protected final UserDao userDao;
     protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
     protected final SMLIntegrationService smlIntegrationService;
+    protected final ConfigurationService configurationService;
 
-    public UIServiceGroupService(DomainDao domainDao, ServiceGroupDao serviceGroupDao, UserDao userDao, CaseSensitivityNormalizer caseSensitivityNormalizer, SMLIntegrationService smlIntegrationService) {
+    public UIServiceGroupService(DomainDao domainDao,
+                                 ServiceGroupDao serviceGroupDao,
+                                 UserDao userDao,
+                                 CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                 SMLIntegrationService smlIntegrationService,
+                                 ConfigurationService configurationService) {
         this.domainDao = domainDao;
         this.serviceGroupDao = serviceGroupDao;
         this.userDao = userDao;
         this.caseSensitivityNormalizer = caseSensitivityNormalizer;
         this.smlIntegrationService = smlIntegrationService;
+        this.configurationService = configurationService;
     }
 
     @Override
@@ -286,7 +294,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
         // validate (if domains are added only once) and  create domain list for service group.
         serviceGroupDomainROList.forEach(dro -> {
-            // everting ok  find domain and add it to service group
+            // everything ok  find domain and add it to service group
             Optional<DBDomain> dmn = domainDao.getDomainByCode(dro.getDomainCode());
             if (dmn.isPresent()) {
                 DBServiceGroupDomain domain =  dbServiceGroup.addDomain(dmn.get());
@@ -420,7 +428,6 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         List<ParticipantSMLRecord> participantSMLRecordList = new ArrayList<>();
 
         // / validate (if domains are added only once) and  create domain list for service group.
-       // List<ServiceGroupDomainRO> serviceGroupDomainROList = validateDomainList(serviceGroupRO);
         List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
         // copy array list of old domains and then put them back. Domain not added back will be deleted by hibernate
         // ...
@@ -497,9 +504,14 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             throw new SMPRuntimeException(MISSING_SG_ID, serviceGroupRO.getParticipantIdentifier(), serviceGroupRO.getParticipantScheme());
         }
         // validate service group id
+        boolean schemeMandatory = configurationService.getParticipantSchemeMandatory();
+        LOG.debug("Validate service group [{}] with [{}] scheme", serviceGroupRO.getParticipantIdentifier(), (schemeMandatory?"mandatory":"optional"));
+
+
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(serviceGroupRO.getId());
         if (!Objects.equals(serviceGroupRO.getParticipantIdentifier(), dbServiceGroup.getParticipantIdentifier())
-                || !Objects.equals(serviceGroupRO.getParticipantScheme(), dbServiceGroup.getParticipantScheme())) {
+                || schemeMandatory &&
+                !Objects.equals(serviceGroupRO.getParticipantScheme(), dbServiceGroup.getParticipantScheme())) {
             throw new SMPRuntimeException(INVALID_SG_ID, serviceGroupRO.getParticipantIdentifier(),
                     serviceGroupRO.getParticipantScheme(), serviceGroupRO.getId());
         }
