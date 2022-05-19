@@ -66,7 +66,9 @@ public class BaseTest {
 
 	@AfterClass(alwaysRun = true)
 	public void afterClass() {
-		driver.quit();
+		if(null!=driver){
+			driver.quit();
+		}
 //		driver.get(PROPERTIES.UI_BASE_URL);
 //		SMPPage page = new SMPPage(driver);
 //		page.refreshPage();
@@ -101,6 +103,7 @@ public class BaseTest {
 				createdDomains.add(generated);
 			} else {
 				logger.warn("Test data creation: Domain creation failed for " + generated);
+				System.exit(-1);
 			}
 		}
 	}
@@ -115,6 +118,7 @@ public class BaseTest {
 				createdUsers.add(generated);
 			} else {
 				logger.warn("Test data creation: User creation failed for " + generated);
+				System.exit(-1);
 			}
 		}
 	}
@@ -122,13 +126,15 @@ public class BaseTest {
 	private void createSGs() {
 		for (int i = 0; i < 5; i++) {
 			String generated = Generator.randomAlphaNumeric(10);
+			String generatedHyphen = generated.substring(0,3)+"-"+generated.substring(3,6)+"-"+generated.substring(6,9);
 			List<String> users = Arrays.asList(createdUsers.get(0));
 			List<String> domains = Arrays.asList(createdDomains.get(0));
-			boolean created = SMPRestClient.createServiceGroup(generated, generated, users, domains);
+			boolean created = SMPRestClient.createServiceGroup(generated, generatedHyphen, users, domains);
 			if (created) {
 				createdServiceGroups.add(generated);
 			} else {
 				logger.warn("Test data creation: SG creation failed for " + generated);
+				System.exit(-1);
 			}
 		}
 	}

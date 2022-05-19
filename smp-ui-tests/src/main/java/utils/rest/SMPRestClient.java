@@ -5,8 +5,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
-import org.apache.log4j.LogMF;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -227,13 +225,17 @@ public class SMPRestClient {
     }
 
     public static boolean createServiceGroup(String pi, String ps, List<String> usernames, List<String> domainCodes) {
-        String template = "[{\"id\":null,\"participantIdentifier\":\"%s\",\"participantScheme\":\"%s\",\"serviceMetadata\":[],\"users\":%s,\"serviceGroupDomains\":%s,\"extension\":\"\",\"status\":2}]";
+        String template = "[{\"id\":null,\"extensionStatus\":1,\"participantIdentifier\":\"%s\",\"participantScheme\":\"%s\",\"serviceMetadata\":[],\"users\":%s,\"serviceGroupDomains\":%s,\"extension\":\"\",\"status\":2}]";
 
         try {
+            List<NewCookie> cookies = login("SMP_ADMIN");
+            HashMap<String, String> map = getCookies(cookies);
+            String xsrf = map.get("XSRF-TOKEN");
+            String jsessionID = map.get("JSESSIONID");
 
             JSONArray users = new JSONArray();
             for (String username : usernames) {
-                users.put(transformUserForSGPost(getUserForName(username)));
+                users.put(transformUserForSGPost(getUserForName(username,jsessionID,xsrf)));
             }
 
             JSONArray domains = new JSONArray();
@@ -243,12 +245,8 @@ public class SMPRestClient {
 
 
             String postStr = String.format(template, pi, ps, users.toString(), domains.toString());
+            log.info("post str is :"+postStr);
 
-            List<NewCookie> cookies = login("SMP_ADMIN");
-
-			HashMap<String, String> map = getCookies(cookies);
-			String xsrf = map.get("XSRF-TOKEN");
-			String jsessionID = map.get("JSESSIONID");
             ClientResponse getResponse = resource.path(SMPPaths.SERVICE_GROUP)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .type(MediaType.APPLICATION_JSON_TYPE)
@@ -317,11 +315,8 @@ public class SMPRestClient {
         return "";
     }
 
-    private static JSONObject getUserForName(String username) {
-        List<NewCookie> cookies = login("SYS_ADMIN");
-		HashMap<String, String> map = getCookies(cookies);
-		String xsrf = map.get("XSRF-TOKEN");
-		String jsessionID = map.get("JSESSIONID");
+    private static JSONObject getUserForName(String username,String jsessionID,String xsrf) {
+
 		try{
             String responseRaw = resource.path(SMPPaths.USER_LIST)
                     .queryParam("page", "-1")
@@ -431,7 +426,7 @@ public class SMPRestClient {
 		String xsrf = map.get("XSRF-TOKEN");
 		String jsessionID = map.get("JSESSIONID");
 		try{
-            String putStr = "[" + getUserForName(username).put("status", 3).toString() + "]";
+            String putStr = "[" + getUserForName(username,jsessionID,xsrf).put("status", 3).toString() + "]";
             ClientResponse getResponse = resource.path(SMPPaths.USER_LIST)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .type(MediaType.APPLICATION_JSON_TYPE)
@@ -472,11 +467,11 @@ public class SMPRestClient {
 
     private static JSONObject transformUserForSGPost(JSONObject user) {
         try {
-            String template = "{\"index\":%s,\"username\":\"%s\",\"role\":\"%s\",\"id\":%s,\"status\":0,\"password\":null,\"emailAddress\":null,\"authorities\":null,\"passwordChanged\":null,\"active\":true,\"certificate\":null,\"statusPassword\":0}";
+            String template = "{\"index\":%s,\"username\":\"%s\",\"role\":\"%s\",\"userId\":%s,\"status\":0,\"password\":null,\"passwordExpireOn\":null,\"accessTokenId\":null,\"accessTokenExpireOn\":null,\"passwordExpired\":true,\"emailAddress\":\"\",\"authorities\":null,\"active\":true,\"certificate\":null,\"statusPassword\":0,\"casAuthenticated\": false,\"forceChangeExpiredPassword\": false, \"showPasswordExpirationWarning\": false}";
             String index = user.getString("index");
             String username = user.getString("username");
             String role = user.getString("role");
-            String id = user.getString("id");
+            String id = user.getString("userId");
             return new JSONObject(String.format(template, index, username, role, id));
         } catch (JSONException e) {
             e.printStackTrace();

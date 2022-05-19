@@ -4,6 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -26,10 +27,11 @@ public class DriverManager {
     public static WebDriver getDriver(){
 		System.setProperty(FirefoxDriver.SystemProperty.DRIVER_USE_MARIONETTE,"true");
 //		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"C:\\temp\\logs.txt");
-
-
-
-		WebDriver driver = new FirefoxDriver();
+		FirefoxOptions options = new FirefoxOptions();
+		FirefoxProfile profile= new FirefoxProfile();
+		profile.setPreference( "layout.css.devPixelsPerPx", "0.8" );
+		options.setProfile(profile);
+		WebDriver driver = new FirefoxDriver(options);
 		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(2, TimeUnit.SECONDS);
