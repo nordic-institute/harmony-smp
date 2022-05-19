@@ -390,7 +390,7 @@ public class DomainPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
-	@Test(description = "DMN-110")
+	@Test(description = "DMN-100")
 	public void allowDuplicateKeyStore() {
 			SoftAssert soft = new SoftAssert();
 			DomainPage page = new DomainPage(driver);
