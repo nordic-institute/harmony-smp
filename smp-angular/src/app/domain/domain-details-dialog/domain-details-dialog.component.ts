@@ -8,6 +8,7 @@ import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {KeystoreEditDialogComponent} from "../keystore-edit-dialog/keystore-edit-dialog.component";
 import {ServiceGroupDomainEditRo} from "../../service-group-edit/service-group-domain-edit-ro.model";
+import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
 
 @Component({
   selector: 'domain-details-dialog',
@@ -41,6 +42,7 @@ export class DomainDetailsDialogComponent {
   constructor(
     public dialog: MatDialog,
     public lookups: GlobalLookups,
+    private responsive: BreakpointObserver,
     private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
     private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -96,6 +98,15 @@ export class DomainDetailsDialogComponent {
       this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
       this.domainForm.controls['smlClientKeyCertificate'].setValue(this.selectedSMLCert );
     }
+
+    this.responsive.observe(Breakpoints.Small)
+      .subscribe(result => {
+
+        if (result.matches) {
+          console.log("screens matches HandsetLandscape");
+        }
+
+      });
   }
 
   submitForm() {

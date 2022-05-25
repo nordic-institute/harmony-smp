@@ -1,22 +1,23 @@
-import {Component, Inject} from '@angular/core';
+import {AfterViewChecked, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {GlobalLookups} from "../../common/global-lookups";
 import {HttpClient} from "@angular/common/http";
 import {SecurityService} from "../../security/security.service";
-import {CertificateDialogComponent} from "../../common/certificate-dialog/certificate-dialog.component";
-import {ConfirmationDialogComponent} from "../../common/confirmation-dialog/confirmation-dialog.component";
+import {CertificateDialogComponent} from "../../common/dialogs/certificate-dialog/certificate-dialog.component";
+import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {KeystoreImportDialogComponent} from "../keystore-import-dialog/keystore-import-dialog.component";
-import {InformationDialogComponent} from "../../common/information-dialog/information-dialog.component";
+import {InformationDialogComponent} from "../../common/dialogs/information-dialog/information-dialog.component";
 import {KeystoreService} from "../keystore.service";
 import {KeystoreResult} from "../keystore-result.model";
 
 @Component({
   selector: 'keystore-edit-dialog',
-  templateUrl: './keystore-edit-dialog.component.html'
+  templateUrl: './keystore-edit-dialog.component.html',
+  styleUrls: ['keystore-edit-dialog.component.css']
 })
-export class KeystoreEditDialogComponent {
+export class KeystoreEditDialogComponent implements AfterViewChecked{
   formTitle: string;
 
   displayedColumns = ['alias', 'certificateId'];
@@ -34,6 +35,11 @@ export class KeystoreEditDialogComponent {
     this.formTitle = "Keystore edit dialog";
   }
 
+  ngAfterViewChecked(): void {
+    // fix bug updating the columns
+    //https://github.com/swimlane/ngx-datatable/issues/1266
+    window.dispatchEvent(new Event('resize'));
+  }
 
   onDeleteCertificateRowActionClicked(row) {
 

@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
-import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -100,9 +99,9 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {AUTOMATION_AUTHENTICATION_TYPES, TEST_STRING_LIST, "getAutomationAuthenticationTypes", true},
                 {SSO_CAS_UI_LABEL, TEST_STRING, "getCasUILabel", true},
                 {SSO_CAS_URL, TEST_URL, "getCasURL", true},
-                {SSO_CAS_URLPATH_LOGIN, TEST_STRING, "getCasURLPathLogin", true},
+                {SSO_CAS_URL_PATH_LOGIN, TEST_STRING, "getCasURLPathLogin", true},
                 {SSO_CAS_CALLBACK_URL, TEST_URL, "getCasCallbackUrl", true},
-                {SSO_CAS_TOKEN_VALIDATION_URLPATH, TEST_STRING, "getCasURLTokenValidation", true},
+                {SSO_CAS_TOKEN_VALIDATION_URL_PATH, TEST_STRING, "getCasURLTokenValidation", true},
                 {SSO_CAS_TOKEN_VALIDATION_PARAMS, TEST_MAP, "getCasTokenValidationParams", true},
                 {SSO_CAS_TOKEN_VALIDATION_GROUPS, TEST_STRING_LIST, "getCasURLTokenValidationGroups", true},
                 {PARTC_EBCOREPARTYID_CONCATENATE, Boolean.FALSE, "getForceConcatenateEBCorePartyId", true},

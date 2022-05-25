@@ -36,7 +36,6 @@ export class PropertyController implements SearchTableController {
   }
 
   public showDetails(row: any) {
-    alert("show dialog")
     let dialogRef: MatDialogRef<PropertyDetailsDialogComponent> = this.dialog.open(PropertyDetailsDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       console.log("Property dialog is closed!");

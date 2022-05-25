@@ -102,28 +102,37 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * Method regenerate access token for user and returns access token
      * In the database the access token value is saved in format BCryptPasswordHash
      *
-     * @param userId
+     * @param authorizedUserId which is authorized for update
+     * @param userToUpdateId   the user id to be updated
      * @return generated AccessToken.
      */
     @Transactional
-    public AccessTokenRO generateAccessTokenForUser(Long userId, String currentPassword) {
+    public AccessTokenRO generateAccessTokenForUser(Long authorizedUserId, Long userToUpdateId, String currentPassword) {
 
-        DBUser dbUser = userDao.find(userId);
+        DBUser dbUser = userDao.find(authorizedUserId);
         if (dbUser == null) {
-            LOG.error("Can not update user password because user for id [{}] does not exist!", userId);
+            LOG.error("Can not update user password because authorized user with id [{}] does not exist!", authorizedUserId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
         if (!BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
+
+        DBUser dbUserToUpdate = userToUpdateId == null || authorizedUserId == userToUpdateId
+                ? dbUser : userDao.find(userToUpdateId);
+        if (dbUserToUpdate == null) {
+            LOG.error("Can not update user access token because user for with [{}] does not exist!", userToUpdateId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id to update!");
+        }
+
         Boolean testMode = configurationService.isSMPStartupInDevMode();
         AccessTokenRO token = SecurityUtils.generateAccessToken(testMode);
         OffsetDateTime generatedTime = token.getGeneratedOn();
         token.setExpireOn(generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
-        dbUser.setAccessTokenIdentifier(token.getIdentifier());
-        dbUser.setAccessToken(BCryptPasswordHash.hashPassword(token.getValue()));
-        dbUser.setAccessTokenGeneratedOn(generatedTime);
-        dbUser.setAccessTokenExpireOn(token.getExpireOn());
+        dbUserToUpdate.setAccessTokenIdentifier(token.getIdentifier());
+        dbUserToUpdate.setAccessToken(BCryptPasswordHash.hashPassword(token.getValue()));
+        dbUserToUpdate.setAccessTokenGeneratedOn(generatedTime);
+        dbUserToUpdate.setAccessTokenExpireOn(token.getExpireOn());
 
         return token;
     }
@@ -132,30 +141,39 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * Method regenerate access token for user and returns access token
      * In the database the access token value is saved in format BCryptPasswordHash
      *
-     * @param userId
+     * @param authorizedUserId - authorized user id
      * @return generated AccessToken.
      */
     @Transactional
-    public boolean updateUserPassword(Long userId, String currentPassword, String newPassword) {
+    public DBUser updateUserPassword(Long authorizedUserId, Long userToUpdateId, String currentPassword, String newPassword) {
 
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
         if (!pattern.matcher(newPassword).matches()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
         }
-        DBUser dbUser = userDao.find(userId);
-        if (dbUser == null) {
-            LOG.error("Can not update user password because user for id [{}] does not exist!", userId);
+        DBUser dbAuthorizedUser = userDao.find(authorizedUserId);
+        if (dbAuthorizedUser == null) {
+            LOG.error("Can not update user password because user for id [{}] does not exist!", authorizedUserId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
 
-        if (!BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
+        if (!BCrypt.checkpw(currentPassword, dbAuthorizedUser.getPassword())) {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
-        dbUser.setPassword(BCryptPasswordHash.hashPassword(newPassword));
+
+        DBUser dbUserToUpdate = userToUpdateId == null || authorizedUserId == userToUpdateId
+                ? dbAuthorizedUser : userDao.find(userToUpdateId);
+
+        if (dbUserToUpdate == null) {
+            LOG.error("Can not update user password because user for with [{}] does not exist!", userToUpdateId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id to update!");
+        }
+
+        dbUserToUpdate.setPassword(BCryptPasswordHash.hashPassword(newPassword));
         OffsetDateTime currentTime = OffsetDateTime.now();
-        dbUser.setPasswordChanged(currentTime);
-        dbUser.setPasswordExpireOn(currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
-        return true;
+        dbUserToUpdate.setPasswordChanged(currentTime);
+        dbUserToUpdate.setPasswordExpireOn(currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
+        return dbUserToUpdate;
     }
 
     @Transactional

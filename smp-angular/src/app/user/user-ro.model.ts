@@ -5,11 +5,13 @@ export interface UserRo extends SearchTableEntity {
   userId?: string
   username: string;
   emailAddress: string;
-  password?: string;
   accessTokenId?: string;
+  passwordExpireOn?:	Date;
+  accessTokenExpireOn?:	Date;
   role: string;
   active: boolean;
   suspended?: boolean;
   certificate?: CertificateRo;
   statusPassword: number;
+  casUserDataUrl?: string;
 }
