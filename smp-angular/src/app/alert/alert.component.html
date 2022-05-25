@@ -9,7 +9,9 @@
   [showSearchPanel]="false"
   [filter]="filter"
   [allowNewItems]="false"
-  [allowDeleteItems]="securityService.isCurrentUserSystemAdmin()"
+  [allowDeleteItems]="false"
+  [allowEditItems]="false"
+  [showActionButtons]="false"
 >
   <ng-template #additionalToolButtons>
     <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>

@@ -43,3 +43,7 @@ label:hover, label:active, input:hover + label, input:active + label {
 .divTableBody {
   display: table-row-group;
 }
+
+.empty-field-label {
+  color: gray;
+}

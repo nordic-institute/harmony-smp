@@ -9,6 +9,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class DialogComponent {
 
   @Input() title: String;
+  @Input() text: String;
 
   @Input() type: string;
 

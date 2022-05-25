@@ -8,11 +8,11 @@ import {User} from '../security/user.model';
 import {MatDialogRef, MatDialog} from '@angular/material/dialog';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
 import {Subscription} from 'rxjs';
-import {ExpiredPasswordDialogComponent} from '../common/expired-password-dialog/expired-password-dialog.component';
+import {ExpiredPasswordDialogComponent} from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
 import {GlobalLookups} from "../common/global-lookups";
-import {PasswordChangeDialogComponent} from "../common/password-change-dialog/password-change-dialog.component";
+import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {UserDetailsDialogMode} from "../user/user-details-dialog/user-details-dialog.component";
-import {InformationDialogComponent} from "../common/information-dialog/information-dialog.component";
+import {InformationDialogComponent} from "../common/dialogs/information-dialog/information-dialog.component";
 import {DatePipe, formatDate} from "@angular/common";
 
 @Component({
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       user => {
         if (user && user.passwordExpired) {
           if (user.forceChangeExpiredPassword) {
-            this.dialog.open(PasswordChangeDialogComponent, {data: user}).afterClosed().subscribe(res =>
+            this.dialog.open(PasswordChangeDialogComponent, {data: {user:user,adminUser:false}}).afterClosed().subscribe(res =>
               this.securityService.finalizeLogout(res)
             );
           } else {

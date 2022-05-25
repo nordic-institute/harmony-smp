@@ -41,7 +41,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     protected UIUserService testInstance;
 
 
-
     protected void insertDataObjects(int size) {
         for (int i = 0; i < size; i++) {
             DBUser d = TestDBUtils.createDBUserByUsername("user" + i);
@@ -275,7 +274,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     @Test
     @Transactional
     public void testGenerateAccessTokenForUser() {
-        String userPassword=UUID.randomUUID().toString();
+        String userPassword = UUID.randomUUID().toString();
         DBUser user = new DBUser();
         user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
         user.setUsername(UUID.randomUUID().toString());
@@ -284,7 +283,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         userDao.persistFlushDetach(user);
 
 
-        AccessTokenRO token = testInstance.generateAccessTokenForUser(user.getId(), userPassword);
+        AccessTokenRO token = testInstance.generateAccessTokenForUser(user.getId(), user.getId(), userPassword);
 
         Optional<DBUser> optResult = userDao.findUserByAuthenticationToken(token.getIdentifier());
         assertTrue(optResult.isPresent());

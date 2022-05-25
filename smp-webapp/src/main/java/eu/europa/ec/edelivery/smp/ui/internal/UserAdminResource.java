@@ -1,12 +1,9 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -15,16 +12,17 @@ import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.UserFilter;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_USER;
+import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntityId;
 
 /**
  * @author Joze Rihtarsic
@@ -84,6 +82,32 @@ public class UserAdminResource {
         }
         dres.getListIds().addAll(query.stream().map(id -> SessionSecurityUtils.encryptedEntityId(id)).collect(Collectors.toList()));
         return uiUserService.validateDeleteRequest(dres);
+    }
+
+    @PostMapping(path = "/{user-id}/generate-access-token-for/{update-user-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
+    public AccessTokenRO generateAccessTokenForUser(
+            @PathVariable("user-id") String userId,
+            @PathVariable("update-user-id") String regenerateForUserId,
+            @RequestBody String password) {
+        Long authorizedUserId = decryptEntityId(userId);
+        Long changeUserId = decryptEntityId(regenerateForUserId);
+        LOG.info("Generated access token for user:[{}] with id:[{}] by the system user with id [{}]", userId, regenerateForUserId, authorizedUserId);
+
+        return uiUserService.generateAccessTokenForUser(authorizedUserId, changeUserId, password);
+    }
+
+
+    @PutMapping(path = "/{user-id}/change-password-for/{update-user-id}", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
+    public UserRO changePassword(@PathVariable("user-id") String userId,
+                                 @PathVariable("update-user-id") String regenerateForUserId,
+                                 @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
+        Long authorizedUserId = decryptEntityId(userId);
+        Long changeUserId = decryptEntityId(regenerateForUserId);
+        LOG.info("change the password of the currently logged in user:[{}] with id:[{}] ", changeUserId, regenerateForUserId);
+        DBUser user = uiUserService.updateUserPassword(authorizedUserId, changeUserId, newPassword.getCurrentPassword(), newPassword.getNewPassword());
+        return authorizationService.sanitize(uiUserService.convertToRo(user));
     }
 
     private SMPUserDetails getLoggedUserData() {

@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.auth;
 
+import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 
+import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
 
@@ -43,7 +45,7 @@ public class SMPAuthorizationService {
                                    UserDao userDao) {
         this.serviceGroupService = serviceGroupService;
         this.conversionService = conversionService;
-        this.configurationService=configurationService;
+        this.configurationService = configurationService;
         this.userDao = userDao;
     }
 
@@ -123,7 +125,7 @@ public class SMPAuthorizationService {
     public UserRO getLoggedUserData() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         // refresh data from database!
-        DBUser dbUser =userDao.find(userDetails.getUser().getId());
+        DBUser dbUser = userDao.find(userDetails.getUser().getId());
         if (dbUser == null || !dbUser.isActive()) {
             LOG.warn("User: [{}] with id [{}] does not exists anymore or is not active.",
                     userDetails.getUser().getId(),
@@ -147,11 +149,16 @@ public class SMPAuthorizationService {
      */
     protected UserRO getUpdatedUserData(UserRO userRO) {
         userRO.setShowPasswordExpirationWarning(userRO.getPasswordExpireOn() != null &&
-                OffsetDateTime.now()
-                        .minusDays(configurationService.getPasswordPolicyUIWarningDaysBeforeExpire())
-                        .isBefore(userRO.getPasswordExpireOn()));
+                OffsetDateTime.now().plusDays(configurationService.getPasswordPolicyUIWarningDaysBeforeExpire())
+                        .isAfter(userRO.getPasswordExpireOn()));
 
         userRO.setForceChangePassword(userRO.isPasswordExpired() && configurationService.getPasswordPolicyForceChangeIfExpired());
+        // set cas authentication data
+        if (configurationService.getUIAuthenticationTypes().contains(SMPUserAuthenticationTypes.SSO.name())) {
+            URL casUrlData = configurationService.getCasUserDataURL();
+            userRO.setCasUserDataUrl(casUrlData!=null?casUrlData.toString():null);
+        }
+
         return sanitize(userRO);
     }
 }

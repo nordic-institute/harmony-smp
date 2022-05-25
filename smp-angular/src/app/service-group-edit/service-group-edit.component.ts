@@ -48,26 +48,26 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit {
 
     this.columnPicker.allColumns = [
       {
-        name: 'Metadata size',
+        name: 'Metadata',
         prop: 'serviceMetadata.length',
         showInitially: true,
-        width: 120,
-        maxWidth: 120,
+        width: 75,
+        maxWidth: 75,
         resizable: "false",
       },
       {
-        name: 'Owners size',
+        name: 'Owners',
         prop: 'users.length',
         showInitially: true,
-        width: 120,
-        maxWidth: 120,
+        width: 75,
+        maxWidth: 75,
         resizable: "false"
       },
       {
         name: 'Participant scheme',
         prop: 'participantScheme',
         showInitially: true,
-        width: 300,
+        width: 200,
         maxWidth: 300,
         resizable: "false"
       },
@@ -80,7 +80,7 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit {
         cellTemplate: this.rowSMPUrlLinkAction,
         name: 'OASIS ServiceGroup URL',
         showInitially: true,
-        width: 250,
+        width: 150,
         maxWidth: 250,
         resizable: "false",
         sortable: false

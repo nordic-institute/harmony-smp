@@ -110,10 +110,11 @@ public enum SMPPropertyEnum {
     // SSO configuration
     SSO_CAS_UI_LABEL("smp.sso.cas.ui.label", "EU Login", "The SSO service provider label.", false, false, true, STRING),
     SSO_CAS_URL("smp.sso.cas.url", "http://localhost:8080/cas/", "The SSO CAS URL endpoint", false, false, true, URL),
-    SSO_CAS_URLPATH_LOGIN("smp.sso.cas.urlpath.login", "login", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.login}.", false, false, true, STRING),
+    SSO_CAS_URL_PATH_LOGIN("smp.sso.cas.urlPath.login", "login", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.login}.", false, false, true, STRING),
     SSO_CAS_CALLBACK_URL("smp.sso.cas.callback.url", "http://localhost:8080/smp/ui/public/rest/security/cas", "The URL is the callback URL belonging to the local SMP Security System. If using RP make sure it target SMP path '/ui/public/rest/security/cas'", false, false, true, URL),
-    SSO_CAS_SMP_LOGIN_URI("smp.sso.cas.smp.uri", "/smp/ui/public/rest/security/cas", "SMP relative path which triggers CAS authentication", false, false, true, STRING),
-    SSO_CAS_TOKEN_VALIDATION_URLPATH("smp.sso.cas.token.validation.urlpath", "laxValidate", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath}.", false, false, true, STRING),
+    SSO_CAS_SMP_LOGIN_URI("smp.sso.cas.smp.urlPath", "/smp/ui/public/rest/security/cas", "SMP relative path which triggers CAS authentication", false, false, true, STRING),
+    SSO_CAS_SMP_USER_DATA_URL_PATH("smp.sso.cas.smp.user.data.urlPath", "userdata/myAccount.cgi", "Relative path for CAS user data. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.smp.user.data.urlpath}.", false, false, true, STRING),
+    SSO_CAS_TOKEN_VALIDATION_URL_PATH("smp.sso.cas.token.validation.urlPath", "laxValidate", "The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.token.validation.urlpath}.", false, false, true, STRING),
     SSO_CAS_TOKEN_VALIDATION_PARAMS("smp.sso.cas.token.validation.params", "acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP", "The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'", false, false, true, MAP_STRING),
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.", false, false, true, LIST_STRING),
 

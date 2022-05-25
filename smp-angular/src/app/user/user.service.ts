@@ -6,7 +6,7 @@ import {SmpConstants} from "../smp.constants";
 import {User} from "../security/user.model";
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
 import {SecurityService} from "../security/security.service";
-import {AccessTokenRo} from "../common/access-token-generation-dialog/access-token-ro.model";
+import {AccessTokenRo} from "../common/dialogs/access-token-generation-dialog/access-token-ro.model";
 
 @Injectable()
 export class UserService {

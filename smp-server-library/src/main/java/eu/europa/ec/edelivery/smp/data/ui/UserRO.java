@@ -1,10 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.utils.SMPConstants;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -20,10 +17,8 @@ public class UserRO extends BaseRO {
 
     String username;
     String password;
-    @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
     OffsetDateTime passwordExpireOn;
     String accessTokenId;
-    @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
     OffsetDateTime accessTokenExpireOn;
     String emailAddress;
     Collection<SMPAuthority> authorities;
@@ -33,9 +28,11 @@ public class UserRO extends BaseRO {
     CertificateRO certificate;
     int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
     boolean passwordExpired = false;
-    boolean showPasswordExpirationWarning  = false;
-    boolean forceChangeExpiredPassword =false;
+    boolean showPasswordExpirationWarning = false;
+    boolean forceChangeExpiredPassword = false;
     boolean casAuthenticated = false;
+
+    String casUserDataUrl;
 
     /**
      * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
@@ -161,6 +158,14 @@ public class UserRO extends BaseRO {
 
     public void setForceChangePassword(boolean forceChangeExpiredPassword) {
         this.forceChangeExpiredPassword = forceChangeExpiredPassword;
+    }
+
+    public String getCasUserDataUrl() {
+        return casUserDataUrl;
+    }
+
+    public void setCasUserDataUrl(String casUserDataUrl) {
+        this.casUserDataUrl = casUserDataUrl;
     }
 
     public boolean isCasAuthenticated() {

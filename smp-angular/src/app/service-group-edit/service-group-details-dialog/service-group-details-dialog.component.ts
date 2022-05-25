@@ -12,7 +12,7 @@ import {ServiceGroupExtensionWizardDialogComponent} from "../service-group-exten
 import {ServiceGroupValidationRo} from "./service-group-validation-edit-ro.model";
 import {DomainRo} from "../../domain/domain-ro.model";
 import {ServiceGroupDomainEditRo} from "../service-group-domain-edit-ro.model";
-import {ConfirmationDialogComponent} from "../../common/confirmation-dialog/confirmation-dialog.component";
+import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SecurityService} from "../../security/security.service";
 import {UserRo} from "../../user/user-ro.model";
 import {ServiceGroupValidationErrorCodeModel} from "./service-group-validation-error-code.model";
@@ -150,36 +150,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.changeDetector.detectChanges()
   }
 
-  getDomainCodeClass(domain) {
-    let domainWarning = this.getDomainConfigurationWarning(domain);
-    if (!!domainWarning) {
-      return 'domainWarning';
-    }
-    return "";
-  }
-  getDomainConfigurationWarning(domain: DomainRo) {
-    let msg =null;
-    if (!domain.signatureKeyAlias) {
-      msg = "The domain should have a defined signature CertAlias."
-    }
-    if (this.lookups.cachedApplicationConfig.smlIntegrationOn) {
-      if( !domain.smlSmpId || !domain.smlClientCertHeader ){
-        msg = (!msg?"": msg+" ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
-      }
-    }
-    if(msg) {
-       msg = msg + " To use domain first fix domain configuration."
-    }
-    return msg;
-  }
-
-  isDomainProperlyConfigured(domain: DomainRo){
-    return !this.getDomainConfigurationWarning(domain);
-  }
-
   submitForm() {
     this.checkValidity(this.dialogForm);
-
 
     let request: ServiceGroupValidationRo = {
       serviceGroupId: this.current.id,
@@ -385,5 +357,9 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
 
   isEmpty(str): boolean {
     return (!str || 0 === str.length);
+  }
+
+  clearAlert() {
+    this.extensionValidationMessage = null;
   }
 }

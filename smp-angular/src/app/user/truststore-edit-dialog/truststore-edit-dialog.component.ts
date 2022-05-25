@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, Inject, TemplateRef, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
@@ -6,9 +6,8 @@ import {GlobalLookups} from "../../common/global-lookups";
 import {HttpClient} from "@angular/common/http";
 import {SecurityService} from "../../security/security.service";
 import {TruststoreService} from "../truststore.service";
-import {CertificateDialogComponent} from "../../common/certificate-dialog/certificate-dialog.component";
-import {ConfirmationDialogComponent} from "../../common/confirmation-dialog/confirmation-dialog.component";
-import {InformationDialogComponent} from "../../common/information-dialog/information-dialog.component";
+import {CertificateDialogComponent} from "../../common/dialogs/certificate-dialog/certificate-dialog.component";
+import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {TruststoreResult} from "../truststore-result.model";
 import {CertificateRo} from "../certificate-ro.model";
 
@@ -18,10 +17,14 @@ import {CertificateRo} from "../certificate-ro.model";
   templateUrl: './truststore-edit-dialog.component.html',
   styleUrls: ['truststore-edit-dialog.component.css']
 })
-export class TruststoreEditDialogComponent {
-  formTitle: string;
+export class TruststoreEditDialogComponent implements AfterViewInit, AfterViewChecked {
+  @ViewChild('certificateRowActions') certificateRowActions: TemplateRef<any>;
+  @ViewChild('rowIndex') rowIndex: TemplateRef<any>;
 
-  displayedColumns = ['alias', 'certificateId'];
+  formTitle: string;
+  trustedCertificateList: Array<any> = [];
+
+  tableColumns = [];
 
 
   constructor(private truststoreService: TruststoreService,
@@ -34,22 +37,64 @@ export class TruststoreEditDialogComponent {
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
     this.formTitle = "Truststore edit dialog";
+    // bind to trusted certificate list events
+    this.lookups.onTrustedCertificateListRefreshEvent().subscribe((data) => {
+        this.refreshData();
+      }
+    )
+  }
+
+  ngAfterViewChecked(): void {
+    // fix bug updating the columns
+    //https://github.com/swimlane/ngx-datatable/issues/1266
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  ngAfterViewInit(): void {
+    this.tableColumns = [
+      {
+        cellTemplate: this.rowIndex,
+        name: 'Index',
+        width: 30,
+        maxWidth: 80,
+        sortable: false
+      },
+      {
+        name: 'Alias',
+        prop: 'alias',
+        sortable: false,
+      },
+      {
+        name: 'Certificate',
+        prop: 'certificateId',
+        sortable: false,
+      },
+      {
+        name: 'Actions',
+        sortable: false,
+        cellTemplate: this.certificateRowActions,
+      },
+    ];
+
+    this.refreshData();
   }
 
 
+  refreshData() {
+    this.trustedCertificateList = [...this.lookups.cachedTrustedCertificateList];
+  }
+
   onDeleteCertificateRowActionClicked(row) {
-
-      this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          title: "Delete certificate " + row.alias + " from truststore!",
-          description: "Action will permanently delete certificate from truststore! Do you wish to continue?"
-        }
-      }).afterClosed().subscribe(result => {
-        if (result) {
-          this.deleteCertificateFromTruststore(row.alias);
-        }
-      })
-
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: "Delete certificate " + row.alias + " from truststore!",
+        description: "Action will permanently delete certificate from truststore! Do you wish to continue?"
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteCertificateFromTruststore(row.alias);
+      }
+    });
   }
 
   deleteCertificateFromTruststore(alias: string) {
@@ -58,9 +103,8 @@ export class TruststoreEditDialogComponent {
           if (res.errorMessage) {
             this.alertService.exception("Error occurred while deleting certificate:" + alias, res.errorMessage, false);
           } else {
-            this.alertService.success("Certificate " + alias + " deleted!");
+            this.alertService.success("Certificate with alias [" + alias + "] is deleted!");
             this.lookups.refreshTrustedCertificateLookup();
-
           }
         } else {
           this.alertService.exception("Error occurred while deleting certificate:" + alias, "Unknown Error", false);
@@ -77,7 +121,7 @@ export class TruststoreEditDialogComponent {
     const file = event.target.files[0];
     this.truststoreService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
         if (res && res.certificateId) {
-          this.alertService.success("Certificate: " + res.certificateId + " is imported!");
+          this.alertService.success("Certificate: [" + res.certificateId + "] with alias [" + res.alias + "] is imported!");
           this.lookups.refreshTrustedCertificateLookup();
         } else {
           this.alertService.exception("Error occurred while uploading certificate.", "Check if uploaded file has valid certificate type.", false);

@@ -9,8 +9,9 @@ import {SearchTableValidationResult} from "../common/search-table/search-table-v
 import {SmpConstants} from "../smp.constants";
 import {HttpClient} from "@angular/common/http";
 import {CertificateRo} from "./certificate-ro.model";
-import {PasswordChangeDialogComponent} from "../common/password-change-dialog/password-change-dialog.component";
-import {AccessTokenGenerationDialogComponent} from "../common/access-token-generation-dialog/access-token-generation-dialog.component";
+import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
+import {AccessTokenGenerationDialogComponent} from "../common/dialogs/access-token-generation-dialog/access-token-generation-dialog.component";
+
 
 export class UserController implements SearchTableController {
 
