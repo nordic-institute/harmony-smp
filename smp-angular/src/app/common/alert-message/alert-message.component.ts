@@ -9,9 +9,8 @@ import {AlertMessageService} from './alert-message.service';
 })
 
 export class AlertMessageComponent implements OnInit {
-  message: any;
+  message: any=null;
 
-  public static readonly MAX_COUNT_CSV: number = 10000;
 
   constructor(private alertService: AlertMessageService) { }
 
@@ -21,5 +20,12 @@ export class AlertMessageComponent implements OnInit {
 
   clearAlert():void {
     this.alertService.clearAlert();
+  }
+
+  get messageText(){
+    if (!!this.message){
+      return this.message.text;
+    }
+    return;
   }
 }
