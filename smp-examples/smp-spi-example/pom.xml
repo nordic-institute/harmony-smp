@@ -20,6 +20,9 @@
         <version>4.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
 
     <artifactId>smp-spi-example</artifactId>
     <name>smp-spi-example</name>

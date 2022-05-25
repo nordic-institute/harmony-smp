@@ -21,7 +21,6 @@
         <version>4.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
     <artifactId>smp-examples</artifactId>
     <name>smp-examples</name>
     <packaging>pom</packaging>
