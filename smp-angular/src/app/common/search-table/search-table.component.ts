@@ -9,11 +9,11 @@ import {SearchTableController} from './search-table-controller';
 import {finalize} from 'rxjs/operators';
 import {SearchTableEntity} from './search-table-entity.model';
 import {SearchTableEntityStatus} from './search-table-entity-status.model';
-import {CancelDialogComponent} from '../cancel-dialog/cancel-dialog.component';
-import {SaveDialogComponent} from '../save-dialog/save-dialog.component';
+import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
+import {SaveDialogComponent} from '../dialogs/save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
 import {HttpParams} from '@angular/common/http';
-import {ConfirmationDialogComponent} from "../confirmation-dialog/confirmation-dialog.component";
+import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SearchTableValidationResult} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
 import {Router} from "@angular/router";
@@ -84,7 +84,7 @@ export class SearchTableComponent implements OnInit {
     this.columnIndex = {
       cellTemplate: this.rowIndex,
       name: 'Index',
-      width: 50,
+      width: 30,
       maxWidth: 80,
       sortable: false
     };
@@ -92,7 +92,7 @@ export class SearchTableComponent implements OnInit {
     this.columnActions = {
       cellTemplate: this.rowActions,
       name: 'Actions',
-      width: 80,
+      width: 100,
       maxWidth: 150,
       sortable: false,
       showInitially: false

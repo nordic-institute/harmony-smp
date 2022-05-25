@@ -16,7 +16,7 @@
             formControlName="value" [pattern]="propertyForm.controls['valuePattern'].value"/>
         </mat-form-field>
         <mat-checkbox *ngIf="propertyForm.controls['type'].value === 'BOOLEAN'"
-                      formControlName="value" >
+                      formControlName="value">
           {{ propertyForm.controls['property'].value }}
         </mat-checkbox>
         <div *ngIf="propertyForm.controls['errorMessage'].value" class="alert-message-error">
@@ -27,17 +27,13 @@
   </form>
 </mat-dialog-content>
 
-<table class="buttonsRow">
-  <tr>
-    <td>
-      <button mat-raised-button color="primary" (click)="submitForm()" [disabled]="!propertyForm.valid">
-        <mat-icon>check_circle</mat-icon>
-        <span>OK</span>
-      </button>
-      <button mat-raised-button color="primary" mat-dialog-close>
-        <mat-icon>cancel</mat-icon>
-        <span>Cancel</span>
-      </button>
-    </td>
-  </tr>
-</table>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="submitForm()" [disabled]="!propertyForm.valid">
+    <mat-icon>check_circle</mat-icon>
+    <span>OK</span>
+  </button>
+  <button mat-raised-button color="primary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
+</mat-dialog-actions>

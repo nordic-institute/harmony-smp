@@ -41,9 +41,7 @@ import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NA
 public class AuthenticationResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationResource.class);
-    public static final String RELATIVE_BASE_ENTRY="../../../#/";
-
-    private UIUserService uiUserService;
+    public static final String RELATIVE_BASE_ENTRY = "../../../#/";
 
     protected SMPAuthenticationService authenticationService;
 
@@ -67,7 +65,6 @@ public class AuthenticationResource {
         this.configurationService = configurationService;
         this.smpCookieWriter = smpCookieWriter;
         this.csrfTokenRepository = csrfTokenRepository;
-        this.uiUserService = uiUserService;
     }
 
     @PostMapping(value = "authentication")
@@ -123,7 +120,6 @@ public class AuthenticationResource {
     public void recreatedSessionCookie(HttpServletRequest request, HttpServletResponse response) {
         // recreate session id  (first make sure it exists)
         String sessionId = request.getSession(true).getId();
-//        String sessionId = request.changeSessionId();
         smpCookieWriter.writeCookieToResponse(SESSION_COOKIE_NAME,
                 sessionId,
                 configurationService.getSessionCookieSecure(),

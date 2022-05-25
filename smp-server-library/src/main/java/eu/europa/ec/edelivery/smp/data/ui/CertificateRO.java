@@ -1,8 +1,5 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import eu.europa.ec.edelivery.smp.utils.SMPConstants;
-
 import java.util.Date;
 
 /**
@@ -23,11 +20,7 @@ public class CertificateRO extends BaseRO {
     private String clientCertHeader;
     private boolean isInvalid;
     private String invalidReason;
-
-
-    @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
     private Date validFrom;
-    @JsonFormat(pattern = SMPConstants.JSON_DATETIME_ISO)
     private Date validTo;
 
     public CertificateRO() {

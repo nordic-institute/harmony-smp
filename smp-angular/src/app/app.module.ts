@@ -49,9 +49,9 @@ import {DatePipe} from './custom-date/date.pipe';
 import {CapitalizeFirstPipe} from './common/capitalize-first.pipe';
 import {DefaultPasswordDialogComponent} from './security/default-password-dialog/default-password-dialog.component';
 import {ServiceGroupDetailsDialogComponent} from './service-group-edit/service-group-details-dialog/service-group-details-dialog.component';
-import {CancelDialogComponent} from './common/cancel-dialog/cancel-dialog.component';
+import {CancelDialogComponent} from './common/dialogs/cancel-dialog/cancel-dialog.component';
 import {DirtyGuard} from './common/dirty.guard';
-import {SaveDialogComponent} from './common/save-dialog/save-dialog.component';
+import {SaveDialogComponent} from './common/dialogs/save-dialog/save-dialog.component';
 import {ColumnPickerComponent} from './common/column-picker/column-picker.component';
 import {PageHelperComponent} from './common/page-helper/page-helper.component';
 import {SharedModule} from './common/module/shared.module';
@@ -67,26 +67,27 @@ import {CertificateService} from './user/certificate.service';
 import {GlobalLookups} from './common/global-lookups';
 import {ServiceGroupExtensionWizardDialogComponent} from './service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component';
 import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
-import {ConfirmationDialogComponent} from './common/confirmation-dialog/confirmation-dialog.component';
+import {ConfirmationDialogComponent} from './common/dialogs/confirmation-dialog/confirmation-dialog.component';
 import {SpinnerComponent} from './common/spinner/spinner.component';
 import {UserService} from './user/user.service';
 import {UserDetailsService} from './user/user-details-dialog/user-details.service';
-import {ExpiredPasswordDialogComponent} from './common/expired-password-dialog/expired-password-dialog.component';
-import {DialogComponent} from './common/dialog/dialog.component';
+import {ExpiredPasswordDialogComponent} from './common/dialogs/expired-password-dialog/expired-password-dialog.component';
+import {DialogComponent} from './common/dialogs/dialog/dialog.component';
 import {KeystoreImportDialogComponent} from "./domain/keystore-import-dialog/keystore-import-dialog.component";
 import {KeystoreEditDialogComponent} from "./domain/keystore-edit-dialog/keystore-edit-dialog.component";
-import {CertificateDialogComponent} from "./common/certificate-dialog/certificate-dialog.component";
+import {CertificateDialogComponent} from "./common/dialogs/certificate-dialog/certificate-dialog.component";
 import {TruststoreEditDialogComponent} from "./user/truststore-edit-dialog/truststore-edit-dialog.component";
-import {InformationDialogComponent} from "./common/information-dialog/information-dialog.component";
+import {InformationDialogComponent} from "./common/dialogs/information-dialog/information-dialog.component";
 import {KeystoreService} from "./domain/keystore.service";
 import {TruststoreService} from "./user/truststore.service";
 import {SmlIntegrationService} from "./domain/sml-integration.service";
-import {PasswordChangeDialogComponent} from "./common/password-change-dialog/password-change-dialog.component";
-import {AccessTokenGenerationDialogComponent} from "./common/access-token-generation-dialog/access-token-generation-dialog.component";
+import {PasswordChangeDialogComponent} from "./common/dialogs/password-change-dialog/password-change-dialog.component";
+import {AccessTokenGenerationDialogComponent} from "./common/dialogs/access-token-generation-dialog/access-token-generation-dialog.component";
 import {AlertComponent} from "./alert/alert.component";
 import {PropertyComponent} from "./property/property.component";
 import {PropertyDetailsDialogComponent} from "./property/property-details-dialog/property-details-dialog.component";
 import {MatCheckbox, MatCheckboxModule} from "@angular/material/checkbox";
+import {AutoFocusDirective} from "./common/directive/autofocus/auto-focus.directive";
 
 
 @NgModule({
@@ -133,6 +134,7 @@ import {MatCheckbox, MatCheckboxModule} from "@angular/material/checkbox";
     KeystoreEditDialogComponent,
     CertificateDialogComponent,
     TruststoreEditDialogComponent,
+    AutoFocusDirective,
   ],
   imports: [
     BrowserModule,

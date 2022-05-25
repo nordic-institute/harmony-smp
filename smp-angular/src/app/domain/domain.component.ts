@@ -10,7 +10,7 @@ import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {SecurityService} from "../security/security.service";
 import {DomainRo} from "./domain-ro.model";
-import {ConfirmationDialogComponent} from "../common/confirmation-dialog/confirmation-dialog.component";
+import {ConfirmationDialogComponent} from "../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
 import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-dialog.component";
 import {SmpInfoService} from "../app-info/smp-info.service";

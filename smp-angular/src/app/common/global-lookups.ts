@@ -10,6 +10,7 @@ import {Subscription} from "rxjs/internal/Subscription";
 import {SmpInfo} from "../app-info/smp-info.model";
 import {SmpConfig} from "../app-config/smp-config.model";
 import {SecurityEventService} from "../security/security-event.service";
+import {Subject} from "rxjs";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -31,8 +32,8 @@ export class GlobalLookups implements OnInit {
   cachedApplicationConfig?: SmpConfig;
   cachedTrustedCertificateList: Array<any> = [];
 
-  loginSubscription: Subscription;
-  logoutSubscription: Subscription;
+  // lookup refresh subscriptions.
+  private trustedCertificateListRefreshEventEmitter = new Subject<any>();
 
 
   constructor(protected alertService: AlertMessageService,
@@ -74,7 +75,7 @@ export class GlobalLookups implements OnInit {
   public refreshDomainLookupForLoggedUser() {
     let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN_SEARCH;
     // for authenticated admin use internal url which returns more data!
-    if (this.securityService.isCurrentUserSMPAdmin() || this.securityService.isCurrentUserSystemAdmin()) {
+    if (this.securityService.isCurrentUserSystemAdmin()) {
       domainUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE;
     }
     this.refreshDomainLookup(domainUrl);
@@ -192,15 +193,21 @@ export class GlobalLookups implements OnInit {
       // init users
       this.trustedCertificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_TRUSTSTORE);
       this.trustedCertificateObserver.subscribe((certs: SearchTableResult) => {
-        this.cachedTrustedCertificateList = certs.serviceEntities.map(serviceEntity => {
-          return {...serviceEntity}
-
-        });
-      }, (error: any) => {
+        this.cachedTrustedCertificateList = [...certs.serviceEntities];
+          this.notifyTrustedCertificateListRefreshEvent(this.cachedTrustedCertificateList );
+        }, (error: any) => {
         // check if unauthorized
         // just console try latter
-        console.log("Error occurred while loading trusted certifcates lookup [" + error + "]");
+        console.log("Error occurred while loading trusted certificates lookup [" + error + "]");
       });
     }
+  }
+
+  onTrustedCertificateListRefreshEvent(): Observable<any> {
+    return this.trustedCertificateListRefreshEventEmitter.asObservable();
+  }
+
+  notifyTrustedCertificateListRefreshEvent(newList) {
+    this.trustedCertificateListRefreshEventEmitter.next(newList);
   }
 }

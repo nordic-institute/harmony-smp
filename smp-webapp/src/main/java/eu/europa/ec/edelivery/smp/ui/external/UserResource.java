@@ -9,7 +9,6 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +44,7 @@ public class UserResource {
         Long entityId = decryptEntityId(userId);
         LOG.info("Generated access token for user:[{}] with id:[{}] ", userId, entityId);
 
-        return uiUserService.generateAccessTokenForUser(entityId, password);
+        return uiUserService.generateAccessTokenForUser(entityId, entityId, password);
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
@@ -53,12 +52,12 @@ public class UserResource {
     public boolean changePassword(@PathVariable("user-id") String userId, @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
-        boolean result = uiUserService.updateUserPassword(entityId, newPassword.getCurrentPassword(), newPassword.getNewPassword());
-        if (result){
+        DBUser result = uiUserService.updateUserPassword(entityId, entityId, newPassword.getCurrentPassword(), newPassword.getNewPassword());
+        if (result!=null) {
             LOG.info("Password successfully changed. Logout the user, to be able to login with the new password!");
             authenticationService.logout(request, response);
         }
-        return result;
+        return result!=null;
     }
 
     /**

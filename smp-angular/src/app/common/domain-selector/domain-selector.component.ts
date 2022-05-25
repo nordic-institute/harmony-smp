@@ -3,7 +3,7 @@ import {SecurityService} from '../../security/security.service';
 import {DomainService} from '../../security/domain.service';
 import {Domain} from '../../security/domain.model';
 import {MatDialog} from '@angular/material/dialog';
-import {CancelDialogComponent} from '../cancel-dialog/cancel-dialog.component';
+import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
 
 @Component({
   selector: 'domain-selector',

@@ -24,7 +24,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
-
 public class SMPAuthorizationServiceTest {
 
     UserRO user = null;
@@ -161,15 +160,31 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void testGetUpdatedUserDataDoNotShowWarning() {
+    public void testGetUpdatedUserDataAboutToExpireNoWarning() {
         UserRO user = new UserRO();
-        user.setPasswordExpireOn(OffsetDateTime.now().minusDays(11));
+        // password will expire in 11 days. But the warning is 10 days before expire
+        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(11));
         Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
         Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
 
         user = testInstance.getUpdatedUserData(user);
 
         Assert.assertFalse(user.isShowPasswordExpirationWarning());
+        Assert.assertFalse(user.isForceChangeExpiredPassword());
+        Assert.assertFalse(user.isPasswordExpired());
+    }
+
+    @Test
+    public void testGetUpdatedUserDataAboutToExpireShowWarning() {
+        UserRO user = new UserRO();
+        // password will expire in 9 days. Warning is 10 days before expire
+        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(9));
+        Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
+        Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
+
+        user = testInstance.getUpdatedUserData(user);
+
+        Assert.assertTrue(user.isShowPasswordExpirationWarning());
         Assert.assertFalse(user.isForceChangeExpiredPassword());
         Assert.assertFalse(user.isPasswordExpired());
     }

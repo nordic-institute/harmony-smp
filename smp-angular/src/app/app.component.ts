@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {SecurityService} from './security/security.service';
 import {Router} from '@angular/router';
 import {Authority} from "./security/authority.model";
@@ -8,7 +8,6 @@ import {GlobalLookups} from "./common/global-lookups";
 import {UserController} from "./user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {SearchTableEntityStatus} from "./common/search-table/search-table-entity-status.model";
-import {SmpConstants} from "./smp.constants";
 import {UserService} from "./user/user.service";
 import {UserDetailsDialogMode} from "./user/user-details-dialog/user-details-dialog.component";
 
@@ -59,21 +58,25 @@ export class AppComponent {
     });
   }
 
+
   changeCurrentUserPassword() {
     const formRef: MatDialogRef<any> = this.userController.changePasswordDialog({
-      data: this.securityService.getCurrentUser()
+      data: {user: this.securityService.getCurrentUser(), adminUser:false}
     });
   }
 
-  regenerateAccesesToken() {
+  regenerateCurrentUserAccessToken() {
     const formRef: MatDialogRef<any> = this.userController.generateAccessTokenDialog({
-      data: this.securityService.getCurrentUser()
+      data: {user: this.securityService.getCurrentUser(), adminUser:false}
     });
     formRef.afterClosed().subscribe(result => {
-      /*if (result) {
-        const user = {...formRef.componentInstance.getCurrent(), status: SearchTableEntityStatus.UPDATED};
-        this.userService.updateUser(user);
-      }*/
+      if (result) {
+        let user = {...formRef.componentInstance.getCurrent()};
+        let currUser = this.securityService.getCurrentUser();
+        currUser.accessTokenId = user.accessTokenId;
+        currUser.accessTokenExpireOn = user.accessTokenExpireOn;
+        this.securityService.updateUserDetails(currUser);
+      }
     });
   }
 

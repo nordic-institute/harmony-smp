@@ -1,23 +1,14 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormGroupDirective, NgForm,
-  ValidatorFn,
-  Validators
-} from "@angular/forms";
-import {User} from "../../security/user.model";
-import {GlobalLookups} from "../global-lookups";
-import {ErrorStateMatcher} from "@angular/material/core";
-import {UserDetailsService} from "../../user/user-details-dialog/user-details.service";
-import {CertificateRo} from "../../user/certificate-ro.model";
-import {AlertMessageService} from "../alert-message/alert-message.service";
-import {ErrorResponseRO} from "../error/error-model";
-import {SecurityService} from "../../security/security.service";
+import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {User} from "../../../security/user.model";
+import {GlobalLookups} from "../../global-lookups";
+import {UserDetailsService} from "../../../user/user-details-dialog/user-details.service";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
+import {SecurityService} from "../../../security/security.service";
 import {InformationDialogComponent} from "../information-dialog/information-dialog.component";
+import {UserRo} from "../../../user/user-ro.model";
+import {SmpConstants} from "../../../smp.constants";
 
 @Component({
   selector: 'smp-password-change-dialog',
@@ -26,19 +17,20 @@ import {InformationDialogComponent} from "../information-dialog/information-dial
 })
 export class PasswordChangeDialogComponent {
 
-  formTitle = "Change password dialog!";
+  formTitle = "Change password dialog";
   dialogForm: FormGroup;
   hideCurrPwdFiled: boolean = true;
   hideNewPwdFiled: boolean = true;
   hideConfPwdFiled: boolean = true;
   current: User;
+  adminUser: boolean = false;
   message: string;
   messageType: string = "alert-error";
-  forceChange:boolean=false;
+  forceChange: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<PasswordChangeDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: User,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private lookups: GlobalLookups,
     private userDetailsService: UserDetailsService,
     private alertService: AlertMessageService,
@@ -49,7 +41,8 @@ export class PasswordChangeDialogComponent {
     // disable close of focus lost
     dialogRef.disableClose = true;
 
-    this.current = {...data}
+    this.current = {...data.user}
+    this.adminUser = data.adminUser
 
     this.forceChange = this.current.forceChangeExpiredPassword;
 
@@ -67,7 +60,7 @@ export class PasswordChangeDialogComponent {
       'confirm-new-password': confirmNewPasswdFormControl
     });
 
-    this.dialogForm.controls['email'].setValue(this.current.emailAddress);
+    this.dialogForm.controls['email'].setValue(this.isEmptyEmailAddress ? "Empty email address!" : this.current.emailAddress);
     this.dialogForm.controls['username'].setValue(this.current.username);
     this.dialogForm.controls['current-password'].setValue('');
     this.dialogForm.controls['new-password'].setValue('');
@@ -78,6 +71,10 @@ export class PasswordChangeDialogComponent {
     return this.dialogForm.controls[controlName].hasError(errorName);
   }
 
+  get isEmptyEmailAddress() {
+    return !this.current.emailAddress;
+  }
+
   get passwordValidationMessage() {
     return this.lookups.cachedApplicationConfig?.passwordValidationRegExpMessage;
   }
@@ -86,30 +83,54 @@ export class PasswordChangeDialogComponent {
     return this.lookups.cachedApplicationConfig?.passwordValidationRegExp;
   }
 
+  get getPasswordTitle(): string {
+    return this.adminUser ? "Admin password for user [" + this.securityService.getCurrentUser().username + "]" : "Current password";
+  }
+
   changeCurrentUserPassword() {
     this.clearAlert();
-
-    // update password
-    this.userDetailsService.changePassword(this.current.userId,
-      this.dialogForm.controls['new-password'].value,
-      this.dialogForm.controls['current-password'].value).subscribe((res: boolean) => {
-        this.showPassChangeDialog();
-        close()
-      },
-      (err) => {
-        this.showErrorMessage(err.error.errorDescription);
-      }
-    );
+    if (this.adminUser) {
+      // update password
+      this.userDetailsService.changePasswordAdmin(
+        this.securityService.getCurrentUser().userId,
+        this.current.userId,
+        this.dialogForm.controls['new-password'].value,
+        this.dialogForm.controls['current-password'].value).subscribe((result: UserRo) => {
+          this.showPassChangeDialog();
+          this.current.passwordExpireOn = result.passwordExpireOn;
+          this.dialogRef.close(result)
+        },
+        (err) => {
+          this.showErrorMessage(err.error.errorDescription);
+        }
+      );
+    } else {
+      // update password
+      this.userDetailsService.changePassword(this.current.userId,
+        this.dialogForm.controls['new-password'].value,
+        this.dialogForm.controls['current-password'].value).subscribe((res: boolean) => {
+          this.showPassChangeDialog();
+          close()
+        },
+        (err) => {
+          this.showErrorMessage(err.error.errorDescription);
+        }
+      );
+    }
   }
-  showPassChangeDialog(){
+
+  showPassChangeDialog() {
     this.dialog.open(InformationDialogComponent, {
       data: {
         title: "Password changed!",
-        description: "Password has been successfully changed. Login again to the application with the new password!"
+        description: "Password has been successfully changed. " +
+          (!this.adminUser ? "Login again to the application with the new password!" : "")
       }
     }).afterClosed().subscribe(result => {
-      // no need to logout because service itself logouts
-      this.securityService.finalizeLogout(result);
+      if (!this.adminUser) {
+        // logout if changed for itself
+        this.securityService.finalizeLogout(result);
+      }
       close();
     })
   }
