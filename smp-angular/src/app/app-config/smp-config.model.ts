@@ -7,4 +7,5 @@ export interface SmpConfig {
   participantSchemaRegExpMessage?: string;
   passwordValidationRegExp?: string;
   passwordValidationRegExpMessage?: string;
+  webServiceAuthTypes?: string[];
 }

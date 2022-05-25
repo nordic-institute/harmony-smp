@@ -377,6 +377,21 @@ export class UserDetailsDialogComponent {
       statusPassword: SearchTableEntityStatus.NEW
     }
   }
+  isUserAuthSSOEnabled(): boolean {
+    return this.lookups.cachedApplicationInfo?.authTypes?.includes('SSO');
+  }
+
+  isUserAuthPasswdEnabled(): boolean {
+    return this.lookups.cachedApplicationInfo?.authTypes?.includes('PASSWORD');
+  }
+
+  isWebServiceUserCertificateAuthEnabled(): boolean {
+    return this.lookups.cachedApplicationConfig?.webServiceAuthTypes?.includes('CERTIFICATE');
+  }
+
+  isWebServiceUserTokenAuthPasswdEnabled(): boolean {
+    return this.lookups.cachedApplicationConfig?.webServiceAuthTypes?.includes('TOKEN');
+  }
 
 }
 

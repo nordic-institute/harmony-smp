@@ -116,7 +116,7 @@ export class GlobalLookups implements OnInit {
     this.securityService.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
       console.log("Refresh application configuration is authenticated " + isAuthenticated)
       if (isAuthenticated) {
-        this.http.get<SmpConfig>(SmpConstants.REST_INTERNAL_APPLICATION_CONFIG)
+        this.http.get<SmpConfig>(SmpConstants.REST_PUBLIC_APPLICATION_CONFIG)
           .subscribe((res: SmpConfig) => {
               this.cachedApplicationConfig = res;
             }, error => {

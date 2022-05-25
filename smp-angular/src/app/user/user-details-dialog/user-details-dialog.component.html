@@ -49,7 +49,7 @@
   <div style="display: flex;flex-flow: row;">
     <mat-card style="flex-grow: 1">
       <mat-card-title>UI authentication credentials</mat-card-title>
-      <mat-card-content>
+      <mat-card-content  *ngIf="isUserAuthPasswdEnabled()">
         <fieldset style="border: solid gray 1px;">
           <legend>Username/password credentials</legend>
           <div style="display: flex;flex-flow: row wrap;">
@@ -69,7 +69,7 @@
           </button>
         </fieldset>
       </mat-card-content>
-      <mat-card-content>
+      <mat-card-content *ngIf="isUserAuthSSOEnabled()">
         <fieldset style="border: solid gray 1px;">
           <legend>CAS authentication</legend>
           <mat-form-field style="width: 100%">
@@ -86,7 +86,7 @@
     </mat-card>
     <mat-card style="flex-grow: 2">
       <mat-card-title>Web service credentials</mat-card-title>
-      <mat-card-content>
+      <mat-card-content *ngIf="isWebServiceUserTokenAuthPasswdEnabled()">
         <fieldset style="border: solid gray 1px;">
           <legend>Access token credentials</legend>
           <div style="display: flex;flex-flow: row wrap;">
@@ -106,7 +106,7 @@
         </fieldset>
       </mat-card-content>
 
-      <mat-card-content>
+      <mat-card-content *ngIf="isWebServiceUserCertificateAuthEnabled()">
         <fieldset style="border: solid gray 1px;">
           <legend>Certificate authentication</legend>
           <mat-form-field class="certificate-id">
