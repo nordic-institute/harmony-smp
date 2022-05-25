@@ -106,12 +106,12 @@ RUN export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::") \
     && cd tomcat-native-${TOMCAT_NAVITVE_VERSION}-src/native \
     && ./configure && make && make install 
 
-# dowload and deploy sml
-RUN  curl -o $SMP_HOME/edelivery-sml.war "$SML_DISTRIBUTION_URL/$SML_VERSION/bdmsl-webapp-$SML_VERSION.war"
-RUN sha512sum $SMP_HOME/edelivery-sml.war  | grep $SML_SHA512
-RUN curl -o /tmp/sml-setup.zip "$SML_DISTRIBUTION_URL/$SML_VERSION/bdmsl-webapp-$SML_VERSION-setup.zip"     
-RUN sha512sum /tmp/sml-setup.zip  | grep $SML_SETUP_SHA512
-RUN mv $SMP_HOME/edelivery-sml.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/
+# download and deploy sml
+RUN  curl -o $SMP_HOME/edelivery-sml.war "$SML_DISTRIBUTION_URL/$SML_VERSION/bdmsl-webapp-$SML_VERSION.war"  \
+    && sha512sum $SMP_HOME/edelivery-sml.war  | grep $SML_SHA512  \
+    && curl -o /tmp/sml-setup.zip "$SML_DISTRIBUTION_URL/$SML_VERSION/bdmsl-webapp-$SML_VERSION-setup.zip"   \
+    && sha512sum /tmp/sml-setup.zip  | grep $SML_SETUP_SHA512  \
+    && mv $SMP_HOME/edelivery-sml.war $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/webapps/
 
 ENV BIND_USER=bind
     
@@ -133,7 +133,6 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && cp /tmp/sml-setup/encriptionPrivateKey.private  /opt/smlconf/encriptionPrivateKey.private \
     && cp /tmp/sml-setup/keystore.jks /opt/smlconf/keystore.jk \
     && mkdir $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs \
-    && mv /tmp/artefacts/*.jar $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs \
     && chmod u+x /sbin/entrypoint.sh
 
 
