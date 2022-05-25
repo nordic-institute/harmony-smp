@@ -6,6 +6,8 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
+import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Injectable()
 export class SecurityService {
@@ -16,6 +18,7 @@ export class SecurityService {
     private http: HttpClient,
     private alertService: AlertMessageService,
     private securityEventService: SecurityEventService,
+    private dialog: MatDialog,
   ) {
     this.securityEventService.onLogoutSuccessEvent().subscribe(() => window.location.reload());
     this.securityEventService.onLogoutErrorEvent().subscribe((error) => this.alertService.error(error));
@@ -40,6 +43,16 @@ export class SecurityService {
   refreshLoggedUserFromServer() {
     this.getCurrentUsernameFromServer().subscribe((res: User) => {
       this.updateUserDetails(res);
+      if (res?.forceChangeExpiredPassword) {
+        this.dialog.open(PasswordChangeDialogComponent, {
+          data: {
+            user: res,
+            adminUser: false
+          }
+        }).afterClosed().subscribe(res =>
+          this.finalizeLogout(res)
+        );
+      }
     }, (error: any) => {
       // just clean local storage
       this.clearLocalStorage();

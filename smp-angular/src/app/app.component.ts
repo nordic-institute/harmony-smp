@@ -97,7 +97,7 @@ export class AppComponent {
   }
 
   logout(event: Event): void {
-    this.router.navigate(['/']).then((result)=> {
+    this.router.navigate(['/search']).then((result)=> {
       if (result){
         this.securityService.logout();
       }
