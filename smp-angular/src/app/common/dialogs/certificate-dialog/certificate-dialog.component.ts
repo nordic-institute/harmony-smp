@@ -1,17 +1,18 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {CertificateRo} from "../../user/certificate-ro.model";
-import {SecurityService} from "../../security/security.service";
+import {CertificateRo} from "../../../user/certificate-ro.model";
+import {SecurityService} from "../../../security/security.service";
+import {SmpConstants} from "../../../smp.constants";
 
 @Component({
   selector: 'keystore-certificate-dialog',
   templateUrl: './certificate-dialog.component.html'
 })
 export class CertificateDialogComponent {
+  readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
   formTitle: string;
   certificateForm: FormGroup;
-
   current: CertificateRo;
 
   constructor(
@@ -21,7 +22,7 @@ export class CertificateDialogComponent {
     private fb: FormBuilder) {
 
     this.formTitle = "Certificate details";
-    this.current = {...data.row}
+    this.current = { ...data.row}
 
 // set empty form ! do not bind it to current object !
     this.certificateForm = fb.group({

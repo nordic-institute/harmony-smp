@@ -1,6 +1,9 @@
 export class SmpConstants {
 
+  public static readonly  DATE_TIME_FORMAT = 'dd/MM/yyyy, HH:mm:ss z';
+
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
+  public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
   public static readonly PATH_PARAM_SRV_GROUP_ID = '{service-group-id}';
 
   //------------------------------
@@ -43,11 +46,15 @@ export class SmpConstants {
   public static readonly REST_INTERNAL_PROPERTY_VALIDATE = SmpConstants.REST_INTERNAL_PROPERTY_MANAGE + '/validate';
   public static readonly REST_INTERNAL_DOMAIN_VALIDATE_DELETE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE + '/validate-delete';
   public static readonly REST_INTERNAL_USER_MANAGE = SmpConstants.REST_INTERNAL + 'user';
+  public static readonly REST_INTERNAL_USER_GENERATE_ACCESS_TOKEN = SmpConstants.REST_INTERNAL_USER_MANAGE +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'generate-access-token-for'+ '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
+
+  public static readonly REST_INTERNAL_USER_CHANGE_PASSWORD = SmpConstants.REST_INTERNAL_USER_MANAGE +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'change-password-for'+ '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
+
   public static readonly REST_INTERNAL_USER_VALIDATE_DELETE = `${SmpConstants.REST_INTERNAL_USER_MANAGE}/validate-delete`;
   public static readonly REST_INTERNAL_APPLICATION_CONFIG = SmpConstants.REST_INTERNAL + 'application/config';
   public static readonly REST_INTERNAL_KEYSTORE = SmpConstants.REST_INTERNAL + 'keystore';
   public static readonly REST_INTERNAL_TRUSTSTORE = SmpConstants.REST_INTERNAL + 'truststore';
-  public static readonly REST_INTERNAL_TRUSTSTORE_UPLOAD_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE + "/" + SmpConstants.PATH_PARAM_ENC_USER_ID + "/" + 'upload-certificate';
-
-
+  public static readonly REST_INTERNAL_TRUSTSTORE_UPLOAD_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'upload-certificate';
 }

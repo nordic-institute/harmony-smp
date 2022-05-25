@@ -41,7 +41,7 @@
 
   <ng-template #additionalToolButtons></ng-template>
 
-  <ng-template #additionalRowActionButtons let-row="row">
+  <ng-template #additionalRowActionButtons let-row="row" >
     <button mat-icon-button color="primary" [disabled]="row?.deleted || loading"
             (click)="onAddMetadataRow(row)" matTooltip="Add service metadata">
       <mat-icon>playlist_add</mat-icon>

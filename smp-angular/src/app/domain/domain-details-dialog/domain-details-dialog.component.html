@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
-<mat-dialog-content style="height:600px;width:1000px">
+<mat-dialog-content >
   <form [formGroup]="domainForm">
     <mat-card>
       <mat-card-title>Domain properties</mat-card-title>
@@ -27,7 +27,9 @@
                    matTooltip="The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: has informative value only, SML DNS zone used for publishing is based on SML configuration."
                    name="smlSubdomain" id="smldomain_id"
                    [formControl]="domainForm.controls['smlSubdomain']" maxlength="63">
-            <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone).</mat-hint>
+            <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for
+              mydomain.sml.dns.zone).
+            </mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
               &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
@@ -119,19 +121,15 @@
 
 </mat-dialog-content>
 
-<table class="buttonsRow">
-  <tr>
-    <td>
-      <button mat-raised-button color="primary" (click)="submitForm()" [disabled]="!domainForm.valid">
-        <mat-icon>check_circle</mat-icon>
-        <span>OK</span>
-      </button>
-      <button mat-raised-button color="primary" mat-dialog-close>
-        <mat-icon>cancel</mat-icon>
-        <span>Cancel</span>
-      </button>
-    </td>
-  </tr>
-</table>
-<div style="text-align: right; font-size: 70%">* required fields</div>
+<div class="required-fields">* required fields</div>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="submitForm()" [disabled]="!domainForm.valid">
+    <mat-icon>check_circle</mat-icon>
+    <span>OK</span>
+  </button>
+  <button mat-raised-button color="primary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
+</mat-dialog-actions>
 

@@ -9,9 +9,13 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -303,12 +307,33 @@ public class ConfigurationService {
     }
 
     public String getCasURLPathLogin() {
-        return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_URLPATH_LOGIN);
+        return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_URL_PATH_LOGIN);
     }
 
     public String getCasURLTokenValidation() {
-        return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_URLPATH);
+        return (String) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_URL_PATH);
     }
+    public URL getCasUserDataURL() {
+        URL casUrl = getCasURL();
+        if (casUrl == null) {
+            LOG.warn("Invalid CAS configuration [{}]. Can not resolve user data URL!", SSO_CAS_URL.getProperty());
+            return null;
+        }
+        String path = (String) configurationDAO.getCachedPropertyValue(SSO_CAS_SMP_USER_DATA_URL_PATH);
+        if (StringUtils.isBlank(path)) {
+            LOG.warn("Invalid CAS configuration [{}]. Can not resolve user data URL!", SSO_CAS_SMP_USER_DATA_URL_PATH.getProperty());
+            return null;
+        }
+        try {
+            return casUrl.toURI().resolve(path).toURL();
+        } catch (MalformedURLException | URISyntaxException e) {
+            LOG.warn("Invalid CAS configuration [{}]. Can not resolve user data URL! Error: [{}]",
+                    SSO_CAS_SMP_USER_DATA_URL_PATH.getProperty(),
+                    ExceptionUtils.getRootCauseMessage(e));
+        }
+        return null;
+    }
+
 
     public Map<String, String> getCasTokenValidationParams() {
         return (Map<String, String>) configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_PARAMS);

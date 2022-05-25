@@ -49,9 +49,11 @@ public class TruststoreAdminResource {
     public ServiceResult<CertificateRO> getCertificateList() {
         List<CertificateRO> lst = uiTruststoreService.getCertificateROEntriesList();
         // clear encoded value to reduce http traffic
-        lst.stream().forEach(certificateRO -> {
+        int i =0;
+        for (CertificateRO certificateRO : lst) {
             certificateRO.setEncodedValue(null);
-        });
+            certificateRO.setIndex(i++);
+        }
 
         ServiceResult<CertificateRO> sg = new ServiceResult<>();
         sg.getServiceEntities().addAll(lst);
