@@ -98,8 +98,10 @@ export class AppComponent {
 
   logout(event: Event): void {
     event.preventDefault();
+
     this.router.navigate(['/search']).then((ok) => {
       if (ok) {
+
         this.securityService.logout();
       }
     });

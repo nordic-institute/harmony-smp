@@ -97,8 +97,8 @@ public enum SMPPropertyEnum {
 
     // authentication
     UI_AUTHENTICATION_TYPES("smp.ui.authentication.types", "PASSWORD", "Set list of '|' separated authentication types: PASSWORD|SSO.", false, false, false, LIST_STRING),
-    AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "PASSWORD|CERTIFICATE",
-            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported PASSWORD, CERTIFICATE: ex. PASSWORD|CERTIFICATE", false, false, false, LIST_STRING),
+    AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "TOKEN|CERTIFICATE",
+            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported TOKEN, CERTIFICATE: ex. TOKEN|CERTIFICATE", false, false, false, LIST_STRING),
 
     EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",
             "Authentication with external module as: reverse proxy. Authenticated data are send send to application using 'Client-Cert' HTTP header. Do not enable this feature " +

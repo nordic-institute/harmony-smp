@@ -1,15 +1,21 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Public SmpInfoRO properties.
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 public class SmpInfoRO implements Serializable {
     private static final long serialVersionUID = -49712226560325302L;
     String version;
     String ssoAuthenticationLabel;
     String ssoAuthenticationURI;
     String contextPath;
-    List<String> authTypes;
+    List<String> authTypes = new ArrayList<>();;
 
     public String getVersion() {
         return version;
@@ -47,7 +53,7 @@ public class SmpInfoRO implements Serializable {
         return authTypes;
     }
 
-    public void setAuthTypes(List<String> authTypes) {
-        this.authTypes = authTypes;
+    public void addAuthTypes(List<String> authTypes) {
+        this.authTypes.addAll(authTypes);
     }
 }

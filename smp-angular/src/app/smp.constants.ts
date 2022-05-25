@@ -13,6 +13,7 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_SEARCH_SERVICE_GROUP = SmpConstants.REST_PUBLIC + 'search';
   public static readonly REST_PUBLIC_DOMAIN_SEARCH = SmpConstants.REST_PUBLIC + 'domain';
   public static readonly REST_PUBLIC_APPLICATION_INFO = SmpConstants.REST_PUBLIC + 'application/info';
+  public static readonly REST_PUBLIC_APPLICATION_CONFIG = SmpConstants.REST_PUBLIC + 'application/config';
   // user public services
   public static readonly REST_PUBLIC_USER = SmpConstants.REST_PUBLIC + 'user';
   public static readonly REST_PUBLIC_USER_UPDATE = SmpConstants.REST_PUBLIC_USER + "/" + SmpConstants.PATH_PARAM_ENC_USER_ID + "/";
@@ -53,7 +54,6 @@ export class SmpConstants {
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'change-password-for'+ '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
 
   public static readonly REST_INTERNAL_USER_VALIDATE_DELETE = `${SmpConstants.REST_INTERNAL_USER_MANAGE}/validate-delete`;
-  public static readonly REST_INTERNAL_APPLICATION_CONFIG = SmpConstants.REST_INTERNAL + 'application/config';
   public static readonly REST_INTERNAL_KEYSTORE = SmpConstants.REST_INTERNAL + 'keystore';
   public static readonly REST_INTERNAL_TRUSTSTORE = SmpConstants.REST_INTERNAL + 'truststore';
   public static readonly REST_INTERNAL_TRUSTSTORE_UPLOAD_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'upload-certificate';
