@@ -17,7 +17,7 @@ import {Subject} from "rxjs";
  */
 
 @Injectable()
-export class GlobalLookups implements OnInit {
+export class GlobalLookups {
 
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
@@ -42,6 +42,7 @@ export class GlobalLookups implements OnInit {
               private securityEventService: SecurityEventService) {
     this.refreshApplicationInfo();
     this.refreshDomainLookupFromPublic();
+    this.securityService.refreshLoggedUserFromServer();
 
     securityEventService.onLoginSuccessEvent().subscribe(value => {
         this.refreshLookupsOnLogin();
@@ -52,10 +53,6 @@ export class GlobalLookups implements OnInit {
         this.clearCachedLookups();
       }
     );
-  }
-
-  ngOnInit() {
-    this.securityService.refreshLoggedUserFromServer();
   }
 
   public refreshLookupsOnLogin() {
