@@ -61,13 +61,13 @@ export class AppComponent {
 
   changeCurrentUserPassword() {
     const formRef: MatDialogRef<any> = this.userController.changePasswordDialog({
-      data: {user: this.securityService.getCurrentUser(), adminUser:false}
+      data: {user: this.securityService.getCurrentUser(), adminUser: false}
     });
   }
 
   regenerateCurrentUserAccessToken() {
     const formRef: MatDialogRef<any> = this.userController.generateAccessTokenDialog({
-      data: {user: this.securityService.getCurrentUser(), adminUser:false}
+      data: {user: this.securityService.getCurrentUser(), adminUser: false}
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
@@ -97,11 +97,8 @@ export class AppComponent {
   }
 
   logout(event: Event): void {
-    event.preventDefault();
-
-    this.router.navigate(['/search']).then((ok) => {
-      if (ok) {
-
+    this.router.navigate(['/']).then((result)=> {
+      if (result){
         this.securityService.logout();
       }
     });
