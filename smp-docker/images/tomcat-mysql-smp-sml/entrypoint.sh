@@ -38,7 +38,14 @@ init_tomcat() {
   if [ -e /tmp/keystores/smp-eulogin-mock.p12 ]; then
       echo "add eulogin trustStore: /tmp/keystores/smp-eulogin-mock.p12"
       JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/tmp/keystores/smp-eulogin-mock.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=test123"
-   fi
+  fi
+
+   # add external extensions
+  for extensionLibFile in /tmp/artefacts/*.jar; do
+    # Check if the glob gets expanded to existing files.
+    [ -e "$extensionLibFile" ] &&  mv $extensionLibFile $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs || echo "Extensions do not exist"
+  done
+
 
   echo "[INFO] init tomcat JAVA_OPTS: $JAVA_OPTS"
   export  JAVA_OPTS

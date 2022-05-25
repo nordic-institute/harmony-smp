@@ -17,7 +17,7 @@ import {Subject} from "rxjs";
  */
 
 @Injectable()
-export class GlobalLookups implements OnInit {
+export class GlobalLookups {
 
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
@@ -40,9 +40,9 @@ export class GlobalLookups implements OnInit {
               protected securityService: SecurityService,
               protected http: HttpClient,
               private securityEventService: SecurityEventService) {
-    securityService.refreshLoggedUserFromServer();
     this.refreshApplicationInfo();
     this.refreshDomainLookupFromPublic();
+    this.securityService.refreshLoggedUserFromServer();
 
     securityEventService.onLoginSuccessEvent().subscribe(value => {
         this.refreshLookupsOnLogin();
@@ -55,21 +55,16 @@ export class GlobalLookups implements OnInit {
     );
   }
 
-  ngOnInit() {
-
-  }
-
   public refreshLookupsOnLogin() {
-    this.refreshDomainLookupForLoggedUser();
     this.refreshCertificateLookup();
     this.refreshApplicationInfo();
     this.refreshApplicationConfiguration();
     this.refreshTrustedCertificateLookup();
   }
 
-  public refreshDomainLookupFromPublic(){
-      let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN_SEARCH;
-      this.refreshDomainLookup(domainUrl);
+  public refreshDomainLookupFromPublic() {
+    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN_SEARCH;
+    this.refreshDomainLookup(domainUrl);
   }
 
   public refreshDomainLookupForLoggedUser() {
@@ -162,7 +157,7 @@ export class GlobalLookups implements OnInit {
     this.cachedServiceGroupOwnerList = [];
     this.cachedApplicationConfig = null;
     this.cachedDomainList = [];
-    this.refreshDomainLookupFromPublic();
+    //this.refreshDomainLookupFromPublic();
   }
 
   public refreshCertificateLookup() {
@@ -194,8 +189,8 @@ export class GlobalLookups implements OnInit {
       this.trustedCertificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_TRUSTSTORE);
       this.trustedCertificateObserver.subscribe((certs: SearchTableResult) => {
         this.cachedTrustedCertificateList = [...certs.serviceEntities];
-          this.notifyTrustedCertificateListRefreshEvent(this.cachedTrustedCertificateList );
-        }, (error: any) => {
+        this.notifyTrustedCertificateListRefreshEvent(this.cachedTrustedCertificateList);
+      }, (error: any) => {
         // check if unauthorized
         // just console try latter
         console.log("Error occurred while loading trusted certificates lookup [" + error + "]");

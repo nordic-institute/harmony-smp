@@ -202,7 +202,7 @@ export class SearchTableComponent implements OnInit {
         });
       }
     }, (error: any) => {
-      this.alertService.error("Error occurred:" + error);
+      console.error("Error occurred while retrieving table data:" + JSON.stringify(error));
     });
   }
 
