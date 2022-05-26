@@ -64,7 +64,7 @@
             </mat-form-field>
             <mat-form-field *ngIf="!userForm.get('passwordExpireOn').value" style="flex-grow: 1">
               <input matInput placeholder="Valid until" style="color: red"
-                     matTooltip="Default password set by system admin! Change password immediately!"
+                     matTooltip="Default password set by system admin! User must change password immediately!"
                      value="Default password"
                      maxlength="255" disabled>
             </mat-form-field>
@@ -107,7 +107,7 @@
             </mat-form-field>
             <mat-form-field *ngIf="!userForm.get('accessTokenExpireOn').value" style="flex-grow: 1">
               <input matInput placeholder="Valid until" style="color: red"
-                     matTooltip="Default access token set by system admin! Regenerate access token immediately!"
+                     matTooltip="Default access token set by system admin! User must regenerate access token immediately!"
                      value="Default access token"
                      maxlength="255" disabled>
             </mat-form-field>

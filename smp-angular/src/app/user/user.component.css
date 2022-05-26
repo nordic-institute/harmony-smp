@@ -17,6 +17,12 @@
   color:red;
 }
 
+::ng-deep .certificateWarning {
+  text-decoration: line-through !important;
+  font-weight: bold;
+  color:#c6c639;
+}
+
 ::ng-deep .deleted  {
   text-decoration: line-through !important;
   font-weight: bold;
