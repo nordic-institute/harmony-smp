@@ -26,6 +26,8 @@
 
             <!-- used to switch off bean validation which resulted in failing Spring context to load -->
             <package-name>javax.validation.*</package-name>
+            <!-- use smp fasterxml because weblogic version is to old -->
+            <package-name>com.fasterxml.*</package-name>
 
         </prefer-application-packages>
         <prefer-application-resources>
