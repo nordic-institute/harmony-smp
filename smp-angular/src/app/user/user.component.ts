@@ -12,7 +12,7 @@ import {SearchTableEntityStatus} from "../common/search-table/search-table-entit
 import {SmpConstants} from "../smp.constants";
 
 @Component({
-  templateUrl:'./user.component.html',
+  templateUrl: './user.component.html',
   styleUrls: ['./user.component.css']
 })
 export class UserComponent implements AfterViewInit {
@@ -26,7 +26,7 @@ export class UserComponent implements AfterViewInit {
   columnPicker: ColumnPicker = new ColumnPicker();
   userController: UserController;
   filter: any = {};
-  baseUrl:string=SmpConstants.REST_INTERNAL_USER_MANAGE;
+  baseUrl: string = SmpConstants.REST_INTERNAL_USER_MANAGE;
 
   constructor(private lookups: GlobalLookups,
               public securityService: SecurityService,
@@ -70,17 +70,35 @@ export class UserComponent implements AfterViewInit {
 
   certCssClass(row) {
 
-     if (row.certificate && row.certificate.invalid) {
+    if (row.certificate?.invalid) {
       return 'invalidCertificate';
+    } else if (!row.certificate?.subject || !row.certificate?.issuer) {
+      return 'certificateWarning';
     } else if (row.status === SearchTableEntityStatus.NEW) {
-       return 'table-row-new';
-     } else if (row.status === SearchTableEntityStatus.UPDATED) {
-       return 'table-row-updated';
-     } else if (row.status === SearchTableEntityStatus.REMOVED) {
-       return 'deleted';
-     }else  {
-       return 'table-row';
-     }
+      return 'table-row-new';
+    } else if (row.status === SearchTableEntityStatus.UPDATED) {
+      return 'table-row-updated';
+    } else if (row.status === SearchTableEntityStatus.REMOVED) {
+      return 'deleted';
+    } else {
+      return 'table-row';
+    }
+  }
+
+  getCertToolTip(certificate) {
+    if (!certificate) {
+      return;
+    }
+
+    if (certificate.invalid) {
+      return certificate.invalidReason;
+    }
+
+    if (!certificate.subject || !certificate.issuer) {
+      return 'Legacy certificate definition. Please register certificate for the user!';
+    }
+
+    return '';
   }
 
   details(row: any) {
@@ -88,7 +106,7 @@ export class UserComponent implements AfterViewInit {
   }
 
   // for dirty guard...
-  isDirty (): boolean {
+  isDirty(): boolean {
     return this.searchTable.isDirty();
   }
 

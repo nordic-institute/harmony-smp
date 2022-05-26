@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
+import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -62,6 +64,9 @@ public class UITruststoreService {
 
     @Autowired
     ConversionService conversionService;
+
+    @Autowired
+    UserDao userDao;
 
     List<String> normalizedTrustedList = new ArrayList<>();
 
@@ -179,11 +184,12 @@ public class UITruststoreService {
      * @throws IOException
      */
     public CertificateRO getCertificateData(byte[] buff, boolean validate) {
-        X509Certificate cert = null;
-        CertificateRO cro = null;
+        X509Certificate cert;
+        CertificateRO cro;
         try {
             cert = X509CertificateUtils.getX509Certificate(buff);
-        } catch (CertificateException e) {
+        } catch ( Throwable e) {
+            LOG.debug("Error occurred while parsing the certificate ", e);
             LOG.warn("Can not parse the certificate with error:[{}]!", ExceptionUtils.getRootCauseMessage(e));
             cro = new CertificateRO();
             cro.setInvalid(true);
@@ -198,6 +204,7 @@ public class UITruststoreService {
             cro.setInvalidReason("Certificate is not validated!");
             try {
                 checkFullCertificateValidity(cert);
+                validateCertificateNotUsed(cro);
                 cro.setInvalid(false);
                 cro.setInvalidReason(null);
             } catch (CertificateExpiredException ex) {
@@ -209,7 +216,7 @@ public class UITruststoreService {
             } catch (CertificateNotTrustedException ex) {
                 cro.setInvalidReason("Certificate is not trusted!");
             } catch (CertificateException e) {
-                cro.setInvalidReason("Can not read the certificate!");
+                cro.setInvalidReason(ExceptionUtils.getRootCauseMessage(e));
             }
         }
         return cro;
@@ -231,6 +238,17 @@ public class UITruststoreService {
         validateCertificateSubjectExpression(cert);
         // check CRL - it is using only HTTP or https
         crlVerifierService.verifyCertificateCRLs(cert);
+    }
+
+    public void validateCertificateNotUsed(CertificateRO cert) throws CertificateException {
+        Optional<DBUser> user = userDao.findUserByCertificateId(cert.getCertificateId());
+        if (user.isPresent()) {
+            String msg = "Certificate: '" + cert.getCertificateId() + "'" +
+                    " is already used!";
+            LOG.debug("Certificate with id: [{}] is already used by user with username [{}]", user.get().getUsername());
+            throw new CertificateException(msg);
+        }
+
     }
 
     public void checkFullCertificateValidity(CertificateRO cert) throws CertificateException {

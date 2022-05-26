@@ -64,7 +64,9 @@ export class UserDetailsDialogComponent {
     const serialNumber = control.get('serialNumber');
     return certificateId && subject && validFrom && validTo && issuer && serialNumber
     && !!certificateId.value
-    && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value) ? {certificateDetailsRequired: true} : null;
+    && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value)
+    && !this.isCertificateInvalid
+      ? {certificateDetailsRequired: true} : null;
   };
 
   private certificateExistValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
@@ -72,7 +74,7 @@ export class UserDetailsDialogComponent {
     // get all persisted
     const listIds = this.lookups.cachedServiceGroupOwnerList.map(a => a.certificate ? a.certificate.certificateId : "NoId");
 
-    return  certificateId && certificateId.value
+    return certificateId && certificateId.value
     && listIds.includes(certificateId.value) && this.current.certificate && certificateId.value !== this.current.certificate.certificateId ? {certificateIdExists: true} : null;
   };
 
@@ -206,7 +208,7 @@ export class UserDetailsDialogComponent {
 
   changeCurrentUserPassword() {
     const formRef: MatDialogRef<any> = this.userController.changePasswordDialog({
-      data:{
+      data: {
         user: this.getCurrent(),
         adminUser: this.securityService.isCurrentUserSystemAdmin() &&
           this.securityService.getCurrentUser().userId !== this.current.userId
@@ -223,7 +225,7 @@ export class UserDetailsDialogComponent {
 
   onShowCertificateDataRow() {
     const formRef: MatDialogRef<any> = this.dialog.open(CertificateDialogComponent, {
-      data: {row:this.getCurrent().certificate}
+      data: {row: this.getCurrent().certificate}
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
@@ -232,12 +234,12 @@ export class UserDetailsDialogComponent {
     });
   }
 
-  clearCertificate(){
+  clearCertificate() {
     this.userForm.patchValue({
       'subject': null,
-      'validFrom':null,
+      'validFrom': null,
       'validTo': null,
-      'issuer':null,
+      'issuer': null,
       'serialNumber': null,
       'certificateId': null,
       'crlUrl': null,
@@ -310,7 +312,6 @@ export class UserDetailsDialogComponent {
   }
 
 
-
   isPreferencesMode() {
     return this.mode === UserDetailsDialogMode.PREFERENCES_MODE;
   }
@@ -377,6 +378,7 @@ export class UserDetailsDialogComponent {
       statusPassword: SearchTableEntityStatus.NEW
     }
   }
+
   isUserAuthSSOEnabled(): boolean {
     return this.lookups.cachedApplicationInfo?.authTypes?.includes('SSO');
   }

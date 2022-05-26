@@ -117,9 +117,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         if (!BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
-
-        DBUser dbUserToUpdate = userToUpdateId == null || authorizedUserId == userToUpdateId
-                ? dbUser : userDao.find(userToUpdateId);
+        boolean adminUpdate = userToUpdateId != null && authorizedUserId != userToUpdateId;
+        DBUser dbUserToUpdate = adminUpdate ? userDao.find(userToUpdateId) : dbUser;
         if (dbUserToUpdate == null) {
             LOG.error("Can not update user access token because user for with [{}] does not exist!", userToUpdateId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id to update!");
@@ -128,7 +127,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         Boolean testMode = configurationService.isSMPStartupInDevMode();
         AccessTokenRO token = SecurityUtils.generateAccessToken(testMode);
         OffsetDateTime generatedTime = token.getGeneratedOn();
-        token.setExpireOn(generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
+        token.setExpireOn(adminUpdate ? null :generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
         dbUserToUpdate.setAccessTokenIdentifier(token.getIdentifier());
         dbUserToUpdate.setAccessToken(BCryptPasswordHash.hashPassword(token.getValue()));
         dbUserToUpdate.setAccessTokenGeneratedOn(generatedTime);
@@ -161,8 +160,9 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
 
-        DBUser dbUserToUpdate = userToUpdateId == null || authorizedUserId == userToUpdateId
-                ? dbAuthorizedUser : userDao.find(userToUpdateId);
+        boolean adminUpdate = userToUpdateId != null && authorizedUserId != userToUpdateId;
+        DBUser dbUserToUpdate = adminUpdate
+                ? userDao.find(userToUpdateId) : dbAuthorizedUser;
 
         if (dbUserToUpdate == null) {
             LOG.error("Can not update user password because user for with [{}] does not exist!", userToUpdateId);
@@ -172,7 +172,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUserToUpdate.setPassword(BCryptPasswordHash.hashPassword(newPassword));
         OffsetDateTime currentTime = OffsetDateTime.now();
         dbUserToUpdate.setPasswordChanged(currentTime);
-        dbUserToUpdate.setPasswordExpireOn(currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
+        dbUserToUpdate.setPasswordExpireOn(adminUpdate ? null : currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
         return dbUserToUpdate;
     }
 
