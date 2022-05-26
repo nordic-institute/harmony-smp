@@ -1,8 +1,9 @@
 version: "3.0"
 services:
   database:
-    image: smp-oradb-19.3.0-se2:${SMP_VERSION}
+    image: smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
     container_name: smp_oracle_db
+    hostname: wlsadmin
     environment:
       - ORACLE_CHARACTERSET=AL32UTF8 # set database encoding
       - NLS_LANG=.AL32UTF8  # set sqlplus encoding for stating up scripts
