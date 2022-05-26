@@ -8,6 +8,7 @@ package eu.europa.ec.edelivery.smp.data.ui.enums;
  * @since 4.2
  */
 public enum AlertStatusEnum {
+    PROCESS,
     SUCCESS,
     FAILED,
 }

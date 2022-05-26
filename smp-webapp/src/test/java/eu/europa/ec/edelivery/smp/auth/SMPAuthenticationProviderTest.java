@@ -44,18 +44,20 @@ public class SMPAuthenticationProviderTest {
 
     @Test
     // response time for existing and non existing user should be "approx. equal"
-    public void authenticateByUsernameTokenResponseTime() {
+    public void authenticateByAccessTokenResponseTime() {
         UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken("User", "User");
+        int count = 10;
         DBUser user = new DBUser();
         user.setId(1L);
         user.setAccessTokenIdentifier("User");
         user.setAccessToken(BCrypt.hashpw("InvalidPassword", BCrypt.gensalt()));
         user.setRole("MY_ROLE");
         doReturn(500).when(mockConfigurationService).getAccessTokenLoginFailDelayInMilliSeconds();
+        doReturn(count+1).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
 
 
         doReturn(Optional.of(user)).when(mockUserDao).findUserByIdentifier(any());
-        int count = 10;
+
         long averageExists = 0;
         long averageNotExist = 0;
         for (int i = 0; i < count; i++) {
@@ -79,7 +81,7 @@ public class SMPAuthenticationProviderTest {
 
         // the average should be the same!
         assertThat("average difference between failed login must be less than 10ms", Math.abs(averageExists - averageNotExist),
-                Matchers.lessThan(20L));
+                Matchers.lessThan(50L));
 
     }
 }

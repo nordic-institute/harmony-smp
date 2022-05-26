@@ -21,9 +21,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         ALERT_TYPE varchar2(255 char),
         MAIL_SUBJECT varchar2(1024 char),
         MAIL_TO varchar2(1024 char),
-        PROCESSED number(1,0),
         PROCESSED_TIME timestamp,
         REPORTING_TIME timestamp,
+        FOR_USERNAME varchar2(256 char),
         primary key (ID)
     );
 
@@ -45,9 +45,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         ALERT_TYPE varchar2(255 char),
         MAIL_SUBJECT varchar2(1024 char),
         MAIL_TO varchar2(1024 char),
-        PROCESSED number(1,0),
         PROCESSED_TIME timestamp,
         REPORTING_TIME timestamp,
+        FOR_USERNAME varchar2(256 char),
         primary key (ID, REV)
     );
 

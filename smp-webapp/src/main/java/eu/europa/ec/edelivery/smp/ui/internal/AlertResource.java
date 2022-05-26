@@ -34,10 +34,9 @@ public class AlertResource {
     public ServiceResult<AlertRO> geDomainList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
-            @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
-            @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType
+            @RequestParam(value = PARAM_PAGINATION_ORDER_BY, defaultValue = "id", required = false) String orderBy,
+            @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "desc", required = false) String orderType
     ) {
-
         LOG.info("Search for page: {}, page size: {}", page, pageSize);
         return uiAlertService.getTableList(page, pageSize, orderBy, orderType, null);
     }

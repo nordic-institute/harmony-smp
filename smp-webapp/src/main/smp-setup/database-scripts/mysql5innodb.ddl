@@ -13,9 +13,9 @@
         ALERT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         MAIL_SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROCESSED bit,
         PROCESSED_TIME datetime,
         REPORTING_TIME datetime,
+        FOR_USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID)
     ) comment='SMP alerts' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -31,9 +31,9 @@
         ALERT_TYPE varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         MAIL_SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
-        PROCESSED bit,
         PROCESSED_TIME datetime,
         REPORTING_TIME datetime,
+        FOR_USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

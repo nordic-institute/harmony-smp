@@ -147,13 +147,16 @@ public abstract class BaseDao<E extends BaseEntity> {
         if (forCount) {
             cq.select(cb.count(om));
         } else if (sortField != null) {
-            if (sortOrder != null && sortOrder.equalsIgnoreCase("desc")) {
+            if (sortOrder != null && sortOrder.equalsIgnoreCase("asc")) {
+                LOG.debug("Sort ascending records by field [{}]", sortField);
                 cq.orderBy(cb.asc(om.get(sortField)));
             } else {
+                LOG.debug("Sort descending records by field [{}]", sortField);
                 cq.orderBy(cb.desc(om.get(sortField)));
             }
         } else {
             if (!StringUtils.isBlank(defaultSortMethod)) {
+                LOG.debug("Sort descending records by field [{}]", defaultSortMethod);
                 cq.orderBy(cb.desc(om.get(defaultSortMethod)));
             }
         }

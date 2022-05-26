@@ -1,6 +1,7 @@
 export class SmpConstants {
 
   public static readonly  DATE_TIME_FORMAT = 'dd/MM/yyyy, HH:mm:ss z';
+  public static readonly  DATE_FORMAT  = 'dd/MM/yyyy';
 
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
