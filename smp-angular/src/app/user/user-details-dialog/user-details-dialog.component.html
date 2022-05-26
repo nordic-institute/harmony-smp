@@ -57,9 +57,15 @@
               <input matInput placeholder="Username" [formControl]="userForm.controls['username']"
                      id="username-password_id" maxlength="255" disabled>
             </mat-form-field>
-            <mat-form-field style="flex-grow: 1">
+            <mat-form-field *ngIf="!!userForm.get('passwordExpireOn').value" style="flex-grow: 1">
               <input matInput placeholder="Valid until"
                      value="{{userForm.get('passwordExpireOn').value | date:dateTimeFormat}}"
+                     maxlength="255" disabled>
+            </mat-form-field>
+            <mat-form-field *ngIf="!userForm.get('passwordExpireOn').value" style="flex-grow: 1">
+              <input matInput placeholder="Valid until" style="color: red"
+                     matTooltip="Default password set by system admin! Change password immediately!"
+                     value="Default password"
                      maxlength="255" disabled>
             </mat-form-field>
           </div>
@@ -94,9 +100,15 @@
               <input matInput placeholder="Access token ID" [formControl]="userForm.controls['accessTokenId']"
                      maxlength="255" disabled>
             </mat-form-field>
-            <mat-form-field style="flex-grow: 1">
+            <mat-form-field *ngIf="!!userForm.get('accessTokenExpireOn').value" style="flex-grow: 1">
               <input matInput placeholder="Valid until"
                      value="{{userForm.get('accessTokenExpireOn').value | date:dateTimeFormat}}"
+                     maxlength="255" disabled>
+            </mat-form-field>
+            <mat-form-field *ngIf="!userForm.get('accessTokenExpireOn').value" style="flex-grow: 1">
+              <input matInput placeholder="Valid until" style="color: red"
+                     matTooltip="Default access token set by system admin! Regenerate access token immediately!"
+                     value="Default access token"
                      maxlength="255" disabled>
             </mat-form-field>
           </div>

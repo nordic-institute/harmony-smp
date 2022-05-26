@@ -47,7 +47,13 @@ public class PropertiesConfig {
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties fileProperties = FileProperty.getFileProperties();
+
         Properties prop = PROP_INIT_TOOLS.getDatabaseProperties(fileProperties);
+        // update log configuration
+        FileProperty.updateLogConfiguration(fileProperties.getProperty(FileProperty.PROPERTY_LOG_FOLDER),
+                fileProperties.getProperty(FileProperty.PROPERTY_LOG_PROPERTIES),
+                prop.getProperty(CONFIGURATION_DIR.getProperty())
+        );
         // set default value
         if (!prop.containsKey(SMP_PROPERTY_REFRESH_CRON.getProperty())) {
             prop.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());

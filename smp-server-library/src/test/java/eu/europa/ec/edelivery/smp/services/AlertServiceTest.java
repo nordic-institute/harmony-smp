@@ -4,6 +4,7 @@ import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
 import eu.europa.ec.edelivery.smp.services.mail.MailModel;
@@ -38,18 +39,20 @@ public class AlertServiceTest {
     public void testCreateAlert() {
         String mailSubject = "mailSubject";
         String mailTo = "mailTo";
+        String username = "username";
         AlertLevelEnum level = AlertLevelEnum.MEDIUM;
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
 
-        DBAlert alert = testInstance.createAlert(mailSubject, mailTo, level, alertType);
+        DBAlert alert = testInstance.createAlert(username, mailSubject, mailTo, level, alertType);
 
         assertNotNull(alert);
         assertNull(alert.getId());
         assertEquals(mailSubject, alert.getMailSubject());
+        assertEquals(username, alert.getUsername());
+        assertEquals(AlertStatusEnum.PROCESS, alert.getAlertStatus());
         assertEquals(mailTo, alert.getMailTo());
         assertEquals(level, alert.getAlertLevel());
         assertEquals(alertType, alert.getAlertType());
-        assertFalse(alert.isProcessed());
         assertNotNull(alert.getReportingTime());
 
     }

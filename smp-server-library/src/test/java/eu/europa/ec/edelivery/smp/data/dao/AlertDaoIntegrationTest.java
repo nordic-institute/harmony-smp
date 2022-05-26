@@ -25,17 +25,4 @@ public class AlertDaoIntegrationTest extends AbstractBaseDao {
         long newCount = testInstance.getDataListCount(null);
         assertEquals(initCount + 1, newCount);
     }
-
-    @Test
-    public void persistAlertDefaultValues() {
-        // given
-        long initCount = testInstance.getDataListCount(null);
-        DBAlert entity = TestDBUtils.createDBAlert();
-        entity.setProcessed(null);
-        // when
-        testInstance.persistFlushDetach(entity);
-        //then
-        assertNotNull(entity.getId());
-        assertEquals(Boolean.FALSE, entity.isProcessed());
-    }
 }

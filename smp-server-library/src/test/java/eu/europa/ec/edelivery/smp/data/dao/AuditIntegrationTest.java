@@ -87,7 +87,6 @@ public class AuditIntegrationTest {
 
         DBAlert dbAlert = createDBAlert();
         Map<String, Object> alterVal = new HashMap<>();
-        alterVal.put("processed", false);
         alterVal.put("alertType", AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION);
         alterVal.put("alertStatus", AlertStatusEnum.FAILED);
         testAuditEntity(dbAlert, alterVal);

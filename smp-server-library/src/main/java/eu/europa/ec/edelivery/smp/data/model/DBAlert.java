@@ -24,9 +24,6 @@ import java.util.Objects;
 @Audited
 @Table(name = "SMP_ALERT")
 @org.hibernate.annotations.Table(appliesTo = "SMP_ALERT", comment = "SMP alerts")
-@NamedQueries({
-        @NamedQuery(name = "DBAlert.updateProcess", query = "UPDATE DBAlert a set a.processed=:PROCESSED where a.id=:ALERT_ID"),
-})
 public class DBAlert extends BaseEntity {
 
     @Id
@@ -35,9 +32,6 @@ public class DBAlert extends BaseEntity {
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique alert id")
     Long id;
-
-    @Column(name = "PROCESSED")
-    private Boolean processed;
 
     @Column(name = "PROCESSED_TIME")
     private OffsetDateTime processedTime;
@@ -68,6 +62,10 @@ public class DBAlert extends BaseEntity {
     @Column(name = "MAIL_TO", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String mailTo;
 
+    @Column(name = "FOR_USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH)
+    private String username;
+
+
     @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKey(name = "property")
     @MapKeyEnumerated
@@ -82,13 +80,6 @@ public class DBAlert extends BaseEntity {
         this.id = id;
     }
 
-    public Boolean isProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(Boolean processed) {
-        this.processed = processed;
-    }
 
     public OffsetDateTime getProcessedTime() {
         return processedTime;
@@ -154,6 +145,14 @@ public class DBAlert extends BaseEntity {
         this.mailTo = mailTo;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public void addProperty(final String key, final String value) {
         properties.put(key, new DBAlertProperty(key, value, this));
     }
@@ -166,19 +165,12 @@ public class DBAlert extends BaseEntity {
         return properties;
     }
 
-    @PreUpdate
-    @PrePersist
-    public void prePersistUpdate() {
-        if (processed == null) {
-            processed = Boolean.FALSE;
-        }
-    }
 
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("DBAlert{");
         sb.append("id=").append(id);
-        sb.append(", processed=").append(processed);
+        sb.append(", username=").append(username);
         sb.append(", processedTime=").append(processedTime);
         sb.append(", alertType=").append(alertType);
         sb.append(", reportingTime=").append(reportingTime);

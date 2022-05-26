@@ -33,3 +33,9 @@
 ::ng-deep .table-row  {
   font-weight: normal;
 }
+
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -16,4 +16,12 @@
   <ng-template #additionalToolButtons>
     <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
   </ng-template>
+  <ng-template #dateTimeColumn let-value="value" ngx-datatable-cell-template>
+    <div class='truncate-text' title="{{value | date:dateTimeFormat}}" >{{value | date:dateFormat}}</div></ng-template>
+  <ng-template #truncateText  let-value="value" ngx-datatable-cell-template>
+    <div class='truncate-text' title="{{value}}" >{{value}}</div>
+  </ng-template>
+  <ng-template #forUser  let-row="row" let-value="value" ngx-datatable-cell-template>
+    <div class='truncate-text' title="{{value}} (Email:'{{row.mailTo}}')" >{{value}}</div>
+  </ng-template>
 </smp-search-table>

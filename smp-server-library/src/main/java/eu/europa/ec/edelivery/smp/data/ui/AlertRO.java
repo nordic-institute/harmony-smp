@@ -17,11 +17,13 @@ public class AlertRO extends BaseRO {
 
     // session id
     private String sid;
-    private Boolean processed;
+    private String username;
+    private String mailTo;
     private OffsetDateTime processedTime;
     private AlertTypeEnum alertType;
     private OffsetDateTime reportingTime;
     private AlertStatusEnum alertStatus;
+    private String alertStatusDesc;
     private AlertLevelEnum alertLevel;
 
     public String getSid() {
@@ -32,12 +34,28 @@ public class AlertRO extends BaseRO {
         this.sid = sid;
     }
 
-    public Boolean getProcessed() {
-        return processed;
+    public String getUsername() {
+        return username;
     }
 
-    public void setProcessed(Boolean processed) {
-        this.processed = processed;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getMailTo() {
+        return mailTo;
+    }
+
+    public void setMailTo(String mailTo) {
+        this.mailTo = mailTo;
+    }
+
+    public String getAlertStatusDesc() {
+        return alertStatusDesc;
+    }
+
+    public void setAlertStatusDesc(String alertStatusDesc) {
+        this.alertStatusDesc = alertStatusDesc;
     }
 
     public OffsetDateTime getProcessedTime() {

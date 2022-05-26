@@ -97,7 +97,6 @@ public class TestDBUtils {
         dbalert.setAlertLevel(AlertLevelEnum.MEDIUM);
         dbalert.setAlertStatus(AlertStatusEnum.SUCCESS);
         dbalert.setAlertType(AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION);
-        dbalert.setProcessed(true);
         dbalert.setProcessedTime(OffsetDateTime.now());
         dbalert.setReportingTime(OffsetDateTime.now());
         return dbalert;

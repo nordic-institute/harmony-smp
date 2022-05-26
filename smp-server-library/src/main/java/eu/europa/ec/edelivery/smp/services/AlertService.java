@@ -4,6 +4,7 @@ import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -15,6 +16,7 @@ import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialVerificationFaile
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProperties;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -54,7 +56,7 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertBeforeExpirePasswordLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
 
-        DBAlert alert = createAlert(mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
 
         alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
     }
@@ -73,7 +75,7 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertExpiredPasswordLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
 
-        DBAlert alert = createAlert(mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
 
         alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
     }
@@ -94,7 +96,7 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertBeforeExpireAccessTokenLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
 
-        DBAlert alert = createAlert(mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
     }
 
@@ -114,7 +116,7 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertExpiredAccessTokenLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
 
-        DBAlert alert = createAlert(mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
     }
 
@@ -134,7 +136,7 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertBeforeExpireCertificateLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
 
-        DBAlert alert = createAlert(mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
     }
 
@@ -153,7 +155,7 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertExpiredCertificateLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
 
-        DBAlert alert = createAlert(mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
     }
 
@@ -185,7 +187,7 @@ public class AlertService {
             LOG.error("Alert for suspended credentials type [{}] is not supported", credentialType);
             return;
         }
-        DBAlert alert = createAlert(mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
         alertCredentialVerificationFailed(alert,
                 credentialType, credentialId,
                 failureCount, lastFailedLoginDate);
@@ -221,7 +223,7 @@ public class AlertService {
             LOG.error("Alert for suspended credentials type [{}] is not supported", credentialType);
             return;
         }
-        DBAlert alert = createAlert(mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
 
         alertCredentialSuspended(alert,
                 credentialType, credentialId,
@@ -298,18 +300,19 @@ public class AlertService {
      * @param alertType
      * @return
      */
-    protected DBAlert createAlert(String mailSubject,
+    protected DBAlert createAlert(String username, String mailSubject,
                                 String mailTo,
                                 AlertLevelEnum level,
                                 AlertTypeEnum alertType) {
 
         DBAlert alert = new DBAlert();
-        alert.setProcessed(false);
         alert.setMailSubject(mailSubject);
         alert.setMailTo(mailTo);
+        alert.setUsername(username);
         alert.setReportingTime(OffsetDateTime.now());
         alert.setAlertType(alertType);
         alert.setAlertLevel(level);
+        alert.setAlertStatus(AlertStatusEnum.PROCESS);
         return alert;
     }
 
@@ -321,16 +324,33 @@ public class AlertService {
         String mailTo = alert.getMailTo();
         if (StringUtils.isBlank(mailTo)) {
             LOG.warn("Can not send mail (empty mail) for alert [{}]!", alert);
+            updateAlertStatus(alert, AlertStatusEnum.FAILED, "Can not send mail (empty mail) for alert!");
             return;
         }
 
         String mailFrom = configurationService.getAlertEmailFrom();
         PropertiesMailModel props = new PropertiesMailModel(alert);
-        mailService.sendMail(props, mailFrom, alert.getMailTo());
+        try {
+            mailService.sendMail(props, mailFrom, alert.getMailTo());
+            updateAlertStatus(alert, AlertStatusEnum.SUCCESS, null);
+        } catch (Throwable exc) {
+            LOG.error("Can not send mail (empty mail) for alert [{}]! Error [{}]",
+                    alert, ExceptionUtils.getRootCauseMessage(exc));
+            updateAlertStatus(alert, AlertStatusEnum.FAILED, ExceptionUtils.getRootCauseMessage(exc));
+        }
 
-        alert.setProcessed(true);
-        alert.setProcessedTime(OffsetDateTime.now());
+    }
+
+    public void updateAlertStatus(DBAlert alert, AlertStatusEnum status, String statusDesc){
+        alert.setAlertStatus(status);
+        alert.setAlertStatusDesc(statusDesc);
+        if (status == AlertStatusEnum.SUCCESS
+                ||status == AlertStatusEnum.FAILED ){
+            alert.setProcessedTime(OffsetDateTime.now());
+        }
         alertDao.update(alert);
     }
+
+
 
 }
