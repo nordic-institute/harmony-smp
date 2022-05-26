@@ -1,8 +1,8 @@
-dsname=cipaeDeliveryDs
+dsname=eDeliverySmpDs
 dsdbname=default;create=true
-dsjndiname=jdbc/cipaeDeliveryDs
+dsjndiname=jdbc/eDeliverySmpDs
 dsdriver=oracle.jdbc.OracleDriver
-dsurl=jdbc:oracle:thin:@//database:1521/ORCLPDB1
+dsurl=jdbc:oracle:thin:@//database:1521/xe
 dsusername=smp
 dspassword=test
 dstestquery=SQL ISVALID

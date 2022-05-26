@@ -112,11 +112,22 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+        <!-- soap ui -->
+        <profile>
+            <id>dump-code-coverage</id>
+            <build>
+                <defaultGoal>test</defaultGoal>
+                <plugins>
                     <!-- dump jacoco report from remote agent and generate report  -->
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>${jacoco.maven.plugin.version}</version>
+
                         <configuration>
                             <classDumpDir>${project.build.outputDirectory}../target/</classDumpDir>
                         </configuration>

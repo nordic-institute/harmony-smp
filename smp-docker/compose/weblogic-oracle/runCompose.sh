@@ -2,16 +2,20 @@
 
 WORKING_DIR="$(dirname $0)"
 SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
-SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
+#SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
+SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql"
 # soap ui data
 PREFIX="smp-wls-orcl"
 SMP_VERSION=
 
 
-ORA_VERSION="19.3.0"
-ORA_EDITION="se2"
-ORA_SERVICE="ORCLPDB1"
-ORACLE_PDB="ORCLPDB1"
+#ORA_VERSION="19.3.0"
+#ORA_EDITION="se2"
+#ORA_SERVICE="ORCLPDB1"
+#ORACLE_PDB="ORCLPDB1"
+ORA_VERSION="11.2.0.2"
+ORA_EDITION="xe"
+ORA_SERVICE="xe"
 
 SMP_DB_USERNAME=smp;
 SMP_DB_PASSWORD=test;
@@ -101,7 +105,10 @@ fi
 echo "Database starting" > ./status-folder/database.status
 clearOldContainers
 # start 
-export SMP_VERSION="${SMP_VERSION}"
+export SMP_VERSION
+export ORA_VERSION
+export ORA_EDITION
+
 docker-compose -p ${PREFIX} up -d --force-recreate
 
 
