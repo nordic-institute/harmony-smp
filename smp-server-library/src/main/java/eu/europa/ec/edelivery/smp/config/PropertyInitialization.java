@@ -103,10 +103,10 @@ public class PropertyInitialization {
      * @param em
      * @param fileProperties
      */
-    protected void initializeProperties(EntityManager em, Properties fileProperties, Properties initProperties, boolean testMode) {
+    protected void initializeProperties(EntityManager em, Properties fileProperties, Properties initProperties, boolean devMode) {
         em.getTransaction().begin();
         LOG.warn("Database configuration table is empty! Initialize new values!");
-        File encFile = initNewValues(em, fileProperties, initProperties, testMode);
+        File encFile = initNewValues(em, fileProperties, initProperties, devMode);
 
         for (SMPPropertyEnum val : SMPPropertyEnum.values()) {
             DBConfiguration dbConf = null;
@@ -164,7 +164,7 @@ public class PropertyInitialization {
         LOG.info("Get keystore");
         File truststore;
         if (fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty())) {
-            LOG.info("Get  truststore value from property file");
+            LOG.info("Get truststore value from property file");
             truststore = new File(absolutePath, fileProperties.getProperty(
                     SMPPropertyEnum.TRUSTSTORE_FILENAME.getProperty()));
 
@@ -251,7 +251,7 @@ public class PropertyInitialization {
      * @param em
      * @param fileProperties
      */
-    protected File initNewValues(EntityManager em, Properties fileProperties, Properties initProperties, boolean testMode) {
+    protected File initNewValues(EntityManager em, Properties fileProperties, Properties initProperties, boolean devMode) {
         String absolutePath;
         if (fileProperties.containsKey(CONFIGURATION_DIR.getProperty())) {
             absolutePath = fileProperties.getProperty(CONFIGURATION_DIR.getProperty());
@@ -274,8 +274,8 @@ public class PropertyInitialization {
         File fEncryption = initEncryptionKey(absolutePath, em, initProperties, fileProperties);
 
         // init truststore
-        initTruststore(absolutePath, fEncryption, em, initProperties, fileProperties, testMode);
-        initAndMergeKeystore(absolutePath, fEncryption, em, initProperties, fileProperties, testMode);
+        initTruststore(absolutePath, fEncryption, em, initProperties, fileProperties, devMode);
+        initAndMergeKeystore(absolutePath, fEncryption, em, initProperties, fileProperties, devMode);
 
         return fEncryption;
     }
