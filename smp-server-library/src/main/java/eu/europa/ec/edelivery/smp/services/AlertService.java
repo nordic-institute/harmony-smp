@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
+import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
@@ -17,10 +19,13 @@ import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProper
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Date;
 
+import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_CREDENTIAL_ALERTS;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 /**
@@ -36,11 +41,19 @@ public class AlertService {
     final AlertDao alertDao;
     final MailService mailService;
     final ConfigurationService configurationService;
+    final UserDao userDao;
+    final SMPDynamicCronTrigger alertCronTrigger;
 
-    public AlertService(AlertDao alertDao, MailService mailService, ConfigurationService configurationService) {
+    public AlertService(AlertDao alertDao,
+                        MailService mailService,
+                        ConfigurationService configurationService,
+                        UserDao userDao,
+                        @Qualifier(TRIGGER_BEAN_CREDENTIAL_ALERTS) SMPDynamicCronTrigger alertCronTrigger) {
         this.alertDao = alertDao;
         this.mailService = mailService;
         this.configurationService = configurationService;
+        this.userDao = userDao;
+        this.alertCronTrigger = alertCronTrigger;
     }
 
     public void alertBeforeUsernamePasswordExpire(DBUser user) {
@@ -58,7 +71,7 @@ public class AlertService {
 
         DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
 
-        alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
+        alertCredentialExpiration(user, alert, credentialType, credentialId, expiredOn);
     }
 
     public void alertUsernamePasswordExpired(DBUser user) {
@@ -75,9 +88,9 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertExpiredPasswordLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
 
-        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
 
-        alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
+        alertCredentialExpiration(user, alert, credentialType, credentialId, expiredOn);
     }
 
     public void alertBeforeAccessTokenExpire(DBUser user) {
@@ -96,8 +109,8 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertBeforeExpireAccessTokenLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
 
-        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
-        alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+        alertCredentialExpiration(user, alert, credentialType, credentialId, expiredOn);
     }
 
     public void alertAccessTokenExpired(DBUser user) {
@@ -116,8 +129,8 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertExpiredAccessTokenLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
 
-        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
-        alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+        alertCredentialExpiration(user, alert, credentialType, credentialId, expiredOn);
     }
 
 
@@ -136,8 +149,8 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertBeforeExpireCertificateLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
 
-        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
-        alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+        alertCredentialExpiration(user, alert, credentialType, credentialId, expiredOn);
     }
 
     public void alertCertificateExpired(DBUser user) {
@@ -155,8 +168,8 @@ public class AlertService {
         AlertLevelEnum alertLevel = configurationService.getAlertExpiredCertificateLevel();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
 
-        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
-        alertCredentialExpiration(alert, credentialType, credentialId, expiredOn);
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+        alertCredentialExpiration(user, alert, credentialType, credentialId, expiredOn);
     }
 
     public void alertCredentialVerificationFailed(DBUser user, CredentialTypeEnum credentialType) {
@@ -175,11 +188,11 @@ public class AlertService {
         OffsetDateTime lastFailedLoginDate;
         String credentialId;
 
-        if(credentialType == CredentialTypeEnum.ACCESS_TOKEN) {
+        if (credentialType == CredentialTypeEnum.ACCESS_TOKEN) {
             failureCount = user.getSequentialTokenLoginFailureCount();
             lastFailedLoginDate = user.getLastTokenFailedLoginAttempt();
             credentialId = user.getAccessTokenIdentifier();
-        }else if(credentialType == CredentialTypeEnum.USERNAME_PASSWORD) {
+        } else if (credentialType == CredentialTypeEnum.USERNAME_PASSWORD) {
             failureCount = user.getSequentialLoginFailureCount();
             lastFailedLoginDate = user.getLastFailedLoginAttempt();
             credentialId = user.getUsername();
@@ -187,8 +200,8 @@ public class AlertService {
             LOG.error("Alert for suspended credentials type [{}] is not supported", credentialType);
             return;
         }
-        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
-        alertCredentialVerificationFailed(alert,
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+        alertCredentialVerificationFailed(user, alert,
                 credentialType, credentialId,
                 failureCount, lastFailedLoginDate);
     }
@@ -209,12 +222,12 @@ public class AlertService {
         OffsetDateTime lastFailedLoginDate;
         OffsetDateTime suspendedUtil;
         String credentialId;
-        if(credentialType == CredentialTypeEnum.ACCESS_TOKEN) {
+        if (credentialType == CredentialTypeEnum.ACCESS_TOKEN) {
             failureCount = user.getSequentialTokenLoginFailureCount();
             lastFailedLoginDate = user.getLastTokenFailedLoginAttempt();
             suspendedUtil = lastFailedLoginDate.plusSeconds(configurationService.getAccessTokenLoginSuspensionTimeInSeconds());
             credentialId = user.getAccessTokenIdentifier();
-        }else if(credentialType == CredentialTypeEnum.USERNAME_PASSWORD) {
+        } else if (credentialType == CredentialTypeEnum.USERNAME_PASSWORD) {
             failureCount = user.getSequentialLoginFailureCount();
             lastFailedLoginDate = user.getLastFailedLoginAttempt();
             suspendedUtil = lastFailedLoginDate.plusSeconds(configurationService.getLoginSuspensionTimeInSeconds());
@@ -223,18 +236,19 @@ public class AlertService {
             LOG.error("Alert for suspended credentials type [{}] is not supported", credentialType);
             return;
         }
-        DBAlert alert = createAlert(user.getUsername(),mailSubject, mailTo, alertLevel, alertType);
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
 
-        alertCredentialSuspended(alert,
+        alertCredentialSuspended(user, alert,
                 credentialType, credentialId,
                 failureCount, lastFailedLoginDate, suspendedUtil);
     }
 
-    public void alertCredentialExpiration(DBAlert alert,
+    public void alertCredentialExpiration(DBUser user,
+                                          DBAlert alert,
                                           CredentialTypeEnum credentialType,
                                           String credentialId,
                                           OffsetDateTime expirationDate
-                                          ) {
+    ) {
 
         String serverName = HttpUtils.getServerAddress();
         // add alert properties
@@ -247,14 +261,21 @@ public class AlertService {
         alertDao.persistFlushDetach(alert);
         // submit alerts
         submitAlertMail(alert);
+        // when alert about to expire - check if the next cron execution is expired
+        // and set date sent tp null to ensure alert submission in next cron execution
+        userDao.updateAlertSentForUserCredentials(user.getId(), credentialType,
+                alert.getAlertType() == AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION
+                        && isNextExecutionExpired(expirationDate) ?
+                        null : OffsetDateTime.now());
     }
 
-    public void alertCredentialVerificationFailed(DBAlert alert,
+    public void alertCredentialVerificationFailed(DBUser user,
+                                                  DBAlert alert,
                                                   CredentialTypeEnum credentialType,
                                                   String credentialId,
                                                   Integer failedLoginCount,
                                                   OffsetDateTime lastFailedLoginDate
-                                                  ) {
+    ) {
         String serverName = HttpUtils.getServerAddress();
         // add alert properties
         alert.addProperty(CredentialVerificationFailedProperties.CREDENTIAL_TYPE.name(), credentialType.name());
@@ -269,7 +290,8 @@ public class AlertService {
         submitAlertMail(alert);
     }
 
-    public void alertCredentialSuspended(DBAlert alert,
+    public void alertCredentialSuspended(DBUser user,
+                                         DBAlert alert,
                                          CredentialTypeEnum credentialType,
                                          String credentialId,
                                          Integer failedLoginCount,
@@ -292,7 +314,7 @@ public class AlertService {
     }
 
     /**
-     *  Create Alert DB entity
+     * Create Alert DB entity
      *
      * @param mailSubject
      * @param mailTo
@@ -301,9 +323,9 @@ public class AlertService {
      * @return
      */
     protected DBAlert createAlert(String username, String mailSubject,
-                                String mailTo,
-                                AlertLevelEnum level,
-                                AlertTypeEnum alertType) {
+                                  String mailTo,
+                                  AlertLevelEnum level,
+                                  AlertTypeEnum alertType) {
 
         DBAlert alert = new DBAlert();
         alert.setMailSubject(mailSubject);
@@ -318,13 +340,14 @@ public class AlertService {
 
     /**
      * Submit mail  for the alert
+     *
      * @param alert
      */
     public void submitAlertMail(DBAlert alert) {
         String mailTo = alert.getMailTo();
         if (StringUtils.isBlank(mailTo)) {
             LOG.warn("Can not send mail (empty mail) for alert [{}]!", alert);
-            updateAlertStatus(alert, AlertStatusEnum.FAILED, "Can not send mail (empty mail) for alert!");
+            updateAlertStatus(alert, AlertStatusEnum.SUCCESS, "Alert created but mail not send (empty mail) for alert!");
             return;
         }
 
@@ -341,16 +364,22 @@ public class AlertService {
 
     }
 
-    public void updateAlertStatus(DBAlert alert, AlertStatusEnum status, String statusDesc){
+    public void updateAlertStatus(DBAlert alert, AlertStatusEnum status, String statusDesc) {
         alert.setAlertStatus(status);
         alert.setAlertStatusDesc(statusDesc);
         if (status == AlertStatusEnum.SUCCESS
-                ||status == AlertStatusEnum.FAILED ){
+                || status == AlertStatusEnum.FAILED) {
             alert.setProcessedTime(OffsetDateTime.now());
         }
         alertDao.update(alert);
     }
 
-
+    public boolean isNextExecutionExpired(OffsetDateTime expireOn) {
+        Date nextExecutionDate = alertCronTrigger.getNextExecutionDate();
+        // get expire offset - presume that expired On was generated
+        // on server in the same zone
+        return nextExecutionDate == null || expireOn == null ||
+                expireOn.isBefore(nextExecutionDate.toInstant().atOffset(expireOn.getOffset()));
+    }
 
 }

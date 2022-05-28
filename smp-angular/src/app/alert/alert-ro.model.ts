@@ -2,11 +2,13 @@ import {SearchTableEntity} from '../common/search-table/search-table-entity.mode
 
 export interface AlertRo extends SearchTableEntity {
   sid: string;
-  processed: boolean;
   alertType: string;
   alertStatus: string;
+  alertStatusDesc?:string;
   alertLevel: string;
-  processedTime: Date;
+  processedTime?: Date;
   reportingTime: Date;
+  mailTo?:string;
+  alertDetails?: Object;
 }
 

@@ -8,6 +8,7 @@ import junitparams.Parameters;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.scheduling.support.CronExpression;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -165,6 +166,9 @@ public class PropertyUtilsTest {
                 break;
             case STRING:
                 Assert.assertEquals(String.class, value.getClass());
+                break;
+            case CRON_EXPRESSION:
+                Assert.assertEquals(CronExpression.class, value.getClass());
                 break;
             default:
                 fail("Unknown property type");

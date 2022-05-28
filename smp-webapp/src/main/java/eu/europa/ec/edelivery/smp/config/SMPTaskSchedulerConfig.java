@@ -5,18 +5,17 @@ import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.AlertService;
 import eu.europa.ec.edelivery.smp.services.CredentialValidatorService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.CronTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-import java.net.InetAddress;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -32,6 +31,8 @@ public class SMPTaskSchedulerConfig implements SchedulingConfigurer {
     final CredentialValidatorService credentialValidatorService;
     final SMPDynamicCronTrigger refreshPropertiesTrigger;
     final SMPDynamicCronTrigger credentialsAlertTrigger;
+
+    ScheduledTaskRegistrar taskRegistrar;
 
     @Autowired
     public SMPTaskSchedulerConfig(
@@ -53,10 +54,11 @@ public class SMPTaskSchedulerConfig implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        this.taskRegistrar = taskRegistrar;
         LOG.info("Configure cron tasks");
-        taskRegistrar.setScheduler(taskExecutor());
+        this.taskRegistrar.setScheduler(taskExecutor());
         LOG.debug("Configure cron task for property refresh");
-        taskRegistrar.addTriggerTask(
+        this.taskRegistrar.addTriggerTask(
                 () -> {
                     configurationDao.refreshProperties();
                 },
@@ -64,11 +66,19 @@ public class SMPTaskSchedulerConfig implements SchedulingConfigurer {
         );
 
         LOG.debug("Configure cron task for alerts: credentials validation");
-        taskRegistrar.addTriggerTask(
+        this.taskRegistrar.addTriggerTask(
                 () -> {
                     credentialValidatorService.validateCredentials();
                 },
                 credentialsAlertTrigger
         );
+    }
+
+    public void updateCronTasks() { //call it when you want to change chron
+        synchronized (SMPTaskSchedulerConfig.class) {
+            List<CronTask> crons = this.taskRegistrar.getCronTaskList();
+            taskRegistrar.destroy(); //important, cleanups current scheduled tasks
+            taskRegistrar.afterPropertiesSet(); //rebuild
+        }
     }
 }

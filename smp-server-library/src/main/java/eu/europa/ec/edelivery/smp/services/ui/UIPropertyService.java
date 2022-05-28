@@ -15,10 +15,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -62,7 +64,7 @@ public class UIPropertyService {
         LOG.debug("Get properties for page [{}], pageSize [{}] and filter [{}]", page, pageSize, filterByProperty);
         List<SMPPropertyEnum> filteredProperties = Arrays.asList(SMPPropertyEnum.values()).stream()
                 .filter(prop -> StringUtils.isBlank(filterByProperty)
-                        || StringUtils.containsIgnoreCase(prop.getProperty(),filterByProperty))
+                        || StringUtils.containsIgnoreCase(prop.getProperty(), filterByProperty))
                 .collect(Collectors.toList());
         LOG.debug("Got filtered properties count [{}]", filteredProperties.size());
 
@@ -70,8 +72,8 @@ public class UIPropertyService {
                 .collect(Collectors.toMap(DBConfiguration::getProperty, Function.identity()));
 
         List<PropertyRO> properties = filteredProperties.stream()
-                .skip( page<0?0:page * (long)pageSize)
-                .limit(pageSize<0?SMPPropertyEnum.values().length:pageSize)
+                .skip(page < 0 ? 0 : page * (long) pageSize)
+                .limit(pageSize < 0 ? SMPPropertyEnum.values().length : pageSize)
                 .map(prop -> createProperty(prop, changedProps))
                 .collect(Collectors.toList());
 
