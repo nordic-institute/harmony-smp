@@ -62,7 +62,8 @@ import java.util.Objects;
                         " AND u.certificate.validTo IS NOT NULL " +
                         " AND u.certificate.validTo <= :startAlertDate " +
                         " AND u.certificate.validTo > :expireDate" +
-                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )"),
+                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
+                        "       OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )"),
         @NamedQuery(name = "DBUser.getUsersForCertificateExpiredAlerts",
                 query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
                         " AND u.certificate.validTo IS NOT NULL " +

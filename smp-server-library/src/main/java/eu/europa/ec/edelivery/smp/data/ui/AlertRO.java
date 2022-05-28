@@ -6,6 +6,8 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Joze Rihtarsic
@@ -25,6 +27,7 @@ public class AlertRO extends BaseRO {
     private AlertStatusEnum alertStatus;
     private String alertStatusDesc;
     private AlertLevelEnum alertLevel;
+    private Map<String, String> alertDetails = new HashMap<>();
 
     public String getSid() {
         return sid;
@@ -96,5 +99,9 @@ public class AlertRO extends BaseRO {
 
     public void setAlertLevel(AlertLevelEnum alertLevel) {
         this.alertLevel = alertLevel;
+    }
+
+    public Map<String, String> getAlertDetails() {
+        return alertDetails;
     }
 }

@@ -286,7 +286,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
                 LOG.error("cachedPropertyValues is FOR SOME REASON NULL ");
             }
             if (this.cachedPropertyValues != null && this.cachedPropertyValues.containsKey(prop.getProperty())) {
-                LOG.debug("Put property [{}] value [{}]", prop.getProperty(), this.cachedPropertyValues.get(prop.getProperty()));
+                LOG.debug("Put property [{}] value [{}]", prop.getProperty(),
+                        this.cachedPropertyValues.get(prop.getProperty()));
                 mapProp.put(prop, this.cachedPropertyValues.get(prop.getProperty()));
             } else {
                 LOG.debug("Property [{}] does not exist in cached map!", prop.getProperty());

@@ -2,7 +2,6 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.cron.CronTriggerConfig;
 import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
-import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
@@ -25,15 +24,15 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_CLUST
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 import static org.junit.Assert.*;
 
-@ContextConfiguration(classes = {UIPropertyService.class, CronTriggerConfig.class})
+@ContextConfiguration(classes = {UIPropertyService.class})
 public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
 
     @Autowired
     protected UIPropertyService testInstance;
-    @Autowired @Qualifier(TRIGGER_BEAN_PROPERTY_REFRESH)
+    @Autowired
+    @Qualifier(TRIGGER_BEAN_PROPERTY_REFRESH)
     SMPDynamicCronTrigger refreshPropertiesTrigger;
-
 
 
     @Test
@@ -87,7 +86,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
         assertEquals(propertyType.isEncrypted(), propertyRO.isEncrypted());
         assertEquals(propertyType.isMandatory(), propertyRO.isMandatory());
         assertEquals(propertyType.isRestartNeeded(), propertyRO.isRestartNeeded());
-}
+    }
 
     @Test
     public void updatePropertyList() {
@@ -103,12 +102,12 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
 
         testInstance.updatePropertyList(Collections.singletonList(propertyRO));
         assertEquals(value, configurationDao.getCachedProperty(propertyType));
-
     }
+
     @Test
     public void validatePropertyNotExists() {
-        String propertyName="DoesNotExist";
-        String propertyValue="DoesNotExistValue";
+        String propertyName = "DoesNotExist";
+        String propertyValue = "DoesNotExistValue";
         PropertyRO property = new PropertyRO(propertyName, propertyValue);
 
         PropertyValidationRO result = testInstance.validateProperty(property);
@@ -116,13 +115,13 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
         assertEquals(propertyName, result.getProperty());
         assertEquals(propertyValue, result.getValue());
         assertFalse(result.isPropertyValid());
-        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Property ["+propertyName+"] is not SMP property!"));
+        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Property [" + propertyName + "] is not SMP property!"));
     }
 
     @Test
     public void validatePropertyInvalidValue() {
-        String propertyName=SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY.getProperty();
-        String propertyValue="NotANumber";
+        String propertyName = SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY.getProperty();
+        String propertyValue = "NotANumber";
         PropertyRO property = new PropertyRO(propertyName, propertyValue);
 
         PropertyValidationRO result = testInstance.validateProperty(property);
@@ -130,13 +129,13 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
         assertEquals(propertyName, result.getProperty());
         assertEquals(propertyValue, result.getValue());
         assertFalse(result.isPropertyValid());
-        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Invalid integer: ["+propertyValue+"]. Error:NumberFormatException: For input string: \""+propertyValue+"\"!"));
+        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Invalid integer: [" + propertyValue + "]. Error:NumberFormatException: For input string: \"" + propertyValue + "\"!"));
     }
 
     @Test
     public void validatePropertyOK() {
-        String propertyName=SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY.getProperty();
-        String propertyValue="1223232";
+        String propertyName = SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY.getProperty();
+        String propertyValue = "1223232";
         PropertyRO property = new PropertyRO(propertyName, propertyValue);
 
         PropertyValidationRO result = testInstance.validateProperty(property);

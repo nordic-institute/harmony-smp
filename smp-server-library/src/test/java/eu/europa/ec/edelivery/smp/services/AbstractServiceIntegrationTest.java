@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.config.ServicesBeansConfiguration;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.cron.CronTriggerConfig;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
@@ -49,7 +50,8 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
         CRLVerifierService.class,
         ConfigurationService.class,
         ServicesBeansConfiguration.class,
-        AlertService.class})
+        AlertService.class,
+        CronTriggerConfig.class})
 @Sql(scripts = {"classpath:cleanup-database.sql",
         "classpath:basic_conf_data-h2.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
