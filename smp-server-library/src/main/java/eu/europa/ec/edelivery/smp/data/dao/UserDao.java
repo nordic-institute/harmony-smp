@@ -15,8 +15,11 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
@@ -36,11 +39,11 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USER
  */
 @Repository
 public class UserDao extends BaseDao<DBUser> {
-
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_START_DATE="startAlertDate";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_END_DATE="endAlertDate";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE="expireDate";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE="lastSendAlertDate";
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserDao.class);
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_START_DATE = "startAlertDate";
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_END_DATE = "endAlertDate";
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE = "expireDate";
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE = "lastSendAlertDate";
 
 
     /**
@@ -265,5 +268,25 @@ public class UserDao extends BaseDao<DBUser> {
                 DBUserDeleteValidation.class);
         query.setParameter("idList", userIds);
         return query.getResultList();
+    }
+
+    @Transactional
+    public void updateAlertSentForUserCredentials(Long userId, CredentialTypeEnum credentialType, OffsetDateTime dateTime) {
+        DBUser user = find(userId);
+        switch (credentialType) {
+            case USERNAME_PASSWORD:
+                user.setPasswordExpireAlertOn(dateTime);
+                break;
+            case ACCESS_TOKEN:
+                user.setAccessTokenExpireAlertOn(dateTime);
+                break;
+            case CERTIFICATE:
+                if (user.getCertificate() == null) {
+                    LOG.warn("Can not set certificate alert sent date for user [{}] without certificate!", user.getUsername());
+                } else {
+                    user.getCertificate().setCertificateLastExpireAlertOn(dateTime);
+                }
+                break;
+        }
     }
 }

@@ -8,7 +8,6 @@ import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {SecurityService} from "../../../security/security.service";
 import {InformationDialogComponent} from "../information-dialog/information-dialog.component";
 import {UserRo} from "../../../user/user-ro.model";
-import {SmpConstants} from "../../../smp.constants";
 
 @Component({
   selector: 'smp-password-change-dialog',

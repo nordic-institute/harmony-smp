@@ -3,6 +3,7 @@ import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
 import {HttpClient} from "@angular/common/http";
+import {ObjectPropertiesDialogComponent} from "../common/dialogs/object-properties-dialog/object-properties-dialog.component";
 
 export class AlertController implements SearchTableController {
 
@@ -30,15 +31,30 @@ export class AlertController implements SearchTableController {
   }
 
   public showDetails(row: any) {
+    this.dialog.open(ObjectPropertiesDialogComponent, {
+      data: {
+        title: "Alert details!",
+        object: row.alertDetails,
+
+      }
+    });
   }
 
   public edit(row: any) {
+    this.dialog.open(ObjectPropertiesDialogComponent, {
+      data: {
+        title: "Alert details!",
+        object: row.alertDetails,
+
+      }
+    });
   }
+
 
   public delete(row: any) {
   }
 
   newDialog(config?: MatDialogConfig): MatDialogRef<any> {
-    return undefined;
+    return this.dialog.open(ObjectPropertiesDialogComponent, config);
   }
 }

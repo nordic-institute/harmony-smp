@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
+import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
@@ -31,9 +33,11 @@ public class AlertServiceTest {
     AlertDao alertDao = Mockito.mock(AlertDao.class);
     MailService mailService = Mockito.mock(MailService.class);
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    UserDao userDao = Mockito.mock(UserDao.class);
+    SMPDynamicCronTrigger alertCronTrigger = Mockito.mock(SMPDynamicCronTrigger.class);
 
 
-    AlertService testInstance = new AlertService(alertDao, mailService, configurationService);
+    AlertService testInstance = new AlertService(alertDao, mailService, configurationService,userDao,alertCronTrigger);
 
     @Test
     public void testCreateAlert() {

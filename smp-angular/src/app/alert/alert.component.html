@@ -10,7 +10,7 @@
   [filter]="filter"
   [allowNewItems]="false"
   [allowDeleteItems]="false"
-  [allowEditItems]="false"
+  [allowEditItems]="true"
   [showActionButtons]="false"
 >
   <ng-template #additionalToolButtons>
@@ -23,5 +23,8 @@
   </ng-template>
   <ng-template #forUser  let-row="row" let-value="value" ngx-datatable-cell-template>
     <div class='truncate-text' title="{{value}} (Email:'{{row.mailTo}}')" >{{value}}</div>
+  </ng-template>
+  <ng-template #credentialType  let-row="row" let-value="value" ngx-datatable-cell-template>
+    <div class='truncate-text'  >{{value['CREDENTIAL_TYPE']}}</div>
   </ng-template>
 </smp-search-table>
