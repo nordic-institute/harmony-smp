@@ -9,6 +9,7 @@ import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {SecurityService} from "../security/security.service";
+import {ObjectPropertiesDialogComponent} from "../common/dialogs/object-properties-dialog/object-properties-dialog.component";
 
 
 @Component({
@@ -23,6 +24,7 @@ export class AlertComponent implements AfterViewInit {
   @ViewChild('searchTable') searchTable: SearchTableComponent;
   @ViewChild('dateTimeColumn') dateTimeColumn:TemplateRef<any>;
   @ViewChild('truncateText') truncateText:TemplateRef<any>;
+  @ViewChild('credentialType') credentialType:TemplateRef<any>;
   @ViewChild('forUser') forUser:TemplateRef<any>;
 
 
@@ -64,6 +66,14 @@ export class AlertComponent implements AfterViewInit {
         showInitially: true,
       },
       {
+        name: 'Credential type',
+        title: "Credential type.",
+        prop: 'alertDetails',
+        maxWidth:200,
+        cellTemplate: this.credentialType,
+        showInitially: true,
+      },
+      {
         name: 'Alert type',
         title: "Alert type.",
         prop: 'alertType',
@@ -90,7 +100,7 @@ export class AlertComponent implements AfterViewInit {
         title: "Alert level.",
         prop: 'alertLevel',
         showInitially: true,
-        maxWidth:100,
+        maxWidth:80,
 
       },
     ];
@@ -100,11 +110,19 @@ export class AlertComponent implements AfterViewInit {
 
 
   details(row: any) {
-    //this.alertController.showDetails(row);
+      this.dialog.open(ObjectPropertiesDialogComponent, {
+        data: {
+          title: "Alert details!",
+          object: row.alertDetails,
+
+        }
+      });
   }
 
   // for dirty guard...
   isDirty(): boolean {
     return this.searchTable.isDirty();
   }
+
+
 }

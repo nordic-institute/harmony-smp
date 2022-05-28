@@ -3,12 +3,12 @@ package eu.europa.ec.edelivery.smp.cron;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronTrigger;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -39,20 +39,22 @@ public class SMPDynamicCronTrigger implements Trigger {
         return nextExecutionDate;
     }
 
-    public void updateCronExpression(String expression) {
-        if (StringUtils.isBlank(expression)) {
-            LOG.debug("Disable cron trigger for property: [{}]. ", expression);
+    public String getExpression() {
+        return cronTrigger.getExpression();
+    }
+
+    public void updateCronExpression(CronExpression expression) {
+        if (expression == null) {
+            LOG.debug("Disable cron trigger for property: [{}]. ", cronExpressionProperty.getProperty());
             cronTrigger = null;
             nextExecutionDate = null;
             return;
         }
-        cronTrigger = new CronTrigger(expression);
+        cronTrigger = new CronTrigger(expression.toString());
         LOG.debug("Set new cron expression: [{}] for property: [{}]. ", expression,
                 cronExpressionProperty.getProperty());
-        if (nextExecutionDate != null) {
-            LOG.debug("The new cron expression will be used after the current planned execution [{}].",
-                    DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(nextExecutionDate));
-        }
+
+        nextExecutionDate = Calendar.getInstance().getTime();
     }
 
     /**

@@ -140,6 +140,13 @@ public class PropertyUtils {
                 }
             case STRING:
                 return value;
+            case CRON_EXPRESSION:
+                try {
+                    return CronExpression.parse(value);
+                } catch (IllegalArgumentException ex) {
+                    throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "cron expression:  ["
+                            + value + "]. Error:" + ExceptionUtils.getRootCauseMessage(ex), ex);
+                }
         }
         return null;
     }

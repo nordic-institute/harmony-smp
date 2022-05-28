@@ -88,6 +88,8 @@ import {PropertyComponent} from "./property/property.component";
 import {PropertyDetailsDialogComponent} from "./property/property-details-dialog/property-details-dialog.component";
 import {MatCheckbox, MatCheckboxModule} from "@angular/material/checkbox";
 import {AutoFocusDirective} from "./common/directive/autofocus/auto-focus.directive";
+import {ObjectPropertiesDialogComponent} from "./common/dialogs/object-properties-dialog/object-properties-dialog.component";
+import {MatTableModule} from "@angular/material/table";
 
 
 @NgModule({
@@ -112,6 +114,7 @@ import {AutoFocusDirective} from "./common/directive/autofocus/auto-focus.direct
     CancelDialogComponent,
     ConfirmationDialogComponent,
     InformationDialogComponent,
+    ObjectPropertiesDialogComponent,
     RowLimiterComponent,
     DatePipe,
     CapitalizeFirstPipe,
@@ -167,6 +170,7 @@ import {AutoFocusDirective} from "./common/directive/autofocus/auto-focus.direct
     ReactiveFormsModule,
     SharedModule,
     MatExpansionModule,
+    MatTableModule,
   ],
   providers: [
     AuthenticatedGuard,

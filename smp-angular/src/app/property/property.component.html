@@ -29,9 +29,6 @@
   <ng-template #tableTitle>
     <span *ngIf="isServerRestartNeeded()" [class]="'alert-message'">Server restart is needed!</span>
   </ng-template>
-
-  tableTitle
-
   <ng-template #propertyValueTemplate
                let-row="row"
                let-value="value"
@@ -40,7 +37,6 @@
       [matTooltip]='row.desc'>{{ value }}</span>
     <span *ngIf="row.updateDate" style="display: block;font-size: 0.8em;color: darkorange">New Value: '{{ row.newValue +"." }}'
         <span *ngIf="!row.restartNeeded">
-          {{  jsonStringify(row)  }}
       Scheduled update time:  {{ row.updateDate | date:'yyyy-MM-dd HH:mm:ss' }}</span>
     </span>
 

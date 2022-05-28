@@ -55,7 +55,7 @@ public enum SMPPropertyEnum {
     CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs","","List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension", false, false,false, STRING),
     CERTIFICATE_SUBJECT_REGULAR_EXPRESSION("smp.certificate.validation.subjectRegex",".*","Regular expression to validate subject of the certificate", false, false,false, REGEXP),
 
-    SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression", "0 48 */1 * * *", "Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!", false, false, true, CRON_EXPRESSION),
+    SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression", "0 48 */1 * * *", "Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!", false, false, false, CRON_EXPRESSION),
     // UI COOKIE configuration
     UI_COOKIE_SESSION_SECURE("smp.ui.session.secure", "false", "Cookie is only sent to the server when a request is made with the https: scheme (except on localhost), and therefore is more resistant to man-in-the-middle attacks.", false, false, false, BOOLEAN),
     UI_COOKIE_SESSION_MAX_AGE("smp.ui.session.max-age", "", "Number of seconds until the cookie expires. A zero or negative number will expire the cookie immediately. Empty value will not set parameter", false, false, false, INTEGER),
