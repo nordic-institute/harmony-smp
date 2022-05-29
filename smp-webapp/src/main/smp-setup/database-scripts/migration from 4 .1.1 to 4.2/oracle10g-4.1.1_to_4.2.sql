@@ -1,173 +1,217 @@
-create sequence SMP_ALERT_PROP_SEQ start with 1 increment by  1;
-create sequence SMP_ALERT_SEQ start with 1 increment by  1;
+CREATE SEQUENCE smp_alert_prop_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE smp_alert_seq START WITH 1 INCREMENT BY 1;
 
 -- set usernames for empty "users"
-UPDATE SMP_USER set USERNAME ='USERNAME_' | lpad(SMP_USER.ID, 3, '0')  where USERNAME IS NULL;
-commit;
+
+UPDATE smp_user
+SET
+    username = 'USERNAME_'
+               || lpad(smp_user.id,3,'0')
+WHERE
+    username IS NULL;
+
+COMMIT;
 -- create new alert table
-create table SMP_ALERT (
-   ID number(19,0) not null,
-    CREATED_ON timestamp not null,
-    LAST_UPDATED_ON timestamp not null,
-    ALERT_LEVEL varchar2(255 char),
-    ALERT_STATUS varchar2(255 char),
-    ALERT_STATUS_DESC varchar2(1024 char),
-    ALERT_TYPE varchar2(255 char),
-    MAIL_SUBJECT varchar2(1024 char),
-    MAIL_TO varchar2(1024 char),
-    PROCESSED_TIME timestamp,
-    REPORTING_TIME timestamp,
-    FOR_USERNAME varchar2(256 char),
-    primary key (ID)
+
+CREATE TABLE smp_alert (
+    id                  NUMBER(19,0) NOT NULL,
+    created_on          TIMESTAMP NOT NULL,
+    last_updated_on     TIMESTAMP NOT NULL,
+    alert_level         VARCHAR2(255 CHAR),
+    alert_status        VARCHAR2(255 CHAR),
+    alert_status_desc   VARCHAR2(1024 CHAR),
+    alert_type          VARCHAR2(255 CHAR),
+    mail_subject        VARCHAR2(1024 CHAR),
+    mail_to             VARCHAR2(1024 CHAR),
+    processed_time      TIMESTAMP,
+    reporting_time      TIMESTAMP,
+    for_username        VARCHAR2(256 CHAR),
+    PRIMARY KEY ( id )
 );
 
-comment on table SMP_ALERT is
+COMMENT ON TABLE smp_alert IS
     'SMP alerts';
 
-comment on column SMP_ALERT.ID is
+COMMENT ON COLUMN smp_alert.id IS
     'Unique alert id';
 
-create table SMP_ALERT_AUD (
-   ID number(19,0) not null,
-    REV number(19,0) not null,
-    REVTYPE number(3,0),
-    CREATED_ON timestamp,
-    LAST_UPDATED_ON timestamp,
-    ALERT_LEVEL varchar2(255 char),
-    ALERT_STATUS varchar2(255 char),
-    ALERT_STATUS_DESC varchar2(1024 char),
-    ALERT_TYPE varchar2(255 char),
-    MAIL_SUBJECT varchar2(1024 char),
-    MAIL_TO varchar2(1024 char),
-    PROCESSED_TIME timestamp,
-    REPORTING_TIME timestamp,
-    FOR_USERNAME varchar2(256 char),
-    primary key (ID, REV)
+CREATE TABLE smp_alert_aud (
+    id                  NUMBER(19,0) NOT NULL,
+    rev                 NUMBER(19,0) NOT NULL,
+    revtype             NUMBER(3,0),
+    created_on          TIMESTAMP,
+    last_updated_on     TIMESTAMP,
+    alert_level         VARCHAR2(255 CHAR),
+    alert_status        VARCHAR2(255 CHAR),
+    alert_status_desc   VARCHAR2(1024 CHAR),
+    alert_type          VARCHAR2(255 CHAR),
+    mail_subject        VARCHAR2(1024 CHAR),
+    mail_to             VARCHAR2(1024 CHAR),
+    processed_time      TIMESTAMP,
+    reporting_time      TIMESTAMP,
+    for_username        VARCHAR2(256 CHAR),
+    PRIMARY KEY ( id,
+                  rev )
 );
 
-create table SMP_ALERT_PROPERTY (
-   ID number(19,0) not null,
-    CREATED_ON timestamp not null,
-    LAST_UPDATED_ON timestamp not null,
-    PROPERTY varchar2(255 char),
-    VALUE varchar2(1024 char),
-    FK_ALERT_ID number(19,0),
-    primary key (ID)
+CREATE TABLE smp_alert_property (
+    id                NUMBER(19,0) NOT NULL,
+    created_on        TIMESTAMP NOT NULL,
+    last_updated_on   TIMESTAMP NOT NULL,
+    property          VARCHAR2(255 CHAR),
+    value             VARCHAR2(1024 CHAR),
+    fk_alert_id       NUMBER(19,0),
+    PRIMARY KEY ( id )
 );
 
-comment on column SMP_ALERT_PROPERTY.ID is
+COMMENT ON COLUMN smp_alert_property.id IS
     'Unique alert property id';
 
-create table SMP_ALERT_PROPERTY_AUD (
-   ID number(19,0) not null,
-    REV number(19,0) not null,
-    REVTYPE number(3,0),
-    CREATED_ON timestamp,
-    LAST_UPDATED_ON timestamp,
-    PROPERTY varchar2(255 char),
-    VALUE varchar2(1024 char),
-    FK_ALERT_ID number(19,0),
-    primary key (ID, REV)
+CREATE TABLE smp_alert_property_aud (
+    id                NUMBER(19,0) NOT NULL,
+    rev               NUMBER(19,0) NOT NULL,
+    revtype           NUMBER(3,0),
+    created_on        TIMESTAMP,
+    last_updated_on   TIMESTAMP,
+    property          VARCHAR2(255 CHAR),
+    value             VARCHAR2(1024 CHAR),
+    fk_alert_id       NUMBER(19,0),
+    PRIMARY KEY ( id,
+                  rev )
 );
 -- update certificate table
-ALTER TABLE SMP_CERTIFICATE ADD  EXPIRE_LAST_ALERT_ON timestamp;
-ALTER TABLE SMP_CERTIFICATE_AUD ADD EXPIRE_LAST_ALERT_ON timestamp;
 
-comment on column SMP_CERTIFICATE.EXPIRE_LAST_ALERT_ON is
-        'Generated last expire alert';
+ALTER TABLE smp_certificate ADD expire_last_alert_on TIMESTAMP;
+
+ALTER TABLE smp_certificate_aud ADD expire_last_alert_on TIMESTAMP;
+
+COMMENT ON COLUMN smp_certificate.expire_last_alert_on IS
+    'Generated last expire alert';
 
 -- add audit table for configuration
-create table SMP_CONFIGURATION_AUD (
-   PROPERTY varchar2(512 char) not null,
-    REV number(19,0) not null,
-    REVTYPE number(3,0),
-    CREATED_ON timestamp,
-    LAST_UPDATED_ON timestamp,
-    DESCRIPTION varchar2(4000 char),
-    VALUE varchar2(4000 char),
-    primary key (PROPERTY, REV)
+
+CREATE TABLE smp_configuration_aud (
+    property          VARCHAR2(512 CHAR) NOT NULL,
+    rev               NUMBER(19,0) NOT NULL,
+    revtype           NUMBER(3,0),
+    created_on        TIMESTAMP,
+    last_updated_on   TIMESTAMP,
+    description       VARCHAR2(4000 CHAR),
+    value             VARCHAR2(4000 CHAR),
+    PRIMARY KEY ( property,
+                  rev )
 );
 
 -- set option that service group scheme can be also null
-ALTER TABLE SMP_SERVICE_GROUP MODIFY (PARTICIPANT_SCHEME NULL);
+
+ALTER TABLE smp_service_group MODIFY (
+    participant_scheme NULL
+);
 
 -- modify user table
-ALTER TABLE SMP_USER MODIFY (USERNAME NOT NULL);
-ALTER TABLE SMP_USER ADD ACCESS_TOKEN varchar2(256 char);
-ALTER TABLE SMP_USER ADD ACCESS_TOKEN_LAST_ALERT_ON timestamp;
-ALTER TABLE SMP_USER ADD ACCESS_TOKEN_EXPIRE_ON timestamp;
-ALTER TABLE SMP_USER ADD ACCESS_TOKEN_GENERATED_ON timestamp;
-ALTER TABLE SMP_USER ADD ACCESS_TOKEN_ID varchar2(256 char);
-ALTER TABLE SMP_USER ADD  LAST_FAILED_LOGIN_ON timestamp;
-ALTER TABLE SMP_USER ADD AT_LAST_FAILED_LOGIN_ON timestamp;
-ALTER TABLE SMP_USER ADD PASSWORD_LAST_ALERT_ON timestamp;
-ALTER TABLE SMP_USER ADD PASSWORD_EXPIRE_ON timestamp;
-ALTER TABLE SMP_USER ADD LOGIN_FAILURE_COUNT number(10,0);
-ALTER TABLE SMP_USER ADD AT_LOGIN_FAILURE_COUNT number(10,0);
 
-ALTER TABLE SMP_USER_AUD ADD ACCESS_TOKEN varchar2(256 char);
-ALTER TABLE SMP_USER_AUD ADD ACCESS_TOKEN_LAST_ALERT_ON timestamp;
-ALTER TABLE SMP_USER_AUD ADD ACCESS_TOKEN_EXPIRE_ON timestamp;
-ALTER TABLE SMP_USER_AUD ADD ACCESS_TOKEN_GENERATED_ON timestamp;
-ALTER TABLE SMP_USER_AUD ADD ACCESS_TOKEN_ID varchar2(256 char);
-ALTER TABLE SMP_USER_AUD ADD  LAST_FAILED_LOGIN_ON timestamp;
-ALTER TABLE SMP_USER_AUD ADD AT_LAST_FAILED_LOGIN_ON timestamp;
-ALTER TABLE SMP_USER_AUD ADD PASSWORD_LAST_ALERT_ON timestamp;
-ALTER TABLE SMP_USER_AUD ADD PASSWORD_EXPIRE_ON timestamp;
-ALTER TABLE SMP_USER_AUD ADD LOGIN_FAILURE_COUNT number(10,0);
-ALTER TABLE SMP_USER_AUD ADD AT_LOGIN_FAILURE_COUNT number(10,0);
+ALTER TABLE smp_user MODIFY (
+    username NOT NULL
+);
 
-comment on column SMP_USER.ACCESS_TOKEN is
+ALTER TABLE smp_user ADD access_token VARCHAR2(256 CHAR);
+
+ALTER TABLE smp_user ADD access_token_last_alert_on TIMESTAMP;
+
+ALTER TABLE smp_user ADD access_token_expire_on TIMESTAMP;
+
+ALTER TABLE smp_user ADD access_token_generated_on TIMESTAMP;
+
+ALTER TABLE smp_user ADD access_token_id VARCHAR2(256 CHAR);
+
+ALTER TABLE smp_user ADD last_failed_login_on TIMESTAMP;
+
+ALTER TABLE smp_user ADD at_last_failed_login_on TIMESTAMP;
+
+ALTER TABLE smp_user ADD password_last_alert_on TIMESTAMP;
+
+ALTER TABLE smp_user ADD password_expire_on TIMESTAMP;
+
+ALTER TABLE smp_user ADD login_failure_count NUMBER(10,0);
+
+ALTER TABLE smp_user ADD at_login_failure_count NUMBER(10,0);
+
+ALTER TABLE smp_user_aud ADD access_token VARCHAR2(256 CHAR);
+
+ALTER TABLE smp_user_aud ADD access_token_last_alert_on TIMESTAMP;
+
+ALTER TABLE smp_user_aud ADD access_token_expire_on TIMESTAMP;
+
+ALTER TABLE smp_user_aud ADD access_token_generated_on TIMESTAMP;
+
+ALTER TABLE smp_user_aud ADD access_token_id VARCHAR2(256 CHAR);
+
+ALTER TABLE smp_user_aud ADD last_failed_login_on TIMESTAMP;
+
+ALTER TABLE smp_user_aud ADD at_last_failed_login_on TIMESTAMP;
+
+ALTER TABLE smp_user_aud ADD password_last_alert_on TIMESTAMP;
+
+ALTER TABLE smp_user_aud ADD password_expire_on TIMESTAMP;
+
+ALTER TABLE smp_user_aud ADD login_failure_count NUMBER(10,0);
+
+ALTER TABLE smp_user_aud ADD at_login_failure_count NUMBER(10,0);
+
+COMMENT ON COLUMN smp_user.access_token IS
     'BCrypted personal access token';
 
-comment on column SMP_USER.ACCESS_TOKEN_LAST_ALERT_ON is
+COMMENT ON COLUMN smp_user.access_token_last_alert_on IS
     'Generated last access token expire alert';
 
-comment on column SMP_USER.ACCESS_TOKEN_EXPIRE_ON is
+COMMENT ON COLUMN smp_user.access_token_expire_on IS
     'Date when personal access token will expire';
 
-comment on column SMP_USER.ACCESS_TOKEN_GENERATED_ON is
+COMMENT ON COLUMN smp_user.access_token_generated_on IS
     'Date when personal access token was generated';
 
-comment on column SMP_USER.ACCESS_TOKEN_ID is
-'Personal access token id';
+COMMENT ON COLUMN smp_user.access_token_id IS
+    'Personal access token id';
 
-comment on column SMP_USER.LAST_FAILED_LOGIN_ON is
-'Last failed login attempt';
+COMMENT ON COLUMN smp_user.last_failed_login_on IS
+    'Last failed login attempt';
 
-comment on column SMP_USER.AT_LAST_FAILED_LOGIN_ON is
-'Last failed token login attempt';
+COMMENT ON COLUMN smp_user.at_last_failed_login_on IS
+    'Last failed token login attempt';
 
-comment on column SMP_USER.PASSWORD_LAST_ALERT_ON is
-'Generated last password expire alert';
+COMMENT ON COLUMN smp_user.password_last_alert_on IS
+    'Generated last password expire alert';
 
-comment on column SMP_USER.PASSWORD_EXPIRE_ON is
-'Date when password will expire';
-comment on column SMP_USER.LOGIN_FAILURE_COUNT is
-'Sequential login failure count';
+COMMENT ON COLUMN smp_user.password_expire_on IS
+    'Date when password will expire';
 
-comment on column SMP_USER.AT_LOGIN_FAILURE_COUNT is
-'Sequential token login failure count';
+COMMENT ON COLUMN smp_user.login_failure_count IS
+    'Sequential login failure count';
 
-alter table SMP_USER
-   add constraint UK_tk9bjsmd2mevgt3b997i6pl27 unique (ACCESS_TOKEN_ID);
+COMMENT ON COLUMN smp_user.at_login_failure_count IS
+    'Sequential token login failure count';
 
-alter table SMP_ALERT_AUD
-   add constraint FKrw0qnto448ojlirpfmfntd8v2
-   foreign key (REV)
-   references SMP_REV_INFO;
+ALTER TABLE smp_user ADD CONSTRAINT uk_tk9bjsmd2mevgt3b997i6pl27 UNIQUE ( access_token_id );
 
-alter table SMP_ALERT_PROPERTY
-   add constraint FK15r37w3r5ty5f6074ykr2o4i6
-   foreign key (FK_ALERT_ID)
-   references SMP_ALERT;
+ALTER TABLE smp_alert_aud ADD CONSTRAINT fkrw0qnto448ojlirpfmfntd8v2 FOREIGN KEY ( rev )
+    REFERENCES smp_rev_info;
 
-alter table SMP_ALERT_PROPERTY_AUD
-   add constraint FKod33qjx87ih1a0skxl2sgddar
-   foreign key (REV)
-   references SMP_REV_INFO;
+ALTER TABLE smp_alert_property ADD CONSTRAINT fk15r37w3r5ty5f6074ykr2o4i6 FOREIGN KEY ( fk_alert_id )
+    REFERENCES smp_alert;
 
-alter table SMP_CONFIGURATION_AUD
-       add constraint FKd4yhbdlusovfbdti1fjkuxp9m
-       foreign key (REV)
-       references SMP_REV_INFO;
+ALTER TABLE smp_alert_property_aud ADD CONSTRAINT fkod33qjx87ih1a0skxl2sgddar FOREIGN KEY ( rev )
+    REFERENCES smp_rev_info;
+
+ALTER TABLE smp_configuration_aud ADD CONSTRAINT fkd4yhbdlusovfbdti1fjkuxp9m FOREIGN KEY ( rev )
+    REFERENCES smp_rev_info;
+
+
+-- set init back-compatible credentials to access tokens
+
+UPDATE smp_user
+SET
+    access_token_id = smp_user.username,
+    access_token = smp_user.password;
+
+COMMIT;
