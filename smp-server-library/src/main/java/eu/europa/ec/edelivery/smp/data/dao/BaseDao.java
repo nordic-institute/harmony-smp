@@ -17,9 +17,7 @@ import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.MatchMode;
 import org.springframework.core.GenericTypeResolver;
 
 import javax.persistence.EntityManager;
@@ -110,10 +108,11 @@ public abstract class BaseDao<E extends BaseEntity> {
     public boolean removeById(Object primaryKey) {
         // Do not use query delete else envers will not work!!
         E val = find(primaryKey);
-        if (val!= null) {
+        if (val != null) {
             memEManager.remove(val);
             return true;
-        } return false;
+        }
+        return false;
     }
 
 
