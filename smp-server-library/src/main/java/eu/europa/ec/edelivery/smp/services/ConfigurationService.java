@@ -234,7 +234,7 @@ public class ConfigurationService {
     }
 
     public boolean useSystemTruststoreForTLS() {
-        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_TRUSTSTORE_TYPE);
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_TRUSTSTORE_USE_SYSTEM_DEFAULT);
         // by default is not forced
         return value != null && value;
     }
