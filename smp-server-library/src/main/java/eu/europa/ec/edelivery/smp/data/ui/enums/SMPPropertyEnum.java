@@ -48,6 +48,8 @@ public enum SMPPropertyEnum {
     KEYSTORE_FILENAME("smp.keystore.filename", "smp-keystore.jks", "Keystore filename ", true, false, false, FILENAME),
     TRUSTSTORE_PASSWORD("smp.truststore.password", "", "Encrypted truststore password ", false, true, false, STRING),
     TRUSTSTORE_FILENAME("smp.truststore.filename", "", "Truststore filename ", false, false, false, FILENAME),
+    TRUSTSTORE_ADD_CERT_ON_USER_UPDATE("smp.truststore.add.cert.onUserRegistration",
+            "false", "Automatically add certificate to truststore when assigned to user.", false, false, false, BOOLEAN),
     CERTIFICATE_CRL_FORCE("smp.certificate.crl.force", "false", "If false then if CRL is not reachable ignore CRL validation", false, false, false, BOOLEAN),
     CONFIGURATION_DIR("configuration.dir", "smp", "Path to the folder containing all the configuration files (keystore and encryption key)", true, false, true, PATH),
     ENCRYPTION_FILENAME("encryption.key.filename", "encryptionPrivateKey.private", "Key filename to encrypt passwords", false, false, true, FILENAME),

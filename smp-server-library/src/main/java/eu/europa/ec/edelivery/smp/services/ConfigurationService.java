@@ -239,9 +239,14 @@ public class ConfigurationService {
         return value != null && value;
     }
 
-
     public boolean smlDisableCNCheck() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_DISABLE_CN_CHECK);
+        // by default is not forced
+        return value != null && value;
+    }
+
+    public boolean trustCertificateOnUserRegistration() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(TRUSTSTORE_ADD_CERT_ON_USER_UPDATE);
         // by default is not forced
         return value != null && value;
     }
