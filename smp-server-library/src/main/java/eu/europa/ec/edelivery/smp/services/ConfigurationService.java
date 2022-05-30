@@ -233,6 +233,12 @@ public class ConfigurationService {
         return (Pattern) configurationDAO.getCachedPropertyValue(SML_TLS_SERVER_CERT_SUBJECT_REGEXP);
     }
 
+    public boolean useSystemTruststoreForTLS() {
+        Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_TRUSTSTORE_TYPE);
+        // by default is not forced
+        return value != null && value;
+    }
+
 
     public boolean smlDisableCNCheck() {
         Boolean value = (Boolean) configurationDAO.getCachedPropertyValue(SML_TLS_DISABLE_CN_CHECK);

@@ -40,6 +40,7 @@ public enum SMPPropertyEnum {
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint", false, false, false, URL),
     SML_TLS_DISABLE_CN_CHECK("bdmsl.integration.tls.disableCNCheck", "false", "If SML Url is HTTPs - Disable CN check if needed.", false, false, false, BOOLEAN),
     SML_TLS_SERVER_CERT_SUBJECT_REGEXP("bdmsl.integration.tls.serverSubjectRegex", ".*", "Regular expression for server TLS certificate subject verification  CertEx. .*CN=acc.edelivery.tech.ec.europa.eu.*.", false, false, false, REGEXP),
+    SML_TLS_TRUSTSTORE_TYPE("bdmsl.integration.tls.userSystemDefaultTruststore", "false", "If true use system default truststore for trusting TLS server certificate (Legacy behaviour to SMP 4.1 version), else use SMP truststore", false, false, false, BOOLEAN),
     SML_LOGICAL_ADDRESS("bdmsl.integration.logical.address", "http://localhost:8080/smp/", "Logical SMP endpoint which will be registered on SML when registering new domain", false, false, false, URL),
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address", "0.0.0.0", "Physical SMP endpoint which will be registered on SML when registering new domain.", false, false, false, STRING),
     // keystore truststore
