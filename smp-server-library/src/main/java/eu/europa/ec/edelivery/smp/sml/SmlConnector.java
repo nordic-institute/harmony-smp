@@ -362,7 +362,13 @@ public class SmlConnector implements ApplicationContextAware {
         tlsParams.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
         tlsParams.setCertConstraints(createCertConstraint(configurationService.getSMLIntegrationServerCertSubjectRegExpPattern()));
         tlsParams.setDisableCNCheck(configurationService.smlDisableCNCheck());
-        tlsParams.setTrustManagers(truststoreService.getTrustManagers());
+        if(!configurationService.useSystemTruststoreForTLS()){
+            /**
+             * Sets the TrustManagers associated with this endpoint.
+             * This parameter may be set to null for system default behavior.
+             */
+            tlsParams.setTrustManagers(truststoreService.getTrustManagers());
+        }
 
         if (!clientCertAuthentication) {
             LOG.info("SML X509 certificate authentication with alias  {}.", smlClientAuthentication);
