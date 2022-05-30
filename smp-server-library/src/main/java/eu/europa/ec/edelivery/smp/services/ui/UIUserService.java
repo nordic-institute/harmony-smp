@@ -127,7 +127,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         Boolean testMode = configurationService.isSMPStartupInDevMode();
         AccessTokenRO token = SecurityUtils.generateAccessToken(testMode);
         OffsetDateTime generatedTime = token.getGeneratedOn();
-        token.setExpireOn(adminUpdate ? null :generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
+        token.setExpireOn(adminUpdate ? null : generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
         dbUserToUpdate.setAccessTokenIdentifier(token.getIdentifier());
         dbUserToUpdate.setAccessToken(BCryptPasswordHash.hashPassword(token.getValue()));
         dbUserToUpdate.setAccessTokenGeneratedOn(generatedTime);
@@ -195,22 +195,29 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         if (user.getCertificate() != null && (dbUser.getCertificate() == null
                 || !StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId()))) {
             CertificateRO certRo = user.getCertificate();
-            LOG.info(certRo.getEncodedValue());
-            if (user.getCertificate().getEncodedValue() != null) {
-
-                String certificateAlias;
-                try {
-                    X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
-                    certificateAlias = truststoreService.addCertificate(certRo.getAlias(), x509Certificate);
-                } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
-                    LOG.error("Error occurred while adding certificate to truststore.", e);
-                    throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "AddUserCertificate", ExceptionUtils.getRootCauseMessage(e));
-                }
-                certRo.setAlias(certificateAlias);
-            }
-            // first
             DBCertificate certificate = conversionService.convert(user.getCertificate(), DBCertificate.class);
             dbUser.setCertificate(certificate);
+
+            if (user.getCertificate().getEncodedValue() == null) {
+                LOG.debug("User has certificate data without certificate bytearray. ");
+                return;
+            }
+
+            if (!configurationService.trustCertificateOnUserRegistration()) {
+                LOG.debug("User certificate is not automatically trusted! Certificate is not added to truststore!");
+                return;
+            }
+
+            String certificateAlias;
+            try {
+                X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
+                certificateAlias = truststoreService.addCertificate(certRo.getAlias(), x509Certificate);
+                LOG.debug("User certificate is added to truststore!");
+            } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
+                LOG.error("Error occurred while adding certificate to truststore.", e);
+                throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "AddUserCertificate", ExceptionUtils.getRootCauseMessage(e));
+            }
+            certRo.setAlias(certificateAlias);
         }
     }
 
