@@ -122,8 +122,9 @@
               </execution>
             </executions>
             <configuration>
-              <executable>${npm.path}/npm</executable>
+              <executable>${npm.path}/node</executable>
               <arguments>
+                <argument>${npm.path}/npm</argument>
                 <argument>run-script</argument>
                 <argument>prod</argument>
               </arguments>
