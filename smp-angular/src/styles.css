@@ -102,7 +102,7 @@ ngx-datatable span:before {
   width: 100%;
   border: gray outset 1px;
   background-color: #c4e1f8;
-  min-heigh: 5px !important;
+  min-height: 5px !important;
   margin: 18px  -24px 0 -24px !important;
 }
 

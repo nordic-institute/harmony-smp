@@ -17,45 +17,19 @@
   <properties>
     <!-- Only selected modules are deployed -->
     <maven.deploy.skip>false</maven.deploy.skip>
-    <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <node.version>v14.18.0</node.version>
     <npm.version>7.24.2</npm.version>
+    <!--set variable to force use of pre-installed npm-->
+    <!-- To build  with preinstalled nodejs build with usePreInstalledNpm argument as example
+    (works only on linux for windows update arguments in exec plugin below)
+    mvn clean install -DusePreInstalledNpm -Dnpm.path=/opt/programs/node-v14.17.0-linux-x64/bin
+    -->
+    <npm.path>/opt/programs/node-v14.17.0-linux-x64/bin</npm.path>
   </properties>
 
+
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>com.github.eirslett</groupId>
-          <artifactId>frontend-maven-plugin</artifactId>
-          <version>${frontend-maven-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>install node and npm</id>
-              <goals>
-                <goal>install-node-and-npm</goal>
-              </goals>
-              <configuration>
-                <nodeVersion>${node.version}</nodeVersion>
-                <npmVersion>${npm.version}</npmVersion>
-              </configuration>
-            </execution>
-
-            <execution>
-              <id>npm install</id>
-              <goals>
-                <goal>npm</goal>
-              </goals>
-              <configuration>
-                <arguments>install --unsafe-perm</arguments>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -64,7 +38,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.0.0</version>
         <configuration>
           <filesets>
             <fileset>
@@ -76,22 +49,79 @@
           </filesets>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>prod</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run-script prod</arguments>
-            </configuration>
-            <phase>generate-resources</phase>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+
+
+  <profiles>
+    <profile>
+      <id>defaultAngularBuild</id>
+      <activation>
+        <property>
+          <name>!usePreInstalledNpm</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <configuration>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${npm.version}</npmVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <id>prod</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <configuration>
+                  <arguments>run-script prod</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>usePreInstalledNpm</id>
+      <activation>
+        <property>
+          <name>usePreInstalledNpm</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <executable>${npm.path}/npm</executable>
+              <arguments>
+                <argument>run-script</argument>
+                <argument>prod</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
