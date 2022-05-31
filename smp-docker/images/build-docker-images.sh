@@ -27,8 +27,8 @@ ORACLE_DB19_FILE="LINUX.X64_193000_db_home.zip"
 ORACLE_DOCKERFILE="Dockerfile.xe"
 
 ORACLE_DB_FILE="${ORACLE_DB11_FILE}"
-SERVER_JDK_FILE="server-jre-8u211-linux-x64.tar.gz"
-WEBLOGIC_122_QUICK_FILE="fmw_12.2.1.3.0_wls_quick_Disk1_1of1.zip"
+SERVER_JDK_FILE="server-jre-8u333-linux-x64.tar.gz"
+WEBLOGIC_122_QUICK_FILE="fmw_12.2.1.4.0_wls_quick_Disk1_1of1.zip"
 SMP_VERSION=
 ORACLE_ARTEFACTS="/CEF/repo"
 
@@ -124,13 +124,17 @@ validateAndPrepareArtefacts() {
     exit 1
   else
     # copy artefact to docker build folder
-    cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ./oracle/weblogic-12.2.1.3/
+    cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ./oracle/weblogic-12.2.1.4/
   fi
 
 
 
   if [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]; then
     mkdir -p "./tomcat-mysql-smp-sml/artefacts"
+  fi
+
+  if [[ ! -d "./weblogic-12.2-smp/artefacts" ]]; then
+    mkdir -p "./weblogic-12.2-smp/artefacts"
   fi
 
   # SMP artefats
@@ -140,7 +144,7 @@ validateAndPrepareArtefacts() {
   else
     # copy artefact to docker build folder
     # for weblogic
-    cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-12.2.1.3-smp/smp.war
+    cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-12.2-smp/artefacts/smp.war
     # for mysql tomcat
     cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql-smp-sml/artefacts/smp.war
   fi
@@ -151,7 +155,7 @@ validateAndPrepareArtefacts() {
     exit 1
   else
     # copy artefact to docker build folder
-    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-12.2.1.3-smp/smp-setup.zip
+    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-12.2-smp/artefacts/smp-setup.zip
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
   fi
 
@@ -178,22 +182,16 @@ buildImages() {
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
-
   # create docker OS image with java (https://github.com/oracle/docker-images/tree/master/OracleJava/java-8)
   docker build -t oracle/serverjre:8 ./oracle/OracleJava/java-8/
 
   # create weblogic basic (https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3)
-  docker build -f ./oracle/weblogic-12.2.1.3/Dockerfile.developer -t oracle/weblogic:12.2.1.3-developer ./oracle/weblogic-12.2.1.3/
-
-  # create weblogic domain-home-in-image (https://github.com/oracle/docker-images/tree/master/OracleWebLogic/samples/12213-domain-home-in-image./)
-  ./oracle/weblogic-12213-domain-home-in-image/container-scripts/setEnv.sh ./oracle/weblogic-12213-domain-home-in-image/properties/docker-build/domain.properties
-  docker build $BUILD_ARG --force-rm=true -t oracle/12213-domain-home-in-image ./oracle/weblogic-12213-domain-home-in-image/
+  docker build -f ./oracle/weblogic-12.2.1.4/Dockerfile.developer -t oracle/weblogic:12.2.1.4-developer ./oracle/weblogic-12.2.1.4/
 
   # build SMP deployment.
-  docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2.1.3-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
+  docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
   # build tomcat mysql image  deployment.
   docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
-
 }
 
 function pushImageToDockerhub() {
@@ -226,11 +224,9 @@ function pushImageIfExisting() {
 cleanArtefacts() {
   rm "./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DB_FILE}"   # clean
   rm "./oracle/OracleJava/java-8/${SERVER_JDK_FILE}"         # clean
-  rm "./oracle/weblogic-12.2.1.3/${WEBLOGIC_122_QUICK_FILE}" # clean
-  rm "./weblogic-12.2.1.3-smp/smp.war"
-  rm "./weblogic-12.2.1.3-smp/smp-setup.zip"
+  rm "./oracle/weblogic-12.2.1.4/${WEBLOGIC_122_QUICK_FILE}" # clean
 
-  # clear also the tomcat/mysql image
+  rm -rf "./weblogic-12.2-smp/artefacts/*.*"
   rm -rf "./tomcat-mysql-smp-sml/artefacts/*.*"
 
   if [[ "V$SMP_ARTEFACTS_CLEAR" == "Vtrue" ]]; then

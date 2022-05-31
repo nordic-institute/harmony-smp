@@ -23,23 +23,22 @@ def getEnvVar(var):
 # This python script is used to create a WebLogic domain
 
 #domain_uid                   = DOMAIN_UID
-server_port                   = int(os.environ.get("MANAGED_SERVER_PORT"))
+server_port                   = int(MANAGED_SERVER_PORT)
 domain_path                   = os.environ.get("DOMAIN_HOME")
 cluster_name                  = CLUSTER_NAME
 print('cluster_name             : [%s]' % cluster_name);
 admin_server_name             = ADMIN_NAME
-#admin_server_name_svc        = os.environ.get("ADMIN_SERVER_NAME_SVC")
-admin_port                    = int(os.environ.get("ADMIN_PORT"))
-domain_name                   = os.environ.get("DOMAIN_NAME")
+admin_port                    = int(ADMIN_PORT)
+admin_https_port              = int(ADMIN_HTTPS_PORT)
+domain_name                   = DOMAIN_NAME
 t3_channel_port               = int(T3_CHANNEL_PORT)
 t3_public_address             = T3_PUBLIC_ADDRESS
 number_of_ms                  = int(CONFIGURED_MANAGED_SERVER_COUNT)
 cluster_type                  = CLUSTER_TYPE
 managed_server_name_base      = MANAGED_SERVER_NAME_BASE
-#managed_server_name_base_svc = MANAGED_SERVER_NAME_BASE_SVC
-#domain_logs                  = DOMAIN_LOGS_DIR
-#script_dir                   = CREATE_DOMAIN_SCRIPT_DIR
 production_mode_enabled       = PRODUCTION_MODE_ENABLED
+ksIdentityAlias               = ADMIN_HOST
+ksIdentityPassword            = SERVER_TLS_KEYSTORE_PASS
 
 # Read the domain secrets from the common python file
 #execfile('%s/read-domain-secret.py' % script_dir)
@@ -98,7 +97,6 @@ cmo.setPassword(password)
 # ==============================================
 setOption('OverwriteDomain', 'true')
 
-
 # Create a cluster
 # ======================
 cd('/')
@@ -156,54 +154,6 @@ else:
 
   print('Done setting attributes for Dynamic Cluster: %s' % cluster_name);
 
-# Create a Data Source
-# ======================
-#cd('/')
-#print('Configuring a Data Source: %s' % dsname);
-#create(dsname, 'JDBCSystemResource')
-#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-#cmo.setName(dsname)
-
-#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-#create('myJdbcDataSourceParams','JDBCDataSourceParams')
-#cd('JDBCDataSourceParams/NO_NAME_0')
-#set('JNDIName', java.lang.String(dsjndiname))
-#set('GlobalTransactionsProtocol', java.lang.String('None'))
-
-#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-#create('myJdbcDriverParams','JDBCDriverParams')
-#cd('JDBCDriverParams/NO_NAME_0')
-#set('DriverName', dsdriver)
-#set('URL', dsurl)
-#set('PasswordEncrypted', dspassword)
-#set('UseXADataSourceInterface', 'false')
-
-#print 'create JDBCDriverParams Properties'
-#create('myProperties','Properties')
-#cd('Properties/NO_NAME_0')
-#create('user','Property')
-#cd('Property/user')
-#set('Value', dsusername)
-
-#cd('../../')
-#create('databaseName','Property')
-#cd('Property/databaseName')
-#set('Value', dsdbname)
-
-#print 'create JDBCConnectionPoolParams'
-#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-#create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
-#cd('JDBCConnectionPoolParams/NO_NAME_0')
-#set('TestTableName','SQL SELECT 1 FROM DUAL')
-#set('InitialCapacity',int(dsinitalcapacity))
-
-#print('Done setting attributes for Data Source: %s' % dsname);
-
-# Assign
-# ======
-# Uncomment to target and enable the data source for the cluster
-# assign('JDBCSystemResource', dsname, 'Target', cluster_name)
-
 # Write Domain
 # ============
 writeDomain(domain_path)
@@ -217,6 +167,7 @@ if production_mode_enabled == "true":
   cmo.setProductionModeEnabled(true)
 else: 
   cmo.setProductionModeEnabled(false)
+
 updateDomain()
 closeDomain()
 print 'Domain Updated'
