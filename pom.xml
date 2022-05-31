@@ -83,6 +83,10 @@
         <spring.version>5.3.20</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
+        <!-- plugins -->
+        <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
+        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
@@ -90,7 +94,8 @@
         <sonar.language>java</sonar.language>
 
         <sonar.binaries>target/classes</sonar.binaries>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <jacoco.maven.plugin.version>0.8.6</jacoco.maven.plugin.version>
         <surefire.maven.plugin.version>2.22.2</surefire.maven.plugin.version>
         <sonar.exclusions>
@@ -593,6 +598,11 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.2</version>
                 </plugin>
@@ -605,6 +615,16 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.6</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>${frontend-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${exec-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
