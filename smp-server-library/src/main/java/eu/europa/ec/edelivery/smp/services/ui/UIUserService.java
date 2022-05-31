@@ -33,6 +33,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -195,8 +196,26 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         if (user.getCertificate() != null && (dbUser.getCertificate() == null
                 || !StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId()))) {
             CertificateRO certRo = user.getCertificate();
-            DBCertificate certificate = conversionService.convert(user.getCertificate(), DBCertificate.class);
-            dbUser.setCertificate(certificate);
+
+            if (dbUser.getCertificate() != null) {
+                dbUser.getCertificate().setCertificateId(certRo.getCertificateId());
+                dbUser.getCertificate().setCrlUrl(certRo.getCrlUrl());
+                dbUser.getCertificate().setPemEncoding(certRo.getEncodedValue());
+                dbUser.getCertificate().setSubject(certRo.getSubject());
+                dbUser.getCertificate().setIssuer(certRo.getIssuer());
+                dbUser.getCertificate().setSerialNumber(certRo.getSerialNumber());
+                if (certRo.getValidTo() != null) {
+                    dbUser.getCertificate().setValidTo(certRo.getValidTo().toInstant()
+                            .atOffset(ZoneOffset.UTC));
+                }
+                if (certRo.getValidFrom() != null) {
+                    dbUser.getCertificate().setValidFrom(certRo.getValidFrom().toInstant()
+                            .atOffset(ZoneOffset.UTC));
+                }
+            } else {
+                DBCertificate certificate = conversionService.convert(certRo, DBCertificate.class);
+                dbUser.setCertificate(certificate);
+            }
 
             if (user.getCertificate().getEncodedValue() == null) {
                 LOG.debug("User has certificate data without certificate bytearray. ");
