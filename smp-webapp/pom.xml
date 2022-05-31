@@ -16,17 +16,7 @@
         <maven.deploy.skip>false</maven.deploy.skip>
         <buildtimestamp>${maven.build.timestamp}</buildtimestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss'Z'</maven.build.timestamp.format>
-
-
-
-        <!-- database - - >
-        <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
-        <jdbc.url>jdbc:mysql://localhost/smpdbdev</jdbc.url>
-        <jdbc.user>smpdev</jdbc.user>
-        <jdbc.password>****</jdbc.password>
-        <target-database>MySQL</target-database>
-        <jdbc.read-connections.max>10</jdbc.read-connections.max>
- -->
+        <!-- integration tests execution-->
         <jdbc.driver>org.h2.Driver</jdbc.driver>
         <jdbc.url>jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE</jdbc.url>
         <jdbc.user>smp</jdbc.user>

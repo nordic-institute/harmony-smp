@@ -21,7 +21,10 @@
     </parent>
     <artifactId>smp-server-library</artifactId>
     <name>smp-server-library</name>
-
+    <properties>
+        <!-- Only selected modules are deployed -->
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.edelivery</groupId>
