@@ -132,7 +132,7 @@ public class SMPAuthorizationService {
                     userDetails.getUser().getUsername());
             return null;
         }
-        return getUserData(userDetails.getUser());
+        return getUserData(dbUser);
     }
 
     public UserRO getUserData(DBUser user) {
