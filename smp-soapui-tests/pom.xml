@@ -13,12 +13,12 @@
     <description>Interation tests suit for SMP</description>
 
     <properties>
-        <!-- url>http://localhost:7001/smp</url -->
+        <!-- Only selected modules are deployed -->
+        <maven.deploy.skip>false</maven.deploy.skip>
         <url>http://localhost:8080/smp</url>
         <SMPAdminUser></SMPAdminUser>
         <SMPAdminPassword></SMPAdminPassword>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
     </properties>
 
     <profiles>

@@ -11,6 +11,10 @@
         <version>4.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+    <properties>
+        <!-- Only selected modules are deployed -->
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
     <artifactId>smp-docker</artifactId>
     <packaging>jar</packaging>
 	<name>SMP Docker</name>
