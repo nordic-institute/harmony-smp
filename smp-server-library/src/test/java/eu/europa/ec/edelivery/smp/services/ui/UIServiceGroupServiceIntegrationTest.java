@@ -69,9 +69,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void testGetTableListEmpty() {
-
         // given
-
         //when
         ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1, -1, null, null, null);
         // then
@@ -285,7 +283,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
 
     @Test
-    public void validateExtensionVaild() throws IOException {
+    public void validateExtensionValid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidExtension();
 
@@ -298,7 +296,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void validateExtensionMultipleVaild() throws IOException {
+    public void validateExtensionMultipleValid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidMultipleExtension();
 
@@ -311,7 +309,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void validateExtensionCustomTextInvaldValid() throws IOException {
+    public void validateExtensionCustomTextInvalid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidCustomText();
 

@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.monitor;
 
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
@@ -60,7 +60,7 @@ public class MonitorResource {
 
 
     @RequestMapping(method = RequestMethod.GET, path = "/is-alive")
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN,SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN})
     public ResponseEntity isAlive() {
 
         String user = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -111,7 +111,7 @@ public class MonitorResource {
         newSg.addDomain(lstDomain.get(0)); // add initial domain
         // persist (make sure this is not in transaction)
         serviceGroupDao.testPersist(newSg, true, TEST_DB_SUCCESSFUL_ROLLBACK);
-        return false;
+        return true;
     }
 
 

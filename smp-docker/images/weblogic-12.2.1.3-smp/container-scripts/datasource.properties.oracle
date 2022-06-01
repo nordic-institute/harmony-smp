@@ -1,6 +1,6 @@
-dsname=smpDatasource
+dsname=eDeliverySmpDs
 dsdbname=default;create=true
-dsjndiname=jdbc/smpDatasource
+dsjndiname=jdbc/eDeliverySmpDs
 dsdriver=oracle.jdbc.OracleDriver
 dsurl=jdbc:oracle:thin:@//database:1521/xe
 dsusername=smp

@@ -1,4 +1,30 @@
-﻿<div *ngIf="message" [ngClass]="{ 'alert': message, 'alert-success': message.type === 'success', 'alert-error': message.type === 'error' }" id="alertmessage_id">
-  <span class="closebtn" (click)="clearAlert()">&times;</span>
-  {{message.text}}
-</div>
+﻿<smp-search-table
+  #searchTable
+  page_id='alert_id'
+  [title]="'Alerts'"
+  [columnPicker]="columnPicker"
+  [url]="baseUrl"
+  [additionalToolButtons]="additionalToolButtons"
+  [searchTableController]="alertController"
+  [showSearchPanel]="false"
+  [filter]="filter"
+  [allowNewItems]="false"
+  [allowDeleteItems]="false"
+  [allowEditItems]="true"
+  [showActionButtons]="false"
+>
+  <ng-template #additionalToolButtons>
+    <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
+  </ng-template>
+  <ng-template #dateTimeColumn let-value="value" ngx-datatable-cell-template>
+    <div class='truncate-text' title="{{value | date:dateTimeFormat}}" >{{value | date:dateFormat}}</div></ng-template>
+  <ng-template #truncateText  let-value="value" ngx-datatable-cell-template>
+    <div class='truncate-text' title="{{value}}" >{{value}}</div>
+  </ng-template>
+  <ng-template #forUser  let-row="row" let-value="value" ngx-datatable-cell-template>
+    <div class='truncate-text' title="{{value}} (Email:'{{row.mailTo}}')" >{{value}}</div>
+  </ng-template>
+  <ng-template #credentialType  let-row="row" let-value="value" ngx-datatable-cell-template>
+    <div class='truncate-text'  >{{value['CREDENTIAL_TYPE']}}</div>
+  </ng-template>
+</smp-search-table>

@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.utils;
 
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
+import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SecurityUtilsTest {
-    ;
 
     @Before
     public void setup(){
@@ -50,7 +49,16 @@ public class SecurityUtilsTest {
         Assert.assertTrue(privateKey instanceof SecretKey);
 
     }
-
+    @Test
+    public void testGenerateAccessToken(){
+        // given-when
+        AccessTokenRO accessToken = SecurityUtils.generateAccessToken(true);
+        // then
+        assertNotNull(accessToken);
+        assertNotNull(accessToken.getGeneratedOn());
+        assertNotNull(accessToken.getIdentifier());
+        assertNotNull(accessToken.getValue());
+    }
 
     @Test
     public void encryptDefault() throws IOException {
@@ -114,7 +122,6 @@ public class SecurityUtilsTest {
     public static File generateRandomPrivateKey() throws IOException{
         File resource = File.createTempFile( "test-key", ".key");
         resource.deleteOnExit();
-
         SecurityUtils.generatePrivateSymmetricKey(resource);
         return resource;
 

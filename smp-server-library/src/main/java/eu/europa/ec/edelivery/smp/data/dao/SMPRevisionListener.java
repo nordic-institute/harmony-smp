@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class SMPRevisionListener implements RevisionListener {
 
@@ -19,9 +19,9 @@ public class SMPRevisionListener implements RevisionListener {
     public void newRevision(Object revisionEntity) {
         DBRevisionLog rev = (DBRevisionLog) revisionEntity;
         String username = getSessionUserName();
-        rev.setRevisionDate(LocalDateTime.now());
-        if (StringUtils.isEmpty(username)){
-            LOG.warn("Update database revision"+rev.getId()+" without session - authenticated user!");
+        rev.setRevisionDate(OffsetDateTime.now());
+        if (StringUtils.isEmpty(username)) {
+            LOG.warn("Update database revision" + rev.getId() + " without session - authenticated user!");
             rev.setUserName("anonymous");
         } else {
             rev.setUserName(getSessionUserName());
@@ -30,6 +30,6 @@ public class SMPRevisionListener implements RevisionListener {
 
     public String getSessionUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null?authentication.getName():null;
+        return authentication != null ? authentication.getName() : null;
     }
 }

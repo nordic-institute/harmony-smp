@@ -29,7 +29,6 @@ public class ConfirmationDialog extends PageComponent {
 		waitForElementToBeClickable(yesBtn);
 		yesBtn.click();
 		waitForElementToBeGone(yesBtn);
-
 	}
 
 	public void cancel(){

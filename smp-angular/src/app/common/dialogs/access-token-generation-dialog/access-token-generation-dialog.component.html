@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="width:700px">
+  <div *ngIf="message"
+       [ngClass]="{ 'alert-message': message, 'alert-message-success': messageType === 'success', 'alert-message-error':messageType === 'error' }"
+       id="alertmessage_id">
+    <span class="alert-message-close-button" (click)="clearAlert()">&times;</span>
+    {{message}}
+  </div>
+  <form [formGroup]="dialogForm">
+    <mat-card>
+      <mat-card-content fxLayout="column">
+        <mat-form-field style="width:100%">
+          <input matInput placeholder="Generate access token for Username" formControlName="username" id="un_id" readonly="true">
+        </mat-form-field>
+        <mat-form-field style="width:100%">
+          <input matInput placeholder="Generate access token for User with email" formControlName="email" id="em_id"
+                 [ngClass]="{ 'empty-field-label': isEmptyEmailAddress }" readonly="true"  >
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="regenerateAccessToken()"
+                  [disabled]="!dialogForm.valid">
+            <mat-icon>check_circle</mat-icon>
+            <span>Regenerate access token</span>
+          </button>
+          <mat-label *ngIf="adminUser" style="color: red;font-weight: bold">
+            Token will be generated immediately.
+          </mat-label>
+        </mat-card-actions>
+        <mat-form-field style="width:100%">
+          <input matInput [placeholder]="getPasswordTitle" [type]="hideCurrPwdFiled ? 'password' : 'text'"
+                 formControlName="current-password" required id="cp_id">
+          <mat-icon matSuffix
+                    (click)="hideCurrPwdFiled = !hideCurrPwdFiled">{{hideCurrPwdFiled ? 'visibility_off' : 'visibility'}}</mat-icon>
+          <mat-error *ngIf="passwordError('current-password', 'required')">Password is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field style="width:100%">
+          <input matInput placeholder="Access token id" formControlName="accessTokenId" id="at_id" readonly="true">
+        </mat-form-field>
+
+        <mat-form-field style="width:100%">
+          <input matInput placeholder="Valid until"
+                 value="{{dialogForm.get('accessTokenExpireOn').value | date:dateTimeFormat}}"
+                  id="expireOn_id"
+                 readonly="true">
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</mat-dialog-content>
+<div class="required-fields">* required fields</div>
+
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    <mat-icon>cancel</mat-icon>
+    <span>Close</span>
+  </button>
+</mat-dialog-actions>
+

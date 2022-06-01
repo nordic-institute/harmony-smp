@@ -1,21 +1,19 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
-import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMLAction;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMLStatusEnum;
 
 import java.io.Serializable;
 
 public class ParticipantSMLRecord implements Serializable {
 
-    private SMLAction status = SMLAction.REGISTER;
+    private SMLStatusEnum status;
 
     private String participantIdentifier;
     private String participantScheme;
     private DBDomain domain;
 
-    public ParticipantSMLRecord(SMLAction status, String participantId,String participantScheme, DBDomain domain  ) {
+    public ParticipantSMLRecord(SMLStatusEnum status, String participantId, String participantScheme, DBDomain domain  ) {
         this.status = status;
         this.participantIdentifier = participantId;
         this.participantScheme = participantScheme;
@@ -23,11 +21,11 @@ public class ParticipantSMLRecord implements Serializable {
 
     }
 
-    public SMLAction getStatus() {
+    public SMLStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(SMLAction status) {
+    public void setStatus(SMLStatusEnum status) {
         this.status = status;
     }
 

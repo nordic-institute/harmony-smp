@@ -1,115 +1,94 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
-import org.junit.Before;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
+import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
+import org.mockito.Mockito;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.MediaType;
 
-import static org.junit.Assert.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        SpringSecurityConfig.class})
-@WebAppConfiguration
-@Sql("classpath:/cleanup-database.sql")
-@Sql("classpath:/webapp_integration_test_data.sql")
-@SqlConfig(encoding = "UTF-8")
 public class AuthenticationResourceTest {
 
-    private static final String PATH="/ui/rest/security/authentication";
+    SMPAuthenticationService authenticationService = Mockito.mock(SMPAuthenticationService.class);
+    SMPAuthorizationService authorizationService = Mockito.mock(SMPAuthorizationService.class);
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    SMPCookieWriter smpCookieWriter = Mockito.mock(SMPCookieWriter.class);
+    CsrfTokenRepository csrfTokenRepository = Mockito.mock(CsrfTokenRepository.class);
+    UIUserService uiUserService = Mockito.mock(UIUserService.class);
 
-    @Autowired
-    private WebApplicationContext webAppContext;
-
-    private MockMvc mvc;
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
-    @Before
-    public void setup() {
-        mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-
-
-
-        initServletContext();
-    }
-
-    private void initServletContext() {
-        MockServletContext sc = new MockServletContext("");
-        ServletContextListener listener = new ContextLoaderListener(webAppContext);
-        ServletContextEvent event = new ServletContextEvent(sc);
-    }
-
+    AuthenticationResource testInstance = new AuthenticationResource(authenticationService,
+            authorizationService,
+            configurationService,
+            smpCookieWriter,
+            csrfTokenRepository,
+            uiUserService);
 
     @Test
-    public void authenticateSuccessTest()  throws Exception {
+    public void logout() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        Mockito.doNothing().when(authenticationService).logout(Mockito.any(), Mockito.any());
+        testInstance.logout(request, response);
 
-        // given when
-        HttpSession session = mvc.perform(post(PATH)
-                .header("Content-Type","application/json")
-                .content("{\"username\":\"smp_admin\",\"password\":\"test123\"}"))
-                .andExpect(status().isOk()).andReturn()
-                .getRequest()
-                .getSession();
-
-        assertNotNull(session);
-    }
-
-
-    @Test
-    public void authenticateInvalidPasswordTest()  throws Exception {
-
-        // given when then
-        mvc.perform(post(PATH)
-                .header("Content-Type","application/json")
-                .content("{\"username\":\"smp_admin\",\"password\":\"test1235\"}"))
-                .andExpect(status().isForbidden()).andReturn()
-                .getRequest()
-                .getSession();
+        Mockito.verify(authenticationService, Mockito.times(1)).logout(request, response);
     }
 
     @Test
-    public void authenticateInvalidUsernameTest()  throws Exception {
+    public void authenticateCAS() {
 
-        // given when
-        mvc.perform(post(PATH)
-                .header("Content-Type","application/json")
-                .content("{\"username\":\"smp_admin1\",\"password\":\"test123\"}"))
-                .andExpect(status().isForbidden()).andReturn()
-                .getRequest()
-                .getSession();
+        RedirectView result = testInstance.authenticateCAS();
+        Assert.assertNotNull(result);
+        Assert.assertEquals("../../../#/", result.getUrl());
+    }
+
+    @Test
+    public void getUser() {
+        UserRO user = new UserRO();
+        Mockito.doReturn(user).when(authorizationService).getLoggedUserData();
+        UserRO result = testInstance.getUser();
+        Assert.assertEquals(user, result);
+    }
+
+    @Test
+    public void recreatedSessionCookie() {
+        String cookieName = SESSION_COOKIE_NAME;
+        String cookieValue = "CookieValue";
+        boolean sessionCookieSecure = true;
+        String sessionCookiePath = "getSessionCookiePath";
+        String sessionCookieSameSite = "getSessionCookieSameSite";
+        Integer sessionCookieMaxAge = 12;
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.doReturn(session).when(request).getSession(Mockito.anyBoolean());
+        Mockito.doReturn(cookieValue).when(session).getId();
+        Mockito.doReturn(sessionCookieSecure).when(configurationService).getSessionCookieSecure();
+        Mockito.doReturn(sessionCookieMaxAge).when(configurationService).getSessionCookieMaxAge();
+        Mockito.doReturn(sessionCookiePath).when(configurationService).getSessionCookiePath();
+        Mockito.doReturn(sessionCookieSameSite).when(configurationService).getSessionCookieSameSite();
 
 
+        Mockito.doNothing().when(smpCookieWriter).writeCookieToResponse(cookieName,
+                cookieValue, sessionCookieSecure, sessionCookieMaxAge, sessionCookiePath, sessionCookieSameSite, request, response);
+
+        testInstance.recreatedSessionCookie(request, response);
+
+        Mockito.verify(smpCookieWriter, Mockito.times(1)).writeCookieToResponse(cookieName,
+                cookieValue, sessionCookieSecure, sessionCookieMaxAge, sessionCookiePath, sessionCookieSameSite, request, response);
     }
 }

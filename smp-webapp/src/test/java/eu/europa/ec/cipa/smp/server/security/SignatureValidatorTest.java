@@ -15,12 +15,9 @@ package eu.europa.ec.cipa.smp.server.security;
 
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
-import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +28,7 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -55,26 +52,25 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.Calendar;
+import java.util.Date;
 
 import static java.lang.String.format;
 import static java.net.URLEncoder.encode;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        SpringSecurityConfig.class
-})
+@RunWith(SpringRunner.class)
 @WebAppConfiguration
-@Sql(scripts = {"classpath:cleanup-database.sql",
-        "classpath:webapp_integration_test_data.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
+        "classpath:/webapp_integration_test_data.sql"},
+        executionPhase = BEFORE_TEST_METHOD)
 public class SignatureValidatorTest {
 
     protected Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
@@ -82,7 +78,7 @@ public class SignatureValidatorTest {
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "123456");
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -113,7 +109,8 @@ public class SignatureValidatorTest {
     @Test
     public void validateSignature() throws Throwable {
         String serviceGroupId = "ehealth-actorid-qns::urn:australia:ncpb";
-        Principal principal = new PreAuthenticatedCertificatePrincipal("C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu, OU=eHealth, CN=EHEALTH_SMP_TEST_BRAZIL", "C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4", "48:b6:81:ee:8e:0d:cc:08");
+        Principal principal = generateMockValidPrincipal();
+
         String filePathToLoad = "/input/ServiceMetadata.xml";
         String signedByCustomizedSignatureFilePath = "/expected_output/PUT_ServiceMetadata_request.xml";
         String defaultSignatureFilePath = "/expected_output/GET_SignedServiceMetadata_response.xml";
@@ -122,13 +119,22 @@ public class SignatureValidatorTest {
     }
 
     @Test
-    public void validateLinarizedSignature() throws Throwable {
+    public void validateLinearizedSignature() throws Throwable {
         String serviceGroupId = "ehealth-actorid-qns::urn:brazil:ncpb";
-        Principal principal = new PreAuthenticatedCertificatePrincipal("C=BE, O=European Commission,OU=CEF_eDelivery.europa.eu,OU=eHealth,OU=SMP_TEST,CN=EHEALTH_SMP_EC", "C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4", "f7:1e:e8:b1:1c:b3:b7:87");
+        Principal principal = generateMockValidPrincipal();
         String filePathToLoad = "/input/ServiceMetadata_linarized.xml";
         String signedByCustomizedSignatureFilePath = "/expected_output/PUT_ServiceMetadata_request_linarized.xml";
         String defaultSignatureFilePath = "/expected_output/GET_SignedServiceMetadata_response_linarized.xml";
+
         commonTest(serviceGroupId, principal, filePathToLoad, signedByCustomizedSignatureFilePath, defaultSignatureFilePath);
+    }
+
+    private Principal generateMockValidPrincipal() {
+        PreAuthenticatedCertificatePrincipal principal = new PreAuthenticatedCertificatePrincipal("C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu, OU=eHealth, CN=EHEALTH_SMP_TEST_BRAZIL", "C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4", "48:b6:81:ee:8e:0d:cc:08");
+        Date date = Calendar.getInstance().getTime();
+        principal.setNotAfter(DateUtils.addDays(date, 2));
+        principal.setNotBefore(DateUtils.addDays(date, -1));
+        return principal;
     }
 
     private void commonTest(String serviceGroupId, Principal principal, String filePathToLoad, String signedByCustomizedSignatureFilePath, String defaultSignatureFilePath) throws Throwable {
@@ -177,6 +183,8 @@ public class SignatureValidatorTest {
         //Default signature validation
         Element smpSigPointer = SignatureUtil.findSignatureByParentNode(response.getDocumentElement());
         SignatureUtil.validateSignature(smpSigPointer);
+        //Assert.assertEquals(SignatureUtil.loadDocumentAsString(signedByCustomizedSignatureFilePath), signedByCustomizedSignature);
+        //Assert.assertEquals(SignatureUtil.loadDocumentAsString(defaultSignatureFilePath), SignatureUtil.marshall(response) );
     }
 
     public static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {

@@ -12,7 +12,7 @@ export class SmpInfoService {
 
   getSmpInfo(): Observable<SmpInfo> {
     let subject = new ReplaySubject<SmpInfo>();
-    this.http.get<SmpInfo>(SmpConstants.REST_APPLICATION)
+    this.http.get<SmpInfo>(SmpConstants.REST_PUBLIC_APPLICATION_INFO)
       .subscribe((res: SmpInfo) => {
         subject.next(res);
       }, error => {

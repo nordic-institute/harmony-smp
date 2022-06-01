@@ -29,7 +29,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 public class GlobalMethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
     @Autowired
-    @Qualifier("smpAuthenticationManager")
+    @Qualifier(SMPSecurityConstants.SMP_AUTHENTICATION_MANAGER_BEAN)
     private AuthenticationManager am;
 
     @Override

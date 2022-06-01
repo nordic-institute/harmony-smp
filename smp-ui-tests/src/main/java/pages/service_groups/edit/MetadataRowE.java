@@ -23,16 +23,15 @@ public class MetadataRowE extends MetadataRow {
 	@FindBy(css = "datatable-body-cell:nth-child(5) > div > div > button:nth-child(2)")
 	WebElement deleteMetadataButton;
 
-	public void clickEdit(){
+	public void clickEdit() {
+		log.info("row action - editing ..");
 		waitForElementToBeClickable(editMetadataButton).click();
 	}
 
-	public void clickDelete(){
+	public void clickDelete() {
+		log.info("row action - deleting ..");
 		waitForElementToBeClickable(deleteMetadataButton).click();
 	}
-
-
-
 
 
 }

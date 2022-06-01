@@ -8,7 +8,6 @@ import pages.components.ConfirmationDialog;
 import pages.components.baseComponents.SMPPage;
 import pages.components.messageArea.AlertMessage;
 import pages.users.UserPopup;
-import pages.users.UserRowInfo;
 import pages.users.UsersPage;
 import utils.Generator;
 import utils.TestDataProvider;
@@ -20,55 +19,39 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UsersPgTest extends BaseTest {
-	
-	
-	@AfterMethod
-	public void logoutAndReset(){
-		SMPPage page = new SMPPage(driver);
-		page.refreshPage();
-		
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
-	}
-	
-	
-	@BeforeMethod
-	public void loginAndGoToUsersPage(){
-		
-		SMPPage page = new SMPPage(driver);
 
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
-		
-		if(!page.pageHeader.sandwichMenu.isLoggedIn()){
-			logger.info("Login!!");
-			page.pageHeader.goToLogin().login("SYS_ADMIN");
-		}
-		
+
+	@AfterMethod
+	public void logoutAndReset() {
+		genericLogoutProcedure();
+	}
+
+
+	@BeforeMethod
+	public void loginAndGoToUsersPage() {
+
+		SMPPage page = genericLoginProcedure("SYS_ADMIN");
+
 		logger.info("Going to Users page");
 		page.sidebar.goToPage(UsersPage.class);
 	}
-	
+
 	@Test(description = "USR-10")
-	public void newUser(){
+	public void newUser() {
 		String username = Generator.randomAlphaNumeric(10);
 		String validPass = "QW!@qw12";
-		
+
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage usersPage = new UsersPage(driver);
-		
+
 //		soft.assertTrue(usersPage.isNewButtonEnabled(), "New button should be enabled");
-		
+
 		UserPopup popup = usersPage.clickNew();
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
-		
+
 		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-		
+
 		popup.clickUserDetailsToggle();
 
 		popup.fillDetailsForm(username, validPass, validPass);
@@ -82,14 +65,14 @@ public class UsersPgTest extends BaseTest {
 		soft.assertTrue(!usersPage.alertArea.getAlertMessage().isError(), "Message listed is success");
 		soft.assertTrue(usersPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
 
-		soft.assertTrue(isUserListed(username), "User present in the page");
+        soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
 
 		soft.assertAll();
 	}
 
 
 	@Test(description = "USR-20")
-	public void usernameValidation(){
+	public void usernameValidation() {
 		String username = Generator.randomAlphaNumeric(10);
 		String validPass = "QW!@qw12";
 
@@ -120,7 +103,7 @@ public class UsersPgTest extends BaseTest {
 
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test(description = "USR-30")
-	public void passwordValidation(){
+	public void passwordValidation() {
 
 		ArrayList<String> passToValidate = new ArrayList<>(Arrays.asList("qwqw",
 				"QWERQWERQWERQWERQWERQWERQWERQWE33",
@@ -152,7 +135,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-40")
-	public void listedRoles(){
+	public void listedRoles() {
 
 		ArrayList<String> expectedRoleValues = new ArrayList<>(Arrays.asList("SYSTEM_ADMIN", "SMP_ADMIN", "SERVICE_GROUP_ADMIN"));
 
@@ -167,7 +150,7 @@ public class UsersPgTest extends BaseTest {
 		for (String expected : expectedRoleValues) {
 			boolean found = false;
 			for (String listedRole : listedRoles) {
-				if(listedRole.equalsIgnoreCase(expected)){
+				if (listedRole.equalsIgnoreCase(expected)) {
 					found = true;
 				}
 			}
@@ -178,32 +161,35 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-50")
-	public void deleteSYS_ADMIN(){
+	public void deleteSYS_ADMIN() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		SMPRestClient.createUser(username, "SYSTEM_ADMIN");
 		SoftAssert soft = new SoftAssert();
 
+		logger.info("created user " + username);
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
+
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-		int index = scrollToUser(username);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+        int index = page.grid().scrollToUser(username);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted");
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted");
 
-		page.clickCancel().confirm();
-		new ConfirmationDialog(driver).confirm();
-		soft.assertTrue(isUserListed(username), "After canceling delete user is still listed");
+        page.clickCancel().confirm();
+        new ConfirmationDialog(driver).confirm();
+        soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
 
 
-		index = scrollToUser(username);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
+        index = page.grid().scrollToUser(username);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
 
 		page.clickDelete();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted(2)");
@@ -212,19 +198,19 @@ public class UsersPgTest extends BaseTest {
 
 		page.clickSave().confirm();
 
-		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
-		soft.assertTrue(!isUserListed(username), "After saving deleted user is not listed");
+        soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
+        soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
 
 		soft.assertAll();
 	}
 
 	@Test(description = "USR-60")
-	public void changeRoleSYS_ADMIN(){
+	public void changeRoleSYS_ADMIN() {
 
 		SoftAssert soft = new SoftAssert();
 
-		UsersPage page = new UsersPage(driver);
-		int index = scrollToUserWithRole("SYSTEM_ADMIN");
+        UsersPage page = new UsersPage(driver);
+        int index = page.grid().scrollToUserWithRole("SYSTEM_ADMIN");
 
 		page.grid().selectRow(index);
 		UserPopup popup = page.clickEdit();
@@ -236,12 +222,12 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-70")
-	public void changeRoleNON_SYS_ADMIN(){
+	public void changeRoleNON_SYS_ADMIN() {
 
 		SoftAssert soft = new SoftAssert();
 
-		UsersPage page = new UsersPage(driver);
-		int index = scrollToUserWithRole("SMP_ADMIN");
+        UsersPage page = new UsersPage(driver);
+        int index = page.grid().scrollToUserWithRole("SMP_ADMIN");
 
 		page.grid().selectRow(index);
 		UserPopup popup = page.clickEdit();
@@ -255,7 +241,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-80")
-	public void deleteOWNUserRecord(){
+	public void deleteOWNUserRecord() {
 
 		String username = new TestDataProvider().getUserWithRole("SYS_ADMIN").get("username");
 
@@ -264,9 +250,9 @@ public class UsersPgTest extends BaseTest {
 		UsersPage page = new UsersPage(driver);
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-		int index = scrollToUser(username);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+        int index = page.grid().scrollToUser(username);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		AlertMessage message = page.alertArea.getAlertMessage();
@@ -277,32 +263,36 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-90")
-	public void deleteSMP_ADMIN(){
+	public void deleteSMP_ADMIN() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		SMPRestClient.createUser(username, "SMP_ADMIN");
 		SoftAssert soft = new SoftAssert();
 
+		logger.info("Created username " + username);
+
+
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-		int index = scrollToUser(username);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+        int index = page.grid().scrollToUser(username);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted");
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted");
 
-		page.clickCancel().confirm();
-		new ConfirmationDialog(driver).confirm();
-		soft.assertTrue(isUserListed(username), "After canceling delete user is still listed");
+        page.clickCancel().confirm();
+        new ConfirmationDialog(driver).confirm();
+        soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
 
 
-		index = scrollToUser(username);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
+        index = page.grid().scrollToUser(username);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
 
 		page.clickDelete();
 		page.waitForXMillis(200);
@@ -312,55 +302,64 @@ public class UsersPgTest extends BaseTest {
 
 		page.clickSave().confirm();
 
-		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
-		soft.assertTrue(!isUserListed(username), "After saving deleted user is not listed");
+        soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
+        soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
 
 		soft.assertAll();
 	}
 
 	@Test(description = "USR-100")
-	public void deleteSERVICE_GROUP_ADMIN(){
+	public void deleteSERVICE_GROUP_ADMIN() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		SMPRestClient.createUser(username, "SERVICE_GROUP_ADMIN");
+		logger.info("Created username" + username);
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
+		page.waitForRowsToLoad();
+
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-		int index = scrollToUser(username);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+        int index =page.grid(). scrollToUser(username);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
+		page.waitForRowsToLoad();
+
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted");
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted");
 
-		page.clickCancel().confirm();
-		new ConfirmationDialog(driver).confirm();
-		soft.assertTrue(isUserListed(username), "After canceling delete user is still listed");
+        page.clickCancel().confirm();
+        new ConfirmationDialog(driver).confirm();
+        page.waitForRowsToLoad();
+        soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
 
 
-		index = scrollToUser(username);
-		page.grid().selectRow(index);
+        index = page.grid().scrollToUser(username);
+        page.grid().selectRow(index);
+
 		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
 
 		page.clickDelete();
+		page.waitForRowsToLoad();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted(2)");
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted(2)");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted(2)");
 
 		page.clickSave().confirm();
 
-		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
-		soft.assertTrue(!isUserListed(username), "After saving deleted user is not listed");
+        soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
+        soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
 
 		soft.assertAll();
 	}
 
 	@Test(description = "USR-110")
-	public void deleteSG_ADMINWithSG(){
+	public void deleteSG_ADMINWithSG() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		String pi = Generator.randomAlphaNumeric(10);
@@ -374,13 +373,17 @@ public class UsersPgTest extends BaseTest {
 				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
+		logger.info("Created username " + username);
+		logger.info("Created service group " + pi);
+
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
 
-		int index = scrollToUser(username);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+        int index = page.grid().scrollToUser(username);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		AlertMessage message = page.alertArea.getAlertMessage();
@@ -394,7 +397,7 @@ public class UsersPgTest extends BaseTest {
 	}
 
 	@Test(description = "USR-120")
-	public void deleteSMP_ADMINWithSG(){
+	public void deleteSMP_ADMINWithSG() {
 
 		String username = Generator.randomAlphaNumeric(10);
 		String pi = Generator.randomAlphaNumeric(10);
@@ -408,13 +411,16 @@ public class UsersPgTest extends BaseTest {
 				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
+		logger.info("Created username "+ username);
+
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage page = new UsersPage(driver);
+		page.refreshPage();
 
-		int index = scrollToUser(username);
-		page.grid().selectRow(index);
-		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+        int index = page.grid().scrollToUser(username);
+        page.grid().selectRow(index);
+        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		page.waitForXMillis(500);
@@ -425,82 +431,58 @@ public class UsersPgTest extends BaseTest {
 		SMPRestClient.deleteSG(pi);
 		SMPRestClient.deleteUser(username);
 
-		soft.assertAll();
-	}
+        soft.assertAll();
+    }
 
+    @Test(description = "USR-121")
+    public void duplicateUserCreation() {
+        SoftAssert soft = new SoftAssert();
+        String userName = Generator.randomAlphaNumeric(10);
+        String validPass = "QW!@qw12";
+        UsersPage page = new UsersPage(driver);
 
+        soft.assertTrue(page.isNewButtonEnabled(), "New button should be enabled");
 
+        UserPopup popup = page.clickNew();
+        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
+        popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
+        popup.clickUserDetailsToggle();
+        popup.fillDetailsForm(userName, validPass, validPass);
+        popup.clickOK();
+        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+        page.clickSave().confirm();
 
-	private boolean isUserListed(String username){
-		boolean end = false;
+        page.clickNew();
+        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
+        popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
+        popup.clickUserDetailsToggle();
+        popup.fillDetailsForm(userName, validPass, validPass);
+        soft.assertFalse(popup.isOKButtonActive(), "OK button is enable after duplicate user name is filled in the popup");
 
-		UsersPage page = new UsersPage(driver);
-		page.pagination.skipToFirstPage();
+        soft.assertTrue(popup.isDuplicateUserNameErrorMsgDisPlayed(), "The user page is not containing the expected error message");
+        soft.assertAll();
+    }
 
-		while (!end) {
-			page = new UsersPage(driver);
-			List<UserRowInfo> rows = page.grid().getRows();
+    @Test(description = "USR-122")
+    public void verifyPasswordDoNotMatch() {
+        String username = Generator.randomAlphaNumeric(10);
+        String validPass = "QW!@qw12";
+        String confirmPass = "AS@!gh12";
+        String errorMsg = "Passwords do not match";
+        SoftAssert soft = new SoftAssert();
 
-			for (UserRowInfo row : rows) {
-				if(row.getUsername().equalsIgnoreCase(username)){
-					return true;
-				}
-			}
+        UsersPage usersPage = new UsersPage(driver);
+        UserPopup popup = usersPage.clickNew();
+        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
 
-			if(page.pagination.hasNextPage()){
-				page.pagination.goToNextPage();
-			}else{end = true;}
-		}
+        popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
 
-		return false;
-	}
+        popup.clickUserDetailsToggle();
 
-	private int scrollToUser(String username){
-		UsersPage page = new UsersPage(driver);
-		page.pagination.skipToFirstPage();
-
-		boolean end = false;
-		while (!end) {
-			page = new UsersPage(driver);
-
-			List<UserRowInfo> rows = page.grid().getRows();
-			for (int i = 0; i < rows.size(); i++) {
-				if(rows.get(i).getUsername().equalsIgnoreCase(username)){
-					return i;
-				}
-			}
-
-			if(page.pagination.hasNextPage()){
-				page.pagination.goToNextPage();
-			}else{end = true;}
-		}
-
-		return -1;
-	}
-
-	private int scrollToUserWithRole(String role){
-		UsersPage page = new UsersPage(driver);
-		page.pagination.skipToFirstPage();
-
-		boolean end = false;
-		while (!end) {
-			page = new UsersPage(driver);
-
-			List<UserRowInfo> rows = page.grid().getRows();
-			for (int i = 0; i < rows.size(); i++) {
-				if(rows.get(i).getRole().equalsIgnoreCase(role)){
-					return i;
-				}
-			}
-
-			if(page.pagination.hasNextPage()){
-				page.pagination.goToNextPage();
-			}else{end = true;}
-		}
-
-		return -1;
-	}
-
-
+        popup.fillDetailsForm(username, validPass, confirmPass);
+        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enabled before valid data is filled in the popup(2)");
+        soft.assertEquals(popup.getPassDontMatchValidationMsg(), errorMsg, "confirmation input does not contain the message 'Passwords do not match' .");
+        soft.assertAll();
+    }
 
 }

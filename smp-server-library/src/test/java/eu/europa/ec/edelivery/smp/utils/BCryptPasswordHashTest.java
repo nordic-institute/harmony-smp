@@ -13,7 +13,6 @@
 
 package eu.europa.ec.edelivery.smp.utils;
 
-import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,24 +31,20 @@ public class BCryptPasswordHashTest {
     private static final String PASSWORD = "this_is_sample_password";
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private PrintStream initialPrintStream;
+    private PrintStream initialPrintStream=null;
 
-    @Before
-    public void setUpStreams() {
-        initialPrintStream = System.out;
-        System.setOut(new PrintStream(outContent));
-    }
 
     @After
     public void cleanUpStreams() {
-        System.setOut(initialPrintStream);
+        if (initialPrintStream!=null){
+            System.setOut(initialPrintStream);
+        }
     }
 
     @Test
     public void generatedHashIsValidTest() {
         //when
         String hash = BCryptPasswordHash.hashPassword(PASSWORD);
-
         //then
         assertTrue(BCrypt.checkpw(PASSWORD, hash));
     }
@@ -67,6 +62,8 @@ public class BCryptPasswordHashTest {
     @Test
     public void mainMethodSupportsMultiplePasswordsAndPrintsThemToStandardOutputTest() {
         //given
+        initialPrintStream = System.out;
+        System.setOut(new PrintStream(outContent));
         String[] passwords = new String[]{PASSWORD + 1, PASSWORD + 2, PASSWORD + 3};
 
         //when

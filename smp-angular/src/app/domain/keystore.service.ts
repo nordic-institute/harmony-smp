@@ -25,7 +25,7 @@ export class KeystoreService {
     let passwordEncoded = encodeURIComponent(password);
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<KeystoreResult>(`${SmpConstants.REST_KEYSTORE}/${currentUser.id}/upload/${keystoreType}/${passwordEncoded}`, selectedFile, {
+    return this.http.post<KeystoreResult>(`${SmpConstants.REST_INTERNAL_KEYSTORE}/${currentUser.userId}/upload/${keystoreType}/${passwordEncoded}`, selectedFile, {
       headers
     });
   }
@@ -36,6 +36,6 @@ export class KeystoreService {
     let certificateAliasEncoded = encodeURIComponent(certificateAlias);
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.delete<KeystoreResult>(`${SmpConstants.REST_KEYSTORE}/${currentUser.id}/delete/${certificateAliasEncoded}`);
+    return this.http.delete<KeystoreResult>(`${SmpConstants.REST_INTERNAL_KEYSTORE}/${currentUser.userId}/delete/${certificateAliasEncoded}`);
   }
 }

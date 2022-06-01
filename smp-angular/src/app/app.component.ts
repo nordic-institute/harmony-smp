@@ -1,14 +1,13 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {SecurityService} from './security/security.service';
 import {Router} from '@angular/router';
 import {Authority} from "./security/authority.model";
-import {AlertService} from "./alert/alert.service";
-import {MatDialog, MatDialogRef} from "@angular/material";
+import {AlertMessageService} from "./common/alert-message/alert-message.service";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {GlobalLookups} from "./common/global-lookups";
 import {UserController} from "./user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {SearchTableEntityStatus} from "./common/search-table/search-table-entity-status.model";
-import {SmpConstants} from "./smp.constants";
 import {UserService} from "./user/user.service";
 import {UserDetailsDialogMode} from "./user/user-details-dialog/user-details-dialog.component";
 
@@ -24,7 +23,7 @@ export class AppComponent {
   userController: UserController;
 
   constructor(
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     private securityService: SecurityService,
     private router: Router,
     private http: HttpClient,
@@ -40,11 +39,11 @@ export class AppComponent {
   }
 
   isCurrentUserSMPAdmin(): boolean {
-    return this.securityService.isCurrentUserInRole([ Authority.SMP_ADMIN]);
+    return this.securityService.isCurrentUserInRole([Authority.SMP_ADMIN]);
   }
 
   isCurrentUserServiceGroupAdmin(): boolean {
-    return this.securityService.isCurrentUserInRole([ Authority.SERVICE_GROUP_ADMIN]);
+    return this.securityService.isCurrentUserInRole([Authority.SERVICE_GROUP_ADMIN]);
   }
 
   editCurrentUser() {
@@ -59,26 +58,47 @@ export class AppComponent {
     });
   }
 
+
+  changeCurrentUserPassword() {
+    const formRef: MatDialogRef<any> = this.userController.changePasswordDialog({
+      data: {user: this.securityService.getCurrentUser(), adminUser: false}
+    });
+  }
+
+  regenerateCurrentUserAccessToken() {
+    const formRef: MatDialogRef<any> = this.userController.generateAccessTokenDialog({
+      data: {user: this.securityService.getCurrentUser(), adminUser: false}
+    });
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        let user = {...formRef.componentInstance.getCurrent()};
+        let currUser = this.securityService.getCurrentUser();
+        currUser.accessTokenId = user.accessTokenId;
+        currUser.accessTokenExpireOn = user.accessTokenExpireOn;
+        this.securityService.updateUserDetails(currUser);
+      }
+    });
+  }
+
   get currentUser(): string {
     let user = this.securityService.getCurrentUser();
     return user ? user.username : "";
   }
 
   get currentUserRoleDescription(): string {
-      if (this.securityService.isCurrentUserSystemAdmin()){
-        return "System administrator";
-      } else if (this.securityService.isCurrentUserSMPAdmin()){
-        return "SMP administrator";
-      } else if (this.securityService.isCurrentUserServiceGroupAdmin()){
-        return "Service group administrator";
-      }
-      return "";
+    if (this.securityService.isCurrentUserSystemAdmin()) {
+      return "System administrator";
+    } else if (this.securityService.isCurrentUserSMPAdmin()) {
+      return "SMP administrator";
+    } else if (this.securityService.isCurrentUserServiceGroupAdmin()) {
+      return "Service group administrator";
+    }
+    return "";
   }
 
   logout(event: Event): void {
-    event.preventDefault();
-    this.router.navigate(['/search']).then((ok) => {
-      if (ok) {
+    this.router.navigate(['/search']).then((result)=> {
+      if (result){
         this.securityService.logout();
       }
     });
@@ -97,7 +117,7 @@ export class AppComponent {
     //containing a ng-datatable and it only works after one clicks inside the table
   }
 
-  clearWarning(){
+  clearWarning() {
     this.alertService.clearAlert();
   }
 

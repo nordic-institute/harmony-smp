@@ -1,0 +1,46 @@
+eDelivery SMP 4.2
+- added new properties:
+    smp.passwordPolicy.validationRegex: Regular expression do define password minimum complexity rules!
+    smp.passwordPolicy.validationMessage: The error message shown to the user in case the password does not follow the regex put in the domibus.passwordPolicy.pattern property"
+    smp.ui.authentication.types: Set list of '|' separated UI authentication types. Currently supported PASSWORD, SSO: ex. PASSWORD|SSO
+    smp.automation.authentication.types: Set list of '|' separated automation authentication types (Web-Service integration). Currently supported PASSWORD, CERT: ex. PASSWORD|CERT
+    smp.http.forwarded.headers.enabled to control usage of Forwarded parameters RP/LoadBalancer.
+    smp.ui.session.secure: Cookie is only sent to the server when a request is made with the https: scheme (except on localhost), and therefore is more resistant to man-in-the-middle attacks.
+    smp.ui.session.max-age: Number of seconds until the cookie expires. A zero or negative number will expire the cookie immediately. Empty value will not set parameter
+    smp.ui.session.strict: Controls whether a cookie is sent with cross-origin requests, providing some protection against cross-site request forgery attacks. Possible values are: Strict, None, Lax. (Cookies with SameSite=None require a secure context/HTTPS)!!)
+    smp.ui.session.path: A path that must exist in the requested URL, or the browser won't send the Cookie header.  Null/Empty value sets the authentication requests context by default.  The forward slash (/) character is interpreted as a directory separator, and subdirectories will be matched as well: for Path=/docs, /docs, /docs/Web/, and /docs/Web/HTTP will all match.
+    smp.ui.session.idle_timeout.admin: Specifies the time, in seconds, between client requests before the SMP will invalidate session for ADMIN users (System)!
+    smp.ui.session.idle_timeout.user: Specifies the time, in seconds, between client requests before the SMP will invalidate session for users (Service group, SMP Admin)
+    smp.sso.cas.ui.label: The SSO service provider label.
+    smp.sso.cas.url: The SSO CAS URL enpoint
+    smp.sso.cas.urlpath.login: The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.login}.
+    smp.sso.cas.callback.url: The URL is the callback URL belonging to the local SMP Security System. If using RP make sure it target SMP path '/ui/rest/security/cas'
+    smp.sso.cas.token.validation.urlpath: The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.token.validation}.
+    smp.sso.cas.token.validation.params: The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'
+    smp.sso.cas.token.validation.groups:  The '|' separated CAS groups user must belong to.
+    smp.http.httpStrictTransportSecurity.maxAge: How long(in seconds) HSTS should last in the browser's cache(default one year)
+    smp.http.header.security.policy: Http header content security policy
+    contextPath.output - added now as database configuration option
+    smp.cluster.enabled: if smp is deployed on cluster. If property is not enabled then all properties are refreshed on SetProperty. Otherwise properties are refreshed by cron task for all nodes at the same time
+    authentication.blueCoat.enabled - deprecated and replaced with smp.automation.authentication.external.tls.clientCert.enabled
+    smp.automation.authentication.external.tls.SSLClientCert.enabled Authentication with external module as: reverse proxy. Authenticated certificate is send to application using  'SSLClientCert' HTTP header. Do not enable this feature without properly configured reverse-proxy!
+    identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate: Concatenate ebCore party id in XML responses <ParticipantIdentifier >urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>
+    smp.passwordPolicy.expired.forceChange: Force change password at UI login if expired
+    smp.passwordPolicy.warning.beforeExpiration: How many days before expiration should the UI warn users at login
+- new application configuration property
+    libraries.folder: add external SPI beans libraries folder loaded at the startup of the SMP!
+
+
+- removed deprecated properties
+    bdmsl.integration.keystore.password
+    bdmsl.integration.keystore.path
+    xmldsig.keystore.password
+    xmldsig.keystore.classpath
+    bdmsl.integration.proxy.server
+    bdmsl.integration.proxy.port
+    bdmsl.integration.proxy.user
+    bdmsl.integration.proxy.password
+
+- added new table SMP_ALERT
+
+    

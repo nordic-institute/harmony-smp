@@ -1,8 +1,8 @@
 import {Component, Inject, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggleChange} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+
 import {
   AbstractControl,
-  AsyncValidatorFn,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -13,32 +13,36 @@ import {
 import {Role} from '../../security/role.model';
 import {UserRo} from '../user-ro.model';
 import {SearchTableEntityStatus} from '../../common/search-table/search-table-entity-status.model';
-import {AlertService} from '../../alert/alert.service';
+import {AlertMessageService} from '../../common/alert-message/alert-message.service';
 import {CertificateService} from '../certificate.service';
 import {CertificateRo} from "../certificate-ro.model";
 import {DatePipe} from "../../custom-date/date.pipe";
 import {GlobalLookups} from "../../common/global-lookups";
-import {Observable, of} from "rxjs";
-import {catchError, map} from "rxjs/operators";
 import {UserDetailsService} from "./user-details.service";
+import {MatSlideToggleChange} from "@angular/material/slide-toggle";
+import {SecurityService} from "../../security/security.service";
+import {UserController} from "../user-controller";
+import {HttpClient} from "@angular/common/http";
+import {CertificateDialogComponent} from "../../common/dialogs/certificate-dialog/certificate-dialog.component";
+import {SmpConstants} from "../../smp.constants";
 
 @Component({
   selector: 'user-details-dialog',
   templateUrl: './user-details-dialog.component.html',
-  styleUrls: ['user-details-dialog.component.css']
+  styleUrls: ['user-details-dialog.component.css'],
 })
 export class UserDetailsDialogComponent {
 
   @ViewChild('fileInput') private fileInput;
 
   readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
-  readonly passwordPattern = '^(?=.*[A-Z])(?=.*[ !#$%&\'()*+,-./:;<=>?@\\[^_`{|}~\\\]"])(?=.*[0-9])(?=.*[a-z]).{8,32}$';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
   readonly usernamePattern = '^[a-zA-Z0-9]{4,32}$';
+  readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
 
   mode: UserDetailsDialogMode;
   editMode: boolean;
-  userId: number;
+  userId: string;
   userRoles = [];
   certificateValidationMessage: string = null;
   isCertificateInvalid: boolean = true;
@@ -47,61 +51,33 @@ export class UserDetailsDialogComponent {
   current: UserRo;
   tempStoreForCertificate: CertificateRo = this.newCertificateRo();
   tempStoreForUser: UserRo = this.newUserRo();
+  newCertFile: File = null;
+  userController: UserController;
 
-  private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
-    const userToggle = control.get('userToggle');
-    const password = control.get('password');
-    const confirmation = control.get('confirmation');
-    return userToggle && password && confirmation && userToggle.value && password.value !== confirmation.value ? {confirmationMatch: true} : null;
-  };
-
-  private atLeastOneToggleCheckedValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
-    const userToggle = control.get('userToggle');
-    const certificateToggle = control.get('certificateToggle');
-    return userToggle && certificateToggle && !userToggle.value && !certificateToggle.value ? {userDetailsOrCertificateRequired: true} : null;
-  };
 
   private certificateValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
-    const certificateToggle = control.get('certificateToggle');
+    const certificateId = control.get('certificateId');
     const subject = control.get('subject');
     const validFrom = control.get('validFrom');
     const validTo = control.get('validTo');
     const issuer = control.get('issuer');
     const serialNumber = control.get('serialNumber');
-    return certificateToggle && subject && validFrom && validTo && issuer && serialNumber
-    && certificateToggle.value
-    && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value) ? {certificateDetailsRequired: true} : null;
+    return certificateId && subject && validFrom && validTo && issuer && serialNumber
+    && !!certificateId.value
+    && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value)
+    && !this.isCertificateInvalid
+      ? {certificateDetailsRequired: true} : null;
   };
 
   private certificateExistValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
-    const certificateToggle = control.get('certificateToggle');
     const certificateId = control.get('certificateId');
     // get all persisted
     const listIds = this.lookups.cachedServiceGroupOwnerList.map(a => a.certificate ? a.certificate.certificateId : "NoId");
 
-    return certificateToggle && certificateId && certificateId.value
+    return certificateId && certificateId.value
     && listIds.includes(certificateId.value) && this.current.certificate && certificateId.value !== this.current.certificate.certificateId ? {certificateIdExists: true} : null;
   };
 
-  private asyncPasswordValidator: AsyncValidatorFn = (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-    if (this.isPreferencesMode()) {
-      const userToggle = control.get('userToggle');
-      const passwordToggle = control.get('passwordToggle');
-      const password = control.get('password');
-      const confirmation = control.get('confirmation');
-
-      if (userToggle && passwordToggle && password
-        && this.userId && userToggle.value && passwordToggle.value && password.value) {
-        return this.userDetailsService.isSamePreviousPasswordUsed$(this.userId, password.value).pipe(
-          map(previousPasswordUsed => previousPasswordUsed ? {previousPasswordUsed: true} : null),
-          catchError(() => {
-            this.alertService.error("Error occurred while validating the password against the previously chosen one!");
-            return of(null);
-          }));
-      }
-    }
-    return of(null);
-  };
 
   notInList(list: string[]) {
     return (c: AbstractControl): { [key: string]: any } => {
@@ -112,43 +88,46 @@ export class UserDetailsDialogComponent {
     }
   }
 
+
   constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
+              private dialog: MatDialog,
+              private http: HttpClient,
               private lookups: GlobalLookups,
               private certificateService: CertificateService,
               private userDetailsService: UserDetailsService,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
+              private securityService: SecurityService,
               private datePipe: DatePipe,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
+
+    this.userController = new UserController(this.http, this.lookups, this.dialog);
+
     this.mode = data.mode;
-    this.userId = data.row && data.row.id;
+    this.userId = data.row && data.row.userId;
     this.editMode = this.mode !== UserDetailsDialogMode.NEW_MODE;
 
     this.current = this.editMode
       ? {
         ...data.row,
-
         password: '', // ensures the user password is cleared before editing
-        confirmation: '',
-        certificate: data.row.certificate? {...data.row.certificate}  : this.newCertificateRo()
+        confirmation: null,
+        certificate: data.row.certificate ? {...data.row.certificate} : this.newCertificateRo()
       } : {
         active: true,
         username: '',
         emailAddress: '',
         password: '',
-        confirmation: '',
+        confirmation: null,
         role: '',
-        encodedValue:'',
-        crlUrl:'',
+        encodedValue: '',
+        crlUrl: '',
         status: SearchTableEntityStatus.NEW,
         statusPassword: SearchTableEntityStatus.NEW,
         certificate: this.newCertificateRo(),
 
       };
 
-    // The password authentication is if username exists
-    // if it's off on clear then clear the username!
-    const bUserPasswordAuthentication: boolean = !!this.current.username;
     const bSetPassword: boolean = false;
 
     // calculate allowed roles
@@ -164,19 +143,19 @@ export class UserDetailsDialogComponent {
         disabled: this.mode === UserDetailsDialogMode.PREFERENCES_MODE
       }, Validators.required),
       // username/password authentication
-      'userToggle': new FormControl(bUserPasswordAuthentication),
-      'passwordToggle': new FormControl({value: bSetPassword, disabled: !bUserPasswordAuthentication}),
-      'username': new FormControl({value: '', disabled: this.editMode || !bUserPasswordAuthentication},
+      'username': new FormControl({value: '', disabled: this.editMode },
         !this.editMode || !this.current.username
           ? [Validators.nullValidator, Validators.pattern(this.usernamePattern), this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))]
           : null),
-      // improve notInList validator
-      'password': new FormControl({value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
-        [Validators.required, Validators.pattern(this.passwordPattern)]),
-      'confirmation': new FormControl({value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
-        Validators.pattern(this.passwordPattern)),
+      'passwordExpireOn': new FormControl({value: '', disabled: true}),
+      'accessTokenId': new FormControl({value: '', disabled: true}),
+
+      'accessTokenExpireOn': new FormControl({value: '', disabled: true}),
+      'casUserDataUrl': new FormControl({value: '', disabled: true}),
+
+
+      'confirmation': new FormControl({value: '', disabled: !bSetPassword}),
       // certificate authentication
-      'certificateToggle': new FormControl(this.current && this.current.certificate && !!this.current.certificate.certificateId),
       'subject': new FormControl({value: '', disabled: true}, Validators.required),
       'validFrom': new FormControl({value: '', disabled: true}, Validators.required),
       'validTo': new FormControl({value: '', disabled: true}, Validators.required),
@@ -188,12 +167,10 @@ export class UserDetailsDialogComponent {
       'isCertificateValid': new FormControl({value: 'true', disabled: true,}, [Validators.requiredTrue]
       ),
     }, {
-      validator: [this.passwordConfirmationValidator,
-        this.atLeastOneToggleCheckedValidator,
+      validator: [
         this.certificateValidator,
         this.certificateExistValidator,
-      ],
-      asyncValidator: this.asyncPasswordValidator,
+      ]
     });
     // bind values to form! not property
     this.userForm.controls['active'].setValue(this.current.active);
@@ -201,7 +178,12 @@ export class UserDetailsDialogComponent {
     this.userForm.controls['role'].setValue(this.current.role);
     // username/password authentication
     this.userForm.controls['username'].setValue(this.current.username);
-    this.userForm.controls['password'].setValue(this.current.password);
+    this.userForm.controls['passwordExpireOn'].setValue(this.current.passwordExpireOn);
+    this.userForm.controls['accessTokenId'].setValue(this.current.accessTokenId);
+    this.userForm.controls['accessTokenExpireOn'].setValue(this.current.accessTokenExpireOn);
+
+    this.userForm.controls['casUserDataUrl'].setValue(this.current.casUserDataUrl);
+
     // certificate authentication
     this.userForm.controls['subject'].setValue(this.current.certificate.subject);
     this.userForm.controls['validFrom'].setValue(this.current.certificate.validFrom);
@@ -214,23 +196,90 @@ export class UserDetailsDialogComponent {
     this.userForm.controls['isCertificateValid'].setValue(!this.current.certificate.invalid);
 
 
-    this.certificateValidationMessage =this.current.certificate.invalidReason;
-    this.isCertificateInvalid= this.current.certificate.invalid;
+    this.certificateValidationMessage = this.current.certificate.invalidReason;
+    this.isCertificateInvalid = this.current.certificate.invalid;
 
-    // if edit mode and user is given - toggle is disabled
-    // username should not be changed.!
-    if (this.editMode && bUserPasswordAuthentication) {
-      this.userForm.controls['userToggle'].disable();
-    }
   }
+
+  changeCurrentUserPassword() {
+    const formRef: MatDialogRef<any> = this.userController.changePasswordDialog({
+      data: {
+        user: this.getCurrent(),
+        adminUser: this.securityService.isCurrentUserSystemAdmin() &&
+          this.securityService.getCurrentUser().userId !== this.current.userId
+      },
+    });
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.current.passwordExpireOn = result.passwordExpireOn;
+        this.userForm.controls['passwordExpireOn'].setValue(this.current.passwordExpireOn);
+      }
+    });
+
+  }
+
+  onShowCertificateDataRow() {
+    const formRef: MatDialogRef<any> = this.dialog.open(CertificateDialogComponent, {
+      data: {row: this.getCurrent().certificate}
+    });
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        // import
+      }
+    });
+  }
+
+  clearCertificate() {
+    this.userForm.patchValue({
+      'subject': null,
+      'validFrom': null,
+      'validTo': null,
+      'issuer': null,
+      'serialNumber': null,
+      'certificateId': null,
+      'crlUrl': null,
+      'encodedValue': null,
+      'isCertificateValid': null,
+    });
+  }
+
+  openCurrentCasUserData() {
+    window.open(this.current.casUserDataUrl, "_blank");
+  }
+
+  regenerateAccessToken() {
+    const formRef: MatDialogRef<any> = this.userController.generateAccessTokenDialog({
+      data: {
+        user: this.getCurrent(),
+        adminUser: this.securityService.isCurrentUserSystemAdmin() &&
+          this.securityService.getCurrentUser().userId !== this.current.userId
+      },
+
+    });
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        let user = {...formRef.componentInstance.getCurrent()};
+        // update value for current user
+        this.current.accessTokenId = user.accessTokenId
+        this.current.accessTokenExpireOn = user.accessTokenExpireOn
+        // set form data
+        this.userForm.controls['accessTokenId'].setValue(user.accessTokenId);
+        this.userForm.controls['accessTokenExpireOn'].setValue(user.accessTokenExpireOn);
+
+        this.lookups.refreshUserLookup();
+      }
+    });
+  }
+
 
   submitForm() {
     this.dialogRef.close(true);
   }
 
   uploadCertificate(event) {
+    this.newCertFile = null;
     const file = event.target.files[0];
-    this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
+    this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
         if (res && res.certificateId) {
           this.userForm.patchValue({
             'subject': res.subject,
@@ -245,7 +294,7 @@ export class UserDetailsDialogComponent {
           });
           this.certificateValidationMessage = res.invalidReason;
           this.isCertificateInvalid = res.invalid;
-
+          this.newCertFile = file;
         } else {
           this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
         }
@@ -257,90 +306,21 @@ export class UserDetailsDialogComponent {
 
   }
 
-  onCertificateToggleChanged({checked}: MatSlideToggleChange) {
-    if (checked) {
-      // fill from temp
-      this.userForm.controls['certificateId'].setValue(this.tempStoreForCertificate.certificateId);
-      this.userForm.controls['subject'].setValue(this.tempStoreForCertificate.subject);
-      this.userForm.controls['issuer'].setValue(this.tempStoreForCertificate.issuer);
-      this.userForm.controls['serialNumber'].setValue(this.tempStoreForCertificate.serialNumber);
-      this.userForm.controls['validFrom'].setValue(this.tempStoreForCertificate.validFrom);
-      this.userForm.controls['validFrom'].setValue(this.tempStoreForCertificate.validFrom);
-      this.userForm.controls['validTo'].setValue(this.tempStoreForCertificate.validTo);
-      this.userForm.controls['encodedValue'].setValue(this.tempStoreForCertificate.encodedValue);
-      this.userForm.controls['crlUrl'].setValue(this.tempStoreForCertificate.crlUrl);
-      this.certificateValidationMessage = this.tempStoreForCertificate.invalidReason;
-      this.isCertificateInvalid= this.tempStoreForCertificate.invalid;
-
-    } else {
-      // store data to temp, set values to null
-      this.tempStoreForCertificate.certificateId = this.userForm.controls['certificateId'].value;
-      this.tempStoreForCertificate.subject = this.userForm.controls['subject'].value;
-      this.tempStoreForCertificate.issuer = this.userForm.controls['issuer'].value;
-      this.tempStoreForCertificate.serialNumber = this.userForm.controls['serialNumber'].value;
-      this.tempStoreForCertificate.validFrom = this.userForm.controls['validFrom'].value;
-      this.tempStoreForCertificate.validTo = this.userForm.controls['validTo'].value;
-      this.tempStoreForCertificate.encodedValue = this.userForm.controls['encodedValue'].value;
-      this.tempStoreForCertificate.crlUrl = this.userForm.controls['crlUrl'].value;
-
-      this.tempStoreForCertificate.invalidReason = this.certificateValidationMessage;
-      this.tempStoreForCertificate.invalid = this.isCertificateInvalid;
-
-      this.userForm.controls['certificateId'].setValue("");
-      this.userForm.controls['subject'].setValue("");
-      this.userForm.controls['issuer'].setValue("");
-      this.userForm.controls['serialNumber'].setValue("");
-      this.userForm.controls['validFrom'].setValue("");
-      this.userForm.controls['validTo'].setValue("");
-      this.userForm.controls['crlUrl'].setValue("");
-      this.userForm.controls['encodedValue'].setValue("");
-      this.userForm.controls['isCertificateValid'].setValue("true");
-
-      this.certificateValidationMessage = null;
-      this.isCertificateInvalid= false;
-    }
-  }
-
-  onUserToggleChanged({checked}: MatSlideToggleChange) {
-    const action = checked ? 'enable' : 'disable';
-    this.userForm.get('username')[action]();
-    this.userForm.get('password')[action]();
-    this.userForm.get('confirmation')[action]();
-
-    if (checked) {
-      this.userForm.controls['username'].setValue(this.tempStoreForUser.username);
-      this.userForm.controls['password'].setValue(this.tempStoreForUser.password);
-    } else {
-      // store data to temp, set values to null
-      this.tempStoreForUser.username = this.userForm.controls['username'].value;
-      this.tempStoreForUser.password = this.userForm.controls['password'].value;
-
-      this.userForm.controls['username'].setValue("");
-      this.userForm.controls['password'].setValue("");
-    }
-    this.userForm.controls['passwordToggle'].setValue(checked || !this.editMode);
-  }
-
-  onPasswordToggleChanged({checked}: MatSlideToggleChange) {
-    const action = checked ? 'enable' : 'disable';
-    this.userForm.get('password')[action]();
-    this.userForm.get('confirmation')[action]();
-    if (!checked) {
-      this.userForm.get('password').setValue('');
-      this.userForm.get('confirmation').setValue('');
-    }
-  }
 
   isPreferencesMode() {
     return this.mode === UserDetailsDialogMode.PREFERENCES_MODE;
   }
 
   public getCurrent(): UserRo {
+    if (this.mode === UserDetailsDialogMode.NEW_MODE){
+      this.current.username = this.userForm.get('username').value;
+    }
+
     this.current.active = this.userForm.get('active').value;
     this.current.emailAddress = this.userForm.get('emailAddress').value;
     this.current.role = this.userForm.get('role').value;
     // certificate data
-    if (this.userForm.get('certificateToggle')) {
+    if (this.userForm.controls['certificateId'].value) {
       this.current.certificate.certificateId = this.userForm.controls['certificateId'].value;
       this.current.certificate.subject = this.userForm.controls['subject'].value;
       this.current.certificate.issuer = this.userForm.controls['issuer'].value;
@@ -354,20 +334,7 @@ export class UserDetailsDialogComponent {
     } else {
       this.current.certificate = null;
     }
-    // set username and password for new
-    if (this.userForm.get('userToggle')) {
-      if (!this.editMode || !this.current.username) {
-        this.current.username = this.userForm.controls['username'].value;
-        this.current.password = this.userForm.controls['password'].value;
-      }
-      // if edit mode and password on  - set password
-      else if (this.editMode && this.userForm.get('passwordToggle')) {
-        this.current.password = this.userForm.controls['password'].value;
-      }
-    } else {
-      this.current.username = '';
-      this.current.password = '';
-    }
+
 
     // update data
     return this.current;
@@ -393,8 +360,8 @@ export class UserDetailsDialogComponent {
       serialNumber: '',
       certificateId: '',
       fingerprints: '',
-      crlUrl:'',
-      encodedValue:'',
+      crlUrl: '',
+      encodedValue: '',
     }
   }
 
@@ -410,6 +377,23 @@ export class UserDetailsDialogComponent {
       statusPassword: SearchTableEntityStatus.NEW
     }
   }
+
+  isUserAuthSSOEnabled(): boolean {
+    return this.lookups.cachedApplicationInfo?.authTypes?.includes('SSO');
+  }
+
+  isUserAuthPasswdEnabled(): boolean {
+    return this.lookups.cachedApplicationInfo?.authTypes?.includes('PASSWORD');
+  }
+
+  isWebServiceUserCertificateAuthEnabled(): boolean {
+    return this.lookups.cachedApplicationConfig?.webServiceAuthTypes?.includes('CERTIFICATE');
+  }
+
+  isWebServiceUserTokenAuthPasswdEnabled(): boolean {
+    return this.lookups.cachedApplicationConfig?.webServiceAuthTypes?.includes('TOKEN');
+  }
+
 }
 
 export enum UserDetailsDialogMode {

@@ -85,7 +85,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();
         Mockito.doReturn(resourceDirectory.toFile()).when(configurationService).getConfigurationFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
-        Mockito.doReturn(new URL("http://localhost/edelivery-sml")).when(configurationService).getSMLIntegrationUrl();
+        Mockito.doReturn(new URL("https://localhost/edelivery-sml")).when(configurationService).getSMLIntegrationUrl();
         keystoreService.refreshData();
 
     }
@@ -96,7 +96,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("second_domain_alias");
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
         // when
         testInstance.configureClient("manageparticipantidentifier", client, domain);
 
@@ -111,7 +111,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         assertTrue(httpHeaders == null || httpHeaders.isEmpty());
 
         assertEquals("C=BE,O=CEF Digital,OU=SMP,CN=Secodn domain", clientCert.getSubjectDN().getName());
-        assertEquals("http://localhost/edelivery-sml/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://localhost/edelivery-sml/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
 
@@ -122,7 +122,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("second_domain_alias");
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
         // when
         testInstance.configureClient("manageservicemetadata", client, domain);
 
@@ -136,7 +136,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         assertTrue(httpHeaders == null || httpHeaders.isEmpty());
 
         assertEquals("C=BE,O=CEF Digital,OU=SMP,CN=Secodn domain", clientCert.getSubjectDN().getName());
-        assertEquals("http://localhost/edelivery-sml/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://localhost/edelivery-sml/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("single_domain_key");
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
         // when
         testInstance.configureClient("changedEndpoint", client, domain);
 
@@ -156,7 +156,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
         assertEquals("C=BE,O=European Commision,OU=DIGIT,CN=SMP Mock Services", clientCert.getSubjectDN().getName());
-        assertEquals("http://localhost/edelivery-sml/changedEndpoint", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://localhost/edelivery-sml/changedEndpoint", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("single_domain_key");
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
         // when
         testInstance.configureClient("changedEndpoint", client, domain);
 
@@ -177,7 +177,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
         assertEquals("C=BE,O=European Commision,OU=DIGIT,CN=SMP Mock Services", clientCert.getSubjectDN().getName());
-        assertEquals("http://localhost/edelivery-sml/changedEndpoint", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://localhost/edelivery-sml/changedEndpoint", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
     @Test
@@ -186,7 +186,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
 
         expectedEx.expect(IllegalStateException.class);
         expectedEx.expectMessage("More than one key in Keystore! Define alias for the domain SML authentication!");
@@ -204,7 +204,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
 
         expectedEx.expect(IllegalStateException.class);
         expectedEx.expectMessage("More than one key in Keystore! Define alias for the domain SML authentication!");
@@ -226,7 +226,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
-        domain.setSmlBlueCoatAuth(false);
+        domain.setSmlClientCertAuth(false);
 
         // when
         testInstance.configureClient("changedEndpoint", client, domain);

@@ -17,17 +17,17 @@
   overflow-y: scroll;
 }
 
-/deep/ .inner-table {
+::ng-deep .inner-table {
   margin-left: 100px;
   width: 80%;
 }
 
-/deep/ .inner-table .datatable-body-cell {
+::ng-deep .inner-table .datatable-body-cell {
   padding:  1.5em 2px !important;
 
 }
 
-/deep/ .inner-table .mat-icon-button {
+::ng-deep .inner-table .mat-icon-button {
   height: auto !important;;
   line-height: unset !important;
 }

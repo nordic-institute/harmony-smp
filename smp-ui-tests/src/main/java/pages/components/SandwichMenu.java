@@ -34,6 +34,7 @@ public class SandwichMenu extends PageComponent {
 
 	public boolean isLoggedIn(){
 		clickVoidSpace();
+
 		waitForElementToBeClickable(expandoButton).click();
 
 		boolean isLoggedIn = false;
@@ -59,5 +60,10 @@ public class SandwichMenu extends PageComponent {
 		return new SearchPage(driver);
 	}
 
+	public void waitForSandwichMenu(){
+		log.info("waiting for sandwich menu");
+		waitForXMillis(500);
+		waitForElementToBeVisible(expandoButton);
+	}
 
 }

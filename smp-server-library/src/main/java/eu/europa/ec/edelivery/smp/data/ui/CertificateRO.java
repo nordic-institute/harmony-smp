@@ -1,7 +1,5 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
 /**
@@ -19,14 +17,10 @@ public class CertificateRO extends BaseRO {
     private String serialNumber;
     private String crlUrl;
     private String encodedValue;
-    private String blueCoatHeader;
+    private String clientCertHeader;
     private boolean isInvalid;
     private String invalidReason;
-
-
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd,HH:mm", timezone="CET")
     private Date validFrom;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd,HH:mm", timezone="CET")
     private Date validTo;
 
     public CertificateRO() {
@@ -100,12 +94,12 @@ public class CertificateRO extends BaseRO {
         this.encodedValue = encodedValue;
     }
 
-    public String getBlueCoatHeader() {
-        return blueCoatHeader;
+    public String getClientCertHeader() {
+        return clientCertHeader;
     }
 
-    public void setBlueCoatHeader(String blueCoatHeader) {
-        this.blueCoatHeader = blueCoatHeader;
+    public void setClientCertHeader(String clientCertHeader) {
+        this.clientCertHeader = clientCertHeader;
     }
 
     public String getCrlUrl() {

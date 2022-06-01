@@ -6,5 +6,4 @@ export class ColumnPicker {
   changeSelectedColumns(newSelectedColumns: Array<any>) {
     this.selectedColumns = newSelectedColumns
   }
-
 }

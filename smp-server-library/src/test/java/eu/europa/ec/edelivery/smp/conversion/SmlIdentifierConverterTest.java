@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by gutowpa on 08/01/2018.
@@ -51,13 +52,17 @@ public class SmlIdentifierConverterTest {
         SmlIdentifierConverter.toBusdoxParticipantId(participantId, null);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void negativeCaseMissingScheme() {
+    @Test
+    public void positiveCaseWithNullScheme() {
         //given
         ParticipantIdentifierType participantId = new ParticipantIdentifierType(ID_VALUE, null);
 
         //when
-        SmlIdentifierConverter.toBusdoxParticipantId(participantId, SMP_ID);
+        ServiceMetadataPublisherServiceForParticipantType result = SmlIdentifierConverter.toBusdoxParticipantId(participantId, SMP_ID);
+        //then
+        assertEquals(SMP_ID, result.getServiceMetadataPublisherID());
+        assertNull(result.getParticipantIdentifier().getScheme());
+        assertEquals(ID_VALUE, result.getParticipantIdentifier().getValue());
     }
 
     @Test(expected = IllegalStateException.class)

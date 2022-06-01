@@ -14,7 +14,7 @@ export class CertificateService {
     private securityService: SecurityService,
   ) { }
 
-  uploadCertificate$(payload): Observable<CertificateRo> {
+  validateCertificate(payload): Observable<CertificateRo> {
     // The user identifier below belongs to the currently logged in user and it may or may not be the same as the
     // identifier of the user being modified (e.g. a normal user editing his own details vs. a system administrator
     // adding or editing another user)
@@ -24,6 +24,7 @@ export class CertificateService {
       .set("Content-Type", "application/octet-stream");
 
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<CertificateRo>(`${SmpConstants.REST_USER}/${currentUser.id}/certdata`, payload, {headers});
+    return this.http.post<CertificateRo>(SmpConstants.REST_PUBLIC_TRUSTSTORE_CERT_VALIDATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId), payload, {headers});
   }
 }

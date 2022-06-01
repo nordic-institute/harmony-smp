@@ -1,4 +1,4 @@
-<smp-search-table
+<smp-search-table  #searchTable
   page_id='search_id'
   [title]="'Search'"
   [columnPicker]="columnPicker"
@@ -11,16 +11,6 @@
   [showActionButtons]="false"
   [showIndexColumn]="true"
 >
-  <ng-template #rowExtensionAction let-row="row" let-value="value" ngx-datatable-cell-template>
-
-    <button mat-button color="primary"
-            (click)="extensionRowButtonAction(row)" id="extensionRowButtonAction{{row.$$index}}_id" tooltip="Extension">
-      <mat-icon>code</mat-icon>
-      <span>Extension</span>
-    </button>
-
-  </ng-template>
-
   <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template>
     <a target="_blank"
        href="{{contextPath}}{{createServiceGroupURL(row)}}">Open URL</a>
@@ -58,7 +48,7 @@
     <div *ngIf="row.serviceMetadata.length !== 0">
       <ngx-datatable
         class='inner-table material striped'
-        [loadingIndicator]="loading"
+        [loadingIndicator]="false"
         [rows]='row.serviceMetadata'
         [columnMode]='"force"'
         [headerHeight]='50'

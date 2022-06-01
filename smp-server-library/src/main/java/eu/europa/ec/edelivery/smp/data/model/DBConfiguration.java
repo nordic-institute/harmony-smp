@@ -17,22 +17,28 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * Created by Joze Rihtarsic .
  */
 @Entity
+@Audited
 @Table(name = "SMP_CONFIGURATION")
 @NamedQueries({
         @NamedQuery(name = "DBConfiguration.getAll", query = "SELECT d FROM DBConfiguration d"),
         @NamedQuery(name = "DBConfiguration.maxUpdateDate",
-                query = "SELECT max(config.lastUpdatedOn) from DBConfiguration config"),
+                query = "SELECT max(config.lastUpdatedOn) from DBConfiguration config"
+        ),
+        @NamedQuery(name = "DBConfiguration.getPendingProperties",
+                query = "SELECT config from DBConfiguration config where config.lastUpdatedOn > :updateDate"
+        ),
+        @NamedQuery(name = "DBConfiguration.getPendingRestartProperties",
+                query = "SELECT config from DBConfiguration config where config.property in (:restartPropertyList) and config.lastUpdatedOn > :serverStartedDate"
+        ),
 })
 @org.hibernate.annotations.Table(appliesTo = "SMP_CONFIGURATION", comment = "SMP user certificates")
-public class DBConfiguration  extends BaseEntity  {
+public class DBConfiguration extends BaseEntity {
 
     @Id
     @Column(name = "PROPERTY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512, nullable = false, unique = true)
@@ -45,20 +51,6 @@ public class DBConfiguration  extends BaseEntity  {
     @Column(name = "DESCRIPTION", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
     @ColumnDescription(comment = "Property description")
     String description;
-
-
-    @Column(name = "CREATED_ON", nullable = false)
-    @ColumnDescription(comment = "Row inserted on date")
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    @ColumnDescription(comment = "Row modified on date")
-    LocalDateTime lastUpdatedOn;
-
-
-
-    public DBConfiguration() {
-
-    }
 
     @Override
     public Object getId() {
@@ -87,37 +79,6 @@ public class DBConfiguration  extends BaseEntity  {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
     }
 
     @Override

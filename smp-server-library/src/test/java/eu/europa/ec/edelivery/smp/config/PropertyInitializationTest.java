@@ -3,46 +3,34 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
-import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static eu.europa.ec.edelivery.smp.config.DatabaseConfigTest.*;
+import static eu.europa.ec.edelivery.smp.config.FileProperty.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+
 
 public class PropertyInitializationTest {
-
 
     PropertyInitialization testInstance = new PropertyInitialization();
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
-
-
     @Test
-    public void testValidateProperties(){
+    public void testValidateProperties() {
         // when
         Properties properties = new Properties();
 
@@ -53,7 +41,7 @@ public class PropertyInitializationTest {
     }
 
     @Test
-    public void getDatasourceWithoutConfiguration(){
+    public void getDatasourceWithoutConfiguration() {
         // when
         Properties properties = new Properties();
 
@@ -64,7 +52,7 @@ public class PropertyInitializationTest {
     }
 
     @Test
-    public void getDatasourceWithoutConfigurationWithJndi(){
+    public void getDatasourceWithoutConfigurationWithJndi() {
         // when
         Properties properties = new Properties();
         properties.setProperty(FileProperty.PROPERTY_DB_JNDI, "jdbc/notExists");
@@ -76,10 +64,10 @@ public class PropertyInitializationTest {
     }
 
     @Test
-    public void getDatasourceBadConfigurationWithUrl(){
+    public void getDatasourceBadConfigurationWithUrl() {
         // when
         Properties properties = new Properties();
-        properties.setProperty(FileProperty.PROPERTY_DB_URL, "schema:/no@exists/db");
+        properties.setProperty(PROPERTY_DB_URL, "schema:/no@exists/db");
 
         expectedEx.expect(IllegalArgumentException.class);
         expectedEx.expectMessage("Property 'driverClassName' must not be empty");
@@ -89,120 +77,12 @@ public class PropertyInitializationTest {
 
 
     @Test
-    public void getDatasourceByUrl(){
-        // when
-        Properties properties = new Properties();
-        properties.setProperty(FileProperty.PROPERTY_DB_URL, "jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
-        properties.setProperty(FileProperty.PROPERTY_DB_DRIVER, "org.h2.Driver");
+    public void getDatasourceByUrl() {
+        Properties properties =  getTestFileProperties();
 
         DataSource dataSource = testInstance.getDatasource(properties);
 
         assertNotNull(dataSource);
-    }
-
-
-    @Test
-    public void calculateSettingsPathSMLKeystore() {
-        // given
-        Properties p = new Properties();
-        p.setProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty(), "testSMLFolder/keystore.jks");
-        // when
-        File f = testInstance.calculateSettingsPath(p);
-        // then
-        assertEquals("testSMLFolder", f.getName());
-    }
-
-    @Test
-    public void calculateSettingsPathKeystore() {
-        // given
-        Properties p = new Properties();
-        p.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty(), "testFolder/keystore.jks");
-        p.setProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty(), "testSMLFolder/keystore.jks");
-        // when
-        File f = testInstance.calculateSettingsPath(p);
-        // then
-        assertEquals("testFolder", f.getName());
-    }
-
-    @Test
-    public void calculateSettingsPathKeystoreNoValue() {
-        // given
-        Properties p = new Properties();
-        // when
-        File f = testInstance.calculateSettingsPath(p);
-        // then
-        assertEquals((new File("smp")).getAbsolutePath(), f.getAbsolutePath());
-    }
-
-    @Test
-    public void initNewValues() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-    // copy folder
-        Path sourceFile = Paths.get("src", "test", "resources",  "keystores", "smp-keystore_multiple_domains.jks");
-        Path targetFile = Paths.get("target","keystores","test-init-prop.jks");
-        FileUtils.copyFile(sourceFile.toFile(), targetFile.toFile());
-
-        EntityManager em = Mockito.mock(EntityManager.class);
-        doReturn( Mockito.mock(Query.class)).when(em).createNamedQuery(any());
-
-        Properties fileSettings = new Properties();
-        fileSettings.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty(), targetFile.toFile().getAbsolutePath());
-        fileSettings.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PASSWORD.getProperty(),"test123");
-        Properties dbSettings = new Properties();
-        testInstance.initNewValues(em, fileSettings, dbSettings);
-
-        assertEquals(6, dbSettings.size());
-        Mockito.verify(em, times(8)).persist(any()); // five times - save also non encrypted message
-        // more that one certificate in keystore
-        Mockito.verify(em, times(0)).createNamedQuery("DBDomain.updateNullSignAlias"); // five times - save also non encrypted message
-        // SML truststore is not set
-        Mockito.verify(em, times(0)).createNamedQuery("DBDomain.updateNullSMLAlias"); // five times - save also non encrypted message
-
-
-        assertTrue( dbSettings.containsKey(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty()));
-        assertTrue( dbSettings.containsKey(SMPPropertyEnum.CONFIGURATION_DIR.getProperty()));
-        assertTrue( dbSettings.containsKey(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty()));
-        assertTrue( dbSettings.containsKey(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty()));
-        String passEnc = dbSettings.getProperty(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty());
-        String confDir = dbSettings.getProperty(SMPPropertyEnum.CONFIGURATION_DIR.getProperty());
-        String encFilePath = confDir+ File.separator  + dbSettings.getProperty(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty());
-        String keystoreFilePath = confDir+ File.separator  +dbSettings.getProperty(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty());
-        File encFile = new File( encFilePath);
-        File keystoreFile = new File( keystoreFilePath);
-        assertTrue(encFile.exists());
-        assertTrue(keystoreFile.exists());
-
-        String passwd = SecurityUtils.decrypt(encFile, passEnc);
-        assertNotNull(passwd);
-        // load keystore
-        KeyStore keyStore = null;
-        try (InputStream keystoreInputStream = new FileInputStream(keystoreFile)) {
-            keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(keystoreInputStream, passwd.toCharArray());
-        }
-        assertTrue(keyStore.size()>0);
-    }
-
-    @Test
-    public void testSignAliasUpdate() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        // copy folder
-        Path sourceFile = Paths.get("src", "test", "resources",  "keystores", "smp-keystore.jks");
-        Path targetFile = Paths.get("target","keystores","test-init-prop.jks");
-        FileUtils.copyFile(sourceFile.toFile(), targetFile.toFile());
-
-        EntityManager em = Mockito.mock(EntityManager.class);
-        doReturn( Mockito.mock(Query.class)).when(em).createNamedQuery(any());
-
-        Properties fileSettings = new Properties();
-        fileSettings.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty(), targetFile.toFile().getAbsolutePath());
-        fileSettings.setProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PASSWORD.getProperty(),"test123");
-        fileSettings.setProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty(), targetFile.toFile().getAbsolutePath());
-        fileSettings.setProperty(SMPPropertyEnum.SML_KEYSTORE_PASSWORD.getProperty(),"test123");
-        Properties dbSettings = new Properties();
-        testInstance.initNewValues(em, fileSettings, dbSettings);
-
-        Mockito.verify(em, times(1)).createNamedQuery("DBDomain.updateNullSignAlias"); // five times - save also non encrypted message
-        Mockito.verify(em, times(1)).createNamedQuery("DBDomain.updateNullSMLAlias"); // five times - save also non encrypted message
-
     }
 
     @Test
@@ -219,11 +99,35 @@ public class PropertyInitializationTest {
     @Test
     public void createDBEntryProperty() {
         // given
-        DBConfiguration entry = testInstance.createDBEntry(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH, "value");
+        DBConfiguration entry = testInstance.createDBEntry(SMPPropertyEnum.CS_DOCUMENTS, "value");
         // then
-        assertEquals(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty(), entry.getProperty());
+        assertEquals(SMPPropertyEnum.CS_DOCUMENTS.getProperty(), entry.getProperty());
         assertEquals("value", entry.getValue());
-        assertEquals(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getDesc(), entry.getDescription());
+        assertEquals(SMPPropertyEnum.CS_DOCUMENTS.getDesc(), entry.getDescription());
+    }
+
+    @Test
+    public void getDatabaseProperties(){
+        Properties properties =  getTestFileProperties();
+
+        Properties databaseProperties = testInstance.getDatabaseProperties(properties);
+
+        assertNotNull(databaseProperties);
+
+    }
+
+    protected Properties getTestFileProperties(){
+        // create test database with SMP_CONFIGURATION TABLE
+        String url="jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'classpath:/create-configuration-table-h2.ddl'";
+        Properties properties = new Properties();
+        properties.setProperty(SMPPropertyEnum.CONFIGURATION_DIR.getProperty(), "./target/prop-init-test");
+        properties.setProperty(PROPERTY_DB_URL, url);
+        properties.setProperty(PROPERTY_DB_DIALECT, DATABASE_DIALECT);
+        properties.setProperty(FileProperty.PROPERTY_DB_DRIVER, DATABASE_DRIVER);
+        properties.setProperty(FileProperty.PROPERTY_DB_USER, DATABASE_USERNAME);
+        properties.setProperty(FileProperty.PROPERTY_DB_TOKEN, "");
+        properties.setProperty(FileProperty.PROPERTY_SMP_MODE_DEVELOPMENT, "true");
+        return properties;
     }
 
 }

@@ -11,13 +11,12 @@ import pages.service_groups.FilterArea;
 import utils.PROPERTIES;
 
 public class SearchPage extends SMPPage {
+
 	public SearchPage(WebDriver driver) {
 		super(driver);
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 
 		this.pageHeader.waitForTitleToBe("Search");
-
-		serviceGroupGrid = new ServiceGroupGrid(driver, searchGridContainer);
 
 	}
 
@@ -25,11 +24,16 @@ public class SearchPage extends SMPPage {
 
 	@FindBy(id = "searchTable")
 	WebElement searchGridContainer;
-	public ServiceGroupGrid serviceGroupGrid;
 
 
 	public boolean isLoaded() {
+		log.info("checking if search page is loaded");
 		if(!filters.isLoaded()){ return false;}
-		return serviceGroupGrid.isLoaded();
+		return getServiceGroupGrid().isLoaded();
+	}
+
+	public ServiceGroupGrid
+		getServiceGroupGrid() {
+		return new ServiceGroupGrid(driver, searchGridContainer);
 	}
 }

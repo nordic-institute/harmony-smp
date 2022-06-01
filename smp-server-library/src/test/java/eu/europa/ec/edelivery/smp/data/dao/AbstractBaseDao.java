@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -12,9 +13,19 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {H2JPATestConfig.class,
-        ServiceGroupDao.class, ServiceMetadataDao.class, DomainDao.class, UserDao.class, ConfigurationDao.class})
+        AlertDao.class,
+        ServiceGroupDao.class,
+        ServiceMetadataDao.class,
+        DomainDao.class,
+        UserDao.class,
+        ConfigurationDao.class}
+        )
 @Sql(scripts = {"classpath:cleanup-database.sql",
         "classpath:basic_conf_data-h2.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig

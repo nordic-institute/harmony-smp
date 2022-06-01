@@ -1,15 +1,16 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Service group domain
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -19,15 +20,24 @@ import java.util.Objects;
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBServiceGroupDomain.getServiceGroupDomain", query = "SELECT sgd.* FROM SMP_DOMAIN dmn  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.FK_DOMAIN_ID = dmn.id " +
                 " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID " +
-                " where sg.PARTICIPANT_IDENTIFIER = :participantIdentifier AND sg.PARTICIPANT_SCHEME=:participantScheme and dmn.DOMAIN_CODE =:domainCode", resultClass=DBServiceGroupDomain.class)
+                " where sg.PARTICIPANT_IDENTIFIER = :participantIdentifier " +
+                "   AND (:participantScheme IS NULL AND sg.PARTICIPANT_SCHEME IS NULL" +
+                "       OR sg.PARTICIPANT_SCHEME=:participantScheme)" +
+                "and dmn.DOMAIN_CODE =:domainCode", resultClass = DBServiceGroupDomain.class),
+        @NamedNativeQuery(name = "DBServiceGroupDomain.getOwnedServiceGroupDomainForUserIdAndServiceMetadataId",
+                query = "SELECT sgd.* FROM SMP_SERVICE_GROUP_DOMAIN sgd" +
+                        "   INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID " +
+                        "   INNER JOIN SMP_OWNERSHIP join_u_sg  ON join_u_sg.FK_SG_ID = sg.ID" +
+                        "   INNER JOIN SMP_SERVICE_METADATA md  ON md.FK_SG_DOM_ID = sgd.ID" +
+                        " where join_u_sg.FK_USER_ID = :userId " +
+                        "   AND md.ID=:serviceMetadataId",
+                resultClass = DBServiceGroupDomain.class)
 })
 public class DBServiceGroupDomain extends BaseEntity {
 
-
-
     @Id
-    @SequenceGenerator(name = "sgd_generator", sequenceName = "SMP_SERVICE_GROUP_DOMAIN_SEQ",allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgd_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SERVICE_GROUP_DOMAIN_SEQ")
+    @GenericGenerator(name = "SMP_SERVICE_GROUP_DOMAIN_SEQ", strategy = "native")
     @Column(name = "ID")
     Long id;
 
@@ -55,12 +65,6 @@ public class DBServiceGroupDomain extends BaseEntity {
     @Column(name = "SML_REGISTERED", nullable = false)
     private boolean smlRegistered = false;
 
-    @Column(name = "CREATED_ON" , nullable = false)
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    LocalDateTime lastUpdatedOn;
-
-
     public DBServiceGroupDomain() {
         //Need this method for hibernate
         // Caused by: java.lang.NoSuchMethodException: eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain_$$_jvst7ad_2.<init>()
@@ -70,7 +74,6 @@ public class DBServiceGroupDomain extends BaseEntity {
         this.domain = domain;
         this.serviceGroup = serviceGroup;
     }
-
 
 
     @Override
@@ -118,8 +121,8 @@ public class DBServiceGroupDomain extends BaseEntity {
     }
 
     public DBServiceMetadata removeServiceMetadata(String docId, String docSch) {
-        DBServiceMetadata dbServiceMetadata =  getServiceMetadata(docId,docSch );
-        if (dbServiceMetadata!=null) {
+        DBServiceMetadata dbServiceMetadata = getServiceMetadata(docId, docSch);
+        if (dbServiceMetadata != null) {
             removeServiceMetadata(dbServiceMetadata);
         }
         return dbServiceMetadata;
@@ -132,6 +135,7 @@ public class DBServiceGroupDomain extends BaseEntity {
 
     /**
      * Method return metadata by documentIdentifier and document schema. Method is case sensitive!
+     *
      * @param docId
      * @param docSch
      * @return DBServiceMetadata or null if not found!
@@ -166,38 +170,6 @@ public class DBServiceGroupDomain extends BaseEntity {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), id);
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if(createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
     }
 }

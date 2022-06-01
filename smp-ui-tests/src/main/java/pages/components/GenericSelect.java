@@ -13,8 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenericSelect extends PageComponent {
+
 	public GenericSelect(WebDriver driver, WebElement container) {
 		super(driver);
+
+		log.info("select init");
 		this.container = container;
 		
 		PageFactory.initElements(new DefaultElementLocatorFactory(container), this);
@@ -32,15 +35,18 @@ public class GenericSelect extends PageComponent {
 
 
 	private void expandSelect(){
+		log.info("expand select");
 		waitForElementToBeClickable(expandoButton).click();
 	}
 
 	private List<WebElement> getOptions(){
 		expandSelect();
-		return webDriverWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(optionSelector));
+		log.info("getting options");
+		return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(optionSelector));
 	}
 
 	public List<String> getOptionTexts(){
+		log.info("get displayed option texts");
 		List<WebElement> options = getOptions();
 		List<String> optionTexts = new ArrayList<>();
 
@@ -51,6 +57,7 @@ public class GenericSelect extends PageComponent {
 	}
 
 	public boolean selectOptionWithText(String text){
+		log.info("selecting option with text" + text);
 		List<WebElement> options = getOptions();
 
 
@@ -61,10 +68,12 @@ public class GenericSelect extends PageComponent {
 				return true;
 			}
 		}
+		log.info(text + " option not found, could not select it");
 		return false;
 	}
 
 	public boolean selectFirstOption(){
+		log.info("selecting first option");
 		List<WebElement> options = getOptions();
 
 		WebElement option = options.get(1);
@@ -75,13 +84,16 @@ public class GenericSelect extends PageComponent {
 
 
 	public String getSelectedValue() {
+		log.info("getting current selected value");
 		return currentValueElement.getText().trim();
 	}
 
 	public boolean selectOptionByText(String text) {
+		log.info("(2) selecting option with text" + text);
+
 		expandoButton.click();
 
-		List<WebElement> options = webDriverWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(optionSelector));
+		List<WebElement> options = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(optionSelector));
 		for (WebElement option : options) {
 			String optionDomain = option.getText().trim();
 			if(optionDomain.equalsIgnoreCase(text)){
@@ -90,11 +102,13 @@ public class GenericSelect extends PageComponent {
 				return true;
 			}
 		}
-
+		log.info(text + " option not found, could not select it (2)" );
 		return false;
 	}
 
 	public boolean isLoaded() {
+		log.info("assert loaded state");
+		waitForElementToBeVisible(expandoButton);
 		if(!expandoButton.isDisplayed()){ return false;}
 		return currentValueElement.isDisplayed();
 	}

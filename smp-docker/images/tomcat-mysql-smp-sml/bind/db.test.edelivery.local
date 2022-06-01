@@ -1,0 +1,15 @@
+$ORIGIN .
+$TTL 604800	; 1 week
+test.edelivery.local	IN SOA	ns.test.edelivery.local. root.test.edelivery.local. (
+				1          ; serial
+				604800     ; refresh (1 week)
+				86400      ; retry (1 day)
+				2419200    ; expire (4 weeks)
+				604800     ; minimum (1 week)
+				)
+			NS	ns.test.edelivery.local.
+
+$ORIGIN test.edelivery.local.
+$TTL 60	; 1 minute
+ns			A	127.0.0.1
+CEF-SMP-002.publisher	60	IN	CNAME	localhost.

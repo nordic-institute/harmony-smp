@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
-        <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.2-SNAPSHOT</version>
-        <relativePath>../smp-parent-pom/pom.xml</relativePath>
+        <artifactId>smp-modules</artifactId>
+        <version>4.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>smp-soapui-tests</artifactId>
     <packaging>jar</packaging>
@@ -13,58 +13,141 @@
     <description>Interation tests suit for SMP</description>
 
     <properties>
-        <!-- url>http://localhost:7001/smp</url -->
+        <!-- Only selected modules are deployed -->
+        <maven.deploy.skip>false</maven.deploy.skip>
         <url>http://localhost:8080/smp</url>
         <SMPAdminUser></SMPAdminUser>
         <SMPAdminPassword></SMPAdminPassword>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-				<groupId>com.smartbear.soapui</groupId>
-                <artifactId>soapui-pro-maven-plugin</artifactId>
-                <version>5.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <outputFolder>${project.build.directory}/surefire-reports</outputFolder>
-                    <junitReport>true</junitReport>
-                    <printReport>true</printReport>
-                    <soapuiProperties>
-                        <property>
-                            <name>soapui.scripting.library</name>
-                            <value>${project.basedir}/groovy</value>
-                        </property>
-                        <property>
-                            <name>soapui.logroot</name>
-                            <value>${project.build.directory}/soapui/logs/</value>
-                        </property>
-                        <property>
-                            <name>http.nonProxyHosts</name>
-                            <value>localhost|127.*|[::1]</value>
-                        </property>
-                    </soapuiProperties>
-                    <testFailIgnore>true</testFailIgnore>
-                    <projectFile>${project.basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
-                    <testSuite>PASSING_AUTO_BAMBOO</testSuite>
-                    <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
-                    <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
-                    <!-- testCase>SMP079-EDELIVERY-2806-Basic Flow-BlueCote UTF8 chars</testCase -->
-                    <projectProperties>
-                        <value>url=${url}</value>
-                        <value>SMPAdminUser=${SMPAdminUser}</value>
-                        <value>SMPAdminPassword=${SMPAdminPassword}</value>
-                    </projectProperties>
-                </configuration>
+    <profiles>
+        <!-- soap ui -->
+        <profile>
+            <id>run-soapui</id>
+            <build>
+                <defaultGoal>test</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>com.smartbear.soapui</groupId>
+                        <artifactId>soapui-pro-maven-plugin</artifactId>
+                        <version>5.1.2</version>
+                        <configuration>
+                            <outputFolder>${build.directory}/soapui-reports/</outputFolder>
+                            <junitReport>true</junitReport>
+                            <printReport>true</printReport>
+                            <settingsFile>${basedir}/soapui/soapui-settings.xml</settingsFile>
+                            <soapuiProperties>
+                                <property>
+                                    <name>soapui.scripting.library</name>
+                                    <value>${basedir}/groovy</value>
+                                </property>
+                                <property>
+                                    <name>soapui.logroot</name>
+                                    <value>${sonar.jacoco.codeCoveragePath}/soapui/logs/</value>
+                                </property>
+                                <property>
+                                    <name>http.nonProxyHosts</name>
+                                    <value>localhost|127.*|[::1]</value>
+                                </property>
+                            </soapuiProperties>
+                            <testFailIgnore>true</testFailIgnore>
+                            <projectFile>${basedir}/soapui/SMP4.0-Generic-soapui-project.xml
+                            </projectFile>
+                            <testSuite>PASSING_AUTO_BAMBOO</testSuite>
+                            <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
+                            <projectProperties>
+                                <value>url=${url}</value>
+                                <value>SMPAdminUser=${SMPAdminUser}</value>
+                                <value>SMPAdminPassword=${SMPAdminPassword}</value>
+                            </projectProperties>
+                        </configuration>
 
-            </plugin>
-        </plugins>
-    </build>
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- extract classes so that JACOCO plugin can find the classes
+                    to generate a report (use this option to get Code coverage report for SOAPUI project)
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>smp-api</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>smp-server-library</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>smp</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>war</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <includes>eu/europa/ec/edelivery/smp/**/*.class</includes>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+        <!-- soap ui -->
+        <profile>
+            <id>dump-code-coverage</id>
+            <build>
+                <defaultGoal>test</defaultGoal>
+                <plugins>
+                    <!-- dump jacoco report from remote agent and generate report  -->
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.maven.plugin.version}</version>
+
+                        <configuration>
+                            <classDumpDir>${project.build.outputDirectory}../target/</classDumpDir>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>dump</goal>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- dataFile>${project.build.directory}/jacoco.exec</dataFile -->
+                                    <address>${sonar.jacoco.remoteAddress}</address>
+                                    <port>${sonar.jacoco.remotePort}</port>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

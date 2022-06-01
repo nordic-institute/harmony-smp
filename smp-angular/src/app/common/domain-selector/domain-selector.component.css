@@ -3,6 +3,6 @@
 	margin-right: 120px;
 }
 
-:host /deep/ .mat-select-trigger {
+:host ::ng-deep .mat-select-trigger {
   min-width: 140px;
 }

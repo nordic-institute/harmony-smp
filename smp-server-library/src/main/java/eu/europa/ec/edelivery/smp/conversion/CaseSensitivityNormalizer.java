@@ -17,12 +17,9 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.ListIterator;
 
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static eu.europa.ec.smp.api.Identifiers.asString;
@@ -33,11 +30,11 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
 @Component
 public class CaseSensitivityNormalizer {
 
+    protected static ConfigurationService configurationService;
 
-    @Autowired
-    ConfigurationService configurationService;
-
-
+    public CaseSensitivityNormalizer(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
+    }
 
     public ParticipantIdentifierType normalizeParticipantIdentifier(String scheme, String value) {
         List<String> caseSensitiveParticipantSchemes = configurationService.getCaseSensitiveParticipantScheme();
@@ -48,10 +45,16 @@ public class CaseSensitivityNormalizer {
         return new ParticipantIdentifierType(value, scheme);
     }
 
-    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
-        String scheme = participantIdentifier.getScheme();
-        String value = participantIdentifier.getValue();
+    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier, boolean schemeMandatory) {
+        ParticipantIdentifierType prtId = asParticipantId(asString(participantIdentifier),
+                schemeMandatory);
+        String scheme = prtId.getScheme();
+        String value = prtId.getValue();
         return normalizeParticipantIdentifier(scheme, value);
+    }
+
+    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
+        return normalize(participantIdentifier,  configurationService.getParticipantSchemeMandatory());
     }
 
     public DocumentIdentifier normalize(final DocumentIdentifier documentIdentifier) {
@@ -74,13 +77,6 @@ public class CaseSensitivityNormalizer {
     }
 
     public ParticipantIdentifierType normalizeParticipant(String participantId) {
-        return normalize(asParticipantId(participantId));
-    }
-
-    private static void toLowerCaseStringList(List<String> strings) {
-        ListIterator<String> iterator = strings.listIterator();
-        while (iterator.hasNext()) {
-            iterator.set(iterator.next().toLowerCase().trim());
-        }
+        return normalize(asParticipantId(participantId, configurationService.getParticipantSchemeMandatory()));
     }
 }

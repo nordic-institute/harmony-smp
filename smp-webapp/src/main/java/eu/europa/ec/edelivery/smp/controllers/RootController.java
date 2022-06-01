@@ -16,19 +16,21 @@ package eu.europa.ec.edelivery.smp.controllers;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.helpers.IOUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
-import static org.springframework.core.Ordered.LOWEST_PRECEDENCE;
 
 
 @RestController
@@ -39,25 +41,33 @@ public class RootController {
 
     /**
      * redirect if / to index.html.
+     *
      * @param model
      * @return
      */
-    @GetMapping(value={"/", "web/index.html"})
+    @GetMapping(value = {"/", "web/index.html"})
     @Order(HIGHEST_PRECEDENCE)
     public ModelAndView redirectOldIndexPath(ModelMap model) {
         return new ModelAndView("redirect:/index.html", model);
     }
 
-    @GetMapping( produces = {MediaType.TEXT_HTML_VALUE, MediaType.IMAGE_PNG_VALUE},
-            value={ "/index.html", "/favicon-16x16.png"})
+    @GetMapping(produces = {MediaType.TEXT_HTML_VALUE,
+            MediaType.IMAGE_PNG_VALUE,
+            "image/ico", "image/x-ico"
+    },
+            value = {"/index.html", "/favicon.png", "/favicon.ico"})
     @Order(HIGHEST_PRECEDENCE)
-    public byte[] getServiceGroup(HttpServletRequest httpReq) throws IOException {
+    public byte[] getServiceGroup(HttpServletRequest httpReq, HttpServletResponse httpRes) throws IOException {
         String host = httpReq.getRemoteHost();
-        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT,host,httpReq.getPathInfo());
-        String value = httpReq.getServletPath();
-        if(value!=null && value.endsWith("favicon-16x16.png")){
-            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon-16x16.png"));
-        }else {
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT, host, httpReq.getPathInfo());
+        String value = httpReq.getPathInfo();
+        if (value != null && value.endsWith("favicon.png")) {
+            httpRes.setContentType("image/x-ico");
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.png"));
+        } else if (value != null && value.endsWith("favicon.ico")) {
+            httpRes.setContentType(MediaType.IMAGE_PNG_VALUE);
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.ico"));
+        } else {
             return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/index.html"));
         }
     }
@@ -65,18 +75,19 @@ public class RootController {
     /**
      * redirect angular pages to index.html
      * solve the 404 error on refresh
+     *
      * @param model
      * @return
-*/
+     */
     //@GetMapping(value={"/ui","/ui/edit","/ui/search","/ui/search","/ui/domain","/ui/user"})
-    @GetMapping(value={"/ui"})
+    @GetMapping(value = {"/ui"})
     public ModelAndView redirectWithUsingRedirectPrefix(ModelMap model) {
         return new ModelAndView("redirect:/ui/index.html", model);
     }
 
-    public String getRemoteHost(HttpServletRequest httpReq){
+    public String getRemoteHost(HttpServletRequest httpReq) {
         String host = httpReq.getHeader("X-Forwarded-For");
-        return StringUtils.isBlank(host)?httpReq.getRemoteHost():host;
+        return StringUtils.isBlank(host) ? httpReq.getRemoteHost() : host;
     }
 
 

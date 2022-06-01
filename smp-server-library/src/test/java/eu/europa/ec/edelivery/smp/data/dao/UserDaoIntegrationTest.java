@@ -136,7 +136,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
         testInstance.persistFlushDetach(u);
 
         //test
-        Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USERNAME_1);
+        Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USERNAME_TOKEN_1);
         assertNotSame(u , ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());

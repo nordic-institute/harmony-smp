@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
 import {NavigationStart, Router} from '@angular/router';
 
 @Component({
@@ -36,7 +36,6 @@ export class PageHelperComponent implements OnInit {
       }
     });
   }
-
 
   openHelpDialog() {
     // window.open(this.pageName, "_blank");

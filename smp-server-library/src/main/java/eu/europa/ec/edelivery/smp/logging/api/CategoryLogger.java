@@ -17,7 +17,7 @@ import java.util.Set;
  * It uses custom {@link MDC} methods in order to add a prefix to each MDC key in order to
  * differentiate the Domibus key from keys used by third parties
  *
- * @author Cosmin Baciu (Domibus 3.3 + )
+ * @author Cosmin Baciu (Taken from Domibus 3.3 + )
  * @since 4.1
  */
 public class CategoryLogger extends LoggerWrapper implements Logger {
@@ -26,16 +26,17 @@ public class CategoryLogger extends LoggerWrapper implements Logger {
 
     protected MessageConverter messageConverter;
     protected String mdcPropertyPrefix;
-    protected String fqcn;
+    protected String fullyQualifiedClassName;
 
-    public CategoryLogger(Logger logger, String fqcn, MessageConverter messageConverter, String mdcPropertyPrefix) {
+
+    public CategoryLogger(Logger logger, String fullyQualifiedClassName, MessageConverter messageConverter, String mdcPropertyPrefix) {
         super(logger, LoggerWrapper.class.getName());
         if (messageConverter == null) {
             throw new IllegalArgumentException("MessageConverter cannot be null");
         }
         this.messageConverter = messageConverter;
         this.mdcPropertyPrefix = mdcPropertyPrefix;
-        this.fqcn = fqcn;
+        this.fullyQualifiedClassName = fullyQualifiedClassName;
     }
 
     public void trace(Marker marker, MessageCode key, Object... args) {
@@ -53,7 +54,7 @@ public class CategoryLogger extends LoggerWrapper implements Logger {
 
     protected void logTrace(Marker marker, String formattedMessage, Throwable t, Object[] args) {
         if (instanceofLAL) {
-            ((LocationAwareLogger) logger).log(marker, fqcn, LocationAwareLogger.TRACE_INT, formattedMessage, args, t);
+            ((LocationAwareLogger) logger).log(marker, fullyQualifiedClassName, LocationAwareLogger.TRACE_INT, formattedMessage, args, t);
         } else {
             logger.trace(marker, formattedMessage, args);
         }
@@ -74,7 +75,7 @@ public class CategoryLogger extends LoggerWrapper implements Logger {
 
     protected void logDebug(Marker marker, String message, Throwable t, Object... args) {
         if (instanceofLAL) {
-            ((LocationAwareLogger) logger).log(marker, fqcn, LocationAwareLogger.DEBUG_INT, message, args, t);
+            ((LocationAwareLogger) logger).log(marker, fullyQualifiedClassName, LocationAwareLogger.DEBUG_INT, message, args, t);
         } else {
             logger.debug(marker, message, args);
         }
@@ -95,7 +96,7 @@ public class CategoryLogger extends LoggerWrapper implements Logger {
 
     protected void logInfo(Marker marker, String formattedMessage, Throwable t, Object[] args) {
         if (instanceofLAL) {
-            ((LocationAwareLogger) logger).log(marker, fqcn, LocationAwareLogger.INFO_INT, formattedMessage, args, t);
+            ((LocationAwareLogger) logger).log(marker, fullyQualifiedClassName, LocationAwareLogger.INFO_INT, formattedMessage, args, t);
         } else {
             logger.info(marker, formattedMessage, args);
         }
@@ -116,7 +117,7 @@ public class CategoryLogger extends LoggerWrapper implements Logger {
 
     protected void logWarn(Marker marker, String message, Throwable t, Object[] args) {
         if (instanceofLAL) {
-            ((LocationAwareLogger) logger).log(marker, fqcn, LocationAwareLogger.WARN_INT, message, args, t);
+            ((LocationAwareLogger) logger).log(marker, fullyQualifiedClassName, LocationAwareLogger.WARN_INT, message, args, t);
         } else {
             logger.warn(marker, message, args);
         }
@@ -137,7 +138,7 @@ public class CategoryLogger extends LoggerWrapper implements Logger {
 
     protected void logError(Marker marker, String message, Throwable t, Object[] args) {
         if (instanceofLAL) {
-            ((LocationAwareLogger) logger).log(marker, fqcn, LocationAwareLogger.ERROR_INT, message, args, t);
+            ((LocationAwareLogger) logger).log(marker, fullyQualifiedClassName, LocationAwareLogger.ERROR_INT, message, args, t);
         } else {
             logger.error(marker, message, args);
         }

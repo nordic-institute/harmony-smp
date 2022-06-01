@@ -18,26 +18,24 @@ public class ServiceGroupRow extends PageComponent {
 	}
 
 
-//	private WebElement container;
+
 
 	@FindBy(tagName = "datatable-body-cell")
 	protected List<WebElement> cells;
+    @FindBy(css = "div.datatable-row-detail.ng-star-inserted > div.ng-star-inserted")
+	private WebElement emptyMetadataContent;
 
-	@FindBy(className = "table-button-expand")
+	@FindBy(css = ".ng-star-inserted.datatable-icon-right")
 	private WebElement expandMetadata;
 
-
 	public MetadataGrid expandMetadata() {
-		if(expandMetadata.getText().contains("+")){
 			expandMetadata.click();
 //		todo: find something better to wait for
-			waitForXMillis(1000);}
+			waitForXMillis(1000);
 		return new MetadataGrid(driver);
 	}
 	public void collapseMetadata(){
-		if(expandMetadata.getText().contains("-")){
-			expandMetadata.click();
-		}
+			driver.findElement(By.cssSelector(".ng-star-inserted.datatable-icon-down")).click();
 	}
 
 	public Integer getMetadataSize() {
@@ -56,8 +54,13 @@ public class ServiceGroupRow extends PageComponent {
 		return cells.get(5).findElement(By.tagName("a")).getAttribute("href").trim();
 	}
 
-	public String getExpandButtonText() {
-		return expandMetadata.getText().trim();
+	public boolean verifyMetadataExpandButton() {
+		return expandMetadata.isEnabled();
+	}
+
+	public boolean verifyMetadataCollapseButton() {
+		WebElement collapseButton = driver.findElement(By.cssSelector(".ng-star-inserted.datatable-icon-down"));
+		return collapseButton.isDisplayed() && collapseButton.isEnabled();
 	}
 
 	public boolean isMetadataExpanded() {
@@ -67,6 +70,11 @@ public class ServiceGroupRow extends PageComponent {
 			}
 		}catch (Exception e){ e.printStackTrace();}
 		return false;
+	}
+
+	public String emptyMetadataContentText()
+	{
+		return emptyMetadataContent.getText();
 	}
 
 

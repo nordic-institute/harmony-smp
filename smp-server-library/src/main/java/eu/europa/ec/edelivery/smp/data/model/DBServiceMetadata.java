@@ -14,10 +14,10 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 
@@ -33,24 +33,27 @@ import java.util.Objects;
         @NamedQuery(name = "DBServiceMetadata.deleteById", query = "DELETE FROM DBServiceMetadata d WHERE d.id = :id"),
 })
 @NamedNativeQueries({
-        @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifierAndSMDdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID \n" +
-                " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID\n" +
-                " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch" +
-                " AND md.DOCUMENT_IDENTIFIER=:docId AND (:docSch IS NULL OR md.DOCUMENT_SCHEME=:docSch)", resultClass=DBServiceMetadata.class),
-        @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID \n" +
-                " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID\n" +
-                " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch", resultClass=DBServiceMetadata.class)
+        @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifierAndSMDdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID " +
+                " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID" +
+                " where sg.PARTICIPANT_IDENTIFIER = :partcId " +
+                " AND (:partcSch IS NULL OR sg.PARTICIPANT_SCHEME= :partcSch) " +
+                " AND md.DOCUMENT_IDENTIFIER=:docId " +
+                " AND (:docSch IS NULL OR md.DOCUMENT_SCHEME=:docSch)", resultClass = DBServiceMetadata.class),
+        @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID " +
+                " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID " +
+                " where sg.PARTICIPANT_IDENTIFIER = :partcId " +
+                " AND (:partcSch IS NULL OR sg.PARTICIPANT_SCHEME= :partcSch) ", resultClass = DBServiceMetadata.class)
 })
 public class DBServiceMetadata extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ",allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgmd_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SERVICE_METADATA_SEQ")
+    @GenericGenerator(name = "SMP_SERVICE_METADATA_SEQ", strategy = "native")
     @Column(name = "ID")
     @ColumnDescription(comment = "Shared primary key with master table SMP_SERVICE_METADATA")
     Long id;
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "FK_SG_DOM_ID", nullable = false)
     })
@@ -64,19 +67,10 @@ public class DBServiceMetadata extends BaseEntity {
     String documentIdentifierScheme;
 
     @OneToOne(mappedBy = "serviceMetadata",
-            cascade=CascadeType.ALL,
+            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true)
     private DBServiceMetadataXml serviceMetadataXml;
-
-    @Column(name = "CREATED_ON" , nullable = false)
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    LocalDateTime lastUpdatedOn;
-
-
-    public DBServiceMetadata() {
-    }
 
     @Override
     public Long getId() {
@@ -121,8 +115,7 @@ public class DBServiceMetadata extends BaseEntity {
             if (this.serviceMetadataXml != null) {
                 this.serviceMetadataXml.setServiceMetadata(null);
             }
-        }
-        else {
+        } else {
             if (this.serviceMetadataXml == null) {
                 this.serviceMetadataXml = new DBServiceMetadataXml();
                 this.serviceMetadataXml.setServiceMetadata(this);
@@ -164,38 +157,6 @@ public class DBServiceMetadata extends BaseEntity {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), id);
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if(createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
     }
 }

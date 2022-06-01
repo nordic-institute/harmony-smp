@@ -13,22 +13,31 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.hibernate.envers.Audited;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
  * Created by gutowpa on 23/01/2018.
  */
+@MappedSuperclass
 public abstract class BaseEntity implements Serializable {
     private static final long serialVersionUID = 1905122041950251200L;
 
     public abstract Object getId();
 
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public abstract LocalDateTime getCreatedOn();
-    public abstract LocalDateTime getLastUpdatedOn();
+    @Audited
+    @Column(name = "CREATED_ON", nullable = false)
+    OffsetDateTime createdOn;
+    @Audited
+    @Column(name = "LAST_UPDATED_ON", nullable = false)
+    OffsetDateTime lastUpdatedOn;
 
     @Override
     public boolean equals(Object o) {
@@ -41,6 +50,35 @@ public abstract class BaseEntity implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (createdOn == null) {
+            createdOn = OffsetDateTime.now();
+        }
+        lastUpdatedOn = OffsetDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        lastUpdatedOn = OffsetDateTime.now();
+    }
+
+    public OffsetDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(OffsetDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public OffsetDateTime getLastUpdatedOn() {
+        return lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(OffsetDateTime lastUpdatedOn) {
+        this.lastUpdatedOn = lastUpdatedOn;
     }
 
 

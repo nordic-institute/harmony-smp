@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>ServiceGroup Extension Wizard</h2>
 
-<mat-dialog-content>
+<mat-dialog-content [class]="'flex-dialog-content'">
   <form [formGroup]="dialogForm">
     <mat-card>
       <mat-card-content>
@@ -20,7 +20,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <div class="group-action-button">
     <button mat-raised-button color="primary" [mat-dialog-close]="true"
             [disabled]="!dialogForm.valid">
       <mat-icon>check_circle</mat-icon>
@@ -31,5 +30,5 @@
       <mat-icon>cancel</mat-icon>
       <span>Cancel</span>
     </button>
-  </div>
+
 </mat-dialog-actions>

@@ -13,15 +13,25 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.edelivery.smp.error.ServiceErrorControllerAdvice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.util.UrlPathHelper;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.TimeZone;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -36,14 +46,22 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
         "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.edelivery.smp.monitor",
         "eu.europa.ec.edelivery.smp.ui"})
-@Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
+@Import({GlobalMethodSecurityConfig.class, ServiceErrorControllerAdvice.class})
 public class SmpWebAppConfig implements WebMvcConfigurer {
+    private static final Logger LOG = LoggerFactory.getLogger(SmpWebAppConfig.class);
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*");
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         registry.setOrder(HIGHEST_PRECEDENCE)
-                .addResourceHandler("/index.html", "/favicon-16x16.png").addResourceLocations("/static_resources/");
+                .addResourceHandler("/index.html", "/favicon.png", "/favicon.ico").addResourceLocations("/html/");
 
         registry.setOrder(HIGHEST_PRECEDENCE - 2)
                 .addResourceHandler("/ui/rest/").addResourceLocations("/"); // ui rest resources
@@ -53,9 +71,6 @@ public class SmpWebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        //Default value (true) would break @PathVariable Identifiers containing dot character "."
-        configurer.setUseSuffixPatternMatch(false);
-
         // do not decode path before mapping - that cause problems to identifiers with /
         UrlPathHelper urlPathHelper = configurer.getUrlPathHelper();
         if (urlPathHelper == null) {
@@ -63,5 +78,22 @@ public class SmpWebAppConfig implements WebMvcConfigurer {
             configurer.setUrlPathHelper(urlPathHelper);
         }
         urlPathHelper.setUrlDecode(false);
+    }
+
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        // Configure Object Mapper with format date as: "2021-12-01T14:52:00Z"
+        LOG.debug("Register MappingJackson2HttpMessageConverter.");
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        converter.setObjectMapper(objectMapper);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        dateFormat.setTimeZone(TimeZone.getDefault());
+        objectMapper.setDateFormat(dateFormat);
+
+        converters.add(0, converter);
     }
 }
