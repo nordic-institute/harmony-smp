@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script builds docker images for SMP oracle/weblogic environment. Docker images for database and weblogic are from  
-# https://github.com/oracle/docker-images 
+# Script builds docker images for SMP oracle/weblogic environment. Docker images for database and weblogic are from
+# https://github.com/oracle/docker-images
 
 # Prerequisites:
 # 1. From oracle download:
@@ -11,9 +11,12 @@
 # and put them to folder ${ORACLE_ARTEFACTS}
 #
 # 2. build SMP mvn clean install
-# 3. run the scripts with arguments 
+# 3. run the scripts with arguments
 # build-docker-images.sh  -f build-docker-images.sh  -f ${oracle_artefact_folder}
- 
+
+#ORA_VERSION="19.3.0"
+#ORA_EDITION="se2"
+#ORA_SERVICE="ORCLPDB1"
 
 ORA_VERSION="11.2.0.2"
 ORA_EDITION="xe"
@@ -50,6 +53,7 @@ while getopts v:o:s:c:p: option; do
   esac
 done
 
+
 if [[ -z "${SMP_VERSION}" ]]; then
   # get version from setup file
   echo "Get version from the pom: $(pwd)"
@@ -62,17 +66,18 @@ if [[ -z "${SMP_VERSION}" ]]; then
 
 fi
 
-DIRNAME=`dirname "$0"`
+SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-example/target/"
+
+DIRNAME=$(dirname "$0")
 cd "$DIRNAME"
 DIRNAME="$(pwd -P)"
 echo "*****************************************************************"
 echo "* SMP artefact folders: $SMP_ARTEFACTS, (Clear folder after build: $SMP_ARTEFACTS_CLEAR )"
+echo "* Plugin example: $SMP_PLUGIN_EXAMPLE "
 echo "* Build SMP image for version $SMP_VERSION"
 echo "* Oracle artefact folders: $ORACLE_ARTEFACTS"
 echo "*****************************************************************"
 echo ""
-
-
 
 # -----------------------------------------------------------------------------
 # validate all necessary artefacts and prepare files to build images
@@ -113,58 +118,56 @@ validateAndPrepareArtefacts() {
     cp "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}" ./oracle/OracleJava/java-8/
   fi
 
- # check weblogic 
-  if [[ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ]]
-  then
+  # check weblogic
+  if [[ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ]]; then
     echo "Weblogic artefacts '${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}' not found."
-    exit 1;
+    exit 1
   else
     # copy artefact to docker build folder
-    cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}"  ./oracle/weblogic-12.2.1.3/
+    cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ./oracle/weblogic-12.2.1.3/
   fi
- 
 
-  if  [[ ! -d "./tomcat-mysql/artefacts/" ]]
-  then
-    mkdir -p "./tomcat-mysql/artefacts/"
+
+
+  if [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]; then
+    mkdir -p "./tomcat-mysql-smp-sml/artefacts"
   fi
-    
 
-  # SMP artefats 
-  if [[ ! -f "${SMP_ARTEFACTS}/smp.war" ]]
-  then
+  # SMP artefats
+  if [[ ! -f "${SMP_ARTEFACTS}/smp.war" ]]; then
     echo "SMP artefact   '${SMP_ARTEFACTS}/smp.war' not found. Was project built!"
-    exit 1;
+    exit 1
   else
     # copy artefact to docker build folder
     # for weblogic
     cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-12.2.1.3-smp/smp.war
     # for mysql tomcat
-    cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql/artefacts/smp.war
-    #cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql-smp-sml/artefacts/smp.war
+    cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql-smp-sml/artefacts/smp.war
   fi
 
- # SMP setup zip   
-  if [[ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]]
-  then
-    echo "SMP setup boundle  '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found. Was project built!"
-    exit 1;
+  # SMP setup zip
+  if [[ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]]; then
+    echo "SMP setup bundle  '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found. Was project built!"
+    exit 1
   else
     # copy artefact to docker build folder
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-12.2.1.3-smp/smp-setup.zip
-    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql/artefacts/smp-setup.zip
-    #cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
+    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
   fi
 
-
-
+  if [[ ! -f "${SMP_PLUGIN_EXAMPLE}" ]]; then
+    echo "SMP SPI plugin  '${SMP_PLUGIN_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
+    ls -ltr ${SMP_ARTEFACTS}
+    cp "${SMP_ARTEFACTS}/smp-spi-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
+  else
+    cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
+  fi
 }
 
-
 # -----------------------------------------------------------------------------
-# build docker images 
-# -----------------------------------------------------------------------------    
- buildImages() {
+# build docker images
+# -----------------------------------------------------------------------------
+buildImages() {
 
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
@@ -188,27 +191,24 @@ validateAndPrepareArtefacts() {
 
   # build SMP deployment.
   docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2.1.3-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
-
   # build tomcat mysql image  deployment.
-  docker build -t "smp-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql/ --build-arg SMP_VERSION=${SMP_VERSION}
+  docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
 
 }
 
-function pushImageToDockerhub {
+function pushImageToDockerhub() {
 
   if [[ "V$SMP_IMAGE_PUBLISH" == "Vtrue" ]]; then
     # login to docker
     docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}" "${DOCKER_REGISTRY_HOST}"
     # push images
-    pushImageIfExisting "smp-tomcat-mysql:${SMP_VERSION}"
     pushImageIfExisting "smp-sml-tomcat-mysql:${SMP_VERSION}"
     pushImageIfExisting "smp-weblogic-122:${SMP_VERSION}"
     pushImageIfExisting "smp-oradb-11.2.0.2-xe:${SMP_VERSION}"
   fi
 }
 
-
-function pushImageIfExisting {
+function pushImageIfExisting() {
   if [[ "x$(docker images -q "${1}")" != "x" ]]; then
     local TAGGED_IMAGE="${DOCKER_REGISTRY_HOST:+$DOCKER_REGISTRY_HOST/}${DOCKER_FOLDER:+$DOCKER_FOLDER/}${1}"
     docker tag "${1}" "${TAGGED_IMAGE}"
@@ -230,8 +230,8 @@ cleanArtefacts() {
   rm "./weblogic-12.2.1.3-smp/smp.war"
   rm "./weblogic-12.2.1.3-smp/smp-setup.zip"
 
-  # clear also the tomcat/mysql image  
-  rm -rf "./tomcat-mysql/artefacts/*.*"
+  # clear also the tomcat/mysql image
+  rm -rf "./tomcat-mysql-smp-sml/artefacts/*.*"
 
   if [[ "V$SMP_ARTEFACTS_CLEAR" == "Vtrue" ]]; then
     rm -rf "${SMP_ARTEFACTS}/smp-setup.zip"
@@ -240,9 +240,7 @@ cleanArtefacts() {
 
 }
 
-
 validateAndPrepareArtefacts
 buildImages
 pushImageToDockerhub
 cleanArtefacts
-

@@ -3,13 +3,16 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
+import eu.europa.ec.edelivery.smp.config.ServicesBeansConfiguration;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.cron.CronTriggerConfig;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.services.mail.MailService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
@@ -40,11 +43,15 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {H2JPATestConfig.class,
-        CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
+        CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class, MailService.class,
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
-        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class,
+        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class, AlertDao.class,
         UITruststoreService.class, UIKeystoreService.class, ConversionTestConfig.class, SMLIntegrationService.class,
-        CRLVerifierService.class, ConfigurationService.class})
+        CRLVerifierService.class,
+        ConfigurationService.class,
+        ServicesBeansConfiguration.class,
+        AlertService.class,
+        CronTriggerConfig.class})
 @Sql(scripts = {"classpath:cleanup-database.sql",
         "classpath:basic_conf_data-h2.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
@@ -105,8 +112,10 @@ public abstract class AbstractServiceIntegrationTest {
 
         DBUser u1 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
         DBUser u2 = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_2);
+        DBUser u3 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_2);
         userDao.persistFlushDetach(u1);
         userDao.persistFlushDetach(u2);
+        userDao.persistFlushDetach(u3);
 
         DBServiceGroup sg1d1 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         DBServiceMetadata sg1md1 = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
@@ -121,6 +130,16 @@ public abstract class AbstractServiceIntegrationTest {
         sg2d1.getUsers().add(u1);
         sg2d1.addDomain(testDomain01);
         serviceGroupDao.update(sg2d1);
+
+
+        DBServiceGroup sg2NoScheme = TestDBUtils.createDBServiceGroup(TEST_SG_ID_NO_SCHEME, null);
+        DBServiceMetadata sg1mdNoScheme = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_NO_SCHEME, null,
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
+        sg2NoScheme.addDomain(testDomain01);
+        sg2NoScheme.getServiceGroupDomains().get(0).addServiceMetadata(sg1mdNoScheme);
+        sg2NoScheme.getUsers().add(u1);
+        sg2NoScheme.getUsers().add(u2);
+        serviceGroupDao.persistFlushDetach(sg2NoScheme);
     }
 
     /**
@@ -143,7 +162,6 @@ public abstract class AbstractServiceIntegrationTest {
      *      - Metadata: /
      *
      */
-
     public void prepareDatabaseForMultipeDomainEnv() {
 
         prepareDatabaseForSingleDomainEnv();
@@ -155,7 +173,6 @@ public abstract class AbstractServiceIntegrationTest {
         DBServiceGroup sg2d2 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_3, TEST_SG_SCHEMA_1);
         sg2d2.getUsers().add(u1);
         serviceGroupDao.update(sg2d2);
-
     }
 
 

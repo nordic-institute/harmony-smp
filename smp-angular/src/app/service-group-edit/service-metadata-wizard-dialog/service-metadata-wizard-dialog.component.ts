@@ -1,11 +1,12 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import {CertificateService} from "../../user/certificate.service";
 import {CertificateRo} from "../../user/certificate-ro.model";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {ServiceMetadataWizardRo} from "./service-metadata-wizard-edit-ro.model";
+import {GlobalLookups} from "../../common/global-lookups";
 
 @Component({
   selector: 'service-metadata-wizard-dialog',
@@ -16,6 +17,7 @@ export class ServiceMetadataWizardDialogComponent {
 
   static readonly NEW_MODE = 'New ServiceMetadata XML';
   static readonly EDIT_MODE = 'Edit ServiceMetadata XML';
+  static readonly EBCORE_IDENTIFIER_PREFIX = "urn:oasis:names:tc:ebcore:partyid-type:";
 
   isNewServiceMetadata: boolean;
   current: ServiceMetadataWizardRo
@@ -29,9 +31,10 @@ export class ServiceMetadataWizardDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient,
     private dialogRef: MatDialogRef<ServiceMetadataWizardDialogComponent>,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     private dialogFormBuilder: FormBuilder,
     private certificateService: CertificateService,
+    private lookups: GlobalLookups,
   ) {
     this.isNewServiceMetadata = this.data.isNewServiceMetadata;
 
@@ -73,7 +76,7 @@ export class ServiceMetadataWizardDialogComponent {
 
   uploadCertificate(event) {
     const file = event.target.files[0];
-    this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
+    this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
         if (res && res.certificateId) {
 
           this.dialogForm.patchValue({
@@ -96,15 +99,13 @@ export class ServiceMetadataWizardDialogComponent {
 
   onUpload() {
     // this.http is the injected HttpClient
-    this.certificateService.uploadCertificate$(this.selectedFile)
+    this.certificateService.validateCertificate(this.selectedFile)
       .subscribe(event => {
         console.log(event); // handle event here
       });
   }
 
   public getCurrent(): ServiceMetadataWizardRo {
-
-
 
     this.current.participantIdentifier = this.dialogForm.controls['participantIdentifier'].value;
     this.current.participantScheme = this.dialogForm.controls['participantScheme'].value;
@@ -122,16 +123,32 @@ export class ServiceMetadataWizardDialogComponent {
     return this.current;
   }
 
+  getParticipantElementXML(): string {
+    let schema = this.dialogForm.controls['participantScheme'].value;
+    let value= this.dialogForm.controls['participantIdentifier'].value;
+    if (!!schema && this.lookups.cachedApplicationConfig.concatEBCorePartyId &&
+      schema.startsWith(ServiceMetadataWizardDialogComponent.EBCORE_IDENTIFIER_PREFIX) ) {
+      value = schema + ":" +  value;
+      schema =null;
+    }
+
+    return  '<ParticipantIdentifier ' +
+              (!schema?'': 'scheme="' + this.xmlSpecialChars(schema) + '"')+ '>'
+      + this.xmlSpecialChars(value)+ '</ParticipantIdentifier>';
+  }
+
+  getDocumentElementXML(): string {
+    return  ' <DocumentIdentifier ' +
+      (!this.dialogForm.controls['documentIdentifierScheme'].value?'': 'scheme="'
+        + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '"') +
+      '>' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>';
+  }
   getServiceMetadataXML() {
 
     let exampleXML = '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">' +
       '\n    <ServiceInformation>' +
-      '\n        <ParticipantIdentifier scheme="' + this.xmlSpecialChars(this.dialogForm.controls['participantScheme'].value) + '">'
-      + this.xmlSpecialChars(this.dialogForm.controls['participantIdentifier'].value)+ '</ParticipantIdentifier>' +
-      '\n        <DocumentIdentifier ' +
-      (!this.dialogForm.controls['documentIdentifierScheme'].value?'': 'scheme="'
-        + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '"') +
-      '>' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>' +
+      '\n        ' + this.getParticipantElementXML() +
+      '\n        ' + this.getDocumentElementXML() +
       '\n        <ProcessList>' +
       '\n            <Process>' +
       '\n                <ProcessIdentifier ' +

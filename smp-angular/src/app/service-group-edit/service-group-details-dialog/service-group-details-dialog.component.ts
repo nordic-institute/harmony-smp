@@ -1,9 +1,9 @@
 import {ChangeDetectorRef, Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from "rxjs/internal/Observable";
 import {HttpClient} from "@angular/common/http";
 import {SmpConstants} from "../../smp.constants";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {ServiceGroupEditRo} from "../service-group-edit-ro.model";
@@ -12,7 +12,7 @@ import {ServiceGroupExtensionWizardDialogComponent} from "../service-group-exten
 import {ServiceGroupValidationRo} from "./service-group-validation-edit-ro.model";
 import {DomainRo} from "../../domain/domain-ro.model";
 import {ServiceGroupDomainEditRo} from "../service-group-domain-edit-ro.model";
-import {ConfirmationDialogComponent} from "../../common/confirmation-dialog/confirmation-dialog.component";
+import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SecurityService} from "../../security/security.service";
 import {UserRo} from "../../user/user-ro.model";
 import {ServiceGroupValidationErrorCodeModel} from "./service-group-validation-error-code.model";
@@ -67,7 +67,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
               public dialog: MatDialog,
               protected http: HttpClient,
               public dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent>,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
               public lookups: GlobalLookups,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private dialogFormBuilder: FormBuilder,
@@ -110,14 +110,18 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
         this.current.status === SearchTableEntityStatus.NEW ? Validators.required : null),
       'participantScheme': new FormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
         this.current.status === SearchTableEntityStatus.NEW ?
-          [Validators.required, Validators.pattern(this.participantSchemePattern)] : null),
+          [Validators.pattern(this.participantSchemePattern)] : null),
       'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1),
-        this.multiDomainOn(this.lookups.cachedApplicationInfo.smlParticipantMultiDomainOn)]),
+        this.multiDomainOn(this.lookups.cachedApplicationConfig.smlParticipantMultiDomainOn)]),
       'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
       'extension': new FormControl({value: ''}, []),
 
 
     });
+    if (!!lookups.cachedApplicationConfig.partyIDSchemeMandatory && this.current.status == SearchTableEntityStatus.NEW){
+      this.dialogForm.controls['participantScheme'].addValidators(Validators.required) ;
+    }
+
     // update values
     this.dialogForm.controls['participantIdentifier'].setValue(this.current.participantIdentifier);
     this.dialogForm.controls['participantScheme'].setValue(this.current.participantScheme);
@@ -130,7 +134,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     // retrieve xml extension for this service group
     if (this.current.status !== SearchTableEntityStatus.NEW && !this.current.extension) {
       // init domains
-      this.extensionObserver = this.http.get<ServiceGroupValidationRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION + '/' + this.current.id);
+      this.extensionObserver = this.http.get<ServiceGroupValidationRo>(SmpConstants.REST_PUBLIC_SERVICE_GROUP_ENTITY_EXTENSION.replace('{service-group-id}',this.current.id+""));
       this.extensionObserver.subscribe((res: ServiceGroupValidationRo) => {
         this.dialogForm.get('extension').setValue(res.extension);
         this.current.extension = res.extension;
@@ -146,36 +150,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.changeDetector.detectChanges()
   }
 
-
-  getDomainCodeClass(domain) {
-    let domainWarning = this.getDomainConfigurationWarning(domain);
-    if (!!domainWarning) {
-      return 'domainWarning';
-    }
-    return "";
-  }
-  getDomainConfigurationWarning(domain: DomainRo) {
-    let msg =null;
-    if (!domain.signatureKeyAlias) {
-      msg = "The domain should have a defined signature CertAlias."
-    }
-    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
-      if( !domain.smlSmpId || !domain.smlClientCertHeader ){
-        msg = (!msg?"": msg+" ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
-      }
-    }
-    if(msg) {
-       msg = msg + " To use domain first fix domain configuration."
-    }
-    return msg;
-  }
-  isDomainProperlyConfigured(domain: DomainRo){
-    return !this.getDomainConfigurationWarning(domain);
-  }
-
   submitForm() {
     this.checkValidity(this.dialogForm);
-
 
     let request: ServiceGroupValidationRo = {
       serviceGroupId: this.current.id,
@@ -227,12 +203,12 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   }
 
 
-  compareTableItemById(item1, item2): boolean {
-    return item1.id === item2.id;
+  compareUserByUserId(item1, item2): boolean {
+    return item1.userId === item2.userId;
   }
 
   compareDomain(domain: DomainRo, serviceGroupDomain: ServiceGroupDomainEditRo): boolean {
-    return domain.id === serviceGroupDomain.domainId;
+    return domain.domainCode === serviceGroupDomain.domainCode;
   }
 
 
@@ -358,8 +334,6 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
           }
         })
       }
-
-
     }
   }
 
@@ -383,5 +357,9 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
 
   isEmpty(str): boolean {
     return (!str || 0 === str.length);
+  }
+
+  clearAlert() {
+    this.extensionValidationMessage = null;
   }
 }

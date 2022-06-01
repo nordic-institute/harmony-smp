@@ -15,9 +15,7 @@ package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
@@ -66,6 +64,33 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         prepareDatabaseForSingleDomainEnv();
         setDatabaseProperty(SMPPropertyEnum.SML_ENABLED,"false");
     }
+
+    @Test
+    public void isServiceGroupOwnerForMetadataID(){
+        // given
+        DBUser user = userDao.findUserByUsername(USERNAME_1).get();
+        DBServiceMetadata metadata = serviceMetadataDao.findServiceMetadata(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1).get();
+        // when
+        Optional<DBServiceGroupDomain> result = serviceGroupDao.findServiceGroupDomainForUserIdAndMetadataId(user.getId(), metadata.getId());
+        // then
+        assertTrue(result.isPresent());
+    }
+
+    @Test
+    public void isServiceGroupOwnerForMetadataIDFailed(){
+        // given
+        DBUser user = userDao.findUserByUsername(USERNAME_2).get();
+        DBServiceMetadata metadata = serviceMetadataDao.findServiceMetadata(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1).get();
+        // when
+        Optional<DBServiceGroupDomain> result = serviceGroupDao.findServiceGroupDomainForUserIdAndMetadataId(user.getId(), metadata.getId());
+        // then
+        assertFalse(result.isPresent());
+    }
+
+
+
     @Test
     public void createAndReadPositiveScenarioForNullDomain() throws IOException {
         // given
@@ -75,8 +100,8 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         DBDomain domain = domainDao.getTheOnlyDomain().get();
         assertNotNull(domain);
         // when
-        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_1,
-                TestConstants.USERNAME_1);
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_TOKEN_1,
+                TestConstants.USERNAME_TOKEN_1);
 
         Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
 
@@ -97,8 +122,8 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
        assertNotNull(domain);
 
        // when
-       boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_1,
-               TestConstants.USERNAME_1);
+       boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_TOKEN_1,
+               TestConstants.USERNAME_TOKEN_1);
 
 
        Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
@@ -123,8 +148,8 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         assertFalse(Arrays.equals(extension, newExtension)); // extension updated
 
         // when
-        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_1,
-                TestConstants.USERNAME_1);
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_TOKEN_1,
+                TestConstants.USERNAME_TOKEN_1);
 
 
         Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
@@ -142,15 +167,15 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(SG_NOT_EXISTS.getMessage("service-group", "not-existing"));
         // when-then
-        testInstance.getServiceGroup(asParticipantId("not-existing::service-group") );
+        testInstance.getServiceGroup(asParticipantId("not-existing::service-group", false) );
     }
 
     @Test
     public void saveAndDeletePositiveScenario() throws IOException {
         // given
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
-        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_1,
-                TestConstants.USERNAME_1);
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_TOKEN_1,
+                TestConstants.USERNAME_TOKEN_1);
         assertTrue(bCreated);
         serviceGroupDao.clearPersistenceContext();
 
@@ -252,7 +277,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         expectedExeption.expectMessage(DOMAIN_NOT_EXISTS.getMessage(domain));
 
         //execute
-        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_1, USERNAME_1);
+        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_TOKEN_1, USERNAME_TOKEN_1);
     }
 
     @Test
@@ -265,12 +290,11 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
                 DomainService.DOMAIN_ID_PATTERN.pattern()));
 
         //execute
-        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_1, USERNAME_1);
+        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_TOKEN_1, USERNAME_TOKEN_1);
     }
 
     @Test
     public void urlsAreHandledByWebLayer() throws Throwable {
-
         //when
         ParticipantIdentifierType pt = new ParticipantIdentifierType();
         pt.setValue(TEST_SG_ID_2);

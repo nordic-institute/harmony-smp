@@ -1,14 +1,21 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Public SmpInfoRO properties.
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 public class SmpInfoRO implements Serializable {
     private static final long serialVersionUID = -49712226560325302L;
     String version;
-    boolean smlIntegrationOn;
-    boolean smlParticipantMultiDomainOn;
-
+    String ssoAuthenticationLabel;
+    String ssoAuthenticationURI;
     String contextPath;
+    List<String> authTypes = new ArrayList<>();;
 
     public String getVersion() {
         return version;
@@ -16,14 +23,6 @@ public class SmpInfoRO implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public boolean isSmlIntegrationOn() {
-        return smlIntegrationOn;
-    }
-
-    public void setSmlIntegrationOn(boolean smlIntegrationOn) {
-        this.smlIntegrationOn = smlIntegrationOn;
     }
 
     public String getContextPath() {
@@ -34,11 +33,27 @@ public class SmpInfoRO implements Serializable {
         this.contextPath = contextPath;
     }
 
-    public boolean isSmlParticipantMultiDomainOn() {
-        return smlParticipantMultiDomainOn;
+    public String getSsoAuthenticationLabel() {
+        return ssoAuthenticationLabel;
     }
 
-    public void setSmlParticipantMultiDomainOn(boolean smlParticipantMultidomainOn) {
-        this.smlParticipantMultiDomainOn = smlParticipantMultidomainOn;
+    public void setSsoAuthenticationLabel(String ssoAuthenticationLabel) {
+        this.ssoAuthenticationLabel = ssoAuthenticationLabel;
+    }
+
+    public String getSsoAuthenticationURI() {
+        return ssoAuthenticationURI;
+    }
+
+    public void setSsoAuthenticationURI(String ssoAuthenticationURI) {
+        this.ssoAuthenticationURI = ssoAuthenticationURI;
+    }
+
+    public List<String> getAuthTypes() {
+        return authTypes;
+    }
+
+    public void addAuthTypes(List<String> authTypes) {
+        this.authTypes.addAll(authTypes);
     }
 }

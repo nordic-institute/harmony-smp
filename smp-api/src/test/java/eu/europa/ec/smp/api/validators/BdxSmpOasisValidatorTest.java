@@ -79,7 +79,7 @@ public class BdxSmpOasisValidatorTest {
     }
 
     public byte[] loadXMLFileAsByteArray(String path) throws IOException {
-        URL fileUrl = BdxSmpOasisValidatorTest.class.getResource("/XMLValidation/"+path);
+        URL fileUrl = BdxSmpOasisValidatorTest.class.getResource("/XMLValidation/" + path);
         return IOUtils.toByteArray(fileUrl.openStream());
     }
 }

@@ -66,7 +66,44 @@ public class X509CertificateTestUtils {
                     BigInteger.valueOf(iSerial++), startDate, expiryDate, new X500Name(sbj),
                     SubjectPublicKeyInfo.getInstance(key.getPublic().getEncoded()));
 
-            ContentSigner sigGen = new JcaContentSignerBuilder("SHA1WithRSAEncryption")
+            ContentSigner sigGen = new JcaContentSignerBuilder("SHA256WITHRSA")
+                    .setProvider("BC").build(issuerKey ==null?key.getPrivate():issuerKey);
+
+            certs[--index] = new JcaX509CertificateConverter().setProvider("BC").getCertificate(certBuilder.build(sigGen));
+            issuer= sbj;
+            issuerKey = key.getPrivate();
+
+        }
+        return certs;
+    }
+
+    /**
+     *  Method generates certificate chain
+     * @param subjects
+     * @param certificatePoliciesOids
+     * @param startDate
+     * @param expiryDate
+     * @return
+     * @throws Exception
+     */
+    public static X509Certificate[] createCertificateChain(String[] subjects,  List<List<String>> certificatePoliciesOids,  Date startDate, Date expiryDate) throws Exception {
+
+        String issuer = null;
+        PrivateKey issuerKey = null;
+        long iSerial = 10000;
+        X509Certificate[] certs = new X509Certificate[subjects.length];
+
+        int index = subjects.length;
+        for (String sbj: subjects){
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            keyGen.initialize(1024);
+            KeyPair key = keyGen.generateKeyPair();
+
+            X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(new X500Name(issuer ==null? sbj:issuer),
+                    BigInteger.valueOf(iSerial++), startDate, expiryDate, new X500Name(sbj),
+                    SubjectPublicKeyInfo.getInstance(key.getPublic().getEncoded()));
+
+            ContentSigner sigGen = new JcaContentSignerBuilder("SHA256WITHRSA")
                     .setProvider("BC").build(issuerKey ==null?key.getPrivate():issuerKey);
 
             certs[--index] = new JcaX509CertificateConverter().setProvider("BC").getCertificate(certBuilder.build(sigGen));

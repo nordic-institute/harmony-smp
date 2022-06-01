@@ -11,7 +11,7 @@
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<url>http://localhost:57005/smp</url>
+		<url>http://localhost:8080/smp</url>
 		<gecko.driver.path>drivers/geckodriver.exe</gecko.driver.path>
 		<chrome.driver.path>drivers/chromedriver.exe</chrome.driver.path>
 	</properties>

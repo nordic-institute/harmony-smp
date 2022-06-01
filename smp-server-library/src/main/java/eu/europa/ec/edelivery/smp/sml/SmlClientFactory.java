@@ -52,7 +52,7 @@ public class SmlClientFactory {
 
     @Bean
     @Scope("prototype")
-    public IManageParticipantIdentifierWS create(String clientKeyAlias, String clientCertHttpHeader, boolean blueCoatAuthentication) {
+    public IManageParticipantIdentifierWS create(String clientKeyAlias, String clientCertHttpHeader, boolean clientCertAuthentication) {
         LOG.info("create IManageParticipantIdentifierWS");
 
 
@@ -68,7 +68,7 @@ public class SmlClientFactory {
 
     @Bean
     @Scope("prototype")
-    public IManageServiceMetadataWS createSmp(String clientKeyAlias, String clientCertHttpHeader, boolean blueCoatAuthentication) {
+    public IManageServiceMetadataWS createSmp(String clientKeyAlias, String clientCertHttpHeader, boolean clientCertAuthentication) {
         LOG.info("create IManageServiceMetadataWS");
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();

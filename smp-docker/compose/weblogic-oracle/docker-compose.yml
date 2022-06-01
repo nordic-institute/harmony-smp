@@ -3,9 +3,13 @@ services:
   database:
     image: smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
     container_name: smp_oracle_db
+    hostname: wlsadmin
+    environment:
+      - ORACLE_CHARACTERSET=AL32UTF8 # set database encoding
+      - NLS_LANG=.AL32UTF8  # set sqlplus encoding for stating up scripts
     volumes:
-      - ./properties/db-scripts:/u01/app/oracle/scripts/setup  # init script.
-      - shared-status-folder:/u01/status/
+      - ./properties/db-scripts:/docker-entrypoint-initdb.d/startup  # init script.
+      - ./status-folder:/u01/status/
     ports:
       - 1921:1521
     shm_size: '1gb'
@@ -17,9 +21,11 @@ services:
     image:  smp-weblogic-122:${SMP_VERSION}
     container_name: wls-smp   
     hostname: wlsadmin
+    environment:
+      JAVA_OPTIONS: "-Dweblogic.webservice.i18n.charset=utf-8"
     volumes:
       - ./properties/weblogic:/u01/oracle/properties
-      - shared-status-folder:/u01/status/
+      - ./status-folder:/u01/status/
     ports:
       - 7901:7001
 volumes:

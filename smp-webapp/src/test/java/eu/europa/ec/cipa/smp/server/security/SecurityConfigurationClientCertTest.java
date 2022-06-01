@@ -14,7 +14,11 @@
 package eu.europa.ec.cipa.smp.server.security;
 
 
-import eu.europa.ec.edelivery.smp.config.*;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
+import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -23,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -31,13 +34,16 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,18 +52,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(Parameterized.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        DatabaseConfig.class,
-        SpringSecurityConfig.class,
-        SpringSecurityTestConfig.class,
-})
 @WebAppConfiguration
-@Sql(scripts = {"classpath:/cleanup-database.sql",
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@Sql(scripts = {
+        "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
-        statements = "insert into SMP_CONFIGURATION (PROPERTY, VALUE, CREATED_ON, LAST_UPDATED_ON) VALUES ('authentication.blueCoat.enabled', 'true',CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());")
+        executionPhase = BEFORE_TEST_METHOD)
 public class SecurityConfigurationClientCertTest {
 
     //Jul++9+23:59:00+2019+GMT"
@@ -117,13 +117,10 @@ public class SecurityConfigurationClientCertTest {
                 },
                 {
                         "Test with Utf8 chars - in url encoded",
-                        "CN=GRP:TEST_\\+\\,& \\=eau!,O=European Commission,C=BE:0000000000001234",
+                        "CN=GRP:TEST_\\\\+\\\\,& \\\\=eau!,O=European Commission,C=BE:0000000000001234",
                         "C%3DBE%2C+O%3DEuropean+Commission%2C+OU%3DCEF_eDelivery.europa.eu%2C+OU%3Dtestabc%2C+OU%3DSMP%2C+CN%3DGRP%3ATEST_%2B%2C%26+%3D%5CxC3%5CxA9%5CxC3%5CxA1%5CxC5%5CxB1%21%2FemailAddress%3DCEF-EDELIVERY-SUPPORT%40ec.europa.eu",
                         "1234",
                 },
-
-
-
                 {
                         "Issue test one",
                         "CN=ncp.fi.ehealth.testa.eu,O=Kansanelakelaitos,C=FI:f71ee8b11cb3b787",
@@ -151,19 +148,20 @@ public class SecurityConfigurationClientCertTest {
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
+    private ConfigurationDao configurationDao;
 
     MockMvc mvc;
 
-
     @Before
-    public void setup() {
-
-        mvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
+    public void setup() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED,"true", null);
+        mvc = MockMvcUtils.initializeMockMvc(context);
+        configurationDao.contextRefreshedEvent();
     }
 
-    @Parameterized.Parameter(0)
+    @Parameterized.Parameter()
     public String testName;
 
     @Parameterized.Parameter(1)
@@ -176,32 +174,32 @@ public class SecurityConfigurationClientCertTest {
     public String serialNumber;
 
     @Test
-    public void validBlueCoatHeaderAuthorizedForPutTest() throws Exception {
-        System.out.println("Test: "+ testName);
+    public void validClientCertHeaderAuthorizedForPutTest() throws Exception {
+        System.out.println("Test: " + testName);
         String clientCert = buildClientCert(serialNumber, certificateDn);
         System.out.println("Client-Cert: " + clientCert);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", clientCert);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers))
+                .headers(headers).with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(expectedCertificateId))
+                .andExpect(content().string(containsString(expectedCertificateId)))
                 .andReturn().getResponse().getContentAsString();
     }
 
     public static String buildClientCert(String serial, String subject) {
-        LocalDateTime from = LocalDateTime.now().minusYears(1);
-        LocalDateTime to = LocalDateTime.now().plusYears(1);
+        OffsetDateTime from = OffsetDateTime.now().minusYears(1);
+        OffsetDateTime to = OffsetDateTime.now().plusYears(1);
         return buildClientCert(serial, subject, "C=x,O=y,CN=z", from, to);
     }
 
-    public static String buildClientCert(String serial, String subject, String issuer, LocalDateTime from, LocalDateTime to) {
+    public static String buildClientCert(String serial, String subject, String issuer, OffsetDateTime from, OffsetDateTime to) {
 
         return String.format(CLIENT_CERT_FORMAT, serial, subject, formatToGMTString(from), formatToGMTString(to), issuer);
     }
 
-    public static String formatToGMTString(LocalDateTime time) {
+    public static String formatToGMTString(OffsetDateTime time) {
         return DATE_FORMATTER.format(time);
     }
 

@@ -1,8 +1,41 @@
 {
   "/rest/**": {
-    "target": "http://localhost:8080/smp/ui/",
+    "target" : "http://localhost:8080/",
+    "secure" : "false",
+    "pathRewrite": {
+      "^/rest": "/smp/ui/rest"
+    },
+    "logLevel": "debug",
     "changeOrigin": true,
-    "secure": true  ,
-    "logLevel": "debug"
+    "cookiePathRewrite": {
+      "/smp": "/"
+    },
+    "cookieDomainRewrite": "localhost"
+  },
+  "/public/**": {
+    "target" : "http://localhost:8080/",
+    "secure" : "false",
+    "pathRewrite": {
+      "^/public": "/smp/ui/public"
+    },
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "cookiePathRewrite": {
+      "/smp": "/"
+    },
+    "cookieDomainRewrite": "localhost"
+  },
+  "/internal/**": {
+    "target" : "http://localhost:8080/",
+    "secure" : "false",
+    "pathRewrite": {
+      "^/internal": "/smp/ui/internal"
+    },
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "cookiePathRewrite": {
+      "/smp": "/"
+    },
+    "cookieDomainRewrite": "localhost"
   }
 }
