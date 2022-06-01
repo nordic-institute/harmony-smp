@@ -45,12 +45,16 @@ public class CaseSensitivityNormalizer {
         return new ParticipantIdentifierType(value, scheme);
     }
 
-    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
+    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier, boolean schemeMandatory) {
         ParticipantIdentifierType prtId = asParticipantId(asString(participantIdentifier),
-                configurationService.getParticipantSchemeMandatory());
+                schemeMandatory);
         String scheme = prtId.getScheme();
         String value = prtId.getValue();
         return normalizeParticipantIdentifier(scheme, value);
+    }
+
+    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
+        return normalize(participantIdentifier,  configurationService.getParticipantSchemeMandatory());
     }
 
     public DocumentIdentifier normalize(final DocumentIdentifier documentIdentifier) {
