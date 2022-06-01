@@ -128,9 +128,6 @@ export class UserDetailsDialogComponent {
 
       };
 
-    // The password authentication is if username exists
-    // if it's off on clear then clear the username!
-    const bUserPasswordAuthentication: boolean = !!this.current.username;
     const bSetPassword: boolean = false;
 
     // calculate allowed roles
@@ -146,9 +143,7 @@ export class UserDetailsDialogComponent {
         disabled: this.mode === UserDetailsDialogMode.PREFERENCES_MODE
       }, Validators.required),
       // username/password authentication
-
-
-      'username': new FormControl({value: '', disabled: this.editMode || !bUserPasswordAuthentication},
+      'username': new FormControl({value: '', disabled: this.editMode },
         !this.editMode || !this.current.username
           ? [Validators.nullValidator, Validators.pattern(this.usernamePattern), this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))]
           : null),
@@ -159,7 +154,7 @@ export class UserDetailsDialogComponent {
       'casUserDataUrl': new FormControl({value: '', disabled: true}),
 
 
-      'confirmation': new FormControl({value: '', disabled: !bUserPasswordAuthentication || !bSetPassword}),
+      'confirmation': new FormControl({value: '', disabled: !bSetPassword}),
       // certificate authentication
       'subject': new FormControl({value: '', disabled: true}, Validators.required),
       'validFrom': new FormControl({value: '', disabled: true}, Validators.required),
@@ -317,6 +312,10 @@ export class UserDetailsDialogComponent {
   }
 
   public getCurrent(): UserRo {
+    if (this.mode === UserDetailsDialogMode.NEW_MODE){
+      this.current.username = this.userForm.get('username').value;
+    }
+
     this.current.active = this.userForm.get('active').value;
     this.current.emailAddress = this.userForm.get('emailAddress').value;
     this.current.role = this.userForm.get('role').value;
