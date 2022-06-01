@@ -25,7 +25,7 @@
     (works only on linux for windows update arguments in exec plugin below)
     mvn clean install -DusePreInstalledNpm -Dnpm.path=/opt/programs/node-v14.17.0-linux-x64/bin
     -->
-    <npm.path>/opt/programs/node-v14.17.0-linux-x64/bin</npm.path>
+    <npm.path>${env.bamboo_CITNET_NODEJS_14_LINUX_PATH}</npm.path>
   </properties>
 
 
@@ -55,10 +55,10 @@
 
   <profiles>
     <profile>
-      <id>defaultAngularBuild</id>
+      <id>installNpm</id>
       <activation>
         <property>
-          <name>!usePreInstalledNpm</name>
+          <name>installNpm</name>
         </property>
       </activation>
       <build>
@@ -105,7 +105,7 @@
       <id>usePreInstalledNpm</id>
       <activation>
         <property>
-          <name>usePreInstalledNpm</name>
+          <name>!installNpm</name>
         </property>
       </activation>
       <build>
