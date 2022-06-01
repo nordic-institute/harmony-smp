@@ -127,7 +127,7 @@ public class ServiceMetadataResourceIntegrationTest {
         smv.setParticipantScheme("partSch");
         smv.setXmlContent("Invalid content");
 
-        MockHttpSession session = loginWithServiceGroupUser2(mvc);
+        MockHttpSession session = loginWithServiceGroupUser(mvc);
 
         MvcResult result = mvc.perform(post(CONTEXT_PATH_PUBLIC_SERVICE_METADATA + "/validate")
                 .session(session)
