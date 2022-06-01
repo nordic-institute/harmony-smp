@@ -19,9 +19,7 @@ ORA_SERVICE="xe"
 
 SMP_DB_USERNAME=smp;
 SMP_DB_PASSWORD=test;
-
-# clear volume and containers - to run  restart from strach 
-
+SMP_DB_SCRIPTS=./properties/db-scripts
 
 # READ arguments
 while getopts i:v: option
@@ -47,7 +45,8 @@ echo "Working Directory: ${WORKING_DIR}"
 echo "*************************************************************************"
 cd "$WORKING_DIR"
 
-
+echo "Create folder (if not exist) for database scripts ${SMP_DB_SCRIPTS}"
+[ -d  ${SMP_DB_SCRIPTS}  ] || mkdir -p "${SMP_DB_SCRIPTS}"
 
 
 function createDatabaseSchemaForUser() {
@@ -77,14 +76,11 @@ function clearOldContainers {
   docker volume rm "${PREFIX}_shared-status-folder"
 }
 
-
-
-
-createDatabaseSchemaForUser $SMP_DB_USERNAME $SMP_DB_PASSWORD ./properties/db-scripts/01_create_user.sql
+createDatabaseSchemaForUser $SMP_DB_USERNAME $SMP_DB_PASSWORD "${SMP_DB_SCRIPTS}/01_create_user.sql"
 
 # create  database init script from 
-echo "CONNECT smp/test@//localhost:1521/${ORA_SERVICE};" > ./properties/db-scripts/02_oracle10g.sql
-cat  "${SMP_INIT_DATABASE}" >> ./properties/db-scripts/02_oracle10g.sql
+echo "CONNECT ${SMP_DB_USERNAME}/${SMP_DB_PASSWORD}@//localhost:1521/${ORA_SERVICE};" > "${SMP_DB_SCRIPTS}/02_oracle10g.sql"
+cat  "${SMP_INIT_DATABASE}" >> "${SMP_DB_SCRIPTS}/02_oracle10g.sql"
 
 
 
@@ -95,8 +91,8 @@ if [ ! -f "${SMP_INIT_DATABASE_DATA}" ]
   exit 1;
 else
   # copy artefact to docker build folder
-  echo "CONNECT smp/test@//localhost:1521/${ORA_SERVICE};" > ./properties/db-scripts/03_oracle10g-data.sql
-  cat  "${SMP_INIT_DATABASE_DATA}" >> ./properties/db-scripts/03_oracle10g-data.sql
+  echo "CONNECT ${SMP_DB_USERNAME}/${SMP_DB_PASSWORD}@//localhost:1521/${ORA_SERVICE};" > "${SMP_DB_SCRIPTS}/03_oracle10g-data.sql"
+  cat  "${SMP_INIT_DATABASE_DATA}" >>  "${SMP_DB_SCRIPTS}/03_oracle10g-data.sql"
 fi
 
 

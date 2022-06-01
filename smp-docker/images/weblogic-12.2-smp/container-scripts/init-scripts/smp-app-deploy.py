@@ -13,7 +13,7 @@ import os
 # Deployment Information
 domainhome = os.environ.get('DOMAIN_HOME', '/u01/oracle/user_projects/domains/base_domain')
 admin_name = os.environ.get('ADMIN_NAME', 'AdminServer')
-appVersion    = os.environ.get('APP_VERSION', '4.0.0')
+appVersion    = os.environ.get('APP_VERSION', '4.2')
 appfilename    = os.environ.get('APP_FILE_NAME', 'smp')
 appname    = os.environ.get('APP_NAME', appfilename+'#'+appVersion)
 appfile    = os.environ.get('APP_FILE', 'smp.war')
