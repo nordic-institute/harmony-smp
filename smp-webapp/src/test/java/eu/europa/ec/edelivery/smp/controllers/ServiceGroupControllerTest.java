@@ -99,7 +99,7 @@ public class ServiceGroupControllerTest {
     }
 
     @Test
-    public void notFoundIsReturnedWhenServiceGroupDoesNotExtist() throws Exception {
+    public void notFoundIsReturnedWhenServiceGroupDoesNotExist() throws Exception {
         mvc.perform(get(URL_PATH))
                 .andExpect(status().isNotFound());
     }

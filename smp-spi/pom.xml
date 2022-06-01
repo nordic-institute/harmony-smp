@@ -20,9 +20,6 @@
         <version>4.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
     <artifactId>smp-spi</artifactId>
     <name>smp-spi</name>
     <description>SMP Service provider interface (SPI). The SMP SPI is an application interface intended to be implemented or extended
