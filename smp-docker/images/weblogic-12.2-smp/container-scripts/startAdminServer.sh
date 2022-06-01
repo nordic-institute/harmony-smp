@@ -7,6 +7,21 @@
 #Define DOMAIN_HOME
 echo "Domain Home is: " $DOMAIN_HOME
 
+
+function deploy_smp() {
+  echo "Deploy SMP"
+    /u01/oracle/createWLSDomain.sh
+    echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc
+    chmod -R a+x $DOMAIN_HOME/bin/*.sh
+    rm ${PROPERTIES_FILE_DIR}/*.properties
+
+    /u01/oracle/deploySMPToDomain.sh
+     wlst -loadProperties /u01/oracle/datasource.properties.oracle /u01/oracle/ds-deploy.py \
+    # set enforce-valid-basic-auth-credentials false to allow basic authentication for rest services
+     sed -i -e "s/<\/security-configuration>/  <enforce-valid-basic-auth-credentials>false<\/enforce-valid-basic-auth-credentials>\n<\/security-configuration>/g" "/u01/oracle/user_projects/domains/domain1/config/config.xml"
+
+}
+
 # If AdminServer.log does not exists, container is starting for 1st time
 # So it should start NM and also associate with AdminServer
 # Otherwise, only start NM (container restarted)
@@ -99,6 +114,15 @@ mkdir -p ${AS_SECURITY}
 echo "username=${USER}" >> ${AS_SECURITY}/boot.properties
 echo "password=${PASS}" >> ${AS_SECURITY}/boot.properties
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
+
+
+# initialize docker image
+cd ~ || exit 13
+if [ ! -f ".initialized" ]; then
+  deploy_smp
+  touch ~/.initialized
+fi
+
 
 #echo 'Running Admin Server in background'
 ${DOMAIN_HOME}/bin/startWebLogic.sh &

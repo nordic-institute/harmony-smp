@@ -3,26 +3,28 @@ services:
   database:
     image: smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
     container_name: smp_oracle_db
-    hostname: wlsadmin
+    hostname: smp-database.local
     environment:
       - ORACLE_CHARACTERSET=AL32UTF8 # set database encoding
-      - NLS_LANG=.AL32UTF8  # set sqlplus encoding for stating up scripts
+      - NLS_LANG=.AL32UTF8  # set sqlplus encoding for starting up scripts
     volumes:
       - ./properties/db-scripts:/docker-entrypoint-initdb.d/startup  # init script.
       - ./status-folder:/u01/status/
     ports:
       - 1921:1521
     shm_size: '1gb'
+
   weblogic:
     depends_on:
       - database
 #    command: [bash, -c, "for i in `seq 10`; do timeout 1  bash -c '</dev/tcp/database/1521'; if [ $$? -eq 0 ] ; then break;fi;sleep 1;  done;"]
     command: [bash, -c, "for i in `seq 150`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.status' ] && [ \"$$( cat /u01/status/database.status )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 10;  done;   /u01/oracle/startAdminServer.sh"]
     image:  smp-weblogic-122:${SMP_VERSION}
-    container_name: wls-smp   
-    hostname: wlsadmin
+    container_name: smp-wls-admin
+    hostname: smp-wls-admin
     environment:
-      JAVA_OPTIONS: "-Dweblogic.webservice.i18n.charset=utf-8"
+      - MANAGED_SERV_NAME=smp-node
+      - JAVA_OPTIONS="-Dweblogic.webservice.i18n.charset=utf-8"
     volumes:
       - ./properties/weblogic:/u01/oracle/properties
       - ./status-folder:/u01/status/
