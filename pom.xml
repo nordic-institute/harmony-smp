@@ -786,6 +786,15 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>deploy-wls</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>smp-wls-deploy</module>
+            </modules>
+        </profile>
     </profiles>
 
 </project>
