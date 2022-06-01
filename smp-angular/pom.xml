@@ -55,10 +55,10 @@
 
   <profiles>
     <profile>
-      <id>installNpm</id>
+      <id>defaultInstallNpm</id>
       <activation>
         <property>
-          <name>installNpm</name>
+          <name>!usePreInstallNpm</name>
         </property>
       </activation>
       <build>
@@ -105,7 +105,7 @@
       <id>usePreInstalledNpm</id>
       <activation>
         <property>
-          <name>!installNpm</name>
+          <name>usePreInstallNpm</name>
         </property>
       </activation>
       <build>

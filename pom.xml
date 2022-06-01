@@ -111,6 +111,7 @@
         </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
+        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</release.arguments>
     </properties>
 
     <scm>
@@ -698,7 +699,10 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
-                    <arguments>$(arguments)</arguments>
+                    <arguments>-DusePreInstallNpm -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</arguments>
+                    <!-- <arguments>${release.arguments}</arguments> and setting it as
+                    release:prepare  -Darguments="-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true" -DskipITs=true
+                    does not work! -->
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
