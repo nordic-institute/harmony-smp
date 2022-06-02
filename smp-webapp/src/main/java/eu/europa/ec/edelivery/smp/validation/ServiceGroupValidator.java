@@ -50,9 +50,9 @@ public class ServiceGroupValidator {
         boolean schemeMandatory = configurationService.getParticipantSchemeMandatory();
         LOG.debug("Parse service group [{}] with [{}] scheme", serviceGroupId, (schemeMandatory?"mandatory":"optional"));
 
-        final ParticipantIdentifierType participantId = caseSensitivityNormalizer.normalize(Identifiers.asParticipantId(serviceGroupId, schemeMandatory));
+        final ParticipantIdentifierType participantId = caseSensitivityNormalizer.normalize(Identifiers.asParticipantId(serviceGroupId, schemeMandatory), schemeMandatory);
         final ParticipantIdentifierType serviceGroupParticipantId =  caseSensitivityNormalizer.normalize(
-                serviceGroup.getParticipantIdentifier());
+                serviceGroup.getParticipantIdentifier(), schemeMandatory);
 
         if (!participantId.equals(serviceGroupParticipantId)) {
             // Business identifier must equal path

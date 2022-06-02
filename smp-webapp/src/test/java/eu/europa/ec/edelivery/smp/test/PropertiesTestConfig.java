@@ -64,6 +64,7 @@ public class PropertiesTestConfig {
         // create test password..
         localProps.setProperty(KEYSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
         localProps.setProperty(TRUSTSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
+        localProps.setProperty(PARTC_SCH_MANDATORY.getProperty(),"false");
 
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
