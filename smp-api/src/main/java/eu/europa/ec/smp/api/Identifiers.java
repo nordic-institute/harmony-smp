@@ -18,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriUtils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -28,6 +30,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Created by gutowpa on 12/01/2017.
  */
 public class Identifiers {
+    private static final Logger LOG = LoggerFactory.getLogger(Identifiers.class);
 
     public static final String EBCORE_IDENTIFIER_PREFIX = "urn:oasis:names:tc:ebcore:partyid-type:";
     public static final String EBCORE_IDENTIFIER_FORMAT = "%s:%s";
@@ -38,16 +41,19 @@ public class Identifiers {
 
 
     public static ParticipantIdentifierType asParticipantId(String participantIdentifier, boolean schemeMandatory) {
+        LOG.debug("Parse participant identifier [{}] with scheme mandatory [{}]", participantIdentifier, schemeMandatory);
         String[] res = splitParticipantIdentifier(participantIdentifier, schemeMandatory);
         return new ParticipantIdentifierType(res[1], res[0]);
     }
 
     public static DocumentIdentifier asDocumentId(String doubleColonDelimitedId) {
+        LOG.debug("Parse document identifier [{}]", doubleColonDelimitedId);
         String[] res = splitDoubleColonIdentifier(doubleColonDelimitedId, false);
         return new DocumentIdentifier(res[1], res[0]);
     }
 
     public static ProcessIdentifier asProcessId(String doubleColonDelimitedId) {
+        LOG.debug("Parse process identifier [{}]", doubleColonDelimitedId);
         String[] res = splitDoubleColonIdentifier(doubleColonDelimitedId, false);
         return new ProcessIdentifier(res[1], res[0]);
     }
@@ -81,7 +87,7 @@ public class Identifiers {
     }
 
     private static String[] splitParticipantIdentifier(String participantIdentifier, boolean schemeMandatory) {
-
+        LOG.debug("Split participant identifier [{}] with mandatory scheme [{}]", participantIdentifier, schemeMandatory);
         String[] idResult;
         if (StringUtils.isBlank(participantIdentifier)) {
             throw new MalformedIdentifierException(EMPTY_IDENTIFIER, null);
@@ -107,6 +113,7 @@ public class Identifiers {
      */
 
     private static String[] splitDoubleColonIdentifier(String doubleColonDelimitedId, boolean schemeMandatory) {
+        LOG.debug("Split identifier [{}] with scheme mandatory [{}]", doubleColonDelimitedId, schemeMandatory);
         if (StringUtils.isBlank(doubleColonDelimitedId)) {
             throw new MalformedIdentifierException(EMPTY_IDENTIFIER, null);
         }
@@ -114,13 +121,15 @@ public class Identifiers {
         String[] idResult = new String[2];
 
         int delimiterIndex = doubleColonDelimitedId.indexOf("::");
-        if (schemeMandatory && delimiterIndex < 0) {
+        if (schemeMandatory && delimiterIndex <= 0) {
+            LOG.debug("Missing mandatory scheme part for the identifier [{}]!", doubleColonDelimitedId);
             throw new MalformedIdentifierException(doubleColonDelimitedId, null);
         }
         idResult[0] = delimiterIndex <= 0 ? null : doubleColonDelimitedId.substring(0, delimiterIndex);
-        idResult[1] = doubleColonDelimitedId.substring(delimiterIndex + (delimiterIndex < 0?1:2));
+        idResult[1] = doubleColonDelimitedId.substring(delimiterIndex + (delimiterIndex < 0 ? 1 : 2));
 
         if (StringUtils.isBlank(idResult[1])) {
+            LOG.debug("Missing id part for the identifier [{}]!", doubleColonDelimitedId);
             throw new MalformedIdentifierException(doubleColonDelimitedId, null);
         }
         return idResult;

@@ -12,14 +12,13 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.edelivery</groupId>
     <artifactId>smp-modules</artifactId>
     <packaging>pom</packaging>
     <name>SMP</name>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.2-RC2-SNAPSHOT</version>
 
     <modules>
         <module>smp-angular</module>
@@ -35,7 +34,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.10-SNAPSHOT</edelivery.ssl-auth.version>
+        <edelivery.ssl-auth.version>1.10</edelivery.ssl-auth.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ant-commons-net.version>1.6.5</ant-commons-net.version>
@@ -83,6 +82,10 @@
         <spring.version>5.3.20</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
+        <!-- plugins -->
+        <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
+        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
@@ -90,7 +93,8 @@
         <sonar.language>java</sonar.language>
 
         <sonar.binaries>target/classes</sonar.binaries>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <jacoco.maven.plugin.version>0.8.6</jacoco.maven.plugin.version>
         <surefire.maven.plugin.version>2.22.2</surefire.maven.plugin.version>
         <sonar.exclusions>
@@ -106,6 +110,8 @@
         </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
+        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</release.arguments>
+        <project.scm.id>edelivery-scm</project.scm.id>
     </properties>
 
     <scm>
@@ -593,6 +599,11 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.2</version>
                 </plugin>
@@ -605,6 +616,16 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.6</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>${frontend-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${exec-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -678,6 +699,10 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
+                    <arguments>-DusePreInstallNpm -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</arguments>
+                    <!-- <arguments>${release.arguments}</arguments> and setting it as
+                    release:prepare  -Darguments="-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true" -DskipITs=true
+                    does not work! -->
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
@@ -765,6 +790,15 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>deploy-wls</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>smp-wls-deploy</module>
+            </modules>
         </profile>
     </profiles>
 
