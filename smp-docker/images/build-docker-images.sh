@@ -177,21 +177,21 @@ buildImages() {
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
   # oracle 1.2.0.2-xe (https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance/dockerfiles/11.2.0.2)
-  #docker build -f ./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DOCKERFILE} -t "smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}" --build-arg DB_EDITION=${ORA_EDITION} ./oracle/oracle-db-${ORA_VERSION}/
+  docker build -f ./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DOCKERFILE} -t "smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}" --build-arg DB_EDITION=${ORA_EDITION} ./oracle/oracle-db-${ORA_VERSION}/
 
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
   # create docker OS image with java (https://github.com/oracle/docker-images/tree/master/OracleJava/java-8)
-  #docker build -t oracle/serverjre:8 ./oracle/OracleJava/java-8/
+  docker build -t oracle/serverjre:8 ./oracle/OracleJava/java-8/
 
   # create weblogic basic (https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3)
-  #docker build -f ./oracle/weblogic-12.2.1.4/Dockerfile.developer -t oracle/weblogic:12.2.1.4-developer ./oracle/weblogic-12.2.1.4/
+  docker build -f ./oracle/weblogic-12.2.1.4/Dockerfile.developer -t oracle/weblogic:12.2.1.4-developer ./oracle/weblogic-12.2.1.4/
 
   # build SMP deployment.
   docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
   # build tomcat mysql image  deployment.
-  #docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
+  docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
 }
 
 function pushImageToDockerhub() {

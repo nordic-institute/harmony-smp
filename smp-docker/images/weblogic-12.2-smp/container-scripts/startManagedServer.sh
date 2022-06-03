@@ -6,25 +6,47 @@
 # So it should start NM and also associate with AdminServer, as well Managed Server
 # Otherwise, only start NM (container is being restarted)o
 
-export MS_HOME="${DOMAIN_HOME}/servers/${MANAGED_SERV_NAME}"
+function initWebLogicDomain(){
+  echo "Init WebLogic domain"
+  INIT_SCRIPTS=$1
+  echo "Start createWLSDomain.sh from ${INIT_SCRIPTS}"
+  "${INIT_SCRIPTS}"/createWLSDomain.sh "${INIT_SCRIPTS}"
+  echo "Set execution flag for all sh scripts in ${WL_DOMAIN_HOME}/bin"
+  chmod -R a+x ${WL_DOMAIN_HOME}/bin/*.sh
+}
+
+
+export MS_HOME="${WL_DOMAIN_HOME}/servers/${WL_MANAGED_SERV_NAME}"
 export MS_SECURITY="${MS_HOME}/security"
 
-if [ -f ${MS_HOME}/logs/${MANAGED_SERV_NAME}.log ]; then
+if [ -f ${MS_HOME}/logs/${WL_MANAGED_SERV_NAME}.log ]; then
+   echo "Log file already exists ${MS_HOME}/logs/${WL_MANAGED_SERV_NAME}.log"
    exit
 fi
 
 # Wait for AdminServer to become available for any subsequent operation
 /u01/oracle/waitForAdminServer.sh
 
-echo "Managed Server Name: ${MANAGED_SERV_NAME}"
+echo "Managed Server Name: ${WL_MANAGED_SERV_NAME}"
 echo "Managed Server Home: ${MS_HOME}"
 echo "Managed Server Security: ${MS_SECURITY}"
 
-SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
+# initialize docker image
+cd ~ || exit 13
+if [ ! -f ".initialized" ]; then
+  INIT_SCRIPTS=${ORACLE_HOME}/init/scripts
+  echo "create domain folder ${WL_DOMAIN_HOME}"
+  unpack.sh -template="${DOCKER_DATA}/${WL_CLUSTER_NAME}.jar" -domain="${WL_DOMAIN_HOME}" -app_dir="${WL_DOMAIN_HOME}"
+  touch ~/.initialized
+fi
+
+
+SEC_PROPERTIES_FILE=${WL_SECURITY_FILE}
 if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
-   echo "A properties file with the username and password needs to be supplied."
+   echo "A properties file with the username and password needs to be supplied. Use default properties"
    exit
 fi
+
 # Get Username
 USER=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep username | cut -d "=" -f2`
 if [ -z "${USER}" ]; then
@@ -47,17 +69,19 @@ export JAVA_OPTIONS=${JAVA_OPTIONS}
 echo "Java Options: ${JAVA_OPTIONS}"
 
 # Create Managed Server
-mkdir -p ${MS_SECURITY}
-echo "username=${USER}" >> ${MS_SECURITY}/boot.properties
-echo "password=${PASS}" >> ${MS_SECURITY}/boot.properties
-${DOMAIN_HOME}/bin/setDomainEnv.sh
+mkdir -p "${MS_SECURITY}"
+echo "username=${USER}" >> "${MS_SECURITY}"/boot.properties
+echo "password=${PASS}" >> "${MS_SECURITY}"/boot.properties
+
+
+"${WL_DOMAIN_HOME}"/bin/setDomainEnv.sh
 
 # Start 'ManagedServer'
 echo "Start Managed Server"
-${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_SERV_NAME} http://${ADMIN_HOST}:${ADMIN_PORT}
+"${WL_DOMAIN_HOME}"/bin/startManagedWebLogic.sh ${WL_MANAGED_SERV_NAME} http://${WL_ADMIN_HOST}:${WL_ADMIN_PORT}
 
 # tail Managed Server log
-tail -f ${MS_HOME}/logs/${MANAGED_SERV_NAME}.log &
+tail -f ${MS_HOME}/logs/"${WL_MANAGED_SERV_NAME}".log &
 
 childPID=$!
 wait $childPID

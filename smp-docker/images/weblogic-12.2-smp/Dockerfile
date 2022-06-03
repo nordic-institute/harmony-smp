@@ -21,79 +21,80 @@ FROM oracle/weblogic:12.2.1.4-developer
 
 # Define variable
 ARG SMP_VERSION
-ARG WL_ADMIN_HOST="${WL_ADMIN_HOST:-localhost}"
-ARG CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-domain1}"
-ARG CUSTOM_ADMIN_PORT="${CUSTOM_ADMIN_PORT:-7001}"
-ARG CUSTOM_ADMIN_HTTPS_PORT="${CUSTOM_ADMIN_HTTPS_PORT:-7002}"
-ARG CUSTOM_MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT:-8001}"
-ARG CUSTOM_DEBUG_PORT="${CUSTOM_DEBUG_PORT:-8453}"
-ARG CUSTOM_ADMIN_NAME="${CUSTOM_ADMIN_NAME:-admin-server}"
-ARG CUSTOM_ADMIN_HOST="${CUSTOM_ADMIN_HOST:-wlsadmin}"
-ARG CUSTOM_CLUSTER_NAME="${CUSTOM_CLUSTER_NAME:-DockerCluster}"
-ARG WL_SERVER_TLS_KEYSTORE_PASS="${WL_SERVER_TLS_KEYSTORE_PASS:-test123}"
+ARG LC_ALL=en_US.UTF-8
+ARG LANG="en_US.UTF-8"
+ARG LANGUAGE="en_US"
+ARG ORACLE_HOME=/u01/oracle
+ARG WL_DOMAIN_NAME="${WL_DOMAIN_NAME:-smp-domain}"
+ARG WL_DOMAIN_HOME="${ORACLE_HOME}/user_projects/domains/${WL_DOMAIN_NAME}"
+ARG WL_MANAGED_SERV_NAME=${WL_MANAGED_SERV_NAME:-smp-node-1}
+ARG WL_MANAGED_SERV_BASE_NAME=${WL_MANAGED_SERV_BASE_NAME:-smp-node-}
+ARG WL_MANAGED_SERVER_COUNT=${WL_MANAGED_SERVER_COUNT:-10}
+ARG WL_ADMIN_NAME=${WL_ADMIN_NAME:-admin-server}
+ARG WL_CLUSTER_NAME=${WL_CLUSTER_NAME:-smp-cluster}
+ARG WL_DEBUG_PORT="${WL_DEBUG_PORT:-8453}"
+ARG WL_ADMIN_PORT="${WL_ADMIN_PORT:-7001}"
+ARG WL_ADMIN_PORT_HTTPS="${WL_ADMIN_PORT_HTTPS:-7002}"
+ARG WL_MANAGED_SERVER_PORT="${WL_MANAGED_SERVER_PORT:-8001}"
+ARG SMP_CONFIG_DIR=/data/smp
 
+# set following build arguments also the environment arguments
 ENV APP_VERSION=$SMP_VERSION \
-    LC_ALL=en_US.UTF-8 \
-    LANG="en_US.UTF-8" \
-    LANGUAGE="en_US"  \
-    ORACLE_HOME=/u01/oracle \
-    PROPERTIES_FILE_DIR="${ORACLE_HOME}/properties" \
-    DOMAIN_NAME="${CUSTOM_DOMAIN_NAME}" \
-    DOMAIN_HOME="${ORACLE_HOME}/user_projects/domains/${CUSTOM_DOMAIN_NAME}" \
-    ADMIN_PORT="${CUSTOM_ADMIN_PORT}" \
-    ADMIN_HTTPS_PORT="${CUSTOM_ADMIN_HTTPS_PORT}" \
-    ADMIN_NAME="${CUSTOM_ADMIN_NAME}" \
-    ADMIN_HOST="${CUSTOM_ADMIN_HOST}" \
-    CLUSTER_NAME="${CUSTOM_CLUSTER_NAME}" \
-    MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT}" \
-    MANAGED_SERV_NAME="${MANAGED_SERV_NAME}" \
-     # set following build arguments also the environment arguments
+    LC_ALL=$LC_ALL \
+    LANG=$LANG \
+    LANGUAGE=$LANGUAGE  \
+    ORACLE_HOME=$ORACLE_HOME \
+    DOCKER_DATA=/data \
+    WL_INIT_PROPERTIES="/u01/init/" \
+    WL_DOMAIN_NAME="${WL_DOMAIN_NAME}" \
+    WL_DOMAIN_HOME="${ORACLE_HOME}/user_projects/domains/${WL_DOMAIN_NAME}" \
+    WL_MANAGED_SERV_BASE_NAME="${WL_MANAGED_SERV_BASE_NAME}" \
+    WL_MANAGED_SERVER_COUNT=${WL_MANAGED_SERVER_COUNT} \
     WL_DEBUG_PORT="${WL_DEBUG_PORT}"  \
-    WL_ADMIN_NAME="${WL_ADMIN_NAME}"  \
     WL_ADMIN_PORT="${WL_ADMIN_PORT}"  \
-    WL_ADMIN_HOST="${WL_ADMIN_HOST}"  \
+    WL_ADMIN_PORT_HTTPS="${WL_ADMIN_PORT_HTTPS}"  \
+    WL_MANAGED_SERVER_PORT="${WL_MANAGED_SERVER_PORT}" \
+    WL_ADMIN_NAME="${WL_ADMIN_NAME}" \
     WL_CLUSTER_NAME="${WL_CLUSTER_NAME}" \
-    ENABLE_JACOCO="${ENABLE_JACOCO}" \
-    # set path variable for script execution
-    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
+    SMP_CONFIG_DIR=${SMP_CONFIG_DIR} \
+    CLASSPATH=${SMP_CONFIG_DIR}/config \
+    WL_SECURITY_FILE=/data/weblogic/security.properties \
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${WL_DOMAIN_HOME}:${WL_DOMAIN_HOME}/bin:${ORACLE_HOME} \
+     # configurable argumentst at containe start
+    WL_ADMIN_HOST="${WL_ADMIN_HOST:-localhost}"  \
+    WL_SERVER_TLS_KEYSTORE_PASS="${WL_SERVER_TLS_KEYSTORE_PASS:-test123}" \
+    WL_DEBUG_FLAG="${WL_DEBUG_FLAG:-true}" \
+    WL_PRODUCTION_MODE_ENABLED="${WL_PRODUCTION_MODE_ENABLED:-false}" \
+    WL_MANAGED_SERV_NAME="${WL_MANAGED_SERV_NAME}" \
+    WL_STATUS_FOLDER=${WL_STATUS_FOLDER:-/u01/status/} \
+    ENABLE_JACOCO="${ENABLE_JACOCO:-false}"
 
 
 # Add files required to build this image
 COPY container-scripts/* ${ORACLE_HOME}/
-COPY container-scripts/init-scripts ${ORACLE_HOME}/init-scripts
-COPY artefacts/smp.war ${ORACLE_HOME}/
-COPY properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
+COPY container-scripts/init-scripts ${ORACLE_HOME}/init/scripts/
+COPY properties/init  ${ORACLE_HOME}/init/properties/
+COPY artefacts/smp.war ${ORACLE_HOME}/init/
+
+
 #Create directory where domain will be written to
 USER root
-RUN chmod +xw ${ORACLE_HOME}/*.sh && \
-    chmod +xw ${ORACLE_HOME}/init-scripts/*.sh && \
-    chmod +xw ${ORACLE_HOME}/init-scripts/*.py && \
-    mkdir -p ${PROPERTIES_FILE_DIR} && \
-    chown -R oracle:oracle ${PROPERTIES_FILE_DIR} && \
-    mkdir -p $DOMAIN_HOME && \
-    chown -R oracle:oracle $DOMAIN_HOME && \
-    chmod -R a+xwr $DOMAIN_HOME
+WORKDIR  $ORACLE_HOME
+RUN mkdir -p $WL_DOMAIN_HOME && \
+    mkdir -p $DOCKER_DATA && \
+    chown -R oracle:oracle $ORACLE_HOME && \
+    chown -R oracle:oracle $WL_DOMAIN_HOME && \
+    chown -R oracle:oracle $DOCKER_DATA && \
+    chmod +xw ${ORACLE_HOME}/*.sh && \
+    chmod +xw ${ORACLE_HOME}/init/scripts/*.sh && \
+    chmod +xw ${ORACLE_HOME}/init/scripts/*.py && \
+    chmod -R +xwr $WL_DOMAIN_HOME
 
 
-# Configuration of WLS Domain
-#RUN /u01/oracle/createWLSDomain.sh && \
-#     echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
-#     chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \
-#     rm ${PROPERTIES_FILE_DIR}/*.properties
-
+USER oracle
+WORKDIR $WL_DOMAIN_HOME
 # Expose ports for admin, managed server, and debug
-EXPOSE $ADMIN_PORT $CUSTOM_ADMIN_HTTPS_PORT $MANAGED_SERVER_PORT $DEBUG_PORT
-
-WORKDIR $DOMAIN_HOME
-
-
-
-#RUN /u01/oracle/deploySMPToDomain.sh && \
-#     wlst -loadProperties /u01/oracle/datasource.properties.oracle /u01/oracle/ds-deploy.py \
-     # set enforce-valid-basic-auth-credentials false to allow basic authentication for rest services
-#     && sed -i -e "s/<\/security-configuration>/  <enforce-valid-basic-auth-credentials>false<\/enforce-valid-basic-auth-credentials>\n<\/security-configuration>/g" "/u01/oracle/user_projects/domains/domain1/config/config.xml"
-    
-
+EXPOSE $WL_ADMIN_PORT $WL_ADMIN_HTTPS_PORT $WL_MANAGED_SERVER_PORT $WL_DEBUG_PORT
 
 # Define default command to start bash.
 CMD ["startManagedServer.sh"]

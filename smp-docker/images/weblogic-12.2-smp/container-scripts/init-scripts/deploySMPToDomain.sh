@@ -1,27 +1,36 @@
 #!/bin/bash
 
-#Define DOMAIN_HOME
-echo "Domain Home is: " $DOMAIN_HOME
+#Define WL_DOMAIN_HOME
+INIT_SCRIPTS=$1
+echo "Domain Home is: $WL_DOMAIN_HOME"
+echo "Scripts folder is: $INIT_SCRIPTS"
 
-
-if [ ! -d "$DOMAIN_HOME/classes" ]; then
-  mkdir -p "$DOMAIN_HOME/classes";
+# set datasource property
+DATA_SOURCE_PROPERTY_FILE="${INIT_SCRIPTS}/../properties/datasource.properties"
+if [  -f "${WL_INIT_PROPERTIES}/datasource.properties" ]; then
+  DATA_SOURCE_PROPERTY_FILE="${WL_INIT_PROPERTIES}/datasource.properties"
 fi
 
-# create smp property file
-echo "hibernate.dialect=org.hibernate.dialect.Oracle10gDialect" > "$DOMAIN_HOME/classes/smp.config.properties"
-echo "datasource.jndi=jdbc/eDeliverySmpDs" >> "$DOMAIN_HOME/classes/smp.config.properties"
-echo "authentication.blueCoat.enabled=true" >> "$DOMAIN_HOME/classes/smp.config.properties"
-echo "smp.truststore.password={DEC}{test123}" >> "$DOMAIN_HOME/classes/smp.config.properties"
-echo "smp.keystore.password={DEC}{test123}" >> "$DOMAIN_HOME/classes/smp.config.properties"
-echo "log.folder=./logs/" >> "$DOMAIN_HOME/classes/smp.config.properties"
+#deploy smp datasource
+wlst.sh -loadProperties "${DATA_SOURCE_PROPERTY_FILE}" "${INIT_SCRIPTS}/ds-deploy.py"
 
-# create weblogic classpath to classes folder
-echo "export CLASSPATH=\${CLASSPATH}:\${DOMAIN_HOME}/classes" >> "$DOMAIN_HOME/bin/setDomainEnv.sh"
+# copy smp startup configuration  - check first init folder else use default
+if [  -f "${WL_INIT_PROPERTIES}/smp.config.properties" ]; then
+  cat "${WL_INIT_PROPERTIES}/smp.config.properties" > "${SMP_CONFIG_DIR}/config/smp.config.properties"
+elif [ -f "${INIT_SCRIPTS}/../properties/smp.config.properties" ]; then
+  cat "${INIT_SCRIPTS}/../properties/smp.config.properties" > "${SMP_CONFIG_DIR}/config/smp.config.properties"
+else
+  cat <<EOT >"${SMP_CONFIG_DIR}/config/smp.config.properties"
+hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+datasource.jndi=jdbc/eDeliverySmpDs
+authentication.blueCoat.enabled=true
+log.folder=./logs/
+configuration.dir=${SMP_CONFIG_DIR}/security
+EOT
+fi
 
-
-cp /u01/oracle/smp.war "$DOMAIN_HOME/"
-
+cp /u01/oracle/init/smp.war "${WL_DOMAIN_HOME}/"
+ls -ltr "${WL_DOMAIN_HOME}/"
 
 # Deploy Application
 wlst.sh -skipWLSModuleScanning /u01/oracle/smp-app-deploy.py
