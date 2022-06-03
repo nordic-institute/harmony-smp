@@ -9,14 +9,25 @@
 import os
 
 # Deployment Information
-domainname = os.environ.get('DOMAIN_NAME', 'base_domain')
-domainhome = os.environ.get('DOMAIN_HOME', '/u01/oracle/user_projects/domains/' + domainname)
-cluster_name =  "cluster-1"
-admin_name = os.environ.get("ADMIN_NAME", "AdminServer")
+domain_name = os.environ.get('WL_DOMAIN_NAME', 'base_domain')
+domain_home = os.environ.get('WL_DOMAIN_HOME', '/u01/oracle/user_projects/domains/' + domain_name)
+cluster_name =  os.environ.get('WL_CLUSTER_NAME')
+admin_name = os.environ.get("WL_ADMIN_NAME", "AdminServer")
+
+
+print('Domain Home      : [%s]' % domain_home)
+print('Admin Name       : [%s]' % admin_name)
+print('Cluster Name     : [%s]' % cluster_name)
+print('Datasource name  : [%s]' % dsname)
+print('Datasource JNDI  : [%s]' % dsjndiname)
+print('Datasource URL   : [%s]' % dsurl)
+print('Datasource Driver: [%s]' % dsdriver)
+print('Datasource User  : [%s]' % dsusername)
+print('Datasource Test  : [%s]' % dstestquery)
 
 # Read Domain in Offline Mode
 # ===========================
-readDomain(domainhome)
+readDomain(domain_home)
 
 # Create Datasource
 # ==================
@@ -54,7 +65,7 @@ print 'create JDBCConnectionPoolParams'
 cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
 create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
 cd('JDBCConnectionPoolParams/NO_NAME_0')
-set('TestTableName','SQL SELECT 1 FROM DUAL')
+set('TestTableName',dstestquery)
 
 # Assign
 # ======

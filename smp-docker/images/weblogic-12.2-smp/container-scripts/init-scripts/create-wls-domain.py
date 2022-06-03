@@ -22,11 +22,9 @@ def getEnvVar(var):
 
 # This python script is used to create a WebLogic domain
 
-#domain_uid                   = DOMAIN_UID
 server_port                   = int(MANAGED_SERVER_PORT)
-domain_path                   = os.environ.get("DOMAIN_HOME")
+domain_path                   = os.environ.get("WL_DOMAIN_HOME")
 cluster_name                  = CLUSTER_NAME
-print('cluster_name             : [%s]' % cluster_name);
 admin_server_name             = ADMIN_NAME
 admin_port                    = int(ADMIN_PORT)
 admin_https_port              = int(ADMIN_HTTPS_PORT)
@@ -43,19 +41,18 @@ ksIdentityPassword            = SERVER_TLS_KEYSTORE_PASS
 # Read the domain secrets from the common python file
 #execfile('%s/read-domain-secret.py' % script_dir)
 
-print('domain_path              : [%s]' % domain_path);
-print('domain_name              : [%s]' % domain_name);
-print('admin_server_name        : [%s]' % admin_server_name);
-print('admin_port               : [%s]' % admin_port);
-print('cluster_name             : [%s]' % cluster_name);
-print('server_port              : [%s]' % server_port);
-print('number_of_ms             : [%s]' % number_of_ms);
-print('cluster_type             : [%s]' % cluster_type);
-print('managed_server_name_base : [%s]' % managed_server_name_base);
-print('production_mode_enabled  : [%s]' % production_mode_enabled);
-#print('dsname                   : [%s]' % dsname);
-print('t3_channel_port          : [%s]' % t3_channel_port);
-print('t3_public_address        : [%s]' % t3_public_address);
+print('domain_path              : [%s]' % domain_path)
+print('domain_name              : [%s]' % domain_name)
+print('admin_server_name        : [%s]' % admin_server_name)
+print('admin_port               : [%s]' % admin_port)
+print('cluster_name             : [%s]' % cluster_name)
+print('server_port              : [%s]' % server_port)
+print('number_of_ms             : [%s]' % number_of_ms)
+print('cluster_type             : [%s]' % cluster_type)
+print('managed_server_name_base : [%s]' % managed_server_name_base)
+print('production_mode_enabled  : [%s]' % production_mode_enabled)
+print('t3_channel_port          : [%s]' % t3_channel_port)
+print('t3_public_address        : [%s]' % t3_public_address)
 
 # Open default domain template
 # ============================
@@ -135,14 +132,7 @@ else:
   print('Done creating Server Template: %s' % templateName)
   cd('/ServerTemplates/%s' % templateName)
   cmo.setListenPort(server_port)
-#  cmo.setListenAddress('%s-%s${id}' % (domain_uid, managed_server_name_base_svc))
   cmo.setCluster(cl)
-#  create(templateName,'Log')
-#  cd('Log/%s' % templateName)
-#  set('FileName', '%s${id}.log' % (managed_server_name_base))
-#  print('Done setting attributes for Server Template: %s' % templateName);
-
-
   cd('/Clusters/%s' % cluster_name)
   create(cluster_name, 'DynamicServers')
   cd('DynamicServers/%s' % cluster_name)
@@ -152,10 +142,11 @@ else:
   set('MaxDynamicClusterSize', number_of_ms)
   set('CalculatedListenPorts', false)
 
-  print('Done setting attributes for Dynamic Cluster: %s' % cluster_name);
+  print('Done setting attributes for Dynamic Cluster: %s' % cluster_name)
 
 # Write Domain
 # ============
+print('Write domain to: %s' % domain_path)
 writeDomain(domain_path)
 closeTemplate()
 print 'Domain Created'
