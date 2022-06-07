@@ -31,16 +31,6 @@ echo "Managed Server Name: ${WL_MANAGED_SERV_NAME}"
 echo "Managed Server Home: ${MS_HOME}"
 echo "Managed Server Security: ${MS_SECURITY}"
 
-# initialize docker image
-cd ~ || exit 13
-if [ ! -f ".initialized" ]; then
-  INIT_SCRIPTS=${ORACLE_HOME}/init/scripts
-  echo "create domain folder ${WL_DOMAIN_HOME}"
-  unpack.sh -template="${DOCKER_DATA}/${WL_CLUSTER_NAME}.jar" -domain="${WL_DOMAIN_HOME}" -app_dir="${WL_DOMAIN_HOME}"
-  touch ~/.initialized
-fi
-
-
 SEC_PROPERTIES_FILE=${WL_SECURITY_FILE}
 if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
    echo "A properties file with the username and password needs to be supplied. Use default properties"
@@ -59,6 +49,19 @@ if [ -z "${PASS}" ]; then
    echo "The domain password is blank.  The Admin password must be set in the properties file."
    exit
 fi
+
+# initialize docker image
+cd ~ || exit 13
+if [ ! -f ".initialized" ]; then
+  INIT_SCRIPTS=${ORACLE_HOME}/init/scripts
+  echo "create domain folder ${WL_DOMAIN_HOME}"
+  unpack.sh -template="${DOCKER_DATA}/${WL_CLUSTER_NAME}-${SMP_VERSION}.jar" -domain="${WL_DOMAIN_HOME}" -app_dir="${WL_DOMAIN_HOME}"
+  touch ~/.initialized
+fi
+
+cd ${WL_DOMAIN_HOME}
+
+
 
 #Set Java Options
 JAVA_OPTIONS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2`

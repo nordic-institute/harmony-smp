@@ -37,9 +37,10 @@ ARG WL_ADMIN_PORT="${WL_ADMIN_PORT:-7001}"
 ARG WL_ADMIN_PORT_HTTPS="${WL_ADMIN_PORT_HTTPS:-7002}"
 ARG WL_MANAGED_SERVER_PORT="${WL_MANAGED_SERVER_PORT:-8001}"
 ARG SMP_CONFIG_DIR=/data/smp
+ARG WL_DATA_WEBLOGIC=/data/weblogic
 
 # set following build arguments also the environment arguments
-ENV APP_VERSION=$SMP_VERSION \
+ENV SMP_VERSION=$SMP_VERSION \
     LC_ALL=$LC_ALL \
     LANG=$LANG \
     LANGUAGE=$LANGUAGE  \
@@ -56,10 +57,12 @@ ENV APP_VERSION=$SMP_VERSION \
     WL_MANAGED_SERVER_PORT="${WL_MANAGED_SERVER_PORT}" \
     WL_ADMIN_NAME="${WL_ADMIN_NAME}" \
     WL_CLUSTER_NAME="${WL_CLUSTER_NAME}" \
-    SMP_CONFIG_DIR=${SMP_CONFIG_DIR} \
-    CLASSPATH=${SMP_CONFIG_DIR}/config \
-    WL_SECURITY_FILE=/data/weblogic/security.properties \
-    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${WL_DOMAIN_HOME}:${WL_DOMAIN_HOME}/bin:${ORACLE_HOME} \
+    SMP_CONFIG_DIR=${SMP_CONFIG_DIR:-/data/smp} \
+    SMP_SECURITY_DIR="${SMP_CONFIG_DIR}/security" \
+    CLASSPATH="${SMP_CONFIG_DIR}/config" \
+    WL_DATA_WEBLOGIC="${WL_DATA_WEBLOGIC:-/data/weblogic}" \
+    WL_SECURITY_FILE="${WL_DATA_WEBLOGIC}/security.properties" \
+    PATH="$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${WL_DOMAIN_HOME}:${WL_DOMAIN_HOME}/bin:${ORACLE_HOME}" \
      # configurable argumentst at containe start
     WL_ADMIN_HOST="${WL_ADMIN_HOST:-localhost}"  \
     WL_SERVER_TLS_KEYSTORE_PASS="${WL_SERVER_TLS_KEYSTORE_PASS:-test123}" \

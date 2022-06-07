@@ -35,8 +35,6 @@ number_of_ms                  = int(CONFIGURED_MANAGED_SERVER_COUNT)
 cluster_type                  = CLUSTER_TYPE
 managed_server_name_base      = MANAGED_SERVER_NAME_BASE
 production_mode_enabled       = PRODUCTION_MODE_ENABLED
-ksIdentityAlias               = ADMIN_HOST
-ksIdentityPassword            = SERVER_TLS_KEYSTORE_PASS
 
 # Read the domain secrets from the common python file
 #execfile('%s/read-domain-secret.py' % script_dir)

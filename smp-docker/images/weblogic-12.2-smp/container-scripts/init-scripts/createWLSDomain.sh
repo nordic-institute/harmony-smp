@@ -9,6 +9,8 @@ INIT_SCRIPTS=$1
 echo "Domain Home is: $WL_DOMAIN_HOME"
 echo "Scripts folder is: $INIT_SCRIPTS"
 
+source "${INIT_SCRIPTS}/functions/keystore.functions"
+
 # If AdminServer.log does not exists, container is starting for 1st time
 # So it should start NM and also associate with AdminServer
 # Otherwise, only start NM (container restarted)
@@ -59,6 +61,24 @@ function check_wls() {
   echo -e "WebLogic Server has $action"
 }
 
+
+function init_server_https_keystore(){
+   # configure https
+		CERTIFICATES=${CERTIFICATES:-/tmp/}
+	  HOST_DOMAIN=${WL_ADMIN_HOST:-localhost}
+	  # put keystore to wildfly configuration folder
+	  [[ ! -d "${WL_DATA_WEBLOGIC}/keystores" ]] &&  mkdir -p "${WL_DATA_WEBLOGIC}/keystores"
+	  KEYSTORE_PATH="${WL_DATA_WEBLOGIC}/keystores/admin-tls-keystore.p12"
+
+    CLIENT_KEYSTORE_PATH="${WL_DATA_WEBLOGIC}/keystores/client-tls-keystore.p12"
+    TRUSTSTORE_PATH="${WL_DATA_WEBLOGIC}/keystores/admin-tls-truststore.p12"
+
+    generateKeyStore "${HOST_DOMAIN}" "${WL_SERVER_TLS_KEYSTORE_PASS}" "${WL_SERVER_TLS_KEYSTORE_PASS}" "${KEYSTORE_PATH}"
+    generateKeyStore "Client-TLS-Certificate" "${WL_SERVER_TLS_KEYSTORE_PASS}" "${WL_SERVER_TLS_KEYSTORE_PASS}" "${TRUSTSTORE_PATH}"
+
+    wlst.sh -skipWLSModuleScanning  "$INIT_SCRIPTS/enable-server-https.py" "${KEYSTORE_PATH}" "${TRUSTSTORE_PATH}"
+}
+
 if [ -f ${WL_DOMAIN_HOME}/servers/${WL_ADMIN_NAME}/logs/${WL_ADMIN_NAME}.log ]; then
   echo "Admin log file: [${WL_DOMAIN_HOME}/servers/${WL_ADMIN_NAME}/logs/${WL_ADMIN_NAME}.log] already exists - Skip domain creation!"
   exit
@@ -79,13 +99,9 @@ fi
 # copy security properties - check first init folder else use default
 if [ -e "${WL_INIT_PROPERTIES}/domain_security.properties" ]; then
   cp -f "${WL_INIT_PROPERTIES}/domain_security.properties" "${SEC_PROPERTIES_FILE}"
+elif [ -e "${INIT_SCRIPTS}/../properties/domain_security.properties" ]; then
+  cp -f "${INIT_SCRIPTS}/../properties/domain_security.properties" "${SEC_PROPERTIES_FILE}"
 else
-  cp -f "${INIT_SCRIPTS}"/../properties/domain_security.properties "${SEC_PROPERTIES_FILE}"
-fi
-
-
-
-if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
   echo "To increase security please provide custom admin username and password in ${SEC_PROPERTIES_FILE}."
   defUsername=weblogic
   randPass=$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 64)
@@ -121,7 +137,6 @@ CONFIGURED_MANAGED_SERVER_COUNT=${WL_MANAGED_SERVER_COUNT}
 CLUSTER_NAME=${WL_CLUSTER_NAME}
 DEBUG_FLAG=${WL_DEBUG_FLAG}
 PRODUCTION_MODE_ENABLED=${WL_PRODUCTION_MODE_ENABLED}
-SERVER_TLS_KEYSTORE_PASS=${WL_SERVER_TLS_KEYSTORE_PASS}
 EOT
 
 echo "Init domain with following properties"
@@ -131,7 +146,7 @@ echo "Show domain home $WL_DOMAIN_HOME"
 wlst.sh -skipWLSModuleScanning -loadProperties "${DOMAIN_PROPERTIES_FILE}" -loadProperties "${SEC_PROPERTIES_FILE}" "$INIT_SCRIPTS/create-wls-domain.py"
 
 ENC_PASS=$(java -cp $ORACLE_HOME/wlserver/server/lib/weblogic.jar  -Dweblogic.RootDirectory=${WL_DOMAIN_HOME} weblogic.security.Encrypt ${PASS});
-
+echo "set cluster shared secret file $WL_SECURITY_FILE"
 cat <<EOT > "$WL_SECURITY_FILE"
 username=${USER}
 password=${PASS}
@@ -145,3 +160,5 @@ username=${USER}
 password=${ENC_PASS}
 EOT
 fi
+
+init_server_https_keystore

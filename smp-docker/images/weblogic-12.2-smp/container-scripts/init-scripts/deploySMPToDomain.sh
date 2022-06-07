@@ -25,7 +25,7 @@ hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
 datasource.jndi=jdbc/eDeliverySmpDs
 authentication.blueCoat.enabled=true
 log.folder=./logs/
-configuration.dir=${SMP_CONFIG_DIR}/security
+configuration.dir=${SMP_SECURITY_DIR}/
 EOT
 fi
 

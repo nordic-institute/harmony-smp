@@ -91,6 +91,23 @@ export AS_SECURITY="${AS_HOME}/security"
 if [ -f ${AS_HOME}/logs/${ADMIN_NAME}.log ]; then
   exit
 fi
+echo "Initialize domain and deploy smp"
+# initialize docker image
+cd ~ || exit 13
+if [ ! -f ".initialized" ]; then
+  echo "Initialize domain and deploy smp"
+  INIT_SCRIPTS=${ORACLE_HOME}/init/scripts
+  initWebLogicDomain "${INIT_SCRIPTS}"
+  deploy_smp "${INIT_SCRIPTS}"
+  [ -f "${DOCKER_DATA}/${WL_CLUSTER_NAME}.jar" ] && rm -rf "${DOCKER_DATA}/${WL_CLUSTER_NAME}-${SMP_VERSION}.jar"
+  pack.sh -domain="${WL_DOMAIN_HOME}" \
+          -template="${DOCKER_DATA}/${WL_CLUSTER_NAME}-${SMP_VERSION}.jar" \
+          -template_name="${WL_CLUSTER_NAME}" \
+          -managed="true" \
+          -template_desc="${WL_DOMAIN_NAME}-managed-template-for-SMP-${SMP_VERSION}"
+
+  touch ~/.initialized
+fi
 
 echo "Admin Server Home: ${AS_HOME}"
 echo "Admin Server Security: ${AS_SECURITY}"
@@ -102,49 +119,12 @@ if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
   exit
 fi
 
-# initialize docker image
-cd ~ || exit 13
-if [ ! -f ".initialized" ]; then
-  INIT_SCRIPTS=${ORACLE_HOME}/init/scripts
-  initWebLogicDomain "${INIT_SCRIPTS}"
-  deploy_smp "${INIT_SCRIPTS}"
-  [ -f "${DOCKER_DATA}/${WL_CLUSTER_NAME}.jar" ] && rm -rf "${DOCKER_DATA}/${WL_CLUSTER_NAME}.jar"
-  pack.sh -domain="${WL_DOMAIN_HOME}" \
-          -template="${DOCKER_DATA}/${WL_CLUSTER_NAME}.jar" \
-          -template_name="${WL_CLUSTER_NAME}" \
-          -managed="true" \
-          -template_desc="${DOMAIN_NAME}-managed-template-for-SMP-${SMP_VERSION}"
-
-  touch ~/.initialized
-fi
-
-# Get Username
-#USER=$(awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep username | cut -d "=" -f2)
-#if [ -z "${USER}" ]; then
-#  echo "The domain username is blank.  The Admin username must be set in the properties file."
-#  exit
-#fi
-# Get Password
-#PASS=$(awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep password | cut -d "=" -f2)
-#if [ -z "${PASS}" ]; then
-#  echo "The domain password is blank.  The Admin password must be set in the properties file."
-#  exit
-#fi
-
 #Define Java Options
 JAVA_OPTIONS=$(awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2)
 if [ -z "${JAVA_OPTIONS}" ]; then
   JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
 fi
 export JAVA_OPTIONS=${JAVA_OPTIONS}
-
-
-
-# Create domain
-#mkdir -p ${AS_SECURITY}
-#echo "username=${USER}" >>${AS_SECURITY}/boot.properties
-#echo "password=${PASS}" >>${AS_SECURITY}/boot.properties
-#${WL_DOMAIN_HOME}/bin/setDomainEnv.sh
 
 
 #echo 'Running Admin Server in background'

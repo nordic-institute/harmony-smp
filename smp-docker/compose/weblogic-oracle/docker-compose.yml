@@ -22,7 +22,7 @@ services:
     environment:
       - JAVA_OPTIONS="-Dweblogic.webservice.i18n.charset=utf-8"
 #    ports:
-#      - 7902:7001
+#      - 7901:7001
     volumes:
       - ./properties/weblogic-init:/u01/init/
       - ./data:/data
@@ -70,9 +70,7 @@ services:
       - NODE_HOSTNAMES=smp-node-01,smp-node-02
       - NODE_PORT_NUMBERS=8001,8001
     ports:
-      - "7901:80"
+      - "7980:80"
     restart: always
 
-volumes:
-   shared-status-folder:
 
