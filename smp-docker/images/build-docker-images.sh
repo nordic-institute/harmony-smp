@@ -53,7 +53,6 @@ while getopts v:o:s:c:p: option; do
   esac
 done
 
-
 if [[ -z "${SMP_VERSION}" ]]; then
   # get version from setup file
   echo "Get version from the pom: $(pwd)"
@@ -94,11 +93,9 @@ validateAndPrepareArtefacts() {
     ;;
   esac
 
-
   export ORA_VERSION
   export ORA_EDITION
   export ORA_SERVICE
-
 
   # check oracle database
   if [[ ! -f "${ORACLE_ARTEFACTS}/Oracle/OracleDatabase/${ORA_VERSION}/${ORACLE_DB_FILE}" ]]; then
@@ -126,8 +123,6 @@ validateAndPrepareArtefacts() {
     # copy artefact to docker build folder
     cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ./oracle/weblogic-12.2.1.4/
   fi
-
-
 
   if [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]; then
     mkdir -p "./tomcat-mysql-smp-sml/artefacts"
@@ -178,20 +173,39 @@ buildImages() {
   # -----------------------------------------------------------------------------
   # oracle 1.2.0.2-xe (https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance/dockerfiles/11.2.0.2)
   docker build -f ./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DOCKERFILE} -t "smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}" --build-arg DB_EDITION=${ORA_EDITION} ./oracle/oracle-db-${ORA_VERSION}/
-
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}]!"
+    exit 10
+  fi
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
   # create docker OS image with java (https://github.com/oracle/docker-images/tree/master/OracleJava/java-8)
   docker build -t oracle/serverjre:8 ./oracle/OracleJava/java-8/
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image for oracle server-java!"
+    exit 10
+  fi
 
-  # create weblogic basic (https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3)
+  # create weblogic basic (https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.4)
   docker build -f ./oracle/weblogic-12.2.1.4/Dockerfile.developer -t oracle/weblogic:12.2.1.4-developer ./oracle/weblogic-12.2.1.4/
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image for oracle weblogic:12.2.1.4 server!"
+    exit 10
+  fi
 
   # build SMP deployment.
   docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-weblogic-122:${SMP_VERSION}]!"
+    exit 10
+  fi
   # build tomcat mysql image  deployment.
   docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-sml-tomcat-mysql:${SMP_VERSION}]!"
+    exit 10
+  fi
 }
 
 function pushImageToDockerhub() {

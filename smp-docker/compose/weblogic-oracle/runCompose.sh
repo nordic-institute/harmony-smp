@@ -1,6 +1,8 @@
 #!/bin/bash
 
-WORKING_DIR="$(dirname $0)"
+#WORKING_DIR="$(dirname $0)"
+WORKING_DIR="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
 SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
 #SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
 SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql"
@@ -73,7 +75,12 @@ function createDatabaseSchemaForUser() {
 function clearOldContainers {
   echo "Clear containers and volumes"
   docker-compose -p "${PREFIX}" rm -s -f -v
-  docker volume rm "${PREFIX}_shared-status-folder"
+  echo "Clear container data ${WORKING_DIR}/data/"
+  rm -rf ${WORKING_DIR}/data/smp/config/*.*
+  rm -rf ${WORKING_DIR}/data/smp/security/*.*
+  rm -rf ${WORKING_DIR}/data/weblogic/keystores/*.*
+  rm -rf ${WORKING_DIR}/data/weblogic/security.properties
+  rm -rf ${WORKING_DIR}/data/*.jar
 }
 
 createDatabaseSchemaForUser $SMP_DB_USERNAME $SMP_DB_PASSWORD "${SMP_DB_SCRIPTS}/01_create_user.sql"
@@ -109,5 +116,5 @@ docker-compose -p ${PREFIX} up -d --force-recreate
 
 
 # wait until service is up
-for i in `seq 200`; do timeout 10  bash -c ' curl --silent --fail http://localhost:7901/smp/'; if [ $? -eq 0  ] ; then break;fi; echo "$i. Wait for weblogic to start!";  sleep 10;  done;
+for i in `seq 200`; do timeout 10  bash -c ' curl --silent --fail http://localhost:7980/smp/'; if [ $? -eq 0  ] ; then break;fi; echo "$i. Wait for weblogic to start!";  sleep 10;  done;
 
