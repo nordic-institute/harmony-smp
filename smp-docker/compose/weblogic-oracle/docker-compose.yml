@@ -1,33 +1,76 @@
 version: "3.0"
 services:
-  database:
+  smp-oracle-db:
     image: smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
-    container_name: smp_oracle_db
-    hostname: wlsadmin
+    hostname: smp-database.local
     environment:
       - ORACLE_CHARACTERSET=AL32UTF8 # set database encoding
-      - NLS_LANG=.AL32UTF8  # set sqlplus encoding for stating up scripts
+      - NLS_LANG=.AL32UTF8  # set sqlplus encoding for starting up scripts
     volumes:
       - ./properties/db-scripts:/docker-entrypoint-initdb.d/startup  # init script.
       - ./status-folder:/u01/status/
     ports:
       - 1921:1521
     shm_size: '1gb'
-  weblogic:
+
+  smp-wls-admin:
     depends_on:
-      - database
-#    command: [bash, -c, "for i in `seq 10`; do timeout 1  bash -c '</dev/tcp/database/1521'; if [ $$? -eq 0 ] ; then break;fi;sleep 1;  done;"]
-    command: [bash, -c, "for i in `seq 150`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.status' ] && [ \"$$( cat /u01/status/database.status )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 10;  done;   /u01/oracle/startAdminServer.sh"]
-    image:  smp-weblogic-122:${SMP_VERSION}
-    container_name: wls-smp   
-    hostname: wlsadmin
+      - smp-oracle-db
+    command: [bash, -c, "rm -rf /u01/status/wls-admin.started;for i in `seq 150`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.status' ] && [ \"$$( cat /u01/status/database.status )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 10;  done;   /u01/oracle/startAdminServer.sh"]
+    image:  smp-weblogic-122:${SMP_VERSION:-4.2-RC2-SNAPSHOT}
+    hostname: smp-wls-admin
     environment:
-      JAVA_OPTIONS: "-Dweblogic.webservice.i18n.charset=utf-8"
+      - JAVA_OPTIONS="-Dweblogic.webservice.i18n.charset=utf-8"
+#    ports:
+#      - 7901:7001
     volumes:
-      - ./properties/weblogic:/u01/oracle/properties
+      - ./properties/weblogic-init:/u01/init/
+      - ./data:/data
       - ./status-folder:/u01/status/
+
+  smp-node-01:
+    # depend of the startup of the db
+    depends_on:
+      - smp-wls-admin
+    command: [bash, -c, "for i in `seq 200`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/wls-admin.started' ]  ; then break;fi; echo \"$$i. Wait for admin server!\"; sleep 10;  done; /u01/oracle/startManagedServer.sh"]
+    environment:
+      - WL_ADMIN_HOST=smp-wls-admin
+      - WL_MANAGED_SERV_NAME=smp-node-1
+    image: smp-weblogic-122:${SMP_VERSION:-4.2-RC2-SNAPSHOT}
+    #    ports:
+    #      - "18453:8453"
+    #      - "18001:8001"
+    volumes:
+      - ./data:/data
+      - ./status-folder:/u01/status/
+  smp-node-02:
+    # depend of the startup of the db
+    depends_on:
+      - smp-wls-admin
+    command: [bash, -c, "for i in `seq 200`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/wls-admin.started' ]  ; then break;fi; echo \"$$i. Wait for admin server!\"; sleep 10;  done; /u01/oracle/startManagedServer.sh"]
+    environment:
+      - WL_ADMIN_HOST=smp-wls-admin
+      - WL_MANAGED_SERV_NAME=smp-node-2
+    image: smp-weblogic-122:${SMP_VERSION:-4.2-RC2-SNAPSHOT}
+    #    ports:
+    #      - "18453:8453"
+    #      - "18001:8001"
+    volumes:
+      - ./data:/data
+      - ./status-folder:/u01/status/
+
+  smp-httpd:
+    depends_on:
+      - smp-node-01
+      - smp-node-02
+    image: edelivery-docker.devops.tech.ec.europa.eu/domibustest/edelivery-httpd:2.4.39
+    environment:
+      - VHOST_CORNER_HOSTNAME=smp.edelivery.eu
+      - NODES_COUNT=2
+      - NODE_HOSTNAMES=smp-node-01,smp-node-02
+      - NODE_PORT_NUMBERS=8001,8001
     ports:
-      - 7901:7001
-volumes:
-   shared-status-folder:
+      - "7980:80"
+    restart: always
+
 
