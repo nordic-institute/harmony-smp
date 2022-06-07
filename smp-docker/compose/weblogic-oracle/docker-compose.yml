@@ -21,8 +21,8 @@ services:
     hostname: smp-wls-admin
     environment:
       - JAVA_OPTIONS="-Dweblogic.webservice.i18n.charset=utf-8"
-#    ports:
-#      - 7901:7001
+    ports:
+      - 7901:7001
     volumes:
       - ./properties/weblogic-init:/u01/init/
       - ./data:/data
