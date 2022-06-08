@@ -11,11 +11,11 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -307,8 +307,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testUpdateUserPasswordNotMatchReqExpression() {
         long authorizedUserId = 1L;
         long userToUpdateId = 1L;
-        String authorizedPassword="testPass";
-        String newPassword="newPass";
+        String authorizedPassword = "testPass";
+        String newPassword = "newPass";
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
@@ -321,8 +321,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         long authorizedUserId = 1L;
         long userToUpdateId = 1L;
-        String authorizedPassword="oldPass";
-        String newPassword="TTTTtttt1111$$$$$";
+        String authorizedPassword = "oldPass";
+        String newPassword = "TTTTtttt1111$$$$$";
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
@@ -342,8 +342,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         long authorizedUserId = user.getId();
         long userToUpdateId = 1L;
-        String authorizedPassword="oldPass";
-        String newPassword="TTTTtttt1111$$$$$";
+        String authorizedPassword = "oldPass";
+        String newPassword = "TTTTtttt1111$$$$$";
 
         BadCredentialsException result = assertThrows(BadCredentialsException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
@@ -363,8 +363,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         long authorizedUserId = user.getId();
         long userToUpdateId = user.getId();
-        String authorizedPassword=userPassword;
-        String newPassword="TTTTtttt1111$$$$$";
+        String authorizedPassword = userPassword;
+        String newPassword = "TTTTtttt1111$$$$$";
 
         testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword);
     }
@@ -398,7 +398,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUpdateUserdataCertificateOK() throws Exception {
-        String certSubject = "CN="+UUID.randomUUID().toString()+",O=eDelivery,C=EU";
+        String certSubject = "CN=" + UUID.randomUUID().toString() + ",O=eDelivery,C=EU";
         String userPassword = UUID.randomUUID().toString();
         DBUser user = new DBUser();
         user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
@@ -409,7 +409,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         CertificateRO certificateRO = TestROUtils.createCertificateRO(certSubject, BigInteger.TEN);
         UserRO userRO = new UserRO();
-        userRO.setCertificate(certificateRO);;
+        userRO.setCertificate(certificateRO);
+
         testInstance.updateUserdata(user.getId(), userRO);
 
 
@@ -417,11 +418,33 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         // fields must not change
         assertNotNull(changedUser.getCertificate());
         assertNotNull(changedUser.getCertificate().getPemEncoding());
-        assertNotNull(certificateRO.getCertificateId(),changedUser.getCertificate().getCertificateId());
-        assertNotNull(certificateRO.getSubject(),changedUser.getCertificate().getSubject());
-        assertNotNull(certificateRO.getIssuer(),changedUser.getCertificate().getIssuer());
-        assertNotNull(certificateRO.getSerialNumber(),changedUser.getCertificate().getSerialNumber());
+        assertNotNull(certificateRO.getCertificateId(), changedUser.getCertificate().getCertificateId());
+        assertNotNull(certificateRO.getSubject(), changedUser.getCertificate().getSubject());
+        assertNotNull(certificateRO.getIssuer(), changedUser.getCertificate().getIssuer());
+        assertNotNull(certificateRO.getSerialNumber(), changedUser.getCertificate().getSerialNumber());
+    }
 
 
+    @Test
+    public void testUpdateUserdataCertificateWithExistingCertificateOK() throws Exception {
+        String certSubject = "CN=" + UUID.randomUUID().toString() + ",O=eDelivery,C=EU";
+        DBUser user = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_2);
+        userDao.persistFlushDetach(user);
+
+        CertificateRO certificateRO = TestROUtils.createCertificateRO(certSubject, BigInteger.TEN);
+        UserRO userRO = new UserRO();
+        userRO.setCertificate(certificateRO);
+        ;
+        testInstance.updateUserdata(user.getId(), userRO);
+
+
+        DBUser changedUser = userDao.findUser(user.getId()).get();
+        // fields must not change
+        assertNotNull(changedUser.getCertificate());
+        assertNotNull(changedUser.getCertificate().getPemEncoding());
+        assertNotNull(certificateRO.getCertificateId(), changedUser.getCertificate().getCertificateId());
+        assertNotNull(certificateRO.getSubject(), changedUser.getCertificate().getSubject());
+        assertNotNull(certificateRO.getIssuer(), changedUser.getCertificate().getIssuer());
+        assertNotNull(certificateRO.getSerialNumber(), changedUser.getCertificate().getSerialNumber());
     }
 }
