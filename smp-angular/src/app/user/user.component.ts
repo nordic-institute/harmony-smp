@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
@@ -15,7 +15,7 @@ import {SmpConstants} from "../smp.constants";
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class UserComponent implements AfterViewInit {
+export class UserComponent implements OnInit, AfterViewInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
@@ -35,7 +35,7 @@ export class UserComponent implements AfterViewInit {
               public dialog: MatDialog) {
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
@@ -59,8 +59,11 @@ export class UserComponent implements AfterViewInit {
         canAutoResize: true
       },
     ];
-    this.searchTable.tableColumnInit();
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+  }
+
+  ngAfterViewInit() {
+    this.searchTable.tableColumnInit();
 
     // if system admin refresh trust certificate list!
     if (this.securityService.isCurrentUserSystemAdmin()) {

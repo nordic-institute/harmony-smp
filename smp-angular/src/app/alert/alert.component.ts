@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
 
@@ -17,15 +17,15 @@ import {ObjectPropertiesDialogComponent} from "../common/dialogs/object-properti
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css']
 })
-export class AlertComponent implements AfterViewInit {
+export class AlertComponent implements OnInit, AfterViewInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
-  @ViewChild('dateTimeColumn') dateTimeColumn:TemplateRef<any>;
-  @ViewChild('truncateText') truncateText:TemplateRef<any>;
-  @ViewChild('credentialType') credentialType:TemplateRef<any>;
-  @ViewChild('forUser') forUser:TemplateRef<any>;
+  @ViewChild('dateTimeColumn') dateTimeColumn: TemplateRef<any>;
+  @ViewChild('truncateText') truncateText: TemplateRef<any>;
+  @ViewChild('credentialType') credentialType: TemplateRef<any>;
+  @ViewChild('forUser') forUser: TemplateRef<any>;
 
 
   readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
@@ -45,7 +45,7 @@ export class AlertComponent implements AfterViewInit {
               public dialog: MatDialog) {
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.alertController = new AlertController(this.http, this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
@@ -54,7 +54,7 @@ export class AlertComponent implements AfterViewInit {
         title: "Alert date",
         prop: 'reportingTime',
         showInitially: true,
-        maxWidth:100,
+        maxWidth: 100,
         cellTemplate: this.dateTimeColumn,
       },
       {
@@ -62,14 +62,14 @@ export class AlertComponent implements AfterViewInit {
         title: "For User",
         prop: 'username',
         cellTemplate: this.forUser,
-        maxWidth:200,
+        maxWidth: 200,
         showInitially: true,
       },
       {
         name: 'Credential type',
         title: "Credential type.",
         prop: 'alertDetails',
-        maxWidth:200,
+        maxWidth: 200,
         cellTemplate: this.credentialType,
         showInitially: true,
       },
@@ -85,7 +85,7 @@ export class AlertComponent implements AfterViewInit {
         title: "Alert status.",
         prop: 'alertStatus',
         showInitially: true,
-        maxWidth:100,
+        maxWidth: 100,
       },
       {
         name: 'Status desc.',
@@ -100,23 +100,26 @@ export class AlertComponent implements AfterViewInit {
         title: "Alert level.",
         prop: 'alertLevel',
         showInitially: true,
-        maxWidth:80,
+        maxWidth: 80,
 
       },
     ];
-    this.searchTable.tableColumnInit();
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+  }
+
+  ngAfterViewInit() {
+    this.searchTable.tableColumnInit();
   }
 
 
   details(row: any) {
-      this.dialog.open(ObjectPropertiesDialogComponent, {
-        data: {
-          title: "Alert details!",
-          object: row.alertDetails,
+    this.dialog.open(ObjectPropertiesDialogComponent, {
+      data: {
+        title: "Alert details!",
+        object: row.alertDetails,
 
-        }
-      });
+      }
+    });
   }
 
   // for dirty guard...
