@@ -1,11 +1,9 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
-import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
@@ -99,9 +97,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 LOG.warn("Unknown or null PreAuthenticatedAuthenticationToken principal type: " + principal);
             }
         } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
-            LOG.info("try to authentication Token: [{}] with user:[{}]" , authenticationToken.getClass(), authenticationToken.getPrincipal());
-            if (CasAuthenticationFilter.CAS_STATEFUL_IDENTIFIER.equalsIgnoreCase((String)authenticationToken.getPrincipal())
-             || CasAuthenticationFilter.CAS_STATELESS_IDENTIFIER.equalsIgnoreCase((String)authenticationToken.getPrincipal())){
+            LOG.info("try to authentication Token: [{}] with user:[{}]", authenticationToken.getClass(), authenticationToken.getPrincipal());
+            if (CasAuthenticationFilter.CAS_STATEFUL_IDENTIFIER.equalsIgnoreCase((String) authenticationToken.getPrincipal())
+                    || CasAuthenticationFilter.CAS_STATELESS_IDENTIFIER.equalsIgnoreCase((String) authenticationToken.getPrincipal())) {
                 LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
                 return null;
             }
@@ -133,13 +131,15 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         X509Certificate x509Certificate = principal.getCertificate();
         String userToken = principal.getName();
 
-        if (truststore != null && x509Certificate != null) {
-            CertificateValidator certificateValidator = new CertificateValidator(
-                    null, truststore, null);
+
+        if (x509Certificate != null) {
             try {
-                certificateValidator.validateCertificate(x509Certificate);
+                truststoreService.validateCertificateWithTruststore(x509Certificate);
             } catch (CertificateException e) {
-                throw new BadCredentialsException("Certificate is not trusted!");
+                String message = "Certificate is not trusted!";
+                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken , message
+                        + " The cert chain is not in truststore or either subject regexp or allowed cert policies does not match");
+                throw new BadCredentialsException(message);
             }
         }
 
@@ -163,6 +163,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         DBCertificate certificate = user.getCertificate();
         // check if certificate is valid
         Date currentDate = Calendar.getInstance().getTime();
+        // this is legacy code because some setups does not have truststore configured
         // validate  dates
         if (principal.getNotBefore() == null) {
             String msg = "Invalid certificate configuration: 'Not Before' value is missing!";
@@ -181,6 +182,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
             throw new AuthenticationServiceException(msg);
         }
+
         // check if issuer or subject are in trusted list
         if (!(truststoreService.isSubjectOnTrustedList(principal.getSubjectOriginalDN())
                 || truststoreService.isSubjectOnTrustedList(principal.getIssuerDN()))) {
@@ -217,7 +219,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
 
     public void delayResponse(long startTime) {
-        int delayInMS = configurationService.getAccessTokenLoginFailDelayInMilliSeconds() -  (int) (Calendar.getInstance().getTimeInMillis() - startTime);
+        int delayInMS = configurationService.getAccessTokenLoginFailDelayInMilliSeconds() - (int) (Calendar.getInstance().getTimeInMillis() - startTime);
         if (delayInMS > 0) {
             try {
                 LOG.debug("Delay response for [{}] ms to mask password/username login failures!", delayInMS);
@@ -317,7 +319,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         // the webservice authentication with corresponding web-service authority;
         SMPAuthority authority = SMPAuthority.getAuthorityByRoleName("WS_" + user.getRole());
         // the webservice authentication does not support session set the session secret is null!
-        SMPUserDetails userDetails = new SMPUserDetails(user, null,  Collections.singletonList(authority));
+        SMPUserDetails userDetails = new SMPUserDetails(user, null, Collections.singletonList(authority));
 
         SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(authenticationTokenId,
                 authenticationTokenValue,

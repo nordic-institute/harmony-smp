@@ -9,16 +9,23 @@ import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -296,4 +303,125 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(result.getAccessTokenGeneratedOn());
     }
 
+    @Test
+    public void testUpdateUserPasswordNotMatchReqExpression() {
+        long authorizedUserId = 1L;
+        long userToUpdateId = 1L;
+        String authorizedPassword="testPass";
+        String newPassword="newPass";
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request PasswordChange."));
+    }
+
+    @Test
+    public void testUpdateUserPasswordUserNotExists() {
+
+        long authorizedUserId = 1L;
+        long userToUpdateId = 1L;
+        String authorizedPassword="oldPass";
+        String newPassword="TTTTtttt1111$$$$$";
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request UserId.  Error: Can not find user id!"));
+    }
+
+    @Test
+    public void testUpdateUserPasswordUserNotAuthorized() {
+        String userPassword = UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+        long authorizedUserId = user.getId();
+        long userToUpdateId = 1L;
+        String authorizedPassword="oldPass";
+        String newPassword="TTTTtttt1111$$$$$";
+
+        BadCredentialsException result = assertThrows(BadCredentialsException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Password change failed; Invalid current password!"));
+    }
+
+    @Test
+    public void testUpdateUserPasswordOK() {
+        String userPassword = UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+        long authorizedUserId = user.getId();
+        long userToUpdateId = user.getId();
+        String authorizedPassword=userPassword;
+        String newPassword="TTTTtttt1111$$$$$";
+
+        testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword);
+    }
+
+    @Test
+    public void testUpdateUserdataOK() {
+        String userPassword = UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+        UserRO userRO = new UserRO();
+        userRO.setEmailAddress(UUID.randomUUID().toString());
+        userRO.setUsername(UUID.randomUUID().toString());
+        userRO.setAccessTokenId(UUID.randomUUID().toString());
+        userRO.setRole(UUID.randomUUID().toString());
+
+        testInstance.updateUserdata(user.getId(), userRO);
+
+        DBUser changedUser = userDao.findUser(user.getId()).get();
+        // fields must not change
+        assertEquals(user.getUsername(), changedUser.getUsername());
+        assertEquals(user.getAccessToken(), changedUser.getAccessToken());
+        assertEquals(user.getRole(), changedUser.getRole());
+        // changed
+        assertEquals(userRO.getEmailAddress(), changedUser.getEmailAddress());
+    }
+
+    @Test
+    public void testUpdateUserdataCertificateOK() throws Exception {
+        String certSubject = "CN="+UUID.randomUUID().toString()+",O=eDelivery,C=EU";
+        String userPassword = UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+        CertificateRO certificateRO = TestROUtils.createCertificateRO(certSubject, BigInteger.TEN);
+        UserRO userRO = new UserRO();
+        userRO.setCertificate(certificateRO);;
+        testInstance.updateUserdata(user.getId(), userRO);
+
+
+        DBUser changedUser = userDao.findUser(user.getId()).get();
+        // fields must not change
+        assertNotNull(changedUser.getCertificate());
+        assertNotNull(changedUser.getCertificate().getPemEncoding());
+        assertNotNull(certificateRO.getCertificateId(),changedUser.getCertificate().getCertificateId());
+        assertNotNull(certificateRO.getSubject(),changedUser.getCertificate().getSubject());
+        assertNotNull(certificateRO.getIssuer(),changedUser.getCertificate().getIssuer());
+        assertNotNull(certificateRO.getSerialNumber(),changedUser.getCertificate().getSerialNumber());
+
+
+    }
 }
