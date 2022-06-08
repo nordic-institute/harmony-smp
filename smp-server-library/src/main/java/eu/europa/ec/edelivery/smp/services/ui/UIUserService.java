@@ -77,6 +77,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * @return ServiceResult with list
      */
     @Transactional
+    @Override
     public ServiceResult<UserRO> getTableList(int page, int pageSize, String sortField, String sortOrder, Object filter) {
         ServiceResult<UserRO> resUsers = super.getTableList(page, pageSize, sortField, sortOrder, filter);
         resUsers.getServiceEntities().forEach(this::updateUserStatus);
@@ -191,10 +192,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-
         dbUser.setEmailAddress(user.getEmailAddress());
-        if (user.getCertificate() != null && (dbUser.getCertificate() == null
-                || !StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId()))) {
+
+        if (user.getCertificate() != null &&
+                (dbUser.getCertificate() == null
+                        || !StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId()))) {
+
             CertificateRO certRo = user.getCertificate();
 
             if (dbUser.getCertificate() != null) {
@@ -318,6 +321,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
 
+    /**
+     * User can be deleted only if it does not own any of the service groups.
+     *
+     * @param dev
+     * @return
+     */
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
         List<Long> idList = dev.getListIds().stream().map(encId -> SessionSecurityUtils.decryptEntityId(encId)).collect(Collectors.toList());
         List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(idList);

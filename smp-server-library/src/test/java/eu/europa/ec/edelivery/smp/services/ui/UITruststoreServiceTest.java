@@ -10,6 +10,8 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,19 +26,23 @@ import org.springframework.test.util.ReflectionTestUtils;
 import javax.security.auth.x500.X500Principal;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.cert.*;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class UITruststoreServiceTest extends AbstractServiceIntegrationTest {
+
+    public static final String CERTIFICATE_POLICY_ANY="2.5.29.32.0";
+    public static final String CERTIFICATE_POLICY_QCP_NATURAL = "0.4.0.194112.1.0";
+    public static final String CERTIFICATE_POLICY_QCP_LEGAL = "0.4.0.194112.1.1";
+    public static final String CERTIFICATE_POLICY_QCP_NATURAL_QSCD = "0.4.0.194112.1.2";
+    public static final String CERTIFICATE_POLICY_QCP_LEGAL_QSCD = "0.4.0.194112.1.3";
 
     public static final String S_SUBJECT_PEPPOL = "CN=POP000004,OU=PEPPOL TEST AP,O=European Commission,C=BE";
     public static final String S_SUBJECT_PEPPOL_EXPANDED = "serialNumber=12345,emailAddress=test@mail.com,CN=POP000004,OU=PEPPOL TEST AP,O=European Commission,street=My Street,C=BE";
@@ -178,12 +184,13 @@ public class UITruststoreServiceTest extends AbstractServiceIntegrationTest {
 
 
     @Test
-    public void testGetCertificateDataPEM() throws IOException, CertificateException {
+    public void testGetCertificateDataPEMAndFullValidationExpired() throws IOException{
         // given
+
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/SMPtest.crt"));
 
         // when
-        CertificateRO cer = testInstance.getCertificateData(buff);
+        CertificateRO cer = testInstance.getCertificateData(buff, true);
 
         //then
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", cer.getCertificateId());
@@ -193,6 +200,7 @@ public class UITruststoreServiceTest extends AbstractServiceIntegrationTest {
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
         assertTrue(cer.getValidFrom().before(cer.getValidTo()));
+        assertEquals("Certificate is expired!",cer.getInvalidReason());
     }
 
     @Test
@@ -409,6 +417,36 @@ public class UITruststoreServiceTest extends AbstractServiceIntegrationTest {
 
         // then
         assertEquals("SMP Test", alias);
+    }
+
+    @Test
+    public void testValidateCertificatePolicyLegacyMatchOk() throws Exception {
+        String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Arrays.asList(CERTIFICATE_POLICY_QCP_NATURAL));
+        Mockito.doReturn( Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL)).when(configurationService).getAllowedCertificatePolicies();
+        testInstance.validateCertificatePolicyMatchLegacy(certificate);
+    }
+
+    @Test
+    public void testValidateCertificatePolicyLegacyMatchEmpty() throws Exception {
+        String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject,BigInteger.TEN, null);
+        Mockito.doReturn( Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL)).when(configurationService).getAllowedCertificatePolicies();
+
+        CertificateException result = assertThrows(CertificateException.class,
+                () -> testInstance.validateCertificatePolicyMatchLegacy(certificate));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate has empty CertificatePolicy extension. Certificate:"));
+    }
+
+    @Test
+    public void testValidateCertificatePolicyLegacyMatchMismatch() throws Exception {
+        String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject,BigInteger.TEN, Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL_QSCD));
+        Mockito.doReturn( Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL)).when(configurationService).getAllowedCertificatePolicies();
+
+        CertificateException result = assertThrows(CertificateException.class,
+                () -> testInstance.validateCertificatePolicyMatchLegacy(certificate));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate policy verification failed."));
     }
 
 }

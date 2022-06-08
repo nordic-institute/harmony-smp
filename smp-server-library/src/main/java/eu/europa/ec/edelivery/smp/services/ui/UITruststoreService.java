@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
@@ -72,7 +73,7 @@ public class UITruststoreService {
 
     Map<String, X509Certificate> truststoreCertificates = new HashMap();
     List<CertificateRO> certificateROList = new ArrayList<>();
-    long lastUpdateTrustoreFileTime = 0;
+    long lastUpdateTrustStoreFileTime = 0;
     File lastUpdateTrustStoreFile = null;
     TrustManager[] trustManagers;
     KeyStore trustStore = null;
@@ -164,7 +165,7 @@ public class UITruststoreService {
         normalizedTrustedList.addAll(tmpList);
         truststoreCertificates.putAll(hmCertificates);
 
-        lastUpdateTrustoreFileTime = truststoreFile.lastModified();
+        lastUpdateTrustStoreFileTime = truststoreFile.lastModified();
         lastUpdateTrustStoreFile = truststoreFile;
         // clear list to reload RO when required
         certificateROList.clear();
@@ -188,7 +189,7 @@ public class UITruststoreService {
         CertificateRO cro;
         try {
             cert = X509CertificateUtils.getX509Certificate(buff);
-        } catch ( Throwable e) {
+        } catch (Throwable e) {
             LOG.debug("Error occurred while parsing the certificate ", e);
             LOG.warn("Can not parse the certificate with error:[{}]!", ExceptionUtils.getRootCauseMessage(e));
             cro = new CertificateRO();
@@ -222,9 +223,33 @@ public class UITruststoreService {
         return cro;
     }
 
+    public void validateCertificateWithTruststore(X509Certificate x509Certificate) throws CertificateException {
+        KeyStore truststore = getTrustStore();
+
+        if (x509Certificate == null) {
+            LOG.warn("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
+            return;
+        }
+
+        if (truststore == null) {
+            LOG.warn("Truststore is not configured! Skip trust validation against the truststore!");
+            return;
+        }
+
+        Pattern subjectRegExp = configurationService.getCertificateSubjectRegularExpression();
+        List<String> allowedCertificatePolicies = configurationService.getAllowedCertificatePolicies();
+        CertificateValidator certificateValidator = new CertificateValidator(
+                null, truststore,
+                subjectRegExp != null ? subjectRegExp.pattern() : null,
+                configurationService.getAllowedCertificatePolicies());
+        LOG.debug("Validate certificate with truststore, subject regexp [{}] and allowed certificate policies [{}]", subjectRegExp, allowedCertificatePolicies);
+        certificateValidator.validateCertificate(x509Certificate);
+    }
+
     public void checkFullCertificateValidity(X509Certificate cert) throws CertificateException {
         // test if certificate is valid
         cert.checkValidity();
+
         // check if certificate or its issuer is on trusted list
         // check only issuer because using Client-cert header we do not have whole chain.
         // if the truststore is empty then truststore validation is ignored
@@ -234,8 +259,16 @@ public class UITruststoreService {
 
             throw new CertificateNotTrustedException("Certificate is not trusted!");
         }
-        validateCertificatePolicyMatch(cert);
-        validateCertificateSubjectExpression(cert);
+
+
+        if (trustStore!=null) {
+            validateCertificateWithTruststore(cert);
+        } else {
+            LOG.warn("Use legacy certificate validation without truststore. Please configure truststore to increase security");
+            validateCertificatePolicyMatchLegacy(cert);
+            validateCertificateSubjectExpressionLegacy(cert);
+        }
+
         // check CRL - it is using only HTTP or https
         crlVerifierService.verifyCertificateCRLs(cert);
     }
@@ -253,6 +286,7 @@ public class UITruststoreService {
 
     public void checkFullCertificateValidity(CertificateRO cert) throws CertificateException {
         // trust data in database
+
         Date currentDate = Calendar.getInstance().getTime();
         if (cert.getValidFrom() != null && currentDate.before(cert.getValidFrom())) {
             throw new CertificateNotYetValidException("Certificate: " + cert.getCertificateId() + " is valid from: "
@@ -294,7 +328,7 @@ public class UITruststoreService {
     boolean isTruststoreChanged() {
         File file = getTruststoreFile();
         return !Objects.equals(lastUpdateTrustStoreFile, file) ||
-                file != null && file.lastModified() != lastUpdateTrustoreFileTime;
+                file != null && file.lastModified() != lastUpdateTrustStoreFileTime;
     }
 
     public File getTruststoreFile() {
@@ -528,7 +562,14 @@ public class UITruststoreService {
                 .collect(Collectors.toList());
     }
 
-    protected void validateCertificatePolicyMatch(X509Certificate certificate) throws CertificateException {
+    /**
+     * Method validates if the certificate contains one of allowed Certificate policy. At the moment it does not validates
+     * the whole chain. Because in some configuration cases does not use the truststore
+     *
+     * @param certificate
+     * @throws CertificateException
+     */
+    protected void validateCertificatePolicyMatchLegacy(X509Certificate certificate) throws CertificateException {
 
         // allowed list
         List<String> allowedCertificatePolicyOIDList = configurationService.getAllowedCertificatePolicies();
@@ -552,7 +593,7 @@ public class UITruststoreService {
         throw new CertificateException(excMessage);
     }
 
-    protected void validateCertificateSubjectExpression(X509Certificate signingCertificate) throws CertificateException {
+    protected void validateCertificateSubjectExpressionLegacy(X509Certificate signingCertificate) throws CertificateException {
         LOG.debug("Validate certificate subject");
 
 
