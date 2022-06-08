@@ -81,8 +81,10 @@ public class BaseTest {
 
 	@BeforeClass(alwaysRun = true)
 	public void beforeClass() {
+        logger.info("beforeClass entry");
 		driver = DriverManager.getDriver();
 		driver.get(PROPERTIES.UI_BASE_URL);
+        logger.info("beforeClass exit");
 	}
 
 	@BeforeMethod(alwaysRun = true)
