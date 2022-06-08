@@ -80,6 +80,9 @@ public abstract class AbstractServiceIntegrationTest {
     protected UserDao userDao;
 
     @Autowired
+    protected AlertDao alertDao;
+
+    @Autowired
     DBAssertion dbAssertion;
 
     @Before

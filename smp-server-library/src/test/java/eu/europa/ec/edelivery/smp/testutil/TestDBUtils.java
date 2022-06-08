@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
+import com.sun.org.apache.bcel.internal.generic.ARETURN;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
@@ -22,6 +23,27 @@ public class TestDBUtils {
         domain.setSmlSmpId(UUID.randomUUID().toString());
         domain.setSmlParticipantIdentifierRegExp(UUID.randomUUID().toString());
         return domain;
+    }
+
+    public static DBAlert createDBAlert(String username) {
+        return createDBAlert(username, "mail-subject", "mail.to@test.eu",AlertLevelEnum.MEDIUM, AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION);
+    }
+
+    public static DBAlert createDBAlert(String username, String mailSubject,
+                                        String mailTo,
+                                        AlertLevelEnum level,
+                                        AlertTypeEnum alertType) {
+        DBAlert alert = new DBAlert();
+        alert.setMailSubject(mailSubject);
+        alert.setMailTo(mailTo);
+        alert.setUsername(username);
+        alert.setReportingTime(OffsetDateTime.now());
+        alert.setAlertType(alertType);
+        alert.setAlertLevel(level);
+        alert.setAlertStatus(AlertStatusEnum.PROCESS);
+        alert.addProperty("prop1", "propValue1");
+        alert.addProperty("prop2", "propValue2");
+        return alert;
     }
 
     public static DBDomain createDBDomain() {
