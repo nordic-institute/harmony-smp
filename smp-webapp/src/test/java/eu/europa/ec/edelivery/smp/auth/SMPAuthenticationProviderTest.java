@@ -52,8 +52,8 @@ public class SMPAuthenticationProviderTest {
         user.setAccessTokenIdentifier("User");
         user.setAccessToken(BCrypt.hashpw("InvalidPassword", BCrypt.gensalt()));
         user.setRole("MY_ROLE");
-        doReturn(500).when(mockConfigurationService).getAccessTokenLoginFailDelayInMilliSeconds();
-        doReturn(count+1).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
+        doReturn(1000).when(mockConfigurationService).getAccessTokenLoginFailDelayInMilliSeconds();
+        doReturn(count+5).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
 
 
         doReturn(Optional.of(user)).when(mockUserDao).findUserByIdentifier(any());
