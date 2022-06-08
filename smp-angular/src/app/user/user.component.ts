@@ -64,7 +64,6 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.searchTable.tableColumnInit();
-
     // if system admin refresh trust certificate list!
     if (this.securityService.isCurrentUserSystemAdmin()) {
       this.lookups.refreshTrustedCertificateLookup();

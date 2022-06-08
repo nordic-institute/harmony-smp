@@ -125,10 +125,12 @@ export class SearchTableComponent implements OnInit {
       if (this.showActionButtons) {
         console.log("show action buttons!")
         this.columnActions.showInitially = true
+
         this.columnPicker.allColumns.push(this.columnActions);
         this.columnPicker.selectedColumns.push(this.columnActions);
       }
     }
+    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
   }
 
   getRowClass(row) {
