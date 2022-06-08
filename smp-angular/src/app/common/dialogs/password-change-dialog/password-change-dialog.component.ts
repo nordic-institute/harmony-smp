@@ -16,7 +16,7 @@ import {UserRo} from "../../../user/user-ro.model";
 })
 export class PasswordChangeDialogComponent {
 
-  formTitle = "Change password dialog";
+  formTitle = "Set/Change password dialog";
   dialogForm: FormGroup;
   hideCurrPwdFiled: boolean = true;
   hideNewPwdFiled: boolean = true;
@@ -121,9 +121,9 @@ export class PasswordChangeDialogComponent {
   showPassChangeDialog() {
     this.dialog.open(InformationDialogComponent, {
       data: {
-        title: "Password changed!",
-        description: "Password has been successfully changed. " +
-          (!this.adminUser ? "Login again to the application with the new password!" : "")
+        title: "Password set/changed!",
+        description: "Password has been successfully set/changed." +
+          (!this.adminUser ? " Login again to the application with the new password!" : "")
       }
     }).afterClosed().subscribe(result => {
       if (!this.adminUser) {

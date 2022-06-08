@@ -70,8 +70,8 @@
             </mat-form-field>
           </div>
           <button mat-flat-button color="primary" style="width: 100%" id="changePassword_id"
-                  (click)="changeCurrentUserPassword()">
-            <span>Change password</span>
+                  (click)="changeCurrentUserPassword()" [disabled]="!editMode">
+            <span>Set/change password</span>
           </button>
         </fieldset>
       </mat-card-content>
@@ -112,7 +112,7 @@
                      maxlength="255" disabled>
             </mat-form-field>
           </div>
-          <button mat-flat-button color="primary" style="width: 100%" (click)="regenerateAccessToken()">
+          <button mat-flat-button color="primary" style="width: 100%" [disabled]="!editMode" (click)="regenerateAccessToken()">
             <span>Regenerate access token</span>
           </button>
         </fieldset>
