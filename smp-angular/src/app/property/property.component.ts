@@ -1,7 +1,6 @@
-import {AfterViewInit, Component, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
-import {Injectable} from '@angular/core';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {PropertyController} from './property-controller';
 import {HttpClient} from '@angular/common/http';
@@ -17,7 +16,7 @@ import {SearchTableEntityStatus} from "../common/search-table/search-table-entit
   templateUrl: './property.component.html',
   styleUrls: ['./property.component.css']
 })
-export class PropertyComponent implements AfterViewInit {
+export class PropertyComponent implements OnInit, AfterViewInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
@@ -41,7 +40,7 @@ export class PropertyComponent implements AfterViewInit {
     return JSON.stringify(val);
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.propertyController = new PropertyController(this.http, this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
@@ -62,11 +61,11 @@ export class PropertyComponent implements AfterViewInit {
 
       },
     ];
-
-    this.searchTable.tableColumnInit();
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+  }
 
-
+  ngAfterViewInit() {
+    this.searchTable.tableColumnInit();
   }
 
   searchPropertyChanged() {

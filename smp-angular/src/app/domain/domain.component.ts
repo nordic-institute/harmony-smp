@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 
@@ -22,7 +22,7 @@ import {SMLResult} from "./sml-result.model";
   templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css']
 })
-export class DomainComponent implements AfterViewInit {
+export class DomainComponent implements  OnInit, AfterViewInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('certificateAliasTemplate') certificateAliasColumn: TemplateRef<any>;
@@ -49,7 +49,7 @@ export class DomainComponent implements AfterViewInit {
 
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.domainController = new DomainController(this.http, this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
@@ -104,14 +104,15 @@ export class DomainComponent implements AfterViewInit {
         width: 130
       },
     ];
-    this.searchTable.tableColumnInit();
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+  }
 
+  ngAfterViewInit() {
+    this.searchTable.tableColumnInit();
     // if system admin refresh certificate list!
     if (this.securityService.isCurrentUserSystemAdmin()) {
       this.lookups.refreshCertificateLookup();
     }
-
   }
 
   certificateAliasExists(alias: string): boolean {

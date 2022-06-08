@@ -75,10 +75,10 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit {
         sortable: false
       },
     ];
+    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
   }
 
   ngAfterViewInit(): void {
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
     this.searchTable.tableColumnInit();
   }
 
