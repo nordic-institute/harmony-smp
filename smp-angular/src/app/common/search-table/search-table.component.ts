@@ -86,7 +86,8 @@ export class SearchTableComponent implements OnInit {
       name: 'Index',
       width: 30,
       maxWidth: 80,
-      sortable: false
+      sortable: false,
+      showInitially: false
     };
 
     this.columnActions = {
@@ -102,7 +103,8 @@ export class SearchTableComponent implements OnInit {
       name: 'Upd.',
       width: 40,
       maxWidth: 50,
-      sortable: false
+      sortable: false,
+      showInitially: false
     };
   }
 
@@ -113,24 +115,25 @@ export class SearchTableComponent implements OnInit {
       // prepend columns
       if (!!this.tableRowDetailContainer) {
         console.log("show table row details!")
+        this.columnExpandDetails.showInitially = true
         this.columnPicker.allColumns.unshift(this.columnExpandDetails);
-        this.columnPicker.selectedColumns.unshift(this.columnExpandDetails);
       }
       if (this.showIndexColumn) {
         console.log("show table index!")
+        this.columnIndex.showInitially = true
         this.columnPicker.allColumns.unshift(this.columnIndex);
-        this.columnPicker.selectedColumns.unshift(this.columnIndex);
       }
 
       if (this.showActionButtons) {
         console.log("show action buttons!")
         this.columnActions.showInitially = true
-
         this.columnPicker.allColumns.push(this.columnActions);
-        this.columnPicker.selectedColumns.push(this.columnActions);
       }
+      this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+    } else {
+      console.log("Column picker is not registered for the table!")
     }
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+
   }
 
   getRowClass(row) {

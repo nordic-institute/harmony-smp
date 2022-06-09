@@ -8,7 +8,6 @@ import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
-import {ServiceGroupEditController} from "../service-group-edit/service-group-edit-controller";
 
 @Component({
   moduleId: module.id,
@@ -17,8 +16,8 @@ import {ServiceGroupEditController} from "../service-group-edit/service-group-ed
 })
 export class ServiceGroupSearchComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('rowSMPUrlLinkAction', { static: true }) rowSMPUrlLinkAction: TemplateRef<any>
-  @ViewChild('rowActions', { static: true }) rowActions: TemplateRef<any>;
+  @ViewChild('rowSMPUrlLinkAction', {static: true}) rowSMPUrlLinkAction: TemplateRef<any>
+  @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
@@ -78,16 +77,16 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit {
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     this.searchTable.tableColumnInit();
   }
 
-  createServiceGroupURL(row: any){
-    return encodeURIComponent((!row.participantScheme? '' : row.participantScheme)+'::'+row.participantIdentifier);
+  createServiceGroupURL(row: any) {
+    return encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
   }
 
-  createServiceMetadataURL(row: any, rowSMD: any){
-    return encodeURIComponent((!row.participantScheme? '': row.participantScheme)+'::'+row.participantIdentifier)+'/services/'+ encodeURIComponent((!rowSMD.documentIdentifierScheme?'':rowSMD.documentIdentifierScheme)+'::'+rowSMD.documentIdentifier);
+  createServiceMetadataURL(row: any, rowSMD: any) {
+    return encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier) + '/services/' + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
 
   details(row: any) {
