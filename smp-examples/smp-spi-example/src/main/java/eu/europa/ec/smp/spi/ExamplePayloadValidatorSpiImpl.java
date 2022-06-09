@@ -34,6 +34,4 @@ public class ExamplePayloadValidatorSpiImpl implements PayloadValidatorSpi {
             throw new PayloadValidatorSpiException("Can not read payload", e);
         }
     }
-
-    ;
 }
