@@ -1,4 +1,12 @@
-import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
@@ -15,7 +23,7 @@ import {SmpConstants} from "../smp.constants";
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class UserComponent implements OnInit, AfterViewInit {
+export class UserComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
@@ -32,12 +40,15 @@ export class UserComponent implements OnInit, AfterViewInit {
               public securityService: SecurityService,
               protected http: HttpClient,
               protected alertService: AlertMessageService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private changeDetector: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
+  }
 
+  initColumns() {
     this.columnPicker.allColumns = [
       {
         name: 'Username',
@@ -59,15 +70,19 @@ export class UserComponent implements OnInit, AfterViewInit {
         canAutoResize: true
       },
     ];
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+    this.searchTable.tableColumnInit();
   }
 
   ngAfterViewInit() {
-    this.searchTable.tableColumnInit();
+    this.initColumns();
     // if system admin refresh trust certificate list!
     if (this.securityService.isCurrentUserSystemAdmin()) {
       this.lookups.refreshTrustedCertificateLookup();
     }
+  }
+
+  ngAfterViewChecked() {
+    this.changeDetector.detectChanges();
   }
 
   certCssClass(row) {

@@ -313,7 +313,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request PasswordChange."));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [PasswordChange]."));
     }
 
     @Test
@@ -327,7 +327,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
 
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request UserId.  Error: Can not find user id!"));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
     }
 
     @Test

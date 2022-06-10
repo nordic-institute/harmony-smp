@@ -1,4 +1,12 @@
-import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
 
@@ -17,7 +25,7 @@ import {ObjectPropertiesDialogComponent} from "../common/dialogs/object-properti
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css']
 })
-export class AlertComponent implements OnInit, AfterViewInit {
+export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
@@ -42,12 +50,19 @@ export class AlertComponent implements OnInit, AfterViewInit {
               protected lookups: GlobalLookups,
               protected http: HttpClient,
               protected alertService: AlertMessageService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private changeDetector: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     this.alertController = new AlertController(this.http, this.lookups, this.dialog);
+  }
 
+  ngAfterViewChecked() {
+    this.changeDetector.detectChanges();
+  }
+
+  initColumns() {
     this.columnPicker.allColumns = [
       {
         name: 'Alert date',
@@ -105,10 +120,11 @@ export class AlertComponent implements OnInit, AfterViewInit {
       },
     ];
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+    this.searchTable.tableColumnInit();
   }
 
   ngAfterViewInit() {
-    this.searchTable.tableColumnInit();
+    this.initColumns();
   }
 
 

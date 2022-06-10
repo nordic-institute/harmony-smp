@@ -1,4 +1,12 @@
-import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 
@@ -22,7 +30,7 @@ import {SMLResult} from "./sml-result.model";
   templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css']
 })
-export class DomainComponent implements  OnInit, AfterViewInit {
+export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('certificateAliasTemplate') certificateAliasColumn: TemplateRef<any>;
@@ -42,7 +50,8 @@ export class DomainComponent implements  OnInit, AfterViewInit {
               protected lookups: GlobalLookups,
               protected http: HttpClient,
               protected alertService: AlertMessageService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private changeDetector: ChangeDetectorRef) {
 
     // check application settings
 
@@ -51,7 +60,9 @@ export class DomainComponent implements  OnInit, AfterViewInit {
 
   ngOnInit() {
     this.domainController = new DomainController(this.http, this.lookups, this.dialog);
+  }
 
+  initColumns() {
     this.columnPicker.allColumns = [
       {
         name: 'Domain code',
@@ -76,7 +87,6 @@ export class DomainComponent implements  OnInit, AfterViewInit {
         cellTemplate: this.certificateAliasColumn,
         width: 150
       },
-
       {
         name: 'SML SMP Id',
         title: "SMP identifier for SML integration",
@@ -104,11 +114,15 @@ export class DomainComponent implements  OnInit, AfterViewInit {
         width: 130
       },
     ];
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+    this.searchTable.tableColumnInit();
+  }
+
+  ngAfterViewChecked() {
+    this.changeDetector.detectChanges();
   }
 
   ngAfterViewInit() {
-    this.searchTable.tableColumnInit();
+    this.initColumns();
     // if system admin refresh certificate list!
     if (this.securityService.isCurrentUserSystemAdmin()) {
       this.lookups.refreshCertificateLookup();
@@ -169,7 +183,8 @@ export class DomainComponent implements  OnInit, AfterViewInit {
   isDirty(): boolean {
     return this.searchTable.isDirty();
   }
-  get isSMPIntegrationOn(){
+
+  get isSMPIntegrationOn() {
     return this.lookups.cachedApplicationConfig?.smlIntegrationOn
   }
 

@@ -30,6 +30,13 @@ public class ExamplePayloadValidatorSpiImpl implements PayloadValidatorSpi {
             LOG.info("*********************************************************************");
             LOG.info("* Validate payload with size [{}] and mime type [{}]!", payload.available(), mimeType);
             LOG.info("**********************************************************************");
+            if (payload.available() > 0 ) {
+                int firstChar = payload.read();
+                // For the test if payload starts with an E throws and error
+                if (firstChar == (int)'E') {
+                    throw new PayloadValidatorSpiException("This is invalid payload starting with E");
+                }
+            }
         } catch (IOException e) {
             throw new PayloadValidatorSpiException("Can not read payload", e);
         }
