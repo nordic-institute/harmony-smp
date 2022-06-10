@@ -153,13 +153,13 @@ public class CRLVerifierService {
                 crl = (X509CRL) cf.generateCRL(crlStream);
             }
         } catch (IOException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL+"'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
         } catch (CertificateException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL+"'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
         } catch (CRLException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL+"'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
         } catch (SMPRuntimeException exc) {
             exception = exc;
@@ -198,7 +198,7 @@ public class CRLVerifierService {
             }
             return inputStream;
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL, ExceptionUtils.getRootCauseMessage(exc));
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL+"'", ExceptionUtils.getRootCauseMessage(exc) );
         }
     }
 

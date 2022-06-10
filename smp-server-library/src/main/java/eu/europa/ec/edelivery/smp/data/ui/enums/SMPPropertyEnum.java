@@ -40,7 +40,7 @@ public enum SMPPropertyEnum {
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint", false, false, false, URL),
     SML_TLS_DISABLE_CN_CHECK("bdmsl.integration.tls.disableCNCheck", "false", "If SML Url is HTTPs - Disable CN check if needed.", false, false, false, BOOLEAN),
     SML_TLS_SERVER_CERT_SUBJECT_REGEXP("bdmsl.integration.tls.serverSubjectRegex", ".*", "Regular expression for server TLS certificate subject verification  CertEx. .*CN=acc.edelivery.tech.ec.europa.eu.*.", false, false, false, REGEXP),
-    SML_TLS_TRUSTSTORE_USE_SYSTEM_DEFAULT("bdmsl.integration.tls.userSystemDefaultTruststore", "false", "If true use system default truststore for trusting TLS server certificate (Legacy behaviour to SMP 4.1 version), else use SMP truststore", false, false, false, BOOLEAN),
+    SML_TLS_TRUSTSTORE_USE_SYSTEM_DEFAULT("bdmsl.integration.tls.useSystemDefaultTruststore", "false", "If true use system default truststore for trusting TLS server certificate (Legacy behaviour to SMP 4.1 version), else use SMP truststore", false, false, false, BOOLEAN),
     SML_LOGICAL_ADDRESS("bdmsl.integration.logical.address", "http://localhost:8080/smp/", "Logical SMP endpoint which will be registered on SML when registering new domain", false, false, false, URL),
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address", "0.0.0.0", "Physical SMP endpoint which will be registered on SML when registering new domain.", false, false, false, STRING),
     // keystore truststore
@@ -55,7 +55,7 @@ public enum SMPPropertyEnum {
     ENCRYPTION_FILENAME("encryption.key.filename", "encryptionPrivateKey.private", "Key filename to encrypt passwords", false, false, true, FILENAME),
     KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted", "", "Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false, false, STRING),
     TRUSTSTORE_PASSWORD_DECRYPTED("smp.truststore.password.decrypted", "", "Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false, false, STRING),
-    CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs","","List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension", false, false,false, STRING),
+    CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs","","List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension", false, false,false, LIST_STRING),
     CERTIFICATE_SUBJECT_REGULAR_EXPRESSION("smp.certificate.validation.subjectRegex",".*","Regular expression to validate subject of the certificate", false, false,false, REGEXP),
 
     SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression", "0 48 */1 * * *", "Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!", false, false, false, CRON_EXPRESSION),

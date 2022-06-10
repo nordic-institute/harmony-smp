@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, Inject} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
@@ -31,7 +31,8 @@ export class KeystoreEditDialogComponent implements AfterViewChecked{
               private dialogRef: MatDialogRef<KeystoreEditDialogComponent>,
               private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private changeDetector: ChangeDetectorRef) {
     this.formTitle = "Keystore edit dialog";
   }
 
@@ -39,6 +40,8 @@ export class KeystoreEditDialogComponent implements AfterViewChecked{
     // fix bug updating the columns
     //https://github.com/swimlane/ngx-datatable/issues/1266
     window.dispatchEvent(new Event('resize'));
+    this.changeDetector.detectChanges();
+
   }
 
   onDeleteCertificateRowActionClicked(row) {

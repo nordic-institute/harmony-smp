@@ -8,7 +8,6 @@ import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
@@ -41,6 +40,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_USER_CERT_INVALID;
 import static java.util.Collections.list;
 import static java.util.Locale.US;
 
@@ -209,15 +209,24 @@ public class UITruststoreService {
                 cro.setInvalid(false);
                 cro.setInvalidReason(null);
             } catch (CertificateExpiredException ex) {
+                LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
                 cro.setInvalidReason("Certificate is expired!");
             } catch (CertificateNotYetValidException ex) {
+                LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
                 cro.setInvalidReason("Certificate is not yet valid!");
             } catch (CertificateRevokedException ex) {
+                LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
                 cro.setInvalidReason("Certificate is revoked!");
             } catch (CertificateNotTrustedException ex) {
+                LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
                 cro.setInvalidReason("Certificate is not trusted!");
             } catch (CertificateException e) {
-                cro.setInvalidReason(ExceptionUtils.getRootCauseMessage(e));
+                LOG.securityError(SEC_USER_CERT_INVALID, e, cro.getCertificateId(), e.getMessage());
+                if (ExceptionUtils.getRootCause(e) instanceof CertPathValidatorException) {
+                    cro.setInvalidReason("Certificate is not trusted! Invalid certificate policy path!");
+                } else {
+                    cro.setInvalidReason(e.getMessage());
+                }
             }
         }
         return cro;
@@ -241,7 +250,7 @@ public class UITruststoreService {
         CertificateValidator certificateValidator = new CertificateValidator(
                 null, truststore,
                 subjectRegExp != null ? subjectRegExp.pattern() : null,
-                configurationService.getAllowedCertificatePolicies());
+                allowedCertificatePolicies != null ? allowedCertificatePolicies : Collections.emptyList());
         LOG.debug("Validate certificate with truststore, subject regexp [{}] and allowed certificate policies [{}]", subjectRegExp, allowedCertificatePolicies);
         certificateValidator.validateCertificate(x509Certificate);
     }
@@ -261,7 +270,7 @@ public class UITruststoreService {
         }
 
 
-        if (trustStore!=null) {
+        if (trustStore != null) {
             validateCertificateWithTruststore(cert);
         } else {
             LOG.warn("Use legacy certificate validation without truststore. Please configure truststore to increase security");
@@ -315,7 +324,7 @@ public class UITruststoreService {
             } catch (CertificateRevokedException ex) {
                 String msg = "Certificate: '" + cert.getCertificateId() + "'" +
                         " is revoked!";
-                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, cert.getCertificateId(), msg, ex);
+                LOG.securityWarn(SEC_USER_CERT_INVALID, cert.getCertificateId(), msg, ex);
                 throw new CertificateException(msg);
             } catch (Throwable th) {
                 String msg = "Error occurred while validating CRL for certificate!";
