@@ -107,7 +107,7 @@ export class UserDetailsDialogComponent {
     this.userId = data.row && data.row.userId;
     this.editMode = this.mode !== UserDetailsDialogMode.NEW_MODE;
 
-    this.current = this.editMode
+    this.current = !!data.row
       ? {
         ...data.row,
         password: '', // ensures the user password is cleared before editing
@@ -125,7 +125,6 @@ export class UserDetailsDialogComponent {
         status: SearchTableEntityStatus.NEW,
         statusPassword: SearchTableEntityStatus.NEW,
         certificate: this.newCertificateRo(),
-
       };
 
     const bSetPassword: boolean = false;
@@ -143,7 +142,7 @@ export class UserDetailsDialogComponent {
         disabled: this.mode === UserDetailsDialogMode.PREFERENCES_MODE
       }, Validators.required),
       // username/password authentication
-      'username': new FormControl({value: '', disabled: this.editMode },
+      'username': new FormControl({value: '', disabled: this.editMode},
         !this.editMode || !this.current.username
           ? [Validators.nullValidator, Validators.pattern(this.usernamePattern), this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))]
           : null),
@@ -312,7 +311,7 @@ export class UserDetailsDialogComponent {
   }
 
   public getCurrent(): UserRo {
-    if (this.mode === UserDetailsDialogMode.NEW_MODE){
+    if (this.mode === UserDetailsDialogMode.NEW_MODE) {
       this.current.username = this.userForm.get('username').value;
     }
 

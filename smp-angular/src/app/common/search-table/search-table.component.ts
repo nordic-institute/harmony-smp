@@ -398,7 +398,7 @@ export class SearchTableComponent implements OnInit {
   private editSearchTableEntity(rowNumber: number) {
     const row = this.rows[rowNumber];
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
-      data: {edit: true, row}
+      data: {edit: row?.status!=SearchTableEntityStatus.NEW, row}
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {

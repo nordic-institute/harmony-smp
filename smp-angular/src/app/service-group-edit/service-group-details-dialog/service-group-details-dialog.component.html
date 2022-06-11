@@ -62,7 +62,6 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
             <mat-selection-list #usersSelected
-                                [disabled]="!securityService.isCurrentUserSMPAdmin()"
                                 [compareWith]="compareUserByUserId"
                                 [formControl]="dialogForm.controls['users']"
                                 style="min-height: 100px; height: 150px; overflow-y: scroll; overflow-x: auto;">
@@ -98,7 +97,6 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
             <mat-selection-list #domainSelector
-                                [disabled]="!securityService.isCurrentUserSMPAdmin()"
                                 [compareWith]="compareDomain"
                                 [formControl]="dialogForm.controls['serviceGroupDomains']"
                                 (selectionChange)="onDomainSelectionChanged($event)"

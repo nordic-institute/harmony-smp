@@ -50,7 +50,7 @@ export class DomainDetailsDialogComponent {
 
     this.editMode = data.edit;
     this.formTitle = this.editMode ? DomainDetailsDialogComponent.EDIT_MODE : DomainDetailsDialogComponent.NEW_MODE;
-    this.current = this.editMode
+    this.current = !!data.row
       ? {
         ...data.row,
       }

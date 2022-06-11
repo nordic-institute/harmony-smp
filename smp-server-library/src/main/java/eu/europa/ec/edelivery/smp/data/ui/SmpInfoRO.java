@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Public SmpInfoRO properties.
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -15,7 +16,7 @@ public class SmpInfoRO implements Serializable {
     String ssoAuthenticationLabel;
     String ssoAuthenticationURI;
     String contextPath;
-    List<String> authTypes = new ArrayList<>();;
+    List<String> authTypes = new ArrayList<>();
 
     public String getVersion() {
         return version;

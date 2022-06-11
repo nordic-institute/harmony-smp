@@ -25,7 +25,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,11 +95,11 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
-            int iStartIndex = pageSize<0?-1:page * pageSize;
-            if (iStartIndex >= iCnt && page > 0){
-                page = page -1;
+            int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
+            if (iStartIndex >= iCnt && page > 0) {
+                page = page - 1;
                 sg.setPage(page); // go back for a page
-                iStartIndex = pageSize<0?-1:page * pageSize;
+                iStartIndex = pageSize < 0 ? -1 : page * pageSize;
             }
 
             List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
@@ -136,7 +135,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         return ex;
     }
 
-    private String getConvertExtensionToString(Long id,  byte[] extension){
+    private String getConvertExtensionToString(Long id, byte[] extension) {
         try {
             return new String(extension, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -169,34 +168,34 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     /**
      * Final process of SML records. If participant is to be unregistered it does not update status to database because
      * it should not be there anymore! For registering it update status!
+     *
      * @param lstRecords
      */
-    public void processSMLRecords( List<ParticipantSMLRecord> lstRecords){
-        if (!smlIntegrationService.isSMLIntegrationEnabled()){
+    public void processSMLRecords(List<ParticipantSMLRecord> lstRecords) {
+        if (!smlIntegrationService.isSMLIntegrationEnabled()) {
             return;
         }
-        for (ParticipantSMLRecord record: lstRecords){
-            if (record.getStatus()== SMLStatusEnum.REGISTER){
+        for (ParticipantSMLRecord record : lstRecords) {
+            if (record.getStatus() == SMLStatusEnum.REGISTER) {
                 boolean result = smlIntegrationService.registerParticipantToSML(record.getParticipantIdentifier(),
                         record.getParticipantScheme(), record.getDomain());
 
                 updateServiceGroupDomainStatus(result, record);
-            }else if (record.getStatus()== SMLStatusEnum.UNREGISTER){
+            } else if (record.getStatus() == SMLStatusEnum.UNREGISTER) {
                 boolean result = smlIntegrationService.unregisterParticipantFromSML(record.getParticipantIdentifier(),
                         record.getParticipantScheme(), record.getDomain());
                 // no need to update database because record is deleted
                 updateServiceGroupDomainStatus(result, record);
-
             }
         }
     }
 
-    protected void updateServiceGroupDomainStatus(boolean smlActionStatus, ParticipantSMLRecord record){
+    protected void updateServiceGroupDomainStatus(boolean smlActionStatus, ParticipantSMLRecord record) {
         Optional<DBServiceGroupDomain> optionalServiceGroupDomain = serviceGroupDao.findServiceGroupDomain(record.getParticipantIdentifier(),
                 record.getParticipantScheme(), record.getDomain().getDomainCode());
         if (optionalServiceGroupDomain.isPresent()) {
             DBServiceGroupDomain serviceGroupDomain = optionalServiceGroupDomain.get();
-            if (serviceGroupDomain.isSmlRegistered()!= smlActionStatus){
+            if (serviceGroupDomain.isSmlRegistered() != smlActionStatus) {
                 serviceGroupDomain.setSmlRegistered(smlActionStatus);
                 serviceGroupDao.updateServiceGroupDomain(serviceGroupDomain);
             }
@@ -206,23 +205,23 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
     /**
      * Remove service group
+     *
      * @param dRo
      * @return
      */
-    public List<ParticipantSMLRecord> removeServiceGroup(ServiceGroupRO dRo){
+    public List<ParticipantSMLRecord> removeServiceGroup(ServiceGroupRO dRo) {
         List<ParticipantSMLRecord> participantSMLRecordList = new ArrayList<>();
 
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(dRo.getId());
         // first update domains
         List<DBServiceGroupDomain> dbServiceGroupDomainList = dbServiceGroup.getServiceGroupDomains();
         dbServiceGroupDomainList.forEach(dro -> {
-                participantSMLRecordList.add( new ParticipantSMLRecord(SMLStatusEnum.UNREGISTER, dro.getServiceGroup().getParticipantIdentifier(),
-                        dro.getServiceGroup().getParticipantScheme(),dro.getDomain()));
+            participantSMLRecordList.add(new ParticipantSMLRecord(SMLStatusEnum.UNREGISTER, dro.getServiceGroup().getParticipantIdentifier(),
+                    dro.getServiceGroup().getParticipantScheme(), dro.getDomain()));
         });
         serviceGroupDao.removeServiceGroup(dbServiceGroup);
         return participantSMLRecordList;
     }
-
 
 
     /**
@@ -297,8 +296,8 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             // everything ok  find domain and add it to service group
             Optional<DBDomain> dmn = domainDao.getDomainByCode(dro.getDomainCode());
             if (dmn.isPresent()) {
-                DBServiceGroupDomain domain =  dbServiceGroup.addDomain(dmn.get());
-                participantSMLRecordList.add( new ParticipantSMLRecord(SMLStatusEnum.REGISTER,
+                DBServiceGroupDomain domain = dbServiceGroup.addDomain(dmn.get());
+                participantSMLRecordList.add(new ParticipantSMLRecord(SMLStatusEnum.REGISTER,
                         serviceGroupRO.getParticipantIdentifier(),
                         serviceGroupRO.getParticipantScheme(),
                         domain.getDomain()));
@@ -326,7 +325,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         updateUsersOnServiceGroup(serviceGroupRO, dbServiceGroup);
 
         // update domain
-        List<ParticipantSMLRecord> participantSMLRecordList =  updateDomainsForServiceGroup(serviceGroupRO, dbServiceGroup);
+        List<ParticipantSMLRecord> participantSMLRecordList = updateDomainsForServiceGroup(serviceGroupRO, dbServiceGroup);
 
         //update service metadata
         List<ServiceMetadataRO> serviceMetadataROList = serviceGroupRO.getServiceMetadata();
@@ -369,28 +368,27 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
                     if (!Objects.equals(serviceMetadataRO.getDomainCode(), dbServiceGroupDomain.getDomain().getDomainCode())) {
                         // remove from old domain
-                        LOG.info("Move service metadata from domain {} to domain: {}" , dbServiceGroupDomain.getDomain().getDomainCode(),
-                                serviceMetadataRO.getDomainCode( ));
+                        LOG.info("Move service metadata from domain {} to domain: {}", dbServiceGroupDomain.getDomain().getDomainCode(),
+                                serviceMetadataRO.getDomainCode());
 
                         DBServiceMetadata smd = dbServiceGroupDomain.removeServiceMetadata(serviceMetadataRO.getDocumentIdentifier(),
                                 serviceMetadataRO.getDocumentIdentifierScheme());
 
 
-
                         // find new domain and add
                         Optional<DBServiceGroupDomain> optNewDomain = dbServiceGroup.getServiceGroupForDomain(serviceMetadataRO.getDomainCode());
                         if (optNewDomain.isPresent()) {
-                            LOG.info("ADD service metadata to domain {} " , optNewDomain.get().getDomain().getDomainCode(),
-                                    serviceMetadataRO.getDomainCode( ));
-                                // create new because the old service metadata will be deleted
-                                DBServiceMetadata smdNew = new DBServiceMetadata();
-                                smdNew.setDocumentIdentifier(dbServiceMetadata.getDocumentIdentifier());
-                                smdNew.setDocumentIdentifierScheme(dbServiceMetadata.getDocumentIdentifierScheme());
-                                smdNew.setServiceGroupDomain(optNewDomain.get());
-                                smdNew.setServiceMetadataXml(dbServiceMetadata.getServiceMetadataXml());
-                                smdNew.setCreatedOn(dbServiceMetadata.getCreatedOn());
+                            LOG.info("ADD service metadata to domain {} ", optNewDomain.get().getDomain().getDomainCode(),
+                                    serviceMetadataRO.getDomainCode());
+                            // create new because the old service metadata will be deleted
+                            DBServiceMetadata smdNew = new DBServiceMetadata();
+                            smdNew.setDocumentIdentifier(dbServiceMetadata.getDocumentIdentifier());
+                            smdNew.setDocumentIdentifierScheme(dbServiceMetadata.getDocumentIdentifierScheme());
+                            smdNew.setServiceGroupDomain(optNewDomain.get());
+                            smdNew.setServiceMetadataXml(dbServiceMetadata.getServiceMetadataXml());
+                            smdNew.setCreatedOn(dbServiceMetadata.getCreatedOn());
 
-                                optNewDomain.get().addServiceMetadata(smdNew);
+                            optNewDomain.get().addServiceMetadata(smdNew);
 
                         } else {
                             throw new SMPRuntimeException(SG_NOT_REGISTRED_FOR_DOMAIN, serviceMetadataRO.getDomainCode(),
@@ -448,8 +446,8 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 Optional<DBDomain> dmn = domainDao.getDomainByCode(serviceGroupDomainRO.getDomainCode());
                 if (dmn.isPresent()) {
 
-                    DBServiceGroupDomain sgd =  dbServiceGroup.addDomain(dmn.get());
-                    participantSMLRecordList.add(new ParticipantSMLRecord( SMLStatusEnum.REGISTER,
+                    DBServiceGroupDomain sgd = dbServiceGroup.addDomain(dmn.get());
+                    participantSMLRecordList.add(new ParticipantSMLRecord(SMLStatusEnum.REGISTER,
                             sgd.getServiceGroup().getParticipantIdentifier(),
                             sgd.getServiceGroup().getParticipantScheme(),
                             sgd.getDomain()));
@@ -460,7 +458,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         });
         // remove old domains
         lstOldSGDomains.forEach(dbServiceGroupDomain -> {
-            participantSMLRecordList.add(new ParticipantSMLRecord( SMLStatusEnum.UNREGISTER,
+            participantSMLRecordList.add(new ParticipantSMLRecord(SMLStatusEnum.UNREGISTER,
                     dbServiceGroupDomain.getServiceGroup().getParticipantIdentifier(),
                     dbServiceGroupDomain.getServiceGroup().getParticipantScheme(),
                     dbServiceGroupDomain.getDomain()));
@@ -486,7 +484,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             Optional<DBUser> optUser = userDao.findUser(userid);
             if (!optUser.isPresent()) {
                 throw new SMPRuntimeException(INTERNAL_ERROR,
-                        "Database changed",  "User "+userRO.getUsername()+ " not exists! (Refresh data)");
+                        "Database changed", "User " + userRO.getUsername() + " not exists! (Refresh data)");
             }
             dbServiceGroup.getUsers().add(optUser.get());
         }
@@ -505,7 +503,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         }
         // validate service group id
         boolean schemeMandatory = configurationService.getParticipantSchemeMandatory();
-        LOG.debug("Validate service group [{}] with [{}] scheme", serviceGroupRO.getParticipantIdentifier(), (schemeMandatory?"mandatory":"optional"));
+        LOG.debug("Validate service group [{}] with [{}] scheme", serviceGroupRO.getParticipantIdentifier(), (schemeMandatory ? "mandatory" : "optional"));
 
 
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(serviceGroupRO.getId());
@@ -539,7 +537,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         }
 
         ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
-        if (smd.getServiceInformation()!=null) {
+        if (smd.getServiceInformation() != null) {
             DocumentIdentifier di = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
             if (Objects.equals(di.getScheme(), serviceMetadataRO.getDocumentIdentifierScheme())
                     && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier())) {
@@ -619,7 +617,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
         byte[] buff = validateServiceMetadata(serviceMetadataRO);
         DBServiceMetadata dbServiceMetadata = new DBServiceMetadata();
-        DocumentIdentifier docIdent=  caseSensitivityNormalizer.normalizeDocumentIdentifier(serviceMetadataRO.getDocumentIdentifierScheme(),serviceMetadataRO.getDocumentIdentifier() );
+        DocumentIdentifier docIdent = caseSensitivityNormalizer.normalizeDocumentIdentifier(serviceMetadataRO.getDocumentIdentifierScheme(), serviceMetadataRO.getDocumentIdentifier());
         dbServiceMetadata.setDocumentIdentifier(docIdent.getValue());
         dbServiceMetadata.setDocumentIdentifierScheme(docIdent.getScheme());
         dbServiceMetadata.setXmlContent(buff);
@@ -661,14 +659,14 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             throw new SMPRuntimeException(INVALID_REQUEST, "Validate extension", "Missing Extension parameter");
         } // if new check if service group already exist
 
-        if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()){
+        if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()) {
             ParticipantIdentifierType normalizedParticipant = caseSensitivityNormalizer.normalizeParticipantIdentifier(
                     serviceGroup.getParticipantScheme(),
                     serviceGroup.getParticipantIdentifier());
-            Optional<DBServiceGroup> sg= serviceGroupDao.findServiceGroup(normalizedParticipant.getValue(),
+            Optional<DBServiceGroup> sg = serviceGroupDao.findServiceGroup(normalizedParticipant.getValue(),
                     normalizedParticipant.getScheme());
             if (sg.isPresent()) {
-                serviceGroup.setErrorMessage("Service group: " +serviceGroup.getParticipantScheme()+ ":"+serviceGroup.getParticipantIdentifier()+
+                serviceGroup.setErrorMessage("Service group: " + serviceGroup.getParticipantScheme() + ":" + serviceGroup.getParticipantIdentifier() +
                         " already exists!");
                 serviceGroup.setErrorCode(ERROR_CODE_SERVICE_GROUP_EXISTS);
                 return serviceGroup;
