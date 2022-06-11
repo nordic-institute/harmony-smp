@@ -425,7 +425,6 @@ public class UITruststoreService {
     public String addCertificate(String alias, X509Certificate certificate) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
         KeyStore truststore = loadTruststore(getTruststoreFile());
-
         if (truststore != null) {
             String aliasPrivate = StringUtils.isBlank(alias) ? createAliasFromCert(certificate, truststore) : alias.trim();
 

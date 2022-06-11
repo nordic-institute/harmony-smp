@@ -75,7 +75,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.editMode = this.data.edit;
 
     this.formTitle = this.editMode ? ServiceGroupDetailsDialogComponent.EDIT_MODE : ServiceGroupDetailsDialogComponent.NEW_MODE;
-    this.current = this.editMode
+    this.current = !!this.data.row
       ? {
         ...this.data.row,
         // copy serviceGroupDomain array
@@ -111,15 +111,22 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       'participantScheme': new FormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
         this.current.status === SearchTableEntityStatus.NEW ?
           [Validators.pattern(this.participantSchemePattern)] : null),
-      'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1),
-        this.multiDomainOn(this.lookups.cachedApplicationConfig.smlParticipantMultiDomainOn)]),
-      'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
+      'serviceGroupDomains': new FormControl({
+          value: [],
+          disabled: !securityService.isCurrentUserSMPAdmin()
+        },
+        [this.minSelectedListCount(1),
+          this.multiDomainOn(this.lookups.cachedApplicationConfig.smlParticipantMultiDomainOn)]),
+      'users': new FormControl({
+        value: [],
+        disabled: !securityService.isCurrentUserSMPAdmin()
+      }, [this.minSelectedListCount(1)]),
       'extension': new FormControl({value: ''}, []),
 
 
     });
-    if (!!lookups.cachedApplicationConfig.partyIDSchemeMandatory && this.current.status == SearchTableEntityStatus.NEW){
-      this.dialogForm.controls['participantScheme'].addValidators(Validators.required) ;
+    if (!!lookups.cachedApplicationConfig.partyIDSchemeMandatory && this.current.status == SearchTableEntityStatus.NEW) {
+      this.dialogForm.controls['participantScheme'].addValidators(Validators.required);
     }
 
     // update values
@@ -134,7 +141,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     // retrieve xml extension for this service group
     if (this.current.status !== SearchTableEntityStatus.NEW && !this.current.extension) {
       // init domains
-      this.extensionObserver = this.http.get<ServiceGroupValidationRo>(SmpConstants.REST_PUBLIC_SERVICE_GROUP_ENTITY_EXTENSION.replace('{service-group-id}',this.current.id+""));
+      this.extensionObserver = this.http.get<ServiceGroupValidationRo>(SmpConstants.REST_PUBLIC_SERVICE_GROUP_ENTITY_EXTENSION.replace('{service-group-id}', this.current.id + ""));
       this.extensionObserver.subscribe((res: ServiceGroupValidationRo) => {
         this.dialogForm.get('extension').setValue(res.extension);
         this.current.extension = res.extension;
@@ -182,9 +189,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       }
     }).catch((err) => {
       console.log("Error occurred on Validation Extension: " + err);
-    });;
-
-
+    });
   }
 
   checkValidity(g: FormGroup) {
@@ -198,8 +203,6 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     Object.keys(g.controls).forEach(key => {
       g.get(key).updateValueAndValidity();
     });
-
-
   }
 
 
@@ -218,13 +221,10 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       this.current.participantIdentifier = this.dialogForm.value['participantIdentifier'];
       this.current.participantScheme = this.dialogForm.value['participantScheme'];
     } else {
-      this.current.extensionStatus =
-        SearchTableEntityStatus.UPDATED;
+      this.current.extensionStatus = SearchTableEntityStatus.UPDATED;
     }
     this.current.users = this.dialogForm.value['users'];
     this.current.extension = this.dialogForm.value['extension'];
-
-
     let domainOptions = this.domainSelector.options._results;
     domainOptions.forEach(opt => {
       let domValue = opt.value;
@@ -265,8 +265,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     return this.current.users !== this.dialogForm.value['users'];
   }
 
-  extensionChanged():boolean {
-    return  !this.isEqual(this.current.extension, this.dialogForm.value['extension'].toString());
+  extensionChanged(): boolean {
+    return !this.isEqual(this.current.extension, this.dialogForm.value['extension'].toString());
   }
 
   onExtensionDelete() {
@@ -313,20 +313,16 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
 
   }
 
-  onPrettyPrintExtension() {
-
-  }
-
   onDomainSelectionChanged(event) {
     // if deselected warn  serviceMetadata will be deleted
     let domainCode = event.option.value.domainCode;
     if (!event.option.selected) {
       let smdCount = this.getServiceMetadataCountOnDomain(domainCode);
-      if (smdCount >0) {
+      if (smdCount > 0) {
         this.dialog.open(ConfirmationDialogComponent, {
           data: {
             title: "Registered serviceMetadata on domain!",
-            description: "Unregistering service group from domain will also delete its serviceMetadata (count: "+smdCount+") from the domain! Do you want to continue?"
+            description: "Unregistering service group from domain will also delete its serviceMetadata (count: " + smdCount + ") from the domain! Do you want to continue?"
           }
         }).afterClosed().subscribe(result => {
           if (!result) {

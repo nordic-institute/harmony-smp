@@ -434,7 +434,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         CertificateRO certificateRO = TestROUtils.createCertificateRO(certSubject, BigInteger.TEN);
         UserRO userRO = new UserRO();
         userRO.setCertificate(certificateRO);
-        ;
+
         testInstance.updateUserdata(user.getId(), userRO);
 
 

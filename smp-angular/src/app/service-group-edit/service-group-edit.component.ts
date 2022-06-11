@@ -144,7 +144,11 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterVi
     let metadataRowNumber = serviceGroupRow.serviceMetadata.indexOf(metaDataRow);
 
     const formRef: MatDialogRef<any> = this.serviceGroupEditController.newMetadataDialog({
-      data: {edit: true, serviceGroup: serviceGroupRow, metadata: metaDataRow}
+      data: {
+        edit: metaDataRow.status !== SearchTableEntityStatus.NEW,
+        serviceGroup: serviceGroupRow,
+        metadata: metaDataRow
+      }
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
@@ -159,7 +163,6 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterVi
         let statusMetadata = metaDataRow.status === SearchTableEntityStatus.PERSISTED
           ? SearchTableEntityStatus.UPDATED
           : metaDataRow;
-
 
         metaDataRow.status = statusMetadata;
         metaDataRow = {...formRef.componentInstance.getCurrent()};
