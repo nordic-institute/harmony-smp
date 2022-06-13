@@ -194,7 +194,7 @@ public class PropertyInitialization {
 
     public void initAndMergeKeystore(String absolutePath, File fEncryption, EntityManager em, Properties initProperties,
                                      Properties fileProperties, boolean testMode) {
-        LOG.info("Start generating new keystore.");
+        LOG.info("Start generating new keystore. mode [{}]", testMode?"dev":"prod");
         // store keystore password  filename
         String newKeyPassword = SecurityUtils.generateAuthenticationToken(testMode);
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
@@ -204,6 +204,7 @@ public class PropertyInitialization {
 
         //store new keystore
         File keystore = getNewFile(absolutePath, SMPPropertyEnum.KEYSTORE_FILENAME.getDefValue());
+        LOG.info("Create file [{}]", keystore.getAbsolutePath());
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_FILENAME, keystore.getName());
         initProperties.setProperty(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty(), keystore.getName());
 
@@ -235,11 +236,13 @@ public class PropertyInitialization {
         }
         // if file is not existing yet - as is the case in getNewFile create file
         if (!fEncryption.exists()) {
+            LOG.debug("Generate encryption key.");
             SecurityUtils.generatePrivateSymmetricKey(fEncryption);
+            LOG.info("Encryption key generated.");
+        } else {
+            LOG.info("Use existing encryption key! [{}].", fEncryption.getAbsolutePath());
         }
 
-        SecurityUtils.generatePrivateSymmetricKey(fEncryption);
-        LOG.info("Encryption key generated.");
         storeDBEntry(em, ENCRYPTION_FILENAME, fEncryption.getName());
         initProperties.setProperty(ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
         return fEncryption;

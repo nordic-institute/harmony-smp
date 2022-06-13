@@ -9,7 +9,7 @@
     <artifactId>smp-soapui-tests</artifactId>
     <packaging>jar</packaging>
     <name>smp-soapui-tests</name>
-    <description>Interation tests suit for SMP</description>
+    <description>Interaction tests suit for SMP</description>
 
     <properties>
         <!-- Only selected modules are deployed -->

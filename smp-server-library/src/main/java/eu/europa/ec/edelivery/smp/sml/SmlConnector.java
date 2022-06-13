@@ -367,20 +367,22 @@ public class SmlConnector implements ApplicationContextAware {
              * Sets the TrustManagers associated with this endpoint.
              * This parameter may be set to null for system default behavior.
              */
+            LOG.debug("Set SMP truststore managers for the TLS certificate verification.");
             tlsParams.setTrustManagers(truststoreService.getTrustManagers());
         }
 
         if (!clientCertAuthentication) {
-            LOG.info("SML X509 certificate authentication with alias  {}.", smlClientAuthentication);
+            LOG.debug("SML X509 certificate authentication with alias  {}.", smlClientAuthentication);
             tlsParams.setCertAlias(smlClientAuthentication);
             tlsParams.setKeyManagers(keystoreService.getKeyManagers());
-            LOG.info("SET KEY MANAGERS!  {}.", keystoreService.getKeyManagers());
         } else {
+            LOG.debug("User Client cert header to authenticate to SML {}.", smlClientAuthentication);
             Map<String, List<String>> customHeaders = new HashMap<>();
             customHeaders.put(CLIENT_CERT_HEADER_KEY, Arrays.asList(smlClientAuthentication));
             requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
         }
         if (useTLS) {
+            LOG.debug("Set SMP TLS client parameters.");
             httpConduit.setTlsClientParameters(tlsParams);
         }
     }
