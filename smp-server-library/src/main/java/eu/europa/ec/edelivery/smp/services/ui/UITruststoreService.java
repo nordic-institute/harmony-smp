@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_TRUSTSTORE_CERT_INVALID;
 import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_USER_CERT_INVALID;
 import static java.util.Collections.list;
 import static java.util.Locale.US;
@@ -146,13 +147,8 @@ public class UITruststoreService {
                             DistinguishedNamesCodingUtil.getCommonAttributesDN());
                     tmpList.add(subject);
                     hmCertificates.put(alias, x509Certificate);
-                    try {
-                        x509Certificate.checkValidity();
-                    } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
-                        LOG.warn("Certificate: [{}] from truststore is not valid anymore!", alias);
-                    }
+                    validateAndLogError(x509Certificate, alias);
                 }
-
             }
         } catch (Exception exception) {
             LOG.error("Could not load truststore certificates Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
@@ -169,6 +165,14 @@ public class UITruststoreService {
         lastUpdateTrustStoreFile = truststoreFile;
         // clear list to reload RO when required
         certificateROList.clear();
+    }
+
+    protected void validateAndLogError(X509Certificate x509Certificate, String alias){
+        try {
+            x509Certificate.checkValidity();
+        } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
+            LOG.securityWarn(SEC_TRUSTSTORE_CERT_INVALID, alias, ExceptionUtils.getRootCauseMessage(ex));
+        }
     }
 
     public CertificateRO getCertificateData(byte[] buff) throws CertificateException, IOException {
