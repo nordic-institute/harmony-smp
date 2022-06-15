@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
 import eu.europa.ec.edelivery.smp.services.AlertService;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -15,12 +16,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.Optional;
 
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Joze Rihtarsic
@@ -84,4 +86,55 @@ public class SMPAuthenticationProviderTest {
                 Matchers.lessThan(50L));
 
     }
+    @Test
+    public void testLoginAttemptForAccessTokenFailed(){
+        int starFailCount = 2;
+        DBUser user = new DBUser();
+        user.setSequentialTokenLoginFailureCount(starFailCount);
+        long starTime =Calendar.getInstance().getTimeInMillis();
+        doReturn(100).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
+        // when
+        BadCredentialsException error = assertThrows(BadCredentialsException.class,
+                () -> testInstance.loginAttemptForAccessTokenFailed(user,starTime));
+
+        assertEquals(SMPAuthenticationProvider.LOGIN_FAILED_MESSAGE, error.getMessage());
+        assertEquals(starFailCount+1,(int)user.getSequentialTokenLoginFailureCount());
+        verify(mocAlertService, times(1)).alertCredentialVerificationFailed(user, CredentialTypeEnum.ACCESS_TOKEN);
+
+    }
+
+    @Test
+    public void testLoginAttemptForAccessTokenSuspended(){
+        int starFailCount = 5;
+        DBUser user = new DBUser();
+        user.setSequentialTokenLoginFailureCount(starFailCount);
+        long starTime =Calendar.getInstance().getTimeInMillis();
+        doReturn(5).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
+        // when
+        BadCredentialsException error = assertThrows(BadCredentialsException.class,
+                () -> testInstance.loginAttemptForAccessTokenFailed(user,starTime));
+
+        assertEquals(SMPAuthenticationProvider.LOGIN_FAILED_MESSAGE, error.getMessage());
+        assertEquals(starFailCount+1,(int)user.getSequentialTokenLoginFailureCount());
+        verify(mocAlertService, times(1)).alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
+    }
+
+    @Test
+    public void testValidateIfTokenIsSuspendedReset(){
+        int starFailCount = 5;
+        DBUser user = new DBUser();
+        user.setUsername("TestToken");
+        int suspensionSeconds =100;
+
+        user.setLastTokenFailedLoginAttempt(OffsetDateTime.now().minusSeconds(suspensionSeconds+10));
+        user.setSequentialTokenLoginFailureCount(starFailCount);
+        doReturn(suspensionSeconds).when(mockConfigurationService).getAccessTokenLoginSuspensionTimeInSeconds();
+        doReturn(starFailCount).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
+
+        testInstance.validateIfTokenIsSuspended(user);
+
+        assertEquals(0, (int)user.getSequentialTokenLoginFailureCount());
+        assertEquals(null, user.getLastTokenFailedLoginAttempt());
+    }
+
 }

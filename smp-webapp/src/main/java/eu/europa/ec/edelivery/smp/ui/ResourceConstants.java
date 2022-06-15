@@ -20,6 +20,7 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_PUBLIC_SERVICE_METADATA = CONTEXT_PATH_PUBLIC + "service-metadata";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY = CONTEXT_PATH_PUBLIC + "security";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION = CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";
+    public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER = CONTEXT_PATH_PUBLIC_SECURITY + "/user";
 
     //internal
     public static final String CONTEXT_PATH_INTERNAL_ALERT = CONTEXT_PATH_INTERNAL + "alert";

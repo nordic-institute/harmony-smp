@@ -149,7 +149,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     public DBUser updateUserPassword(Long authorizedUserId, Long userToUpdateId, String currentPassword, String newPassword) {
 
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
-        if (!pattern.matcher(newPassword).matches()) {
+        if (pattern != null && !pattern.matcher(newPassword).matches()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
         }
         DBUser dbAuthorizedUser = userDao.find(authorizedUserId);

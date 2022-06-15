@@ -184,7 +184,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         }
         // check if the last failed attempt is already expired. If yes just clear the attempts
         if (configurationService.getLoginSuspensionTimeInSeconds() != null && configurationService.getLoginSuspensionTimeInSeconds() > 0
-                && ChronoUnit.SECONDS.between(OffsetDateTime.now(), user.getLastFailedLoginAttempt()) > configurationService.getLoginSuspensionTimeInSeconds()) {
+                && ChronoUnit.SECONDS.between( user.getLastFailedLoginAttempt(),OffsetDateTime.now()) > configurationService.getLoginSuspensionTimeInSeconds()) {
             LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
             user.setLastFailedLoginAttempt(null);
             user.setSequentialLoginFailureCount(0);
