@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -33,6 +34,8 @@ import java.security.cert.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -447,6 +450,16 @@ public class UITruststoreServiceTest extends AbstractServiceIntegrationTest {
         CertificateException result = assertThrows(CertificateException.class,
                 () -> testInstance.validateCertificatePolicyMatchLegacy(certificate));
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate policy verification failed."));
+    }
+
+    @Test
+    public void validateCertificateNotUsed() throws CertificateException {
+        String certId = "cn=test"+UUID.randomUUID().toString()+",o=test,c=eu:123456";
+        CertificateRO certificateRO = new CertificateRO();
+        certificateRO.setCertificateId(certId);
+        // when
+        testInstance.validateCertificateNotUsed(certificateRO);
+        //then no error is thrown
     }
 
 }

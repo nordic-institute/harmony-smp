@@ -51,6 +51,7 @@ public enum SMPMessageCode implements MessageCode {
     SEC_USER_NOT_AUTHENTICATED("SEC-007", "User [{}]. Reason: [{}]."),
     SEC_USER_SUSPENDED("SEC-008", "User [{}] is temporarily suspended."),
     SEC_INVALID_TOKEN("SEC-009", "User [{}] has invalid token value for token id: [{}]."),
+    SEC_TRUSTSTORE_CERT_INVALID("SEC-010", "Truststore certificate with alias [{}] is invalid: [{}]."),
 
 
     ;

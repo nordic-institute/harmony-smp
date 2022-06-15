@@ -102,11 +102,13 @@
             **/smp-angular/node_modules/**,
             **/swagger*.js,
             **/web.xml,
+            **/smp-examples/**,
         </sonar.exclusions>
         <sonar.coverage.exclusions>
             **/*Entity.java,
             **/*RO.java,
             **/*Exception.java,
+            **/*Types.java,
         </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>

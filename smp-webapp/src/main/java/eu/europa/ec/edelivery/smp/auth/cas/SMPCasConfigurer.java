@@ -68,15 +68,15 @@ public class SMPCasConfigurer {
      * @return
      */
     @Bean
-    public CasAuthenticationEntryPoint casAuthenticationEntryPoint(@Nullable @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties serviceProperties, ConfigurationService configService) {
+    public CasAuthenticationEntryPoint casAuthenticationEntryPoint(@Nullable @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties serviceProperties) {
 
-        if (!configService.isSSOEnabledForUserAuthentication()) {
-            LOG.debug("Bean CasAuthenticationEntryPoint is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
+        if (!configurationService.isSSOEnabledForUserAuthentication()) {
+            LOG.debug("Bean [{}] is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
             return null;
         }
 
-        String casUrl = configService.getCasURL().toString();
-        String casLoginPath = configService.getCasURLPathLogin();
+        String casUrl = configurationService.getCasURL().toString();
+        String casLoginPath = configurationService.getCasURLPathLogin();
         String casUrlLogin = StringUtils.removeEnd(casUrl, "/") + StringUtils.prependIfMissing(casLoginPath, "/");
 
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
@@ -87,21 +87,20 @@ public class SMPCasConfigurer {
     }
 
     @Bean
-    public SMPCas20ServiceTicketValidator ecasServiceTicketValidator(ConfigurationService configService) {
-        if (!configService.isSSOEnabledForUserAuthentication()) {
-            LOG.debug("Bean SMPCas20ServiceTicketValidator is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
+    public SMPCas20ServiceTicketValidator ecasServiceTicketValidator() {
+        if (!configurationService.isSSOEnabledForUserAuthentication()) {
+            LOG.debug("Bean [{}] is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
             return null;
         }
-        if (configService.getCasURL() == null) {
-            LOG.error("Bean SMPCas20ServiceTicketValidator is not created! Missing Service parameter [{}]!", SSO_CAS_URL.getProperty());
+        if (configurationService.getCasURL() == null) {
+            LOG.error("Bean  [{}]  is not created! Missing Service parameter [{}]!", SMP_CAS_PROPERTIES_BEAN, SSO_CAS_URL.getProperty());
             return null;
         }
 
-        String casUrl = configService.getCasURL().toString();
-        String casTokenValidationSuffix = configService.getCasURLTokenValidation();
-        LOG.debug("Create Bean SMPCas20ServiceTicketValidator with cas URL [{}] and token suffix [{}]!", casUrl,casTokenValidationSuffix );
+        String casUrl = configurationService.getCasURL().toString();
+        String casTokenValidationSuffix = configurationService.getCasURLTokenValidation();
         SMPCas20ServiceTicketValidator validator = new SMPCas20ServiceTicketValidator(casUrl, casTokenValidationSuffix);
-        validator.setCustomParameters(getCustomParameters(configService));
+        validator.setCustomParameters(getCustomParameters());
         validator.setRenew(false);
         return validator;
     }
@@ -109,15 +108,14 @@ public class SMPCasConfigurer {
     /**
      * Generate properties for SMPCas20ServiceTicketValidator
      *
-     * @param configService
      * @return CAS properties
      */
-    public Map<String, String> getCustomParameters(ConfigurationService configService) {
+    public Map<String, String> getCustomParameters() {
         Map<String, String> map = new HashMap<>();
         // always return details
         map.put("userDetails", "true");
-        map.putAll(configService.getCasTokenValidationParams());
-        List<String> groupList = configService.getCasURLTokenValidationGroups();
+        map.putAll(configurationService.getCasTokenValidationParams());
+        List<String> groupList = configurationService.getCasURLTokenValidationGroups();
         if (!groupList.isEmpty()) {
             map.put("groups", String.join(",", groupList));
         }
@@ -133,10 +131,9 @@ public class SMPCasConfigurer {
     public CasAuthenticationProvider casAuthenticationProvider(
             @Nullable @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties serviceProperties,
             @Nullable SMPCas20ServiceTicketValidator serviceTicketValidator,
-            @Nullable SMPCasUserService smpCasUserService,
-            ConfigurationService configService) {
+            @Nullable SMPCasUserService smpCasUserService) {
 
-        if (!configService.isSSOEnabledForUserAuthentication()) {
+        if (!configurationService.isSSOEnabledForUserAuthentication()) {
             LOG.debug("Bean [CasAuthenticationProvider:{}] is not configured because SSO CAS authentication is not enabled!", SMP_CAS_PROPERTIES_BEAN);
             return null;
         }
@@ -169,7 +166,7 @@ public class SMPCasConfigurer {
         //filter.setFilterProcessesUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE);
         filter.setServiceProperties(casServiceProperties);
         filter.setAuthenticationManager(authenticationManager);
-        LOG.info("Created CAS Filter: " + filter.getClass().getSimpleName() + "with the properties: " + casServiceProperties.getArtifactParameter());
+        LOG.info("Created CAS Filter: [{}] with the properties: [{}]", filter.getClass().getSimpleName() , casServiceProperties.getArtifactParameter());
         return filter;
     }
 }
