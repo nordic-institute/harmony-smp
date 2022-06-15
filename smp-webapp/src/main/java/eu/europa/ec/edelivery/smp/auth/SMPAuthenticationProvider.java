@@ -35,7 +35,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
 
 import static java.util.Locale.US;
 
@@ -125,8 +128,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      */
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
-        KeyStore truststore = truststoreService.getTrustStore();
-
         DBUser user;
         X509Certificate x509Certificate = principal.getCertificate();
         String userToken = principal.getName();
@@ -137,7 +138,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 truststoreService.validateCertificateWithTruststore(x509Certificate);
             } catch (CertificateException e) {
                 String message = "Certificate is not trusted!";
-                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken , message
+                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, message
                         + " The cert chain is not in truststore or either subject regexp or allowed cert policies does not match");
                 throw new BadCredentialsException(message);
             }
@@ -238,7 +239,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      */
     public void validateIfTokenIsSuspended(DBUser user) {
         if (user.getSequentialTokenLoginFailureCount() == null
-                || user.getSequentialTokenLoginFailureCount() < 0) {
+                || user.getSequentialTokenLoginFailureCount() < 1) {
             LOG.trace("User has no previous failed attempts");
             return;
         }
@@ -249,14 +250,17 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         }
 
         if (user.getLastTokenFailedLoginAttempt() == null) {
-            LOG.warn("Access token [{}] has failed attempts [{}] but null last Failed login attempt!", user.getUsername(), user.getLastFailedLoginAttempt());
+            LOG.warn("Access token [{}] for user [{}] has failed attempts [{}] but null last Failed login attempt!",
+                    user.getAccessTokenIdentifier(), user.getUsername(), user.getLastFailedLoginAttempt());
             return;
         }
 
         // check if the last failed attempt is already expired. If yes just clear the attempts
-        if (configurationService.getAccessTokenLoginSuspensionTimeInSeconds() != null && configurationService.getAccessTokenLoginSuspensionTimeInSeconds() > 0
-                && ChronoUnit.SECONDS.between(OffsetDateTime.now(), user.getLastTokenFailedLoginAttempt()) > configurationService.getAccessTokenLoginSuspensionTimeInSeconds()) {
-            LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
+        if (configurationService.getAccessTokenLoginSuspensionTimeInSeconds() != null
+                && configurationService.getAccessTokenLoginSuspensionTimeInSeconds() > 0
+                && ChronoUnit.SECONDS.between(user.getLastTokenFailedLoginAttempt(), OffsetDateTime.now()) > configurationService.getAccessTokenLoginSuspensionTimeInSeconds()) {
+            LOG.info("User token [{}] for user [{}] suspension is expired! Clear failed login attempts and last failed login attempt",
+                    user.getAccessTokenIdentifier(), user.getUsername());
             user.setLastTokenFailedLoginAttempt(null);
             user.setSequentialTokenLoginFailureCount(0);
             mUserDao.update(user);
@@ -264,7 +268,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         }
 
         if (user.getSequentialTokenLoginFailureCount() < configurationService.getAccessTokenLoginMaxAttempts()) {
-            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialTokenLoginFailureCount(), configurationService.getAccessTokenLoginMaxAttempts());
+            LOG.warn("User token [{}] for user [{}] failed login attempt [{}] did not reach the max failed attempts [{}]",
+                    user.getAccessTokenIdentifier(), user.getUsername(), user.getSequentialTokenLoginFailureCount(), configurationService.getAccessTokenLoginMaxAttempts());
             return;
         }
         if (configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
@@ -312,11 +317,11 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             user.setLastTokenFailedLoginAttempt(null);
             mUserDao.update(user);
         } catch (java.lang.IllegalArgumentException ex) {
-            // password is not hashed;
+            // password is not hashed
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, authenticationTokenId);
             throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
         }
-        // the webservice authentication with corresponding web-service authority;
+        // the webservice authentication with corresponding web-service authority
         SMPAuthority authority = SMPAuthority.getAuthorityByRoleName("WS_" + user.getRole());
         // the webservice authentication does not support session set the session secret is null!
         SMPUserDetails userDetails = new SMPUserDetails(user, null, Collections.singletonList(authority));
@@ -335,12 +340,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         user.setSequentialTokenLoginFailureCount(user.getSequentialTokenLoginFailureCount() != null ? user.getSequentialTokenLoginFailureCount() + 1 : 1);
         user.setLastTokenFailedLoginAttempt(OffsetDateTime.now());
         mUserDao.update(user);
-        LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getAccessTokenIdentifier());
+        LOG.securityWarn(SMPMessageCode.SEC_INVALID_TOKEN, user.getUsername(), user.getAccessTokenIdentifier());
 
-        user.setSequentialLoginFailureCount(user.getSequentialLoginFailureCount() != null ? user.getSequentialLoginFailureCount() + 1 : 1);
-        user.setLastFailedLoginAttempt(OffsetDateTime.now());
-        mUserDao.update(user);
-        LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getUsername());
         if (user.getSequentialTokenLoginFailureCount() >= configurationService.getAccessTokenLoginMaxAttempts()) {
             LOG.info("User access token [{}] failed sequential attempt exceeded the max allowed attempts [{}]!", user.getAccessToken(), configurationService.getAccessTokenLoginMaxAttempts());
             alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
@@ -353,10 +354,10 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> auth) {
-        LOG.info("Support authentication: " + auth);
+        LOG.info("Support authentication: [{}].", auth);
         boolean supportAuthentication = auth.equals(UsernamePasswordAuthenticationToken.class) || auth.equals(PreAuthenticatedAuthenticationToken.class);
         if (!supportAuthentication) {
-            LOG.warn("SMP does not support authentication type: " + auth);
+            LOG.warn("SMP does not support authentication type: [{}].", auth);
         }
         return supportAuthentication;
     }
