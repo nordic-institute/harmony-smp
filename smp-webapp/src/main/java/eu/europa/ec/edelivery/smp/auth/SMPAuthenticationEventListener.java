@@ -14,7 +14,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpSession;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -51,7 +50,9 @@ public class SMPAuthenticationEventListener implements ApplicationListener<Authe
             Collection<? extends GrantedAuthority> authorities = event.getAuthentication().getAuthorities();
             HttpSession session = attr.getRequest().getSession();
             int idleTimeout = getSessionTimeoutForRoles(authorities);
-            LOG.debug("Set session idle timeout [{}] for user [{}] with roles [{}]", idleTimeout, event.getAuthentication().getName(), authorities.stream().map(auth->auth.getAuthority()).toArray());
+            LOG.debug("Set session idle timeout [{}] for user [{}] with roles [{}]",
+                    idleTimeout, event.getAuthentication().getName(),
+                    authorities.stream().map(GrantedAuthority::getAuthority).toArray());
             session.setMaxInactiveInterval(idleTimeout);
         } else {
             LOG.warn("Could not get ServletRequestAttributes attributes for authentication [{}]", event.getAuthentication());
@@ -61,9 +62,9 @@ public class SMPAuthenticationEventListener implements ApplicationListener<Authe
     public int getSessionTimeoutForRoles(Collection<? extends GrantedAuthority> authorities) {
         boolean hasAdminRole = authorities.stream().anyMatch(grantedAuthority ->
                 StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-            || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority())
-            || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_WS_SYSTEM_ADMIN.getAuthority())
-            || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_WS_SMP_ADMIN.getAuthority())
+                        || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority())
+                        || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_WS_SYSTEM_ADMIN.getAuthority())
+                        || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_WS_SMP_ADMIN.getAuthority())
         );
         LOG.debug("has admin role [{}]", hasAdminRole);
         LOG.debug("configurationService [{}]", configurationService);

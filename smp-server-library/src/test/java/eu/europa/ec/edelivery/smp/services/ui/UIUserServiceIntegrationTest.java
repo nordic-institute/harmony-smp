@@ -2,12 +2,12 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
@@ -30,6 +30,7 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.Assert.*;
 
 
@@ -46,6 +47,10 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Autowired
     protected UIUserService testInstance;
+
+
+    @Autowired
+    protected ServiceGroupDao serviceGroupDao;
 
 
     protected void insertDataObjects(int size) {
@@ -446,5 +451,36 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(certificateRO.getSubject(), changedUser.getCertificate().getSubject());
         assertNotNull(certificateRO.getIssuer(), changedUser.getCertificate().getIssuer());
         assertNotNull(certificateRO.getSerialNumber(), changedUser.getCertificate().getSerialNumber());
+    }
+
+    @Test
+    public void testValidateDeleteRequest() throws Exception {
+        String username1 = "test-user-delete-01";
+        String username2 = "test-user-delete-02";
+
+        DBUser user1 = TestDBUtils.createDBUser(username1);
+        DBUser user2 = TestDBUtils.createDBUser(username2);
+        userDao.persistFlushDetach(user1);
+        userDao.persistFlushDetach(user2);
+
+        DBDomain d = new DBDomain();
+        d.setDomainCode(TEST_DOMAIN_CODE_1);
+        d.setSmlSubdomain(TEST_SML_SUBDOMAIN_CODE_1);
+        domainDao.persistFlushDetach(d);
+
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
+        sg.getUsers().add(user2);
+        sg.addDomain(d);
+
+        serviceGroupDao.persistFlushDetach(sg);
+        DeleteEntityValidation validation = new DeleteEntityValidation();
+        validation.getListIds().add(user1.getId()+"");
+        validation.getListIds().add(user2.getId()+"");
+
+        DeleteEntityValidation result = testInstance.validateDeleteRequest(validation);
+
+        assertEquals(1, result.getListDeleteNotPermitedIds().size());
+        assertEquals(user2.getId()+"",  result.getListDeleteNotPermitedIds().get(0));
+        assertEquals(2, result.getListIds().size());
     }
 }

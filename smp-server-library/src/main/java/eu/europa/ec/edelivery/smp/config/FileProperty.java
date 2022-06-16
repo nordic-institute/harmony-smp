@@ -39,6 +39,9 @@ public class FileProperty {
     public static final String PROPERTY_LIB_FOLDER = "libraries.folder";
     public static final String PROPERTY_SMP_MODE_DEVELOPMENT = "smp.mode.development";
 
+    protected FileProperty() {
+    }
+
     public static void updateLogConfiguration(String logFileFolder, String logPropertyFile, String configurationFolder) {
 
         if (StringUtils.isNotBlank(logFileFolder)) {
