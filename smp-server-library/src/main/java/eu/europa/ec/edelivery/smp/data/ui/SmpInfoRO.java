@@ -12,11 +12,11 @@ import java.util.List;
  */
 public class SmpInfoRO implements Serializable {
     private static final long serialVersionUID = -49712226560325302L;
-    String version;
-    String ssoAuthenticationLabel;
-    String ssoAuthenticationURI;
-    String contextPath;
-    List<String> authTypes = new ArrayList<>();
+    private String version;
+    private String ssoAuthenticationLabel;
+    private String ssoAuthenticationURI;
+    private String contextPath;
+    private List<String> authTypes = new ArrayList<>();
 
     public String getVersion() {
         return version;

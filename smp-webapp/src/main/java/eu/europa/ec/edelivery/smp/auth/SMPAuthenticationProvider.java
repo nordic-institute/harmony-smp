@@ -27,7 +27,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateRevokedException;
 import java.security.cert.X509Certificate;

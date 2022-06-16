@@ -28,12 +28,6 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.XMLConstants;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -709,37 +703,4 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                     serviceGroupRO.getParticipantScheme(), ExceptionUtils.getRootCauseMessage(e));
         }
     }
-
-    /**
-     * Method
-     *
-     * @param sgExtension
-     * @return
-     */
-    public ServiceGroupValidationRO formatExtension(ServiceGroupValidationRO sgExtension) {
-        if (sgExtension == null) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "Format extension", "Missing Extension parameter");
-        } else if (StringUtils.isBlank(sgExtension.getExtension())) {
-            sgExtension.setErrorMessage("Empty extension");
-        } else {
-            try {
-                Source xmlInput = new StreamSource(new StringReader(sgExtension.getExtension()));
-                StringWriter stringWriter = new StringWriter();
-                StreamResult xmlOutput = new StreamResult(stringWriter);
-
-                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                transformerFactory.setAttribute("indent-number", 4);
-
-                Transformer transformer = transformerFactory.newTransformer();
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                transformer.transform(xmlInput, xmlOutput);
-                sgExtension.setExtension(xmlOutput.getWriter().toString());
-            } catch (TransformerException e) {
-                sgExtension.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
-            }
-        }
-        return sgExtension;
-    }
-
 }
