@@ -7,7 +7,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.smp.spi.PayloadValidatorSpi;
 import eu.europa.ec.smp.spi.exceptions.PayloadValidatorSpiException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Marker;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -53,8 +52,8 @@ public class PayloadValidatorService {
                 validatorSpi.validatePayload(payload, mimeType);
             }
         } catch (PayloadValidatorSpiException e) {
-            LOG.error(SECURITY_MARKER,"Content validation failed: ["+ExceptionUtils.getRootCauseMessage(e)+"]" , e );
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST,"Upload payload", "Content validation failed");
+            LOG.error(SECURITY_MARKER, "Content validation failed: [" + ExceptionUtils.getRootCauseMessage(e) + "]", e);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Upload payload", "Content validation failed");
         }
     }
 }
