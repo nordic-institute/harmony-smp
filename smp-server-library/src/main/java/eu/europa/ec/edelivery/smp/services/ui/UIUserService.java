@@ -344,7 +344,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * @return
      */
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
-        List<Long> idList = dev.getListIds().stream().map(encId -> SessionSecurityUtils.decryptEntityId(encId)).collect(Collectors.toList());
+        List<Long> idList = dev.getListIds().stream().map(SessionSecurityUtils::decryptEntityId).collect(Collectors.toList());
         List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(idList);
         dev.setValidOperation(lstMessages.isEmpty());
         StringWriter sw = new StringWriter();
