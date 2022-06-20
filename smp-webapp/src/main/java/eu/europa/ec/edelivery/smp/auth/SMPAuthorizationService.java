@@ -124,6 +124,7 @@ public class SMPAuthorizationService {
 
     public UserRO getLoggedUserData() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
+
         // refresh data from database!
         DBUser dbUser = userDao.find(userDetails.getUser().getId());
         if (dbUser == null || !dbUser.isActive()) {
@@ -132,7 +133,9 @@ public class SMPAuthorizationService {
                     userDetails.getUser().getUsername());
             return null;
         }
-        return getUserData(dbUser);
+        UserRO userRO = getUserData(dbUser);
+        userRO.setCasAuthenticated(userDetails.isCasAuthenticated());
+        return userRO;
     }
 
     public UserRO getUserData(DBUser user) {

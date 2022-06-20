@@ -92,10 +92,10 @@
               <mat-icon>person</mat-icon>
               <span>{{currentUser}}</span>
             </button>
-            <button mat-menu-item id="changePassword_id" (click)="changeCurrentUserPassword()">
+            <button *ngIf="isUserAuthPasswdEnabled" mat-menu-item id="changePassword_id" (click)="changeCurrentUserPassword()">
               <span>Change password</span>
             </button>
-            <button mat-menu-item id="getAccessToken_id" (click)="regenerateCurrentUserAccessToken()">
+            <button *ngIf="isWebServiceUserTokenAuthPasswdEnabled" mat-menu-item id="getAccessToken_id" (click)="regenerateCurrentUserAccessToken()">
               <span>Generated access token</span>
             </button>
 

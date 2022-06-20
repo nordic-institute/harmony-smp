@@ -82,7 +82,7 @@
             <input matInput placeholder="Cas identifier" [formControl]="userForm.controls['username']"
                    id="cas-user_id" maxlength="255" disabled>
           </mat-form-field>
-          <button mat-flat-button color="primary" style="width: 100%" id="openCASData"
+          <button mat-flat-button color="primary" style="width: 100%" id="openCASData" [disabled]="!this.current?.casUserDataUrl"
                   (click)="openCurrentCasUserData()">
             <span>Open CAS user data</span>
           </button>

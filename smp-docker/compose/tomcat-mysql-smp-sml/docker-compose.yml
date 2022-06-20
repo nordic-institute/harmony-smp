@@ -33,8 +33,8 @@ services:
       - "3908:3306"
       - "8982:8080"
       - "6902:6901"
-      - "8953:53"
-      - "5005:5005"
+#      - "8953:53"
+#      - "5005:5005"
 
   eulogin-mock-server:
     image: edelivery-docker.devops.tech.ec.europa.eu/eulogin/mockserver:6.2.7

@@ -100,8 +100,13 @@ public class UIPropertyService {
         property.setValuePattern(property.getValuePattern());
 
         if (changedProps.containsKey(property.getProperty())) {
-            property.setNewValue(changedProps.get(propertyType.getProperty()).getValue());
-            property.setUpdateDate(refreshPropertiesTrigger.getNextExecutionDate());
+            String newVal = changedProps.get(propertyType.getProperty()).getValue();
+            if (!StringUtils.equals(newVal, property.getValue())) {
+                property.setNewValue(changedProps.get(propertyType.getProperty()).getValue());
+                property.setUpdateDate(refreshPropertiesTrigger.getNextExecutionDate());
+            } else {
+                LOG.debug("Property [{}] has newer update time, but it has the same value as the current value!");
+            }
         }
         return property;
     }
