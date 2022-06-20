@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.ui.external;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
+import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
 import eu.europa.ec.edelivery.smp.data.ui.PasswordChangeRO;
@@ -9,7 +10,9 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,11 +43,16 @@ public class UserResource {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PostMapping(path = "/{user-id}/generate-access-token", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public AccessTokenRO generateAccessToken(@PathVariable("user-id") String userId, @RequestBody String password) {
+    public AccessTokenRO generateAccessToken(@PathVariable("user-id") String userId, @RequestBody(required = false)  String password) {
         Long entityId = decryptEntityId(userId);
+        SMPUserDetails currentUser = SessionSecurityUtils.getSessionUserDetails();
         LOG.info("Generated access token for user:[{}] with id:[{}] ", userId, entityId);
+        if (currentUser == null) {
+            throw new SessionAuthenticationException("User session expired!");
+        }
 
-        return uiUserService.generateAccessTokenForUser(entityId, entityId, password);
+        // no need to validate password if CAS authenticated
+        return uiUserService.generateAccessTokenForUser(entityId, entityId, password, !currentUser.isCasAuthenticated());
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
@@ -52,6 +60,7 @@ public class UserResource {
     public boolean changePassword(@PathVariable("user-id") String userId, @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
+        // when user changing password the current password must be verified even if cas authenticated
         DBUser result = uiUserService.updateUserPassword(entityId, entityId, newPassword.getCurrentPassword(), newPassword.getNewPassword());
         if (result!=null) {
             LOG.info("Password successfully changed. Logout the user, to be able to login with the new password!");

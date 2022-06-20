@@ -30,7 +30,7 @@
             Token will be generated immediately.
           </mat-label>
         </mat-card-actions>
-        <mat-form-field style="width:100%">
+        <mat-form-field *ngIf="!securityService.getCurrentUser()?.casAuthenticated" style="width:100%">
           <input matInput [placeholder]="getPasswordTitle" [type]="hideCurrPwdFiled ? 'password' : 'text'"
                  formControlName="current-password" required id="cp_id">
           <mat-icon matSuffix
