@@ -68,7 +68,7 @@ public class SMPMessages {
 	public static final String MSG_21 = "Unable to login. SMP is not running.";
 
 
-	public static final String USERNAME_VALIDATION_MESSAGE = "Username can only contain alphanumeric characters (letters A-Z, numbers 0-9) and must have from 4 to 32 characters!";
+	public static final String USERNAME_VALIDATION_MESSAGE = "Username is case insensitive and can only contain alphanumeric characters (letters a-zA-Z, numbers 0-9) and must have from 4 to 32 characters!";
 	public static final String PASS_POLICY_MESSAGE = "Password should follow all of these rules:\n" +
 			"- Minimum length: 8 characters\n" +
 			"- Maximum length: 32 characters\n" +
