@@ -45,7 +45,8 @@ export class PasswordChangeDialogComponent {
 
     this.forceChange = this.current.forceChangeExpiredPassword;
 
-    let currentPasswdFormControl: FormControl = new FormControl({value: null, readonly: false}, [Validators.required]);
+    let currentPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
+      this.securityService.getCurrentUser().casAuthenticated && this.adminUser ? null : [Validators.required]);
     let newPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
       [Validators.required, Validators.pattern(this.passwordValidationRegExp), equal(currentPasswdFormControl, false)]);
     let confirmNewPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
@@ -64,6 +65,10 @@ export class PasswordChangeDialogComponent {
     this.dialogForm.controls['current-password'].setValue('');
     this.dialogForm.controls['new-password'].setValue('');
     this.dialogForm.controls['confirm-new-password'].setValue('');
+  }
+
+  get showCurrentPasswordField():boolean {
+    return !this.securityService.getCurrentUser()?.casAuthenticated || !this.adminUser
   }
 
   public passwordError = (controlName: string, errorName: string) => {

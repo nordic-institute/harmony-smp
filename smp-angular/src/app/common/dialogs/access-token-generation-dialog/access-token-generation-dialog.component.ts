@@ -34,7 +34,7 @@ export class AccessTokenGenerationDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private lookups: GlobalLookups,
     private userDetailsService: UserDetailsService,
-    private securityService: SecurityService,
+    public securityService: SecurityService,
     private fb: FormBuilder
   ) {
     dialogRef.disableClose = true;//disable default close operation
@@ -48,7 +48,7 @@ export class AccessTokenGenerationDialogComponent {
       'username': new FormControl({value: null, readonly: true}, null),
       'accessTokenId': new FormControl({value: null, readonly: true}, null),
       'accessTokenExpireOn': new FormControl({value: null, readonly: true}, null),
-      'current-password': new FormControl({value: null, readonly: false}, [Validators.required]),
+      'current-password': new FormControl({value: null, readonly: false}, this.securityService.getCurrentUser().casAuthenticated?null:[Validators.required]),
     });
 
     this.dialogForm.controls['email'].setValue(this.isEmptyEmailAddress ? "Empty email address!" : this.current.emailAddress);

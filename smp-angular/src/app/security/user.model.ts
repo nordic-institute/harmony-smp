@@ -7,6 +7,7 @@ export interface User {
   accessTokenId?: string;
   accessTokenExpireOn?: Date;
   authorities: Array<Authority>;
+  casAuthenticated?: boolean;
   defaultPasswordUsed: boolean;
   forceChangeExpiredPassword?: boolean;
   showPasswordExpirationWarning?: boolean;

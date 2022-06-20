@@ -12,6 +12,7 @@ import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.UserFilter;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -89,12 +90,18 @@ public class UserAdminResource {
     public AccessTokenRO generateAccessTokenForUser(
             @PathVariable("user-id") String userId,
             @PathVariable("update-user-id") String regenerateForUserId,
-            @RequestBody String password) {
+            @RequestBody(required = false) String password) {
         Long authorizedUserId = decryptEntityId(userId);
         Long changeUserId = decryptEntityId(regenerateForUserId);
         LOG.info("Generated access token for user:[{}] with id:[{}] by the system user with id [{}]", userId, regenerateForUserId, authorizedUserId);
 
-        return uiUserService.generateAccessTokenForUser(authorizedUserId, changeUserId, password);
+        SMPUserDetails currentUser = SessionSecurityUtils.getSessionUserDetails();
+        if (currentUser == null) {
+            throw new SessionAuthenticationException("User session expired!");
+        }
+
+        // no need to validate password if cas authenticated
+        return uiUserService.generateAccessTokenForUser(authorizedUserId, changeUserId, password,!currentUser.isCasAuthenticated());
     }
 
 
@@ -102,11 +109,17 @@ public class UserAdminResource {
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public UserRO changePassword(@PathVariable("user-id") String userId,
                                  @PathVariable("update-user-id") String regenerateForUserId,
-                                 @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
+                                 @RequestBody PasswordChangeRO newPassword) {
         Long authorizedUserId = decryptEntityId(userId);
         Long changeUserId = decryptEntityId(regenerateForUserId);
         LOG.info("change the password of the currently logged in user:[{}] with id:[{}] ", changeUserId, regenerateForUserId);
-        DBUser user = uiUserService.updateUserPassword(authorizedUserId, changeUserId, newPassword.getCurrentPassword(), newPassword.getNewPassword());
+
+        SMPUserDetails currentUser = SessionSecurityUtils.getSessionUserDetails();
+        if (currentUser == null) {
+            throw new SessionAuthenticationException("User session expired!");
+        }
+
+        DBUser user = uiUserService.updateUserPassword(authorizedUserId, changeUserId, newPassword.getCurrentPassword(), newPassword.getNewPassword(),!currentUser.isCasAuthenticated());
         return authorizationService.sanitize(uiUserService.convertToRo(user));
     }
 

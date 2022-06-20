@@ -106,18 +106,20 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      *
      * @param authorizedUserId which is authorized for update
      * @param userToUpdateId   the user id to be updated
+     * @param currentPassword   authorized password
+     * @param validatePassword   do not validate password if CAS authenticated
      * @return generated AccessToken.
      */
     @Transactional
-    public AccessTokenRO generateAccessTokenForUser(Long authorizedUserId, Long userToUpdateId, String currentPassword) {
+    public AccessTokenRO generateAccessTokenForUser(Long authorizedUserId, Long userToUpdateId, String currentPassword, boolean validateCurrentPassword) {
 
         DBUser dbUser = userDao.find(authorizedUserId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", authorizedUserId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-        if (!BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
-            throw new BadCredentialsException("Password change failed; Invalid current password!");
+        if (validateCurrentPassword && !BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
+            throw new BadCredentialsException("AccessToken generation failed: Invalid current password!");
         }
         boolean adminUpdate = userToUpdateId != null && authorizedUserId != userToUpdateId;
         DBUser dbUserToUpdate = adminUpdate ? userDao.find(userToUpdateId) : dbUser;
@@ -142,11 +144,27 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * Method regenerate access token for user and returns access token
      * In the database the access token value is saved in format BCryptPasswordHash
      *
-     * @param authorizedUserId - authorized user id
+     * @param authorizedUserId which is authorized for update
+     * @param userToUpdateId   the user id to be updated
      * @return generated AccessToken.
      */
     @Transactional
-    public DBUser updateUserPassword(Long authorizedUserId, Long userToUpdateId, String currentPassword, String newPassword) {
+    public AccessTokenRO generateAccessTokenForUser(Long authorizedUserId, Long userToUpdateId, String currentPassword) {
+        return generateAccessTokenForUser(authorizedUserId, userToUpdateId, currentPassword, true);
+    }
+
+    /**
+     * Method updates the user password
+     *
+     * @param authorizedUserId - authorized user id
+     * @param userToUpdateId - user id to update password  user id
+     * @param authorizationPassword - authorization password
+     * @param newPassword - new password for the userToUpdateId
+     * @param validateCurrentPassword - validate authorizationPassword - if CAS authenticated skip this part
+     * @return generated DBUser.
+     */
+    @Transactional
+    public DBUser updateUserPassword(Long authorizedUserId, Long userToUpdateId, String authorizationPassword, String newPassword, boolean validateCurrentPassword) {
 
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
         if (pattern != null && !pattern.matcher(newPassword).matches()) {
@@ -158,7 +176,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
 
-        if (!BCrypt.checkpw(currentPassword, dbAuthorizedUser.getPassword())) {
+        if (validateCurrentPassword && !BCrypt.checkpw(authorizationPassword, dbAuthorizedUser.getPassword())) {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
 
@@ -176,6 +194,20 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUserToUpdate.setPasswordChanged(currentTime);
         dbUserToUpdate.setPasswordExpireOn(adminUpdate ? null : currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
         return dbUserToUpdate;
+    }
+
+    /**
+     * Method updates the user password
+     *
+     * @param authorizedUserId - authorized user id
+     * @param userToUpdateId - user id to update password  user id
+     * @param authorizationPassword - authorization password
+     * @param newPassword - new password for the userToUpdateId
+     * @return generated DBUser.
+     */
+    @Transactional
+    public DBUser updateUserPassword(Long authorizedUserId, Long userToUpdateId, String authorizationPassword, String newPassword) {
+        return updateUserPassword(authorizedUserId, userToUpdateId, authorizationPassword, newPassword, true);
     }
 
     @Transactional
