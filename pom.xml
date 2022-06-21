@@ -50,8 +50,7 @@
         <commons-validator.version>1.7</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
         <cxf.version>3.5.2</cxf.version>
-        <dnsjava.version>2.1.7</dnsjava.version>
-        <ehcache.version>2.10.9.2</ehcache.version>
+         <ehcache.version>2.10.9.2</ehcache.version>
         <freemarker.version>2.3.31</freemarker.version>
         <h2.version>1.4.200</h2.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
@@ -74,12 +73,12 @@
         <mockito.version>2.23.4</mockito.version>
         <orika.version>1.5.4</orika.version>
         <servlet-api.version>3.0.1</servlet-api.version>
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <soapui.plugin.version>5.1.2</soapui.plugin.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring.boot.version>2.7.0</spring.boot.version>
-        <spring.security.version>5.7.1</spring.security.version>
-        <spring.version>5.3.20</spring.version>
+        <spring.security.version>5.7.2</spring.security.version>
+        <spring.version>5.3.21</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
         <!-- plugins -->
@@ -470,12 +469,6 @@
                 <artifactId>bcpkix-jdk15to18</artifactId>
                 <version>${bouncycastle.version}</version>
             </dependency>
-            <dependency>
-                <groupId>dnsjava</groupId>
-                <artifactId>dnsjava</artifactId>
-                <version>${dnsjava.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>ant</groupId>
                 <artifactId>ant-commons-net</artifactId>
