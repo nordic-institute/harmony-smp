@@ -78,9 +78,14 @@ public class UsersPgTest extends BaseTest {
 			e.printStackTrace();
 		}
 		popup.clickChangePassword();
-	    popup.setPassword(adminPass,validPass,validPass);
-		popup.clickChangedPassword().cancel();
-		//popup.clickCloseAfterChangedPass();
+	    popup.setOrChangePassword(adminPass,validPass,validPass);
+		popup.clickChangedPassword();
+		popup.clickCloseAfterChangedPass();
+		try {
+			Thread.sleep(1000);
+		}
+		catch(Exception e)
+		{}
 		popup.clickOK();
 		soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
 
@@ -160,7 +165,7 @@ public class UsersPgTest extends BaseTest {
 			popup = usersPage.clickEdit();
 
 			popup.clickChangePassword();
-			popup.setPassword(adminPass,pass,pass);
+			popup.setOrChangePassword(adminPass,pass,pass);
 			popup.clickClosePasswordDialog();
 			popup.clickCancel();
 			//popup.clickChangedPassword();
@@ -501,7 +506,7 @@ public class UsersPgTest extends BaseTest {
 		popup = page.clickEdit();
 
 		popup.clickChangePassword();
-		popup.setPassword(adminPass,validPass,validPass);
+		popup.setOrChangePassword(adminPass,validPass,validPass);
 		popup.clickChangedPassword();
 		popup.clickCloseAfterChangedPass();
 		popup.clickCancel();
@@ -545,7 +550,7 @@ public class UsersPgTest extends BaseTest {
 		popup = usersPage.clickEdit();
 
 		popup.clickChangePassword();
-		popup.setPassword(adminPass,validPass,confirmPass);
+		popup.setOrChangePassword(adminPass,validPass,confirmPass);
        // popup.clickUserDetailsToggle();
 		// popup.fillDetailsForm(username,validPass,confirmPass);
         soft.assertTrue(!popup.isChangePasswordButtonActive(), "password change button is enabled before valid data is filled in the popup(2)");
