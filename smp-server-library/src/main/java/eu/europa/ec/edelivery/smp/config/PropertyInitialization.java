@@ -141,7 +141,7 @@ public class PropertyInitialization {
     }
 
     public void initTruststore(String absolutePath, File fEncryption, EntityManager em, Properties properties, Properties fileProperties, boolean testMode) {
-        LOG.info("Start generating new truststore.");
+        LOG.info("Start initialization of the truststore.");
         String encTrustEncToken;
         if (fileProperties.containsKey(SMPPropertyEnum.TRUSTSTORE_PASSWORD.getProperty())) {
             LOG.info("get token from  properties");
@@ -192,36 +192,63 @@ public class PropertyInitialization {
         }
     }
 
-    public void initAndMergeKeystore(String absolutePath, File fEncryption, EntityManager em, Properties initProperties,
-                                     Properties fileProperties, boolean testMode) {
-        LOG.info("Start generating new keystore. mode [{}]", testMode?"dev":"prod");
-        // store keystore password  filename
-        String newKeyPassword = SecurityUtils.generateAuthenticationToken(testMode);
-        storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
-        String encPasswd = SecurityUtils.encrypt(fEncryption, newKeyPassword);
-        storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD, encPasswd);
-        initProperties.setProperty(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty(), encPasswd);
+    public void initKeystore(String absolutePath, File fEncryption, EntityManager em, Properties initProperties,
+                             Properties fileProperties, boolean testMode) {
 
-        //store new keystore
-        File keystore = getNewFile(absolutePath, SMPPropertyEnum.KEYSTORE_FILENAME.getDefValue());
-        LOG.info("Create file [{}]", keystore.getAbsolutePath());
+        LOG.info("Start initialization of the keystore.");
+        String encKeystoreToken;
+        if (fileProperties.containsKey(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty())) {
+            LOG.debug("Get keystore token from the init properties");
+            encKeystoreToken = SecurityUtils.encryptWrappedToken(fEncryption,
+                    fileProperties.getProperty(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty()));
+        } else {
+            // generate new token
+            LOG.debug("Generate keystore token");
+            String trustToken = SecurityUtils.generateAuthenticationToken(testMode);
+            storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, trustToken);
+            encKeystoreToken = SecurityUtils.encrypt(fEncryption, trustToken);
+        }
+        LOG.debug("Store keystore security token to database");
+        // store token to database
+        storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD, encKeystoreToken);
+        initProperties.setProperty(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty(), encKeystoreToken);
+
+        LOG.debug("Decode security token");
+        String trustToken = SecurityUtils.decrypt(fEncryption, encKeystoreToken);
+        LOG.info("Initialize keystore file!");
+        File keystore;
+        if (fileProperties.containsKey(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty())) {
+            LOG.debug("Get keystore filename from property file");
+            keystore = new File(absolutePath, fileProperties.getProperty(
+                    SMPPropertyEnum.KEYSTORE_FILENAME.getProperty()));
+
+        } else {
+            LOG.info("Create new keystore file ");
+            keystore = getNewFile(absolutePath, SMPPropertyEnum.KEYSTORE_FILENAME.getDefValue());
+        }
+        LOG.debug("Set SMP keystore to file [{}]!", keystore.getAbsolutePath());
+        // store file to database
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_FILENAME, keystore.getName());
         initProperties.setProperty(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty(), keystore.getName());
 
-        try (FileOutputStream out = new FileOutputStream(keystore)) {
-            KeyStore newKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            // initialize keystore
-            newKeystore.load(null, newKeyPassword.toCharArray());
-            // check if keystore is empty then generate cert for user
-            if (newKeystore.size() == 0) {
-                X509CertificateUtils.createAndStoreCertificateWithChain(
-                        new String[]{TEST_CERT_ISSUER_DN, TEST_CERT_SUBJECT_DN},
-                        new String[]{TEST_CERT_ISSUER_ALIAS, TEST_CERT_CERT_ALIAS},
-                        newKeystore, newKeyPassword);
+        // if truststore does not exist create a new file
+        if (!keystore.exists()) {
+            LOG.info("Generate new truststore file {}.", keystore.getAbsolutePath());
+            try (FileOutputStream out = new FileOutputStream(keystore)) {
+                KeyStore newKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                // initialize keystore
+                newKeystore.load(null, trustToken.toCharArray());
+                // check if keystore is empty then generate cert for user
+                if (newKeystore.size() == 0) {
+                    X509CertificateUtils.createAndStoreCertificateWithChain(
+                            new String[]{TEST_CERT_ISSUER_DN, TEST_CERT_SUBJECT_DN},
+                            new String[]{TEST_CERT_ISSUER_ALIAS, TEST_CERT_CERT_ALIAS},
+                            newKeystore, trustToken);
+                }
+                newKeystore.store(out, trustToken.toCharArray());
+            } catch (Exception e) {
+                throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating truststore", ExceptionUtils.getRootCauseMessage(e));
             }
-            newKeystore.store(out, newKeyPassword.toCharArray());
-        } catch (Exception e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating keystore", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -278,7 +305,7 @@ public class PropertyInitialization {
 
         // init truststore
         initTruststore(absolutePath, fEncryption, em, initProperties, fileProperties, devMode);
-        initAndMergeKeystore(absolutePath, fEncryption, em, initProperties, fileProperties, devMode);
+        initKeystore(absolutePath, fEncryption, em, initProperties, fileProperties, devMode);
 
         return fEncryption;
     }
