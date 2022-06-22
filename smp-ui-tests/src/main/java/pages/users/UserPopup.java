@@ -66,7 +66,7 @@ public class UserPopup extends PageComponent {
 	@FindBy(css ="smp-password-change-dialog mat-dialog-actions button:nth-child(1)")
 	WebElement changedPassword;
 
-	@FindBy(css = "#nobuttondialog_id")
+	@FindBy(css = "#closebuttondialog_id")
 	WebElement passChangedClose;
 
 	@FindBy(css = "smp-password-change-dialog mat-dialog-actions button:nth-child(2)")
@@ -161,7 +161,7 @@ public class UserPopup extends PageComponent {
 		//return new UsersPage(driver);
 		return new ConfirmationDialog(driver);
 	}
-	public void setPassword(String adminPass,String newPass,String confirmPass)
+	public void setOrChangePassword(String adminPass,String newPass,String confirmPass)
 	{
 
 		clearAndFillInput(adminPassInput,adminPass);
