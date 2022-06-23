@@ -7,6 +7,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -70,6 +71,7 @@ public class FileProperty {
         LOG.info("Set log configuration properties from the file: [{}]", configurationFile.getAbsolutePath());
         try (InputStream configStream = new FileInputStream(configurationFile)) {
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            context.reset();
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext(context);
             configurator.doConfigure(configStream); // loads logback file
