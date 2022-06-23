@@ -54,18 +54,20 @@ public class FileProperty {
 
         File f = new File(logPropertyFile);
         if (!f.exists()) {
-            LOG.info("Log configuration file: {} not exists.", f.getAbsolutePath());
+            LOG.info("Log configuration file: [{}] not exists.", f.getAbsolutePath());
             f = new File(configurationFolder, logPropertyFile);
-            LOG.info("Set log configuration file: {}.", f.getAbsolutePath());
-
+            LOG.info("Try with the configuration file path: [{}].", f.getAbsolutePath());
         }
         // if configuration file exist update configuration
         if (f.exists()) {
             setLogConfiguration(f);
+        } else {
+            LOG.info("File path: [{}] does not exists.", f.getAbsolutePath());
         }
     }
 
     public static void setLogConfiguration(File configurationFile) {
+        LOG.info("Set log configuration properties from the file: [{}]", configurationFile.getAbsolutePath());
         try (InputStream configStream = new FileInputStream(configurationFile)) {
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             JoranConfigurator configurator = new JoranConfigurator();

@@ -32,9 +32,9 @@
             <pattern>${consolePattern}</pattern>
         </encoder>
     </appender>
-    <logger name="eu.europa.ec.edelivery" level="DEBUG" />
-    <logger name="eu.europa.ec.smp" level="DEBUG" />
-    <logger name="org.springframework.security.cas" level="DEBUG" />
+    <logger name="eu.europa.ec.edelivery" level="INFO" />
+    <logger name="eu.europa.ec.smp" level="INFO" />
+    <logger name="org.springframework.security.cas" level="INFO" />
     <root level="WARN">
         <appender-ref ref="file"/>
         <appender-ref ref="stdout"/>
