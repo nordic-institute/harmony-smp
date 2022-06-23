@@ -34,10 +34,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Locale.US;
 
@@ -191,6 +188,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
             throw new AuthenticationServiceException(msg);
         }
+
+        validateCertificatePolicyMatchLegacy(userToken, principal.getPolicyOids());
         // Check crl list
         String url = certificate.getCrlUrl();
         if (!StringUtils.isBlank(url)) {
@@ -215,6 +214,37 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
         authentication.setAuthenticated(true);
         return authentication;
+    }
+
+
+    /**
+     * Method validates if the certificate contains one of allowed Certificate policy. At the moment it does not validates
+     * the whole chain. Because in some configuration cases does not use the truststore
+     *
+     * @param certificateId
+     * @throws CertificateException
+     */
+    protected void validateCertificatePolicyMatchLegacy(String certificateId, List<String> certPolicyList) throws AuthenticationServiceException {
+
+        // allowed list
+        List<String> allowedCertificatePolicyOIDList = configurationService.getAllowedCertificatePolicies();
+        if (allowedCertificatePolicyOIDList == null || allowedCertificatePolicyOIDList.isEmpty()) {
+            LOG.debug("Certificate policy is not configured. Skip Certificate policy validation!");
+            return;
+        }
+        // certificate list
+        if (certPolicyList.isEmpty()) {
+            String excMessage = String.format("Certificate [%] does not have CertificatePolicy extension.", certificateId);
+            throw new AuthenticationServiceException(excMessage);
+        }
+
+        Optional<String> result = certPolicyList.stream().filter(allowedCertificatePolicyOIDList::contains).findFirst();
+        if (result.isPresent()) {
+            LOG.debug("Certificate [{}] is trusted with certificate policy [{}]",certificateId,  result.get());
+            return;
+        }
+        String excMessage = String.format("Certificate policy verification failed. Certificate [%s] does not contain any of the mandatory policy: [%s]", certificateId, allowedCertificatePolicyOIDList);
+        throw new AuthenticationServiceException(excMessage);
     }
 
 
@@ -282,6 +312,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             throws AuthenticationException {
 
         String authenticationTokenId = auth.getName();
+        LOG.debug("Got authentication token:" + authenticationTokenId);
         String authenticationTokenValue = auth.getCredentials().toString();
         long startTime = Calendar.getInstance().getTimeInMillis();
 
