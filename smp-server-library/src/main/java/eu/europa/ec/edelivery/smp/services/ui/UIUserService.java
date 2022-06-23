@@ -89,15 +89,32 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         user.setPassword(null);
         if (user.getCertificate() != null && !StringUtils.isBlank(user.getCertificate().getCertificateId())) {
             // validate certificate
-            try {
-                truststoreService.checkFullCertificateValidity(user.getCertificate());
-            } catch (CertificateException e) {
-                LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
-                user.getCertificate().setInvalid(true);
-                user.getCertificate().setInvalidReason(e.getMessage());
+            X509Certificate cert = getX509CertificateFromCertificateRO(user.getCertificate());
+            if (cert != null) {
+                truststoreService.validateCertificate(cert, user.getCertificate());
+            } else {
+                // validate just the database data
+                try {
+                    truststoreService.checkFullCertificateValidity(user.getCertificate());
+                } catch (CertificateException e) {
+                    LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
+                    user.getCertificate().setInvalid(true);
+                    user.getCertificate().setInvalidReason(e.getMessage());
+                }
             }
         }
+    }
 
+    public X509Certificate getX509CertificateFromCertificateRO(CertificateRO certificateRO) {
+        if (certificateRO == null || certificateRO.getEncodedValue() == null) {
+            return null;
+        }
+        try {
+            return X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certificateRO.getEncodedValue()));
+        } catch (CertificateException e) {
+            LOG.error("Error occurred while parsing the certificate encoded value for certificate id:[" + certificateRO.getCertificateId() + "].", e);
+            return null;
+        }
     }
 
     /**
@@ -106,8 +123,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      *
      * @param authorizedUserId which is authorized for update
      * @param userToUpdateId   the user id to be updated
-     * @param currentPassword   authorized password
-     * @param validatePassword   do not validate password if CAS authenticated
+     * @param currentPassword  authorized password
+     * @param currentPassword  do not validate password if CAS authenticated
      * @return generated AccessToken.
      */
     @Transactional
@@ -156,10 +173,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     /**
      * Method updates the user password
      *
-     * @param authorizedUserId - authorized user id
-     * @param userToUpdateId - user id to update password  user id
-     * @param authorizationPassword - authorization password
-     * @param newPassword - new password for the userToUpdateId
+     * @param authorizedUserId        - authorized user id
+     * @param userToUpdateId          - user id to update password  user id
+     * @param authorizationPassword   - authorization password
+     * @param newPassword             - new password for the userToUpdateId
      * @param validateCurrentPassword - validate authorizationPassword - if CAS authenticated skip this part
      * @return generated DBUser.
      */
@@ -199,10 +216,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     /**
      * Method updates the user password
      *
-     * @param authorizedUserId - authorized user id
-     * @param userToUpdateId - user id to update password  user id
+     * @param authorizedUserId      - authorized user id
+     * @param userToUpdateId        - user id to update password  user id
      * @param authorizationPassword - authorization password
-     * @param newPassword - new password for the userToUpdateId
+     * @param newPassword           - new password for the userToUpdateId
      * @return generated DBUser.
      */
     @Transactional

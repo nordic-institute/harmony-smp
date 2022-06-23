@@ -74,6 +74,10 @@ public class PropertyUtils {
             return null;
         }
 
+        if (StringUtils.length(value) > 2000) {
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid property value! Error: Value to long. Max. allowed size 200O characters!");
+        }
+
         switch (type) {
             case BOOLEAN:
                 if(StringUtils.equalsAnyIgnoreCase(trim(value),"true","false")) {

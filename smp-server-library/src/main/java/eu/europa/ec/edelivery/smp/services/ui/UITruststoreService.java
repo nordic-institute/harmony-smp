@@ -203,12 +203,12 @@ public class UITruststoreService {
 
         cro = convertToRo(cert);
         if (validate) {
-            validateNewCertificate(cert, cro);
+            validateCertificate(cert, cro);
         }
         return cro;
     }
 
-    public void validateNewCertificate(X509Certificate cert, CertificateRO cro) {
+    public void validateCertificate(X509Certificate cert, CertificateRO cro) {
         // first expect the worst
         cro.setInvalid(true);
         cro.setInvalidReason("Certificate is not validated!");

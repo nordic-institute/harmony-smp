@@ -74,7 +74,7 @@ public class UITruststoreServiceTest {
         doNothing().when(testInstance).checkFullCertificateValidity(cert);
         doNothing().when(testInstance).validateCertificateNotUsed(certData);
 
-        testInstance.validateNewCertificate(cert, certData);
+        testInstance.validateCertificate(cert, certData);
 
         assertFalse(certData.isInvalid());
         assertNull(certData.getInvalidReason());
@@ -86,7 +86,7 @@ public class UITruststoreServiceTest {
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateExpiredException("Expired")).when(testInstance).checkFullCertificateValidity(cert);
 
-        testInstance.validateNewCertificate(cert, certData);
+        testInstance.validateCertificate(cert, certData);
 
         assertTrue(certData.isInvalid());
         assertEquals("Certificate is expired!", certData.getInvalidReason());
@@ -98,7 +98,7 @@ public class UITruststoreServiceTest {
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateNotYetValidException("Error")).when(testInstance).checkFullCertificateValidity(cert);
 
-        testInstance.validateNewCertificate(cert, certData);
+        testInstance.validateCertificate(cert, certData);
 
         assertTrue(certData.isInvalid());
         assertEquals("Certificate is not yet valid!", certData.getInvalidReason());
@@ -110,7 +110,7 @@ public class UITruststoreServiceTest {
         CertificateRO certData = new CertificateRO();
         doThrow(Mockito.mock(CertificateRevokedException.class)).when(testInstance).checkFullCertificateValidity(cert);
 
-        testInstance.validateNewCertificate(cert, certData);
+        testInstance.validateCertificate(cert, certData);
 
         assertTrue(certData.isInvalid());
         assertEquals("Certificate is revoked!", certData.getInvalidReason());
@@ -122,7 +122,7 @@ public class UITruststoreServiceTest {
         CertificateRO certData = new CertificateRO();
         doThrow(Mockito.mock(CertificateNotTrustedException.class)).when(testInstance).checkFullCertificateValidity(cert);
 
-        testInstance.validateNewCertificate(cert, certData);
+        testInstance.validateCertificate(cert, certData);
 
         assertTrue(certData.isInvalid());
         assertEquals("Certificate is not trusted!", certData.getInvalidReason());
@@ -134,7 +134,7 @@ public class UITruststoreServiceTest {
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateException(Mockito.mock(CertPathValidatorException.class))).when(testInstance).checkFullCertificateValidity(cert);
 
-        testInstance.validateNewCertificate(cert, certData);
+        testInstance.validateCertificate(cert, certData);
 
         assertTrue(certData.isInvalid());
         assertEquals("Certificate is not trusted! Invalid certificate policy path!", certData.getInvalidReason());
@@ -147,7 +147,7 @@ public class UITruststoreServiceTest {
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateException(errorMessage)).when(testInstance).checkFullCertificateValidity(cert);
 
-        testInstance.validateNewCertificate(cert, certData);
+        testInstance.validateCertificate(cert, certData);
 
         assertTrue(certData.isInvalid());
         assertEquals(errorMessage, certData.getInvalidReason());
