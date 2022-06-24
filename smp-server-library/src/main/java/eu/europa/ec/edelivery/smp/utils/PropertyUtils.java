@@ -42,6 +42,10 @@ public class PropertyUtils {
             }
             return null;
         }
+        if (!prop.getValuePattern().matcher(value).find()) {
+            LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, prop.getErrorValueMessage());
+        }
 
         SMPPropertyTypeEnum type = prop.getPropertyType();
         return parsePropertyType(type, value, rootFolder);
@@ -51,6 +55,13 @@ public class PropertyUtils {
         if (StringUtils.isBlank(value)) {
             // empty/ null value is invalid
             return !prop.isMandatory();
+        }
+        if (value == null) {
+            return true;
+        }
+        if (!prop.getValuePattern().matcher(value).matches()) {
+            LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, prop.getErrorValueMessage());
         }
         SMPPropertyTypeEnum type = prop.getPropertyType();
         return isValidPropertyType(type, value, confFolder);
@@ -64,7 +75,7 @@ public class PropertyUtils {
             parsePropertyType(type, value, confFolder);
             return true;
         } catch (SMPRuntimeException ex) {
-            LOG.debug("Invalid property value [{}] for type [{}]. Error: " , value, type, ExceptionUtils.getRootCauseMessage(ex));
+            LOG.debug("Invalid property value [{}] for type [{}]. Error: ", value, type, ExceptionUtils.getRootCauseMessage(ex));
             return false;
         }
     }
@@ -75,12 +86,12 @@ public class PropertyUtils {
         }
 
         if (StringUtils.length(value) > 2000) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid property value! Error: Value to long. Max. allowed size 200O characters!");
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid property value! Error: Value to long. Max. allowed size 2000 characters!");
         }
 
         switch (type) {
             case BOOLEAN:
-                if(StringUtils.equalsAnyIgnoreCase(trim(value),"true","false")) {
+                if (StringUtils.equalsAnyIgnoreCase(trim(value), "true", "false")) {
                     return Boolean.valueOf(value.trim());
                 }
                 throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid boolean value: ["
@@ -125,7 +136,7 @@ public class PropertyUtils {
             case FILENAME:
                 File file = new File(rootFolder, value);
                 if (!file.exists()) {
-                    LOG.warn("File: [{}] does not exist. Full path: [{}].",value,  file.getAbsolutePath());
+                    LOG.warn("File: [{}] does not exist. Full path: [{}].", value, file.getAbsolutePath());
                 }
                 return file;
             case EMAIL:

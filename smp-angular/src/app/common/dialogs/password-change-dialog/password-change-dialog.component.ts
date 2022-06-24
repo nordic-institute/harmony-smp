@@ -135,7 +135,6 @@ export class PasswordChangeDialogComponent {
         // logout if changed for itself
         this.securityService.finalizeLogout(result);
       }
-      close();
     })
   }
 

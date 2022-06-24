@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.ui.enums;
 
 public enum SMPPropertyTypeEnum {
-    STRING (".{0,2000}","Property [%s] is not valid String type!"),
+    STRING (".{0,2000}","Property value [%s] must be less than 2000 characters!"),
     LIST_STRING(".{0,2000}","Property [%s] is not valid LIST_STRING type!"),
     MAP_STRING(".{0,2000}","Property [%s] is not valid MAP_STRING type!"),
     INTEGER("\\d{0,12}","Property [%s] is not valid Integer!"),

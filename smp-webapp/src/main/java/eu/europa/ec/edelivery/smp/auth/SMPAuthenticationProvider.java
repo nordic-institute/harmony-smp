@@ -348,6 +348,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             mUserDao.update(user);
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed
+            loginAttemptForAccessTokenFailed(user, startTime);
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, authenticationTokenId);
             throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
         }
