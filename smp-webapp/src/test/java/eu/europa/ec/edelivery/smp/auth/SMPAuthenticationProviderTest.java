@@ -95,9 +95,9 @@ public class SMPAuthenticationProviderTest {
         doReturn(100).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
         // when
         BadCredentialsException error = assertThrows(BadCredentialsException.class,
-                () -> testInstance.loginAttemptForAccessTokenFailed(user,starTime));
+                () -> testInstance.loginAttemptForAccessTokenFailed(user,true, starTime));
 
-        assertEquals(SMPAuthenticationProvider.LOGIN_FAILED_MESSAGE, error.getMessage());
+        assertEquals(SMPAuthenticationProvider.BAD_CREDENTIALS_EXCEPTION, error);
         assertEquals(starFailCount+1,(int)user.getSequentialTokenLoginFailureCount());
         verify(mocAlertService, times(1)).alertCredentialVerificationFailed(user, CredentialTypeEnum.ACCESS_TOKEN);
 
@@ -112,9 +112,9 @@ public class SMPAuthenticationProviderTest {
         doReturn(5).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
         // when
         BadCredentialsException error = assertThrows(BadCredentialsException.class,
-                () -> testInstance.loginAttemptForAccessTokenFailed(user,starTime));
+                () -> testInstance.loginAttemptForAccessTokenFailed(user,false,starTime));
 
-        assertEquals(SMPAuthenticationProvider.LOGIN_FAILED_MESSAGE, error.getMessage());
+        assertEquals(SMPAuthenticationProvider.SUSPENDED_CREDENTIALS_EXCEPTION, error);
         assertEquals(starFailCount+1,(int)user.getSequentialTokenLoginFailureCount());
         verify(mocAlertService, times(1)).alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
     }
@@ -131,7 +131,7 @@ public class SMPAuthenticationProviderTest {
         doReturn(suspensionSeconds).when(mockConfigurationService).getAccessTokenLoginSuspensionTimeInSeconds();
         doReturn(starFailCount).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
 
-        testInstance.validateIfTokenIsSuspended(user);
+        testInstance.validateIfTokenIsSuspended(user, Calendar.getInstance().getTimeInMillis());
 
         assertEquals(0, (int)user.getSequentialTokenLoginFailureCount());
         assertEquals(null, user.getLastTokenFailedLoginAttempt());

@@ -59,7 +59,7 @@
                             <!-- TITLE -->
                             <tr>
                               <td valign="top" align="left" style=" font-size: 20px; font-family: Arial, Helvetica, sans-serif; color: #000;"><br/>
-                                Account is temporarily suspended</td>
+                                  Credential type: ${CREDENTIAL_TYPE} is temporarily suspended</td>
                             </tr>
                             <!-- / TITLE --> 
                             
@@ -79,7 +79,7 @@
                               <td valign="top" align="left" style=" font-size: 13px; font-family: Arial, Helvetica, sans-serif; color: #000;"><br/>
                                 <br/>
                                   <p><strong>Credential type:</strong> ${CREDENTIAL_TYPE}</p>
-                                  <p><strong>Credential id:</strong> ${CREDENTIAL_ID}</p>
+                                  <p><strong>Credential identifier:</strong> ${CREDENTIAL_ID}</p>
                                   <p><strong>Failed login attempt count:</strong> ${FAILED_LOGIN_ATTEMPT}</p>
                                   <p><strong>Last failed login time:</strong> ${LAST_LOGIN_FAILURE_DATETIME}</p>
                                   <p><strong>Suspended util</strong> ${SUSPENDED_UNTIL_DATETIME}</p>

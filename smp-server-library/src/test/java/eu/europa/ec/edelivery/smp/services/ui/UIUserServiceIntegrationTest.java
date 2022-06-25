@@ -115,6 +115,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         user.setRole("ROLE");
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
+
+
         //when
         testInstance.updateUserList(Collections.singletonList(user), null);
 

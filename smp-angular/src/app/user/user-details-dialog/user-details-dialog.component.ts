@@ -119,6 +119,12 @@ export class UserDetailsDialogComponent {
         emailAddress: '',
         password: '',
         confirmation: null,
+        sequentialLoginFailureCount:null,
+        lastFailedLoginAttempt:null,
+        suspendedUtil:null,
+        sequentialTokenLoginFailureCount:null,
+        lastTokenFailedLoginAttempt:null,
+        tokenSuspendedUtil:null,
         role: '',
         encodedValue: '',
         crlUrl: '',
@@ -147,9 +153,15 @@ export class UserDetailsDialogComponent {
           ? [Validators.nullValidator, Validators.pattern(this.usernamePattern), this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))]
           : null),
       'passwordExpireOn': new FormControl({value: '', disabled: true}),
-      'accessTokenId': new FormControl({value: '', disabled: true}),
+      'sequentialLoginFailureCount': new FormControl({value: '', disabled: true}),
+      'lastFailedLoginAttempt': new FormControl({value: '', disabled: true}),
+      'suspendedUtil': new FormControl({value: '', disabled: true}),
 
+      'accessTokenId': new FormControl({value: '', disabled: true}),
       'accessTokenExpireOn': new FormControl({value: '', disabled: true}),
+      'sequentialTokenLoginFailureCount': new FormControl({value: '', disabled: true}),
+      'lastTokenFailedLoginAttempt': new FormControl({value: '', disabled: true}),
+      'tokenSuspendedUtil': new FormControl({value: '', disabled: true}),
       'casUserDataUrl': new FormControl({value: '', disabled: true}),
 
 
@@ -178,8 +190,15 @@ export class UserDetailsDialogComponent {
     // username/password authentication
     this.userForm.controls['username'].setValue(this.current.username);
     this.userForm.controls['passwordExpireOn'].setValue(this.current.passwordExpireOn);
+    this.userForm.controls['sequentialLoginFailureCount'].setValue(!this.current.sequentialLoginFailureCount?0:this.current.sequentialLoginFailureCount);
+    this.userForm.controls['lastFailedLoginAttempt'].setValue(this.current.lastFailedLoginAttempt);
+    this.userForm.controls['suspendedUtil'].setValue(this.current.suspendedUtil);
+
     this.userForm.controls['accessTokenId'].setValue(this.current.accessTokenId);
     this.userForm.controls['accessTokenExpireOn'].setValue(this.current.accessTokenExpireOn);
+    this.userForm.controls['sequentialTokenLoginFailureCount'].setValue(!this.current.sequentialTokenLoginFailureCount?0:this.current.sequentialTokenLoginFailureCount);
+    this.userForm.controls['lastTokenFailedLoginAttempt'].setValue(this.current.lastTokenFailedLoginAttempt);
+    this.userForm.controls['tokenSuspendedUtil'].setValue(this.current.tokenSuspendedUtil);
 
     this.userForm.controls['casUserDataUrl'].setValue(this.current.casUserDataUrl);
 

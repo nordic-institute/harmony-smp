@@ -86,6 +86,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     protected void updateUserStatus(UserRO user) {
         // never return password even if is hashed...
+
         user.setPassword(null);
         if (user.getCertificate() != null && !StringUtils.isBlank(user.getCertificate().getCertificateId())) {
             // validate certificate

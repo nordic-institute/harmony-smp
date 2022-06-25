@@ -1,8 +1,10 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
+import javax.persistence.Column;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 
@@ -18,8 +20,14 @@ public class UserRO extends BaseRO {
     String username;
     String password;
     OffsetDateTime passwordExpireOn;
+    Integer sequentialLoginFailureCount;
+    OffsetDateTime lastFailedLoginAttempt;
+    OffsetDateTime suspendedUtil;
     String accessTokenId;
     OffsetDateTime accessTokenExpireOn;
+    Integer sequentialTokenLoginFailureCount;
+    OffsetDateTime lastTokenFailedLoginAttempt;
+    OffsetDateTime tokenSuspendedUtil;
     String emailAddress;
     Collection<SMPAuthority> authorities;
     boolean active = true;
@@ -174,5 +182,53 @@ public class UserRO extends BaseRO {
 
     public void setCasAuthenticated(boolean casAuthenticated) {
         this.casAuthenticated = casAuthenticated;
+    }
+
+    public Integer getSequentialLoginFailureCount() {
+        return sequentialLoginFailureCount;
+    }
+
+    public void setSequentialLoginFailureCount(Integer sequentialLoginFailureCount) {
+        this.sequentialLoginFailureCount = sequentialLoginFailureCount;
+    }
+
+    public OffsetDateTime getLastFailedLoginAttempt() {
+        return lastFailedLoginAttempt;
+    }
+
+    public void setLastFailedLoginAttempt(OffsetDateTime lastFailedLoginAttempt) {
+        this.lastFailedLoginAttempt = lastFailedLoginAttempt;
+    }
+
+    public OffsetDateTime getSuspendedUtil() {
+        return suspendedUtil;
+    }
+
+    public void setSuspendedUtil(OffsetDateTime suspendedUtil) {
+        this.suspendedUtil = suspendedUtil;
+    }
+
+    public Integer getSequentialTokenLoginFailureCount() {
+        return sequentialTokenLoginFailureCount;
+    }
+
+    public void setSequentialTokenLoginFailureCount(Integer sequentialTokenLoginFailureCount) {
+        this.sequentialTokenLoginFailureCount = sequentialTokenLoginFailureCount;
+    }
+
+    public OffsetDateTime getLastTokenFailedLoginAttempt() {
+        return lastTokenFailedLoginAttempt;
+    }
+
+    public void setLastTokenFailedLoginAttempt(OffsetDateTime lastTokenFailedLoginAttempt) {
+        this.lastTokenFailedLoginAttempt = lastTokenFailedLoginAttempt;
+    }
+
+    public OffsetDateTime getTokenSuspendedUtil() {
+        return tokenSuspendedUtil;
+    }
+
+    public void setTokenSuspendedUtil(OffsetDateTime tokenSuspendedUtil) {
+        this.tokenSuspendedUtil = tokenSuspendedUtil;
     }
 }

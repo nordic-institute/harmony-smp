@@ -65,7 +65,23 @@
             <mat-form-field *ngIf="!userForm.get('passwordExpireOn').value" style="flex-grow: 1">
               <input matInput placeholder="Valid until" style="color: red"
                      matTooltip="Default password set by system admin! User must change password immediately!"
-                     value="Default password"
+                     value="Default or null password"
+                     maxlength="255" disabled>
+            </mat-form-field>
+          </div>
+          <div style="display: flex;flex-flow: row wrap;">
+            <mat-form-field style="flex-grow: 2">
+              <input matInput placeholder="Seq. failed attempts" [value]="userForm.controls['sequentialLoginFailureCount'].value"
+                     id="sequentialLoginFailureCount_id" maxlength="255" disabled readonly>
+            </mat-form-field>
+            <mat-form-field style="flex-grow: 1">
+              <input matInput placeholder="Last failed attempt"
+                     value="{{!userForm.get('lastFailedLoginAttempt').value?'/':userForm.get('lastFailedLoginAttempt').value | date:dateTimeFormat}}"
+                     maxlength="255" disabled>
+            </mat-form-field>
+            <mat-form-field >
+              <input matInput placeholder="Suspended until"
+                     value="{{!userForm.get('suspendedUtil').value?'/':userForm.get('suspendedUtil').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
             </mat-form-field>
           </div>
@@ -73,6 +89,9 @@
                   (click)="changeCurrentUserPassword()" [disabled]="!editMode">
             <span>Set/change password</span>
           </button>
+          <div *ngIf="!editMode"
+               style="color: red"> Password can be set after the user is saved!
+          </div>
         </fieldset>
       </mat-card-content>
       <mat-card-content *ngIf="isUserAuthSSOEnabled()">
@@ -108,13 +127,32 @@
             <mat-form-field *ngIf="!userForm.get('accessTokenExpireOn').value" style="flex-grow: 1">
               <input matInput placeholder="Valid until" style="color: red"
                      matTooltip="Default access token set by system admin! User must regenerate access token immediately!"
-                     value="Default access token"
+                     value="Default or null access token"
+                     maxlength="255" disabled>
+            </mat-form-field>
+          </div>
+          <div style="display: flex;flex-flow: row wrap;">
+            <mat-form-field style="flex-grow: 2">
+              <input matInput placeholder="Seq. failed attempts" [value]="userForm.controls['sequentialTokenLoginFailureCount'].value"
+                     id="sequentialTokenLoginFailureCount_id" maxlength="255" disabled readonly>
+            </mat-form-field>
+            <mat-form-field style="flex-grow: 1">
+              <input matInput placeholder="Last failed attempt"
+                     value="{{!userForm.get('lastTokenFailedLoginAttempt').value?'/':userForm.get('lastTokenFailedLoginAttempt').value | date:dateTimeFormat}}"
+                     maxlength="255" disabled>
+            </mat-form-field>
+            <mat-form-field >
+              <input matInput placeholder="Suspended until"
+                     value="{{!userForm.get('tokenSuspendedUtil').value?'/':userForm.get('tokenSuspendedUtil').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
             </mat-form-field>
           </div>
           <button mat-flat-button color="primary" style="width: 100%" [disabled]="!editMode" (click)="regenerateAccessToken()">
             <span>Regenerate access token</span>
           </button>
+          <div *ngIf="!editMode"
+               style="color: red"> Access token can be set after the user is saved!
+          </div>
         </fieldset>
       </mat-card-content>
 
