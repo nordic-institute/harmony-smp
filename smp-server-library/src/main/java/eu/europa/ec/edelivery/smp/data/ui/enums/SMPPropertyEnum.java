@@ -86,7 +86,8 @@ public enum SMPPropertyEnum {
             "Delay response in ms on invalid username or password", false, false,false, INTEGER),
 
     USER_MAX_FAILED_ATTEMPTS("smp.user.login.maximum.attempt","5",
-            "Number of console login attempt before the user is deactivated", false, false,false, INTEGER),
+            "The number of sequence login attempts when the user credentials get suspended. The login attempt count as a sequence login" +
+                    " if there is less time between login attempts than defined in property: smp.user.login.suspension.time!", false, false,false, INTEGER),
     USER_SUSPENSION_TIME("smp.user.login.suspension.time","3600",
             "Time in seconds for a suspended user to be reactivated. (if 0 the user will not be reactivated)", false, false,false, INTEGER),
 
@@ -102,7 +103,8 @@ public enum SMPPropertyEnum {
     // authentication
     UI_AUTHENTICATION_TYPES("smp.ui.authentication.types", "PASSWORD", "Set list of '|' separated authentication types: PASSWORD|SSO.", false, false, false, LIST_STRING),
     AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "TOKEN|CERTIFICATE",
-            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported TOKEN, CERTIFICATE: ex. TOKEN|CERTIFICATE", false, false, false, LIST_STRING),
+            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported TOKEN, CERTIFICATE: ex. TOKEN|CERTIFICATE", false, false, false, LIST_STRING
+            ),
 
     EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",
             "Authentication with external module as: reverse proxy. Authenticated data are send send to application using 'Client-Cert' HTTP header. Do not enable this feature " +
@@ -147,8 +149,8 @@ public enum SMPPropertyEnum {
             "Login credentials suspended", "Login suspended mail subject.", false, false,false, STRING,
             "^(.{0,255})$", "Subject must have less than 256 character"),
     ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
-            "WHEN_BLOCKED", "When should the account disabled alert be triggered. Values: AT_LOGON: An alert will be triggered each time a user tries to login and fail to account. WHEN_BLOCKED: An alert will be triggered once when the account got suspended.",
-            false, false,false, STRING, "^(.{0,255})$", "Subject must have less than 256 character" ),
+            "WHEN_BLOCKED", "When should the account disabled alert be triggered. Values: AT_LOGON: An alert will submit mail for all logon attempts to susspended account, WHEN_BLOCKED: An alert will be triggered only the first time when the account got suspended.",
+            false, false,false, STRING, "^(AT_LOGON|WHEN_BLOCKED)$", "Allowed values are: AT_LOGON,WHEN_BLOCKED" ),
 
     ALERT_PASSWORD_BEFORE_EXPIRATION_ENABLED("smp.alert.password.imminent_expiration.enabled",
             "true", "Enable/disable the imminent password expiration alert", false, false,false, BOOLEAN),

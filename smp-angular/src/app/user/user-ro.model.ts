@@ -14,4 +14,10 @@ export interface UserRo extends SearchTableEntity {
   certificate?: CertificateRo;
   statusPassword: number;
   casUserDataUrl?: string;
+  sequentialLoginFailureCount?:number;
+  lastFailedLoginAttempt?:Date;
+  suspendedUtil?:Date;
+  sequentialTokenLoginFailureCount?:number;
+  lastTokenFailedLoginAttempt?:Date;
+  tokenSuspendedUtil?:Date;
 }

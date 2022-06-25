@@ -90,9 +90,13 @@ public class UserDao extends BaseDao<DBUser> {
      * @return resturns Optional DBUser for identifier
      */
     public Optional<DBUser> findUserByIdentifier(String identifier) {
-
-        Optional<DBUser> usr = findUserByAuthenticationToken(identifier);
+        Optional<DBUser> usr = findUserByUsername(identifier);
+        if (!usr.isPresent()) {
+            LOG.info("Service group owner [{}] not found by username. Try with the access token!", identifier);
+            usr = findUserByAuthenticationToken(identifier);
+        }
         if (!usr.isPresent()) { // try to retrieve by identifier
+            LOG.info("Service group owner  [{}] not found by username. Try with certificate id!", identifier);
             usr = findUserByCertificateId(identifier);
         }
         return usr;

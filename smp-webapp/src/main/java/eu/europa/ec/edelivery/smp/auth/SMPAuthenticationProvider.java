@@ -52,7 +52,9 @@ import static java.util.Locale.US;
 @Component
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
-    public static final String LOGIN_FAILED_MESSAGE = "Login failed; Invalid userID or password";
+    protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException("Login failed; Invalid userID or password");
+    protected static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
+
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);
     /**
@@ -127,6 +129,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         DBUser user;
         X509Certificate x509Certificate = principal.getCertificate();
         String userToken = principal.getName();
+        long startTime = Calendar.getInstance().getTimeInMillis();
 
 
         if (x509Certificate != null) {
@@ -146,7 +149,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, userToken);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
-                throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
+                delayResponse(startTime);
+                throw BAD_CREDENTIALS_EXCEPTION;
             }
             user = oUsr.get();
         } catch (AuthenticationException ex) {
@@ -266,7 +270,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      *
      * @param user
      */
-    public void validateIfTokenIsSuspended(DBUser user) {
+    public void validateIfTokenIsSuspended(DBUser user, long startTime) {
         if (user.getSequentialTokenLoginFailureCount() == null
                 || user.getSequentialTokenLoginFailureCount() < 1) {
             LOG.trace("User has no previous failed attempts");
@@ -297,15 +301,14 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         }
 
         if (user.getSequentialTokenLoginFailureCount() < configurationService.getAccessTokenLoginMaxAttempts()) {
-            LOG.warn("User token [{}] for user [{}] failed login attempt [{}] did not reach the max failed attempts [{}]",
+            LOG.debug("User token [{}] for user [{}] failed login attempt [{}] did not reach the max failed attempts [{}]",
                     user.getAccessTokenIdentifier(), user.getUsername(), user.getSequentialTokenLoginFailureCount(), configurationService.getAccessTokenLoginMaxAttempts());
             return;
         }
-        if (configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
-            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
-        }
+
         LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
-        throw new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
+        delayResponse(startTime);
+        loginAttemptForAccessTokenFailed(user, false, startTime);
     }
 
     public Authentication authenticateByUsernameToken(UsernamePasswordAuthenticationToken auth)
@@ -325,32 +328,33 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
                 delayResponse(startTime);
-                throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
+                throw BAD_CREDENTIALS_EXCEPTION;
             }
             user = oUsr.get();
         } catch (AuthenticationException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
-            throw ex;
+            delayResponse(startTime);
+            throw BAD_CREDENTIALS_EXCEPTION;
 
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
-            throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
+            delayResponse(startTime);
+            throw BAD_CREDENTIALS_EXCEPTION;
         }
 
-        validateIfTokenIsSuspended(user);
+        validateIfTokenIsSuspended(user, startTime);
 
         try {
             if (!BCrypt.checkpw(authenticationTokenValue, user.getAccessToken())) {
-                loginAttemptForAccessTokenFailed(user, startTime);
+                loginAttemptForAccessTokenFailed(user, true, startTime);
             }
             user.setSequentialTokenLoginFailureCount(0);
             user.setLastTokenFailedLoginAttempt(null);
             mUserDao.update(user);
         } catch (java.lang.IllegalArgumentException ex) {
             // password is not hashed
-            loginAttemptForAccessTokenFailed(user, startTime);
+            loginAttemptForAccessTokenFailed(user, true, startTime);
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, authenticationTokenId);
-            throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
         }
         // the webservice authentication with corresponding web-service authority
         SMPAuthority authority = SMPAuthority.getAuthorityByRoleName("WS_" + user.getRole());
@@ -366,21 +370,30 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         return smpAuthenticationToken;
     }
 
-    public void loginAttemptForAccessTokenFailed(DBUser user, long startTime) {
+    public void loginAttemptForAccessTokenFailed(DBUser user, boolean notYetSuspended, long startTime) {
 
         user.setSequentialTokenLoginFailureCount(user.getSequentialTokenLoginFailureCount() != null ? user.getSequentialTokenLoginFailureCount() + 1 : 1);
         user.setLastTokenFailedLoginAttempt(OffsetDateTime.now());
         mUserDao.update(user);
         LOG.securityWarn(SMPMessageCode.SEC_INVALID_TOKEN, user.getUsername(), user.getAccessTokenIdentifier());
-
-        if (user.getSequentialTokenLoginFailureCount() >= configurationService.getAccessTokenLoginMaxAttempts()) {
+        boolean isCredentialSuspended =user.getSequentialTokenLoginFailureCount() >= configurationService.getAccessTokenLoginMaxAttempts();
+        if (isCredentialSuspended) {
             LOG.info("User access token [{}] failed sequential attempt exceeded the max allowed attempts [{}]!", user.getAccessToken(), configurationService.getAccessTokenLoginMaxAttempts());
+            if (notYetSuspended ||
+                    configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
+                alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
+            }
+
             alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
         } else {
             alertService.alertCredentialVerificationFailed(user, CredentialTypeEnum.ACCESS_TOKEN);
         }
         delayResponse(startTime);
-        throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
+        if (isCredentialSuspended) {
+            throw SUSPENDED_CREDENTIALS_EXCEPTION;
+        } else {
+            throw BAD_CREDENTIALS_EXCEPTION;
+        }
     }
 
     @Override

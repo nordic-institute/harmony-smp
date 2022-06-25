@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
 
 import java.time.OffsetDateTime;
+import java.util.Calendar;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
@@ -42,7 +43,7 @@ public class SMPAuthenticationProviderForUITest {
         doReturn(suspensionSeconds).when(mockConfigurationService).getLoginSuspensionTimeInSeconds();
         doReturn(starFailCount).when(mockConfigurationService).getLoginMaxAttempts();
 
-        testInstance.validateIfUserAccountIsSuspended(user);
+        testInstance.validateIfUserAccountIsSuspended(user, Calendar.getInstance().getTimeInMillis());
 
         assertEquals(0, (int)user.getSequentialLoginFailureCount());
         assertEquals(null, user.getLastFailedLoginAttempt());
