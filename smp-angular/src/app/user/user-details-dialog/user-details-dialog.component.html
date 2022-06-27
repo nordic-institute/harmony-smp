@@ -4,52 +4,59 @@
 
   <mat-card>
     <mat-card-content>
-      <mat-form-field class="username">
-        <input matInput placeholder="Username" [formControl]="userForm.controls['username']"
-               id="username_id" maxlength="255" required>
-        <div *ngIf="userForm.controls['username'].hasError('required') && userForm.controls['username'].touched"
-             class="has-error">You should type an username
-        </div>
-        <div *ngIf="userForm.controls['username'].hasError('pattern') && userForm.controls['username'].touched"
-             class="has-error">Username is case insensitive and can only contain alphanumeric characters (letters a-zA-Z, numbers 0-9) and must
-          have from 4 to 32 characters!
-        </div>
-        <div
-          *ngIf="(!editMode && userForm.controls['username'].touched || editMode) && userForm.controls['username'].hasError('notInList')"
-          class="has-error">
-          Username already exists!
-        </div>
-      </mat-form-field>
+      <div style="display: flex;flex-flow: row;flex-wrap:  wrap; justify-content: space-between;">
 
-      <mat-slide-toggle *ngIf="!isPreferencesMode()" class="user-toggle"
-                        mat-no-ink class="mat-primary" [formControl]="userForm.controls['active']" id="active_id">
+        <mat-form-field class="username">
+          <input matInput placeholder="Username" [formControl]="userForm.controls['username']"
+                 id="username_id" maxlength="255" required>
+          <div *ngIf="userForm.controls['username'].hasError('required') && userForm.controls['username'].touched"
+               class="has-error">You should type an username
+          </div>
+          <div *ngIf="userForm.controls['username'].hasError('pattern') && userForm.controls['username'].touched"
+               class="has-error">Username is case insensitive and can only contain alphanumeric characters (letters
+            a-zA-Z, numbers 0-9) and must
+            have from 4 to 32 characters!
+          </div>
+          <div
+            *ngIf="(!editMode && userForm.controls['username'].touched || editMode) && userForm.controls['username'].hasError('notInList')"
+            class="has-error">
+            Username already exists!
+          </div>
+        </mat-form-field>
 
-        Active
-      </mat-slide-toggle>
-
-      <mat-form-field class="role-field">
-        <mat-select matInput placeholder="Role" class="role" [formControl]="userForm.controls['role']"
-                    id="role_id" required>
-          <mat-option *ngFor="let item of existingRoles" [value]="item">{{item}}</mat-option>
-        </mat-select>
-        <div *ngIf="userForm.controls['role'].hasError('required') && userForm.controls['role'].touched"
-             class="has-error">You need to choose at least one role for this user
+        <div class="user-toggle">
+          <mat-slide-toggle *ngIf="!isPreferencesMode()"
+                            mat-no-ink class="mat-primary" [formControl]="userForm.controls['active']" id="active_id">
+            Active
+          </mat-slide-toggle>
         </div>
-      </mat-form-field>
-      <mat-form-field class="emailAddress" class="email">
-        <input matInput placeholder="Email address" name="emailAddress"
-               [formControl]="userForm.controls['emailAddress']"
-               id="emailAddress_id" maxlength="255">
-      </mat-form-field>
-      <div *ngIf="userForm.controls['emailAddress'].hasError('pattern') && userForm.controls['emailAddress'].touched"
-           class="has-error">Email is invalid!
+      </div>
+      <div style="display: flex;flex-flow: row;flex-wrap: wrap; justify-content: space-between;">
+        <mat-form-field class="emailAddress" class="email">
+          <input matInput placeholder="Email address" name="emailAddress"
+                 [formControl]="userForm.controls['emailAddress']"
+                 id="emailAddress_id" maxlength="255">
+          <div
+            *ngIf="userForm.controls['emailAddress'].hasError('pattern') && userForm.controls['emailAddress'].touched"
+            class="has-error">Email is invalid!
+          </div>
+        </mat-form-field>
+        <mat-form-field class="role-field">
+          <mat-select matInput placeholder="Role" class="role" [formControl]="userForm.controls['role']"
+                      id="role_id" required>
+            <mat-option *ngFor="let item of existingRoles" [value]="item">{{item}}</mat-option>
+          </mat-select>
+          <div *ngIf="userForm.controls['role'].hasError('required') && userForm.controls['role'].touched"
+               class="has-error">You need to choose at least one role for this user
+          </div>
+        </mat-form-field>
       </div>
     </mat-card-content>
   </mat-card>
   <div style="display: flex;flex-flow: row;">
     <mat-card style="flex-grow: 1">
       <mat-card-title>UI authentication credentials</mat-card-title>
-      <mat-card-content  *ngIf="isUserAuthPasswdEnabled()">
+      <mat-card-content *ngIf="isUserAuthPasswdEnabled()">
         <fieldset style="border: solid gray 1px;">
           <legend>Username/password credentials</legend>
           <div style="display: flex;flex-flow: row wrap;">
@@ -71,17 +78,18 @@
           </div>
           <div style="display: flex;flex-flow: row wrap;">
             <mat-form-field style="flex-grow: 2">
-              <input matInput placeholder="Seq. failed attempts" [value]="userForm.controls['sequentialLoginFailureCount'].value"
+              <input matInput placeholder="Seq. failed attempts"
+                     [value]="userForm.controls['sequentialLoginFailureCount'].value"
                      id="sequentialLoginFailureCount_id" maxlength="255" disabled readonly>
             </mat-form-field>
             <mat-form-field style="flex-grow: 1">
               <input matInput placeholder="Last failed attempt"
-                     value="{{!userForm.get('lastFailedLoginAttempt').value?'/':userForm.get('lastFailedLoginAttempt').value | date:dateTimeFormat}}"
+                     value="{{!userForm.get('lastFailedLoginAttempt').value?nullValue:userForm.get('lastFailedLoginAttempt').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
             </mat-form-field>
-            <mat-form-field >
+            <mat-form-field>
               <input matInput placeholder="Suspended until"
-                     value="{{!userForm.get('suspendedUtil').value?'/':userForm.get('suspendedUtil').value | date:dateTimeFormat}}"
+                     value="{{!userForm.get('suspendedUtil').value?nullValue:userForm.get('suspendedUtil').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
             </mat-form-field>
           </div>
@@ -101,7 +109,8 @@
             <input matInput placeholder="Cas identifier" [formControl]="userForm.controls['username']"
                    id="cas-user_id" maxlength="255" disabled readonly>
           </mat-form-field>
-          <button mat-flat-button color="primary" style="width: 100%" id="openCASData" [disabled]="!this.current?.casUserDataUrl"
+          <button mat-flat-button color="primary" style="width: 100%" id="openCASData"
+                  [disabled]="!this.current?.casUserDataUrl"
                   (click)="openCurrentCasUserData()">
             <span>Open CAS user data</span>
           </button>
@@ -133,21 +142,23 @@
           </div>
           <div style="display: flex;flex-flow: row wrap;">
             <mat-form-field style="flex-grow: 2">
-              <input matInput placeholder="Seq. failed attempts" [value]="userForm.controls['sequentialTokenLoginFailureCount'].value"
+              <input matInput placeholder="Seq. failed attempts"
+                     [value]="userForm.controls['sequentialTokenLoginFailureCount'].value"
                      id="sequentialTokenLoginFailureCount_id" maxlength="255" disabled readonly>
             </mat-form-field>
             <mat-form-field style="flex-grow: 1">
               <input matInput placeholder="Last failed attempt"
-                     value="{{!userForm.get('lastTokenFailedLoginAttempt').value?'/':userForm.get('lastTokenFailedLoginAttempt').value | date:dateTimeFormat}}"
+                     value="{{!userForm.get('lastTokenFailedLoginAttempt').value?nullValue:userForm.get('lastTokenFailedLoginAttempt').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
             </mat-form-field>
-            <mat-form-field >
+            <mat-form-field>
               <input matInput placeholder="Suspended until"
-                     value="{{!userForm.get('tokenSuspendedUtil').value?'/':userForm.get('tokenSuspendedUtil').value | date:dateTimeFormat}}"
+                     value="{{!userForm.get('tokenSuspendedUtil').value?nullValue:userForm.get('tokenSuspendedUtil').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
             </mat-form-field>
           </div>
-          <button mat-flat-button color="primary" style="width: 100%" [disabled]="!editMode" (click)="regenerateAccessToken()">
+          <button mat-flat-button color="primary" style="width: 100%" [disabled]="!editMode"
+                  (click)="regenerateAccessToken()">
             <span>Regenerate access token</span>
           </button>
           <div *ngIf="!editMode"
