@@ -91,7 +91,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         DBUser user;
         try {
             Optional<DBUser> oUsr = mUserDao.findUserByUsername(username);
-            if (!oUsr.isPresent()) {
+            if (!oUsr.isPresent() || !oUsr.get().isActive() ){
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider");
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, "Username does not exits", username);
                 delayResponse(startTime);
@@ -107,7 +107,6 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
             delayResponse(startTime);
             throw BAD_CREDENTIALS_EXCEPTION;
-
         }
 
         validateIfUserAccountIsSuspended(user, startTime);
