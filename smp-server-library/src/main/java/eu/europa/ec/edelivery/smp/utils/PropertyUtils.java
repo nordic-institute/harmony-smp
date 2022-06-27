@@ -56,9 +56,7 @@ public class PropertyUtils {
             // empty/ null value is invalid
             return !prop.isMandatory();
         }
-        if (value == null) {
-            return true;
-        }
+
         if (!prop.getValuePattern().matcher(value).matches()) {
             LOG.debug("Value [{}] for property [{}] does not match [{}]", value, prop.getProperty(), prop.getValuePattern().pattern());
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, prop.getErrorValueMessage());
