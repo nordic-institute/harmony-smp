@@ -33,7 +33,7 @@ export class AlertController implements SearchTableController {
   public showDetails(row: any) {
     this.dialog.open(ObjectPropertiesDialogComponent, {
       data: {
-        title: "Alert details!",
+        title: "Alert details",
         object: row.alertDetails,
 
       }

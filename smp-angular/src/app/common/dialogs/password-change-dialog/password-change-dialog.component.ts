@@ -114,7 +114,6 @@ export class PasswordChangeDialogComponent {
         this.dialogForm.controls['new-password'].value,
         this.dialogForm.controls['current-password'].value).subscribe((res: boolean) => {
           this.showPassChangeDialog();
-          close()
         },
         (err) => {
           this.showErrorMessage(err.error.errorDescription);
@@ -126,7 +125,7 @@ export class PasswordChangeDialogComponent {
   showPassChangeDialog() {
     this.dialog.open(InformationDialogComponent, {
       data: {
-        title: "Password set/changed!",
+        title: "Password set/changed",
         description: "Password has been successfully set/changed." +
           (!this.adminUser ? " Login again to the application with the new password!" : "")
       }
