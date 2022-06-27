@@ -383,8 +383,6 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                     configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
                 alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
             }
-
-            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
         } else {
             alertService.alertCredentialVerificationFailed(user, CredentialTypeEnum.ACCESS_TOKEN);
         }
