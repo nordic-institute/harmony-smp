@@ -131,7 +131,7 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
   details(row: any) {
     this.dialog.open(ObjectPropertiesDialogComponent, {
       data: {
-        title: "Alert details!",
+        title: "Alert details",
         object: row.alertDetails,
 
       }

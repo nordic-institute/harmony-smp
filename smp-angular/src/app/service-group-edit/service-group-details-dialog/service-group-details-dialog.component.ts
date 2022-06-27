@@ -321,7 +321,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       if (smdCount > 0) {
         this.dialog.open(ConfirmationDialogComponent, {
           data: {
-            title: "Registered serviceMetadata on domain!",
+            title: "Registered serviceMetadata on domain",
             description: "Unregistering service group from domain will also delete its serviceMetadata (count: " + smdCount + ") from the domain! Do you want to continue?"
           }
         }).afterClosed().subscribe(result => {

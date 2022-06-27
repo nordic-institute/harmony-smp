@@ -101,7 +101,7 @@ export class TruststoreEditDialogComponent implements AfterViewInit, AfterViewCh
   onDeleteCertificateRowActionClicked(row) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete certificate " + row.alias + " from truststore!",
+        title: "Delete certificate " + row.alias + " from truststore",
         description: "Action will permanently delete certificate from truststore! Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
