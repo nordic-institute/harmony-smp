@@ -87,7 +87,9 @@
                      value="{{!userForm.get('lastFailedLoginAttempt').value?nullValue:userForm.get('lastFailedLoginAttempt').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
             </mat-form-field>
-            <mat-form-field>
+          </div>
+          <div style="display: flex;flex-flow: row wrap;">
+            <mat-form-field style="flex-grow: 1">
               <input matInput placeholder="Suspended until"
                      value="{{!userForm.get('suspendedUtil').value?nullValue:userForm.get('suspendedUtil').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
@@ -151,7 +153,9 @@
                      value="{{!userForm.get('lastTokenFailedLoginAttempt').value?nullValue:userForm.get('lastTokenFailedLoginAttempt').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
             </mat-form-field>
-            <mat-form-field>
+          </div>
+          <div style="display: flex;flex-flow: row wrap;">
+            <mat-form-field style="flex-grow: 1">
               <input matInput placeholder="Suspended until"
                      value="{{!userForm.get('tokenSuspendedUtil').value?nullValue:userForm.get('tokenSuspendedUtil').value | date:dateTimeFormat}}"
                      maxlength="255" disabled>
