@@ -17,7 +17,7 @@ import {SearchTableEntityStatus} from "../../search-table/search-table-entity-st
 export class AccessTokenGenerationDialogComponent {
 
   dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
-  formTitle = "Access token generation dialog!";
+  formTitle = "Access token generation dialog";
   dialogForm: FormGroup;
   hideCurrPwdFiled: boolean = true;
   hideNewPwdFiled: boolean = true;
