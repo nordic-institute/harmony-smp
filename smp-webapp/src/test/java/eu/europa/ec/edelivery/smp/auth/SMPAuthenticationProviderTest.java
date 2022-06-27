@@ -112,7 +112,7 @@ public class SMPAuthenticationProviderTest {
         doReturn(5).when(mockConfigurationService).getAccessTokenLoginMaxAttempts();
         // when
         BadCredentialsException error = assertThrows(BadCredentialsException.class,
-                () -> testInstance.loginAttemptForAccessTokenFailed(user,false,starTime));
+                () -> testInstance.loginAttemptForAccessTokenFailed(user,true,starTime));
 
         assertEquals(SMPAuthenticationProvider.SUSPENDED_CREDENTIALS_EXCEPTION, error);
         assertEquals(starFailCount+1,(int)user.getSequentialTokenLoginFailureCount());
