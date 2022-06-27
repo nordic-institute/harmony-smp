@@ -39,7 +39,7 @@ export class UserDetailsDialogComponent {
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
   readonly usernamePattern = '^[a-zA-Z0-9]{4,32}$';
   readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
-
+  readonly nullValue: string = SmpConstants.NULL_VALUE;
   mode: UserDetailsDialogMode;
   editMode: boolean;
   userId: string;
@@ -119,12 +119,12 @@ export class UserDetailsDialogComponent {
         emailAddress: '',
         password: '',
         confirmation: null,
-        sequentialLoginFailureCount:null,
-        lastFailedLoginAttempt:null,
-        suspendedUtil:null,
-        sequentialTokenLoginFailureCount:null,
-        lastTokenFailedLoginAttempt:null,
-        tokenSuspendedUtil:null,
+        sequentialLoginFailureCount: null,
+        lastFailedLoginAttempt: null,
+        suspendedUtil: null,
+        sequentialTokenLoginFailureCount: null,
+        lastTokenFailedLoginAttempt: null,
+        tokenSuspendedUtil: null,
         role: '',
         encodedValue: '',
         crlUrl: '',
@@ -190,13 +190,13 @@ export class UserDetailsDialogComponent {
     // username/password authentication
     this.userForm.controls['username'].setValue(this.current.username);
     this.userForm.controls['passwordExpireOn'].setValue(this.current.passwordExpireOn);
-    this.userForm.controls['sequentialLoginFailureCount'].setValue(!this.current.sequentialLoginFailureCount?0:this.current.sequentialLoginFailureCount);
+    this.userForm.controls['sequentialLoginFailureCount'].setValue(!this.current.sequentialLoginFailureCount ? 0 : this.current.sequentialLoginFailureCount);
     this.userForm.controls['lastFailedLoginAttempt'].setValue(this.current.lastFailedLoginAttempt);
     this.userForm.controls['suspendedUtil'].setValue(this.current.suspendedUtil);
 
     this.userForm.controls['accessTokenId'].setValue(this.current.accessTokenId);
     this.userForm.controls['accessTokenExpireOn'].setValue(this.current.accessTokenExpireOn);
-    this.userForm.controls['sequentialTokenLoginFailureCount'].setValue(!this.current.sequentialTokenLoginFailureCount?0:this.current.sequentialTokenLoginFailureCount);
+    this.userForm.controls['sequentialTokenLoginFailureCount'].setValue(!this.current.sequentialTokenLoginFailureCount ? 0 : this.current.sequentialTokenLoginFailureCount);
     this.userForm.controls['lastTokenFailedLoginAttempt'].setValue(this.current.lastTokenFailedLoginAttempt);
     this.userForm.controls['tokenSuspendedUtil'].setValue(this.current.tokenSuspendedUtil);
 

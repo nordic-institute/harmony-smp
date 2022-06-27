@@ -149,7 +149,7 @@ public enum SMPPropertyEnum {
             "Login credentials suspended", "Login suspended mail subject.", false, false,false, STRING,
             "^(.{0,255})$", "Subject must have less than 256 character"),
     ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
-            "WHEN_BLOCKED", "When should the account disabled alert be triggered. Values: AT_LOGON: An alert will submit mail for all logon attempts to susspended account, WHEN_BLOCKED: An alert will be triggered only the first time when the account got suspended.",
+            "WHEN_BLOCKED", "When should the account disabled alert be triggered. Values: AT_LOGON: An alert will submit mail for all logon attempts to suspended account, WHEN_BLOCKED: An alert will be triggered only the first time when the account got suspended.",
             false, false,false, STRING, "^(AT_LOGON|WHEN_BLOCKED)$", "Allowed values are: AT_LOGON,WHEN_BLOCKED" ),
 
     ALERT_PASSWORD_BEFORE_EXPIRATION_ENABLED("smp.alert.password.imminent_expiration.enabled",

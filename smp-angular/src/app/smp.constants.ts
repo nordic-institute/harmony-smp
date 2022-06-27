@@ -1,7 +1,8 @@
 export class SmpConstants {
 
-  public static readonly  DATE_TIME_FORMAT = 'dd/MM/yyyy, HH:mm:ss z';
-  public static readonly  DATE_FORMAT  = 'dd/MM/yyyy';
+  public static readonly NULL_VALUE: string = "-----------"
+  public static readonly DATE_TIME_FORMAT = 'dd/MM/yyyy, HH:mm:ss z';
+  public static readonly DATE_FORMAT = 'dd/MM/yyyy';
 
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
@@ -21,7 +22,7 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_USER_GENERATE_ACCESS_TOKEN = SmpConstants.REST_PUBLIC_USER_UPDATE + 'generate-access-token';
   public static readonly REST_PUBLIC_USER_CHANGE_PASSWORD = SmpConstants.REST_PUBLIC_USER_UPDATE + 'change-password';
   // truststore public services
-  public static readonly REST_PUBLIC_TRUSTSTORE = SmpConstants.REST_PUBLIC +"truststore/"+ "/" + SmpConstants.PATH_PARAM_ENC_USER_ID + "/";
+  public static readonly REST_PUBLIC_TRUSTSTORE = SmpConstants.REST_PUBLIC + "truststore/" + "/" + SmpConstants.PATH_PARAM_ENC_USER_ID + "/";
   public static readonly REST_PUBLIC_TRUSTSTORE_CERT_VALIDATE = SmpConstants.REST_PUBLIC_TRUSTSTORE + 'validate-certificate';
 
   // public authentication services
@@ -30,7 +31,7 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_SECURITY_USER = SmpConstants.REST_PUBLIC_SECURITY + 'user';
 
   public static readonly REST_PUBLIC_SERVICE_GROUP = SmpConstants.REST_PUBLIC + 'service-group';
-  public static readonly REST_PUBLIC_SERVICE_GROUP_ENTITY = SmpConstants.REST_PUBLIC_SERVICE_GROUP + '/'  +  SmpConstants.PATH_PARAM_SRV_GROUP_ID;
+  public static readonly REST_PUBLIC_SERVICE_GROUP_ENTITY = SmpConstants.REST_PUBLIC_SERVICE_GROUP + '/' + SmpConstants.PATH_PARAM_SRV_GROUP_ID;
   public static readonly REST_PUBLIC_SERVICE_GROUP_ENTITY_EXTENSION = SmpConstants.REST_PUBLIC_SERVICE_GROUP_ENTITY + '/extension';
   // service group extension tools
   public static readonly REST_SERVICE_GROUP_EXTENSION = `${SmpConstants.REST_PUBLIC_SERVICE_GROUP}/extension`;
@@ -49,10 +50,10 @@ export class SmpConstants {
   public static readonly REST_INTERNAL_DOMAIN_VALIDATE_DELETE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE + '/validate-delete';
   public static readonly REST_INTERNAL_USER_MANAGE = SmpConstants.REST_INTERNAL + 'user';
   public static readonly REST_INTERNAL_USER_GENERATE_ACCESS_TOKEN = SmpConstants.REST_INTERNAL_USER_MANAGE +
-    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'generate-access-token-for'+ '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'generate-access-token-for' + '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
 
   public static readonly REST_INTERNAL_USER_CHANGE_PASSWORD = SmpConstants.REST_INTERNAL_USER_MANAGE +
-    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'change-password-for'+ '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'change-password-for' + '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
 
   public static readonly REST_INTERNAL_USER_VALIDATE_DELETE = `${SmpConstants.REST_INTERNAL_USER_MANAGE}/validate-delete`;
   public static readonly REST_INTERNAL_KEYSTORE = SmpConstants.REST_INTERNAL + 'keystore';
