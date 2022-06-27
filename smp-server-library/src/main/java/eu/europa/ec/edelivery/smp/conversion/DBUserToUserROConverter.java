@@ -48,7 +48,7 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         target.setLastTokenFailedLoginAttempt(source.getLastTokenFailedLoginAttempt());
         target.setTokenSuspendedUtil(getSuspensionUntilDate(source.getLastTokenFailedLoginAttempt(),
                 source.getSequentialTokenLoginFailureCount(),
-                configurationService.getAccessTokenLoginFailDelayInMilliSeconds(),
+                configurationService.getAccessTokenLoginSuspensionTimeInSeconds(),
                 configurationService.getAccessTokenLoginMaxAttempts()));
 
         target.setActive(source.isActive());

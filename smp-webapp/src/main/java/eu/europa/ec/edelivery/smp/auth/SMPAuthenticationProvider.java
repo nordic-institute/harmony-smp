@@ -145,7 +145,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
 
         try {
             Optional<DBUser> oUsr = mUserDao.findUserByCertificateId(userToken, true);
-            if (!oUsr.isPresent()) {
+            if (!oUsr.isPresent() || !oUsr.get().isActive() ) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, userToken);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
