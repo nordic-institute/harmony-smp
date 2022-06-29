@@ -113,21 +113,21 @@ public class DBUser extends BaseEntity {
     private String password;
     @Column(name = "PASSWORD_CHANGED")
     @ColumnDescription(comment = "Last date when password was changed")
-    OffsetDateTime passwordChanged;
+    private OffsetDateTime passwordChanged;
     @Column(name = "PASSWORD_EXPIRE_ON")
     @ColumnDescription(comment = "Date when password will expire")
-    OffsetDateTime passwordExpireOn;
+    private OffsetDateTime passwordExpireOn;
     @Column(name = "PASSWORD_LAST_ALERT_ON")
     @ColumnDescription(comment = "Generated last password expire alert")
-    OffsetDateTime passwordExpireAlertOn;
+    private OffsetDateTime passwordExpireAlertOn;
 
 
     @Column(name = "LOGIN_FAILURE_COUNT")
     @ColumnDescription(comment = "Sequential login failure count")
-    Integer sequentialLoginFailureCount;
+    private Integer sequentialLoginFailureCount;
     @Column(name = "LAST_FAILED_LOGIN_ON")
     @ColumnDescription(comment = "Last failed login attempt")
-    OffsetDateTime lastFailedLoginAttempt;
+    private OffsetDateTime lastFailedLoginAttempt;
 
     // Personal access token
     @Column(name = "ACCESS_TOKEN_ID", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
@@ -138,19 +138,19 @@ public class DBUser extends BaseEntity {
     private String accessToken;
     @Column(name = "ACCESS_TOKEN_GENERATED_ON")
     @ColumnDescription(comment = "Date when personal access token was generated")
-    OffsetDateTime accessTokenGeneratedOn;
+    private OffsetDateTime accessTokenGeneratedOn;
     @Column(name = "ACCESS_TOKEN_EXPIRE_ON")
     @ColumnDescription(comment = "Date when personal access token will expire")
-    OffsetDateTime accessTokenExpireOn;
+    private OffsetDateTime accessTokenExpireOn;
     @Column(name = "ACCESS_TOKEN_LAST_ALERT_ON")
     @ColumnDescription(comment = "Generated last access token expire alert")
-    OffsetDateTime accessTokenExpireAlertOn;
+    private OffsetDateTime accessTokenExpireAlertOn;
     @Column(name = "AT_LOGIN_FAILURE_COUNT")
     @ColumnDescription(comment = "Sequential token login failure count")
-    Integer sequentialTokenLoginFailureCount;
+    private Integer sequentialTokenLoginFailureCount;
     @Column(name = "AT_LAST_FAILED_LOGIN_ON")
     @ColumnDescription(comment = "Last failed token login attempt")
-    OffsetDateTime lastTokenFailedLoginAttempt;
+    private OffsetDateTime lastTokenFailedLoginAttempt;
 
     @Column(name = "ACTIVE", nullable = false)
     @ColumnDescription(comment = "Is user active")

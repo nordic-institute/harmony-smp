@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,9 +28,11 @@ public class DBUserToUserROConverterTest {
 
     @Mock
     private ConversionService conversionService;
+    @Mock
+    private ConfigurationService configurationService;
 
     @InjectMocks
-    private DBUserToUserROConverter converter = new DBUserToUserROConverter();
+    private DBUserToUserROConverter converter = new DBUserToUserROConverter(configurationService, conversionService);
 
     @Test
     public void returnsThePasswordAsNotExpiredForCertificateOnlyUsers() {

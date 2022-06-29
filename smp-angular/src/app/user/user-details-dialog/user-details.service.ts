@@ -39,7 +39,6 @@ export class UserDetailsService {
       });
   }
 
-  REST_INTERNAL_USER_CHANGE_PASSWORD
 
   /**
    * Submit request to regenerated request token!

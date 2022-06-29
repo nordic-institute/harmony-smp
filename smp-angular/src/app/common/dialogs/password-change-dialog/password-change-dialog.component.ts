@@ -16,7 +16,7 @@ import {UserRo} from "../../../user/user-ro.model";
 })
 export class PasswordChangeDialogComponent {
 
-  formTitle = "Change password dialog";
+  formTitle = "Set/Change password dialog";
   dialogForm: FormGroup;
   hideCurrPwdFiled: boolean = true;
   hideNewPwdFiled: boolean = true;
@@ -45,7 +45,8 @@ export class PasswordChangeDialogComponent {
 
     this.forceChange = this.current.forceChangeExpiredPassword;
 
-    let currentPasswdFormControl: FormControl = new FormControl({value: null, readonly: false}, [Validators.required]);
+    let currentPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
+      this.securityService.getCurrentUser().casAuthenticated && this.adminUser ? null : [Validators.required]);
     let newPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
       [Validators.required, Validators.pattern(this.passwordValidationRegExp), equal(currentPasswdFormControl, false)]);
     let confirmNewPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
@@ -64,6 +65,10 @@ export class PasswordChangeDialogComponent {
     this.dialogForm.controls['current-password'].setValue('');
     this.dialogForm.controls['new-password'].setValue('');
     this.dialogForm.controls['confirm-new-password'].setValue('');
+  }
+
+  get showCurrentPasswordField():boolean {
+    return !this.securityService.getCurrentUser()?.casAuthenticated || !this.adminUser
   }
 
   public passwordError = (controlName: string, errorName: string) => {
@@ -109,7 +114,6 @@ export class PasswordChangeDialogComponent {
         this.dialogForm.controls['new-password'].value,
         this.dialogForm.controls['current-password'].value).subscribe((res: boolean) => {
           this.showPassChangeDialog();
-          close()
         },
         (err) => {
           this.showErrorMessage(err.error.errorDescription);
@@ -121,16 +125,15 @@ export class PasswordChangeDialogComponent {
   showPassChangeDialog() {
     this.dialog.open(InformationDialogComponent, {
       data: {
-        title: "Password changed!",
-        description: "Password has been successfully changed. " +
-          (!this.adminUser ? "Login again to the application with the new password!" : "")
+        title: "Password set/changed",
+        description: "Password has been successfully set/changed." +
+          (!this.adminUser ? " Login again to the application with the new password!" : "")
       }
     }).afterClosed().subscribe(result => {
       if (!this.adminUser) {
         // logout if changed for itself
         this.securityService.finalizeLogout(result);
       }
-      close();
     })
   }
 

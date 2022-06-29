@@ -46,9 +46,9 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
               private fb: FormBuilder) {
 
     this.editMode = data.edit;
-    this.formTitle = this.editMode ? ServiceGroupMetadataDialogComponent.EDIT_MODE : ServiceGroupMetadataDialogComponent.NEW_MODE;
+    this.formTitle = !!data.metadata ? ServiceGroupMetadataDialogComponent.EDIT_MODE : ServiceGroupMetadataDialogComponent.NEW_MODE;
     this.currentServiceGroup = data.serviceGroup;
-    this.current = this.editMode
+    this.current = !!data.metadata
       ? {
         ...data.metadata,
       }
@@ -91,7 +91,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
       this.xmlServiceMetadataObserver.subscribe((res: ServiceMetadataEditRo) => {
         this.dialogForm.get('xmlContent').setValue(res.xmlContent);
         // store init xml to current value for change validation
-        this.current.xmlContent=res.xmlContent;
+        this.current.xmlContent = res.xmlContent;
       });
     }
 
@@ -117,11 +117,11 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
     let request: ServiceMetadataValidationEditRo = {
       participantScheme: this.dialogForm.controls['participantScheme'].value,
       participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
-      documentIdentifierScheme: !this.dialogForm.controls['documentIdentifierScheme'].value?null:
-      this.dialogForm.controls['documentIdentifierScheme'].value,
+      documentIdentifierScheme: !this.dialogForm.controls['documentIdentifierScheme'].value ? null :
+        this.dialogForm.controls['documentIdentifierScheme'].value,
       documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
       xmlContent: this.dialogForm.controls['xmlContent'].value,
-      statusAction: this.editMode?SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.NEW,
+      statusAction: this.editMode ? SearchTableEntityStatus.UPDATED : SearchTableEntityStatus.NEW,
     }
     //
     let validationObservable = this.http.post<ServiceMetadataValidationEditRo>(SmpConstants.REST_METADATA_VALIDATE, request);
@@ -168,14 +168,13 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
     }
 
 
-
-    const formRef: MatDialogRef<any> = this.dialog.open(ServiceMetadataWizardDialogComponent,wizardInit);
+    const formRef: MatDialogRef<any> = this.dialog.open(ServiceMetadataWizardDialogComponent, wizardInit);
     formRef.afterClosed().subscribe(result => {
       if (result) {
 
-        let smw: ServiceMetadataWizardRo =  formRef.componentInstance.getCurrent();
+        let smw: ServiceMetadataWizardRo = formRef.componentInstance.getCurrent();
         this.dialogForm.controls['xmlContent'].setValue(smw.contentXML);
-        if(!this.editMode){
+        if (!this.editMode) {
           this.dialogForm.controls['documentIdentifierScheme'].setValue(smw.documentIdentifierScheme);
           this.dialogForm.controls['documentIdentifier'].setValue(smw.documentIdentifier);
         }
@@ -185,21 +184,21 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
 
   getParticipantElementXML(): string {
     let schema = this.dialogForm.controls['participantScheme'].value;
-    let value= this.dialogForm.controls['participantIdentifier'].value;
+    let value = this.dialogForm.controls['participantIdentifier'].value;
     if (!!schema && this.lookups.cachedApplicationConfig.concatEBCorePartyId &&
-      schema.startsWith(ServiceMetadataWizardDialogComponent.EBCORE_IDENTIFIER_PREFIX) ) {
-      value = schema + ":" +  value;
-      schema =null;
+      schema.startsWith(ServiceMetadataWizardDialogComponent.EBCORE_IDENTIFIER_PREFIX)) {
+      value = schema + ":" + value;
+      schema = null;
     }
 
-    return  '<ParticipantIdentifier ' +
-      (!schema?'': 'scheme="' + this.xmlSpecialChars(schema) + '"')+ '>'
-      + this.xmlSpecialChars(value)+ '</ParticipantIdentifier>';
+    return '<ParticipantIdentifier ' +
+      (!schema ? '' : 'scheme="' + this.xmlSpecialChars(schema) + '"') + '>'
+      + this.xmlSpecialChars(value) + '</ParticipantIdentifier>';
   }
 
   getDocumentElementXML(): string {
-    return  ' <DocumentIdentifier ' +
-      (!this.dialogForm.controls['documentIdentifierScheme'].value?'': 'scheme="'
+    return ' <DocumentIdentifier ' +
+      (!this.dialogForm.controls['documentIdentifierScheme'].value ? '' : 'scheme="'
         + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '"') +
       '>' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>';
   }
@@ -228,7 +227,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   }
 
   xmlSpecialChars(unsafe) {
-    return !unsafe?'':unsafe
+    return !unsafe ? '' : unsafe
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
@@ -241,11 +240,11 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
 
       participantScheme: this.dialogForm.controls['participantScheme'].value,
       participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
-      documentIdentifierScheme: !this.dialogForm.controls['documentIdentifierScheme'].value?null:
+      documentIdentifierScheme: !this.dialogForm.controls['documentIdentifierScheme'].value ? null :
         this.dialogForm.controls['documentIdentifierScheme'].value,
       documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
       xmlContent: this.dialogForm.controls['xmlContent'].value,
-      statusAction: this.editMode?SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.NEW,
+      statusAction: this.editMode ? SearchTableEntityStatus.UPDATED : SearchTableEntityStatus.NEW,
     }
     //
     let validationObservable = this.http.post<ServiceMetadataValidationEditRo>(SmpConstants.REST_METADATA_VALIDATE, request);
@@ -280,11 +279,12 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   }
 
   //!! this two method must be called before getCurrent
-  public isMetaDataXMLChanged():boolean{
-     return  this.dialogForm.value['xmlContent'] !== this.current.xmlContent;
+  public isMetaDataXMLChanged(): boolean {
+    return this.dialogForm.value['xmlContent'] !== this.current.xmlContent;
   }
-  public isServiceMetaDataChanged():boolean{
-    return  this.isMetaDataXMLChanged() || !this.isEqual(this.current.domainCode, this.domainList.selected.value.domainCode) ;
+
+  public isServiceMetaDataChanged(): boolean {
+    return this.isMetaDataXMLChanged() || !this.isEqual(this.current.domainCode, this.domainList.selected.value.domainCode);
   }
 
   compareDomainCode(sgDomain: ServiceGroupDomainEditRo, domainCode: String): boolean {

@@ -34,7 +34,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.10</edelivery.ssl-auth.version>
+        <edelivery.ssl-auth.version>1.11</edelivery.ssl-auth.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ant-commons-net.version>1.6.5</ant-commons-net.version>
@@ -50,8 +50,7 @@
         <commons-validator.version>1.7</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
         <cxf.version>3.5.2</cxf.version>
-        <dnsjava.version>2.1.7</dnsjava.version>
-        <ehcache.version>2.10.9.2</ehcache.version>
+         <ehcache.version>2.10.9.2</ehcache.version>
         <freemarker.version>2.3.31</freemarker.version>
         <h2.version>1.4.200</h2.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
@@ -74,12 +73,12 @@
         <mockito.version>2.23.4</mockito.version>
         <orika.version>1.5.4</orika.version>
         <servlet-api.version>3.0.1</servlet-api.version>
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <soapui.plugin.version>5.1.2</soapui.plugin.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring.boot.version>2.7.0</spring.boot.version>
-        <spring.security.version>5.7.1</spring.security.version>
-        <spring.version>5.3.20</spring.version>
+        <spring.security.version>5.7.2</spring.security.version>
+        <spring.version>5.3.21</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
         <!-- plugins -->
@@ -102,11 +101,14 @@
             **/smp-angular/node_modules/**,
             **/swagger*.js,
             **/web.xml,
+            **/smp-examples/**,
         </sonar.exclusions>
         <sonar.coverage.exclusions>
             **/*Entity.java,
             **/*RO.java,
             **/*Exception.java,
+            **/*Types.java,
+            **/*Constants.java,
         </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
@@ -332,6 +334,13 @@
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-cas</artifactId>
                 <version>${spring.security.version}</version>
+                <exclusions>
+                    <!-- current build is optimized for java 1.8: include bouncy castle jdk15to18 -->
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
@@ -452,20 +461,14 @@
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <artifactId>bcprov-jdk15to18</artifactId>
                 <version>${bouncycastle.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
+                <artifactId>bcpkix-jdk15to18</artifactId>
                 <version>${bouncycastle.version}</version>
             </dependency>
-            <dependency>
-                <groupId>dnsjava</groupId>
-                <artifactId>dnsjava</artifactId>
-                <version>${dnsjava.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>ant</groupId>
                 <artifactId>ant-commons-net</artifactId>
@@ -717,7 +720,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>7.1.0</version>
+                        <version>7.1.1</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
@@ -729,6 +732,7 @@
                             <!-- Disable checking npm dev dependencies -->
                             <nodeAuditSkipDevDependencies>true</nodeAuditSkipDevDependencies>
                             <nodePackageSkipDevDependencies>true</nodePackageSkipDevDependencies>
+                            <suppressionFile>owasp-false-positive-warnings.xml</suppressionFile>
                         </configuration>
                         <executions>
                             <execution>

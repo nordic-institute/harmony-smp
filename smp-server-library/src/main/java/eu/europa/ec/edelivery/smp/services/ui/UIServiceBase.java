@@ -82,8 +82,6 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
                     LOG.error(msg, e );
                      throw new SMPRuntimeException(INTERNAL_ERROR, "DB list query exception.", msg);
                 }
-
-
             }
             sg.getServiceEntities().addAll(lstRo);
         }

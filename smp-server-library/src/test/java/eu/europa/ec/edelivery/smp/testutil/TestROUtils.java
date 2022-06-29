@@ -1,13 +1,13 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
+import eu.europa.ec.edelivery.smp.conversion.X509CertificateToCertificateROConverter;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupDomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -17,18 +17,20 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_EXTENSION
 
 public class TestROUtils {
 
+    public static final X509CertificateToCertificateROConverter CERT_CONVERTER = new X509CertificateToCertificateROConverter();
 
-    public static ServiceMetadataRO createServiceMetadataDomain(DBDomain domain, ServiceGroupRO sgo, String docid, String docSch){
+
+    public static ServiceMetadataRO createServiceMetadataDomain(DBDomain domain, ServiceGroupRO sgo, String docid, String docSch) {
         ServiceMetadataRO sgdmd = new ServiceMetadataRO();
         sgdmd.setDomainCode(domain.getDomainCode());
         sgdmd.setSmlSubdomain(domain.getSmlSubdomain());
         sgdmd.setDocumentIdentifier(docid);
         sgdmd.setDocumentIdentifierScheme(docSch);
-        sgdmd.setXmlContent(generateServiceMetadata(sgo.getParticipantIdentifier(), sgo.getParticipantScheme(), docid,docSch ));
+        sgdmd.setXmlContent(generateServiceMetadata(sgo.getParticipantIdentifier(), sgo.getParticipantScheme(), docid, docSch));
         return sgdmd;
     }
 
-    public static ServiceGroupDomainRO createServiceGroupDomain(DBDomain domain){
+    public static ServiceGroupDomainRO createServiceGroupDomain(DBDomain domain) {
 
         ServiceGroupDomainRO sgd = new ServiceGroupDomainRO();
         sgd.setDomainId(domain.getId());
@@ -41,8 +43,8 @@ public class TestROUtils {
         return createROServiceGroup(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
     }
 
-    public static ServiceGroupRO createROServiceGroupForDomains(DBDomain ... domains) {
-        ServiceGroupRO sgo =  createROServiceGroup(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
+    public static ServiceGroupRO createROServiceGroupForDomains(DBDomain... domains) {
+        ServiceGroupRO sgo = createROServiceGroup(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
         Arrays.asList(domains).forEach(domain -> {
             ServiceGroupDomainRO sgd = createServiceGroupDomain(domain);
             sgo.getServiceGroupDomains().add(sgd);
@@ -50,8 +52,8 @@ public class TestROUtils {
         return sgo;
     }
 
-    public static ServiceGroupRO createROServiceGroupForDomains(String id, String sch, DBDomain ... domains) {
-        ServiceGroupRO sgo =  createROServiceGroup(id, sch);
+    public static ServiceGroupRO createROServiceGroupForDomains(String id, String sch, DBDomain... domains) {
+        ServiceGroupRO sgo = createROServiceGroup(id, sch);
         Arrays.asList(domains).forEach(domain -> {
             ServiceGroupDomainRO sgd = createServiceGroupDomain(domain);
             sgo.getServiceGroupDomains().add(sgd);
@@ -75,12 +77,12 @@ public class TestROUtils {
         return grp;
     }
 
-    public static String generateExtension(){
+    public static String generateExtension() {
         return String.format(SIMPLE_EXTENSION_XML, UUID.randomUUID().toString());
     }
 
-    public static String generateServiceMetadata(String partId, String partSch, String docId, String docSch){
-        return String.format(SIMPLE_DOCUMENT_XML, partSch, partId,docSch, docId, UUID.randomUUID().toString()  );
+    public static String generateServiceMetadata(String partId, String partSch, String docId, String docSch) {
+        return String.format(SIMPLE_DOCUMENT_XML, partSch, partId, docSch, docId, UUID.randomUUID().toString());
     }
 
     public static ServiceGroupValidationRO getValidExtension() throws IOException {
@@ -115,5 +117,11 @@ public class TestROUtils {
         sg.setServiceGroupId((long) 1);
         sg.setExtension(extension);
         return sg;
+    }
+
+
+    public static CertificateRO createCertificateRO(String certSubject, BigInteger serial) throws Exception {
+        X509Certificate cert = X509CertificateTestUtils.createX509CertificateForTest(certSubject, serial, null);
+        return CERT_CONVERTER.convert(cert);
     }
 }

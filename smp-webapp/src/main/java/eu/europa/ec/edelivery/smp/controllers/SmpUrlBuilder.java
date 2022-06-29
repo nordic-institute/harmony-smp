@@ -73,16 +73,21 @@ public class SmpUrlBuilder {
         LOG.debug("Build SMP url for participant identifier: [{}] and document identifier [{}].", participantId, docId);
         HttpServletRequest req = getCurrentRequest();
         HttpForwardedHeaders fh = new HttpForwardedHeaders(req);
-        LOG.info("Generate response uri for forwarded headers: " + fh.toString());
-        UriComponentsBuilder uriBuilder = getSMPUrlBuilder();
-        //
+        LOG.debug("Generate response uri with headers data: [{}]" + fh.toString());
+        UriComponentsBuilder uriBuilder = getSMPUrlBuilder();//
         if (fh.getHost()!=null) {
+            LOG.debug("Set response uri for forwarded headers: [{}]", fh.toString());
             uriBuilder = uriBuilder.host(fh.getHost());
             String port = fh.getNonDefaultPort();
             if (!StringUtils.isBlank(port)) {
                 uriBuilder = uriBuilder.port(port);
+            } else if (!StringUtils.isBlank(fh.getPort())){
+                LOG.debug("Set port to null because it is default port: [{}]", fh.toString());
+                uriBuilder = uriBuilder.port(null);
             }
             uriBuilder = uriBuilder.scheme(fh.getProto());
+        } else {
+            LOG.debug("Ignore settings header because host is null!");
         }
 
         String path = uriBuilder

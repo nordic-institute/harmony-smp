@@ -1,4 +1,12 @@
-import {AfterViewChecked, AfterViewInit, Component, Inject, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
@@ -35,7 +43,8 @@ export class TruststoreEditDialogComponent implements AfterViewInit, AfterViewCh
               private dialogRef: MatDialogRef<TruststoreEditDialogComponent>,
               private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private changeDetector: ChangeDetectorRef) {
     this.formTitle = "Truststore edit dialog";
     // bind to trusted certificate list events
     this.lookups.onTrustedCertificateListRefreshEvent().subscribe((data) => {
@@ -48,9 +57,16 @@ export class TruststoreEditDialogComponent implements AfterViewInit, AfterViewCh
     // fix bug updating the columns
     //https://github.com/swimlane/ngx-datatable/issues/1266
     window.dispatchEvent(new Event('resize'));
+    this.changeDetector.detectChanges();
+
   }
 
   ngAfterViewInit(): void {
+    this.initColumns();
+    this.refreshData();
+  }
+
+  initColumns(): void {
     this.tableColumns = [
       {
         cellTemplate: this.rowIndex,
@@ -75,8 +91,6 @@ export class TruststoreEditDialogComponent implements AfterViewInit, AfterViewCh
         cellTemplate: this.certificateRowActions,
       },
     ];
-
-    this.refreshData();
   }
 
 
@@ -87,7 +101,7 @@ export class TruststoreEditDialogComponent implements AfterViewInit, AfterViewCh
   onDeleteCertificateRowActionClicked(row) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete certificate " + row.alias + " from truststore!",
+        title: "Delete certificate " + row.alias + " from truststore",
         description: "Action will permanently delete certificate from truststore! Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
@@ -128,7 +142,7 @@ export class TruststoreEditDialogComponent implements AfterViewInit, AfterViewCh
         }
       },
       err => {
-        this.alertService.exception('Error uploading certificate file ' + file.name, err);
+        this.alertService.exception('Error uploading certificate file ' + file.name, err.error?.errorDescription);
       }
     );
   }

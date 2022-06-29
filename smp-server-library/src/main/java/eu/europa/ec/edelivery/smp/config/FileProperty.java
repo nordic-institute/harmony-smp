@@ -7,6 +7,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -39,6 +40,9 @@ public class FileProperty {
     public static final String PROPERTY_LIB_FOLDER = "libraries.folder";
     public static final String PROPERTY_SMP_MODE_DEVELOPMENT = "smp.mode.development";
 
+    protected FileProperty() {
+    }
+
     public static void updateLogConfiguration(String logFileFolder, String logPropertyFile, String configurationFolder) {
 
         if (StringUtils.isNotBlank(logFileFolder)) {
@@ -51,20 +55,23 @@ public class FileProperty {
 
         File f = new File(logPropertyFile);
         if (!f.exists()) {
-            LOG.info("Log configuration file: {} not exists.", f.getAbsolutePath());
+            LOG.info("Log configuration file: [{}] not exists.", f.getAbsolutePath());
             f = new File(configurationFolder, logPropertyFile);
-            LOG.info("Set log configuration file: {}.", f.getAbsolutePath());
-
+            LOG.info("Try with the configuration file path: [{}].", f.getAbsolutePath());
         }
         // if configuration file exist update configuration
         if (f.exists()) {
             setLogConfiguration(f);
+        } else {
+            LOG.info("File path: [{}] does not exists.", f.getAbsolutePath());
         }
     }
 
     public static void setLogConfiguration(File configurationFile) {
+        LOG.info("Set log configuration properties from the file: [{}]", configurationFile.getAbsolutePath());
         try (InputStream configStream = new FileInputStream(configurationFile)) {
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            context.reset();
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext(context);
             configurator.doConfigure(configStream); // loads logback file

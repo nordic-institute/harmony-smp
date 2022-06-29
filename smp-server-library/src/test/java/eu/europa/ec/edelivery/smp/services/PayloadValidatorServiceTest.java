@@ -77,6 +77,8 @@ public class PayloadValidatorServiceTest {
                 assertThrows(SMPRuntimeException.class, () -> testInstance.validateUploadedContent(inputStream, mimeType));
 
         assertEquals(ErrorCode.INVALID_REQUEST, smpRuntimeException.getErrorCode());
-        MatcherAssert.assertThat(smpRuntimeException.getMessage(), CoreMatchers.containsString(spiException.getMessage()));
+        // generic error
+        assertEquals("Invalid request [Upload payload]. Error: Content validation failed!", smpRuntimeException.getMessage());
+
     }
 }

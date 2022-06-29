@@ -87,7 +87,7 @@ export class ServiceMetadataWizardDialogComponent {
         }
       },
       err => {
-        this.alertService.exception('Error uploading certificate file ' + file.name, err);
+        this.alertService.exception('Error uploading certificate file ' +file.name, err.error?.errorDescription);
       }
     );
   }

@@ -26,7 +26,6 @@
 
     <artifactId>smp-spi-example</artifactId>
     <name>smp-spi-example</name>
-    <packaging>jar</packaging>
     <description>Example of SMP's SPI Payload validation.</description>
     <dependencies>
         <dependency>
