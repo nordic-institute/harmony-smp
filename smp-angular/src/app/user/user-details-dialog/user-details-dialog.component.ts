@@ -417,5 +417,5 @@ export class UserDetailsDialogComponent {
 export enum UserDetailsDialogMode {
   NEW_MODE = 'New User',
   EDIT_MODE = 'User Edit',
-  PREFERENCES_MODE = 'Edit',
+  PREFERENCES_MODE = 'User details',
 }
