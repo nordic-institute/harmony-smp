@@ -720,7 +720,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>7.1.0</version>
+                        <version>7.1.1</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
@@ -732,6 +732,7 @@
                             <!-- Disable checking npm dev dependencies -->
                             <nodeAuditSkipDevDependencies>true</nodeAuditSkipDevDependencies>
                             <nodePackageSkipDevDependencies>true</nodePackageSkipDevDependencies>
+                            <suppressionFile>owasp-false-positive-warnings.xml</suppressionFile>
                         </configuration>
                         <executions>
                             <execution>
