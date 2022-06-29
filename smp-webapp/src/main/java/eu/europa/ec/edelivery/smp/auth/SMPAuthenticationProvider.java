@@ -1,11 +1,9 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
-import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
@@ -29,7 +27,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateRevokedException;
 import java.security.cert.X509Certificate;
@@ -55,7 +52,9 @@ import static java.util.Locale.US;
 @Component
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
-    public static final String LOGIN_FAILED_MESSAGE = "Login failed; Invalid userID or password";
+    protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException("Login failed; Invalid userID or password");
+    protected static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
+
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);
     /**
@@ -99,9 +98,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 LOG.warn("Unknown or null PreAuthenticatedAuthenticationToken principal type: " + principal);
             }
         } else if (authenticationToken instanceof UsernamePasswordAuthenticationToken) {
-            LOG.info("try to authentication Token: [{}] with user:[{}]" , authenticationToken.getClass(), authenticationToken.getPrincipal());
-            if (CasAuthenticationFilter.CAS_STATEFUL_IDENTIFIER.equalsIgnoreCase((String)authenticationToken.getPrincipal())
-             || CasAuthenticationFilter.CAS_STATELESS_IDENTIFIER.equalsIgnoreCase((String)authenticationToken.getPrincipal())){
+            LOG.info("try to authentication Token: [{}] with user:[{}]", authenticationToken.getClass(), authenticationToken.getPrincipal());
+            if (CasAuthenticationFilter.CAS_STATEFUL_IDENTIFIER.equalsIgnoreCase((String) authenticationToken.getPrincipal())
+                    || CasAuthenticationFilter.CAS_STATELESS_IDENTIFIER.equalsIgnoreCase((String) authenticationToken.getPrincipal())) {
                 LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
                 return null;
             }
@@ -127,29 +126,31 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      */
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
-        KeyStore truststore = truststoreService.getTrustStore();
-
         DBUser user;
         X509Certificate x509Certificate = principal.getCertificate();
         String userToken = principal.getName();
+        long startTime = Calendar.getInstance().getTimeInMillis();
 
-        if (truststore != null && x509Certificate != null) {
-            CertificateValidator certificateValidator = new CertificateValidator(
-                    null, truststore, null);
+
+        if (x509Certificate != null) {
             try {
-                certificateValidator.validateCertificate(x509Certificate);
+                truststoreService.validateCertificateWithTruststore(x509Certificate);
             } catch (CertificateException e) {
-                throw new BadCredentialsException("Certificate is not trusted!");
+                String message = "Certificate is not trusted!";
+                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, message
+                        + " The cert chain is not in truststore or either subject regexp or allowed cert policies does not match");
+                throw new BadCredentialsException(message);
             }
         }
 
         try {
             Optional<DBUser> oUsr = mUserDao.findUserByCertificateId(userToken, true);
-            if (!oUsr.isPresent()) {
+            if (!oUsr.isPresent() || !oUsr.get().isActive() ) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, userToken);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
-                throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
+                delayResponse(startTime);
+                throw BAD_CREDENTIALS_EXCEPTION;
             }
             user = oUsr.get();
         } catch (AuthenticationException ex) {
@@ -163,6 +164,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         DBCertificate certificate = user.getCertificate();
         // check if certificate is valid
         Date currentDate = Calendar.getInstance().getTime();
+        // this is legacy code because some setups does not have truststore configured
         // validate  dates
         if (principal.getNotBefore() == null) {
             String msg = "Invalid certificate configuration: 'Not Before' value is missing!";
@@ -181,6 +183,7 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
             throw new AuthenticationServiceException(msg);
         }
+
         // check if issuer or subject are in trusted list
         if (!(truststoreService.isSubjectOnTrustedList(principal.getSubjectOriginalDN())
                 || truststoreService.isSubjectOnTrustedList(principal.getIssuerDN()))) {
@@ -189,6 +192,8 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, userToken, msg);
             throw new AuthenticationServiceException(msg);
         }
+
+        validateCertificatePolicyMatchLegacy(userToken, principal.getPolicyOids());
         // Check crl list
         String url = certificate.getCrlUrl();
         if (!StringUtils.isBlank(url)) {
@@ -216,8 +221,39 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
     }
 
 
+    /**
+     * Method validates if the certificate contains one of allowed Certificate policy. At the moment it does not validates
+     * the whole chain. Because in some configuration cases does not use the truststore
+     *
+     * @param certificateId
+     * @throws CertificateException
+     */
+    protected void validateCertificatePolicyMatchLegacy(String certificateId, List<String> certPolicyList) throws AuthenticationServiceException {
+
+        // allowed list
+        List<String> allowedCertificatePolicyOIDList = configurationService.getAllowedCertificatePolicies();
+        if (allowedCertificatePolicyOIDList == null || allowedCertificatePolicyOIDList.isEmpty()) {
+            LOG.debug("Certificate policy is not configured. Skip Certificate policy validation!");
+            return;
+        }
+        // certificate list
+        if (certPolicyList.isEmpty()) {
+            String excMessage = String.format("Certificate [%] does not have CertificatePolicy extension.", certificateId);
+            throw new AuthenticationServiceException(excMessage);
+        }
+
+        Optional<String> result = certPolicyList.stream().filter(allowedCertificatePolicyOIDList::contains).findFirst();
+        if (result.isPresent()) {
+            LOG.debug("Certificate [{}] is trusted with certificate policy [{}]",certificateId,  result.get());
+            return;
+        }
+        String excMessage = String.format("Certificate policy verification failed. Certificate [%s] does not contain any of the mandatory policy: [%s]", certificateId, allowedCertificatePolicyOIDList);
+        throw new AuthenticationServiceException(excMessage);
+    }
+
+
     public void delayResponse(long startTime) {
-        int delayInMS = configurationService.getAccessTokenLoginFailDelayInMilliSeconds() -  (int) (Calendar.getInstance().getTimeInMillis() - startTime);
+        int delayInMS = configurationService.getAccessTokenLoginFailDelayInMilliSeconds() - (int) (Calendar.getInstance().getTimeInMillis() - startTime);
         if (delayInMS > 0) {
             try {
                 LOG.debug("Delay response for [{}] ms to mask password/username login failures!", delayInMS);
@@ -234,9 +270,9 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
      *
      * @param user
      */
-    public void validateIfTokenIsSuspended(DBUser user) {
+    public void validateIfTokenIsSuspended(DBUser user, long startTime) {
         if (user.getSequentialTokenLoginFailureCount() == null
-                || user.getSequentialTokenLoginFailureCount() < 0) {
+                || user.getSequentialTokenLoginFailureCount() < 1) {
             LOG.trace("User has no previous failed attempts");
             return;
         }
@@ -247,14 +283,17 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         }
 
         if (user.getLastTokenFailedLoginAttempt() == null) {
-            LOG.warn("Access token [{}] has failed attempts [{}] but null last Failed login attempt!", user.getUsername(), user.getLastFailedLoginAttempt());
+            LOG.warn("Access token [{}] for user [{}] has failed attempts [{}] but null last Failed login attempt!",
+                    user.getAccessTokenIdentifier(), user.getUsername(), user.getLastFailedLoginAttempt());
             return;
         }
 
         // check if the last failed attempt is already expired. If yes just clear the attempts
-        if (configurationService.getAccessTokenLoginSuspensionTimeInSeconds() != null && configurationService.getAccessTokenLoginSuspensionTimeInSeconds() > 0
-                && ChronoUnit.SECONDS.between(OffsetDateTime.now(), user.getLastTokenFailedLoginAttempt()) > configurationService.getAccessTokenLoginSuspensionTimeInSeconds()) {
-            LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
+        if (configurationService.getAccessTokenLoginSuspensionTimeInSeconds() != null
+                && configurationService.getAccessTokenLoginSuspensionTimeInSeconds() > 0
+                && ChronoUnit.SECONDS.between(user.getLastTokenFailedLoginAttempt(), OffsetDateTime.now()) > configurationService.getAccessTokenLoginSuspensionTimeInSeconds()) {
+            LOG.info("User token [{}] for user [{}] suspension is expired! Clear failed login attempts and last failed login attempt",
+                    user.getAccessTokenIdentifier(), user.getUsername());
             user.setLastTokenFailedLoginAttempt(null);
             user.setSequentialTokenLoginFailureCount(0);
             mUserDao.update(user);
@@ -262,20 +301,21 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         }
 
         if (user.getSequentialTokenLoginFailureCount() < configurationService.getAccessTokenLoginMaxAttempts()) {
-            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialTokenLoginFailureCount(), configurationService.getAccessTokenLoginMaxAttempts());
+            LOG.debug("User token [{}] for user [{}] failed login attempt [{}] did not reach the max failed attempts [{}]",
+                    user.getAccessTokenIdentifier(), user.getUsername(), user.getSequentialTokenLoginFailureCount(), configurationService.getAccessTokenLoginMaxAttempts());
             return;
         }
-        if (configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
-            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
-        }
+
         LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
-        throw new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
+        delayResponse(startTime);
+        loginAttemptForAccessTokenFailed(user, false, startTime);
     }
 
     public Authentication authenticateByUsernameToken(UsernamePasswordAuthenticationToken auth)
             throws AuthenticationException {
 
         String authenticationTokenId = auth.getName();
+        LOG.debug("Got authentication token:" + authenticationTokenId);
         String authenticationTokenValue = auth.getCredentials().toString();
         long startTime = Calendar.getInstance().getTimeInMillis();
 
@@ -288,36 +328,38 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
                 delayResponse(startTime);
-                throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
+                throw BAD_CREDENTIALS_EXCEPTION;
             }
             user = oUsr.get();
         } catch (AuthenticationException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
-            throw ex;
+            delayResponse(startTime);
+            throw BAD_CREDENTIALS_EXCEPTION;
 
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
-            throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
+            delayResponse(startTime);
+            throw BAD_CREDENTIALS_EXCEPTION;
         }
 
-        validateIfTokenIsSuspended(user);
+        validateIfTokenIsSuspended(user, startTime);
 
         try {
             if (!BCrypt.checkpw(authenticationTokenValue, user.getAccessToken())) {
-                loginAttemptForAccessTokenFailed(user, startTime);
+                loginAttemptForAccessTokenFailed(user, true, startTime);
             }
             user.setSequentialTokenLoginFailureCount(0);
             user.setLastTokenFailedLoginAttempt(null);
             mUserDao.update(user);
         } catch (java.lang.IllegalArgumentException ex) {
-            // password is not hashed;
+            // password is not hashed
+            loginAttemptForAccessTokenFailed(user, true, startTime);
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, authenticationTokenId);
-            throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
         }
-        // the webservice authentication with corresponding web-service authority;
+        // the webservice authentication with corresponding web-service authority
         SMPAuthority authority = SMPAuthority.getAuthorityByRoleName("WS_" + user.getRole());
         // the webservice authentication does not support session set the session secret is null!
-        SMPUserDetails userDetails = new SMPUserDetails(user, null,  Collections.singletonList(authority));
+        SMPUserDetails userDetails = new SMPUserDetails(user, null, Collections.singletonList(authority));
 
         SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(authenticationTokenId,
                 authenticationTokenValue,
@@ -328,33 +370,36 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
         return smpAuthenticationToken;
     }
 
-    public void loginAttemptForAccessTokenFailed(DBUser user, long startTime) {
+    public void loginAttemptForAccessTokenFailed(DBUser user, boolean notYetSuspended, long startTime) {
 
         user.setSequentialTokenLoginFailureCount(user.getSequentialTokenLoginFailureCount() != null ? user.getSequentialTokenLoginFailureCount() + 1 : 1);
         user.setLastTokenFailedLoginAttempt(OffsetDateTime.now());
         mUserDao.update(user);
-        LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getAccessTokenIdentifier());
-
-        user.setSequentialLoginFailureCount(user.getSequentialLoginFailureCount() != null ? user.getSequentialLoginFailureCount() + 1 : 1);
-        user.setLastFailedLoginAttempt(OffsetDateTime.now());
-        mUserDao.update(user);
-        LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getUsername());
-        if (user.getSequentialTokenLoginFailureCount() >= configurationService.getAccessTokenLoginMaxAttempts()) {
+        LOG.securityWarn(SMPMessageCode.SEC_INVALID_TOKEN, user.getUsername(), user.getAccessTokenIdentifier());
+        boolean isCredentialSuspended =user.getSequentialTokenLoginFailureCount() >= configurationService.getAccessTokenLoginMaxAttempts();
+        if (isCredentialSuspended) {
             LOG.info("User access token [{}] failed sequential attempt exceeded the max allowed attempts [{}]!", user.getAccessToken(), configurationService.getAccessTokenLoginMaxAttempts());
-            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
+            if (notYetSuspended ||
+                    configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
+                alertService.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
+            }
         } else {
             alertService.alertCredentialVerificationFailed(user, CredentialTypeEnum.ACCESS_TOKEN);
         }
         delayResponse(startTime);
-        throw new BadCredentialsException(LOGIN_FAILED_MESSAGE);
+        if (isCredentialSuspended) {
+            throw SUSPENDED_CREDENTIALS_EXCEPTION;
+        } else {
+            throw BAD_CREDENTIALS_EXCEPTION;
+        }
     }
 
     @Override
     public boolean supports(Class<?> auth) {
-        LOG.info("Support authentication: " + auth);
+        LOG.info("Support authentication: [{}].", auth);
         boolean supportAuthentication = auth.equals(UsernamePasswordAuthenticationToken.class) || auth.equals(PreAuthenticatedAuthenticationToken.class);
         if (!supportAuthentication) {
-            LOG.warn("SMP does not support authentication type: " + auth);
+            LOG.warn("SMP does not support authentication type: [{}].", auth);
         }
         return supportAuthentication;
     }

@@ -1,5 +1,13 @@
 ///<reference path="../smp.constants.ts"/>
-import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
@@ -8,17 +16,16 @@ import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
-import {ServiceGroupEditController} from "../service-group-edit/service-group-edit-controller";
 
 @Component({
   moduleId: module.id,
   templateUrl: './service-group-search.component.html',
   styleUrls: ['./service-group-search.component.css']
 })
-export class ServiceGroupSearchComponent implements OnInit, AfterViewInit {
+export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
-  @ViewChild('rowSMPUrlLinkAction', { static: true }) rowSMPUrlLinkAction: TemplateRef<any>
-  @ViewChild('rowActions', { static: true }) rowActions: TemplateRef<any>;
+  @ViewChild('rowSMPUrlLinkAction', {static: true}) rowSMPUrlLinkAction: TemplateRef<any>
+  @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
@@ -31,7 +38,8 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit {
               protected http: HttpClient,
               protected alertService:
                 AlertMessageService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private changeDetector: ChangeDetectorRef) {
 
     this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_SERVICE_GROUP;
   }
@@ -42,7 +50,9 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.serviceGroupSearchController = new ServiceGroupSearchController(this.dialog);
+  }
 
+  initColumns(): void {
     this.columnPicker.allColumns = [
       {
         name: 'Metadata size',
@@ -75,19 +85,23 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit {
         sortable: false
       },
     ];
-  }
-
-  ngAfterViewInit(): void {
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
     this.searchTable.tableColumnInit();
   }
 
-  createServiceGroupURL(row: any){
-    return encodeURIComponent((!row.participantScheme? '' : row.participantScheme)+'::'+row.participantIdentifier);
+  ngAfterViewChecked() {
+    this.changeDetector.detectChanges();
   }
 
-  createServiceMetadataURL(row: any, rowSMD: any){
-    return encodeURIComponent((!row.participantScheme? '': row.participantScheme)+'::'+row.participantIdentifier)+'/services/'+ encodeURIComponent((!rowSMD.documentIdentifierScheme?'':rowSMD.documentIdentifierScheme)+'::'+rowSMD.documentIdentifier);
+  ngAfterViewInit() {
+    this.initColumns();
+  }
+
+  createServiceGroupURL(row: any) {
+    return encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
+  }
+
+  createServiceMetadataURL(row: any, rowSMD: any) {
+    return encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier) + '/services/' + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
 
   details(row: any) {

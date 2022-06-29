@@ -8,15 +8,45 @@
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-modules</artifactId>
-        <version>4.2-SNAPSHOT</version>
+        <version>4.2-RC2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <properties>
         <!-- Only selected modules are deployed -->
         <maven.deploy.skip>false</maven.deploy.skip>
+        <docker.artefacts.folder>/CEF/repo</docker.artefacts.folder>
     </properties>
     <artifactId>smp-docker</artifactId>
     <packaging>jar</packaging>
-	<name>SMP Docker</name>
+    <name>SMP Docker</name>
+    <profiles>
+        <profile>
+            <id>build-docker-images</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-docker-images</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target name="buildDockerImages">
+                                        <exec executable="/bin/bash">
+                                            <arg value="${project.basedir}/images/build-docker-images.sh"/>
+                                            <arg value="-o ${docker.artefacts.folder}"/>
+                                        </exec>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

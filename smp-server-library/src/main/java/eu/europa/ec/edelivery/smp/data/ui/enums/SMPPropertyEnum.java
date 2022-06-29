@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum.*;
@@ -40,7 +41,7 @@ public enum SMPPropertyEnum {
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint", false, false, false, URL),
     SML_TLS_DISABLE_CN_CHECK("bdmsl.integration.tls.disableCNCheck", "false", "If SML Url is HTTPs - Disable CN check if needed.", false, false, false, BOOLEAN),
     SML_TLS_SERVER_CERT_SUBJECT_REGEXP("bdmsl.integration.tls.serverSubjectRegex", ".*", "Regular expression for server TLS certificate subject verification  CertEx. .*CN=acc.edelivery.tech.ec.europa.eu.*.", false, false, false, REGEXP),
-    SML_TLS_TRUSTSTORE_USE_SYSTEM_DEFAULT("bdmsl.integration.tls.userSystemDefaultTruststore", "false", "If true use system default truststore for trusting TLS server certificate (Legacy behaviour to SMP 4.1 version), else use SMP truststore", false, false, false, BOOLEAN),
+    SML_TLS_TRUSTSTORE_USE_SYSTEM_DEFAULT("bdmsl.integration.tls.useSystemDefaultTruststore", "false", "If true use system default truststore for trusting TLS server certificate (Legacy behaviour to SMP 4.1 version), else use SMP truststore", false, false, false, BOOLEAN),
     SML_LOGICAL_ADDRESS("bdmsl.integration.logical.address", "http://localhost:8080/smp/", "Logical SMP endpoint which will be registered on SML when registering new domain", false, false, false, URL),
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address", "0.0.0.0", "Physical SMP endpoint which will be registered on SML when registering new domain.", false, false, false, STRING),
     // keystore truststore
@@ -55,7 +56,7 @@ public enum SMPPropertyEnum {
     ENCRYPTION_FILENAME("encryption.key.filename", "encryptionPrivateKey.private", "Key filename to encrypt passwords", false, false, true, FILENAME),
     KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted", "", "Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false, false, STRING),
     TRUSTSTORE_PASSWORD_DECRYPTED("smp.truststore.password.decrypted", "", "Only for backup purposes when  password is automatically created. Store password somewhere save and delete this entry!", false, false, false, STRING),
-    CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs","","List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension", false, false,false, STRING),
+    CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS("smp.certificate.validation.allowedCertificatePolicyOIDs","","List of certificate policy OIDs separated by | where at least one must be in the CertifictePolicy extension", false, false,false, LIST_STRING),
     CERTIFICATE_SUBJECT_REGULAR_EXPRESSION("smp.certificate.validation.subjectRegex",".*","Regular expression to validate subject of the certificate", false, false,false, REGEXP),
 
     SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression", "0 48 */1 * * *", "Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!", false, false, false, CRON_EXPRESSION),
@@ -85,7 +86,8 @@ public enum SMPPropertyEnum {
             "Delay response in ms on invalid username or password", false, false,false, INTEGER),
 
     USER_MAX_FAILED_ATTEMPTS("smp.user.login.maximum.attempt","5",
-            "Number of console login attempt before the user is deactivated", false, false,false, INTEGER),
+            "The number of sequence login attempts when the user credentials get suspended. The login attempt count as a sequence login" +
+                    " if there is less time between login attempts than defined in property: smp.user.login.suspension.time!", false, false,false, INTEGER),
     USER_SUSPENSION_TIME("smp.user.login.suspension.time","3600",
             "Time in seconds for a suspended user to be reactivated. (if 0 the user will not be reactivated)", false, false,false, INTEGER),
 
@@ -101,7 +103,8 @@ public enum SMPPropertyEnum {
     // authentication
     UI_AUTHENTICATION_TYPES("smp.ui.authentication.types", "PASSWORD", "Set list of '|' separated authentication types: PASSWORD|SSO.", false, false, false, LIST_STRING),
     AUTOMATION_AUTHENTICATION_TYPES("smp.automation.authentication.types", "TOKEN|CERTIFICATE",
-            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported TOKEN, CERTIFICATE: ex. TOKEN|CERTIFICATE", false, false, false, LIST_STRING),
+            "Set list of '|' separated application-automation authentication types (Web-Service integration). Currently supported TOKEN, CERTIFICATE: ex. TOKEN|CERTIFICATE", false, false, false, LIST_STRING
+            ),
 
     EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",
             "Authentication with external module as: reverse proxy. Authenticated data are send send to application using 'Client-Cert' HTTP header. Do not enable this feature " +
@@ -131,18 +134,23 @@ public enum SMPPropertyEnum {
     ALERT_USER_LOGIN_FAILURE_ENABLED("smp.alert.user.login_failure.enabled",
             "false", "Enable/disable the login failure alert of the authentication module.", false, false,false, BOOLEAN),
     ALERT_USER_LOGIN_FAILURE_LEVEL("smp.alert.user.login_failure.level",
-            "LOW", "Alert level for login failure.", false, false,false, STRING),
+            "LOW", "Alert level for login failure. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
     ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT("smp.alert.user.login_failure.mail.subject",
-            "Login failure", "Login failure mail subject. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+            "Login failure", "Login failure mail subject.", false, false,false, STRING,
+            "^(.{0,255})$", "Subject must have less than 256 character" ),
 
     ALERT_USER_SUSPENDED_ENABLED("smp.alert.user.suspended.enabled",
             "true", "Enable/disable the login suspended alert of the authentication module.", false, false,false, BOOLEAN),
     ALERT_USER_SUSPENDED_LEVEL("smp.alert.user.suspended.level",
-            "HIGH", "Alert level for login suspended. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+            "HIGH", "Alert level for login suspended. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
     ALERT_USER_SUSPENDED_MAIL_SUBJECT("smp.alert.user.suspended.mail.subject",
-            "Login credentials suspended", "Login suspended mail subject.", false, false,false, STRING),
+            "Login credentials suspended", "Login suspended mail subject.", false, false,false, STRING,
+            "^(.{0,255})$", "Subject must have less than 256 character"),
     ALERT_USER_SUSPENDED_MOMENT("smp.alert.user.suspended.mail.moment",
-            "WHEN_BLOCKED", "#When should the account disabled alert be triggered. Values: AT_LOGON: An alert will be triggered each time a user tries to login to a disabled account. WHEN_BLOCKED: An alert will be triggered once when the account got suspended.", false, false,false, STRING),
+            "WHEN_BLOCKED", "When should the account disabled alert be triggered. Values: AT_LOGON: An alert will submit mail for all logon attempts to suspended account, WHEN_BLOCKED: An alert will be triggered only the first time when the account got suspended.",
+            false, false,false, STRING, "^(AT_LOGON|WHEN_BLOCKED)$", "Allowed values are: AT_LOGON,WHEN_BLOCKED" ),
 
     ALERT_PASSWORD_BEFORE_EXPIRATION_ENABLED("smp.alert.password.imminent_expiration.enabled",
             "true", "Enable/disable the imminent password expiration alert", false, false,false, BOOLEAN),
@@ -151,9 +159,11 @@ public enum SMPPropertyEnum {
     ALERT_PASSWORD_BEFORE_EXPIRATION_INTERVAL("smp.alert.password.imminent_expiration.frequency_days",
             "5", "Interval between alerts.", false, false,false, INTEGER),
     ALERT_PASSWORD_BEFORE_EXPIRATION_LEVEL("smp.alert.password.imminent_expiration.level",
-            "LOW", "Password imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+            "LOW", "Password imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
     ALERT_PASSWORD_BEFORE_EXPIRATION_MAIL_SUBJECT("smp.alert.password.imminent_expiration.mail.subject",
-            "Password imminent expiration", "Password imminent expiration mail subject.", false, false,false, STRING),
+            "Password imminent expiration", "Password imminent expiration mail subject.", false, false,false, STRING,
+            "^(.{0,255})$", "Subject must have less than 256 character" ),
 
     ALERT_PASSWORD_EXPIRED_ENABLED("smp.alert.password.expired.enabled",
             "true", "Enable/disable the password expiration alert", false, false,false, BOOLEAN),
@@ -162,9 +172,11 @@ public enum SMPPropertyEnum {
     ALERT_PASSWORD_EXPIRED_INTERVAL("smp.alert.password.expired.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_PASSWORD_EXPIRED_LEVEL("smp.alert.password.expired.level",
-            "LOW", "Password expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+            "LOW", "Password expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
     ALERT_PASSWORD_EXPIRED_MAIL_SUBJECT("smp.alert.password.expired.mail.subject",
-            "Password expired", "Password expiration mail subject.", false, false,false, STRING),
+            "Password expired", "Password expiration mail subject.", false, false,false, STRING,
+            "^(.{0,255})$", "Subject must have less than 256 character" ),
 
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_ENABLED("smp.alert.accessToken.imminent_expiration.enabled",
             "true", "Enable/disable the imminent accessToken expiration alert", false, false,false, BOOLEAN),
@@ -173,9 +185,11 @@ public enum SMPPropertyEnum {
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_INTERVAL("smp.alert.accessToken.imminent_expiration.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_LEVEL("smp.alert.accessToken.imminent_expiration.level",
-            "LOW", "AccessToken imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+            "LOW", "AccessToken imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
     ALERT_ACCESS_TOKEN_BEFORE_EXPIRATION_MAIL_SUBJECT("smp.alert.accessToken.imminent_expiration.mail.subject",
-            "Access token imminent expiration", "accessToken imminent expiration mail subject.", false, false,false, STRING),
+            "Access token imminent expiration", "accessToken imminent expiration mail subject.", false, false,false, STRING,
+            "^(.{0,255})$", "Subject must have less than 256 character" ),
 
     ALERT_ACCESS_TOKEN_EXPIRED_ENABLED("smp.alert.accessToken.expired.enabled",
             "true", "Enable/disable the accessToken expiration alert", false, false,false, BOOLEAN),
@@ -184,9 +198,11 @@ public enum SMPPropertyEnum {
     ALERT_ACCESS_TOKEN_EXPIRED_INTERVAL("smp.alert.accessToken.expired.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_ACCESS_TOKEN_EXPIRED_LEVEL("smp.alert.accessToken.expired.level",
-            "LOW", "Access Token expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+            "LOW", "Access Token expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
     ALERT_ACCESS_TOKEN_EXPIRED_MAIL_SUBJECT("smp.alert.accessToken.expired.mail.subject",
-            "Access token expired", "Password expiration mail subject.", false, false,false, STRING),
+            "Access token expired", "Password expiration mail subject.", false, false,false, STRING,
+            "^(.{0,255})$", "Subject must have less than 256 character" ),
 
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_ENABLED("smp.alert.certificate.imminent_expiration.enabled",
             "true", "Enable/disable the imminent certificate expiration alert", false, false,false, BOOLEAN),
@@ -195,9 +211,11 @@ public enum SMPPropertyEnum {
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_INTERVAL("smp.alert.certificate.imminent_expiration.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_LEVEL("smp.alert.certificate.imminent_expiration.level",
-            "LOW", "certificate imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+            "LOW", "certificate imminent expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
     ALERT_CERTIFICATE_BEFORE_EXPIRATION_MAIL_SUBJECT("smp.alert.certificate.imminent_expiration.mail.subject",
-            "Certificate imminent expiration", "Certificate imminent expiration mail subject.", false, false,false, STRING),
+            "Certificate imminent expiration", "Certificate imminent expiration mail subject.", false, false,false, STRING,
+            "^(.{0,255})$", "Subject must have less than 256 character" ),
 
     ALERT_CERTIFICATE_EXPIRED_ENABLED("smp.alert.certificate.expired.enabled",
             "true", "Enable/disable the certificate expiration alert", false, false,false, BOOLEAN),
@@ -206,9 +224,11 @@ public enum SMPPropertyEnum {
     ALERT_CERTIFICATE_EXPIRED_INTERVAL("smp.alert.certificate.expired.frequency_days",
             "5", "Frequency in days between alerts.", false, false,false, INTEGER),
     ALERT_CERTIFICATE_EXPIRED_LEVEL("smp.alert.certificate.expired.level",
-            "LOW", "Certificate expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING),
+            "LOW", "Certificate expiration alert level. Values: {LOW, MEDIUM, HIGH}", false, false,false, STRING,
+            "^(LOW|MEDIUM|HIGH)$", "Allowed values are: LOW, MEDIUM, HIGH"),
     ALERT_CERTIFICATE_EXPIRED_MAIL_SUBJECT("smp.alert.certificate.expired.mail.subject",
-            "Certificate expired", "Password expiration mail subject.", false, false,false, STRING),
+            "Certificate expired", "Certificate expiration mail subject.", false, false,false, STRING,
+            "^(.{0,255})$", "Subject must have less than 256 character" ),
 
     SMP_ALERT_CREDENTIALS_CRON("smp.alert.credentials.cronJobExpression", "0 52 4 */1 * *", "Property cron expression for triggering alert messages !", false, false, false, CRON_EXPRESSION),
     SMP_ALERT_CREDENTIALS_SERVER("smp.alert.credentials.serverInstance", "localhost",  "If smp.cluster.enabled is set to true then then instance (hostname) to generate report.", false, false, false, STRING),
@@ -221,14 +241,16 @@ public enum SMPPropertyEnum {
     String property;
     String defValue;
     String desc;
-    String valuePattern;
+    Pattern valuePattern;
+    String errorValueMessage;
 
     boolean isEncrypted;
     boolean isMandatory;
     boolean restartNeeded;
     SMPPropertyTypeEnum propertyType;
 
-    SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded, SMPPropertyTypeEnum propertyType,String valuePattern) {
+    SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded,
+                    SMPPropertyTypeEnum propertyType,String valuePattern,String errorValueMessage ) {
         this.property = property;
         this.defValue = defValue;
         this.desc = desc;
@@ -236,11 +258,12 @@ public enum SMPPropertyEnum {
         this.isMandatory = isMandatory;
         this.restartNeeded = restartNeeded;
         this.propertyType = propertyType;
-        this.valuePattern = valuePattern;
+        this.valuePattern = Pattern.compile(valuePattern);
+        this.errorValueMessage = errorValueMessage;
     }
 
     SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded, SMPPropertyTypeEnum propertyType) {
-        this(property, defValue, desc, isMandatory, isEncrypted, restartNeeded, propertyType, propertyType.errorTemplate);
+        this(property, defValue, desc, isMandatory, isEncrypted, restartNeeded, propertyType, propertyType.defValidationRegExp, propertyType.getErrorMessage(property));
 
     }
 
@@ -284,8 +307,12 @@ public enum SMPPropertyEnum {
         return Arrays.asList(values()).stream().filter(val -> val.isRestartNeeded()).collect(Collectors.toList());
     }
 
-    public String getValuePattern() {
+    public Pattern getValuePattern() {
         return valuePattern;
+    }
+
+    public String getErrorValueMessage() {
+        return this.errorValueMessage;
     }
 }
 

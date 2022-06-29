@@ -25,6 +25,7 @@ public class SMPCas20ServiceTicketValidator extends Cas20ServiceTicketValidator 
         this.urlSuffix = urlSuffix;
     }
 
+    @Override
     protected String getUrlSuffix() {
         if (StringUtils.isBlank(urlSuffix)){
             LOG.warn("Cas20 ServiceTicketValidator url suffix is not configured. Use default value: [{}]", super.getUrlSuffix());
@@ -33,6 +34,7 @@ public class SMPCas20ServiceTicketValidator extends Cas20ServiceTicketValidator 
         return urlSuffix;
     }
 
+    @Override
     protected void customParseResponse(final String response, final Assertion assertion)
             throws TicketValidationException {
         LOG.debug("Got CAS response: [{}] and test it with assertion [{}]",response,assertion );

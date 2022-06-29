@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.logging.SMPLogger.SECURITY_MARKER;
+
 
 /**
  * @author Joze Rihtarsic
@@ -50,7 +52,8 @@ public class PayloadValidatorService {
                 validatorSpi.validatePayload(payload, mimeType);
             }
         } catch (PayloadValidatorSpiException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Content validation failed", ExceptionUtils.getRootCauseMessage(e),e);
+            LOG.error(SECURITY_MARKER, "Content validation failed: [" + ExceptionUtils.getRootCauseMessage(e) + "]", e);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Upload payload", "Content validation failed");
         }
     }
 }

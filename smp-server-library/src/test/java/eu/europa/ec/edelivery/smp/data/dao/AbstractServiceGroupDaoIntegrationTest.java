@@ -22,7 +22,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  * @since 4.1
  */
 
-public abstract class AbstractServiceGroupDaoIntegrationTest extends AbstractBaseDao{
+public abstract class AbstractServiceGroupDaoIntegrationTest extends AbstractBaseDao {
     @Autowired
     ServiceGroupDao testInstance;
 
@@ -50,39 +50,40 @@ public abstract class AbstractServiceGroupDaoIntegrationTest extends AbstractBas
         userDao.persistFlushDetach(u3);
     }
 
-   public DBServiceGroup createAndSaveNewServiceGroup(){
-       return createAndSaveNewServiceGroup(TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
-   }
+    public DBServiceGroup createAndSaveNewServiceGroup() {
+        return createAndSaveNewServiceGroup(TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
+    }
 
-    private DBServiceGroup createAndSaveNewServiceGroup(String domain, String participantId, String participantSchema){
+    private DBServiceGroup createAndSaveNewServiceGroup(String domain, String participantId, String participantSchema) {
         return createAndSaveNewServiceGroup(domain, participantId, participantSchema, null);
     }
-    @Transactional
-   public DBServiceGroup createAndSaveNewServiceGroup(String domain, String participantId, String participantSchema, DBUser usr){
-       DBDomain d = domainDao.getDomainByCode(domain).get();
-       DBServiceGroup sg = TestDBUtils.createDBServiceGroup(participantId, participantSchema);
-       if (usr!= null) {
-           sg.getUsers().add(usr);
-       }
-       sg.addDomain(d);
-       testInstance.persistFlushDetach(sg);
-       return sg;
-   }
 
-    public void createAndSaveNewServiceGroups(int iCount, String domain, String participant){
+    @Transactional
+    public DBServiceGroup createAndSaveNewServiceGroup(String domain, String participantId, String participantSchema, DBUser usr) {
+        DBDomain d = domainDao.getDomainByCode(domain).get();
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup(participantId, participantSchema);
+        if (usr != null) {
+            sg.getUsers().add(usr);
+        }
+        sg.addDomain(d);
+        testInstance.persistFlushDetach(sg);
+        return sg;
+    }
+
+    public void createAndSaveNewServiceGroups(int iCount, String domain, String participant) {
         createAndSaveNewServiceGroups(iCount, domain, participant, null);
     }
 
     @Transactional
-    public void createAndSaveNewServiceGroups(int iCount, String domain, String participant, DBUser usr){
-        int i =0;
-        while (i++ < iCount){
-            createAndSaveNewServiceGroup(domain,  participant+":"+i, TestConstants.TEST_SG_SCHEMA_1, usr);
+    public void createAndSaveNewServiceGroups(int iCount, String domain, String participant, DBUser usr) {
+        int i = 0;
+        while (i++ < iCount) {
+            createAndSaveNewServiceGroup(domain, participant + ":" + i, TestConstants.TEST_SG_SCHEMA_1, usr);
         }
     }
 
     @Transactional
-    public DBServiceGroup createAndSaveNewServiceGroupWithMetadata(){
+    public DBServiceGroup createAndSaveNewServiceGroupWithMetadata() {
 
         DBDomain d = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
         DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
@@ -94,7 +95,7 @@ public abstract class AbstractServiceGroupDaoIntegrationTest extends AbstractBas
     }
 
     @Transactional
-    public DBServiceGroup createAndSaveNewServiceGroupWithUsers(){
+    public DBServiceGroup createAndSaveNewServiceGroupWithUsers() {
         DBUser u1 = userDao.findUserByUsername(USERNAME_1).get();
         DBUser u2 = userDao.findUserByCertificateId(USER_CERT_2).get();
 
@@ -108,7 +109,7 @@ public abstract class AbstractServiceGroupDaoIntegrationTest extends AbstractBas
     }
 
     @Transactional
-    public void update(DBServiceGroup sg){
+    public void update(DBServiceGroup sg) {
         testInstance.update(sg);
     }
 

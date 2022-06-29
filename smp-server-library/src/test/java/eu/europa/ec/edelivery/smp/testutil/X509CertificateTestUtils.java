@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -14,6 +15,7 @@ import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,40 +79,18 @@ public class X509CertificateTestUtils {
         return certs;
     }
 
-    /**
-     *  Method generates certificate chain
-     * @param subjects
-     * @param certificatePoliciesOids
-     * @param startDate
-     * @param expiryDate
-     * @return
-     * @throws Exception
-     */
-    public static X509Certificate[] createCertificateChain(String[] subjects,  List<List<String>> certificatePoliciesOids,  Date startDate, Date expiryDate) throws Exception {
 
-        String issuer = null;
-        PrivateKey issuerKey = null;
-        long iSerial = 10000;
-        X509Certificate[] certs = new X509Certificate[subjects.length];
 
-        int index = subjects.length;
-        for (String sbj: subjects){
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(1024);
-            KeyPair key = keyGen.generateKeyPair();
+    public static X509Certificate createX509CertificateForTest( String subject, BigInteger serial,  List<String> listOfPolicyOIDs) throws Exception {
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        keyGen.initialize(2048);
+        KeyPair key = keyGen.generateKeyPair();
+        KeyUsage usage = new KeyUsage(244);
+        X509Certificate cert = X509CertificateUtils.createCertificate(serial,
+                key.getPublic(), subject, OffsetDateTime.now().minusDays(1L),
+                OffsetDateTime.now().plusYears(5L), (String)null,
+                key.getPrivate(), false, -1, usage, "SHA256withRSA",listOfPolicyOIDs);
 
-            X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(new X500Name(issuer ==null? sbj:issuer),
-                    BigInteger.valueOf(iSerial++), startDate, expiryDate, new X500Name(sbj),
-                    SubjectPublicKeyInfo.getInstance(key.getPublic().getEncoded()));
-
-            ContentSigner sigGen = new JcaContentSignerBuilder("SHA256WITHRSA")
-                    .setProvider("BC").build(issuerKey ==null?key.getPrivate():issuerKey);
-
-            certs[--index] = new JcaX509CertificateConverter().setProvider("BC").getCertificate(certBuilder.build(sigGen));
-            issuer= sbj;
-            issuerKey = key.getPrivate();
-
-        }
-        return certs;
+        return cert;
     }
 }

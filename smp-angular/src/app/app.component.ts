@@ -34,6 +34,14 @@ export class AppComponent {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
   }
 
+  get isWebServiceUserTokenAuthPasswdEnabled(): boolean {
+    return this.lookups.cachedApplicationConfig?.webServiceAuthTypes?.includes('TOKEN');
+  }
+
+  get isUserAuthPasswdEnabled(): boolean {
+    return this.lookups.cachedApplicationInfo?.authTypes.includes('PASSWORD');
+  }
+
   isCurrentUserSystemAdmin(): boolean {
     return this.securityService.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
   }

@@ -3,9 +3,9 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -19,8 +19,13 @@ import java.time.OffsetDateTime;
 @Component
 public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
 
-    @Autowired
+    private ConfigurationService configurationService;
     private ConversionService conversionService;
+
+    public DBUserToUserROConverter(ConfigurationService configurationService, ConversionService conversionService) {
+        this.configurationService = configurationService;
+        this.conversionService = conversionService;
+    }
 
     @Override
     public UserRO convert(DBUser source) {
@@ -34,6 +39,17 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         target.setPasswordExpireOn(source.getPasswordExpireOn());
         target.setAccessTokenExpireOn(source.getAccessTokenExpireOn());
         target.setPasswordExpired(isPasswordExpired(source));
+
+        target.setSequentialLoginFailureCount(source.getSequentialLoginFailureCount());
+        target.setLastFailedLoginAttempt(source.getLastFailedLoginAttempt());
+        target.setSuspendedUtil(getSuspensionUntilDate(source.getLastFailedLoginAttempt(),source.getSequentialLoginFailureCount(),
+                configurationService.getLoginSuspensionTimeInSeconds(), configurationService.getLoginMaxAttempts()));
+        target.setSequentialTokenLoginFailureCount(source.getSequentialTokenLoginFailureCount());
+        target.setLastTokenFailedLoginAttempt(source.getLastTokenFailedLoginAttempt());
+        target.setTokenSuspendedUtil(getSuspensionUntilDate(source.getLastTokenFailedLoginAttempt(),
+                source.getSequentialTokenLoginFailureCount(),
+                configurationService.getAccessTokenLoginSuspensionTimeInSeconds(),
+                configurationService.getAccessTokenLoginMaxAttempts()));
 
         target.setActive(source.isActive());
         // do not expose internal id
@@ -49,6 +65,20 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
             }
         }
         return target;
+    }
+
+    public OffsetDateTime getSuspensionUntilDate(OffsetDateTime lastAttempt, Integer currentCount, Integer suspendedForSec, Integer suspendedFromCount){
+        if (lastAttempt ==null || currentCount ==null || suspendedForSec ==null || suspendedFromCount ==null){
+            return null;
+        }
+        if (currentCount < suspendedFromCount){
+            return null;
+        }
+        OffsetDateTime suspendedUtil = lastAttempt.plusSeconds(suspendedForSec);
+        if (suspendedUtil.isBefore(OffsetDateTime.now())){
+            return null;
+        }
+        return suspendedUtil;
     }
 
     private boolean isPasswordExpired(DBUser source) {

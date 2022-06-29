@@ -2,27 +2,35 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.Assert.*;
 
 
@@ -39,6 +47,10 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Autowired
     protected UIUserService testInstance;
+
+
+    @Autowired
+    protected ServiceGroupDao serviceGroupDao;
 
 
     protected void insertDataObjects(int size) {
@@ -102,6 +114,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         user.setEmailAddress(UUID.randomUUID().toString());
         user.setRole("ROLE");
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
+
+
 
         //when
         testInstance.updateUserList(Collections.singletonList(user), null);
@@ -296,4 +310,179 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(result.getAccessTokenGeneratedOn());
     }
 
+    @Test
+    public void testUpdateUserPasswordNotMatchReqExpression() {
+        long authorizedUserId = 1L;
+        long userToUpdateId = 1L;
+        String authorizedPassword = "testPass";
+        String newPassword = "newPass";
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [PasswordChange]."));
+    }
+
+    @Test
+    public void testUpdateUserPasswordUserNotExists() {
+
+        long authorizedUserId = 1L;
+        long userToUpdateId = 1L;
+        String authorizedPassword = "oldPass";
+        String newPassword = "TTTTtttt1111$$$$$";
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
+    }
+
+    @Test
+    public void testUpdateUserPasswordUserNotAuthorized() {
+        String userPassword = UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+        long authorizedUserId = user.getId();
+        long userToUpdateId = 1L;
+        String authorizedPassword = "oldPass";
+        String newPassword = "TTTTtttt1111$$$$$";
+
+        BadCredentialsException result = assertThrows(BadCredentialsException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Password change failed; Invalid current password!"));
+    }
+
+    @Test
+    public void testUpdateUserPasswordOK() {
+        String userPassword = UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+        long authorizedUserId = user.getId();
+        long userToUpdateId = user.getId();
+        String authorizedPassword = userPassword;
+        String newPassword = "TTTTtttt1111$$$$$";
+
+        testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword);
+    }
+
+    @Test
+    public void testUpdateUserdataOK() {
+        String userPassword = UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+        UserRO userRO = new UserRO();
+        userRO.setEmailAddress(UUID.randomUUID().toString());
+        userRO.setUsername(UUID.randomUUID().toString());
+        userRO.setAccessTokenId(UUID.randomUUID().toString());
+        userRO.setRole(UUID.randomUUID().toString());
+
+        testInstance.updateUserdata(user.getId(), userRO);
+
+        DBUser changedUser = userDao.findUser(user.getId()).get();
+        // fields must not change
+        assertEquals(user.getUsername(), changedUser.getUsername());
+        assertEquals(user.getAccessToken(), changedUser.getAccessToken());
+        assertEquals(user.getRole(), changedUser.getRole());
+        // changed
+        assertEquals(userRO.getEmailAddress(), changedUser.getEmailAddress());
+    }
+
+    @Test
+    public void testUpdateUserdataCertificateOK() throws Exception {
+        String certSubject = "CN=" + UUID.randomUUID().toString() + ",O=eDelivery,C=EU";
+        String userPassword = UUID.randomUUID().toString();
+        DBUser user = new DBUser();
+        user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
+        user.setUsername(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
+        user.setRole("ROLE");
+        userDao.persistFlushDetach(user);
+
+        CertificateRO certificateRO = TestROUtils.createCertificateRO(certSubject, BigInteger.TEN);
+        UserRO userRO = new UserRO();
+        userRO.setCertificate(certificateRO);
+
+        testInstance.updateUserdata(user.getId(), userRO);
+
+
+        DBUser changedUser = userDao.findUser(user.getId()).get();
+        // fields must not change
+        assertNotNull(changedUser.getCertificate());
+        assertNotNull(changedUser.getCertificate().getPemEncoding());
+        assertNotNull(certificateRO.getCertificateId(), changedUser.getCertificate().getCertificateId());
+        assertNotNull(certificateRO.getSubject(), changedUser.getCertificate().getSubject());
+        assertNotNull(certificateRO.getIssuer(), changedUser.getCertificate().getIssuer());
+        assertNotNull(certificateRO.getSerialNumber(), changedUser.getCertificate().getSerialNumber());
+    }
+
+
+    @Test
+    public void testUpdateUserdataCertificateWithExistingCertificateOK() throws Exception {
+        String certSubject = "CN=" + UUID.randomUUID().toString() + ",O=eDelivery,C=EU";
+        DBUser user = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_2);
+        userDao.persistFlushDetach(user);
+
+        CertificateRO certificateRO = TestROUtils.createCertificateRO(certSubject, BigInteger.TEN);
+        UserRO userRO = new UserRO();
+        userRO.setCertificate(certificateRO);
+
+        testInstance.updateUserdata(user.getId(), userRO);
+
+
+        DBUser changedUser = userDao.findUser(user.getId()).get();
+        // fields must not change
+        assertNotNull(changedUser.getCertificate());
+        assertNotNull(changedUser.getCertificate().getPemEncoding());
+        assertNotNull(certificateRO.getCertificateId(), changedUser.getCertificate().getCertificateId());
+        assertNotNull(certificateRO.getSubject(), changedUser.getCertificate().getSubject());
+        assertNotNull(certificateRO.getIssuer(), changedUser.getCertificate().getIssuer());
+        assertNotNull(certificateRO.getSerialNumber(), changedUser.getCertificate().getSerialNumber());
+    }
+
+    @Test
+    public void testValidateDeleteRequest() throws Exception {
+        String username1 = "test-user-delete-01";
+        String username2 = "test-user-delete-02";
+
+        DBUser user1 = TestDBUtils.createDBUser(username1);
+        DBUser user2 = TestDBUtils.createDBUser(username2);
+        userDao.persistFlushDetach(user1);
+        userDao.persistFlushDetach(user2);
+
+        DBDomain d = new DBDomain();
+        d.setDomainCode(TEST_DOMAIN_CODE_1);
+        d.setSmlSubdomain(TEST_SML_SUBDOMAIN_CODE_1);
+        domainDao.persistFlushDetach(d);
+
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
+        sg.getUsers().add(user2);
+        sg.addDomain(d);
+
+        serviceGroupDao.persistFlushDetach(sg);
+        DeleteEntityValidation validation = new DeleteEntityValidation();
+        validation.getListIds().add(user1.getId()+"");
+        validation.getListIds().add(user2.getId()+"");
+
+        DeleteEntityValidation result = testInstance.validateDeleteRequest(validation);
+
+        assertEquals(1, result.getListDeleteNotPermitedIds().size());
+        assertEquals(user2.getId()+"",  result.getListDeleteNotPermitedIds().get(0));
+        assertEquals(2, result.getListIds().size());
+    }
 }

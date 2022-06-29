@@ -1,10 +1,8 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Before;
@@ -12,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,11 +19,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.core.MediaType;
-import java.util.Arrays;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_USER;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -57,26 +53,8 @@ public class UserResourceIntegrationTest {
 
     @Before
     public void setup() {
+        mapper.registerModule(new JavaTimeModule());
         mvc = initializeMockMvc(webAppContext);
-    }
-
-    @Test
-    public void getUserList() throws Exception {
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        MvcResult result = mvc.perform(get(CONTEXT_PATH_INTERNAL_USER)
-                .session(session)
-                .with(csrf()))
-                .andExpect(status().isOk()).andReturn();
-        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
-        // then
-        assertNotNull(res);
-        assertEquals(10, res.getServiceEntities().size());
-        res.getServiceEntities().forEach(sgMap -> {
-            UserRO sgro = mapper.convertValue(sgMap, UserRO.class);
-            assertNotNull(sgro.getUserId());
-            assertNotNull(sgro.getUsername());
-            assertNotNull(sgro.getRole());
-        });
     }
 
     @Test
@@ -124,134 +102,55 @@ public class UserResourceIntegrationTest {
     }
 
     @Test
-    public void testUpdateUserList() throws Exception {
-        // given when
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-
-        SecurityMockMvcRequestPostProcessors.CsrfRequestPostProcessor csrf = csrf();
-        MvcResult result = mvc.perform(get(CONTEXT_PATH_INTERNAL_USER)
-                .session(session)
-                .with(csrf))
-                .andExpect(status().isOk()).andReturn();
-        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
-        assertNotNull(res);
-        assertFalse(res.getServiceEntities().isEmpty());
-        UserRO userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
-        // then
-        userRO.setActive(!userRO.isActive());
-        userRO.setEmailAddress("test@mail.com");
-        userRO.setPassword(UUID.randomUUID().toString());
-        if (userRO.getCertificate() == null) {
-            userRO.setCertificate(new CertificateRO());
-        }
-        userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
-
-        mvc.perform(put(CONTEXT_PATH_INTERNAL_USER)
-                .session(session)
-                .with(csrf)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
-        ).andExpect(status().isOk());
-    }
-
-    @Test
-    public void testUpdateUserListWrongAuthentication() throws Exception {
-        // given when
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        MvcResult result = mvc.perform(get(CONTEXT_PATH_INTERNAL_USER)
-                .session(session)
-                .with(csrf()))
-                .andExpect(status().isOk()).andReturn();
-        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
-        assertNotNull(res);
-        assertFalse(res.getServiceEntities().isEmpty());
-        UserRO userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
-        // then
-        userRO.setActive(!userRO.isActive());
-        userRO.setEmailAddress("test@mail.com");
-        userRO.setPassword(UUID.randomUUID().toString());
-        if (userRO.getCertificate() == null) {
-            userRO.setCertificate(new CertificateRO());
-        }
-        userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
-        // anonymous
-        mvc.perform(put(CONTEXT_PATH_INTERNAL_USER)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
-        ).andExpect(status().isUnauthorized());
-
-        MockHttpSession sessionSMPAdmin = loginWithSMPAdmin(mvc);
-        mvc.perform(put(CONTEXT_PATH_INTERNAL_USER)
-                .session(sessionSMPAdmin)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
-        ).andExpect(status().isUnauthorized());
-
-        MockHttpSession sessionSGAdmin = loginWithServiceGroupUser(mvc);
-        mvc.perform(put(CONTEXT_PATH_INTERNAL_USER)
-                .session(sessionSGAdmin)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
-        ).andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    public void testValidateDeleteUserOK() throws Exception {
-
-        // login
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        // get list
-        MvcResult result = mvc.perform(get(CONTEXT_PATH_INTERNAL_USER)
-                .with(csrf())
-                .session(session))
-                .andExpect(status().isOk()).andReturn();
-        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
-        assertNotNull(res);
-        assertFalse(res.getServiceEntities().isEmpty());
-        UserRO userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
-
-        MvcResult resultDelete = mvc.perform(post(CONTEXT_PATH_INTERNAL_USER + "/validate-delete")
-                .with(csrf())
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("[\"" + userRO.getUserId() + "\"]"))
-                .andExpect(status().isOk()).andReturn();
-
-        DeleteEntityValidation dev = mapper.readValue(resultDelete.getResponse().getContentAsString(), DeleteEntityValidation.class);
-
-        assertFalse(dev.getListIds().isEmpty());
-        assertTrue(dev.getListDeleteNotPermitedIds().isEmpty());
-        assertEquals(userRO.getUserId(), dev.getListIds().get(0));
-    }
-
-    @Test
-    public void testValidateDeleteLoggedUserNotOK() throws Exception {
-
-        // login
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        // get list
-        MvcResult result = mvc.perform(get(CONTEXT_PATH_INTERNAL_USER)
-                .with(csrf())
-                .session(session))
-                .andExpect(status().isOk()).andReturn();
+    public void generateAccessTokenForUser() throws Exception {
+        MockHttpSession session = loginWithServiceGroupUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
+        assertNotNull(userRO);
 
-        // note system credential has id 3!
-        MvcResult resultDelete = mvc.perform(post(CONTEXT_PATH_INTERNAL_USER + "/validate-delete")
+        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/" + userRO.getUserId()+"/generate-access-token")
                 .with(csrf())
                 .session(session)
-                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .content("[\"" + userRO.getUserId() + "\"]"))
-                .andExpect(status().isOk())
-                .andReturn();
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(SG_USER2_PASSWD)
+        ).andExpect(status().isOk()).andReturn();
 
-        DeleteEntityValidation res = mapper.readValue(resultDelete.getResponse().getContentAsString(), DeleteEntityValidation.class);
+        MvcResult resultUser = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY_USER )
+                .with(csrf())
+                .session(session)
+        ).andExpect(status().isOk()).andReturn();
 
-        assertTrue(res.getListIds().isEmpty());
-        assertEquals("Could not delete logged user!", res.getStringMessage());
+        UserRO updateUserData = mapper.readValue(resultUser.getResponse().getContentAsString(), UserRO.class);
+        AccessTokenRO resAccessToken = mapper.readValue(result.getResponse().getContentAsString(), AccessTokenRO.class);
+        assertNotNull(resAccessToken);
+        assertNotEquals(userRO.getAccessTokenId(), resAccessToken.getIdentifier());
+        assertNotEquals(userRO.getAccessTokenExpireOn(), resAccessToken.getExpireOn());
+        assertEquals(updateUserData.getAccessTokenId(), resAccessToken.getIdentifier());
+        assertEquals(updateUserData.getAccessTokenExpireOn(), resAccessToken.getExpireOn());
+    }
+
+    @Test
+    public void changePassword() throws Exception {
+        String newPassword = "TESTtest1234!@#$";
+
+        MockHttpSession session = loginWithServiceGroupUser2(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        assertNotNull(userRO);
+        PasswordChangeRO newPass = new PasswordChangeRO();
+        newPass.setUsername(SG_USER2_USERNAME);
+        newPass.setCurrentPassword(SG_USER2_PASSWD);
+        newPass.setNewPassword(newPassword);
+        assertNotEquals(newPassword, SG_USER2_PASSWD);
+
+        mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId()+"/change-password")
+                .with(csrf())
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(newPass))
+        ).andExpect(status().isOk()).andReturn();
+
+        // test to login with new password
+        MockHttpSession sessionNew = loginWithCredentials(mvc, SG_USER2_USERNAME, newPassword);
+        assertNotNull(sessionNew);
     }
 
 }

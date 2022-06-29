@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
 
+import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.ui.SmpConfigRO;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -52,8 +55,12 @@ public class ApplicationResource {
     public SmpInfoRO getApplicationInfo() {
         SmpInfoRO info = new SmpInfoRO();
         info.setVersion(getDisplayVersion());
-        info.addAuthTypes(configurationService.getUIAuthenticationTypes());
-        if (configurationService.getUIAuthenticationTypes().contains("SSO")){
+        List<String> authTypes = configurationService.getUIAuthenticationTypes();
+        // set default password
+        authTypes = authTypes ==null || authTypes.isEmpty()?
+                Collections.singletonList(SMPUserAuthenticationTypes.PASSWORD.name()):authTypes;
+        info.addAuthTypes(authTypes);
+        if (authTypes.contains(SMPUserAuthenticationTypes.SSO.name())){
             info.setSsoAuthenticationLabel(configurationService.getCasUILabel());
             info.setSsoAuthenticationURI(configurationService.getCasSMPLoginRelativePath());
         }

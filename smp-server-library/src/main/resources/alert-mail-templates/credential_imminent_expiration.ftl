@@ -59,7 +59,7 @@
                             <!-- TITLE -->
                             <tr>
                               <td valign="top" align="left" style=" font-size: 20px; font-family: Arial, Helvetica, sans-serif; color: #000;"><br/>
-                                User password imminent expiration</td>
+                                  Credential type: ${CREDENTIAL_TYPE} imminent expiration</td>
                             </tr>
                             <!-- / TITLE -->
 
@@ -78,8 +78,8 @@
                             <tr>
                               <td valign="top" align="left" style=" font-size: 13px; font-family: Arial, Helvetica, sans-serif; color: #000;"><br/>
                                 <br/>
-                                <p><strong>User type:</strong> ${CREDENTIAL_TYPE}</p>
-                                <p><strong>User:</strong> ${CREDENTIAL_ID}</p>
+                                <p><strong>Credential type:</strong> ${CREDENTIAL_TYPE}</p>
+                                <p><strong>Credential identifier:</strong> ${CREDENTIAL_ID}</p>
                                 <p><strong>Expiration date-time: </strong> ${EXPIRATION_DATETIME}</p>
                                 <p><strong>Reporting date-time:</strong> ${REPORTING_DATETIME}</p>
                                 <p><strong>Alert level:</strong> ${ALERT_LEVEL}</p>

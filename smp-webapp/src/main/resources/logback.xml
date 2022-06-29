@@ -4,7 +4,6 @@
     <!-- pattern definition -->
     <property name="encoderPattern" value="%d{ISO8601} [%X{smp_user}] [%X{smp_session_id}] [%X{smp_request_id}] [%thread] %5p %c{1}:%L - %m%n" scope="global"/>
     <property name="consolePattern" value="%d{ISO8601} [%X{smp_user}] [%X{smp_session_id}] [%X{smp_request_id}] [%thread] %5p %c{1}:%L - %m%n" scope="global"/>
-
      <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log.folder:-logs}/edelivery-smp.log</file>
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -27,19 +26,15 @@
             <pattern>${encoderPattern}</pattern>
         </encoder>
     </appender>
-
-
-
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <Target>System.out</Target>
         <encoder>
             <pattern>${consolePattern}</pattern>
         </encoder>
     </appender>
-
-    <logger name="eu.europa.ec.edelivery" level="DEBUG" />
-    <logger name="eu.europa.ec.smp" level="DEBUG" />
-    <logger name="org.springframework.security.cas" level="DEBUG" />
+    <logger name="eu.europa.ec.edelivery" level="INFO" />
+    <logger name="eu.europa.ec.smp" level="INFO" />
+    <logger name="org.springframework.security.cas" level="INFO" />
     <root level="WARN">
         <appender-ref ref="file"/>
         <appender-ref ref="stdout"/>

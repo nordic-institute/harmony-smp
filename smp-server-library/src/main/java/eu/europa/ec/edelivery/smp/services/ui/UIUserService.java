@@ -77,6 +77,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * @return ServiceResult with list
      */
     @Transactional
+    @Override
     public ServiceResult<UserRO> getTableList(int page, int pageSize, String sortField, String sortOrder, Object filter) {
         ServiceResult<UserRO> resUsers = super.getTableList(page, pageSize, sortField, sortOrder, filter);
         resUsers.getServiceEntities().forEach(this::updateUserStatus);
@@ -85,18 +86,36 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     protected void updateUserStatus(UserRO user) {
         // never return password even if is hashed...
+
         user.setPassword(null);
         if (user.getCertificate() != null && !StringUtils.isBlank(user.getCertificate().getCertificateId())) {
             // validate certificate
-            try {
-                truststoreService.checkFullCertificateValidity(user.getCertificate());
-            } catch (CertificateException e) {
-                LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
-                user.getCertificate().setInvalid(true);
-                user.getCertificate().setInvalidReason(e.getMessage());
+            X509Certificate cert = getX509CertificateFromCertificateRO(user.getCertificate());
+            if (cert != null) {
+                truststoreService.validateCertificate(cert, user.getCertificate());
+            } else {
+                // validate just the database data
+                try {
+                    truststoreService.checkFullCertificateValidity(user.getCertificate());
+                } catch (CertificateException e) {
+                    LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
+                    user.getCertificate().setInvalid(true);
+                    user.getCertificate().setInvalidReason(e.getMessage());
+                }
             }
         }
+    }
 
+    public X509Certificate getX509CertificateFromCertificateRO(CertificateRO certificateRO) {
+        if (certificateRO == null || certificateRO.getEncodedValue() == null) {
+            return null;
+        }
+        try {
+            return X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certificateRO.getEncodedValue()));
+        } catch (CertificateException e) {
+            LOG.error("Error occurred while parsing the certificate encoded value for certificate id:[" + certificateRO.getCertificateId() + "].", e);
+            return null;
+        }
     }
 
     /**
@@ -105,18 +124,20 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      *
      * @param authorizedUserId which is authorized for update
      * @param userToUpdateId   the user id to be updated
+     * @param currentPassword  authorized password
+     * @param currentPassword  do not validate password if CAS authenticated
      * @return generated AccessToken.
      */
     @Transactional
-    public AccessTokenRO generateAccessTokenForUser(Long authorizedUserId, Long userToUpdateId, String currentPassword) {
+    public AccessTokenRO generateAccessTokenForUser(Long authorizedUserId, Long userToUpdateId, String currentPassword, boolean validateCurrentPassword) {
 
         DBUser dbUser = userDao.find(authorizedUserId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", authorizedUserId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-        if (!BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
-            throw new BadCredentialsException("Password change failed; Invalid current password!");
+        if (validateCurrentPassword && !BCrypt.checkpw(currentPassword, dbUser.getPassword())) {
+            throw new BadCredentialsException("AccessToken generation failed: Invalid current password!");
         }
         boolean adminUpdate = userToUpdateId != null && authorizedUserId != userToUpdateId;
         DBUser dbUserToUpdate = adminUpdate ? userDao.find(userToUpdateId) : dbUser;
@@ -141,14 +162,30 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * Method regenerate access token for user and returns access token
      * In the database the access token value is saved in format BCryptPasswordHash
      *
-     * @param authorizedUserId - authorized user id
+     * @param authorizedUserId which is authorized for update
+     * @param userToUpdateId   the user id to be updated
      * @return generated AccessToken.
      */
     @Transactional
-    public DBUser updateUserPassword(Long authorizedUserId, Long userToUpdateId, String currentPassword, String newPassword) {
+    public AccessTokenRO generateAccessTokenForUser(Long authorizedUserId, Long userToUpdateId, String currentPassword) {
+        return generateAccessTokenForUser(authorizedUserId, userToUpdateId, currentPassword, true);
+    }
+
+    /**
+     * Method updates the user password
+     *
+     * @param authorizedUserId        - authorized user id
+     * @param userToUpdateId          - user id to update password  user id
+     * @param authorizationPassword   - authorization password
+     * @param newPassword             - new password for the userToUpdateId
+     * @param validateCurrentPassword - validate authorizationPassword - if CAS authenticated skip this part
+     * @return generated DBUser.
+     */
+    @Transactional
+    public DBUser updateUserPassword(Long authorizedUserId, Long userToUpdateId, String authorizationPassword, String newPassword, boolean validateCurrentPassword) {
 
         Pattern pattern = configurationService.getPasswordPolicyRexExp();
-        if (!pattern.matcher(newPassword).matches()) {
+        if (pattern != null && !pattern.matcher(newPassword).matches()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
         }
         DBUser dbAuthorizedUser = userDao.find(authorizedUserId);
@@ -157,7 +194,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
 
-        if (!BCrypt.checkpw(currentPassword, dbAuthorizedUser.getPassword())) {
+        if (validateCurrentPassword && !BCrypt.checkpw(authorizationPassword, dbAuthorizedUser.getPassword())) {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
 
@@ -177,6 +214,20 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return dbUserToUpdate;
     }
 
+    /**
+     * Method updates the user password
+     *
+     * @param authorizedUserId      - authorized user id
+     * @param userToUpdateId        - user id to update password  user id
+     * @param authorizationPassword - authorization password
+     * @param newPassword           - new password for the userToUpdateId
+     * @return generated DBUser.
+     */
+    @Transactional
+    public DBUser updateUserPassword(Long authorizedUserId, Long userToUpdateId, String authorizationPassword, String newPassword) {
+        return updateUserPassword(authorizedUserId, userToUpdateId, authorizationPassword, newPassword, true);
+    }
+
     @Transactional
     public void updateUserList(List<UserRO> lst, OffsetDateTime passwordChange) {
         for (UserRO userRO : lst) {
@@ -191,53 +242,71 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-
+        // the only think what user can update now on user dat
         dbUser.setEmailAddress(user.getEmailAddress());
-        if (user.getCertificate() != null && (dbUser.getCertificate() == null
-                || !StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId()))) {
-            CertificateRO certRo = user.getCertificate();
 
-            if (dbUser.getCertificate() != null) {
-                dbUser.getCertificate().setCertificateId(certRo.getCertificateId());
-                dbUser.getCertificate().setCrlUrl(certRo.getCrlUrl());
-                dbUser.getCertificate().setPemEncoding(certRo.getEncodedValue());
-                dbUser.getCertificate().setSubject(certRo.getSubject());
-                dbUser.getCertificate().setIssuer(certRo.getIssuer());
-                dbUser.getCertificate().setSerialNumber(certRo.getSerialNumber());
-                if (certRo.getValidTo() != null) {
-                    dbUser.getCertificate().setValidTo(certRo.getValidTo().toInstant()
-                            .atOffset(ZoneOffset.UTC));
-                }
-                if (certRo.getValidFrom() != null) {
-                    dbUser.getCertificate().setValidFrom(certRo.getValidFrom().toInstant()
-                            .atOffset(ZoneOffset.UTC));
-                }
-            } else {
-                DBCertificate certificate = conversionService.convert(certRo, DBCertificate.class);
-                dbUser.setCertificate(certificate);
-            }
-
-            if (user.getCertificate().getEncodedValue() == null) {
-                LOG.debug("User has certificate data without certificate bytearray. ");
-                return;
-            }
-
-            if (!configurationService.trustCertificateOnUserRegistration()) {
-                LOG.debug("User certificate is not automatically trusted! Certificate is not added to truststore!");
-                return;
-            }
-
-            String certificateAlias;
-            try {
-                X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
-                certificateAlias = truststoreService.addCertificate(certRo.getAlias(), x509Certificate);
-                LOG.debug("User certificate is added to truststore!");
-            } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
-                LOG.error("Error occurred while adding certificate to truststore.", e);
-                throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "AddUserCertificate", ExceptionUtils.getRootCauseMessage(e));
-            }
-            certRo.setAlias(certificateAlias);
+        // update certificate
+        if (user.getCertificate() == null && dbUser.getCertificate() == null) {
+            return;
         }
+
+        // clear certificate data
+        if (user.getCertificate() == null || StringUtils.isBlank(user.getCertificate().getCertificateId())) {
+            dbUser.setCertificate(null);
+            LOG.info("Clear certificate credentials from the user [{}] with id [{}]", dbUser.getUsername(), dbUser.getId());
+            return;
+        }
+
+        if (dbUser.getCertificate() != null && StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId())) {
+            LOG.debug("Certificate id was not changed for the user [{}] with id [{}]. Skip updating the certificate data!",
+                    dbUser.getCertificate().getCertificateId(), dbUser.getUsername(), dbUser.getId());
+            return;
+        }
+
+        CertificateRO certRo = user.getCertificate();
+        if (dbUser.getCertificate() == null) {
+            DBCertificate certificate = conversionService.convert(certRo, DBCertificate.class);
+            dbUser.setCertificate(certificate);
+        } else {
+            LOG.info("Update certificate credentials for user:");
+            dbUser.getCertificate().setCertificateId(certRo.getCertificateId());
+            dbUser.getCertificate().setCrlUrl(certRo.getCrlUrl());
+            dbUser.getCertificate().setPemEncoding(certRo.getEncodedValue());
+            dbUser.getCertificate().setSubject(certRo.getSubject());
+            dbUser.getCertificate().setIssuer(certRo.getIssuer());
+            dbUser.getCertificate().setSerialNumber(certRo.getSerialNumber());
+            if (certRo.getValidTo() != null) {
+                dbUser.getCertificate().setValidTo(certRo.getValidTo().toInstant()
+                        .atOffset(ZoneOffset.UTC));
+            }
+            if (certRo.getValidFrom() != null) {
+                dbUser.getCertificate().setValidFrom(certRo.getValidFrom().toInstant()
+                        .atOffset(ZoneOffset.UTC));
+            }
+        }
+
+        if (user.getCertificate().getEncodedValue() == null) {
+            LOG.debug("User has certificate data without certificate bytearray. ");
+            return;
+        }
+
+        if (!configurationService.trustCertificateOnUserRegistration()) {
+            LOG.debug("User certificate is not automatically trusted! Certificate is not added to truststore!");
+            return;
+        }
+
+        String certificateAlias;
+        try {
+            X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
+
+            certificateAlias = truststoreService.addCertificate(certRo.getAlias(), x509Certificate);
+            LOG.debug("User certificate is added to truststore!");
+        } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
+            LOG.error("Error occurred while adding certificate to truststore.", e);
+            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "AddUserCertificate", ExceptionUtils.getRootCauseMessage(e));
+        }
+        certRo.setAlias(certificateAlias);
+
     }
 
     protected void createOrUpdateUser(UserRO userRO, OffsetDateTime passwordChange) {
@@ -318,8 +387,14 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
 
+    /**
+     * User can be deleted only if it does not own any of the service groups.
+     *
+     * @param dev
+     * @return
+     */
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
-        List<Long> idList = dev.getListIds().stream().map(encId -> SessionSecurityUtils.decryptEntityId(encId)).collect(Collectors.toList());
+        List<Long> idList = dev.getListIds().stream().map(SessionSecurityUtils::decryptEntityId).collect(Collectors.toList());
         List<DBUserDeleteValidation> lstMessages = userDao.validateUsersForDelete(idList);
         dev.setValidOperation(lstMessages.isEmpty());
         StringWriter sw = new StringWriter();

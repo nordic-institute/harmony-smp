@@ -18,7 +18,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -41,6 +40,9 @@ import java.util.Optional;
 public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProviderForUI.class);
+
+    private static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException("Login failed; Invalid userID or password");
+    private static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
 
     final UserDao mUserDao;
     final ConversionService conversionService;
@@ -89,24 +91,25 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         DBUser user;
         try {
             Optional<DBUser> oUsr = mUserDao.findUserByUsername(username);
-            if (!oUsr.isPresent()) {
+            if (!oUsr.isPresent() || !oUsr.get().isActive() ){
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider");
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, "Username does not exits", username);
                 delayResponse(startTime);
-                throw new BadCredentialsException("Login failed; Invalid userID or password");
+                throw BAD_CREDENTIALS_EXCEPTION;
             }
             user = oUsr.get();
         } catch (AuthenticationException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
-            throw ex;
+            delayResponse(startTime);
+            throw BAD_CREDENTIALS_EXCEPTION;
 
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
-            throw new AuthenticationServiceException("Internal server error occurred while user authentication!");
-
+            delayResponse(startTime);
+            throw BAD_CREDENTIALS_EXCEPTION;
         }
 
-        validateIfUserAccountIsSuspended(user);
+        validateIfUserAccountIsSuspended(user, startTime);
 
         SMPAuthority authority = SMPAuthority.getAuthorityByRoleName(user.getRole());
         // the webservice authentication does not support session set the session secret is null!
@@ -119,7 +122,8 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
                 userDetails);
         try {
             if (!BCrypt.checkpw(userCredentialToken, user.getPassword())) {
-                loginAttemptForUserFailed(user, startTime);
+                LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, username);
+                loginAttemptForUserFailedAndThrowError(user, true, startTime);
             }
             user.setSequentialLoginFailureCount(0);
             user.setLastFailedLoginAttempt(null);
@@ -127,11 +131,12 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         } catch (IllegalArgumentException ex) {
             // password is not hashed;
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, ex, username);
-            throw new BadCredentialsException("Login failed; Invalid userID or password");
+            loginAttemptForUserFailedAndThrowError(user, true, startTime);
         }
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, username, role);
         return smpAuthenticationToken;
     }
+
 
     public void delayResponse(long startTime) {
         int delayInMS = configurationService.getLoginFailDelayInMilliSeconds() - (int) (Calendar.getInstance().getTimeInMillis() - startTime);
@@ -146,19 +151,29 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         }
     }
 
-    public void loginAttemptForUserFailed(DBUser user, long startTime) {
+    public void loginAttemptForUserFailedAndThrowError(DBUser user, boolean notYetSuspended, long startTime) {
         user.setSequentialLoginFailureCount(user.getSequentialLoginFailureCount() != null ? user.getSequentialLoginFailureCount() + 1 : 1);
         user.setLastFailedLoginAttempt(OffsetDateTime.now());
         mUserDao.update(user);
         LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, user.getUsername());
-        if (user.getSequentialLoginFailureCount() >= configurationService.getLoginMaxAttempts()) {
+        boolean isUserSuspended = user.getSequentialLoginFailureCount() >= configurationService.getLoginMaxAttempts();
+        if (isUserSuspended) {
             LOG.info("User [{}] failed sequential attempt exceeded the max allowed attempts [{}]!", user.getUsername(), configurationService.getLoginMaxAttempts());
-            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.USERNAME_PASSWORD);
+            // at notYetSuspended alert is sent for all settings AT_LOGON, WHEN_BLOCKED
+            if (notYetSuspended ||
+                    configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
+                alertService.alertCredentialsSuspended(user, CredentialTypeEnum.USERNAME_PASSWORD);
+            }
         } else {
+            // always invoke the method. The method handles the smp.alert.user.login_failure.enabled
             alertService.alertCredentialVerificationFailed(user, CredentialTypeEnum.USERNAME_PASSWORD);
         }
         delayResponse(startTime);
-        throw new BadCredentialsException("Login failed; Invalid userID or password");
+        if (isUserSuspended) {
+            throw SUSPENDED_CREDENTIALS_EXCEPTION;
+        } else {
+            throw BAD_CREDENTIALS_EXCEPTION;
+        }
     }
 
     /**
@@ -166,7 +181,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
      *
      * @param user
      */
-    public void validateIfUserAccountIsSuspended(DBUser user) {
+    public void validateIfUserAccountIsSuspended(DBUser user, long startTime) {
         if (user.getSequentialLoginFailureCount() == null
                 || user.getSequentialLoginFailureCount() < 0) {
             LOG.trace("User has no previous failed attempts");
@@ -184,7 +199,7 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         }
         // check if the last failed attempt is already expired. If yes just clear the attempts
         if (configurationService.getLoginSuspensionTimeInSeconds() != null && configurationService.getLoginSuspensionTimeInSeconds() > 0
-                && ChronoUnit.SECONDS.between(OffsetDateTime.now(), user.getLastFailedLoginAttempt()) > configurationService.getLoginSuspensionTimeInSeconds()) {
+                && ChronoUnit.SECONDS.between(user.getLastFailedLoginAttempt(), OffsetDateTime.now()) > configurationService.getLoginSuspensionTimeInSeconds()) {
             LOG.warn("User [{}] suspension is expired! Clear failed login attempts and last failed login attempt", user.getUsername());
             user.setLastFailedLoginAttempt(null);
             user.setSequentialLoginFailureCount(0);
@@ -193,14 +208,11 @@ public class SMPAuthenticationProviderForUI implements AuthenticationProvider {
         }
 
         if (user.getSequentialLoginFailureCount() < configurationService.getLoginMaxAttempts()) {
-            LOG.warn("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialLoginFailureCount(), configurationService.getLoginMaxAttempts());
+            LOG.debug("User [{}] failed login attempt [{}]! did not reach the max failed attempts [{}]", user.getUsername(), user.getSequentialLoginFailureCount(), configurationService.getLoginMaxAttempts());
             return;
         }
-        if (configurationService.getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
-            alertService.alertCredentialsSuspended(user, CredentialTypeEnum.USERNAME_PASSWORD);
-        }
         LOG.securityWarn(SMPMessageCode.SEC_USER_SUSPENDED, user.getUsername());
-        throw new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
+        loginAttemptForUserFailedAndThrowError(user, false, startTime);
     }
 
     @Override

@@ -64,70 +64,8 @@ export class KeystoreImportDialogComponent {
         }
       },
       err => {
-        this.alertService.exception('Error uploading keystore file ' + this.selectedFile.name, err);
+        this.alertService.exception('Error uploading keystore file ' + this.selectedFile.name,  err.error?.errorDescription);
       }
     )
-
   }
-  /*
-
-  importKeystore() {
-    const headers = new HttpHeaders()
-      .set("Content-Type", "application/octet-stream");
-
-    const params: HttpParams = new HttpParams();
-    params.set('keystoreType', this.dialogForm.controls['keystoreType'].value);
-    params.set('password', this.dialogForm.controls['password'].value);
-    let keystoreType = this.dialogForm.controls['keystoreType'].value;
-    let password = encodeURIComponent(this.dialogForm.controls['password'].value);
-
-
-    const currentUser: User = this.securityService.getCurrentUser();
-    this.http.post<CertificateRo>(`${SmpConstants.REST_KEYSTORE}/${currentUser.id}/upload/${keystoreType}/${password}`, this.selectedFile, {headers,params }).subscribe((res: CertificateRo) => {
-        if (res ) {
-          this.alertService.success("Keystore "+this.selectedFile.name+ " imported!");
-          this.lookups.refreshCertificateLookup();
-        } else {
-          this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
-        }
-      },
-      err => {
-        this.alertService.exception('Error uploading certificate file ' + this.selectedFile.name, err);
-      }
-    )
-
-  }
-
-
-  importKeystoreMultipart() {
-    const headers = new HttpHeaders()
-      .set("Content-Type", "multipart/form-data");
-
-    const params: HttpParams = new HttpParams();
-    params.set('keystoreType', this.dialogForm.controls['keystoreType'].value);
-    params.set('password', this.dialogForm.controls['password'].value);
-    let keystoreType = this.dialogForm.controls['keystoreType'].value;
-    let password = encodeURI(this.dialogForm.controls['password'].value);
-
-    let input = new FormData();
-// Add your values in here
-    input.append('keystoreType',keystoreType);
-    input.append('password', password);
-    input.append('file', this.selectedFile);
-
-    const currentUser: User = this.securityService.getCurrentUser();
-    this.http.post<CertificateRo>(`${SmpConstants.REST_KEYSTORE}/${currentUser.id}/upload/`, input).subscribe((res: CertificateRo) => {
-        if (res ) {
-          this.alertService.success("Keystore "+this.selectedFile.name+ " imported!");
-        } else {
-          this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
-        }
-      },
-      err => {
-        this.alertService.exception('Error uploading certificate file ' + this.selectedFile.name, err);
-      }
-    )
-
-  }
-*/
 }

@@ -1,31 +1,67 @@
 # Service Metadata Publishing
 
-## Continuous Integration
+[![License badge](https://img.shields.io/badge/license-EUPL-blue.svg)](https://ec.europa.eu/digital-building-blocks/wikis/download/attachments/52601883/eupl_v1.2_en%20.pdf?version=1&modificationDate=1507206778126&api=v2)
+[![Documentation badge](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/SMP)
+[![Support badge]( https://img.shields.io/badge/support-sof-yellowgreen.svg)](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/Support+eDelivery)
 
-[https://webgate.ec.europa.eu/CITnet/bamboo/browse/EDELIVERY-SMPDEV]
+		  
+## Introduction
 
-## Building SMP
-SMP requires Maven 3.6+ and Java 1.8. 
+This is the code repository for eDelivery SMP, the sample implementation, open source project of the European Commission [eDelivery SMP profile](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/SMP+specifications) implementation.
 
-    
-## Source code history
-This is a continuation of CIPA SMP Joinup repository, which was migrated here to GIT on 07.12.2016:
-[https://joinup.ec.europa.eu/svn/cipaedelivery/trunk]
+Any feedback on the application or the following documentation is highly welcome, including bugs, typos
+or things you think should be included but aren't. You can use [JIRA](https://ec.europa.eu/digital-building-blocks/tracker/projects/EDELIVERY/issues) to provide feedback.
 
-##  Build SMP
-Step 1:
+Following documents are available on the [Domibus release page](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/SMP):
+*   Administration Guide 
+*   Software Architecture Document
+*   Interface Control Documents
 
-mvn clean install 
+[Top](#top)
+
+## Overall description
+
+To successfully send a business document in a (4-corner) network, an entity must be able to discover critical metadata about 
+the recipient (Access Point) of the business document, such as types of documents the Access Point is capable of receiving 
+and methods of transport supported. The recipient makes this metadata available to other entities in the network through 
+a Service Metadata Publisher service. The eDelivery SMP profile describes the request/response exchanges between a 
+Service Metadata Publisher and a client wishing to discover Access Point metadata. The profile is based on the 
+OASIS Service Metadata Publishing (SMP) Version 1.0 standard. 
+
+The eDelivery SMP application is an implementation of the eDelivery SMP profile. The application also has a feature to 
+configure the integration to SML using  [PEPPOL Transport Infrastructure SML specifications](https://docs.peppol.eu/edelivery/sml/ICT-Transport-SML_Service_Specification-101.pdf).
+
+eDelivery SMP is the Open Source project of the AS4 Access Point maintained by the European Commission. 
+
+If this is your first contact with the eDelivery SMP, it is highly recommended to check the [SMP Software](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/SMP+software) page.
+
+[Top](#top)
+
+## Build
+
+In order to build eDelivery SMP :
+
+    mvn clean install 
 
 
-## Execute integartion tests
-By default integrations tests are executes on H2 database.  
-Any remote DB with preconfigured schema might be used as well. Sample build command:
+[Top](#top)
 
-    mvn clean install \
-    -Djdbc.driver=oracle.jdbc.OracleDriver \
-    -Djdbc.url=jdbc:oracle:thin:<HOST_AND_PORT_AND_SERVICENAME> \
-    -Djdbc.user=<USERNAME> \
-    -Djdbc.password=<PASSWORD> \ 
-    -Dtarget-database=Oracle \ 
-    -Djdbc.read-connections.max=10
+## Install and run
+
+How to install and run eDelivery SMP can be read in the Admin Guide available on the [eDelivery SMP Release Page](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/SMP+software).
+
+[Top](#top)
+
+## License
+
+eDelivery SMP is licensed under European Union Public Licence (EUPL) version 1.2.
+
+[Top](#top)
+
+## Support
+
+Have questions? Consult our [Q&A section](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/SMP+FAQs). 
+Still have questions? Contact [eDelivery support](https://ec.europa.eu/digital-building-blocks/tracker/plugins/servlet/desk/portal/6).
+
+
+[Top](#top)

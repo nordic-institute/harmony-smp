@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
@@ -7,7 +8,6 @@ import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
@@ -18,7 +18,6 @@ import org.bouncycastle.asn1.x509.CertificatePolicies;
 import org.bouncycastle.asn1.x509.PolicyInformation;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +29,7 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.security.auth.x500.X500Principal;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -40,6 +40,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_TRUSTSTORE_CERT_INVALID;
+import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_USER_CERT_INVALID;
 import static java.util.Collections.list;
 import static java.util.Locale.US;
 
@@ -56,27 +58,26 @@ public class UITruststoreService {
             new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
     );
 
-    @Autowired
-    private ConfigurationService configurationService;
-
-    @Autowired
-    CRLVerifierService crlVerifierService;
-
-    @Autowired
-    ConversionService conversionService;
-
-    @Autowired
-    UserDao userDao;
+    // dependand beans
+    private final ConfigurationService configurationService;
+    private final CRLVerifierService crlVerifierService;
+    private final ConversionService conversionService;
+    private final UserDao userDao;
 
     List<String> normalizedTrustedList = new ArrayList<>();
-
     Map<String, X509Certificate> truststoreCertificates = new HashMap();
     List<CertificateRO> certificateROList = new ArrayList<>();
-    long lastUpdateTrustoreFileTime = 0;
+    long lastUpdateTrustStoreFileTime = 0;
     File lastUpdateTrustStoreFile = null;
     TrustManager[] trustManagers;
     KeyStore trustStore = null;
 
+    public UITruststoreService(ConfigurationService configurationService, CRLVerifierService crlVerifierService, ConversionService conversionService, UserDao userDao) {
+        this.configurationService = configurationService;
+        this.crlVerifierService = crlVerifierService;
+        this.conversionService = conversionService;
+        this.userDao = userDao;
+    }
 
     @PostConstruct
     public void init() {
@@ -145,13 +146,8 @@ public class UITruststoreService {
                             DistinguishedNamesCodingUtil.getCommonAttributesDN());
                     tmpList.add(subject);
                     hmCertificates.put(alias, x509Certificate);
-                    try {
-                        x509Certificate.checkValidity();
-                    } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
-                        LOG.warn("Certificate: [{}] from truststore is not valid anymore!", alias);
-                    }
+                    validateAndLogError(x509Certificate, alias);
                 }
-
             }
         } catch (Exception exception) {
             LOG.error("Could not load truststore certificates Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
@@ -164,10 +160,18 @@ public class UITruststoreService {
         normalizedTrustedList.addAll(tmpList);
         truststoreCertificates.putAll(hmCertificates);
 
-        lastUpdateTrustoreFileTime = truststoreFile.lastModified();
+        lastUpdateTrustStoreFileTime = truststoreFile.lastModified();
         lastUpdateTrustStoreFile = truststoreFile;
         // clear list to reload RO when required
         certificateROList.clear();
+    }
+
+    protected void validateAndLogError(X509Certificate x509Certificate, String alias) {
+        try {
+            x509Certificate.checkValidity();
+        } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
+            LOG.securityWarn(SEC_TRUSTSTORE_CERT_INVALID, alias, ExceptionUtils.getRootCauseMessage(ex));
+        }
     }
 
     public CertificateRO getCertificateData(byte[] buff) throws CertificateException, IOException {
@@ -188,7 +192,7 @@ public class UITruststoreService {
         CertificateRO cro;
         try {
             cert = X509CertificateUtils.getX509Certificate(buff);
-        } catch ( Throwable e) {
+        } catch (Throwable e) {
             LOG.debug("Error occurred while parsing the certificate ", e);
             LOG.warn("Can not parse the certificate with error:[{}]!", ExceptionUtils.getRootCauseMessage(e));
             cro = new CertificateRO();
@@ -199,32 +203,69 @@ public class UITruststoreService {
 
         cro = convertToRo(cert);
         if (validate) {
-            // first expect the worst
-            cro.setInvalid(true);
-            cro.setInvalidReason("Certificate is not validated!");
-            try {
-                checkFullCertificateValidity(cert);
-                validateCertificateNotUsed(cro);
-                cro.setInvalid(false);
-                cro.setInvalidReason(null);
-            } catch (CertificateExpiredException ex) {
-                cro.setInvalidReason("Certificate is expired!");
-            } catch (CertificateNotYetValidException ex) {
-                cro.setInvalidReason("Certificate is not yet valid!");
-            } catch (CertificateRevokedException ex) {
-                cro.setInvalidReason("Certificate is revoked!");
-            } catch (CertificateNotTrustedException ex) {
-                cro.setInvalidReason("Certificate is not trusted!");
-            } catch (CertificateException e) {
-                cro.setInvalidReason(ExceptionUtils.getRootCauseMessage(e));
-            }
+            validateCertificate(cert, cro);
         }
         return cro;
+    }
+
+    public void validateCertificate(X509Certificate cert, CertificateRO cro) {
+        // first expect the worst
+        cro.setInvalid(true);
+        cro.setInvalidReason("Certificate is not validated!");
+        try {
+            checkFullCertificateValidity(cert);
+            validateCertificateNotUsed(cro);
+            cro.setInvalid(false);
+            cro.setInvalidReason(null);
+        } catch (CertificateExpiredException ex) {
+            LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
+            cro.setInvalidReason("Certificate is expired!");
+        } catch (CertificateNotYetValidException ex) {
+            LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
+            cro.setInvalidReason("Certificate is not yet valid!");
+        } catch (CertificateRevokedException ex) {
+            LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
+            cro.setInvalidReason("Certificate is revoked!");
+        } catch (CertificateNotTrustedException ex) {
+            LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
+            cro.setInvalidReason("Certificate is not trusted!");
+        } catch (CertificateException e) {
+            LOG.securityError(SEC_USER_CERT_INVALID, e, cro.getCertificateId(), e.getMessage());
+            if (ExceptionUtils.getRootCause(e) instanceof CertPathValidatorException) {
+                cro.setInvalidReason("Certificate is not trusted! Invalid certificate policy path!");
+            } else {
+                cro.setInvalidReason(e.getMessage());
+            }
+        }
+    }
+
+    public void validateCertificateWithTruststore(X509Certificate x509Certificate) throws CertificateException {
+        KeyStore truststore = getTrustStore();
+
+        if (x509Certificate == null) {
+            LOG.warn("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
+            return;
+        }
+
+        if (truststore == null) {
+            LOG.warn("Truststore is not configured! Skip trust validation against the truststore!");
+            return;
+        }
+
+        Pattern subjectRegExp = configurationService.getCertificateSubjectRegularExpression();
+        List<String> allowedCertificatePolicies = configurationService.getAllowedCertificatePolicies();
+        CertificateValidator certificateValidator = new CertificateValidator(
+                null, truststore,
+                subjectRegExp != null ? subjectRegExp.pattern() : null,
+                allowedCertificatePolicies != null ? allowedCertificatePolicies : Collections.emptyList());
+        LOG.debug("Validate certificate with truststore, subject regexp [{}] and allowed certificate policies [{}]", subjectRegExp, allowedCertificatePolicies);
+        certificateValidator.validateCertificate(x509Certificate);
     }
 
     public void checkFullCertificateValidity(X509Certificate cert) throws CertificateException {
         // test if certificate is valid
         cert.checkValidity();
+
         // check if certificate or its issuer is on trusted list
         // check only issuer because using Client-cert header we do not have whole chain.
         // if the truststore is empty then truststore validation is ignored
@@ -234,8 +275,16 @@ public class UITruststoreService {
 
             throw new CertificateNotTrustedException("Certificate is not trusted!");
         }
-        validateCertificatePolicyMatch(cert);
-        validateCertificateSubjectExpression(cert);
+
+
+        if (trustStore != null) {
+            validateCertificateWithTruststore(cert);
+        } else {
+            LOG.warn("Use legacy certificate validation without truststore. Please configure truststore to increase security");
+            validateCertificatePolicyMatchLegacy(cert);
+            validateCertificateSubjectExpressionLegacy(cert);
+        }
+
         // check CRL - it is using only HTTP or https
         crlVerifierService.verifyCertificateCRLs(cert);
     }
@@ -243,8 +292,7 @@ public class UITruststoreService {
     public void validateCertificateNotUsed(CertificateRO cert) throws CertificateException {
         Optional<DBUser> user = userDao.findUserByCertificateId(cert.getCertificateId());
         if (user.isPresent()) {
-            String msg = "Certificate: '" + cert.getCertificateId() + "'" +
-                    " is already used!";
+            String msg = "Certificate: [" + cert.getCertificateId() + "] is already used!";
             LOG.debug("Certificate with id: [{}] is already used by user with username [{}]", user.get().getUsername());
             throw new CertificateException(msg);
         }
@@ -253,6 +301,7 @@ public class UITruststoreService {
 
     public void checkFullCertificateValidity(CertificateRO cert) throws CertificateException {
         // trust data in database
+
         Date currentDate = Calendar.getInstance().getTime();
         if (cert.getValidFrom() != null && currentDate.before(cert.getValidFrom())) {
             throw new CertificateNotYetValidException("Certificate: " + cert.getCertificateId() + " is valid from: "
@@ -281,7 +330,7 @@ public class UITruststoreService {
             } catch (CertificateRevokedException ex) {
                 String msg = "Certificate: '" + cert.getCertificateId() + "'" +
                         " is revoked!";
-                LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, cert.getCertificateId(), msg, ex);
+                LOG.securityWarn(SEC_USER_CERT_INVALID, cert.getCertificateId(), msg, ex);
                 throw new CertificateException(msg);
             } catch (Throwable th) {
                 String msg = "Error occurred while validating CRL for certificate!";
@@ -294,7 +343,7 @@ public class UITruststoreService {
     boolean isTruststoreChanged() {
         File file = getTruststoreFile();
         return !Objects.equals(lastUpdateTrustStoreFile, file) ||
-                file != null && file.lastModified() != lastUpdateTrustoreFileTime;
+                file != null && file.lastModified() != lastUpdateTrustStoreFileTime;
     }
 
     public File getTruststoreFile() {
@@ -311,7 +360,7 @@ public class UITruststoreService {
     }
 
 
-    private KeyStore loadTruststore(File truststoreFile) {
+    protected KeyStore loadTruststore(File truststoreFile) {
 
         if (truststoreFile == null) {
             LOG.error("Truststore file is not configured! Update SMP configuration!");
@@ -382,7 +431,6 @@ public class UITruststoreService {
     public String addCertificate(String alias, X509Certificate certificate) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
         KeyStore truststore = loadTruststore(getTruststoreFile());
-
         if (truststore != null) {
             String aliasPrivate = StringUtils.isBlank(alias) ? createAliasFromCert(certificate, truststore) : alias.trim();
 
@@ -455,7 +503,7 @@ public class UITruststoreService {
                 alias = alias + "_" + iVal;
             }
         } catch (KeyStoreException e) {
-            LOG.error("Error occured while reading truststore for validating alias: " + alias, e);
+            LOG.error("Error occurred while reading truststore for validating existance of the alias: " + alias, e);
         }
         return alias;
     }
@@ -528,7 +576,14 @@ public class UITruststoreService {
                 .collect(Collectors.toList());
     }
 
-    protected void validateCertificatePolicyMatch(X509Certificate certificate) throws CertificateException {
+    /**
+     * Method validates if the certificate contains one of allowed Certificate policy. At the moment it does not validates
+     * the whole chain. Because in some configuration cases does not use the truststore
+     *
+     * @param certificate
+     * @throws CertificateException
+     */
+    protected void validateCertificatePolicyMatchLegacy(X509Certificate certificate) throws CertificateException {
 
         // allowed list
         List<String> allowedCertificatePolicyOIDList = configurationService.getAllowedCertificatePolicies();
@@ -543,7 +598,7 @@ public class UITruststoreService {
             throw new CertificateException(excMessage);
         }
 
-        Optional<String> result = certPolicyList.stream().filter(certPolicyOID -> allowedCertificatePolicyOIDList.contains(certPolicyOID)).findFirst();
+        Optional<String> result = certPolicyList.stream().filter(allowedCertificatePolicyOIDList::contains).findFirst();
         if (result.isPresent()) {
             LOG.info("Certificate [{}] is trusted with certificate policy [{}]", certificate, result.get());
             return;
@@ -552,22 +607,19 @@ public class UITruststoreService {
         throw new CertificateException(excMessage);
     }
 
-    protected void validateCertificateSubjectExpression(X509Certificate signingCertificate) throws CertificateException {
+    protected void validateCertificateSubjectExpressionLegacy(X509Certificate signingCertificate) throws CertificateException {
         LOG.debug("Validate certificate subject");
-
-
-        String subject = signingCertificate.getSubjectDN().getName();
         Pattern certSubjectExpression = configurationService.getCertificateSubjectRegularExpression();
         if (certSubjectExpression == null) {
             LOG.debug("Certificate subject regular expression is empty, verification is disabled.");
             return;
         }
 
+        String subject = signingCertificate.getSubjectX500Principal().getName(X500Principal.RFC2253);
         if (!certSubjectExpression.matcher(subject).matches()) {
             String excMessage = String.format("Certificate subject [%s] does not match the regular expression configured [%s]", subject, certSubjectExpression);
             LOG.error(excMessage);
             throw new CertificateException(excMessage);
         }
     }
-
 }

@@ -1,4 +1,12 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
@@ -15,7 +23,7 @@ import {SecurityService} from "../security/security.service";
   templateUrl: './service-group-edit.component.html',
   styleUrls: ['./service-group-edit.component.css']
 })
-export class ServiceGroupEditComponent implements OnInit, AfterViewInit {
+export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowMetadataAction', {static: true}) rowMetadataAction: TemplateRef<any>
   @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
@@ -45,7 +53,9 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.serviceGroupEditController = new ServiceGroupEditController(this.dialog);
+  }
 
+  initColumns() {
     this.columnPicker.allColumns = [
       {
         name: 'Metadata',
@@ -86,11 +96,15 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit {
         sortable: false
       },
     ];
+    this.searchTable.tableColumnInit();
+  }
+
+  ngAfterViewChecked() {
+    this.changeDetector.detectChanges();
   }
 
   ngAfterViewInit(): void {
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
-    this.searchTable.tableColumnInit();
+    this.initColumns();
   }
 
   details(row: any) {
@@ -130,7 +144,11 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit {
     let metadataRowNumber = serviceGroupRow.serviceMetadata.indexOf(metaDataRow);
 
     const formRef: MatDialogRef<any> = this.serviceGroupEditController.newMetadataDialog({
-      data: {edit: true, serviceGroup: serviceGroupRow, metadata: metaDataRow}
+      data: {
+        edit: metaDataRow.status !== SearchTableEntityStatus.NEW,
+        serviceGroup: serviceGroupRow,
+        metadata: metaDataRow
+      }
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
@@ -145,7 +163,6 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit {
         let statusMetadata = metaDataRow.status === SearchTableEntityStatus.PERSISTED
           ? SearchTableEntityStatus.UPDATED
           : metaDataRow;
-
 
         metaDataRow.status = statusMetadata;
         metaDataRow = {...formRef.componentInstance.getCurrent()};

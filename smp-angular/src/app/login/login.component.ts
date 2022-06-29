@@ -105,7 +105,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   showWarningBeforeExpire(user: User) {
     this.dialog.open(InformationDialogComponent, {
       data: {
-        title: "Warning! Your password is about to expire!",
+        title: "Warning! Your password is about to expire",
         description: "Your password is about to expire on " + formatDate(user.passwordExpireOn,"longDate","en-US")+"! Please change the password before the expiration date!"
       }
     }).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));

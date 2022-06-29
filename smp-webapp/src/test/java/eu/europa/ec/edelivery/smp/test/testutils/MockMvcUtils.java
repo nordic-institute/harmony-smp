@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.test.testutils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpSession;
@@ -31,17 +32,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 4.2
  */
 public class MockMvcUtils {
-    static ObjectMapper mapper = new ObjectMapper();
+    static ObjectMapper mapper = new ObjectMapper(){{
+        registerModule(new JavaTimeModule());
+    }};
 
-    private static final String SYS_ADMIN_USERNAME = "sys_admin";
-    private static final String SYS_ADMIN_PASSWD = "test123";
-    private static final String SMP_ADMIN_USERNAME = "smp_admin";
-    private static final String SMP_ADMIN_PASSWD = "test123";
-    private static final String SG_USER_USERNAME = "sg_admin";
-    private static final String SG_USER_PASSWD = "test123";
+    public static final String SYS_ADMIN_USERNAME = "sys_admin";
+    public static final String SYS_ADMIN_PASSWD = "test123";
+    public static final String SMP_ADMIN_USERNAME = "smp_admin";
+    public static final String SMP_ADMIN_PASSWD = "test123";
+    public static final String SG_USER_USERNAME = "sg_admin";
+    public static final String SG_USER_PASSWD = "test123";
 
-    private static final String SG_USER2_USERNAME = "test_user_hashed_pass";
-    private static final String SG_USER2_PASSWD = "test123";
+    public static final String SG_USER2_USERNAME = "test_user_hashed_pass";
+    public static final String SG_USER2_PASSWD = "test123";
 
 
     public static RequestPostProcessor getHttpBasicSystemAdminCredentials() {
