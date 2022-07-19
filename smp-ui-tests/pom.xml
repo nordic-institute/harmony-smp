@@ -77,7 +77,7 @@
 							<failIfNoTests>true</failIfNoTests>
 							<systemPropertyVariables>
 								<webdriver.chrome.driver>${chrome.driver.path}</webdriver.chrome.driver>
-								<webdriver.gecko.driver>geckodriver.exe</webdriver.gecko.driver>
+								<webdriver.gecko.driver>chromedriver.exe</webdriver.gecko.driver>
 								<reports.folder>./target/</reports.folder>
 								<data.folder>.\src\main\resources\</data.folder>
 								<testdata.file>testData.json</testdata.file>
@@ -110,7 +110,7 @@
 							<failIfNoTests>true</failIfNoTests>
 
 							<systemPropertyVariables>
-								<webdriver.gecko.driver>${gecko.driver.path}</webdriver.gecko.driver>
+								<webdriver.gecko.driver>${chrome.driver.path}</webdriver.gecko.driver>
 								<reports.folder>./target/</reports.folder>
 								<data.folder>./src/main/resources/</data.folder>
 								<testdata.file>testData.json</testdata.file>

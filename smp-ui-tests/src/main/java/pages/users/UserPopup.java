@@ -33,25 +33,28 @@ public class UserPopup extends PageComponent {
 	WebElement emailInput;
 
 	@FindBy(id = "np_id")
-	WebElement passwordInput;
+	WebElement newPasswordInput;
 
 	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "cnp_id")
 	WebElement confirmationInput;
 
-	@FindBy(css = "input#cp_id")
+	/*@FindBy(css = "input#cp_id")
+	WebElement adminPassInput;*/
+
+	@FindBy(xpath = "//input[@data-placeholder='Admin password for user [system]']")
 	WebElement adminPassInput;
 
 	@FindBy(css = "mat-form-field.username> div > div.mat-form-field-flex > div > div")
 	WebElement usernameValidationError;
 
-	@FindBy(css = "mat-form-field.password > div > div.mat-form-field-flex > div > div")
+	@FindBy(css = "smp-password-change-dialog .password-panel mat-form-field:nth-child(2) .mat-form-field-subscript-wrapper mat-error")
 	WebElement passValidationError;
 
 	@FindBy(css = "mat-form-field.password-confirmation > div > div.mat-form-field-flex > div > div")
 	WebElement passConfirmationValidationError;
 
-	@FindBy(css = ".mat-form-field-infix > div.has-error")
+	@FindBy(css = ".ng-trigger.ng-trigger-transitionMessages.ng-star-inserted > mat-error")
 	WebElement passMatchValidationError;
 
 	@FindBy(css = "mat-dialog-actions button:nth-child(1)")
@@ -76,6 +79,23 @@ public class UserPopup extends PageComponent {
 	WebElement rolesSelectContainer;
 	public GenericSelect rolesSelect;
 
+	public boolean isAdminPasswordInputEnable()
+	{
+		boolean bool = adminPassInput.isEnabled();
+		return bool;
+	}
+	public boolean isNewPasswordInputEnable()
+	{
+		boolean bool = newPasswordInput.isEnabled();
+		return bool;
+	}
+	public boolean isConfirmPasswordInputEnable()
+	{
+		boolean bool = confirmationInput.isEnabled();
+		return bool;
+	}
+
+
 
 	public boolean isOKButtonActive() {
 		return isEnabled(okBtn);
@@ -94,7 +114,7 @@ public class UserPopup extends PageComponent {
 	public void fillData(String user, String email, String role, String password, String confirmation) {
 		clearAndFillInput(userNameInput, user);
 		clearAndFillInput(emailInput, email);
-		clearAndFillInput(passwordInput, password);
+		clearAndFillInput(newPasswordInput, password);
 		clearAndFillInput(confirmationInput, confirmation);
 
 		GenericSelect rolesSelect = new GenericSelect(driver, rolesSelectContainer);
@@ -130,7 +150,7 @@ public class UserPopup extends PageComponent {
 		//clearAndFillInput(confirmationInput, confirmation);
 		emailInput.click();
 	}
-	public void clickChangePassword(){
+	public void clickSetOrChangePassword(){
 		log.info("click change password");
 		waitForElementToBeClickable(changePassword);
 		changePassword.click();
@@ -158,14 +178,17 @@ public class UserPopup extends PageComponent {
 		waitForElementToBeClickable(changedPassword);
 		changedPassword.click();
 		waitForElementToBeGone(changedPassword);
-		//return new UsersPage(driver);
 		return new ConfirmationDialog(driver);
+	}
+	public boolean isPopupChangedPasswordEnabled()
+	{
+		return changedPassword.isEnabled();
 	}
 	public void setOrChangePassword(String adminPass,String newPass,String confirmPass)
 	{
 
 		clearAndFillInput(adminPassInput,adminPass);
-		clearAndFillInput(passwordInput,newPass);
+		clearAndFillInput(newPasswordInput,newPass);
 		clearAndFillInput(confirmationInput,confirmPass);
 	}
 	public void clickClosePasswordDialog()
@@ -213,7 +236,8 @@ public class UserPopup extends PageComponent {
 	}
 
 	public String getPassDontMatchValidationMsg() {
-//		WebElement passwordUnmatchingMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.has-error"));
+		//WebElement passwordUnmatchingMsg = driver.findElement(By.cssSelector(".ng-trigger.ng-trigger-transitionMessages.ng-star-inserted > mat-error"));
 		return passMatchValidationError.getText();
+		//".mat-form-field-infix > div.has-error"
 	}
 }

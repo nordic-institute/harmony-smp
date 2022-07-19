@@ -9,6 +9,7 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import pages.components.baseComponents.Header;
 import pages.components.baseComponents.SMPPage;
 import pages.components.baseComponents.PageComponent;
+import pages.service_groups.search.SearchPage;
 import utils.PROPERTIES;
 
 import java.security.PublicKey;
@@ -40,6 +41,9 @@ public class Sidebar extends PageComponent {
 	@FindBy(id = "sidebar_user_id")
 	private WebElement userLnk;
 
+	@FindBy(id = "sidebar_property_id")
+	private WebElement propertyLnk;
+
 	@FindBy(css = "mat-icon[role=img][mattooltip=Collapse]")
 	private WebElement collapseButton;
 
@@ -63,6 +67,9 @@ public class Sidebar extends PageComponent {
 				break;
 			case "UsersPage":
 				waitForElementToBeClickable(userLnk).click();
+				break;
+			case "PropertiesPage":
+				waitForElementToBeClickable(propertyLnk).click();
 				break;
 		}
 
