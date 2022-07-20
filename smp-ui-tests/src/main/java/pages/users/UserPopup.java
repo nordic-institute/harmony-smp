@@ -1,12 +1,16 @@
 package pages.users;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import pages.components.ConfirmationDialog;
 import pages.components.GenericSelect;
 import pages.components.baseComponents.PageComponent;
+
+import static org.openqa.selenium.remote.DriverCommand.CLICK_ELEMENT;
 
 public class UserPopup extends PageComponent {
 	public UserPopup(WebDriver driver) {
@@ -28,12 +32,15 @@ public class UserPopup extends PageComponent {
 	@FindBy(id = "emailAddress_id")
 	WebElement emailInput;
 
-	@FindBy(id = "password_id")
+	@FindBy(id = "np_id")
 	WebElement passwordInput;
 
 	@SuppressWarnings("SpellCheckingInspection")
-	@FindBy(id = "usernameconfirmation_id")
+	@FindBy(id = "cnp_id")
 	WebElement confirmationInput;
+
+	@FindBy(css = "input#cp_id")
+	WebElement adminPassInput;
 
 	@FindBy(css = "mat-form-field.username> div > div.mat-form-field-flex > div > div")
 	WebElement usernameValidationError;
@@ -47,11 +54,23 @@ public class UserPopup extends PageComponent {
 	@FindBy(css = ".mat-form-field-infix > div.has-error")
 	WebElement passMatchValidationError;
 
-	@FindBy(css = "mat-dialog-content > table > tr > td > button:nth-child(1)")
+	@FindBy(css = "mat-dialog-actions button:nth-child(1)")
 	WebElement okBtn;
 
-	@FindBy(css = "mat-dialog-content > table > tr > td > button:nth-child(2)")
+	@FindBy(css = "mat-dialog-actions button:nth-child(2)")
 	WebElement cancelBtn;
+
+	@FindBy(css ="#changePassword_id")
+	WebElement changePassword;
+
+	@FindBy(css ="smp-password-change-dialog mat-dialog-actions button:nth-child(1)")
+	WebElement changedPassword;
+
+	@FindBy(css = "#nobuttondialog_id")
+	WebElement passChangedClose;
+
+	@FindBy(css = "smp-password-change-dialog mat-dialog-actions button:nth-child(2)")
+	WebElement passwordDialogClose;
 
 	@FindBy(css = "#role_id")
 	WebElement rolesSelectContainer;
@@ -60,6 +79,12 @@ public class UserPopup extends PageComponent {
 
 	public boolean isOKButtonActive() {
 		return isEnabled(okBtn);
+	}
+	public boolean isChangePasswordActive() {
+		return isEnabled(passChangedClose);
+	}
+	public boolean isChangePasswordButtonActive() {
+		return isEnabled(changedPassword);
 	}
 
 	public boolean isCancelButtonActive() {
@@ -98,11 +123,55 @@ public class UserPopup extends PageComponent {
 		waitForElementToBeEnabled(userNameInput);
 	}
 
-	public void fillDetailsForm(String username, String pass, String confirmation) {
+	//public void fillDetailsForm(String username, String pass, String confirmation)
+	public void fillDetailsForm(String username){
 		clearAndFillInput(userNameInput, username);
-		clearAndFillInput(passwordInput, pass);
-		clearAndFillInput(confirmationInput, confirmation);
+		//clearAndFillInput(passwordInput, pass);
+		//clearAndFillInput(confirmationInput, confirmation);
 		emailInput.click();
+	}
+	public void clickChangePassword(){
+		log.info("click change password");
+		waitForElementToBeClickable(changePassword);
+		changePassword.click();
+		//waitForElementToBeGone(changePassword);
+	}
+	public void clickCloseAfterChangedPass()
+	{
+		log.info("click close after change password");
+		try {
+			Thread.sleep(10000);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		waitForElementToBeClickable(passChangedClose);
+		log.info("ab");
+		passChangedClose.click();
+		log.info("bd");
+		waitForElementToBeGone(passChangedClose);
+		log.info("cd");
+	}
+	public ConfirmationDialog clickChangedPassword()
+	{
+		log.info("click changed password");
+		waitForElementToBeClickable(changedPassword);
+		changedPassword.click();
+		waitForElementToBeGone(changedPassword);
+		//return new UsersPage(driver);
+		return new ConfirmationDialog(driver);
+	}
+	public void setPassword(String adminPass,String newPass,String confirmPass)
+	{
+
+		clearAndFillInput(adminPassInput,adminPass);
+		clearAndFillInput(passwordInput,newPass);
+		clearAndFillInput(confirmationInput,confirmPass);
+	}
+	public void clickClosePasswordDialog()
+	{
+		passwordDialogClose.click();
+		waitForElementToBeGone(passwordDialogClose);
 	}
 
 

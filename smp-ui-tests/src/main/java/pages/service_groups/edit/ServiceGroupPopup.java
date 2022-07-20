@@ -33,10 +33,10 @@ public class ServiceGroupPopup extends PageComponent {
 	private WebElement domainsPanelContainer;
 	public AccordionSection domainsPanel;
 
-	@FindBy(css = "mat-dialog-actions > div > button:nth-child(1)")
+	@FindBy(css = "mat-dialog-actions button:nth-child(1)")
 	private WebElement okButton;
 
-	@FindBy(css = "mat-dialog-actions > div > button:nth-child(2)")
+	@FindBy(css = "mat-dialog-actions button:nth-child(2)")
 	private WebElement cancelButton;
 
 	@FindBy(css = "#participantIdentifier_id")
@@ -57,7 +57,7 @@ public class ServiceGroupPopup extends PageComponent {
 	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(3)")
 	private WebElement validateExtensionButton;
 
-	@FindBy(css = "mat-card-content > div > div.ng-star-inserted")
+	@FindBy(css = "mat-card-content > div.ng-star-inserted")
 	private WebElement errorContainer;
 
 

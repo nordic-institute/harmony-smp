@@ -39,7 +39,7 @@ public class UsersPgTest extends BaseTest {
 	@Test(description = "USR-10")
 	public void newUser() {
 		String username = Generator.randomAlphaNumeric(10);
-		String validPass = "QW!@qw12";
+		String validPass = "Aabcdefghijklm1@";
 
 		SoftAssert soft = new SoftAssert();
 
@@ -49,13 +49,13 @@ public class UsersPgTest extends BaseTest {
 
 		UserPopup popup = usersPage.clickNew();
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
-
+		popup.fillDetailsForm(username);
 		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-
-		popup.clickUserDetailsToggle();
-
-		popup.fillDetailsForm(username, validPass, validPass);
 		popup.clickOK();
+
+	    //popup.clickUserDetailsToggle();
+		//popup.fillDetailsForm(username, validPass, validPass);
+
 
 		soft.assertTrue(usersPage.isSaveButtonEnabled(), "Save button is enabled");
 		soft.assertTrue(usersPage.isCancelButtonEnabled(), "Cancel button is enabled");
@@ -66,6 +66,23 @@ public class UsersPgTest extends BaseTest {
 		soft.assertTrue(usersPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
 
         soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
+		String adminPass = "123456";
+		int index = usersPage.grid().scrollToUser(username);
+
+		usersPage.grid().selectRow(index);
+		popup = usersPage.clickEdit();
+		try{
+			Thread.sleep(10000);
+		}
+        catch(Exception e){
+			e.printStackTrace();
+		}
+		popup.clickChangePassword();
+	    popup.setPassword(adminPass,validPass,validPass);
+		popup.clickChangedPassword().cancel();
+		//popup.clickCloseAfterChangedPass();
+		popup.clickOK();
+		soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
 
 		soft.assertAll();
 	}
@@ -81,19 +98,19 @@ public class UsersPgTest extends BaseTest {
 		UsersPage usersPage = new UsersPage(driver);
 		UserPopup popup = usersPage.clickNew();
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
-
+		popup.fillDetailsForm("tst");
 		popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
 
-		popup.clickUserDetailsToggle();
+		//popup.clickUserDetailsToggle();
 
-		popup.fillDetailsForm("tst", validPass, validPass);
+		//popup.fillDetailsForm("tst");
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(2)");
 		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(2)");
-		popup.fillDetailsForm("#$^&*^%&$#@%@$#%$", validPass, validPass);
+		popup.fillDetailsForm("#$^&*^%&$#@%@$#%$");
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(3)");
 		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(3)");
 		//noinspection SpellCheckingInspection
-		popup.fillDetailsForm("QWERQWERQWERQWERQWERQWERQWERQWE33", validPass, validPass);
+		popup.fillDetailsForm("QWERQWERQWERQWERQWERQWERQWERQWE33");
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(4)");
 		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(4)");
 
@@ -104,7 +121,7 @@ public class UsersPgTest extends BaseTest {
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test(description = "USR-30")
 	public void passwordValidation() {
-
+		String username = Generator.randomAlphaNumeric(10);
 		ArrayList<String> passToValidate = new ArrayList<>(Arrays.asList("qwqw",
 				"QWERQWERQWERQWERQWERQWERQWERQWE33",
 //				"QWERTYUIOP",
@@ -117,17 +134,44 @@ public class UsersPgTest extends BaseTest {
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage usersPage = new UsersPage(driver);
+		usersPage.clickVoidSpace();
 
+		UserPopup popup = usersPage.clickNew();
+		popup.fillDetailsForm("test11");
+		popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
+		popup.clickOK();
+		usersPage.clickSave().confirm();
+		soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
+		int index = usersPage.grid().scrollToUser(username);
+		usersPage.grid().selectRow(index);
+		String adminPass = "123456";
 		for (String pass : passToValidate) {
 //			usersPage.refreshPage();
-			usersPage.clickVoidSpace();
+			/*usersPage.clickVoidSpace();
 
 			UserPopup popup = usersPage.clickNew();
+			popup.fillDetailsForm("test11");
 			popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
-			popup.clickUserDetailsToggle();
+			popup.clickOK();
 
-			popup.fillDetailsForm("test11", pass, pass);
-			soft.assertTrue(!popup.isOKButtonActive(), String.format("OK button should be disabled until valid data is filled in the popup - %s ", pass));
+			usersPage.clickSave().confirm();
+			soft.assertTrue(usersPage.grid().isUserListed("test11"), "User present in the page");*/
+
+			popup = usersPage.clickEdit();
+
+			popup.clickChangePassword();
+			popup.setPassword(adminPass,pass,pass);
+			popup.clickClosePasswordDialog();
+			popup.clickCancel();
+			//popup.clickChangedPassword();
+			//popup.clickCloseAfterChangedPass();
+			//popup.clickCancel();
+
+
+			//popup.clickUserDetailsToggle();
+
+			//popup.fillDetailsForm("test11", pass, pass);
+			soft.assertTrue(!popup.isChangePasswordActive(), String.format("ChangePassword button should be disabled until valid data is filled in the popup - %s ", pass));
 			soft.assertEquals(popup.getPassValidationError(), SMPMessages.PASS_POLICY_MESSAGE, String.format("Pass policy message is displayed - %s", pass));
 		}
 
@@ -438,50 +482,74 @@ public class UsersPgTest extends BaseTest {
     public void duplicateUserCreation() {
         SoftAssert soft = new SoftAssert();
         String userName = Generator.randomAlphaNumeric(10);
-        String validPass = "QW!@qw12";
+        String validPass = "Aabcdefghijklm1@";
         UsersPage page = new UsersPage(driver);
 
         soft.assertTrue(page.isNewButtonEnabled(), "New button should be enabled");
 
         UserPopup popup = page.clickNew();
         soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
+		popup.fillDetailsForm(userName);
         popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-        popup.clickUserDetailsToggle();
-        popup.fillDetailsForm(userName, validPass, validPass);
-        popup.clickOK();
-        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
-        page.clickSave().confirm();
+		popup.clickOK();
+		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+		page.clickSave().confirm();
+		String adminPass = "123456";
+		int index = page.grid().scrollToUser(userName);
+
+		page.grid().selectRow(index);
+		popup = page.clickEdit();
+
+		popup.clickChangePassword();
+		popup.setPassword(adminPass,validPass,validPass);
+		popup.clickChangedPassword();
+		popup.clickCloseAfterChangedPass();
+		popup.clickCancel();
+		soft.assertTrue(page.grid().isUserListed(userName), "User present in the page");
+
+		//popup.clickUserDetailsToggle();
+        //popup.fillDetailsForm(userName,validPass,validPass);
+
 
         page.clickNew();
-        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
+
+		popup.fillDetailsForm(userName);
         popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-        popup.clickUserDetailsToggle();
-        popup.fillDetailsForm(userName, validPass, validPass);
+       // popup.clickUserDetailsToggle();
+        //popup.fillDetailsForm(userName);
         soft.assertFalse(popup.isOKButtonActive(), "OK button is enable after duplicate user name is filled in the popup");
 
         soft.assertTrue(popup.isDuplicateUserNameErrorMsgDisPlayed(), "The user page is not containing the expected error message");
+		popup.clickCancel();
         soft.assertAll();
     }
 
     @Test(description = "USR-122")
     public void verifyPasswordDoNotMatch() {
         String username = Generator.randomAlphaNumeric(10);
-        String validPass = "QW!@qw12";
-        String confirmPass = "AS@!gh12";
+        String validPass = "Aabcdefghijklm1@";
+        String confirmPass = "AS@!gh12fxghfnh43546";
         String errorMsg = "Passwords do not match";
         SoftAssert soft = new SoftAssert();
 
         UsersPage usersPage = new UsersPage(driver);
         UserPopup popup = usersPage.clickNew();
         soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
-
+		popup.fillDetailsForm(username);
         popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
+		popup.clickOK();
+		String adminPass = "123456";
+		int index = usersPage.grid().scrollToUser(username);
 
-        popup.clickUserDetailsToggle();
+		usersPage.grid().selectRow(index);
+		popup = usersPage.clickEdit();
 
-        popup.fillDetailsForm(username, validPass, confirmPass);
-        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enabled before valid data is filled in the popup(2)");
-        soft.assertEquals(popup.getPassDontMatchValidationMsg(), errorMsg, "confirmation input does not contain the message 'Passwords do not match' .");
+		popup.clickChangePassword();
+		popup.setPassword(adminPass,validPass,confirmPass);
+       // popup.clickUserDetailsToggle();
+		// popup.fillDetailsForm(username,validPass,confirmPass);
+        soft.assertTrue(!popup.isChangePasswordButtonActive(), "password change button is enabled before valid data is filled in the popup(2)");
+       // soft.assertEquals(popup.getPassDontMatchValidationMsg(), errorMsg, "confirmation input does not contain the message 'Passwords do not match' .");
         soft.assertAll();
     }
 
