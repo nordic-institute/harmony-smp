@@ -66,6 +66,8 @@ public class SMPMessages {
 	public static final String MSG_19 = "Domain ${BDMSL_DOMAIN} is already registered with id ${DOMAIN_ID}";
 	public static final String MSG_20 = "All changes were aborted and data restored into the present window";
 	public static final String MSG_21 = "Unable to login. SMP is not running.";
+	public static final String MSG_22 = "The user is suspended. Please try again later or contact your administrator.";
+	public static final String MSG_23 = "Configuration error: Subject must have less than 256 character!";
 
 
 	public static final String USERNAME_VALIDATION_MESSAGE = "Username can only contain alphanumeric characters (letters A-Z, numbers 0-9) and must have from 4 to 32 characters!";

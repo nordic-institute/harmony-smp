@@ -29,6 +29,9 @@ public class EditPage extends SMPPage {
 	@FindBy(id = "searchTable")
 	private WebElement searchTable;
 
+	@FindBy(id = "okButton")
+	private WebElement okButton;
+
 	@FindBy(id = "cancelButton")
 	private WebElement cancelButton;
 
@@ -99,6 +102,11 @@ public class EditPage extends SMPPage {
 	public ConfirmationDialog clickCancel() {
 		log.info("canceling ...");
 		waitForElementToBeClickable(cancelButton).click();
+		return new ConfirmationDialog(driver);
+	}
+	public ConfirmationDialog clickOk() {
+		log.info("canceling ...");
+		waitForElementToBeClickable(okButton).click();
 		return new ConfirmationDialog(driver);
 	}
 
