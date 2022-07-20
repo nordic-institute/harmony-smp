@@ -69,6 +69,14 @@ public class ServiceGroupPopup extends PageComponent {
 		log.info("is cancel button visible");
 		return isVisible(cancelButton);
 	}
+	public boolean isOKButtonEnable(){
+		log.info("is ok button visible");
+		return isEnabled(okButton);
+	}
+	public boolean isCancelButtonEnable(){
+		log.info("is cancel button visible");
+		return isEnabled(cancelButton);
+	}
 
 	public boolean isExtensionAreaEditable(){
 		log.info("is Extension Area Editable");
@@ -114,7 +122,7 @@ public class ServiceGroupPopup extends PageComponent {
 	public void clickCancel(){
 		log.info("click cancel..");
 		waitForElementToBeClickable(cancelButton).click();
-		waitForElementToBeGone(okButton);
+		waitForElementToBeGone(cancelButton);
 	}
 
 	public void fillForm(String identifier, String scheme, List<String> owners, List<String> domains, String extension){
