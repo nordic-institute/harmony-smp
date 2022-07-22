@@ -65,6 +65,7 @@ public class GenericSelect extends PageComponent {
 			if(option.getText().trim().equalsIgnoreCase(text)){
 				waitForElementToBeClickable(option).click();
 				waitForElementToBeGone(option);
+				log.info("return type is True");
 				return true;
 			}
 		}
