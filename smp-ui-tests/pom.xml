@@ -110,7 +110,7 @@
 							<failIfNoTests>true</failIfNoTests>
 
 							<systemPropertyVariables>
-								<webdriver.gecko.driver>${chrome.driver.path}</webdriver.gecko.driver>
+								<webdriver.chrome.driver>${chrome.driver.path}</webdriver.chrome.driver>
 								<reports.folder>./target/</reports.folder>
 								<data.folder>./src/main/resources/</data.folder>
 								<testdata.file>testData.json</testdata.file>

@@ -1,6 +1,7 @@
 package utils;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -25,13 +26,11 @@ public class DriverManager {
 //    }
 
     public static WebDriver getDriver(){
-		System.setProperty(FirefoxDriver.SystemProperty.DRIVER_USE_MARIONETTE,"true");
-//		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"C:\\temp\\logs.txt");
-		FirefoxOptions options = new FirefoxOptions();
-		FirefoxProfile profile= new FirefoxProfile();
-		profile.setPreference( "layout.css.devPixelsPerPx", "0.8" );
-		options.setProfile(profile);
-		WebDriver driver = new FirefoxDriver(options);
+		/*System.setProperty(FirefoxDriver.SystemProperty.DRIVER_USE_MARIONETTE,"true");
+		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"C:\\temp\\logs.txt");*/
+
+		System.setProperty("Webdriver.chrome.driver","D:\\Users\\monhaso\\Downloads\\Chromedriver");
+		WebDriver driver = new ChromeDriver();
 		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(2, TimeUnit.SECONDS);
