@@ -98,19 +98,7 @@ import utils.PROPERTIES;
         public SearchPage clickCloseAfterChangedPassForLoggedUser()
         {
             log.info("click close after change password");
-            try {
-                Thread.sleep(10000);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
             waitForElementToBeClickable(passChangedClose);
-            log.info("ab");
-            try {
-                Thread.sleep(5000);
-            }
-            catch(Exception e)
-            {}
             passChangedClose.click();
             waitForElementToBeGone(passChangedClose);
             return new SearchPage(driver);
@@ -118,19 +106,8 @@ import utils.PROPERTIES;
         public void clickCloseAfterChangedPass()
         {
             log.info("click close after change password");
-            try {
-                Thread.sleep(10000);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
+
             waitForElementToBeClickable(passChangedClose);
-            log.info("ab");
-            try {
-                Thread.sleep(5000);
-            }
-            catch(Exception e)
-            {}
             passChangedClose.click();
             waitForElementToBeGone(passChangedClose);
 
