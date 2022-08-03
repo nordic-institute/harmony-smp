@@ -47,19 +47,19 @@ public class PropertiesPage extends SMPPage {
 
 
     public boolean isLoaded(){
-        log.info("checking if Domain page is loaded");
+        log.info("checking if Property page is loaded");
         return isVisible(cancelBtn)
                 && isVisible(saveBtn)
                 && isVisible(editBtn);
     }
 
     public boolean isCancelButtonEnabled() {
-        log.info("cancel button");
+        log.info("checking cancel button is enabled");
         return isEnabled(cancelBtn);
     }
 
     public boolean isSaveButtonEnabled() {
-        log.info("save button");
+        log.info("checking save button is enabled");
         return isEnabled(saveBtn);
     }
     public ConfirmationDialog clickCancel() {
@@ -68,7 +68,7 @@ public class PropertiesPage extends SMPPage {
         return new ConfirmationDialog(driver);
     }
     public boolean isEditButtonEnabled() {
-        log.info("edit button");
+        log.info("checking edit button is enabled");
         return isEnabled(editBtn);
     }
 

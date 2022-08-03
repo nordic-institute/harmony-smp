@@ -30,17 +30,12 @@ public class PropertiesGrid extends BasicGrid {
         return rowInfos;
     }
 
-    public Boolean isRowContainSearchProperty(String property){
+    public Boolean rowContainPropertyName(String property){
         List<PropertyRowInfo> rows = getRows();
         int i = rows.size();
-        Boolean bool;
-        if (rows.size() == 1 && rows.get(i-1).getPropertyname().equalsIgnoreCase(property)) {
-            bool = true;
-        }
-           else{
-               bool = false;
-            }
-           return bool;
+        Boolean bool=rows.size() == 1 && rows.get(i-1).getPropertyname().equalsIgnoreCase(property);
+
+        return bool;
 
     }
 }

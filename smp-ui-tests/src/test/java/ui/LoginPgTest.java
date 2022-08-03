@@ -281,11 +281,3 @@ public class LoginPgTest extends BaseTest {
 
 	}
 }
-	/*SMPPage page = new SMPPage(driver);
-		logger.info("Going to login page");
-				page.pageHeader.goToLogin();
-
-				LoginPage loginPage = new LoginPage(driver);
-				HashMap<String, String> user = testDataProvider.getUserWithRole("SYS_ADMIN");
-		SearchPage searchPage = loginPage.login(user.get("username"), user.get("password"));
-		soft.assertTrue(searchPage.pageHeader.sandwichMenu.isLoggedIn(), "User is logged in");*/
