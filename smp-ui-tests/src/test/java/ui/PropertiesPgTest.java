@@ -45,29 +45,18 @@ public class PropertiesPgTest extends BaseTest{
 
         PropertiesPage propertiesPage = new PropertiesPage(driver);
         propertiesPage.propertySearch(property);
-        soft.assertTrue(propertiesPage.grid().isRowContainSearchProperty(property),"The row does not contain the searching property");
+        soft.assertTrue(propertiesPage.grid().rowContainPropertyName(property),"The row does not contain the searching property");
         PropertyRowInfo newRow0 = propertiesPage.grid().getRows().get(0);
         System.out.println("newRow0.getPropertyvalue() "+newRow0.getPropertyvalue());
         if(newRow0.getPropertyvalue().equals("true"))
         {
            propertiesPage.grid().selectRow(0);
            PropertyPopup popup = propertiesPage.clickEdit();
-            try {
-                Thread.sleep(5000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
            propertiesPage = popup.disableCheckboxOfProperty();
             soft.assertTrue(propertiesPage.isSaveButtonEnabled(),"Save button is disbled");
-           try {
-               Thread.sleep(5000);
-           } catch (Exception e) {
-               e.printStackTrace();
-           }
-
-                  propertiesPage.clickSave().confirm();
-                  soft.assertTrue(propertiesPage.alertArea.getAlertMessage().isError(), "Message listed is success");
-                  soft.assertTrue(propertiesPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is not listed is as expected");
+            propertiesPage.clickSave().confirm();
+            soft.assertTrue(propertiesPage.alertArea.getAlertMessage().isError(), "Message listed is success");
+            soft.assertTrue(propertiesPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is not listed is as expected");
        }
 
         propertiesPage.pageHeader.sandwichMenu.logout();
@@ -109,7 +98,7 @@ public class PropertiesPgTest extends BaseTest{
 
         PropertiesPage propertiesPage = new PropertiesPage(driver);
         propertiesPage.propertySearch(property);
-        soft.assertTrue(propertiesPage.grid().isRowContainSearchProperty(property),"The row does not contain the searching property");
+        soft.assertTrue(propertiesPage.grid().rowContainPropertyName(property),"The row does not contain the searching property");
         int index = 0;
         propertiesPage.grid().selectRow(index);
         PropertyPopup popup = propertiesPage.clickEdit();
