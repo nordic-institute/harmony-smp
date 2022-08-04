@@ -33,10 +33,10 @@ public class ServiceGroupPopup extends PageComponent {
 	private WebElement domainsPanelContainer;
 	public AccordionSection domainsPanel;
 
-	@FindBy(css = "mat-dialog-actions > div > button:nth-child(1)")
+	@FindBy(css = "mat-dialog-actions button:nth-child(1)")
 	private WebElement okButton;
 
-	@FindBy(css = "mat-dialog-actions > div > button:nth-child(2)")
+	@FindBy(css = "mat-dialog-actions button:nth-child(2)")
 	private WebElement cancelButton;
 
 	@FindBy(css = "#participantIdentifier_id")
@@ -57,7 +57,7 @@ public class ServiceGroupPopup extends PageComponent {
 	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(3)")
 	private WebElement validateExtensionButton;
 
-	@FindBy(css = "mat-card-content > div > div.ng-star-inserted")
+	@FindBy(css = "mat-card-content > div.ng-star-inserted")
 	private WebElement errorContainer;
 
 
@@ -68,6 +68,14 @@ public class ServiceGroupPopup extends PageComponent {
 	public boolean isCancelButtonPresent(){
 		log.info("is cancel button visible");
 		return isVisible(cancelButton);
+	}
+	public boolean isOKButtonEnable(){
+		log.info("is ok button visible");
+		return isEnabled(okButton);
+	}
+	public boolean isCancelButtonEnable(){
+		log.info("is cancel button visible");
+		return isEnabled(cancelButton);
 	}
 
 	public boolean isExtensionAreaEditable(){
@@ -114,7 +122,7 @@ public class ServiceGroupPopup extends PageComponent {
 	public void clickCancel(){
 		log.info("click cancel..");
 		waitForElementToBeClickable(cancelButton).click();
-		waitForElementToBeGone(okButton);
+		waitForElementToBeGone(cancelButton);
 	}
 
 	public void fillForm(String identifier, String scheme, List<String> owners, List<String> domains, String extension){

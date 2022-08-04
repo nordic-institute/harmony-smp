@@ -5,9 +5,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.components.SandwichMenu;
 import pages.login.LoginPage;
+import pages.password.PasswordChangepopup;
 import utils.PROPERTIES;
 
 public class Header extends PageComponent{
@@ -29,7 +29,17 @@ public class Header extends PageComponent{
 	@FindBy(css = "#sandwichMenu .ng-star-inserted")
 	private WebElement role;
 
+	@FindBy(css = "#changePassword_id")
+	private WebElement changePasswordOption;
+
 	public SandwichMenu sandwichMenu = new SandwichMenu(driver);
+
+	public PasswordChangepopup clickChangePasswordOption()
+	{
+		log.info("Clicking on changepassword option");
+		waitForElementToBeClickable(changePasswordOption).click();
+		return new PasswordChangepopup(driver);
+	}
 
 	public LoginPage goToLogin(){
 		log.info("Going to login page");
