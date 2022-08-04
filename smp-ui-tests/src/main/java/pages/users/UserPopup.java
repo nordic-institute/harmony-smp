@@ -146,8 +146,9 @@ public class UserPopup extends PageComponent {
     public void clickSetOrChangePassword() {
         log.info("click change password");
         waitForElementToBeClickable(changePassword);
+        waitForXMillis(500);
         changePassword.click();
-        waitForXMillis(1000);
+        waitForXMillis(500);
     }
 
     public void clickCloseAfterChangedPass() {
@@ -168,6 +169,7 @@ public class UserPopup extends PageComponent {
     public ConfirmationDialog clickChangedPassword() {
         log.info("click changed password");
         waitForElementToBeClickable(changedPassword);
+        waitForXMillis(500);
         changedPassword.click();
         waitForElementToBeGone(changedPassword);
         return new ConfirmationDialog(driver);

@@ -173,7 +173,7 @@ public class UsersPgTest extends BaseTest {
     }
 
     @SuppressWarnings("SpellCheckingInspection")
-    @Test(description = "USR-30", enabled = false)
+    @Test(description = "USR-30")
     public void passwordValidation() {
         String username = Generator.randomAlphaNumeric(10);
         ArrayList<String> passToValidate = new ArrayList<>(Arrays.asList("qwqw",

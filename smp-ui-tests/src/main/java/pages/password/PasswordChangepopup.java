@@ -53,7 +53,6 @@ public class PasswordChangepopup extends PageComponent {
     public PasswordChangepopup(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
-
     }
 
     public void clickOK() {
