@@ -6,6 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import pages.components.baseComponents.PageComponent;
+import pages.password.PasswordChangepopup;
 import pages.service_groups.search.SearchPage;
 import utils.PROPERTIES;
 
@@ -32,6 +33,10 @@ public class SandwichMenu extends PageComponent {
 	@FindBy(id = "logout_id")
 	WebElement logoutLnk;
 
+	@FindBy(id = "changePassword_id")
+	WebElement passChangeLnk;
+
+
 	public boolean isLoggedIn(){
 		clickVoidSpace();
 
@@ -47,6 +52,12 @@ public class SandwichMenu extends PageComponent {
 
 		clickVoidSpace();
 		return isLoggedIn;
+	}
+	public PasswordChangepopup clickChangePasswordOption()
+	{
+		waitForElementToBeClickable(expandoButton).click();
+		waitForElementToBeClickable(passChangeLnk).click();
+		return new PasswordChangepopup(driver);
 	}
 
 	public SearchPage logout(){

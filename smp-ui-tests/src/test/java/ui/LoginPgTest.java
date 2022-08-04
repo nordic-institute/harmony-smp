@@ -6,6 +6,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.components.messageArea.AlertMessage;
+import pages.password.PasswordChangepopup;
 import pages.service_groups.search.SearchPage;
 import pages.components.baseComponents.SMPPage;
 import pages.login.LoginPage;
@@ -217,5 +218,66 @@ public class LoginPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
+	@Test(description = "LGN-100")
+	public void loggedUserPasswordDialogView()
+	{
+		SoftAssert soft = new SoftAssert();
 
+
+		String username = Generator.randomAlphaNumeric(10);
+		SMPRestClient.createUser(username, "SYSTEM_ADMIN");
+		logger.info("created user " + username);
+
+		SMPPage page = new SMPPage(driver);
+		logger.info("Going to login page");
+		page.pageHeader.goToLogin();
+
+		logger.info("trying to login with " + username);
+		LoginPage loginPage = new LoginPage(driver);
+		SearchPage searchPage = loginPage.login(username, "QW!@qw12");
+
+		soft.assertTrue(searchPage.pageHeader.sandwichMenu.isLoggedIn(), "User is not logged in");
+		soft.assertTrue(searchPage.isLoaded(), "Search page is not loaded");
+
+		PasswordChangepopup passPopup = searchPage.pageHeader.sandwichMenu.clickChangePasswordOption();
+		soft.assertTrue(passPopup.isCurrentPasswordInputEnable(),"Current password input is not enable in the password dialog for logged user");
+		soft.assertTrue(passPopup.isNewPasswordInputEnable(),"New password input is not enable in the password dialog for logged user");
+		soft.assertTrue(passPopup.isConfirmPasswordInputEnable(),"Confirm password input is not enable in the password dialog for logged user");
+
+		searchPage = passPopup.clickClosePasswordDialog();
+
+		soft.assertAll();
+
+	}
+
+
+	@Test(description = "LGN-100")
+	public void passwordChangeForLoggedUser()
+	{
+		SoftAssert soft = new SoftAssert();
+		String username = Generator.randomAlphaNumeric(10);
+		String validPass = "Aabcdefghijklm1@";
+		SMPRestClient.createUser(username,"SYSTEM_ADMIN");
+		logger.info("created user " + username);
+		SMPPage page = new SMPPage(driver);
+		logger.info("Going to login page");
+		page.pageHeader.goToLogin();
+		LoginPage loginPage = new LoginPage(driver);
+		SearchPage searchPage = loginPage.login(username, "QW!@qw12");
+
+		soft.assertTrue(searchPage.pageHeader.sandwichMenu.isLoggedIn(), "User is logged in");
+		soft.assertTrue(searchPage.isLoaded(), "Search page is loaded");
+
+		PasswordChangepopup passDialog = searchPage.pageHeader.sandwichMenu.clickChangePasswordOption();
+		passDialog.fillDataForLoggedUser("QW!@qw12",validPass,validPass);
+
+		passDialog.clickChangedPassword();
+		/*SearchPage page = passDialog.clickCloseAfterChangedPassForLoggedUser();
+		soft.assertEquals(page.getTitle(),"Search");*/
+		//passDialog.clickOK();
+		//soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
+
+		soft.assertAll();
+
+	}
 }
