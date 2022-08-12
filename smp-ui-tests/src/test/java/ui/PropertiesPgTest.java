@@ -37,7 +37,8 @@ public class PropertiesPgTest extends BaseTest{
         page.sidebar.goToPage(PropertiesPage.class);
     }
 
-    @Test(description = "PROP-0")
+    /*@Test(description = "PROP-0")*/
+    @Test(enabled = false)
     public void verifyParticipantschemeMandatoryProperty(){
 
         SoftAssert soft = new SoftAssert();
