@@ -24,6 +24,8 @@ public class UsersPage extends SMPPage {
     private WebElement editBtn;
     @FindBy(id = "deleteButton")
     private WebElement deleteBtn;
+    @FindBy(xpath = "//span[text()=' Edit truststore']")
+    private WebElement editTruststore;
 
     public UsersPage(WebDriver driver) {
         super(driver);
@@ -50,6 +52,10 @@ public class UsersPage extends SMPPage {
     public boolean isSaveButtonEnabled() {
         log.info("save button");
         return isEnabled(saveBtn);
+    }
+    public boolean isEditButtonEnabled() {
+        log.info("save button");
+        return isEnabled(editBtn);
     }
 
     public boolean isDeleteButtonEnabled() {
@@ -106,12 +112,52 @@ public class UsersPage extends SMPPage {
 
     public boolean isNewButtonEnabled() {
         try {
-            return newBtn.isEnabled();
+            return isEnabled(newBtn);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+    public boolean isEditTruststoreButtonEnabled(){
+        try {
+            return isEnabled(editTruststore);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+
+    }
+    public boolean isDeleteButtonVisibled(){
+        try {
+            return isVisible(deleteBtn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isEditButtonVisibled(){
+        try {
+            return isVisible(editBtn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public boolean isCancelButtonVisibled() {
+
+        return isVisible(cancelBtn);
+    }
+
+    public boolean isSaveButtonVisibled() {
+
+        return isVisible(saveBtn);
+    }
+
+
+
 
 
 }
