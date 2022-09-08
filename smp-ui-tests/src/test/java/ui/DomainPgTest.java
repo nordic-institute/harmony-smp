@@ -435,5 +435,51 @@ public class DomainPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
+	@Test(description = "DMN-110")
+	public void mandatoryDomainIdFieldVerification()
+	{
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+		String randstring =Generator.randomAlphaNumeric(10);
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		DomainPopup popup = page.clickNew();
+		popup.fillDataForNewDomain("",randstring,randstring,randstring);
+		soft.assertTrue(!popup.isEnableOkButton(),"Ok button is not disabled after leave domain input empty");
+		soft.assertAll();
+	}
+
+	@Test(description = "DMN-120")
+	public void verifyInvalidSMLSMPIDField(){
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+		String randstring =Generator.randomAlphaNumeric(10);
+		ArrayList<String> smlsmpId = new ArrayList<>(Arrays.asList("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop",
+				"abc@k",
+				"abcd-",
+				"-abgxknvlk",
+				"1qwertyuvbnm"));
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		DomainPopup popup = page.clickNew();
+		for(String smlsmpid : smlsmpId) {
+			popup.fillDataForNewDomain(randstring, randstring, smlsmpid, randstring);
+			soft.assertTrue(!popup.isEnableOkButton(),"OK button is enable after sending the invalid smlsmpId");
+			soft.assertEquals(popup.getSmlSmpIdValidationMsg(), SMPMessages.SMLSMPID_VALIDATION_MESSAGE,"Error message is not in list");
+
+		}
+       soft.assertAll();
+	}
+
+	@Test(description = "DMN-130")
+	public void clientCertHeaderToggleTest()
+	{
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		DomainPopup popup = page.clickNew();
+		soft.assertEquals(popup.checkedUserClientCertHeaderToggl(),"false","The user toggle is on");
+		popup.clickUserClientCertHeaderToggle();
+		soft.assertEquals(popup.checkedUserClientCertHeaderToggl(),"true","The user toggle is off");
+		soft.assertAll();
+	}
 
 }

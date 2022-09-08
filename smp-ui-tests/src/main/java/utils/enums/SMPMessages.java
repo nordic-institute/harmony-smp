@@ -77,4 +77,6 @@ public class SMPMessages {
 
 	public static final String KEYSTORE_IMPORTED_MSG = "Keystore %s imported!";
 	public static final String KEYSTORE_DELETION_MSG = "Certificate %s deleted!";
+	public static final String SMLSMPID_VALIDATION_MESSAGE = "SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit nor a hyphen and should not end with a hyphen.";
+	public static final String USER_EMAIL_VALIDATION_MESSAGE ="Email is invalid!";
 }
