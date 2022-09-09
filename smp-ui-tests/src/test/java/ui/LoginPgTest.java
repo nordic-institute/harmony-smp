@@ -10,6 +10,8 @@ import pages.password.PasswordChangepopup;
 import pages.service_groups.search.SearchPage;
 import pages.components.baseComponents.SMPPage;
 import pages.login.LoginPage;
+import pages.users.UserPopup;
+import pages.users.UsersPage;
 import utils.Generator;
 import utils.enums.SMPMessages;
 import utils.rest.SMPRestClient;
@@ -255,23 +257,58 @@ public class LoginPgTest extends BaseTest {
 	public void passwordChangeForLoggedUser()
 	{
 		SoftAssert soft = new SoftAssert();
-		String username = Generator.randomAlphaNumeric(10);
+		String userName = Generator.randomAlphaNumeric(10);
 		String validPass = "Aabcdefghijklm1@";
-		SMPRestClient.createUser(username,"SYSTEM_ADMIN");
-		logger.info("created user " + username);
+		String validPass1 = "Aabcdefghijklm1@2";
+
 		SMPPage page = new SMPPage(driver);
 		logger.info("Going to login page");
 		page.pageHeader.goToLogin();
+
 		LoginPage loginPage = new LoginPage(driver);
-		SearchPage searchPage = loginPage.login(username, "QW!@qw12");
-
+		HashMap<String, String> user = testDataProvider.getUserWithRole("SYS_ADMIN");
+		SearchPage searchPage = loginPage.login(user.get("username"), user.get("password"));
 		soft.assertTrue(searchPage.pageHeader.sandwichMenu.isLoggedIn(), "User is logged in");
-		soft.assertTrue(searchPage.isLoaded(), "Search page is loaded");
+		logger.info("Going to login page");
+		SMPRestClient.createUser(userName,"SMP_ADMIN");
+		logger.info("created user " + userName);
+		page.sidebar.goToPage(UsersPage.class);
+		UsersPage usersPage = new UsersPage(driver);
+		int index = usersPage.grid().scrollToUser(userName);
+		String adminPass = "123456";
+		usersPage.grid().selectRow(index);
+		UserPopup popup = usersPage.clickEdit();
 
-		PasswordChangepopup passDialog = searchPage.pageHeader.sandwichMenu.clickChangePasswordOption();
-		passDialog.fillDataForLoggedUser("QW!@qw12",validPass,validPass);
+		try {
+			Thread.sleep(1000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		popup.clickSetOrChangePassword();
+		popup.setOrChangePassword(adminPass, validPass, validPass);
+		popup.clickChangedPassword();
+		popup.clickCloseAfterChangedPass();
+		try {
+			Thread.sleep(1000);
+		} catch (Exception e) {
+		}
+		popup.clickOK();
+		usersPage.pageHeader.sandwichMenu.logout();
+		SearchPage searchpage = new SearchPage(driver);
+		logger.info("Going to login page");
+		searchpage.pageHeader.goToLogin();
+	/*	page.pageHeader.goToLogin();*/
+		LoginPage loginpage = new LoginPage(driver);
+		searchpage = loginpage.login(userName, "validPass");
+
+		soft.assertTrue(searchpage.pageHeader.sandwichMenu.isLoggedIn(), "User is logged in");
+		soft.assertTrue(searchpage.isLoaded(), "Search page is loaded");
+
+		PasswordChangepopup passDialog = searchpage.pageHeader.sandwichMenu.clickChangePasswordOption();
+		passDialog.fillDataForLoggedUser(validPass,validPass1,validPass1);
 
 		passDialog.clickChangedPassword();
+		 passDialog.clickClosePasswordDialog();
 		/*SearchPage page = passDialog.clickCloseAfterChangedPassForLoggedUser();
 		soft.assertEquals(page.getTitle(),"Search");*/
 		//passDialog.clickOK();

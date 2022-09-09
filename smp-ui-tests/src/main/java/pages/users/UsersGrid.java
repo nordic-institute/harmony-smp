@@ -90,6 +90,11 @@ public class UsersGrid extends BasicGrid {
 		    } while (pagination.hasNextPage());
 		      return -1;
 	     }
+	public boolean userHasCertificate(int index){
+		List<UserRowInfo> rows = getRows();
+		int i=index;
+		return rows.get(i).getCertificate().isEmpty();
+	}
 	}
 
 
