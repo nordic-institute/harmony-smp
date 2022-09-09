@@ -65,6 +65,23 @@ public class UserPopup extends PageComponent {
 
     @FindBy(css = "#role_id")
     WebElement rolesSelectContainer;
+
+    @FindBy(xpath = "//span[text()='Regenerate access token']")
+    WebElement regenarateAccessTokenBtn;
+
+    @FindBy(css = "label > button.mat-focus-indicator.mat-flat-button.mat-button-base.mat-primary")
+    WebElement importBtn;
+
+    @FindBy(xpath = "//span[text()='Show details']")
+    WebElement showDetailsBtn;
+
+    @FindBy(xpath = "//span[text()='Clear']")
+    WebElement clearBtn;
+
+    @FindBy(css = ".has-error.ng-star-inserted")
+    WebElement emailValidationError;
+
+
     public UserPopup(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
@@ -91,7 +108,7 @@ public class UserPopup extends PageComponent {
         return isEnabled(okBtn);
     }
 
-    public boolean isChangePasswordActive() {
+    public boolean isChangedPasswordActive() {
         return isEnabled(passChangedClose);
     }
 
@@ -135,12 +152,9 @@ public class UserPopup extends PageComponent {
         waitForElementToBeEnabled(userNameInput);
     }
 
-    //public void fillDetailsForm(String username, String pass, String confirmation)
-    public void fillDetailsForm(String username) {
+    public void fillDetailsForm(String username,String email) {
         clearAndFillInput(userNameInput, username);
-        //clearAndFillInput(passwordInput, pass);
-        //clearAndFillInput(confirmationInput, confirmation);
-        emailInput.click();
+        clearAndFillInput(emailInput,email);
     }
 
     public void clickSetOrChangePassword() {
@@ -201,6 +215,15 @@ public class UserPopup extends PageComponent {
         return null;
     }
 
+    public String userEmailValidationGetErrMsg(){
+        try {
+            waitForElementToBeVisible(emailValidationError);
+            return emailValidationError.getText();
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
     public String getPassValidationError() {
         try {
             waitForElementToBeVisible(passValidationError);
@@ -234,4 +257,32 @@ public class UserPopup extends PageComponent {
         return passMatchValidationError.getText();
         //".mat-form-field-infix > div.has-error"
     }
+
+    public boolean isUsernameFieldEnabled(){
+        return isEnabled(userNameInput);
+    }
+
+    public boolean isEmailFieldEnabled(){
+        return isEnabled(emailInput);
+    }
+    public boolean isRoleSelectFieldEnabled(){
+        return isEnabled(rolesSelectContainer);
+    }
+    public boolean isSetOrChangePassOptionBtnEnabled(){
+        return isEnabled(changePassword);
+    }
+
+    public boolean isRegenerateAccesstokenBtnEnabled(){
+        return isEnabled(regenarateAccessTokenBtn);
+    }
+    public boolean isImportButtonActive(){
+        return isEnabled(importBtn);
+    }
+    public boolean isShowDetailsButtonActive(){
+        return isEnabled(showDetailsBtn);
+    }
+    public boolean isClearButtonActive(){
+        return isEnabled(clearBtn);
+    }
+
 }
