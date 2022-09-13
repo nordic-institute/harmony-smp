@@ -453,7 +453,7 @@ public class DomainPgTest extends BaseTest {
 		SoftAssert soft = new SoftAssert();
 		DomainPage page = new DomainPage(driver);
 		String randstring =Generator.randomAlphaNumeric(10);
-		ArrayList<String> smlsmpId = new ArrayList<>(Arrays.asList("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop",
+		ArrayList<String> smlsmpId = new ArrayList<>(Arrays.asList("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopmkjh",
 				"abc@k",
 				"abcd-",
 				"-abgxknvlk",
