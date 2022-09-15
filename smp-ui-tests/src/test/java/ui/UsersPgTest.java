@@ -320,6 +320,17 @@ public class UsersPgTest extends BaseTest {
         soft.assertTrue(options.size() == 2, "Role dropdown has only two values");
         soft.assertTrue(options.get(0).equalsIgnoreCase("SMP_ADMIN"), "Role dropdown has value \"SMP_ADMIN\"");
         soft.assertTrue(options.get(1).equalsIgnoreCase("SERVICE_GROUP_ADMIN"), "Role dropdown has value \"SERVICE_GROUP_ADMIN\"");
+        page.refreshPage();
+
+        int index2 = page.grid().scrollToUserWithRole("SERVICE_GROUP_ADMIN");
+
+        page.grid().selectRow(index2);
+        popup = page.clickEdit();
+
+        options = popup.rolesSelect.getOptionTexts();
+        soft.assertTrue(options.size() == 2, "Role dropdown has only two values");
+        soft.assertTrue(options.get(0).equalsIgnoreCase("SMP_ADMIN"), "Role dropdown has value \"SMP_ADMIN\"");
+        soft.assertTrue(options.get(1).equalsIgnoreCase("SERVICE_GROUP_ADMIN"), "Role dropdown has value \"SERVICE_GROUP_ADMIN\"");
 
         soft.assertAll();
     }
