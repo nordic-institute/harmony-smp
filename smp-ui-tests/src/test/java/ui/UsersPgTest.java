@@ -320,7 +320,8 @@ public class UsersPgTest extends BaseTest {
         soft.assertTrue(options.size() == 2, "Role dropdown has only two values");
         soft.assertTrue(options.get(0).equalsIgnoreCase("SMP_ADMIN"), "Role dropdown has value \"SMP_ADMIN\"");
         soft.assertTrue(options.get(1).equalsIgnoreCase("SERVICE_GROUP_ADMIN"), "Role dropdown has value \"SERVICE_GROUP_ADMIN\"");
-        popup.clickCancel();
+        page.refreshPage();
+
         int index2 = page.grid().scrollToUserWithRole("SERVICE_GROUP_ADMIN");
 
         page.grid().selectRow(index2);
@@ -330,7 +331,6 @@ public class UsersPgTest extends BaseTest {
         soft.assertTrue(options.size() == 2, "Role dropdown has only two values");
         soft.assertTrue(options.get(0).equalsIgnoreCase("SMP_ADMIN"), "Role dropdown has value \"SMP_ADMIN\"");
         soft.assertTrue(options.get(1).equalsIgnoreCase("SERVICE_GROUP_ADMIN"), "Role dropdown has value \"SERVICE_GROUP_ADMIN\"");
-
 
         soft.assertAll();
     }
@@ -665,24 +665,6 @@ public class UsersPgTest extends BaseTest {
         soft.assertAll();
     }
 
-   /* @Test(description = "USR-124")
-    public void creteInvalidUser() {
-
-        ArrayList<String> usernameToValidate = new ArrayList<>(Arrays.asList("qwq",
-                "QWERQWERQWERQWERQWERQWERQWERQWE33s",
-                "~1a#2d2dds"));
-        SoftAssert soft = new SoftAssert();
-        UsersPage usersPage = new UsersPage(driver);
-        usersPage.clickVoidSpace();
-        UserPopup popup = usersPage.clickNew();
-        for (String username : usernameToValidate) {
-            popup.fillDetailsForm(username);
-            popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-            soft.assertTrue(!popup.isOKButtonActive(), "OK button is active after putting the invalidusername");
-            soft.assertEquals(popup.getUsernameValidationError(),SMPMessages.USERNAME_VALIDATION_MESSAGE,String.format("Username policy message is displayed - %s", username));
-        }
-    }*/
-
     @Test(description = "USR-160")
     public void userPageUIAppearanceAndBehaviour(){
         SoftAssert soft = new SoftAssert();
@@ -761,9 +743,7 @@ public class UsersPgTest extends BaseTest {
         String username = Generator.randomAlphaNumeric(10);
         ArrayList<String> email = new ArrayList<>(Arrays.asList("sdfdgfdghxvfv@gmail.c",
                 "sdfdgfdghxvfv$gmail.com",
-                 "hdbvsdkvdsvf",
-                  "dshujhfgbid@gmail.co",
-                  "sdfdgfdghxvfv@cmail.com"));
+                 "hdbvsdkvdsvf"));
         UserPopup popup = page.clickNew();
         soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
         for(String emailId:email)
