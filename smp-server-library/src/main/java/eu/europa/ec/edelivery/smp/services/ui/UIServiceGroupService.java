@@ -29,10 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
@@ -116,6 +113,26 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     }
 
     @Transactional
+    public ServiceGroupRO getOwnedServiceGroupById(Long userId, Long serviceGroupId) {
+        DBServiceGroup dbServiceGroup = getDatabaseDao().find(serviceGroupId);
+        if (isServiceGroupOwner(userId,dbServiceGroup )){
+            convertToRo(dbServiceGroup);
+        }
+        return null;
+    }
+
+    /**
+     * Method validates if any of the service group users contains userID
+     * @param userId
+     * @param dbServiceGroup
+     * @return
+     */
+    protected boolean isServiceGroupOwner(Long userId,  DBServiceGroup dbServiceGroup){
+        return dbServiceGroup!=null &&
+                dbServiceGroup.getUsers().stream().filter(user ->user.getId().equals(userId)).findAny().isPresent();
+    }
+
+    @Transactional
     public ServiceGroupValidationRO getServiceGroupExtensionById(Long serviceGroupId) {
         ServiceGroupValidationRO ex = new ServiceGroupValidationRO();
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(serviceGroupId);
@@ -140,16 +157,20 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     }
 
     @Transactional
-    public List<ParticipantSMLRecord> updateServiceGroupList(List<ServiceGroupRO> lst) {
+    public List<ParticipantSMLRecord> updateServiceGroupList(List<ServiceGroupRO> lst, boolean serviceGroupAdmin) {
         boolean suc = false;
         List<ParticipantSMLRecord> lstRecords = new ArrayList<>();
         for (ServiceGroupRO dRo : lst) {
             if (dRo.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
-                lstRecords.addAll(addNewServiceGroup(dRo));
+                if (serviceGroupAdmin) {
+                    lstRecords.addAll(addNewServiceGroup(dRo));
+                }
             } else if (dRo.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
-                lstRecords.addAll(updateServiceGroup(dRo));
+                lstRecords.addAll(updateServiceGroup(dRo, serviceGroupAdmin));
             } else if (dRo.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
-                lstRecords.addAll(removeServiceGroup(dRo));
+                if (serviceGroupAdmin) {
+                    lstRecords.addAll(removeServiceGroup(dRo));
+                }
             }
         }
         // register/unregister participants from domain
@@ -308,18 +329,20 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
      *
      * @param serviceGroupRO
      */
-    protected List<ParticipantSMLRecord> updateServiceGroup(ServiceGroupRO serviceGroupRO) {
+    protected List<ParticipantSMLRecord> updateServiceGroup(ServiceGroupRO serviceGroupRO, boolean serviceGroupAdmin) {
 
         // normalize identifiers
         normalizeIdentifiers(serviceGroupRO);
         // find and validate service group
         DBServiceGroup dbServiceGroup = findAndValidateServiceGroup(serviceGroupRO);
+        List<ParticipantSMLRecord> participantSMLRecordList = Collections.emptyList();
+        if (serviceGroupAdmin) {
+            // update users
+            updateUsersOnServiceGroup(serviceGroupRO, dbServiceGroup);
 
-        // update users
-        updateUsersOnServiceGroup(serviceGroupRO, dbServiceGroup);
-
-        // update domain
-        List<ParticipantSMLRecord> participantSMLRecordList = updateDomainsForServiceGroup(serviceGroupRO, dbServiceGroup);
+            // update domain
+            participantSMLRecordList = updateDomainsForServiceGroup(serviceGroupRO, dbServiceGroup);
+        }
 
         //update service metadata
         List<ServiceMetadataRO> serviceMetadataROList = serviceGroupRO.getServiceMetadata();

@@ -117,7 +117,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         sgnew.getServiceMetadata().add(mtro);
 
         //when
-        testInstance.updateServiceGroupList(Collections.singletonList(sgnew));
+        testInstance.updateServiceGroupList(Collections.singletonList(sgnew), true);
 
         // then
         ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1, -1, null, null, null);
@@ -171,7 +171,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         sgChange.getServiceMetadata().get(0).setXmlContent(newMetadataXML);
 
         //when
-        testInstance.updateServiceGroupList(Collections.singletonList(sgChange));
+        testInstance.updateServiceGroupList(Collections.singletonList(sgChange), true);
 
         // then
         res = testInstance.getTableList(-1, -1, null, null, null);
@@ -227,7 +227,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         smdToChange.setStatus(EntityROStatus.UPDATED.getStatusNumber());
         smdToChange.setDomainCode(testDomain02.getDomainCode());
         smdToChange.setSmlSubdomain(testDomain02.getSmlSubdomain());
-        testInstance.updateServiceGroupList(Collections.singletonList(sgChanged));
+        testInstance.updateServiceGroupList(Collections.singletonList(sgChanged), true);
 
         res = testInstance.getTableList(-1, -1, null, null, null);
         ServiceGroupRO sgUpdated = res.getServiceEntities().get(0);
@@ -270,7 +270,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         smdToChange.setStatus(EntityROStatus.UPDATED.getStatusNumber());
         smdToChange.setDomainCode(testDomain02.getDomainCode());
         smdToChange.setSmlSubdomain(testDomain02.getSmlSubdomain());
-        testInstance.updateServiceGroupList(Collections.singletonList(sgChanged));
+        testInstance.updateServiceGroupList(Collections.singletonList(sgChanged), true);
 
         res = testInstance.getTableList(-1, -1, null, null, null);
         ServiceGroupRO sgUpdated = res.getServiceEntities().get(0);
