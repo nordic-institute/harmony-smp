@@ -87,7 +87,15 @@ public class ServiceGroupResource {
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public ServiceGroupRO getServiceGroupById(@PathVariable Long serviceGroupId) {
         LOG.info("Get service group [{}]", serviceGroupId);
-        return uiServiceGroupService.getServiceGroupById(serviceGroupId);
+        // SMP administrators are authorized by default
+        if (authorizationService.isSMPAdministrator()){
+            return uiServiceGroupService.getServiceGroupById(serviceGroupId);
+        } else {
+            // if not authorized by default check if is it an owner
+            authorizationService.getAndValidateUserDetails();
+            SMPUserDetails user = SessionSecurityUtils.getSessionUserDetails();
+            return uiServiceGroupService.getOwnedServiceGroupById(user.getUser().getId(), serviceGroupId);
+        }
     }
 
     @GetMapping(path = "{service-group-id}/extension", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -109,7 +117,7 @@ public class ServiceGroupResource {
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public void updateServiceGroupList(@RequestBody ServiceGroupRO[] updateEntities) {
         LOG.info("Update ServiceGroupRO count: " + updateEntities.length);
-        uiServiceGroupService.updateServiceGroupList(Arrays.asList(updateEntities));
+        uiServiceGroupService.updateServiceGroupList(Arrays.asList(updateEntities), authorizationService.isSMPAdministrator());
     }
 
     private String decodeUrlToUTF8(String value) {
