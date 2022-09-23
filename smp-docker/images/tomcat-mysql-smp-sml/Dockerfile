@@ -131,7 +131,7 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && unzip /tmp/sml-setup.zip -d /tmp/    \
     && mv /tmp/bdmsl-webapp-$SML_VERSION /tmp/sml-setup \
     && cp /tmp/sml-setup/encriptionPrivateKey.private  /opt/smlconf/encriptionPrivateKey.private \
-    && cp /tmp/sml-setup/keystore.jks /opt/smlconf/keystore.jk \
+    && cp /tmp/sml-setup/keystore.jks /opt/smlconf/keystore.jks \
     && mkdir $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs \
     && chmod u+x /sbin/entrypoint.sh
 
