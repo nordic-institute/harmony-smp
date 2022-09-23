@@ -46,7 +46,9 @@ public enum SMPPropertyEnum {
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address", "0.0.0.0", "Physical SMP endpoint which will be registered on SML when registering new domain.", false, false, false, STRING),
     // keystore truststore
     KEYSTORE_PASSWORD("smp.keystore.password", "", "Encrypted keystore (and keys) password ", false, true, false, STRING),
+    KEYSTORE_TYPE("smp.keystore.type", "JKS", "Keystore type as JKS/PKCS12", false, true, false, STRING),
     KEYSTORE_FILENAME("smp.keystore.filename", "smp-keystore.jks", "Keystore filename ", true, false, false, FILENAME),
+    TRUSTSTORE_TYPE("smp.truststore.type", "JKS", "Truststore type as JKS/PKCS12", false, true, false, STRING),
     TRUSTSTORE_PASSWORD("smp.truststore.password", "", "Encrypted truststore password ", false, true, false, STRING),
     TRUSTSTORE_FILENAME("smp.truststore.filename", "", "Truststore filename ", false, false, false, FILENAME),
     TRUSTSTORE_ADD_CERT_ON_USER_UPDATE("smp.truststore.add.cert.onUserRegistration",
