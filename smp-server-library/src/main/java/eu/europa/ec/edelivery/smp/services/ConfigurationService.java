@@ -259,8 +259,16 @@ public class ConfigurationService {
         return (File) configurationDAO.getCachedPropertyValue(TRUSTSTORE_FILENAME);
     }
 
+    public String getTruststoreType() {
+        return (String) configurationDAO.getCachedPropertyValue(TRUSTSTORE_TYPE);
+    }
+
     public File getKeystoreFile() {
         return (File) configurationDAO.getCachedPropertyValue(KEYSTORE_FILENAME);
+    }
+
+    public String getKeystoreType() {
+        return (String) configurationDAO.getCachedPropertyValue(KEYSTORE_TYPE);
     }
 
     public String getTruststoreCredentialToken() {
