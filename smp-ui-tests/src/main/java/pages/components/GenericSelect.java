@@ -82,6 +82,16 @@ public class GenericSelect extends PageComponent {
 		waitForElementToBeGone(option);
 		return true;
 	}
+	public boolean selectWithIndex(int index){
+		log.info("selecting first option");
+		List<WebElement> options = getOptions();
+
+		WebElement option = options.get(index);
+		waitForElementToBeClickable(option).click();
+		waitForElementToBeGone(option);
+		return true;
+	}
+
 
 
 	public String getSelectedValue() {
