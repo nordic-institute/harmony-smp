@@ -284,7 +284,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
 
         // test decrypt
-        File encryptionKey = (File) configurationDao.getCachedPropertyValue(SMPPropertyEnum.ENCRYPTION_FILENAME);
+        File encryptionKey = configurationDao.getCachedPropertyValue(SMPPropertyEnum.ENCRYPTION_FILENAME);
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, dbKeystorePassword, encryptionKey));
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.TRUSTSTORE_PASSWORD, dbTruststorePassword, encryptionKey));
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.HTTP_PROXY_PASSWORD, dbProxyPassword, encryptionKey));

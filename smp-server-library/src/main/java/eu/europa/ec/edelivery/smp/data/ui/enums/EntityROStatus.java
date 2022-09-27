@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.data.ui.enums;
 
 
 /**
- * Enumeraton of Resourceobject statuse .
+ * Enumeration of Resource Object status.
  * @author Joze Rihtarsic
  * @since 4.1
  */
