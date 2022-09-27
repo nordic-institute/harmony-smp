@@ -70,9 +70,8 @@ public class KeystoreResource {
         payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(fileBytes), MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
         // try to open keystore
         KeystoreImportResult keystoreImportResult = new KeystoreImportResult();
-        KeyStore keyStore;
         try {
-            keyStore = KeyStore.getInstance(keystoreType);
+            KeyStore keyStore = KeyStore.getInstance(keystoreType);
             keyStore.load(new ByteArrayInputStream(fileBytes), password.toCharArray());
             LOG.debug(keyStore.aliases().nextElement());
             uiKeystoreService.importKeys(keyStore, password);
