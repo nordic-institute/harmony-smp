@@ -18,10 +18,10 @@ public class ServiceMetadataPopup extends PageComponent {
 		domainSelect = new GenericSelect(driver, domainSelectContainer);
 	}
 
-	@FindBy(css = "mat-dialog-actions > div > button:nth-child(1)")
+	@FindBy(css = "mat-dialog-actions > button:nth-child(1)")
 	private WebElement okButton;
 
-	@FindBy(css = "mat-dialog-actions > div > button:nth-child(2)")
+	@FindBy(css = "mat-dialog-actions > button:nth-child(2)")
 	private WebElement cancelButton;
 
 	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(1)")
@@ -46,22 +46,51 @@ public class ServiceMetadataPopup extends PageComponent {
 	@FindBy(css = "#documentIdentifier_id")
 	private WebElement documentIdentifierInput;
 
+	@FindBy(xpath = "//span[text() ='Metadata wizard']")
+	private WebElement metadataWizardBtn;
+
 	@FindBy(css = "mat-dialog-content #domain_id")
 	private WebElement domainSelectContainer;
 	private GenericSelect domainSelect;
 
 
+	public EditPage clickOK(){
+		/*waitForElementToBeClickable(okButton);
+		okButton.click();
+		waitForElementToBeGone(okButton);
+		return new EditPage(driver);*/
+		waitForElementToBeVisible(okButton);
+		okButton.click();
+		return new EditPage(driver);
+	}
+	public boolean isOKBtnEnabled(){
+		return okButton.isEnabled();
+	}
+	public void fillDocIdAndDocIdScheme(String docID, String docScheme){
+		waitForElementToBeVisible(documentIdentifierInput);
+		clearAndFillInput(documentIdentifierInput, docID);
+		clearAndFillInput(documentSchemeInput, docScheme);
+
+	}
+
 	public void fillForm(String domain, String docID, String docScheme) {
 		waitForElementToBeVisible(documentIdentifierInput);
-		domainSelect.selectOptionWithText(domain);
+		domainSelect.selectWithIndex(0);
 
 		clearAndFillInput(documentIdentifierInput, docID);
 		clearAndFillInput(documentSchemeInput, docScheme);
 
 		generateXMLButton.click();
 
-		waitForElementToBeClickable(okButton).click();
+	}
 
+
+	public String docIDFieldValue(){
+		return documentIdentifierInput.getAttribute("value");
+	}
+
+	public String docIDSchemeFieldValue(){
+		return documentSchemeInput.getAttribute("value");
 	}
 
 	public String getParticipantSchemeValue() {
@@ -84,6 +113,7 @@ public class ServiceMetadataPopup extends PageComponent {
 		return documentSchemeInput.getAttribute("value").trim();
 	}
 
+
 	public boolean isParticipantSchemeEnabled() {
 		return isEnabled(participantSchemaInput);
 	}
@@ -94,6 +124,13 @@ public class ServiceMetadataPopup extends PageComponent {
 
 	public boolean isDocumentIdentifierEnabled() {
 		return isEnabled(documentIdentifierInput);
+	}
+
+	public ServiceMetadataWizardPopup clickMetadataWizard(){
+		waitForElementToBeClickable(metadataWizardBtn);
+		metadataWizardBtn.click();
+		return new ServiceMetadataWizardPopup(driver);
+
 	}
 
 	public boolean isDocumentSchemeEnabled() {

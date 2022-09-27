@@ -482,4 +482,31 @@ public class DomainPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
+	@Test(description = "USR-140")
+	public void domainVerification() {
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+
+		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
+		ArrayList<String> domainCode = new ArrayList<>(Arrays.asList("sddfgf@",
+				"123%",
+				"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678901g"));
+
+		DomainPopup popup = page.clickNew();
+		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
+
+		soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
+		soft.assertTrue(popup.isSMLDomainInputEnabled(), "When defining new domain -SML Domain input is disabled");
+
+		String rndString = Generator.randomAlphaNumeric(10);
+
+		for (String domain : domainCode) {
+			popup.fillDataForNewDomain(domain, rndString, rndString, rndString);
+			soft.assertTrue(!popup.isEnableOkButton(),"OK button is active after s4ending invalid domain code");
+			soft.assertEquals(popup.domainCodeValidationGetErrMsg(), SMPMessages.DOMAINCODE_VALIDATION_MESSAGE, "Message is not in the list");
+		}
+
+		soft.assertAll();
+	}
+
 }

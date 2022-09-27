@@ -52,6 +52,9 @@ public class DomainPopup extends PageComponent {
 //	@FindBy(css = "#smlClientHeader_id")
 //	WebElement smlClientHeaderInput;
 
+	@FindBy(css = "div.mat-form-field-infix > div.ng-star-inserted")
+	WebElement domainCodeValidationError;
+
 	@FindBy(css = "#smlClientKeyAlias_id")
 	WebElement smlClientAliasSelectContainer;
 	GenericSelect smlClientAliasSelect;
@@ -101,6 +104,16 @@ public class DomainPopup extends PageComponent {
 		clearAndFillInput(smlSMPIdInput, smlSmpID);
 		smlClientAliasSelect.selectFirstOption();
 	}
+
+	public String domainCodeValidationGetErrMsg() {
+		try {
+			waitForElementToBeVisible(domainCodeValidationError);
+			return domainCodeValidationError.getText();
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
 
 	public String getDuplicateDomainErrorMsgText() {
 		WebElement duplicateDomainErrorMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.ng-star-inserted"));
