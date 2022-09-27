@@ -7,6 +7,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -140,13 +141,16 @@ public class UIKeystoreService {
         }
 
 
-        KeyStore keyStore = null;
+        KeyStore keyStore;
         try (InputStream keystoreInputStream = new FileInputStream(keyStoreFile)) {
-            keyStore = KeyStore.getInstance("JKS");
+            String type = StringUtils.defaultIfEmpty(configurationService.getKeystoreType(), "JKS");
+            LOG.info("Load keystore [{}] with type [{}].", keyStoreFile, type);
+            keyStore = KeyStore.getInstance(type);
             keyStore.load(keystoreInputStream, keystoreSecToken.toCharArray());
         } catch (Exception exception) {
             LOG.error("Could not load signing certificate with private key from keystore file:"
                     + keyStoreFile + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            keyStore = null;
         }
         return keyStore;
     }

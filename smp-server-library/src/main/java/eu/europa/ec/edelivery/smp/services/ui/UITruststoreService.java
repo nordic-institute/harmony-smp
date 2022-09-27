@@ -377,15 +377,17 @@ public class UITruststoreService {
             return null;
         }
 
-        KeyStore truststore = null;
         try (InputStream truststoreInputStream = new FileInputStream(truststoreFile)) {
-            truststore = KeyStore.getInstance("JKS");
-            truststore.load(truststoreInputStream, token.toCharArray());
+            String type = StringUtils.defaultIfEmpty(configurationService.getTruststoreType(),"JKS");
+            LOG.info("Load truststore [{}] with type [{}].", truststoreFile, type);
+            KeyStore loadedTrustStore = KeyStore.getInstance(type);
+            loadedTrustStore.load(truststoreInputStream, token.toCharArray());
+            return loadedTrustStore;
         } catch (Exception exception) {
             LOG.error("Could not load truststore:"
                     + truststoreFile + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
         }
-        return truststore;
+        return null;
     }
 
 
