@@ -6,7 +6,6 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import pages.components.baseComponents.PageComponent;
-import utils.Generator;
 import utils.PROPERTIES;
 
 import java.io.File;
@@ -48,11 +47,11 @@ public class ServiceMetadataWizardPopup extends PageComponent {
     private WebElement certificateDescriptionBox;
 
 
-    public String docIDFieldContain(){
+    public String docIDFieldValue(){
        return docIdField.getAttribute("value");
     }
 
-    public String docIDSchemeFieldContain(){
+    public String docIDSchemeFieldValue(){
         return docIdSchemeField.getAttribute("value");
     }
 

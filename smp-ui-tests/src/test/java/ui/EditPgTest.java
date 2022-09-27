@@ -384,8 +384,8 @@ public class EditPgTest extends BaseTest {
 		ServiceMetadataPopup metadataPopup= row0.clickAddMetadata();
 		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(),"participantId field is enabled for an existing service group in service metadata popup");
 		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(),"participantScheme field is enabled for an existing service group in service metadata popup");
-		soft.assertEquals(metadataPopup.docIDFieldContain(),"","docIDField is not empty");
-		soft.assertEquals(metadataPopup.docIDSchemeFieldContain(),"","docIDField is not empty");
+		soft.assertEquals(metadataPopup.docIDFieldValue(),"","docIDField is not empty");
+		soft.assertEquals(metadataPopup.docIDSchemeFieldValue(),"","docIDField is not empty");
 		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(metadataPopup.getParticipantIdentifierValue()), "ServiceMetadata dialog opened for appropriate service group");
 		soft.assertTrue(row0.getParticipantScheme().equalsIgnoreCase(metadataPopup.getParticipantSchemeValue()), "ServiceMetadata dialog opened for appropriate service group");
 		metadataPopup.fillForm(generator,generator,generator);
@@ -394,8 +394,8 @@ public class EditPgTest extends BaseTest {
 		metadataWizaedPopup.fillCerificateBox(generator);
 		soft.assertTrue(metadataWizaedPopup.isEnableOkBtn(),"ok button is disabled after providing the valid data");
 		metadataPopup = metadataWizaedPopup.clickOK();
-		soft.assertEquals(metadataPopup.docIDFieldContain(),generator,"After saving the servicemetadata wizard popup with valid data the docID field of service metadata popup doc id contain the coressponding value");
-		soft.assertEquals(metadataPopup.docIDSchemeFieldContain(),generator,"After saving the servicemetadata wizard popup with valid data the docIDScheme field of service metadata popup doc id scheme contain the coressponding value");
+		soft.assertEquals(metadataPopup.docIDFieldValue(),generator,"After saving the servicemetadata wizard popup with valid data the docID field of service metadata popup doc id contain the coressponding value");
+		soft.assertEquals(metadataPopup.docIDSchemeFieldValue(),generator,"After saving the servicemetadata wizard popup with valid data the docIDScheme field of service metadata popup doc id scheme contain the coressponding value");
 		soft.assertTrue(metadataPopup.isOKBtnEnabled(),"OK button is not enabled");
 		soft.assertAll();
 
@@ -414,8 +414,8 @@ public class EditPgTest extends BaseTest {
 		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(),"participantScheme field is enabled for an existing service group in service metadata popup");
 		metadataPopup.fillForm(generator,generator,generator);
 		ServiceMetadataWizardPopup metadataWizard= metadataPopup.clickMetadataWizard();
-		soft.assertEquals(metadataWizard.docIDFieldContain(),generator,"document identifier field of metdata wizard popup not contain the corresponding doc id filled in sevice metadata popup");
-		soft.assertEquals(metadataWizard.docIDSchemeFieldContain(),generator,"document identifier field of metdata wizard popup not contain the corresponding doc id scheme filled in sevice metadata popup");
+		soft.assertEquals(metadataWizard.docIDFieldValue(),generator,"document identifier field of metdata wizard popup not contain the corresponding doc id filled in sevice metadata popup");
+		soft.assertEquals(metadataWizard.docIDSchemeFieldValue(),generator,"document identifier field of metdata wizard popup not contain the corresponding doc id scheme filled in sevice metadata popup");
 		soft.assertAll();
 	}
 
