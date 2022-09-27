@@ -85,11 +85,11 @@ public class ServiceMetadataPopup extends PageComponent {
 	}
 
 
-	public String docIDFieldContain(){
+	public String docIDFieldValue(){
 		return documentIdentifierInput.getAttribute("value");
 	}
 
-	public String docIDSchemeFieldContain(){
+	public String docIDSchemeFieldValue(){
 		return documentSchemeInput.getAttribute("value");
 	}
 

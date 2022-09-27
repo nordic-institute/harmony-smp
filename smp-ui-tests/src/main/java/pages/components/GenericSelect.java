@@ -83,7 +83,7 @@ public class GenericSelect extends PageComponent {
 		return true;
 	}
 	public boolean selectWithIndex(int index){
-		log.info("selecting first option");
+		log.info("selecting the required option");
 		List<WebElement> options = getOptions();
 
 		WebElement option = options.get(index);
