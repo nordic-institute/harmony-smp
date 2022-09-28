@@ -18,7 +18,6 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.smp.api.Identifiers;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
@@ -53,22 +52,22 @@ public class ServiceGroupConverter {
     /**
      * Class has only static members.
      */
-    private  ServiceGroupConverter() {
+    private ServiceGroupConverter() {
 
     }
 
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupConverter.class);
 
-    private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial( () -> {
+    private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial(() -> {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
             return jaxbContext.createUnmarshaller();
-        }catch(JAXBException ex) {
+        } catch (JAXBException ex) {
             LOG.error("Error occurred while initializing JAXBContext for ServiceMetadata. Cause message:", ex);
         }
         return null;
-    } );
+    });
 
 
     private static Unmarshaller getUnmarshaller() {
@@ -77,6 +76,7 @@ public class ServiceGroupConverter {
 
     /**
      * Method umarshal ServiceGroup from xml string
+     *
      * @param serviceGroupXml
      * @return
      */
@@ -85,12 +85,13 @@ public class ServiceGroupConverter {
             Document serviceGroupDoc = parse(serviceGroupXml);
             return getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
         } catch (ParserConfigurationException | IOException | SAXException | JAXBException ex) {
-            throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION,ex,ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));
+            throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION, ex, ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));
         }
     }
 
     /**
      * Method umarshal ServiceGroup from xml bytearraz
+     *
      * @param serviceGroupXml
      * @return
      */
@@ -99,7 +100,7 @@ public class ServiceGroupConverter {
         try {
             System.out.println("UNMARSHAL SERVICE GROUP " + new String(serviceGroupXml));
             Document serviceGroupDoc = parse(serviceGroupXml);
-            ServiceGroup serviceGroup =  getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
+            ServiceGroup serviceGroup = getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
             /*
             if (serviceGroup!=null && serviceGroup.getParticipantIdentifier()!=null
             && StringUtils.isBlank(serviceGroup.getParticipantIdentifier().getScheme())
@@ -113,7 +114,7 @@ public class ServiceGroupConverter {
             }*/
             return serviceGroup;
         } catch (ParserConfigurationException | IOException | SAXException | JAXBException ex) {
-            throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION,ex,ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));
+            throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION, ex, ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));
         }
     }
 
@@ -125,28 +126,28 @@ public class ServiceGroupConverter {
      * @param dsg - database service group entity
      * @return Oasis ServiceGroup entity or null if parameter is null
      */
-    public static ServiceGroup toServiceGroup(DBServiceGroup dsg, boolean concatenateEBCoreID){
+    public static ServiceGroup toServiceGroup(DBServiceGroup dsg, boolean concatenateEBCoreID) {
 
-        if (dsg==null){
+        if (dsg == null) {
             return null;
         }
 
         ServiceGroup serviceGroup = new ServiceGroup();
-        String schema  = dsg.getParticipantScheme();
-        String value  = dsg.getParticipantIdentifier();
-        if (concatenateEBCoreID && StringUtils.startsWithIgnoreCase(schema, EBCORE_IDENTIFIER_PREFIX) ){
+        String schema = dsg.getParticipantScheme();
+        String value = dsg.getParticipantIdentifier();
+        if (concatenateEBCoreID && StringUtils.startsWithIgnoreCase(schema, EBCORE_IDENTIFIER_PREFIX)) {
             value = schema + ":" + value;
             schema = null;
         }
         ParticipantIdentifierType identifier = new ParticipantIdentifierType(value, schema);
         serviceGroup.setParticipantIdentifier(identifier);
-        if (dsg.getExtension()!=null){
+        if (dsg.getExtension() != null) {
             try {
                 List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(dsg.getExtension());
                 serviceGroup.getExtensions().addAll(extensions);
             } catch (JAXBException e) {
-                 throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e, dsg.getParticipantIdentifier(),
-                         dsg.getParticipantScheme(),ExceptionUtils.getRootCauseMessage(e));
+                throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e, dsg.getParticipantIdentifier(),
+                        dsg.getParticipantScheme(), ExceptionUtils.getRootCauseMessage(e));
             }
         }
         serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType(new ArrayList()));
@@ -163,6 +164,7 @@ public class ServiceGroupConverter {
         InputStream inputStream = new ByteArrayInputStream(serviceGroupXml);
         return getDocumentBuilder().parse(inputStream);
     }
+
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(true);
@@ -173,7 +175,7 @@ public class ServiceGroupConverter {
     public static byte[] extractExtensionsPayload(ServiceGroup sg) {
         try {
             return ExtensionConverter.marshalExtensions(sg.getExtensions());
-        } catch (JAXBException | XMLStreamException | IOException  e) {
+        } catch (JAXBException | XMLStreamException | IOException e) {
             throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e,
                     sg.getParticipantIdentifier().getValue(), sg.getParticipantIdentifier().getScheme(),
                     ExceptionUtils.getRootCauseMessage(e));
