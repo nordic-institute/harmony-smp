@@ -7,13 +7,19 @@
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
             <input matInput placeholder="Domain Code" name="domainCode"
-                   id="domainCode_id"
+                   id="domainCode_id" #domainCode
                    matTooltip="The SMP's domain code. The code is used in HTTP header 'Domain' when adding service group using the webservice API"
+                   (keypress)="onDomainCodeKey(domainCode.value)"
                    [formControl]="domainForm.controls['domainCode']" maxlength="63" required>
             <mat-hint align="end">For WS API integration: the Domain property</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')"
               style="color:red; font-size: 70%">
+              Domain code must contain only chars and numbers and must be less than 63 chars long.
+            </div>
+            <div
+              *ngIf="hitTheCodeLengthLimit"
+              style="color:darkorange; font-size: 70%">
               Domain code must contain only chars and numbers and must be less than 63 chars long.
             </div>
             <div

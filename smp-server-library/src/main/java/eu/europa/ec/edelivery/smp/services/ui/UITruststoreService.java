@@ -385,7 +385,8 @@ public class UITruststoreService {
             return loadedTrustStore;
         } catch (Exception exception) {
             LOG.error("Could not load truststore:"
-                    + truststoreFile + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+                    + truststoreFile
+                    + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
         }
         return null;
     }
