@@ -76,6 +76,7 @@ export class ServiceMetadataWizardDialogComponent {
 
   uploadCertificate(event) {
     const file = event.target.files[0];
+    this.certificateValidationMessage = null;
     this.certificateService.validateCertificate(file).subscribe((res: CertificateRo) => {
         if (res && res.certificateId) {
 
@@ -83,13 +84,17 @@ export class ServiceMetadataWizardDialogComponent {
             'endpointCertificate': res.encodedValue
           });
         } else {
-          this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
+          this.certificateValidationMessage = 'Error occurred while reading certificate. Check if uploaded file has valid certificate type';
         }
       },
       err => {
-        this.alertService.exception('Error uploading certificate file ' +file.name, err.error?.errorDescription);
+        this.certificateValidationMessage = 'Error uploading certificate file [' + file.name + '] ' + err.error?.errorDescription;
       }
     );
+  }
+
+  clearAlert() {
+    this.certificateValidationMessage = null;
   }
 
 
@@ -125,24 +130,25 @@ export class ServiceMetadataWizardDialogComponent {
 
   getParticipantElementXML(): string {
     let schema = this.dialogForm.controls['participantScheme'].value;
-    let value= this.dialogForm.controls['participantIdentifier'].value;
+    let value = this.dialogForm.controls['participantIdentifier'].value;
     if (!!schema && this.lookups.cachedApplicationConfig.concatEBCorePartyId &&
-      schema.startsWith(ServiceMetadataWizardDialogComponent.EBCORE_IDENTIFIER_PREFIX) ) {
-      value = schema + ":" +  value;
-      schema =null;
+      schema.startsWith(ServiceMetadataWizardDialogComponent.EBCORE_IDENTIFIER_PREFIX)) {
+      value = schema + ":" + value;
+      schema = null;
     }
 
-    return  '<ParticipantIdentifier ' +
-              (!schema?'': 'scheme="' + this.xmlSpecialChars(schema) + '"')+ '>'
-      + this.xmlSpecialChars(value)+ '</ParticipantIdentifier>';
+    return '<ParticipantIdentifier ' +
+      (!schema ? '' : 'scheme="' + this.xmlSpecialChars(schema) + '"') + '>'
+      + this.xmlSpecialChars(value) + '</ParticipantIdentifier>';
   }
 
   getDocumentElementXML(): string {
-    return  ' <DocumentIdentifier ' +
-      (!this.dialogForm.controls['documentIdentifierScheme'].value?'': 'scheme="'
+    return ' <DocumentIdentifier ' +
+      (!this.dialogForm.controls['documentIdentifierScheme'].value ? '' : 'scheme="'
         + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '"') +
       '>' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>';
   }
+
   getServiceMetadataXML() {
 
     let exampleXML = '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">' +
@@ -152,14 +158,14 @@ export class ServiceMetadataWizardDialogComponent {
       '\n        <ProcessList>' +
       '\n            <Process>' +
       '\n                <ProcessIdentifier ' +
-      (!this.dialogForm.controls['processScheme'].value?'': 'scheme="' + this.xmlSpecialChars(this.dialogForm.controls['processScheme'].value) + '"')+
-      '>'+this.xmlSpecialChars(this.dialogForm.controls['processIdentifier'].value)+'</ProcessIdentifier>' +
+      (!this.dialogForm.controls['processScheme'].value ? '' : 'scheme="' + this.xmlSpecialChars(this.dialogForm.controls['processScheme'].value) + '"') +
+      '>' + this.xmlSpecialChars(this.dialogForm.controls['processIdentifier'].value) + '</ProcessIdentifier>' +
       '\n                <ServiceEndpointList>' +
-      '\n                   <Endpoint transportProfile="'+this.xmlSpecialChars(this.dialogForm.controls['transportProfile'].value)+'">' +
-      '\n                        <EndpointURI>'+this.xmlSpecialChars(this.dialogForm.controls['endpointUrl'].value)+'</EndpointURI>' +
-      '\n                        <Certificate>'+this.xmlSpecialChars(this.dialogForm.controls['endpointCertificate'].value)+'</Certificate>' +
-      '\n                        <ServiceDescription>'+this.xmlSpecialChars(this.dialogForm.controls['serviceDescription'].value)+'</ServiceDescription>' +
-      '\n                        <TechnicalContactUrl>'+this.xmlSpecialChars(this.dialogForm.controls['technicalContactUrl'].value)+'</TechnicalContactUrl>' +
+      '\n                   <Endpoint transportProfile="' + this.xmlSpecialChars(this.dialogForm.controls['transportProfile'].value) + '">' +
+      '\n                        <EndpointURI>' + this.xmlSpecialChars(this.dialogForm.controls['endpointUrl'].value) + '</EndpointURI>' +
+      '\n                        <Certificate>' + this.xmlSpecialChars(this.dialogForm.controls['endpointCertificate'].value) + '</Certificate>' +
+      '\n                        <ServiceDescription>' + this.xmlSpecialChars(this.dialogForm.controls['serviceDescription'].value) + '</ServiceDescription>' +
+      '\n                        <TechnicalContactUrl>' + this.xmlSpecialChars(this.dialogForm.controls['technicalContactUrl'].value) + '</TechnicalContactUrl>' +
       '\n                    </Endpoint>' +
       '\n                </ServiceEndpointList>' +
       '\n            </Process>' +
