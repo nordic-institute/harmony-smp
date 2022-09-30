@@ -6,9 +6,7 @@ import {AlertMessageService} from "../../common/alert-message/alert-message.serv
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
-import {KeystoreEditDialogComponent} from "../keystore-edit-dialog/keystore-edit-dialog.component";
-import {ServiceGroupDomainEditRo} from "../../service-group-edit/service-group-domain-edit-ro.model";
-import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
+import {BreakpointObserver} from "@angular/cdk/layout";
 
 @Component({
   selector: 'domain-details-dialog',
@@ -24,6 +22,8 @@ export class DomainDetailsDialogComponent {
   // is part of domain
   readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
 
+  hitTheCodeLengthLimit: boolean = false;
+  domainCodeTimeout = null;
   editMode: boolean;
   formTitle: string;
   current: DomainRo & { confirmation?: string };
@@ -99,15 +99,21 @@ export class DomainDetailsDialogComponent {
       this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
       this.domainForm.controls['smlClientKeyCertificate'].setValue(this.selectedSMLCert);
     }
+  }
 
-    this.responsive.observe(Breakpoints.Small)
-      .subscribe(result => {
-
-        if (result.matches) {
-          console.log("screens matches HandsetLandscape");
-        }
-
-      });
+  /**
+   * Show warning if domain code exceed the maxlength.
+   * @param value
+   */
+  onDomainCodeKey(value: string) {
+    let code = this.domainForm.value['domainCode'];
+    this.hitTheCodeLengthLimit = !!code && code.length >= 63;
+    if (!this.domainCodeTimeout) {
+      this.domainCodeTimeout = setTimeout(() => {
+        this.hitTheCodeLengthLimit = false;
+        this.domainCodeTimeout = null;
+      }, 2000);
+    }
   }
 
   submitForm() {
