@@ -16,7 +16,7 @@ export class DomainDetailsDialogComponent {
 
   static readonly NEW_MODE = 'New Domain';
   static readonly EDIT_MODE = 'Domain Edit';
-  // test team can not automate test if this is less than 10 seconds :(
+  // Request from test team can not automate test if this is less than 10 seconds :(. Initialy it was 2s
   readonly warningTimeout : number = 10000;
   readonly dnsDomainPattern = '^([a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?){0,63}$';
   readonly subDomainPattern = this.dnsDomainPattern;
@@ -113,9 +113,7 @@ export class DomainDetailsDialogComponent {
    * @param value
    */
   onFieldKeyPressed(value: string, showTheWarningReference:string) {
-    console.log("onFieldKeyPressed Show warning?")
     if (!!value && value.length >= 63 && !this.fieldWarningTimeoutMap[showTheWarningReference]) {
-      console.log("Show warning!")
       this.fieldWarningTimeoutMap[showTheWarningReference] = setTimeout(() => {
         this.fieldWarningTimeoutMap[showTheWarningReference] = null;
       }, this.warningTimeout);
