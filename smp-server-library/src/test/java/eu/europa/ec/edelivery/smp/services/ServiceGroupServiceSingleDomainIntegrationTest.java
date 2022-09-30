@@ -248,7 +248,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         //then
         expectedExeption.expect(SMPRuntimeException.class);
         // get by null domain so: (all registered domains)
-        expectedExeption.expectMessage(USER_NOT_EXISTS.getMessage());
+        expectedExeption.expectMessage(INVALID_OWNER.getMessage(TestConstants.USER_CERT_3));
 
         // when
         testInstance.saveServiceGroup(inServiceGroup, null,
