@@ -16,14 +16,20 @@ export class DomainDetailsDialogComponent {
 
   static readonly NEW_MODE = 'New Domain';
   static readonly EDIT_MODE = 'Domain Edit';
+  // Request from test team can not automate test if this is less than 10 seconds :(. Initialy it was 2s
+  readonly warningTimeout : number = 10000;
   readonly dnsDomainPattern = '^([a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?){0,63}$';
   readonly subDomainPattern = this.dnsDomainPattern;
   readonly smpIdDomainPattern = this.dnsDomainPattern;
   // is part of domain
   readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
 
-  hitTheCodeLengthLimit: boolean = false;
-  domainCodeTimeout = null;
+  fieldWarningTimeoutMap = {
+    domainCodeTimeout: null,
+    smlDomainCodeTimeout: null,
+    smlsmpid: null,
+  };
+
   editMode: boolean;
   formTitle: string;
   current: DomainRo & { confirmation?: string };
@@ -101,18 +107,16 @@ export class DomainDetailsDialogComponent {
     }
   }
 
+
   /**
    * Show warning if domain code exceed the maxlength.
    * @param value
    */
-  onDomainCodeKey(value: string) {
-    let code = this.domainForm.value['domainCode'];
-    this.hitTheCodeLengthLimit = !!code && code.length >= 63;
-    if (!this.domainCodeTimeout) {
-      this.domainCodeTimeout = setTimeout(() => {
-        this.hitTheCodeLengthLimit = false;
-        this.domainCodeTimeout = null;
-      }, 2000);
+  onFieldKeyPressed(value: string, showTheWarningReference:string) {
+    if (!!value && value.length >= 63 && !this.fieldWarningTimeoutMap[showTheWarningReference]) {
+      this.fieldWarningTimeoutMap[showTheWarningReference] = setTimeout(() => {
+        this.fieldWarningTimeoutMap[showTheWarningReference] = null;
+      }, this.warningTimeout);
     }
   }
 
