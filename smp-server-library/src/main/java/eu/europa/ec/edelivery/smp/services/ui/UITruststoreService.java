@@ -384,8 +384,7 @@ public class UITruststoreService {
             loadedTrustStore.load(truststoreInputStream, token.toCharArray());
             return loadedTrustStore;
         } catch (Exception exception) {
-            LOG.error("Could not load truststore:"
-                    + truststoreFile + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            LOG.error("Could not load truststore:" + truststoreFile + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
         }
         return null;
     }
