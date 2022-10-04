@@ -79,7 +79,7 @@
 								<webdriver.chrome.driver>${chrome.driver.path}</webdriver.chrome.driver>
 								<webdriver.gecko.driver>chromedriver.exe</webdriver.gecko.driver>
 								<reports.folder>./target/</reports.folder>
-								<data.folder>.\src\main\resources\</data.folder>
+								<data.folder>./src/main/resources/</data.folder>
 								<testdata.file>testData.json</testdata.file>
 								<LONG_TIMEOUT>30</LONG_TIMEOUT>
 								<SHORT_TIMEOUT>5</SHORT_TIMEOUT>

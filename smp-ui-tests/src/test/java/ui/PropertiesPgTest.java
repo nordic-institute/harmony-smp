@@ -38,7 +38,7 @@ public class PropertiesPgTest extends BaseTest{
     }
 
     /*@Test(description = "PROP-0")*/
-    @Test(enabled = false)
+    @Test(description = "PROP-0", enabled = false)
     public void verifyParticipantschemeMandatoryProperty(){
 
         SoftAssert soft = new SoftAssert();
@@ -48,7 +48,7 @@ public class PropertiesPgTest extends BaseTest{
         propertiesPage.propertySearch(property);
         soft.assertTrue(propertiesPage.grid().rowContainPropertyName(property),"The row does not contain the searching property");
         PropertyRowInfo newRow0 = propertiesPage.grid().getRows().get(0);
-        System.out.println("newRow0.getPropertyvalue() "+newRow0.getPropertyvalue());
+
         if(newRow0.getPropertyvalue().equals("true"))
         {
            propertiesPage.grid().selectRow(0);
