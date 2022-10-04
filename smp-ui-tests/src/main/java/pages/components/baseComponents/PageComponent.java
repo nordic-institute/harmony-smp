@@ -17,7 +17,7 @@ public class PageComponent {
     protected WebDriver driver;
     protected WebDriverWait wait;
     protected Logger log = Logger.getLogger(this.getClass());
-    protected By loadingBar = By.className("mat-ripple-element");
+    protected By loadingBar = By.cssSelector(".container .bar");
 
 
     public PageComponent(WebDriver driver) {
@@ -41,8 +41,8 @@ public class PageComponent {
         int maxTimeout = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
         int waitedSoFar = 0;
         while ((null != element.getAttribute("disabled")) && (waitedSoFar < maxTimeout)) {
-            waitedSoFar += 300;
-            waitForXMillis(300);
+            waitedSoFar += 100;
+            waitForXMillis(100);
         }
     }
 
@@ -50,63 +50,26 @@ public class PageComponent {
         int maxTimeout = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
         int waitedSoFar = 0;
         while ((null == element.getAttribute("disabled")) && (waitedSoFar < maxTimeout)) {
-            waitedSoFar += 300;
-            waitForXMillis(300);
+            waitedSoFar += 100;
+            waitForXMillis(100);
         }
     }
 
     public void waitForElementToBeGone(WebElement element) {
-        WebDriverWait myWait = new WebDriverWait(driver, 1);
-
-        try {
-            myWait.until(ExpectedConditions.visibilityOf(element));
-            myWait.until(ExpectedConditions.invisibilityOf(element));
-        } catch (Exception e) {
-            return;
-        }
-
-        int waitTime = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
-        while (waitTime > 0) {
-
-            try {
-                if (!element.isDisplayed()) {
-                    return;
-                }
-            } catch (Exception e) {
-                return;
-            }
-            waitForXMillis(500);
-            waitTime = waitTime - 500;
-        }
+//        int maxTimeout = 1000;
+//        int waitedSoFar = 0;
+//
+//        try {
+//            while ((null != element.getText()) && (waitedSoFar < maxTimeout)) {
+//                waitedSoFar += 100;
+//                waitForXMillis(100);
+//            }
+//        } catch (Exception e) {
+//            return;
+//        }
+        waitForXMillis(500);
     }
 
-    public void waitForElementToBeGone(By locator) {
-        WebDriverWait myWait = new WebDriverWait(driver, PROPERTIES.SHORT_UI_TIMEOUT);
-
-        try {
-            myWait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-        } catch (Exception e) {
-            return;
-        }
-
-        int waitTime = PROPERTIES.SHORT_UI_TIMEOUT * 1000;
-        while (waitTime > 0) {
-            boolean displayed = true;
-
-            try {
-                displayed = driver.findElement(locator).isDisplayed();
-            } catch (Exception e) {
-                return;
-            }
-
-            if (!displayed) {
-                return;
-            }
-
-            waitForXMillis(500);
-            waitTime = waitTime - 500;
-        }
-    }
 
     public void waitForNumberOfWindowsToBe(int noOfWindows) {
         try {
@@ -163,12 +126,13 @@ public class PageComponent {
 
     public void waitForElementToBe(WebElement element) {
 
-        wait.until(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                return element.getLocation() != null;
-            }
-        });
+        wait.until(ExpectedConditions.visibilityOf(element));
+//        wait.until(new ExpectedCondition<Boolean>() {
+//            @Override
+//            public Boolean apply(WebDriver driver) {
+//                return element.getLocation() != null;
+//            }
+//        });
 
     }
 
@@ -221,12 +185,23 @@ public class PageComponent {
     }
 
     public void waitForRowsToLoad() {
+
         log.info("waiting for rows to load");
         try {
-            waitForElementToBeGone(loadingBar);
+            waitForXMillis(100);
+            int bars = 1;
+            int waits = 0;
+            while (bars > 0 && waits < 30) {
+                Object tmp = ((JavascriptExecutor) driver).executeScript("return document.querySelectorAll('.container .bar').length;");
+                bars = Integer.valueOf(tmp.toString());
+                waits++;
+                waitForXMillis(200);
+            }
+            log.debug("waited for rows to load for ms = 200*" + waits);
+            waitForXMillis(200);
         } catch (Exception e) {
         }
-        waitForXMillis(500);
+
     }
 
 

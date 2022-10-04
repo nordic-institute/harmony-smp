@@ -31,8 +31,6 @@ public class BaseTest {
     protected Logger logger = Logger.getLogger(this.getClass());
 
     @BeforeSuite(alwaysRun = true)
-	/*Starts the browser and navigates to the homepage. This happens once before the test
-	suite and the browser window is reused for all tests in suite*/
     public void beforeSuite() {
         logger.info("Creating necessary data !!!!");
         createDomains();
@@ -42,7 +40,7 @@ public class BaseTest {
 
 
     @AfterSuite(alwaysRun = true)
-    /*After the test suite is done we close the browser*/
+    /*After the test suite is done, we close the browser*/
     public void afterSuite() {
         logger.info("Deleting created data!!!");
 
