@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright 2017 European Commission | CEF eDelivery
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+  ~ You may not use this work except in compliance with the Licence.
+  ~
+  ~ You may obtain a copy of the Licence at:
+  ~ https://joinup.ec.europa.eu/software/page/eupl
+  ~ or file: LICENCE-EUPL-v1.1.pdf
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the Licence for the specific language governing permissions and limitations under the Licence.
+  -->
+
+<jaxb:bindings version="2.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+               xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+               xmlns:annox="http://annox.dev.java.net"
+               jaxb:extensionBindingPrefixes="xjc"
+               xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <jaxb:globalBindings xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xjc:simple />
+        <jaxb:javaType
+                name="java.util.Date"
+                xmlType="xs:dateTime"
+                parseMethod="org.apache.cxf.xjc.runtime.DataTypeAdapter.parseDateTime"
+                printMethod="org.apache.cxf.xjc.runtime.DataTypeAdapter.printDateTime"
+        />
+        <jaxb:javaType
+                name="java.util.Date"
+                xmlType="xs:date"
+                parseMethod="org.apache.cxf.xjc.runtime.DataTypeAdapter.parseDate"
+                printMethod="org.apache.cxf.xjc.runtime.DataTypeAdapter.printDate"
+        />
+    </jaxb:globalBindings>
+</jaxb:bindings>
