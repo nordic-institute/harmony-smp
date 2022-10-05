@@ -74,6 +74,12 @@
               <button mat-flat-button color="primary"
                       (click)="fileInput.click()" >Upload certificate</button>
             </label>
+            <div *ngIf="certificateValidationMessage"
+                 [ngClass]="{ 'alert-message': certificateValidationMessage, 'alert-message-success': !certificateValidationMessage, 'alert-message-error':!!certificateValidationMessage }"
+                 id="alertmessage_id">
+              <span class="alert-message-close-button" (click)="clearAlert()">&times;</span>
+              {{certificateValidationMessage}}
+            </div>
             <textarea matInput style="width:100%;border: #03A9F4 1px solid" cols="2" rows="10"
                       resizeable="false"
                       id="metadatacertificate_id"

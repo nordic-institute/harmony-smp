@@ -123,7 +123,7 @@ public class ServiceGroupService {
 
         if (!newOwner.isPresent()) {
             LOG.error("The owner [{}] does not exist! Save service group is rejected!", ownerName);
-            SMPRuntimeException ex = new SMPRuntimeException(USER_NOT_EXISTS);
+            SMPRuntimeException ex = new SMPRuntimeException(INVALID_OWNER, ownerName);
             LOG.businessError(SMPMessageCode.BUS_SAVE_SERVICE_GROUP_FAILED, domain, normalizedParticipantId.getValue(), normalizedParticipantId.getScheme(), ex.getMessage());
             throw ex;
         }

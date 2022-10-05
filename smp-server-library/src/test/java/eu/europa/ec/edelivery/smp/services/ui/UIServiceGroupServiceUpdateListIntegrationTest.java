@@ -139,7 +139,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         ServiceGroupRO roToUpdate = testInstance.getServiceGroupById(dbServiceGroup.getId());
         // when
         ServiceGroupDomainRO dro = roToUpdate.getServiceGroupDomains().remove(0);
-        List<ParticipantSMLRecord> lst = testInstance.updateServiceGroup(roToUpdate);
+        List<ParticipantSMLRecord> lst = testInstance.updateServiceGroup(roToUpdate, true);
         // then
         assertEquals(1, lst.size());
         assertEquals(SMLStatusEnum.UNREGISTER, lst.get(0).getStatus());
@@ -165,7 +165,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         sgr.setSmlSubdomain(dbDomain2.getSmlSubdomain());
         sgr.setDomainId(dbDomain2.getId());
         roToUpdate.getServiceGroupDomains().add(sgr);
-        List<ParticipantSMLRecord> lst = testInstance.updateServiceGroup(roToUpdate);
+        List<ParticipantSMLRecord> lst = testInstance.updateServiceGroup(roToUpdate, true);
         // then
         assertEquals(1, lst.size());
         assertEquals(SMLStatusEnum.REGISTER, lst.get(0).getStatus());

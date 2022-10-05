@@ -116,7 +116,7 @@ public class UIPropertyService {
         for (PropertyRO property : properties) {
             configurationDao.setPropertyToDatabase(property.getProperty(), property.getValue());
         }
-        Boolean isClusterEnabled = (Boolean) configurationDao.getCachedPropertyValue(SMP_CLUSTER_ENABLED);
+        Boolean isClusterEnabled = configurationDao.getCachedPropertyValue(SMP_CLUSTER_ENABLED);
         if (isClusterEnabled) {
             LOG.info("Properties were updated in database. Changed properties will be activated to all cluster nodes at: [{}]!",
                     ISO_8601_EXTENDED_DATETIME_FORMAT.format(refreshPropertiesTrigger.getNextExecutionDate()));
@@ -147,7 +147,7 @@ public class UIPropertyService {
 
         // try to parse value
         try {
-            File confDir = (File) configurationDao.getCachedPropertyValue(CONFIGURATION_DIR);
+            File confDir = configurationDao.getCachedPropertyValue(CONFIGURATION_DIR);
             PropertyUtils.parseProperty(propertyEnum, propertyRO.getValue(), confDir);
         } catch (SMPRuntimeException ex) {
             propertyValidationRO.setErrorMessage(ex.getMessage());

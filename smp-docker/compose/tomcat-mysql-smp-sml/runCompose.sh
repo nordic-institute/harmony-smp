@@ -8,10 +8,8 @@ SML_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/mysql-4.1_integration_t
 PREFIX="smp-sml-tomcat-mysql"
 SMP_VERSION=
 
-# clear volume and containers - to run  restart from strach 
 
-
-# READ argumnets 
+# READ arguments
 while getopts i:v: option
 do
   case "${option}"
