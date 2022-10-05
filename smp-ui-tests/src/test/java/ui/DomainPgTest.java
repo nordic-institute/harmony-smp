@@ -177,6 +177,11 @@ public class DomainPgTest extends BaseTest {
 
 
 		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		popup.clickOK();
 
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
@@ -453,8 +458,7 @@ public class DomainPgTest extends BaseTest {
 		SoftAssert soft = new SoftAssert();
 		DomainPage page = new DomainPage(driver);
 		String randstring =Generator.randomAlphaNumeric(10);
-		ArrayList<String> smlsmpId = new ArrayList<>(Arrays.asList("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopmkjh",
-				"abc@k",
+		ArrayList<String> smlsmpId = new ArrayList<>(Arrays.asList("abc@k",
 				"abcd-",
 				"-abgxknvlk",
 				"1qwertyuvbnm"));
@@ -489,8 +493,7 @@ public class DomainPgTest extends BaseTest {
 
 		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
 		ArrayList<String> domainCode = new ArrayList<>(Arrays.asList("sddfgf@",
-				"123%",
-				"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678901g"));
+				"123%"));
 
 		DomainPopup popup = page.clickNew();
 		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
@@ -509,4 +512,20 @@ public class DomainPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
+	@Test(description = "USR-150")
+	public void verifyNoOfCharcterAllowanceLimitInDomaincodeAndSMLSMPId(){
+		SoftAssert soft = new SoftAssert();
+		DomainPage page = new DomainPage(driver);
+		String randstring =Generator.randomAlphaNumeric(10);
+		String string = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678901g";
+
+		soft.assertTrue(page.isLoaded(), "Check that the page is not loaded");
+		DomainPopup popup = page.clickNew();
+		soft.assertTrue(popup.isLoaded(), "Domain popup is not loaded");
+		popup.fillDataForNewDomain(string, randstring, string, randstring);
+		soft.assertEquals(popup.domainCode63CharValidationGetErrMsg(), SMPMessages.DOMAINCODE_VALIDATION_MESSAGE, "Message is not in the list");
+		soft.assertEquals(popup.getSmlSmpId63CharValidationMsg(), SMPMessages.SMLSMPID_VALIDATION_MESSAGE,"Error message is not in list");
+
+		soft.assertAll();
+	}
 }
