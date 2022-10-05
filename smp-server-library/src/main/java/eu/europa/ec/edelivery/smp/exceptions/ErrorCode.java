@@ -28,7 +28,7 @@ public enum ErrorCode {
     USER_IS_NOT_OWNER(400,"SMP:124",ErrorBusinessCode.UNAUTHORIZED,"User %s is not owner of service group (part. id: %s, part. sch.: '%s')!"), // OWASP recommendation
     INVALID_CERTIFICATE_MESSAGE_DIGEST(500, "SMP:125", ErrorBusinessCode.TECHNICAL, "Could not initialize MessageDigest"),
     INVALID_CERTIFICATE_ENCODING(500, "SMP:126", ErrorBusinessCode.TECHNICAL, "Could not encode certificate"),
-    INVALID_OWNER(500, "SMP:127", ErrorBusinessCode.TECHNICAL, "Invalid owner id: %s"),
+    INVALID_OWNER(400, "SMP:127", ErrorBusinessCode.NOT_FOUND, "Invalid owner id: %s"),
 
     // service group error
     ILLEGAL_STATE_SG_MULTIPLE_ENTRY (500,"SMP:130",ErrorBusinessCode.TECHNICAL,"More than one service group ( part. id: %s, part. sch.: '%s') is defined in database!"),
@@ -52,11 +52,8 @@ public enum ErrorCode {
 
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),
-
-
     //
     XML_SIGNING_EXCEPTION (500,"SMP:500",ErrorBusinessCode.TECHNICAL,"Error occurred while signing response!"),
-
     JAXB_INITIALIZATION (500,"SMP:511",ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class [%s]!"),
     XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for [%s].  Error: %s!"),
     INVALID_REQUEST(400,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request [%s]. Error: %s!"),

@@ -1,13 +1,12 @@
-CREATE SEQUENCE smp_alert_prop_seq START WITH 1 INCREMENT BY 1;
+-- CREATE SEQUENCE smp_alert_prop_seq START WITH 1 INCREMENT BY 1;
 
-CREATE SEQUENCE smp_alert_seq START WITH 1 INCREMENT BY 1;
+-- CREATE SEQUENCE smp_alert_seq START WITH 1 INCREMENT BY 1;
 
 -- set usernames for empty "users"
 
 UPDATE smp_user
 SET
-    username = 'USERNAME_'
-               || lpad(smp_user.id,3,'0')
+    username = 'USERNAME_' || smp_user.id 
 WHERE
     username IS NULL;
 

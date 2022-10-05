@@ -1,5 +1,5 @@
-# Experiamental SMP docker image
-Purpose of compose plan is to startup fully functinal SMP environment for demo and testing. The plan contains 
+# Experimental SMP docker image
+Purpose of compose plan is to startup fully functional SMP environment for demo and testing. The plan contains. 
  - MySql database
  - SML services
  - CAS instance (EULOGIN)
@@ -44,7 +44,6 @@ Users:
 
  To use eulogin add the following hostname mappings (Linux: /etc/hosts, windows: C:\Windows\System32\drivers\etc\hosts
                                                                                  
-                                                                                 and add the lines )
  - 127.0.0.1 eulogin-mock-server
  - 127.0.0.1 eulogin.protected.smp.local
 

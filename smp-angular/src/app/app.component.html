@@ -95,12 +95,13 @@
             <button *ngIf="isUserAuthPasswdEnabled" mat-menu-item id="changePassword_id" (click)="changeCurrentUserPassword()">
               <span>Change password</span>
             </button>
+            <button *ngIf="isUserAuthSSOEnabled" mat-menu-item id="showSSODetails_id" (click)="openCurrentCasUserData()">
+              <span>Open CAS user data</span>
+            </button>
             <button *ngIf="isWebServiceUserTokenAuthPasswdEnabled" mat-menu-item id="getAccessToken_id" (click)="regenerateCurrentUserAccessToken()">
               <span>Generated access token</span>
             </button>
-
             <hr/>
-
             <button mat-menu-item (click)="logout($event)" id="logout_id">
               <mat-icon>power_settings_new</mat-icon>
               <span>Logout</span>

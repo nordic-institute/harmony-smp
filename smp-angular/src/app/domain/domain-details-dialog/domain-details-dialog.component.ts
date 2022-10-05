@@ -6,9 +6,7 @@ import {AlertMessageService} from "../../common/alert-message/alert-message.serv
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
-import {KeystoreEditDialogComponent} from "../keystore-edit-dialog/keystore-edit-dialog.component";
-import {ServiceGroupDomainEditRo} from "../../service-group-edit/service-group-domain-edit-ro.model";
-import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
+import {BreakpointObserver} from "@angular/cdk/layout";
 
 @Component({
   selector: 'domain-details-dialog',
@@ -18,17 +16,26 @@ export class DomainDetailsDialogComponent {
 
   static readonly NEW_MODE = 'New Domain';
   static readonly EDIT_MODE = 'Domain Edit';
-  readonly subDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$';
-  readonly smpIdDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{0,63}$';
+  // Request from test team can not automate test if this is less than 10 seconds :(. Initialy it was 2s
+  readonly warningTimeout : number = 10000;
+  readonly dnsDomainPattern = '^([a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?){0,63}$';
+  readonly subDomainPattern = this.dnsDomainPattern;
+  readonly smpIdDomainPattern = this.dnsDomainPattern;
   // is part of domain
   readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
+
+  fieldWarningTimeoutMap = {
+    domainCodeTimeout: null,
+    smlDomainCodeTimeout: null,
+    smlsmpid: null,
+  };
 
   editMode: boolean;
   formTitle: string;
   current: DomainRo & { confirmation?: string };
   domainForm: FormGroup;
   domain;
-  selectedSMLCert: CertificateRo =null;
+  selectedSMLCert: CertificateRo = null;
 
 
   notInList(list: string[], exception: string) {
@@ -96,31 +103,35 @@ export class DomainDetailsDialogComponent {
 
     if (this.current.smlClientKeyAlias) {
       this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
-      this.domainForm.controls['smlClientKeyCertificate'].setValue(this.selectedSMLCert );
+      this.domainForm.controls['smlClientKeyCertificate'].setValue(this.selectedSMLCert);
     }
+  }
 
-    this.responsive.observe(Breakpoints.Small)
-      .subscribe(result => {
 
-        if (result.matches) {
-          console.log("screens matches HandsetLandscape");
-        }
-
-      });
+  /**
+   * Show warning if domain code exceed the maxlength.
+   * @param value
+   */
+  onFieldKeyPressed(value: string, showTheWarningReference:string) {
+    if (!!value && value.length >= 63 && !this.fieldWarningTimeoutMap[showTheWarningReference]) {
+      this.fieldWarningTimeoutMap[showTheWarningReference] = setTimeout(() => {
+        this.fieldWarningTimeoutMap[showTheWarningReference] = null;
+      }, this.warningTimeout);
+    }
   }
 
   submitForm() {
     this.checkValidity(this.domainForm)
 
     // check if empty domain already exists
-    if(this.current.status === SearchTableEntityStatus.NEW
-    && !this.domainForm.value['smlSubdomain'] ){
+    if (this.current.status === SearchTableEntityStatus.NEW
+      && !this.domainForm.value['smlSubdomain']) {
 
-      var domainWithNullSML = this.lookups.cachedDomainList.filter(function(dmn) {
+      var domainWithNullSML = this.lookups.cachedDomainList.filter(function (dmn) {
         return !dmn.smlSubdomain;
       })[0];
 
-      if(!domainWithNullSML) {
+      if (!domainWithNullSML) {
         this.dialogRef.close(true);
       } else {
         this.domainForm.controls['smlSubdomain'].setErrors({'blankDomainError': true});

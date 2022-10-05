@@ -89,7 +89,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     @Transactional
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
-        File rootFolder = (File)getCachedPropertyValue(CONFIGURATION_DIR);
+        File rootFolder = getCachedPropertyValue(CONFIGURATION_DIR);
         if (!PropertyUtils.isValidProperty(key, value, rootFolder)) {
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, key.getPropertyType().getErrorMessage(key.getProperty()));
         }
@@ -155,12 +155,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return cachedProperties.getProperty(property, defValue);
     }
 
-    public Object getCachedPropertyValue(SMPPropertyEnum key) {
+    public <T extends Object> T getCachedPropertyValue(SMPPropertyEnum key) {
         if (lastUpdate == null) {
             // init properties
             refreshProperties();
         }
-        return cachedPropertyValues.get(key.getProperty());
+        return (T) cachedPropertyValues.get(key.getProperty());
     }
 
     @Transactional

@@ -7,13 +7,19 @@
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
             <input matInput placeholder="Domain Code" name="domainCode"
-                   id="domainCode_id"
+                   id="domainCode_id" #domainCode
                    matTooltip="The SMP's domain code. The code is used in HTTP header 'Domain' when adding service group using the webservice API"
+                   (keypress)="onFieldKeyPressed(domainCode.value, 'domainCodeTimeout')"
                    [formControl]="domainForm.controls['domainCode']" maxlength="63" required>
             <mat-hint align="end">For WS API integration: the Domain property</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')"
               style="color:red; font-size: 70%">
+              Domain code must contain only chars and numbers and must be less than 63 chars long.
+            </div>
+            <div
+              *ngIf="!!fieldWarningTimeoutMap.domainCodeTimeout"
+              style="color:darkorange; font-size: 70%">
               Domain code must contain only chars and numbers and must be less than 63 chars long.
             </div>
             <div
@@ -25,7 +31,9 @@
           <mat-form-field style="width:100%">
             <input matInput placeholder="SML domain"
                    matTooltip="The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: has informative value only, SML DNS zone used for publishing is based on SML configuration."
-                   name="smlSubdomain" id="smldomain_id"
+                   name="smlSubdomain"
+                   id="smldomain_id" #smldomain
+                   (keypress)="onFieldKeyPressed(smldomain.value, 'smlDomainCodeTimeout')"
                    [formControl]="domainForm.controls['smlSubdomain']" maxlength="63">
             <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for
               mydomain.sml.dns.zone).
@@ -34,6 +42,12 @@
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
               &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
               style="color:red; font-size: 70%">
+              SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit nor a hyphen and should not end with a hyphen.
+            </div>
+            <div
+              *ngIf="!!fieldWarningTimeoutMap.smlDomainCodeTimeout"
+              style="color:darkorange; font-size: 70%">
               SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
               should not start with a digit nor a hyphen and should not end with a hyphen.
             </div>
@@ -70,12 +84,19 @@
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
             <input matInput placeholder="SML SMP identifier" name="smlSmpId"
-                   id="smlSMPId_id"
+                   id="smlSMPId_id" #smlSMPId
+                  (keypress)="onFieldKeyPressed(smlSMPId.value, 'smlsmpid')"
                    [formControl]="domainForm.controls['smlSmpId']" maxlength="63">
             <mat-hint align="end">SMP ID used for SML</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')"
               style="color:red; font-size: 70%">
+              SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit nor a hyphen and should not end with a hyphen.
+            </div>
+            <div
+              *ngIf="!!fieldWarningTimeoutMap.smlsmpid"
+              style="color:darkorange; font-size: 70%">
               SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
               should not start with a digit nor a hyphen and should not end with a hyphen.
             </div>

@@ -20,10 +20,10 @@ ENV SMP_HOME=/opt/smp  \
     SMP_DB_USER_PASSWORD=smp  \
     MYSQL_ROOT_PASSWORD=root \
 # sml environment variables
-    SML_VERSION=4.0.1 \
+    SML_VERSION=4.2.RC1 \
     SML_DISTRIBUTION_URL=https://ec.europa.eu/digital-building-blocks/artifact/repository/public/eu/europa/ec/bdmsl/bdmsl-webapp/ \
-    SML_SHA512=b40d6ff717216635839e420f467b9dbf5cab87582babc103dea3ed7cbb0fd264f0755fc95607bb3d5ddbcd976a13f0d2170cbf824b3dfebb2ca046579a5d5278  \
-    SML_SETUP_SHA512=dee04b6c60696c052f4807cc24df72a09dd7443e1c87df82967b08a02381c3042af338f726bc60f40e9428de301af8c317839d286ac58e37b5c7c6ae36c42468  \
+    SML_SHA512=2330e6caf557fd6a6e8725eb339c26cb2d06f0ca768fd1766989f5dec7557e41375ef61b65cad5d87fa478f3c468272880ebe8521bb66e8e7dee9bb16d0a3d51  \
+    SML_SETUP_SHA512=f9b7a9607f34f2d547acac13e7044df04fdf616b163f4cae8788f7b1eccd837c3db947458b4f55273d263f6af2e794c18d5216484cc8132e3cfd2dc176d9e1bf  \
     SML_DB_SCHEMA=sml  \
     SML_DB_USER=sml \
     SML_DB_USER_PASSWORD=sml  \
@@ -131,7 +131,7 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && unzip /tmp/sml-setup.zip -d /tmp/    \
     && mv /tmp/bdmsl-webapp-$SML_VERSION /tmp/sml-setup \
     && cp /tmp/sml-setup/encriptionPrivateKey.private  /opt/smlconf/encriptionPrivateKey.private \
-    && cp /tmp/sml-setup/keystore.jks /opt/smlconf/keystore.jk \
+    && cp /tmp/sml-setup/keystore.jks /opt/smlconf/keystore.jks \
     && mkdir $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs \
     && chmod u+x /sbin/entrypoint.sh
 

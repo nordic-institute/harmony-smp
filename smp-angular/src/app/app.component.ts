@@ -34,12 +34,20 @@ export class AppComponent {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
   }
 
+  openCurrentCasUserData() {
+    window.open(this.securityService.getCurrentUser().casUserDataUrl, "_blank");
+  }
+
   get isWebServiceUserTokenAuthPasswdEnabled(): boolean {
     return this.lookups.cachedApplicationConfig?.webServiceAuthTypes?.includes('TOKEN');
   }
 
   get isUserAuthPasswdEnabled(): boolean {
     return this.lookups.cachedApplicationInfo?.authTypes.includes('PASSWORD');
+  }
+
+  get isUserAuthSSOEnabled(): boolean {
+    return this.lookups.cachedApplicationInfo?.authTypes?.includes('SSO');
   }
 
   isCurrentUserSystemAdmin(): boolean {

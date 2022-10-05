@@ -33,4 +33,4 @@ cp /u01/oracle/init/smp.war "${WL_DOMAIN_HOME}/"
 ls -ltr "${WL_DOMAIN_HOME}/"
 
 # Deploy Application
-wlst.sh -skipWLSModuleScanning /u01/oracle/smp-app-deploy.py
+wlst.sh -skipWLSModuleScanning "${ORACLE_HOME}"/smp-app-deploy.py
