@@ -1,6 +1,7 @@
 package pages.components.baseComponents;
 
 
+import com.google.common.base.Stopwatch;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -56,18 +57,7 @@ public class PageComponent {
     }
 
     public void waitForElementToBeGone(WebElement element) {
-//        int maxTimeout = 1000;
-//        int waitedSoFar = 0;
-//
-//        try {
-//            while ((null != element.getText()) && (waitedSoFar < maxTimeout)) {
-//                waitedSoFar += 100;
-//                waitForXMillis(100);
-//            }
-//        } catch (Exception e) {
-//            return;
-//        }
-        waitForXMillis(500);
+        waitForXMillis(1000);
     }
 
 
