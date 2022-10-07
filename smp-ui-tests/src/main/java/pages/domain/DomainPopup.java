@@ -56,6 +56,7 @@ public class DomainPopup extends PageComponent {
 
 	public void clickOK() {
 		waitForElementToBeClickable(okBtn).click();
+		waitForXMillis(500);
 		waitForElementToBeGone(okBtn);
 	}
 
