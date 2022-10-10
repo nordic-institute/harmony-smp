@@ -1,19 +1,24 @@
-package utils.customReporter;
+package customReporter;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.extensions.XSSFCellFill;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
+import ui.BaseTest;
 import utils.PROPERTIES;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,9 +33,8 @@ public class ExcelTestReporter implements ITestListener {
 	@Override
 	/*Creates the report file, the sheet and writes the headers of the table with style as well*/
 	public void onStart(ITestContext iTestContext) {
-		
-		
-		
+
+
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
 		String dateStr = format.format(iTestContext.getStartDate());
 		filename = PROPERTIES.REPORTS_FOLDER + "TestRunReport" + dateStr + ".xlsx";
@@ -47,12 +51,12 @@ public class ExcelTestReporter implements ITestListener {
 			cell.setCellValue(headers[i]);
 		}
 
-		try{
+		try {
 			FileOutputStream os = new FileOutputStream(filename);
 			workbook.write(os);
 			workbook.close();
 			os.close();
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -81,6 +85,7 @@ public class ExcelTestReporter implements ITestListener {
 	/* Writes a row in the report file with the test id, name  and FAIL as status*/
 	@Override
 	public void onTestFailure(ITestResult iTestResult) {
+		takeScreenshot(iTestResult);
 		try {
 			writeRowToReportFile(iTestResult, "FAIL");
 		} catch (Exception e) {
@@ -105,27 +110,26 @@ public class ExcelTestReporter implements ITestListener {
 
 
 	/* depending on the type of cell returns the desired style. The supported type are "Header", "Fail", "Pass" */
-	private XSSFCellStyle composeCellStyle(XSSFWorkbook workbook, String type){
+	private XSSFCellStyle composeCellStyle(XSSFWorkbook workbook, String type) {
 		XSSFCellStyle style = workbook.createCellStyle();
 		XSSFFont font = workbook.createFont();
 		font.setBold(true);
 
-		if(type.equalsIgnoreCase("Pass")){
+		if (type.equalsIgnoreCase("Pass")) {
 			style.setFillBackgroundColor(IndexedColors.BRIGHT_GREEN.getIndex());
 			style.setFillForegroundColor(IndexedColors.BRIGHT_GREEN.getIndex());
 
-		}else if (type.equalsIgnoreCase("Fail")){
+		} else if (type.equalsIgnoreCase("Fail")) {
 			style.setFillBackgroundColor(IndexedColors.RED.getIndex());
 			style.setFillForegroundColor(IndexedColors.RED.getIndex());
 			style.setFont(font);
 
-		}else if (type.equalsIgnoreCase("Skipped")){
+		} else if (type.equalsIgnoreCase("Skipped")) {
 			style.setFillBackgroundColor(IndexedColors.WHITE.getIndex());
 			style.setFillForegroundColor(IndexedColors.WHITE.getIndex());
 			style.setFont(font);
 
-		}
-		else if (type.equalsIgnoreCase("Header")){
+		} else if (type.equalsIgnoreCase("Header")) {
 			style.setFillBackgroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
 			style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
 			style.setFont(font);
@@ -140,15 +144,19 @@ public class ExcelTestReporter implements ITestListener {
 
 		String qualifiedName = iTestResult.getMethod().getQualifiedName();
 		String testType = "";
-		if(qualifiedName.contains(".ui.")){testType = "UI";}
-		if(qualifiedName.contains(".rest.")){testType = "REST";}
-		
+		if (qualifiedName.contains(".ui.")) {
+			testType = "UI";
+		}
+		if (qualifiedName.contains(".rest.")) {
+			testType = "REST";
+		}
+
 		File myFile = new File(filename);
 		FileInputStream inputStream = new FileInputStream(myFile);
 		XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
 
 		Sheet reportSheet = workbook.getSheetAt(0);
-		int rowNum = reportSheet.getLastRowNum()+1;
+		int rowNum = reportSheet.getLastRowNum() + 1;
 		Row currentRow = reportSheet.createRow(rowNum);
 
 		currentRow.createCell(0).setCellValue(testType);
@@ -162,11 +170,11 @@ public class ExcelTestReporter implements ITestListener {
 		cell.setCellValue(result);
 		cell.setCellStyle(composeCellStyle(workbook, result));
 		currentRow.createCell(7).setCellValue(sdf.format(new Date(iTestResult.getStartMillis())));
-		currentRow.createCell(8).setCellValue((iTestResult.getEndMillis()-iTestResult.getStartMillis())/1000);
+		currentRow.createCell(8).setCellValue((iTestResult.getEndMillis() - iTestResult.getStartMillis()) / 1000);
 		currentRow.createCell(9).setCellValue("");
 		currentRow.createCell(10).setCellValue("");
 
-		if(iTestResult.getThrowable() != null){
+		if (iTestResult.getThrowable() != null) {
 			currentRow.createCell(11).setCellValue(iTestResult.getThrowable().getMessage());
 		}
 
@@ -180,9 +188,21 @@ public class ExcelTestReporter implements ITestListener {
 	}
 
 
+	private void takeScreenshot(ITestResult result) {
 
+		System.out.println("***** Error " + result.getName() + " test has failed *****");
+		String methodName = "target/" + result.getName().toString().trim();
 
+		WebDriver driver = ((BaseTest) result.getInstance()).driver;
+		File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 
+		try {
+			FileUtils.copyFile(scrFile, new File(methodName + ".png"));
+			System.out.println("***Placed screen shot in " + methodName + ".png ***");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 
 }
