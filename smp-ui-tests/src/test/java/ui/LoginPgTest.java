@@ -160,12 +160,6 @@ public class LoginPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
-	//	This will serve as a reminder to check this message manually
-	@Test(description = "LGN-50")
-	public void SMPNotRunningTest() {
-		throw new SkipException("This test will be executed manually !!!");
-	}
-
 	@Test(description = "LGN-60")
 	public void loginButtonDisableVerification() {
 		SoftAssert soft = new SoftAssert();
