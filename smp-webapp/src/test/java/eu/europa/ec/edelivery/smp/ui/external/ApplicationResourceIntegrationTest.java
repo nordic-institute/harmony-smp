@@ -6,6 +6,7 @@ import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +28,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
-import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithSMPAdmin;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -87,7 +87,7 @@ public class ApplicationResourceIntegrationTest {
     @Test
     public void getDisplayName() throws Exception {
         String value = applicationResource.getDisplayVersion();
-        assertEquals("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00|Central European Time]", value);
+        MatcherAssert.assertThat(value, startsWith("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00"));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ApplicationResourceIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         SmpInfoRO info = mapper.readValue(value, SmpInfoRO.class);
 
-        assertEquals("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00|Central European Time]", info.getVersion());
+        MatcherAssert.assertThat(info.getVersion(), startsWith("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00"));
         assertEquals("/", info.getContextPath());
     }
 
