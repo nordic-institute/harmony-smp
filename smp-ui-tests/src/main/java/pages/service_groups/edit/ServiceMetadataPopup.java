@@ -28,7 +28,7 @@ public class ServiceMetadataPopup extends PageComponent {
 	private WebElement clearButton;
 	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(2)")
 	private WebElement generateXMLButton;
-	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(3)")
+	@FindBy(css = "mat-card-content > mat-toolbar > mat-toolbar-row > button:nth-child(4)")
 	private WebElement validateButton;
 
 	@FindBy(css = "#MetadataTextArea")
@@ -48,6 +48,9 @@ public class ServiceMetadataPopup extends PageComponent {
 
 	@FindBy(xpath = "//span[text() ='Metadata wizard']")
 	private WebElement metadataWizardBtn;
+
+	@FindBy(css = "mat-card-content > div > div.ng-star-inserted:nth-child(2)")
+	private WebElement xmlValidationMsg;
 
 	@FindBy(css = "mat-dialog-content #domain_id")
 	private WebElement domainSelectContainer;
@@ -73,6 +76,11 @@ public class ServiceMetadataPopup extends PageComponent {
 
 	}
 
+	public String xmlFieldVALUE(){
+		log.info("value is "+metadataTextArea.getAttribute("value"));
+		return metadataTextArea.getAttribute("value");
+	}
+
 	public void fillForm(String domain, String docID, String docScheme) {
 		waitForElementToBeVisible(documentIdentifierInput);
 		domainSelect.selectWithIndex(0);
@@ -83,7 +91,26 @@ public class ServiceMetadataPopup extends PageComponent {
 		generateXMLButton.click();
 
 	}
+	public String captureTextOfMetadataTextArea(){
+		return metadataTextArea.getText();
+	}
 
+	public void clickValidateBtn(){
+		waitForElementToBeClickable(validateButton).click();
+	}
+	public void clickGenerateXMLBtn(){
+		waitForElementToBeClickable(generateXMLButton).click();
+	}
+	public void clickClearBtn(){
+		waitForElementToBeClickable(clearButton).click();
+	}
+	public String getXMLValidationMessage(){
+		return xmlValidationMsg.getText();
+	}
+	public void addTextToMetadataTextArea(String generator){
+		metadataTextArea.sendKeys(generator);
+
+	}
 
 	public String docIDFieldValue(){
 		return documentIdentifierInput.getAttribute("value");

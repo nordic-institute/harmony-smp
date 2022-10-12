@@ -49,6 +49,9 @@ public class DomainPopup extends PageComponent {
 	@FindBy(css = "div.mat-form-field-infix > div.ng-star-inserted")
 	WebElement domainCodeValidationError;
 
+	@FindBy(css = "#MetadataTextArea")
+	private WebElement metadataTextArea;
+
 	@FindBy(css = "#smlClientKeyAlias_id")
 	WebElement smlClientAliasSelectContainer;
 	GenericSelect smlClientAliasSelect;
@@ -64,6 +67,7 @@ public class DomainPopup extends PageComponent {
 		waitForElementToBeClickable(cancelBtn).click();
 		waitForElementToBeGone(cancelBtn);
 	}
+
 
 	public boolean isLoaded() {
 		log.info("checking if domain popup is properly loaded");
@@ -143,7 +147,29 @@ public class DomainPopup extends PageComponent {
 		}
 
 	}
+	public String domainCode63CharValidationGetErrMsg() {
+		try {
+			waitForElementToBeVisible(domainCodeValidationError);
+			return domainCodeValidationError.getAttribute("value");
+		} catch (Exception e) {
+		}
+		return null;
+	}
 
+	public String getSmlSmpId63CharValidationMsg() {
+		WebElement invalidSmlSmpIdErrorMsg = driver.findElement(By.cssSelector("div.mat-form-field-infix > div.ng-star-inserted"));
+		try {
+			waitForElementToBeVisible(invalidSmlSmpIdErrorMsg);
+			return invalidSmlSmpIdErrorMsg.getAttribute("value");
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
+	public String xmlFieldVALUE(){
+		log.info("value is "+metadataTextArea.getAttribute("value"));
+		return metadataTextArea.getAttribute("value");
+	}
 	public void clearAndFillDomainCodeInput(String domainCode) {
 		log.info("clear and fill domain code data");
 		clearAndFillInput(domainCodeInput, domainCode);
