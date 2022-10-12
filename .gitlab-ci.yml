@@ -118,10 +118,14 @@ test-soapui-tomcat-mysql-sml-job:
   artifacts:
     when: always
     expire_in: 1 week
+    name: "tomcat-mysql-soapui-report"
+    paths:
+      - "*/target/soapui-reports"
+      - "*/target/soapui"
     reports:
       junit:
         - "*/target/soapui-reports/TEST-*.xml"
-#        - "*/target/failsafe-reports/TEST-*.xml"
+
 
 # backend tests on tomcat/mysql with sml integration
 test-soapui-weblogic-oracle-job:
@@ -147,4 +151,13 @@ test-ui-tomcat-mysql-sml-job:
   needs: ["test-soapui-tomcat-mysql-sml-job"]
   script:
     - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - ./smp-docker/compose/tomcat-mysql-smp-sml/runCompose.sh -i ../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql -v 5.0-SNAPSHOT
+    - cd smp-ui-tests
+    - /usr/bin/xvfb-run -e /tmp/xvfb-error.log --server-args="-screen 0 1920x1080x24" mvn test -Pubuntu -Durl=http://localhost:8982/smp/  -Dchrome.driver.path=/home/edelivery/drivers/chromedriver
+  artifacts:
+    when: always
+    expire_in: 1 week
+    name: "ui-report"
+    paths:
+      - target/surefire-reports/*
+
