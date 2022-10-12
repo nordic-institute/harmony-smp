@@ -46,12 +46,6 @@ public class DomainPopup extends PageComponent {
 	@FindBy(css = "#smlClientCertHeaderAuth_id-input")
 	WebElement userClientCertHeaderToggleInput;
 
-	/*@FindBy(css = "div.mat-form-field-infix >  div.ng-star-inserted")
-	WebElement invalidSmlSmpIdErrorMsg;*/
-
-//	@FindBy(css = "#smlClientHeader_id")
-//	WebElement smlClientHeaderInput;
-
 	@FindBy(css = "div.mat-form-field-infix > div.ng-star-inserted")
 	WebElement domainCodeValidationError;
 
@@ -65,6 +59,7 @@ public class DomainPopup extends PageComponent {
 
 	public void clickOK() {
 		waitForElementToBeClickable(okBtn).click();
+		waitForXMillis(500);
 		waitForElementToBeGone(okBtn);
 	}
 

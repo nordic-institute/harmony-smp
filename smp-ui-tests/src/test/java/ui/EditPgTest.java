@@ -305,7 +305,6 @@ public class EditPgTest extends BaseTest {
 		SMPRestClient.deleteSG(identifier);
 
 		identifier = Generator.randomAlphaNumeric(10);
-//		scheme = Generator.randomAlphaNumeric(10);
 
 		popup = page.clickNew();
 		popup.fillParticipantIdentifier(identifier);
