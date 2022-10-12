@@ -1,11 +1,11 @@
-package utils.customReporter;
+package customReporter;
 
 import org.apache.log4j.Logger;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-public class TestProgressReporter  implements ITestListener {
+public class TestProgressReporter implements ITestListener {
 
 
 	static int test_count = 0;
