@@ -5,21 +5,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.components.GenericSelect;
 import pages.components.baseComponents.PageComponent;
 import utils.PROPERTIES;
 
 public class FilterArea extends PageComponent {
-	public FilterArea(WebDriver driver) {
-		super(driver);
-		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
-
-		domainSelect = new GenericSelect(driver, domainSelectContainer);
-
-	}
-
-
+	public GenericSelect domainSelect;
 	@FindBy(id = "participantIdentifier")
 	private WebElement participantIdentifierInput;
 
@@ -28,13 +19,17 @@ public class FilterArea extends PageComponent {
 
 	@FindBy(id = "domain_id")
 	private WebElement domainSelectContainer;
-	public GenericSelect domainSelect;
-
 	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "searchbutton_id")
 	private WebElement searchButton;
 
+	public FilterArea(WebDriver driver) {
+		super(driver);
+		PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 
+		domainSelect = new GenericSelect(driver, domainSelectContainer);
+
+	}
 
 	public String getParticipantIdentifierInputValue() {
 		log.info("getting text in participant Identifier Input");
@@ -48,23 +43,23 @@ public class FilterArea extends PageComponent {
 		return participantSchemeInput.getText().trim();
 	}
 
-	public boolean isLoaded(){
+	public boolean isLoaded() {
 		log.info("checking filter area is properly loaded");
-		if(!isVisible(participantIdentifierInput)){
+		if (!isVisible(participantIdentifierInput)) {
 			return false;
 		}
-		if(!isVisible(participantSchemeInput)){
+		if (!isVisible(participantSchemeInput)) {
 			return false;
 		}
 		return domainSelect.isLoaded();
 	}
 
-	public void filter(String identifier, String scheme, String domain){
+	public void filter(String identifier, String scheme, String domain) {
 		log.info(String.format("filtering by %s, %s, %s", identifier, scheme, domain));
 		clearAndFillInput(participantIdentifierInput, identifier);
 		clearAndFillInput(participantSchemeInput, scheme);
 
-		if(null != domain && !domain.isEmpty()){
+		if (null != domain && !domain.isEmpty()) {
 			domainSelect.selectOptionByText(domain);
 		}
 
@@ -73,21 +68,19 @@ public class FilterArea extends PageComponent {
 		waitForXMillis(1000);
 	}
 
-	public boolean isSearchButtonVisible(){
-		try{
+	public boolean isSearchButtonVisible() {
+		try {
 			return searchButton.isDisplayed();
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
 
-	public boolean isSearchButtonEnable(){
-		try{
+	public boolean isSearchButtonEnable() {
+		try {
 			return searchButton.isEnabled();
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
