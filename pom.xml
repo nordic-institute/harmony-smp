@@ -76,7 +76,7 @@
         <slf4j.version>1.7.36</slf4j.version>
         <soapui.plugin.version>5.1.2</soapui.plugin.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring.boot.version>2.7.0</spring.boot.version>
+        <spring.boot.version>2.7.4</spring.boot.version>
         <spring.security.version>5.7.2</spring.security.version>
         <spring.version>5.3.21</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
@@ -692,7 +692,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>7.1.1</version>
+                        <version>7.1.2</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
