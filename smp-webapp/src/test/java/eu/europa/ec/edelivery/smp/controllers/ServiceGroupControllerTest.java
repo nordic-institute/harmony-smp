@@ -52,7 +52,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
-        "classpath:/webapp_integration_test_data.sql"},
+        "classpath:/webapp_integration_test_data.sql",
+        },
+        statements = {
+                "update SMP_CONFIGURATION set VALUE='false', LAST_UPDATED_ON=CURRENT_TIMESTAMP() where PROPERTY='identifiersBehaviour.scheme.mandatory';",
+                "update SMP_CONFIGURATION set VALUE='true', LAST_UPDATED_ON=CURRENT_TIMESTAMP() where PROPERTY='smp.automation.authentication.external.tls.clientCert.enabled';"
+        },
         executionPhase = BEFORE_TEST_METHOD)
 public class ServiceGroupControllerTest {
 
@@ -91,8 +96,6 @@ public class ServiceGroupControllerTest {
     @Before
     public void setup() throws IOException {
         forwardedHeaderTransformer.setRemoveOnly(false);
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", null);
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.PARTC_SCH_MANDATORY, "false", null);
         X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcUtils.initializeMockMvc(webAppContext);
         configurationDao.reloadPropertiesFromDatabase();
@@ -116,8 +119,6 @@ public class ServiceGroupControllerTest {
 
     @Test
     public void adminCanCreateServiceGroupNullScheme() throws Exception {
-        // make sure identifiersBehaviour.scheme.allowNull is set to true in db script
-        // set identifiersBehaviour.scheme.mandatory to false
         mvc.perform(put(URL_PATH_NULL_SCHEME)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
