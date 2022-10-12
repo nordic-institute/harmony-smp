@@ -1,64 +1,60 @@
 package utils.enums;
 
-import utils.TestDataProvider;
-
-import java.util.Map;
-
 public class SMPMessages {
 
 	public static final String MSG_1 = "Login failed; Invalid userID or password";
 	public static final String MSG_2 = "Too many invalid attempts to log in. Access has been temporarily\n" +
-										"suspended. Please try again later with the right credentials.";
+			"suspended. Please try again later with the right credentials.";
 	public static final String MSG_3 = "To abandon all changes performed since last save, click on the \"Cancel\" button.\n" +
-										"Click on the \"Ok\" button keep your changes and come back to the current\n" +
-										"window unchanged.";
+			"Click on the \"Ok\" button keep your changes and come back to the current\n" +
+			"window unchanged.";
 	public static final String MSG_4 = "Please confirm by clicking on the \"Save\" button that you want to save all changes.\n" +
-										"If you don't want to save these changes now, please click on the \"Don't\n" +
-										"save now\" button";
+			"If you don't want to save these changes now, please click on the \"Don't\n" +
+			"save now\" button";
 	public static final String MSG_5 = "To delete the current item(s) click on the \"Ok\" button.\n" +
-										"Click on the \"Cancel\" button to keep this item and come back to the\n" +
-										"current window unchanged";
+			"Click on the \"Cancel\" button to keep this item and come back to the\n" +
+			"current window unchanged";
 	public static final String MSG_6 = "The system detected a concurrent access.\n" +
-										"Your changes are irremediably lost, and the data were reverted to what\n" +
-										"the concurrent user saved before you.";
+			"Your changes are irremediably lost, and the data were reverted to what\n" +
+			"the concurrent user saved before you.";
 	public static final String MSG_7 = "Component ${COMPONENT} is not accessible. Administration console is\n" +
-										"disabled.";
+			"disabled.";
 	public static final String MSG_8 = "You are about to leave the edition of the current ${OBJECT_TYPE} which\n" +
-										"modifications were not saved yet.\n" +
-										"Click on \"Abandon\" to abandon your changes.\n" +
-										"Click \"Keep\" to stay on the current screen and keep your changes without\n" +
-										"saving them now"+
-										"Click \"Save\" to save your changes and move to the selected screen.";
+			"modifications were not saved yet.\n" +
+			"Click on \"Abandon\" to abandon your changes.\n" +
+			"Click \"Keep\" to stay on the current screen and keep your changes without\n" +
+			"saving them now" +
+			"Click \"Save\" to save your changes and move to the selected screen.";
 	public static final String MSG_9 = "The selection criteria you provided are too restrictive, no result matches\n" +
-										"these criteria. Please enter less selective criteria to obtain some results";
+			"these criteria. Please enter less selective criteria to obtain some results";
 	public static final String MSG_10 = "A value must be provided for the plugin and at least for one of the other\n" +
-										"column for the filter to be applicable.";
+			"column for the filter to be applicable.";
 	public static final String MSG_11 = "You are about to delete ServiceGroup: ${ServiceGroup} and its ServiceMetadata.\n" +
-										"Click on \"Delete\" to confirm the deletion.\n" +
-										"Click on \"Keep\" to keep the ServiceMetadata.";
+			"Click on \"Delete\" to confirm the deletion.\n" +
+			"Click on \"Keep\" to keep the ServiceMetadata.";
 	public static final String MSG_12 = "You are about to delete ServiceMetadata: ${ServiceMetadata}.\n" +
-										"Click on \"Delete\" to confirm the deletion.\n" +
-										"Click on \"Keep\" to keep the ServiceMetadata";
+			"Click on \"Delete\" to confirm the deletion.\n" +
+			"Click on \"Keep\" to keep the ServiceMetadata";
 	public static final String MSG_13 = "You are about to delete User: ${User}.\n" +
-										"Click on \"Delete\" to confirm the deletion.\n" +
-										"Click on \"Keep\" to keep the user.\n";
+			"Click on \"Delete\" to confirm the deletion.\n" +
+			"Click on \"Keep\" to keep the user.\n";
 	public static final String MSG_14 = "You are about to create an SMP Domain: ${SMP_BDMSL_ID}. Action will\n" +
-										"register new user SMP user to SML for domain ${ BDMSL _DOMAIN}.\n" +
-										"Domain will be saved to SMP. Action is not recoverable.\n" +
-										"Click on \"Register\" to confirm the registration and saving.\n" +
-										"Click on \"Cancel\" to cancel the registration.";
+			"register new user SMP user to SML for domain ${ BDMSL _DOMAIN}.\n" +
+			"Domain will be saved to SMP. Action is not recoverable.\n" +
+			"Click on \"Register\" to confirm the registration and saving.\n" +
+			"Click on \"Cancel\" to cancel the registration.";
 	@SuppressWarnings("SpellCheckingInspection")
 	public static final String MSG_15 = "You are about to delete an SMP Domain: ${SMP_DOMAIN_ID}. Action\n" +
-										"will unregister SMP domain user ${SMP_SML_ID}. from SML for domain\n" +
-										"${ BDMSL _DOMAIN}. Action is not recoverable.\n" +
-										"Click on \"Delete\" to confirm the deleting and unregistration of domain.\n" +
-										"Click on \"Keep\" to keep the domain.";
+			"will unregister SMP domain user ${SMP_SML_ID}. from SML for domain\n" +
+			"${ BDMSL _DOMAIN}. Action is not recoverable.\n" +
+			"Click on \"Delete\" to confirm the deleting and unregistration of domain.\n" +
+			"Click on \"Keep\" to keep the domain.";
 	public static final String MSG_16 = "You are about to delete an X509 private key: ${Key }. Action is not recoverable.\n" +
-										"Click on \"Delete\" to confirm the deleting the key.\n" +
-										"Click on \"Keep\" to keep the key.";
+			"Click on \"Delete\" to confirm the deleting the key.\n" +
+			"Click on \"Keep\" to keep the key.";
 	public static final String MSG_17 = "You are about to delete Domain: ${SMP_DOMAIN_ID}.\n" +
-										"Click on \"Delete\" to confirm the deletion.\n" +
-										"Click on \"Keep\" to keep the domain.";
+			"Click on \"Delete\" to confirm the deletion.\n" +
+			"Click on \"Keep\" to keep the domain.";
 	public static final String MSG_18 = "The operation 'update' completed successfully.";
 
 	public static final String USER_OWN_DELETE_ERR = "Delete validation error Could not delete logged user!";
@@ -78,7 +74,7 @@ public class SMPMessages {
 	public static final String KEYSTORE_IMPORTED_MSG = "Keystore %s imported!";
 	public static final String KEYSTORE_DELETION_MSG = "Certificate %s deleted!";
 	public static final String SMLSMPID_VALIDATION_MESSAGE = "SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit nor a hyphen and should not end with a hyphen.";
-	public static final String USER_EMAIL_VALIDATION_MESSAGE ="Email is invalid!";
+	public static final String USER_EMAIL_VALIDATION_MESSAGE = "Email is invalid!";
 	public static final String DOMAINCODE_VALIDATION_MESSAGE = "Domain code must contain only chars and numbers and must be less than 63 chars long.";
 	public static final String VALID_XML_MESSAGE = "Servicemetadata is valid!";
 	public static final String INVALID_XML_MESSAGE1 = "SAXParseException: XML document structures must start and end within the same entity.";
