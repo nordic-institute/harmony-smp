@@ -82,11 +82,11 @@ build-maven-job:
     - echo "Compiling the code..."
     - mvn clean verify
     - echo "Compile complete."
+  after_script:
+    - cat smp-aggregator/target/site/jacoco-aggregate/index.html | grep -o '<tfoot>.*</tfoot>'
   artifacts:
     when: always
     expire_in: 1 week
-    after_script:
-      - cat smp-aggregator/target/site/jacoco-aggregate/index.html | grep -o '<tfoot>.*</tfoot>'
     paths:
       - "target/site"
       - "*/target/site"
