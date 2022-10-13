@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.security.Security;
 import java.security.cert.*;
 
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 
 
 public class CRLVerifierServiceTest extends AbstractServiceIntegrationTest {
@@ -71,11 +74,8 @@ public class CRLVerifierServiceTest extends AbstractServiceIntegrationTest {
 
         Mockito.doReturn(crl).when(crlVerifierServiceInstance).getCRLByURL("https://localhost/crl");
 
-        expectedEx.expect(CertificateRevokedException.class);
-        expectedEx.expectMessage("Certificate has been revoked, reason: UNSPECIFIED, revocation date: Mon Mar 18 19:22:42 CET 2019, authority: , extension OIDs: []");
-
-        // when-then
-        crlVerifierServiceInstance.verifyCertificateCRLs(certificate);
+        CertificateRevokedException result = assertThrows(CertificateRevokedException.class, () -> crlVerifierServiceInstance.verifyCertificateCRLs(certificate));
+        assertThat(result.getMessage(), startsWith("Certificate has been revoked, reason: UNSPECIFIED"));
     }
 
     @Test
@@ -114,18 +114,15 @@ public class CRLVerifierServiceTest extends AbstractServiceIntegrationTest {
 
         Mockito.doReturn(crl).when(crlVerifierServiceInstance).downloadCRL("https://localhost/crl", true);
 
-        expectedEx.expect(CertificateRevokedException.class);
-        expectedEx.expectMessage("Certificate has been revoked, reason: UNSPECIFIED, revocation date: Mon Mar 18 19:22:42 CET 2019, authority: , extension OIDs: []");
-
-        // when-then
-        crlVerifierServiceInstance.verifyCertificateCRLs("11", "https://localhost/crl");
+        CertificateRevokedException result = assertThrows(CertificateRevokedException.class, () ->crlVerifierServiceInstance.verifyCertificateCRLs("11", "https://localhost/crl"));
+        assertThat(result.getMessage(), startsWith("Certificate has been revoked, reason: UNSPECIFIED"));
     }
 
     @Test
     public void verifyCertificateCRLsRevokedSerialTestThrowIOExceptionHttps() throws CertificateException, IOException, CRLException {
         String crlURL = "https://localhost/crl";
 
-        Mockito.doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL+"'", "IOException: Can not access URL")).when(crlVerifierServiceInstance).downloadCRL("https://localhost/crl", true);
+        Mockito.doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL + "'", "IOException: Can not access URL")).when(crlVerifierServiceInstance).downloadCRL("https://localhost/crl", true);
 
         expectedEx.expect(SMPRuntimeException.class);
         expectedEx.expectMessage("Certificate error [Can not download CRL 'https://localhost/crl']. Error: IOException: Can not access URL!");

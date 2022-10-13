@@ -74,7 +74,7 @@ public class TruststoreAdminResourceIntegrationTest {
         UserRO userRO = getLoggedUserData(mvc, session);
 
         // given when
-        mvc.perform(post(PATH_PUBLIC + "/"+userRO.getUserId()+"/validate-certificate")
+        mvc.perform(post(PATH_PUBLIC + "/" + userRO.getUserId() + "/validate-certificate")
                 .session(session)
                 .with(csrf())
                 .content(buff))
@@ -90,7 +90,7 @@ public class TruststoreAdminResourceIntegrationTest {
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
         // given when
-        MvcResult result = mvc.perform(post(PATH_PUBLIC +  "/"+userRO.getUserId()+"/validate-certificate")
+        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/" + userRO.getUserId() + "/validate-certificate")
                 .session(session)
                 .with(csrf())
                 .content(buff))
@@ -105,7 +105,7 @@ public class TruststoreAdminResourceIntegrationTest {
         assertEquals("1.2.840.113549.1.9.1=#160c736d7040746573742e636f6d,CN=SMP test,O=DIGIT,C=BE", res.getSubject());
         assertEquals("3", res.getSerialNumber());
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
-        assertEquals("sno=3&subject=1.2.840.113549.1.9.1%3D%23160c736d7040746573742e636f6d%2CCN%3DSMP+test%2CO%3DDIGIT%2CC%3DBE&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=CN%3DIntermediate+CA%2CO%3DDIGIT%2CC%3DBE", res.getClientCertHeader());
+        assertEquals("sno=3&subject=1.2.840.113549.1.9.1%3D%23160c736d7040746573742e636f6d%2CCN%3DSMP+test%2CO%3DDIGIT%2CC%3DBE&validfrom=May+22+18%3A59%3A00+2018+GMT&validto=May+22+18%3A56%3A00+2019+GMT&issuer=CN%3DIntermediate+CA%2CO%3DDIGIT%2CC%3DBE", res.getClientCertHeader());
     }
 
     @Test
@@ -120,7 +120,7 @@ public class TruststoreAdminResourceIntegrationTest {
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(serialNumber, subject);
         byte[] buff = certificate.getEncoded();
         // given when
-        MvcResult result = mvc.perform(post(PATH_PUBLIC +  "/"+userRO.getUserId()+"/validate-certificate")
+        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/" + userRO.getUserId() + "/validate-certificate")
                 .session(session)
                 .with(csrf())
                 .content(buff))
@@ -198,7 +198,7 @@ public class TruststoreAdminResourceIntegrationTest {
         assertEquals(countStart + 1, uiTruststoreService.getNormalizedTrustedList().size());
 
         // then
-        MvcResult result = mvc.perform(delete(PATH_INTERNAL  + "/" + userRO.getUserId() + "/delete/" + res.getAlias())
+        MvcResult result = mvc.perform(delete(PATH_INTERNAL + "/" + userRO.getUserId() + "/delete/" + res.getAlias())
                 .session(session)
                 .with(csrf())
                 .content(buff))
