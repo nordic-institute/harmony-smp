@@ -16,8 +16,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.TimeZone;
 
 /**
  * @author Joze Rihtarsic
@@ -27,8 +29,15 @@ import java.util.Base64;
 public class X509CertificateToCertificateROConverter implements Converter<X509Certificate, CertificateRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CertificateROToDBCertificateConverter.class);
-
     private static final String S_CLIENT_CERT_DATEFORMAT = "MMM dd HH:mm:ss yyyy";
+    // the GMT date format for the Client-Cert header generation!
+    private static final ThreadLocal<DateFormat> dateFormatGMT = ThreadLocal.withInitial(() -> {
+                SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT);
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+                return sdf;
+            }
+    );
+
 
     @Override
     public CertificateRO convert(X509Certificate cert) {
@@ -57,7 +66,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
 
         }
         // generate clientCertHeader header
-        SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT);
+        DateFormat sdf = dateFormatGMT.get();
         StringWriter sw = new StringWriter();
         sw.write("sno=");
         sw.write(serial);

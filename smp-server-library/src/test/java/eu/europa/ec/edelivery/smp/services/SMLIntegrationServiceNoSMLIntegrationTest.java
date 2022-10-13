@@ -21,12 +21,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Purpose of class is to test ServiceGroupService base methods
@@ -34,8 +31,6 @@ import static org.junit.Assert.assertTrue;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@TestPropertySource(properties = {
-        "bdmsl.integration.enabled=false"})
 @ContextConfiguration(classes = {SMLIntegrationService.class})
 public class
 SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest {
@@ -50,6 +45,7 @@ SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest
     @Transactional
     public void prepareDatabase() {
         prepareDatabaseForSingleDomainEnv();
+        configurationDao.reloadPropertiesFromDatabase();
     }
 
     @Test
@@ -78,7 +74,6 @@ SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest
         // when
         testInstance.unRegisterDomain(testDomain01);
     }
-
 
 
     @Test
