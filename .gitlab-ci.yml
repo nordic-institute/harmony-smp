@@ -23,6 +23,7 @@ stages:          # List of stages for jobs, and their order of execution
   - build-docker
   - test-backend
   - test-ui
+  - visualization
 
 
 include:
@@ -89,6 +90,28 @@ build-maven-job:
         - "*/target/surefire-reports/TEST-*.xml"
         #        - "*/target/failsafe-reports/TEST-*.xml"
 
+code-coverage-visualization:
+  # Must be in a stage later than build-maven-job's stage.
+  stage: visualization
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
+  tags:
+    - cq-sans-dind     # Set this job to only run on our new specialized runner
+  script:
+    # convert report from jacoco to cobertura, using relative project path
+    # find all modules containing java source files.
+    - mkdir -p target/site/
+    - jacoco_paths=`find * -path "**/src/main/java" -type d | sed -e 's@^@'"$CI_PROJECT_DIR"'/@'`
+    - echo "jacocopaths -> $jacoco_paths"
+    - python /opt/cover2cover.py smp-aggregator/target/site/jacoco-aggregate/index.html $jacoco_paths > target/site/cobertura.xml
+  needs: ["build-maven-job"]
+  dependencies:
+    - build-maven-job
+
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: target/site/cobertura.xml
 
 
 # This job executed docker image build (and pushes them to repo)
@@ -159,5 +182,5 @@ test-ui-tomcat-mysql-sml-job:
     expire_in: 1 week
     name: "ui-report"
     paths:
-      - target/surefire-reports/*
+      - target/*
 

@@ -28,6 +28,7 @@
         <module>smp-webapp</module>
         <module>smp-soapui-tests</module>
         <module>smp-examples</module>
+        <module>smp-aggregator</module>
     </modules>
 
     <properties>
@@ -659,7 +660,7 @@
                     </execution>
                     <execution>
                         <id>report</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
