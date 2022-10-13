@@ -87,12 +87,9 @@ build-maven-job:
     expire_in: 1 week
     after_script:
       - cat smp-aggregator/target/site/jacoco-aggregate/index.html | grep -o '<tfoot>.*</tfoot>'
-    artifacts:
-      when: always
-      expire_in: 1 week
-      paths:
-        - "target/site"
-        - "*/target/site"
+    paths:
+      - "target/site"
+      - "*/target/site"
     reports:
       junit:
         - "*/target/surefire-reports/TEST-*.xml"
