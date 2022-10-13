@@ -363,6 +363,7 @@ public class EditPgTest extends BaseTest {
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is now active (2)");
 
 		page.clickSave().confirm();
+		page.waitForRowsToLoad();
 
 		page.filterArea.filter(identifier, "", "");
 		soft.assertTrue(page.getGrid().getRowsNo() == 0
@@ -380,57 +381,57 @@ public class EditPgTest extends BaseTest {
 		ServiceGroupGrid grid = page.getGrid();
 		Integer index = 0;
 		ServiceGroupRowE row0 = grid.getRowsAs(ServiceGroupRowE.class).get(index);
-		ServiceMetadataPopup metadataPopup= row0.clickAddMetadata();
-		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(),"participantId field is enabled for an existing service group in service metadata popup");
-		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(),"participantScheme field is enabled for an existing service group in service metadata popup");
-		soft.assertEquals(metadataPopup.docIDFieldValue(),"","docIDField is not empty");
-		soft.assertEquals(metadataPopup.docIDSchemeFieldValue(),"","docIDField is not empty");
+		ServiceMetadataPopup metadataPopup = row0.clickAddMetadata();
+		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(), "participantId field is enabled for an existing service group in service metadata popup");
+		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(), "participantScheme field is enabled for an existing service group in service metadata popup");
+		soft.assertEquals(metadataPopup.docIDFieldValue(), "", "docIDField is not empty");
+		soft.assertEquals(metadataPopup.docIDSchemeFieldValue(), "", "docIDField is not empty");
 		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(metadataPopup.getParticipantIdentifierValue()), "ServiceMetadata dialog opened for appropriate service group");
 		soft.assertTrue(row0.getParticipantScheme().equalsIgnoreCase(metadataPopup.getParticipantSchemeValue()), "ServiceMetadata dialog opened for appropriate service group");
-		metadataPopup.fillForm(generator,generator,generator);
+		metadataPopup.fillForm(generator, generator, generator);
 		ServiceMetadataWizardPopup metadataWizaedPopup = metadataPopup.clickMetadataWizard();
-		metadataWizaedPopup.fillForm(generator,generator,generator,generator,"bdxr-transport-ebms3-as4-v1p0","internal/rest/domain");
+		metadataWizaedPopup.fillForm(generator, generator, generator, generator, "bdxr-transport-ebms3-as4-v1p0", "internal/rest/domain");
 		metadataWizaedPopup.fillCerificateBox(generator);
-		soft.assertTrue(metadataWizaedPopup.isEnableOkBtn(),"ok button is disabled after providing the valid data");
+		soft.assertTrue(metadataWizaedPopup.isEnableOkBtn(), "ok button is disabled after providing the valid data");
 		metadataPopup = metadataWizaedPopup.clickOK();
-		soft.assertEquals(metadataPopup.docIDFieldValue(),generator,"After saving the servicemetadata wizard popup with valid data the docID field of service metadata popup doc id contain the coressponding value");
-		soft.assertEquals(metadataPopup.docIDSchemeFieldValue(),generator,"After saving the servicemetadata wizard popup with valid data the docIDScheme field of service metadata popup doc id scheme contain the coressponding value");
-		soft.assertTrue(metadataPopup.isOKBtnEnabled(),"OK button is not enabled");
+		soft.assertEquals(metadataPopup.docIDFieldValue(), generator, "After saving the servicemetadata wizard popup with valid data the docID field of service metadata popup doc id contain the coressponding value");
+		soft.assertEquals(metadataPopup.docIDSchemeFieldValue(), generator, "After saving the servicemetadata wizard popup with valid data the docIDScheme field of service metadata popup doc id scheme contain the coressponding value");
+		soft.assertTrue(metadataPopup.isOKBtnEnabled(), "OK button is not enabled");
 		soft.assertAll();
 
 	}
 
 	@Test(description = "EDT-120")
-	public void verifyServicemtadataWizardDilogField(){
+	public void verifyServicemtadataWizardDilogField() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 		String generator = Generator.randomAlphaNumeric(10);
 		ServiceGroupGrid grid = page.getGrid();
 		Integer index = 0;
 		ServiceGroupRowE row0 = grid.getRowsAs(ServiceGroupRowE.class).get(index);
-		ServiceMetadataPopup metadataPopup= row0.clickAddMetadata();
-		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(),"participantId field is enabled for an existing service group in service metadata popup");
-		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(),"participantScheme field is enabled for an existing service group in service metadata popup");
-		metadataPopup.fillForm(generator,generator,generator);
-		ServiceMetadataWizardPopup metadataWizard= metadataPopup.clickMetadataWizard();
-		soft.assertEquals(metadataWizard.docIDFieldValue(),generator,"document identifier field of metdata wizard popup not contain the corresponding doc id filled in sevice metadata popup");
-		soft.assertEquals(metadataWizard.docIDSchemeFieldValue(),generator,"document identifier field of metdata wizard popup not contain the corresponding doc id scheme filled in sevice metadata popup");
+		ServiceMetadataPopup metadataPopup = row0.clickAddMetadata();
+		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(), "participantId field is enabled for an existing service group in service metadata popup");
+		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(), "participantScheme field is enabled for an existing service group in service metadata popup");
+		metadataPopup.fillForm(generator, generator, generator);
+		ServiceMetadataWizardPopup metadataWizard = metadataPopup.clickMetadataWizard();
+		soft.assertEquals(metadataWizard.docIDFieldValue(), generator, "document identifier field of metdata wizard popup not contain the corresponding doc id filled in sevice metadata popup");
+		soft.assertEquals(metadataWizard.docIDSchemeFieldValue(), generator, "document identifier field of metdata wizard popup not contain the corresponding doc id scheme filled in sevice metadata popup");
 		soft.assertAll();
 	}
 
 	@Test(description = "EDT-130")
-	public void verifyTransportProfile(){
+	public void verifyTransportProfile() {
 		SoftAssert soft = new SoftAssert();
 		EditPage page = new EditPage(driver);
 		String generator = Generator.randomAlphaNumeric(10);
 		ServiceGroupGrid grid = page.getGrid();
 		Integer index = 0;
 		ServiceGroupRowE row0 = grid.getRowsAs(ServiceGroupRowE.class).get(index);
-		ServiceMetadataPopup metadataPopup= row0.clickAddMetadata();
-		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(),"participantId field is enabled for an existing service group in service metadata popup");
-		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(),"participantScheme field is enabled for an existing service group in service metadata popup");
-		ServiceMetadataWizardPopup metadataWizard= metadataPopup.clickMetadataWizard();
-		soft.assertEquals(metadataWizard.transportProfileFieldContent(),"bdxr-transport-ebms3-as4-v1p0","The transport profile field in service metadata wizard popup not contain the default value");
+		ServiceMetadataPopup metadataPopup = row0.clickAddMetadata();
+		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(), "participantId field is enabled for an existing service group in service metadata popup");
+		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(), "participantScheme field is enabled for an existing service group in service metadata popup");
+		ServiceMetadataWizardPopup metadataWizard = metadataPopup.clickMetadataWizard();
+		soft.assertEquals(metadataWizard.transportProfileFieldContent(), "bdxr-transport-ebms3-as4-v1p0", "The transport profile field in service metadata wizard popup not contain the default value");
 
 		soft.assertAll();
 	}

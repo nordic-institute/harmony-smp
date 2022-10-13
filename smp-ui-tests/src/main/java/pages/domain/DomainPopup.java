@@ -11,6 +11,29 @@ import pages.components.baseComponents.PageComponent;
 import utils.PROPERTIES;
 
 public class DomainPopup extends PageComponent {
+	@FindBy(css = "domain-details-dialog button:nth-child(1)")
+	WebElement okBtn;
+	@FindBy(css = "domain-details-dialog button:nth-child(2)")
+	WebElement cancelBtn;
+	@FindBy(css = "#domainCode_id")
+	WebElement domainCodeInput;
+	@FindBy(css = "#smldomain_id")
+	WebElement smlDomainInput;
+	@FindBy(css = "#signatureKeyAlias_id")
+	WebElement signatureCertSelectContainer;
+	GenericSelect signatureCertSelect;
+	@FindBy(css = "#smlSMPId_id")
+	WebElement smlSMPIdInput;
+	@FindBy(css = "span.mat-slide-toggle-bar")
+	WebElement userClientCertHeaderToggle;
+	@FindBy(css = "#smlClientCertHeaderAuth_id-input")
+	WebElement userClientCertHeaderToggleInput;
+	@FindBy(css = "div.mat-form-field-infix > div.ng-star-inserted")
+	WebElement domainCodeValidationError;
+	@FindBy(css = "#smlClientKeyAlias_id")
+	WebElement smlClientAliasSelectContainer;
+	GenericSelect smlClientAliasSelect;
+
 	public DomainPopup(WebDriver driver) {
 		super(driver);
 		PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
@@ -20,39 +43,6 @@ public class DomainPopup extends PageComponent {
 
 
 	}
-
-	@FindBy(css = "domain-details-dialog button:nth-child(1)")
-	WebElement okBtn;
-
-	@FindBy(css = "domain-details-dialog button:nth-child(2)")
-	WebElement cancelBtn;
-
-	@FindBy(css = "#domainCode_id")
-	WebElement domainCodeInput;
-
-	@FindBy(css = "#smldomain_id")
-	WebElement smlDomainInput;
-
-	@FindBy(css = "#signatureKeyAlias_id")
-	WebElement signatureCertSelectContainer;
-	GenericSelect signatureCertSelect;
-
-	@FindBy(css = "#smlSMPId_id")
-	WebElement smlSMPIdInput;
-
-	@FindBy(css = "span.mat-slide-toggle-bar")
-	WebElement userClientCertHeaderToggle;
-
-	@FindBy(css = "#smlClientCertHeaderAuth_id-input")
-	WebElement userClientCertHeaderToggleInput;
-
-	@FindBy(css = "div.mat-form-field-infix > div.ng-star-inserted")
-	WebElement domainCodeValidationError;
-
-	@FindBy(css = "#smlClientKeyAlias_id")
-	WebElement smlClientAliasSelectContainer;
-	GenericSelect smlClientAliasSelect;
-
 
 	public void clickOK() {
 		waitForElementToBeClickable(okBtn).click();
@@ -67,6 +57,9 @@ public class DomainPopup extends PageComponent {
 
 	public boolean isLoaded() {
 		log.info("checking if domain popup is properly loaded");
+
+		waitForElementToBeEnabled(okBtn);
+
 		return isVisible(okBtn)
 				&& isVisible(domainCodeInput)
 				&& isVisible(smlDomainInput)

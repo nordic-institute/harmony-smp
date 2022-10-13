@@ -43,10 +43,10 @@ public class ServiceGroupPopup extends PageComponent {
 		try {
 			ownersPanel = new AccordionSection(driver, ownersPanelContainer);
 		} catch (Exception e) {
-
+			log.error("Owners panel is not present");
 		}
 		domainsPanel = new AccordionSection(driver, domainsPanelContainer);
-
+		waitForElementToBeVisible(okButton);
 	}
 
 	public boolean isOKButtonPresent() {

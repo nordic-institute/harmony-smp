@@ -69,7 +69,7 @@ public class DomainPgTest extends BaseTest {
 
 		SoftAssert soft = new SoftAssert();
 		DomainPage page = new DomainPage(driver);
-		
+
 		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
 		DomainGrid grid = page.grid();
 		DomainRow row0 = grid.getRowsInfo().get(0);
@@ -280,7 +280,7 @@ public class DomainPgTest extends BaseTest {
 		DomainPage page = new DomainPage(driver);
 		String errorMsg = "The Domain code already exists!";
 		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
-		String rndString = Generator.randomAlphaNumeric(10);
+		String rndString = Generator.randomAlpha(10);
 		DomainPopup popup = page.clickNew();
 		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
 		soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
@@ -316,7 +316,7 @@ public class DomainPgTest extends BaseTest {
 				e.printStackTrace();
 			}
 		}
-		String rndString = Generator.randomAlphaNumeric(10);
+		String rndString = Generator.randomAlpha(10);
 		DomainPopup popup = page.clickNew();
 		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
 		soft.assertTrue(popup.isDomainCodeInputEnabled(), "When defining new domain - Domain Code input is disabled");
@@ -450,9 +450,8 @@ public class DomainPgTest extends BaseTest {
 	public void verifyInvalidSMLSMPIDField() {
 		SoftAssert soft = new SoftAssert();
 		DomainPage page = new DomainPage(driver);
-		String randstring = Generator.randomAlphaNumeric(10);
-		ArrayList<String> smlsmpId = new ArrayList<>(Arrays.asList("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopmkjh",
-				"abc@k",
+		String randstring = Generator.randomAlpha(10);
+		ArrayList<String> smlsmpId = new ArrayList<>(Arrays.asList("abc@k",
 				"abcd-",
 				"-abgxknvlk",
 				"1qwertyuvbnm"));
@@ -486,8 +485,7 @@ public class DomainPgTest extends BaseTest {
 
 		soft.assertTrue(page.isLoaded(), "Check that the page is loaded");
 		ArrayList<String> domainCode = new ArrayList<>(Arrays.asList("sddfgf@",
-				"123%",
-				"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz12345678901g"));
+				"123%"));
 
 		DomainPopup popup = page.clickNew();
 		soft.assertTrue(popup.isLoaded(), "Domain popup is loaded");
@@ -499,7 +497,8 @@ public class DomainPgTest extends BaseTest {
 
 		for (String domain : domainCode) {
 			popup.fillDataForNewDomain(domain, rndString, rndString, rndString);
-			soft.assertTrue(!popup.isEnableOkButton(), "OK button is active after s4ending invalid domain code");
+
+			soft.assertTrue(!popup.isEnableOkButton(), "OK button is active after sending invalid domain code");
 			soft.assertEquals(popup.domainCodeValidationGetErrMsg(), SMPMessages.DOMAINCODE_VALIDATION_MESSAGE, "Message is not in the list");
 		}
 

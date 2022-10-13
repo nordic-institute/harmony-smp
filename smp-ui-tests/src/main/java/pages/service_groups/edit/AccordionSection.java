@@ -5,7 +5,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
-import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory;
 import pages.components.baseComponents.PageComponent;
 import utils.PROPERTIES;
 
@@ -13,23 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AccordionSection extends PageComponent {
+	@FindBy(css = "span.mat-content > mat-panel-title")
+	WebElement title;
+	@FindBy(css = "span.mat-content > mat-panel-description > div")
+	WebElement selectCount;
+	@FindBy(css = ".mat-expansion-indicator")
+	WebElement expandButton;
+	@FindBy(tagName = "mat-list-option")
+	List<WebElement> options;
+
 	public AccordionSection(WebDriver driver, WebElement container) {
 		super(driver);
 		PageFactory.initElements(new AjaxElementLocatorFactory(container, PROPERTIES.TIMEOUT), this);
 	}
-
-	@FindBy(css = "span.mat-content > mat-panel-title")
-	WebElement title;
-
-	@FindBy(css = "span.mat-content > mat-panel-description > div")
-	WebElement selectCount;
-
-
-	@FindBy(css = ".mat-expansion-indicator")
-	WebElement expandButton;
-
-	@FindBy(tagName = "mat-list-option")
-	List<WebElement> options;
 
 	public boolean isExpanded() {
 		log.info("check if expanded");
@@ -85,15 +80,13 @@ public class AccordionSection extends PageComponent {
 		if (option.getAttribute("aria-selected").contains("true")) {
 			return;
 		}
-
-		option.click();
+		waitForElementToBeClickable(option).click();
 		return;
 	}
 
 	public boolean optionsEnabled() {
 		log.info("checking if options are enabled");
 		waitForElementToBeVisible(title);
-//		waitForElementToBeVisible(options.get(0));
 		boolean isDisabled = options.get(0).getAttribute("aria-disabled").equalsIgnoreCase("true");
 		return !isDisabled;
 	}
