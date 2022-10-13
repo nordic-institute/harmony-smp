@@ -113,6 +113,10 @@ code-coverage-visualization:
     - build-maven-job
 
   artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - "target/site"
     reports:
       coverage_report:
         coverage_format: cobertura
@@ -176,6 +180,7 @@ test-soapui-weblogic-oracle-job:
 
 test-ui-tomcat-mysql-sml-job:
   stage: test-ui  # It only runs when *both* test jobs in the test stage complete successfully.
+  allow_failure: true
   needs: ["test-soapui-tomcat-mysql-sml-job"]
   script:
     - echo "Deploying application..."
@@ -187,5 +192,5 @@ test-ui-tomcat-mysql-sml-job:
     expire_in: 1 week
     name: "ui-report"
     paths:
-      - target/*
+      - "*/testng-results.xml"
 
