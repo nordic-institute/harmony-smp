@@ -165,8 +165,8 @@ public class EditPgTest extends BaseTest {
 
 		ServiceGroupPopup popup = new ServiceGroupPopup(driver);
 
-		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for appropriate service group");
-		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantSchemeValue()), "Popup opened for appropriate service group");
+		soft.assertEquals(row0.getParticipantIdentifier().trim().toLowerCase(), popup.getParticipantIdentifierValue().trim().toLowerCase(), "Popup opened for appropriate service group");
+		soft.assertEquals(row0.getParticipantScheme().trim().toLowerCase(), popup.getParticipantSchemeValue().trim().toLowerCase(), "Popup opened for appropriate service group");
 		soft.assertTrue(popup.isExtensionAreaEditable(), "extension area is editable");
 
 		soft.assertTrue(!popup.isParticipantIdentifierInputEnabled(), "Participant Identifier field is disabled");
