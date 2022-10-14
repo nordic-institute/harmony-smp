@@ -76,4 +76,15 @@ public class SMPMessages {
 	public static final String SMLSMPID_VALIDATION_MESSAGE = "SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit nor a hyphen and should not end with a hyphen.";
 	public static final String USER_EMAIL_VALIDATION_MESSAGE = "Email is invalid!";
 	public static final String DOMAINCODE_VALIDATION_MESSAGE = "Domain code must contain only chars and numbers and must be less than 63 chars long.";
+	public static final String VALID_XML_MESSAGE = "Servicemetadata is valid!";
+	public static final String INVALID_XML_MESSAGE1 = "SAXParseException: XML document structures must start and end within the same entity.";
+	public static final String INVALID_XML_MESSAGE2 = "SAXParseException: Content is not allowed in prolog.";
+	public static final String INVALID_XML_MESSAGE3 = "SAXParseException: Content is not allowed in trailing section.";
+	public static final String INVALID_XML_MESSAGE4 = "SAXParseException: cvc-complex-type.2.3: Element 'ServiceMetadata' cannot have character [children], because the type's content type is element-only.";
+	public static final String INVALID_XML_MESSAGE5 = "SAXParseException: The end-tag for element type \"ServiceMetadata\" must end with a '>' delimiter.";
+	public static final String INVALID_XML_MESSAGE6 = "SAXParseException: cvc-complex-type.2.3: Element 'Process' cannot have character [children], because the type's content type is element-only.";
+	public static final String EMPTY_XML_WARN_MESSAGE = "Service metadata xml must not be empty";
+	public static final String EMPTY_XML_MESSAGE = "Valid service metadata XML is required!";
+	public static final String INVALID_XML_MESSAGE7 = "SAXParseException: The markup in the document following the root element must be well-formed.";
+
 }
