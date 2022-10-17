@@ -53,6 +53,7 @@ public class UsersPage extends SMPPage {
         log.info("save button");
         return isEnabled(saveBtn);
     }
+
     public boolean isEditButtonEnabled() {
         log.info("save button");
         return isEnabled(editBtn);
@@ -118,7 +119,8 @@ public class UsersPage extends SMPPage {
         }
         return false;
     }
-    public boolean isEditTruststoreButtonEnabled(){
+
+    public boolean isEditTruststoreButtonEnabled() {
         try {
             return isEnabled(editTruststore);
         } catch (Exception e) {
@@ -127,7 +129,8 @@ public class UsersPage extends SMPPage {
         return false;
 
     }
-    public boolean isDeleteButtonVisibled(){
+
+    public boolean isDeleteButtonVisible() {
         try {
             return isVisible(deleteBtn);
         } catch (Exception e) {
@@ -136,7 +139,7 @@ public class UsersPage extends SMPPage {
         return false;
     }
 
-    public boolean isEditButtonVisibled(){
+    public boolean isEditButtonVisible() {
         try {
             return isVisible(editBtn);
         } catch (Exception e) {
@@ -146,18 +149,15 @@ public class UsersPage extends SMPPage {
     }
 
 
-    public boolean isCancelButtonVisibled() {
+    public boolean isCancelButtonVisible() {
 
         return isVisible(cancelBtn);
     }
 
-    public boolean isSaveButtonVisibled() {
+    public boolean isSaveButtonVisible() {
 
         return isVisible(saveBtn);
     }
-
-
-
 
 
 }

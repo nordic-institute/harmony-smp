@@ -496,7 +496,7 @@ public class EditPgTest extends BaseTest {
 		ServiceMetadataWizardPopup metadataWizard = metadataPopup.clickMetadataWizard();
 		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(), "participantId field is enabled for an existing service group in service metadata popup");
 		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(), "participantScheme field is enabled for an existing service group in service metadata popup");
-		soft.assertFalse(metadataWizard.isEnableOkBtn(), "OK button is enable before providing the valid data");
+		soft.assertFalse(metadataWizard.isEnableOkBtn(), "OK button is enabled before providing the valid data");
 		metadataWizard.fillForm(generator, generator, generator, generator, "bdxr-transport-ebms3-as4-v1p0", "internal/rest/domain");
 		metadataWizard.fillCerificateBox(generator);
 		soft.assertTrue(metadataWizard.isEnableOkBtn(), "OK button is disable after providing the valid data");

@@ -28,13 +28,17 @@ public class DomainPopup extends PageComponent {
 	WebElement userClientCertHeaderToggle;
 	@FindBy(css = "#smlClientCertHeaderAuth_id-input")
 	WebElement userClientCertHeaderToggleInput;
-	@FindBy(css = "div.mat-form-field-infix > div.ng-star-inserted")
+	@FindBy(css = "#domainCode_id + div")
 	WebElement domainCodeValidationError;
+
+	@FindBy(css = "#smlSMPId_id + div")
+	WebElement smlSmpIdValidationError;
 	@FindBy(css = "#smlClientKeyAlias_id")
 	WebElement smlClientAliasSelectContainer;
 	GenericSelect smlClientAliasSelect;
 	@FindBy(css = "#MetadataTextArea")
 	private WebElement metadataTextArea;
+
 	public DomainPopup(WebDriver driver) {
 		super(driver);
 		PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
@@ -138,25 +142,6 @@ public class DomainPopup extends PageComponent {
 
 	}
 
-	public String domainCode63CharValidationGetErrMsg() {
-		try {
-			waitForElementToBeVisible(domainCodeValidationError);
-			return domainCodeValidationError.getAttribute("value");
-		} catch (Exception e) {
-		}
-		return null;
-	}
-
-	public String getSmlSmpId63CharValidationMsg() {
-		WebElement invalidSmlSmpIdErrorMsg = driver.findElement(By.cssSelector("div.mat-form-field-infix > div.ng-star-inserted"));
-		try {
-			waitForElementToBeVisible(invalidSmlSmpIdErrorMsg);
-			return invalidSmlSmpIdErrorMsg.getAttribute("value");
-		} catch (Exception e) {
-		}
-		return null;
-	}
-
 	public String xmlFieldVALUE() {
 		log.info("value is " + metadataTextArea.getAttribute("value"));
 		return metadataTextArea.getAttribute("value");
@@ -185,6 +170,23 @@ public class DomainPopup extends PageComponent {
 		return userClientCertHeaderToggleInput.getAttribute("aria-checked");
 
 
+	}
+
+
+	public String domainCode63CharValidationGetErrMsg() {
+		try {
+			return waitForElementToBeVisible(domainCodeValidationError).getText().trim();
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
+	public String getSmlSmpId63CharValidationMsg() {
+		try {
+			return waitForElementToBeVisible(smlSmpIdValidationError).getText().trim();
+		} catch (Exception e) {
+		}
+		return null;
 	}
 
 

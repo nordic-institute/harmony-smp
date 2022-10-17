@@ -296,7 +296,7 @@ public class DomainPgTest extends BaseTest {
 		soft.assertTrue(popup.isSMLDomainInputEnabled(), "When defining new domain -SML Domain input is disabled");
 		popup.fillDataForNewDomain(rndString, rndString, rndString, rndString);
 		soft.assertEquals(popup.getDuplicateDomainErrorMsgText(), errorMsg, "The message is not matching with our expected error message");
-		soft.assertFalse(popup.isEnableOkButton(), "Ok button is enable");
+		soft.assertFalse(popup.isEnableOkButton(), "Ok button is enabled");
 		soft.assertTrue(popup.isEnableCancelButton(), "Cancel button is disabled");
 		popup.clickCancel();
 		soft.assertAll();
@@ -460,7 +460,7 @@ public class DomainPgTest extends BaseTest {
 		DomainPopup popup = page.clickNew();
 		for (String smlsmpid : smlsmpId) {
 			popup.fillDataForNewDomain(randstring, randstring, smlsmpid, randstring);
-			soft.assertTrue(!popup.isEnableOkButton(), "OK button is enable after sending the invalid smlsmpId");
+			soft.assertTrue(!popup.isEnableOkButton(), "OK button is enabled after sending the invalid smlsmpId");
 			soft.assertEquals(popup.getSmlSmpIdValidationMsg(), SMPMessages.SMLSMPID_VALIDATION_MESSAGE, "Error message is not in list");
 
 		}

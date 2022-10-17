@@ -525,7 +525,7 @@ public class UsersPgTest extends BaseTest {
 		soft.assertTrue(page.isNewButtonEnabled(), "New button should be enabled");
 
 		UserPopup popup = page.clickNew();
-		soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
+		soft.assertTrue(!popup.isOKButtonActive(), "OK button is enabled before valid data is filled in the popup");
 		popup.fillDetailsForm(userName, email);
 		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
 		popup.clickOK();
@@ -548,7 +548,7 @@ public class UsersPgTest extends BaseTest {
 		popup.fillDetailsForm(userName, email);
 		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
 
-		soft.assertFalse(popup.isOKButtonActive(), "OK button is enable after duplicate user name is filled in the popup");
+		soft.assertFalse(popup.isOKButtonActive(), "OK button is enabled after duplicate user name is filled in the popup");
 
 		soft.assertTrue(popup.isDuplicateUserNameErrorMsgDisPlayed(), "The user page is not containing the expected error message");
 		popup.clickCancel();
@@ -566,7 +566,7 @@ public class UsersPgTest extends BaseTest {
 		SoftAssert soft = new SoftAssert();
 		UsersPage usersPage = new UsersPage(driver);
 		UserPopup popup = usersPage.clickNew();
-		soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
+		soft.assertTrue(!popup.isOKButtonActive(), "OK button is enabled before valid data is filled in the popup");
 		popup.fillDetailsForm(username, email);
 		popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
 		popup.clickOK();
@@ -648,12 +648,12 @@ public class UsersPgTest extends BaseTest {
 
 		UsersPage page = new UsersPage(driver);
 		soft.assertTrue(page.isLoaded());
-		soft.assertTrue(page.isNewButtonEnabled(), "New button is not enable");
+		soft.assertTrue(page.isNewButtonEnabled(), "New button is not enabled");
 		soft.assertTrue(page.isEditTruststoreButtonEnabled(), "EditTruststore Button is not enabled");
-		soft.assertTrue(page.isDeleteButtonVisibled(), "Delete button is not visibled");
-		soft.assertTrue(page.isEditButtonVisibled(), "Edit button is not visibled");
-		soft.assertTrue(page.isSaveButtonVisibled(), "Save button is not visibled");
-		soft.assertTrue(page.isCancelButtonVisibled(), "Cancel button is not visibled");
+		soft.assertTrue(page.isDeleteButtonVisible(), "Delete button is not visible");
+		soft.assertTrue(page.isEditButtonVisible(), "Edit button is not visible");
+		soft.assertTrue(page.isSaveButtonVisible(), "Save button is not visible");
+		soft.assertTrue(page.isCancelButtonVisible(), "Cancel button is not visible");
 		soft.assertTrue(!page.isEditButtonEnabled(), "Edit button is  enabled");
 		soft.assertTrue(!page.isSaveButtonEnabled(), "Save button is  enabled");
 		soft.assertTrue(!page.isCancelButtonEnabled(), "Cancel button is  enabled");
@@ -725,7 +725,7 @@ public class UsersPgTest extends BaseTest {
 		for (String emailId : email) {
 			popup.fillDetailsForm(username, emailId);
 			popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-			soft.assertTrue(!popup.isOKButtonActive(), "OK button is active after s4ending invalid email");
+			soft.assertTrue(!popup.isOKButtonActive(), "OK button is active after sending invalid email");
 			soft.assertEquals(popup.userEmailValidationGetErrMsg(), SMPMessages.USER_EMAIL_VALIDATION_MESSAGE, "Message is not in the list");
 		}
 		soft.assertAll();
