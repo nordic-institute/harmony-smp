@@ -257,19 +257,14 @@ public class LoginPgTest extends BaseTest {
 		SearchPage searchPage = loginPage.login(userName, "QW!@qw12");
 		PasswordChangepopup passDialog = searchPage.pageHeader.sandwichMenu.clickChangePasswordOption();
 
-		try {
-			Thread.sleep(1000);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		passDialog.waitForXMillis(1000);
 
 		passDialog.fillDataForLoggedUser("QW!@qw12", validPass, validPass);
 		passDialog.clickChangedPassword();
 		searchPage = passDialog.clickCloseAfterChangedPassForLoggedUser();
-		try {
-			Thread.sleep(10000);
-		} catch (Exception e) {
-		}
+
+		passDialog.waitForXMillis(1000);
+
 		soft.assertTrue(searchPage.isLoaded(), "After changing the password for a logged user the page is not redirecting to searchpage");
 		SMPPage page1 = genericLoginProcedure("SYS_ADMIN");
 		logger.info("Going to Users page");

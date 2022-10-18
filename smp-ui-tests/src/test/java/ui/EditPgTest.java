@@ -393,7 +393,7 @@ public class EditPgTest extends BaseTest {
 		ServiceMetadataWizardPopup metadataWizaedPopup = metadataPopup.clickMetadataWizard();
 		metadataWizaedPopup.fillForm(generator, generator, generator, generator, "bdxr-transport-ebms3-as4-v1p0", "internal/rest/domain");
 		metadataWizaedPopup.fillCerificateBox(generator);
-		soft.assertTrue(metadataWizaedPopup.isEnableOkBtn(), "ok button is disabled after providing the valid data");
+		soft.assertTrue(metadataWizaedPopup.isEnabledOkBtn(), "ok button is disabled after providing the valid data");
 		metadataPopup = metadataWizaedPopup.clickOK();
 		soft.assertEquals(metadataPopup.docIDFieldValue(), generator, "After saving the servicemetadata wizard popup with valid data the docID field of service metadata popup doc id contain the coressponding value");
 		soft.assertEquals(metadataPopup.docIDSchemeFieldValue(), generator, "After saving the servicemetadata wizard popup with valid data the docIDScheme field of service metadata popup doc id scheme contain the coressponding value");
@@ -490,16 +490,20 @@ public class EditPgTest extends BaseTest {
 		EditPage page = new EditPage(driver);
 		String generator = Generator.randomAlphaNumeric(10);
 		ServiceGroupGrid grid = page.getGrid();
+		grid.waitForRowsToLoad();
 		int index = 0;
 		ServiceGroupRowE row0 = grid.getRowsAs(ServiceGroupRowE.class).get(index);
 		ServiceMetadataPopup metadataPopup = row0.clickAddMetadata();
-		ServiceMetadataWizardPopup metadataWizard = metadataPopup.clickMetadataWizard();
 		soft.assertTrue(!metadataPopup.isParticipantIdentifierEnabled(), "participantId field is enabled for an existing service group in service metadata popup");
 		soft.assertTrue(!metadataPopup.isParticipantSchemeEnabled(), "participantScheme field is enabled for an existing service group in service metadata popup");
-		soft.assertFalse(metadataWizard.isEnableOkBtn(), "OK button is enabled before providing the valid data");
+
+
+		ServiceMetadataWizardPopup metadataWizard = metadataPopup.clickMetadataWizard();
+
+		soft.assertFalse(metadataWizard.isEnabledOkBtn(), "OK button is enabled before providing the valid data");
 		metadataWizard.fillForm(generator, generator, generator, generator, "bdxr-transport-ebms3-as4-v1p0", "internal/rest/domain");
 		metadataWizard.fillCerificateBox(generator);
-		soft.assertTrue(metadataWizard.isEnableOkBtn(), "OK button is disable after providing the valid data");
+		soft.assertTrue(metadataWizard.isEnabledOkBtn(), "OK button is disabled after providing the valid data");
 
 		soft.assertAll();
 

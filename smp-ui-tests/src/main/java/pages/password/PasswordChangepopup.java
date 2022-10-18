@@ -41,8 +41,7 @@ public class PasswordChangepopup extends PageComponent {
 	WebElement okBtn;
 	@FindBy(css = "mat-dialog-actions button:nth-child(2)")
 	WebElement cancelBtn;
-	@FindBy(css = "#changePassword_id")
-	WebElement changePassword;
+
 	@FindBy(css = "smp-password-change-dialog mat-dialog-actions button:nth-child(1)")
 	WebElement changedPassword;
 	@FindBy(css = "#closebuttondialog_id")
@@ -69,11 +68,6 @@ public class PasswordChangepopup extends PageComponent {
 		waitForElementToBeGone(cancelBtn);
 	}
 
-	public void clickChangePassword() {
-		log.info("click change password");
-		waitForElementToBeClickable(changePassword);
-		changePassword.click();
-	}
 
 	public SearchPage clickCloseAfterChangedPassForLoggedUser() {
 		log.info("click close after change password");
