@@ -160,7 +160,6 @@ public class ExcelTestReporter implements ITestListener {
 		Row currentRow = reportSheet.createRow(rowNum);
 
 		currentRow.createCell(0).setCellValue(testType);
-//		currentRow.createCell(0).setCellValue("UI");
 		currentRow.createCell(1).setCellValue(iTestResult.getTestContext().getSuite().getName());
 		currentRow.createCell(2).setCellValue(iTestResult.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Test.class).description());
 		currentRow.createCell(3).setCellValue(iTestResult.getName());
