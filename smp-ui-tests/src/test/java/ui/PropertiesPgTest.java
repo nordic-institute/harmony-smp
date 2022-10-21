@@ -73,8 +73,8 @@ public class PropertiesPgTest extends BaseTest {
 
 		servicePopup.clickOK();
 
-		soft.assertTrue(editPage.isSaveButtonEnabled(), "Save button is not enable after cration of servicegroup without scheme");
-		soft.assertTrue(editPage.isCancelButtonEnabled(), "Cancel button is not enable after cration of servicegroup without scheme");
+		soft.assertTrue(editPage.isSaveButtonEnabled(), "Save button is not enabled after cration of servicegroup without scheme");
+		soft.assertTrue(editPage.isCancelButtonEnabled(), "Cancel button is not enabled after cration of servicegroup without scheme");
 		editPage.clickSave().confirm();
 		;
 

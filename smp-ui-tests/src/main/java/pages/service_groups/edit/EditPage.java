@@ -146,6 +146,8 @@ public class EditPage extends SMPPage {
 		log.info("saving..");
 		waitForElementToBeClickable(saveButton).click();
 		new ConfirmationDialog(driver).confirm();
+
+		waitForRowsToLoad();
 	}
 
 }

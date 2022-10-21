@@ -8,20 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 public class DriverManager {
 
-//	public static WebDriver getDriver(){
-//
-//		ChromeOptions options = new ChromeOptions();
-//		options.addArguments("--headless");
-//		options.addArguments("--window-size=1920x1080");
-//		options.addArguments("--no-sandbox");
-//
-//		WebDriver driver = new ChromeDriver(options);
-//		driver.manage().window().maximize();
-//
-//		return driver;
-//    }
 
-    public static WebDriver getDriver() {
+	public static WebDriver getDriver() {
 
 		ChromeOptions options = new ChromeOptions();
 		options.setHeadless(Boolean.valueOf(PROPERTIES.HEADLESS));
@@ -33,13 +21,11 @@ public class DriverManager {
 
 
 		WebDriver driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
 		driver.manage().window().maximize();
 
 		return driver;
 	}
-
-
 
 
 }
