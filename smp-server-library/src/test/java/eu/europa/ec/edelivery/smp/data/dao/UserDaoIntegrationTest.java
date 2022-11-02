@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
@@ -11,9 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +59,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
-        assertNotSame(u , ou.get());
+        assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getPassword(), ou.get().getPassword());
@@ -84,7 +81,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
-        assertNotSame(u , ou.get());
+        assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getUsername(), ou.get().getUsername());
         assertNull(u.getCertificate());
@@ -100,12 +97,15 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByCertificateId(TestConstants.USER_CERT_1);
-        assertNotSame(u , ou.get());
+        assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getCertificate().getCertificateId(), ou.get().getCertificate().getCertificateId());
-        assertEquals(u.getCertificate().getValidFrom().truncatedTo(ChronoUnit.MINUTES), ou.get().getCertificate().getValidFrom().truncatedTo(ChronoUnit.MINUTES));
-        assertEquals(u.getCertificate().getValidTo().truncatedTo(ChronoUnit.MINUTES), ou.get().getCertificate().getValidTo().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(u.getCertificate().getValidFrom().toInstant(),
+                ou.get().getCertificate().getValidFrom().toInstant());
+
+        assertEquals(u.getCertificate().getValidTo().toInstant(),
+                ou.get().getCertificate().getValidTo().toInstant());
     }
 
     @Test
@@ -118,13 +118,16 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USER_CERT_1);
-        assertNotSame(u , ou.get());
+        assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getCertificate().getCertificateId(), ou.get().getCertificate().getCertificateId());
-        // some database timestamp objects does not store miliseconds
-        assertEquals(u.getCertificate().getValidFrom().truncatedTo(ChronoUnit.MINUTES), ou.get().getCertificate().getValidFrom().truncatedTo(ChronoUnit.MINUTES));
-        assertEquals(u.getCertificate().getValidTo().truncatedTo(ChronoUnit.MINUTES), ou.get().getCertificate().getValidTo().truncatedTo(ChronoUnit.MINUTES));
+
+        System.out.println("Zone: " + u.getCertificate().getValidFrom().toInstant());
+        assertEquals(u.getCertificate().getValidFrom().toInstant(),
+                ou.get().getCertificate().getValidFrom().toInstant());
+        assertEquals(u.getCertificate().getValidTo().toInstant(),
+                ou.get().getCertificate().getValidTo().toInstant());
     }
 
     @Test
@@ -137,7 +140,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao {
 
         //test
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USERNAME_TOKEN_1);
-        assertNotSame(u , ou.get());
+        assertNotSame(u, ou.get());
         assertEquals(u, ou.get());
         assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
     }
