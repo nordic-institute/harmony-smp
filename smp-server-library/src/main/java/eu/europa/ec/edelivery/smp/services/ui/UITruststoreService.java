@@ -255,7 +255,7 @@ public class UITruststoreService {
         Pattern subjectRegExp = configurationService.getCertificateSubjectRegularExpression();
         List<String> allowedCertificatePolicies = configurationService.getAllowedCertificatePolicies();
         CertificateValidator certificateValidator = new CertificateValidator(
-                null, truststore,
+                Collections.emptyList(), truststore,
                 subjectRegExp != null ? subjectRegExp.pattern() : null,
                 allowedCertificatePolicies != null ? allowedCertificatePolicies : Collections.emptyList());
         LOG.debug("Validate certificate with truststore, subject regexp [{}] and allowed certificate policies [{}]", subjectRegExp, allowedCertificatePolicies);

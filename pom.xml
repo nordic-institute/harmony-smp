@@ -35,7 +35,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.11</edelivery.ssl-auth.version>
+        <edelivery.ssl-auth.version>1.12-SNAPSHOT</edelivery.ssl-auth.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ant-commons-net.version>1.6.5</ant-commons-net.version>
@@ -59,8 +59,8 @@
         <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
         <hibernate.version>5.6.9.Final</hibernate.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <jackson-databind.version>2.13.3</jackson-databind.version>
-        <jackson.version>2.13.3</jackson.version>
+        <jackson-databind.version>2.13.4.2</jackson-databind.version>
+        <jackson.version>2.13.4</jackson.version>
         <javaee-api.version>7.0</javaee-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.mail.version>1.6.2</javax.mail.version>
@@ -78,8 +78,8 @@
         <soapui.plugin.version>5.1.2</soapui.plugin.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring.boot.version>2.7.4</spring.boot.version>
-        <spring.security.version>5.7.2</spring.security.version>
-        <spring.version>5.3.21</spring.version>
+        <spring.security.version>5.7.5</spring.security.version>
+        <spring.version>5.3.23</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
         <!-- plugins -->
