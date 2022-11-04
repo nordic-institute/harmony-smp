@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 MAINTAINER Joze Rihtarsic
 
 ARG SMP_VERSION
@@ -6,13 +6,12 @@ ARG SMP_LOGICAL_ADDRESS="${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
 
 # Set the SMP_VERSION env variable  \
 ENV SMP_HOME=/opt/smp  \
-    MYSQL_DRV_VERSION=5.1.46  \
-    MYSQL_DRV_SHA1=9a3e63b387e376364211e96827bc27db8d7a92e9	  \
-    TOMCAT_MAJOR=8    \
-    TOMCAT_VERSION=8.5.73   \
-    #native version is dependant from tomcat version!
-    TOMCAT_NAVITVE_VERSION=1.2.31  \
-    TOMCAT_SHA512=bc39e4545c779326803bc2574592d72dfea1b56e4cb95d7ac5264c1b91f3da8b1b94f53c53390d1c8348ebe1dad2c10719cc2746b179e1085719d964aa60a779   \
+    MYSQL_DRV_VERSION=5.1.49  \
+    MYSQL_DRV_SHA1=cf76d2e4c9c3782a85c15c87bec5772b34ffd0e5 \
+    TOMCAT_MAJOR=9  \
+    TOMCAT_VERSION=9.0.65 \
+    TOMCAT_NAVITVE_VERSION=1.2.35  \
+    TOMCAT_SHA512=00e1ba9139969e6bf056b7e862a4bfb6a13d62208170d4081e18fa45ffa42f6a1fed6d78931e7f7dd64b7dd746e0cee066592204c277528b7aab5d9f29322bd7 \
     SMP_DB_SCHEMA=smp  \
     SMP_DB_USER=smp \
     SMP_INIT_PROPERTY_DELIMITER="||"  \
@@ -29,12 +28,13 @@ ENV SMP_HOME=/opt/smp  \
     SML_DB_USER_PASSWORD=sml  \
     BIND_USER=bind   \
 # misc variables
-   JACOCO_VERSION=0.8.4 \
-   LANG=en_US.utf8  \
-   LD_LIBRARY_PATH=/usr/local/apr/lib \
+    JACOCO_VERSION=0.8.8 \
+    JACOCO_SHA512=bc9bbd10434900e7b48e68678cb280173db86489cdd320552089eb91bb470e7297d2f6f4f595907c35747c36cfa212f3fac71eb4005fce6c65451505e17d19a2 \
+    LANG=en_US.utf8  \
+    LD_LIBRARY_PATH=/usr/local/apr/lib \
    # set debug
-   JPDA_ADDRESS="5005" \
-   JPDA_TRANSPORT="dt_socket"
+    JPDA_ADDRESS="5005" \
+    JPDA_TRANSPORT="dt_socket"
 
 
 # Exposing ports used in entrypoint.sh ..
@@ -82,7 +82,7 @@ RUN apt-get update \
     && mkdir -p $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/  \
     && echo "export CLASSPATH=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes" >   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
 # add sml and smp datasource 
-    && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SMP_DB_USER\" password=\"$SMP_DB_USER_PASSWORD\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$SMP_DB_SCHEMA?useSSL=false\&amp;characterEncoding=UTF-8\&amp;useUnicode=true\"\/>\\n<Resource name=\"jdbc\/eDeliverySmlDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SML_DB_USER\" password=\"$SML_DB_USER_PASSWORD\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$SML_DB_SCHEMA?useSSL=false\&amp;characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
+    && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SMP_DB_USER\" password=\"$SMP_DB_USER_PASSWORD\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$SMP_DB_SCHEMA?characterEncoding=UTF-8\&amp;useUnicode=true\"\/>\\n<Resource name=\"jdbc\/eDeliverySmlDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SML_DB_USER\" password=\"$SML_DB_USER_PASSWORD\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$SML_DB_SCHEMA?characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
     && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"  \
 # add SMP init configuration
     && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
