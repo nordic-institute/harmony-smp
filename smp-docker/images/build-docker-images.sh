@@ -167,7 +167,20 @@ validateAndPrepareArtefacts() {
 # build docker images
 # -----------------------------------------------------------------------------
 buildImages() {
+  #buildOracleDatabaseImage
+  #buildWebLogicOracleImages
+  buildTomcatMysqlImages
+}
+buildTomcatMysqlImages() {
+    # build tomcat mysql image  deployment.
+  docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-sml-tomcat-mysql:${SMP_VERSION}]!"
+    exit 10
+  fi
+}
 
+buildOracleDatabaseImage(){
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
@@ -177,6 +190,9 @@ buildImages() {
     echo "Error occurred while building image [smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}]!"
     exit 10
   fi
+}
+
+buildWebLogicOracleImages(){
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
@@ -198,12 +214,6 @@ buildImages() {
   docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
   if [ $? -ne 0 ]; then
     echo "Error occurred while building image [smp-weblogic-122:${SMP_VERSION}]!"
-    exit 10
-  fi
-  # build tomcat mysql image  deployment.
-  docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [smp-sml-tomcat-mysql:${SMP_VERSION}]!"
     exit 10
   fi
 }
