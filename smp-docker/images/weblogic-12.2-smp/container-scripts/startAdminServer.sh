@@ -7,6 +7,9 @@
 #Define DOMAIN_HOME
 echo "Oracle Home is: " "$ORACLE_HOME"
 echo "Domain Home is: " "${WL_DOMAIN_HOME}"
+echo "Delay startup in seconds: ${WL_DELAY_STARTUP_IN_S:-0}"
+sleep ${WL_DELAY_STARTUP_IN_S:-0}
+
 
 # init setup properties
 STATUS_FILE=${WL_STATUS_FOLDER}/wls-admin.started

@@ -4,7 +4,10 @@
 #
 # If log.nm does not exists, container is starting for 1st time
 # So it should start NM and also associate with AdminServer, as well Managed Server
-# Otherwise, only start NM (container is being restarted)o
+# Otherwise, only start NM (container is being restarted)
+
+echo "Delay startup in seconds: ${WL_DELAY_STARTUP_IN_S:-0}"
+sleep ${WL_DELAY_STARTUP_IN_S:-0}
 
 function initWebLogicDomain(){
   echo "Init WebLogic domain"

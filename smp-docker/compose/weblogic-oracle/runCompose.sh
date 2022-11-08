@@ -71,16 +71,16 @@ function createDatabaseSchemaForUser() {
   } >>"$3"
 }
 
-
 function clearOldContainers {
   echo "Clear containers and volumes"
   docker-compose -p "${PREFIX}" rm -s -f -v
   echo "Clear container data ${WORKING_DIR}/data/"
+  rm -rf ${WORKING_DIR}/data/upload/*.*
   rm -rf ${WORKING_DIR}/data/smp/config/*.*
   rm -rf ${WORKING_DIR}/data/smp/security/*.*
   rm -rf ${WORKING_DIR}/data/weblogic/keystores/*.*
   rm -rf ${WORKING_DIR}/data/weblogic/security.properties
-  rm -rf ${WORKING_DIR}/data/*.jar
+  rm -rf ${WORKING_DIR}/data/*.*
 }
 
 createDatabaseSchemaForUser $SMP_DB_USERNAME $SMP_DB_PASSWORD "${SMP_DB_SCRIPTS}/01_create_user.sql"
