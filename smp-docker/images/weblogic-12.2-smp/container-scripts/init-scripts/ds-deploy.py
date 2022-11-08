@@ -13,11 +13,13 @@ domain_name = os.environ.get('WL_DOMAIN_NAME', 'base_domain')
 domain_home = os.environ.get('WL_DOMAIN_HOME', '/u01/oracle/user_projects/domains/' + domain_name)
 cluster_name =  os.environ.get('WL_CLUSTER_NAME')
 admin_name = os.environ.get("WL_ADMIN_NAME", "AdminServer")
+target_name =   os.environ.get('WL_DEPLOYMENT_TARGET')
 
 
 print('Domain Home      : [%s]' % domain_home)
 print('Admin Name       : [%s]' % admin_name)
 print('Cluster Name     : [%s]' % cluster_name)
+print('Deployment target: [%s]' % target_name)
 print('Datasource name  : [%s]' % dsname)
 print('Datasource JNDI  : [%s]' % dsjndiname)
 print('Datasource URL   : [%s]' % dsurl)
@@ -69,8 +71,7 @@ set('TestTableName',dstestquery)
 
 # Assign
 # ======
-assign('JDBCSystemResource', dsname, 'Target', admin_name)
-assign('JDBCSystemResource', dsname, 'Target', cluster_name)
+assign('JDBCSystemResource', dsname, 'Target', target_name)
 
 # Update Domain, Close It, Exit
 # ==========================

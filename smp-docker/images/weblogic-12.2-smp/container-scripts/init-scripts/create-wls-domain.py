@@ -28,6 +28,7 @@ cluster_name                  = CLUSTER_NAME
 admin_server_name             = ADMIN_NAME
 admin_port                    = int(ADMIN_PORT)
 admin_https_port              = int(ADMIN_HTTPS_PORT)
+admin_upload_folder           = ADMIN_UPLOAD_FOLDER
 domain_name                   = DOMAIN_NAME
 t3_channel_port               = int(T3_CHANNEL_PORT)
 t3_public_address             = T3_PUBLIC_ADDRESS
@@ -43,6 +44,7 @@ print('domain_path              : [%s]' % domain_path)
 print('domain_name              : [%s]' % domain_name)
 print('admin_server_name        : [%s]' % admin_server_name)
 print('admin_port               : [%s]' % admin_port)
+print('admin_upload_folder      : [%s]' % admin_upload_folder)
 print('cluster_name             : [%s]' % cluster_name)
 print('server_port              : [%s]' % server_port)
 print('number_of_ms             : [%s]' % number_of_ms)
@@ -59,7 +61,7 @@ readTemplate("/u01/oracle/wlserver/common/templates/wls/wls.jar")
 set('Name', domain_name)
 setOption('DomainName', domain_name)
 create(domain_name,'Log')
-cd('/Log/%s' % domain_name);
+cd('/Log/%s' % domain_name)
 set('FileName', '%s.log' % (domain_name))
 
 # Configure the Administration Server
@@ -68,7 +70,9 @@ cd('/Servers/AdminServer')
 #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
 set('ListenPort', admin_port)
 set('Name', admin_server_name)
-
+# set shared upload folder for redeployment - admin server uploads the artefacts to this folder
+# which must be shared to all nodes!
+set('UploadDirectoryName', admin_upload_folder)
 
 create('T3Channel', 'NetworkAccessPoint')
 cd('/Servers/%s/NetworkAccessPoints/T3Channel' % admin_server_name)

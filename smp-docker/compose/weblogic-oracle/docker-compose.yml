@@ -1,7 +1,7 @@
 version: "3.0"
 services:
   smp-oracle-db:
-    image: smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
+    image: smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION:-5.0-SNAPSHOT}
     hostname: smp-database.local
     environment:
       - ORACLE_CHARACTERSET=AL32UTF8 # set database encoding
@@ -17,10 +17,12 @@ services:
     depends_on:
       - smp-oracle-db
     command: [bash, -c, "rm -rf /u01/status/wls-admin.started;for i in `seq 150`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.status' ] && [ \"$$( cat /u01/status/database.status )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 10;  done;   /u01/oracle/startAdminServer.sh"]
-    image:  smp-weblogic-122:${SMP_VERSION:-4.2-RC2-SNAPSHOT}
+    image:  smp-weblogic-122:${SMP_VERSION:-5.0-SNAPSHOT}
     hostname: smp-wls-admin
     environment:
       - JAVA_OPTIONS="-Dweblogic.webservice.i18n.charset=utf-8"
+      - WL_PRODUCTION_MODE_ENABLED=true # to enable production deployment
+      - WL_DEPLOYMENT_TARGET=smp-cluster
     ports:
       - 7901:7001
     volumes:
@@ -36,7 +38,7 @@ services:
     environment:
       - WL_ADMIN_HOST=smp-wls-admin
       - WL_MANAGED_SERV_NAME=smp-node-1
-    image: smp-weblogic-122:${SMP_VERSION:-4.2-RC2-SNAPSHOT}
+    image: smp-weblogic-122:${SMP_VERSION:-5.0-SNAPSHOT}
     #    ports:
     #      - "18453:8453"
     #      - "18001:8001"
@@ -51,7 +53,8 @@ services:
     environment:
       - WL_ADMIN_HOST=smp-wls-admin
       - WL_MANAGED_SERV_NAME=smp-node-2
-    image: smp-weblogic-122:${SMP_VERSION:-4.2-RC2-SNAPSHOT}
+      - WL_DELAY_STARTUP_IN_S=20 # delay startup to allow node 01 to initialize the database, truststore and keystore
+    image: smp-weblogic-122:${SMP_VERSION:-5.0-SNAPSHOT}
     #    ports:
     #      - "18453:8453"
     #      - "18001:8001"
@@ -63,12 +66,13 @@ services:
     depends_on:
       - smp-node-01
       - smp-node-02
-    image: edelivery-docker.devops.tech.ec.europa.eu/domibustest/edelivery-httpd:2.4.39
+    image: smp-httpd:${SMP_VERSION:-5.0-SNAPSHOT}
     environment:
       - VHOST_CORNER_HOSTNAME=smp.edelivery.eu
       - NODES_COUNT=2
       - NODE_HOSTNAMES=smp-node-01,smp-node-02
       - NODE_PORT_NUMBERS=8001,8001
+      - AllowEncodedSlashes=NoDecode
     ports:
       - "7980:80"
     restart: always

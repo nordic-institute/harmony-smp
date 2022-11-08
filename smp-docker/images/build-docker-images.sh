@@ -216,6 +216,13 @@ buildWebLogicOracleImages(){
     echo "Error occurred while building image [smp-weblogic-122:${SMP_VERSION}]!"
     exit 10
   fi
+ # build the httpd image for LB. The Http is configured to allow encoded characters which
+ # are not decoded!
+ docker build -t "smp-httpd:${SMP_VERSION}" ./smp-httpd/
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-httpd:${SMP_VERSION}]!"
+    exit 10
+  fi
 }
 
 function pushImageToDockerhub() {

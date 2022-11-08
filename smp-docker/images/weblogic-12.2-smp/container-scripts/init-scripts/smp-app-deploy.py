@@ -13,16 +13,18 @@ import os
 # Deployment Information
 domainhome = os.environ.get('WL_DOMAIN_HOME', '/u01/oracle/user_projects/domains/base_domain')
 admin_name = os.environ.get('WL_ADMIN_NAME', 'AdminServer')
-appVersion    = os.environ.get('SMP_VERSION', '4.2')
+appVersion    = os.environ.get('SMP_VERSION', '5.0')
 appfilename    = os.environ.get('WL_APP_FILE_NAME', 'smp')
 appname    = os.environ.get('WL_APP_NAME', appfilename+'#'+appVersion)
 appfile    = os.environ.get('APP_FILE', 'smp.war')
 appdir     = os.environ.get('WL_DOMAIN_HOME')
 cluster_name =   os.environ.get('WL_CLUSTER_NAME')
+target_name =   os.environ.get('WL_DEPLOYMENT_TARGET')
 
 print('Domain Home      : [%s]' % domainhome)
 print('Admin Name       : [%s]' % admin_name)
 print('Cluster Name     : [%s]' % cluster_name)
+print('Deployment target: [%s]' % target_name)
 print('Application Name : [%s]' % appname)
 print('appfile          : [%s]' % appfile)
 print('appdir           : [%s]' % appdir)
@@ -40,8 +42,7 @@ app.setStagingMode('nostage')
 
 # Assign application to AdminServer
 # =================================
-assign('AppDeployment', appname, 'Target', admin_name)
-assign('AppDeployment', appname, 'Target', cluster_name)
+assign('AppDeployment', appname, 'Target', target_name)
 
 # Update Domain, Close It, Exit
 # ==========================
