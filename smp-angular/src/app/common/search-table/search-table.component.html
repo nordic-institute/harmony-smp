@@ -1,6 +1,6 @@
 <div fxLayout="column" fxFill="100" style=" top: 5px; bottom: 5px; left: 5px; right: 5px;">
-  <h1  flex id="{{id}}_header_id" style="margin: 0 !important;">{{title}}</h1>
-  <spinner [show]="showSpinner" [size]="150"> </spinner>
+  <h1 flex id="{{id}}_header_id" style="margin: 0 !important;">{{title}}</h1>
+  <spinner [show]="showSpinner" [size]="150"></spinner>
   <div *ngIf="showSearchPanel" fxFlex="170px" class="selectionCriteria">
     <mat-card>
       <mat-card-content>
@@ -19,25 +19,26 @@
     </mat-card>
   </div>
 
-  <div class="panel" fxFlex fxLayout="column">
+  <form class="panel" fxFlex fxLayout="column" name="tableForm" #tableForm="ngForm">
+    <ng-container *ngTemplateOutlet="tableTitle"></ng-container>
     <div class="group-filter-button" fxFlex="50px">
       <span class="row-button">
-        <app-row-limiter  [pageSizes]="rowLimiter.pageSizes"
+        <app-row-limiter [pageSizes]="rowLimiter.pageSizes"
                          (onPageSizeChanged)="changePageSize($event.value)"></app-row-limiter>
       </span>
-      <!-- no need for this for SMP 4.1 <span class="column-filter-button">
+      <!-- span class="column-filter-button">
         <app-column-picker [allColumns]="columnPicker.allColumns" [selectedColumns]="columnPicker.selectedColumns"
                            (onSelectedColumnsChanged)="columnPicker.changeSelectedColumns($event)"></app-column-picker>
       </span -->
     </div>
     <ngx-datatable #searchTable fxFlex id="searchTable"
-                   class="material striped"
+                   class="material expandable"
                    [rowClass]="getRowClass"
                    [rows]="rows"
                    [columns]="columnPicker.selectedColumns"
                    [columnMode]="'force'"
-                   [headerHeight]="50"
-                   [footerHeight]="50"
+                   [headerHeight]="38"
+                   [footerHeight]="32"
                    [rowHeight]="'auto'"
                    [scrollbarH]="true"
                    [scrollbarV]="true"
@@ -54,19 +55,31 @@
                    [selectionType]="'multi'"
                    (activate)="onActivate($event)"
                    (select)="onSelect($event)"
-                    >
+    >
       <!-- Row Detail Template -->
-      <ngx-datatable-row-detail id="rowDetail" [rowHeight]="'auto'" #searchTableDetailRow
+      <ngx-datatable-row-detail id="rowDetail" [rowHeight]="'auto'"
                                 (toggle)="onDetailToggle($event)">
-        <ng-template let-row="row" let-expanded="expanded" let-enabled="enabled"  ngx-datatable-row-detail-template>
+        <ng-template let-row="row" let-expanded="expanded" let-enabled="enabled" ngx-datatable-row-detail-template>
           <ng-container [ngTemplateOutlet]="tableRowDetailContainer"
                         [ngTemplateOutletContext]="{row:row}"></ng-container>
         </ng-template>
       </ngx-datatable-row-detail>
+
     </ngx-datatable>
 
     <ng-template #rowIndex let-row="row" ngx-datatable-cell-template>
       <span>{{row.index + 1}}</span>
+    </ng-template>
+
+
+    <ng-template #rowExpand let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+      <a
+        href="javascript:void(0)"
+        [class.datatable-icon-right]="!expanded"
+        [class.datatable-icon-down]="expanded"
+        title="Expand/Collapse Row"
+        (click)="toggleExpandRow(row)">
+      </a>
     </ng-template>
 
     <ng-template #rowActions let-row="row" ngx-datatable-cell-template>
@@ -74,28 +87,19 @@
         <ng-container [ngTemplateOutlet]="additionalRowActionButtons"
                       [ngTemplateOutletContext]="{row:row}"></ng-container>
 
-        <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
+        <button *ngIf="allowEditItems" mat-icon-button color="primary" [disabled]="row.deleted || loading"
                 (click)="editSearchTableEntityRow(row)" matTooltip="Edit">
           <mat-icon>edit</mat-icon>
         </button>
-        <button *ngIf="allowDeleteItems"  mat-icon-button color="primary" [disabled]="row.deleted || loading"
+        <button *ngIf="allowDeleteItems" mat-icon-button color="primary" [disabled]="row.deleted || loading"
                 (click)="onDeleteRowActionClicked(row)" matTooltip="Delete">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
     </ng-template>
 
-    <ng-template #rowExpand let-row="row" let-expanded="expanded" let-disabled="disabled" ngx-datatable-cell-template >
-      <span *ngIf="isRowExpanderDisabled(row, disabled)">()</span>
-      <a *ngIf="!isRowExpanderDisabled(row, disabled)" class="table-button-expand"
-        href="javascript:void(0)"
-        title="Expand/Collapse Row"
-        (click)="toggleExpandRow(row)">{{expanded?'(-)':'(+)'}}
-      </a>
-    </ng-template>
-  </div>
-  <div fxFlex="50px"  *ngIf=showActionButtons >
-    <ng-container>
+    <div fxFlex="50px" *ngIf=showActionButtons>
+      <ng-container>
 
         <button id="cancelButton" mat-raised-button (click)="onCancelButtonClicked()" color="primary"
                 [disabled]="!submitButtonsEnabled">
@@ -107,14 +111,15 @@
           <mat-icon>save</mat-icon>
           <span>Save</span>
         </button>
-      <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
-       <!-- new button enabled -->
+        <span *ngIf="allowNewItems || allowEditItems || allowDeleteItems"
+              style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
+        <!-- new button enabled -->
         <button *ngIf="allowNewItems" id="newButton" mat-raised-button (click)="onNewButtonClicked()"
                 [disabled]="loading || !allowNewItems" color="primary">
           <mat-icon>add</mat-icon>
           <span>New</span>
         </button>
-        <button id="editButton" mat-raised-button (click)="onEditButtonClicked()"
+        <button *ngIf="allowEditItems" id="editButton" mat-raised-button (click)="onEditButtonClicked()"
                 [disabled]="!editButtonEnabled || loading" color="primary">
           <mat-icon>edit</mat-icon>
           <span>Edit</span>
@@ -124,7 +129,8 @@
           <mat-icon>delete</mat-icon>
           <span>Delete</span>
         </button>
-    </ng-container>
-    <ng-container *ngTemplateOutlet="additionalToolButtons"></ng-container>
-  </div>
+      </ng-container>
+      <ng-container *ngTemplateOutlet="additionalToolButtons"></ng-container>
+    </div>
+  </form>
 </div>

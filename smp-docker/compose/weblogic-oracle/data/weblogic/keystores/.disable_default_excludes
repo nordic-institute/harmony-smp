@@ -1,0 +1,4 @@
+.gitignore is excluded when sharing artifacts on bamboo
+http://ant.apache.org/manual/dirtasks.html
+
+And we want this folder to be shared in order to keep the project structure.

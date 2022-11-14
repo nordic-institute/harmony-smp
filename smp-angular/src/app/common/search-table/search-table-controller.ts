@@ -1,4 +1,4 @@
-import {MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {SearchTableEntity} from './search-table-entity.model';
 
 export interface SearchTableController {
@@ -18,5 +18,7 @@ export interface SearchTableController {
    * @param row the row for which the row expander should be disabled or not
    */
   isRowExpanderDisabled(row: SearchTableEntity): boolean;
+
+
 
 }

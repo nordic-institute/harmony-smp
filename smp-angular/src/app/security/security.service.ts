@@ -5,18 +5,20 @@ import {SecurityEventService} from './security-event.service';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
-import {HttpEventService} from "../http/http-event.service";
-import {AlertService} from "../alert/alert.service";
+import {AlertMessageService} from "../common/alert-message/alert-message.service";
+import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Injectable()
 export class SecurityService {
 
   readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
 
-  constructor (
+  constructor(
     private http: HttpClient,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     private securityEventService: SecurityEventService,
+    private dialog: MatDialog,
   ) {
     this.securityEventService.onLogoutSuccessEvent().subscribe(() => window.location.reload());
     this.securityEventService.onLogoutErrorEvent().subscribe((error) => this.alertService.error(error));
@@ -24,13 +26,13 @@ export class SecurityService {
 
   login(username: string, password: string) {
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post<string>(SmpConstants.REST_SECURITY_AUTHENTICATION,
+    return this.http.post<User>(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION,
       JSON.stringify({
         username: username,
         password: password
       }),
-      { headers })
-      .subscribe((response: string) => {
+      {headers})
+      .subscribe((response: User) => {
           this.updateUserDetails(response);
         },
         (error: any) => {
@@ -38,27 +40,50 @@ export class SecurityService {
         });
   }
 
+  refreshLoggedUserFromServer() {
+    this.getCurrentUsernameFromServer().subscribe((res: User) => {
+      this.updateUserDetails(res);
+      if (res?.forceChangeExpiredPassword) {
+        this.dialog.open(PasswordChangeDialogComponent, {
+          data: {
+            user: res,
+            adminUser: false
+          }
+        }).afterClosed().subscribe(res =>
+          this.finalizeLogout(res)
+        );
+      }
+    }, (error: any) => {
+      // just clean local storage
+      this.clearLocalStorage();
+    });
+  }
+
   logout() {
-    this.http.delete(SmpConstants.REST_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
-        this.clearLocalStorage();
-        this.securityEventService.notifyLogoutSuccessEvent(res);
+    this.http.delete(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
+        this.finalizeLogout(res);
       },
       (error) => {
         this.securityEventService.notifyLogoutErrorEvent(error);
       });
   }
 
+  finalizeLogout(res) {
+    this.clearLocalStorage();
+    this.securityEventService.notifyLogoutSuccessEvent(res);
+  }
+
+
   getCurrentUser(): User {
     return JSON.parse(this.readLocalStorage());
   }
 
-  private getCurrentUsernameFromServer(): Observable<string> {
-    let subject = new ReplaySubject<string>();
-    this.http.get<string>(SmpConstants.REST_SECURITY_USER)
-      .subscribe((res: string) => {
+  private getCurrentUsernameFromServer(): Observable<User> {
+    let subject = new ReplaySubject<User>();
+    this.http.get<User>(SmpConstants.REST_PUBLIC_SECURITY_USER)
+      .subscribe((res: User) => {
         subject.next(res);
       }, (error: any) => {
-        //console.log('getCurrentUsernameFromServer:' + error);
         subject.next(null);
       });
     return subject.asObservable();
@@ -68,14 +93,14 @@ export class SecurityService {
     let subject = new ReplaySubject<boolean>();
     if (callServer) {
       //we get the username from the server to trigger the redirection to the login screen in case the user is not authenticated
-      this.getCurrentUsernameFromServer().subscribe((user: string) => {
-          if(!user) {
-            this.clearLocalStorage();
-          }
-          subject.next(user !== null);
-        }, (user: string) => {
-          subject.next(false);
-        });
+      this.getCurrentUsernameFromServer().subscribe((user: User) => {
+        if (!user) {
+          this.clearLocalStorage();
+        }
+        subject.next(user !== null);
+      }, (user: string) => {
+        subject.next(false);
+      });
 
     } else {
       let currentUser = this.getCurrentUser();
@@ -89,11 +114,11 @@ export class SecurityService {
   }
 
   isCurrentUserSMPAdmin(): boolean {
-    return this.isCurrentUserInRole([ Authority.SMP_ADMIN]);
+    return this.isCurrentUserInRole([Authority.SMP_ADMIN]);
   }
 
   isCurrentUserServiceGroupAdmin(): boolean {
-    return this.isCurrentUserInRole([ Authority.SERVICE_GROUP_ADMIN]);
+    return this.isCurrentUserInRole([Authority.SERVICE_GROUP_ADMIN]);
   }
 
   isCurrentUserInRole(roles: Array<Authority>): boolean {
@@ -108,6 +133,7 @@ export class SecurityService {
     }
     return hasRole;
   }
+
   isAuthorized(roles: Array<Authority>): Observable<boolean> {
     let subject = new ReplaySubject<boolean>();
 
@@ -120,7 +146,7 @@ export class SecurityService {
     return subject.asObservable();
   }
 
-  updateUserDetails(userDetails) {
+  updateUserDetails(userDetails: User) {
     this.populateLocalStorage(JSON.stringify(userDetails));
     this.securityEventService.notifyLoginSuccessEvent(userDetails);
   }

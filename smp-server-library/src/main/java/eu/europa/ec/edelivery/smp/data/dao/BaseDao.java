@@ -17,9 +17,7 @@ import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.MatchMode;
 import org.springframework.core.GenericTypeResolver;
 
 import javax.persistence.EntityManager;
@@ -110,10 +108,11 @@ public abstract class BaseDao<E extends BaseEntity> {
     public boolean removeById(Object primaryKey) {
         // Do not use query delete else envers will not work!!
         E val = find(primaryKey);
-        if (val!= null) {
+        if (val != null) {
             memEManager.remove(val);
             return true;
-        } return false;
+        }
+        return false;
     }
 
 
@@ -130,7 +129,7 @@ public abstract class BaseDao<E extends BaseEntity> {
     /**
      * Method generates CriteriaQuery for search or count. If filter property value should match multiple values eg: column in (:list)
      * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
-     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
+     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to query. If Method end To, than
      * predicate cb.lessThan is set. If filter property  has null value, than filter parameter is ignored.
      *
      * @param searchParams
@@ -147,13 +146,16 @@ public abstract class BaseDao<E extends BaseEntity> {
         if (forCount) {
             cq.select(cb.count(om));
         } else if (sortField != null) {
-            if (sortOrder != null && sortOrder.equalsIgnoreCase("desc")) {
+            if (sortOrder != null && sortOrder.equalsIgnoreCase("asc")) {
+                LOG.debug("Sort ascending records by field [{}]", sortField);
                 cq.orderBy(cb.asc(om.get(sortField)));
             } else {
+                LOG.debug("Sort descending records by field [{}]", sortField);
                 cq.orderBy(cb.desc(om.get(sortField)));
             }
         } else {
             if (!StringUtils.isBlank(defaultSortMethod)) {
+                LOG.debug("Sort descending records by field [{}]", defaultSortMethod);
                 cq.orderBy(cb.desc(om.get(defaultSortMethod)));
             }
         }
@@ -271,8 +273,8 @@ public abstract class BaseDao<E extends BaseEntity> {
      * Method returns paginated entity list with give pagination parameters and filters.
      * Filter methods must match object methods. If property value should match multiple values eg: column in (:list)
      * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
-     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
-     * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
+     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to query. If Method end To, than
+     * predicate cb.lessThan is set. If filter property  has null value, than filter parameter is ignored.
      *
      * @param startingAt
      * @param maxResultCnt
@@ -294,8 +296,8 @@ public abstract class BaseDao<E extends BaseEntity> {
      * Method returns paginated entity list with give pagination parameters and filters.
      * Filter methods must match object methods. If property value should match multiple values eg: column in (:list)
      * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
-     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
-     * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
+     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to query. If Method end To, than
+     * predicate cb.lessThan is set. If filter property  has null value, than filter parameter is ignored.
      *
      * @param startingAt
      * @param maxResultCnt
@@ -335,8 +337,8 @@ public abstract class BaseDao<E extends BaseEntity> {
      * Method returns filtered list count.
      * Filter methods must match object methods. If property value should match multiple values eg: column in (:list)
      * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
-     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
-     * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
+     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to query. If Method end To, than
+     * predicate cb.lessThan is set. If filter property  has null value, than filter parameter is ignored.
      *
      * @param filters
      * @return

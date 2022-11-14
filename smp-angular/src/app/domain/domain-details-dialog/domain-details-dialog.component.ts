@@ -1,13 +1,14 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../domain-ro.model";
-import {AlertService} from "../../alert/alert.service";
+import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {KeystoreEditDialogComponent} from "../keystore-edit-dialog/keystore-edit-dialog.component";
 import {ServiceGroupDomainEditRo} from "../../service-group-edit/service-group-domain-edit-ro.model";
+import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
 
 @Component({
   selector: 'domain-details-dialog',
@@ -41,14 +42,15 @@ export class DomainDetailsDialogComponent {
   constructor(
     public dialog: MatDialog,
     public lookups: GlobalLookups,
+    private responsive: BreakpointObserver,
     private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
-    private alertService: AlertService,
+    private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private fb: FormBuilder) {
 
     this.editMode = data.edit;
     this.formTitle = this.editMode ? DomainDetailsDialogComponent.EDIT_MODE : DomainDetailsDialogComponent.NEW_MODE;
-    this.current = this.editMode
+    this.current = !!data.row
       ? {
         ...data.row,
       }
@@ -77,7 +79,7 @@ export class DomainDetailsDialogComponent {
       'signatureKeyAlias': new FormControl({value: ''}, null),
 
       'smlRegistered': new FormControl({value: ''}, null),
-      'smlBlueCoatAuth': new FormControl({value: ''}, null),
+      'smlClientCertAuth': new FormControl({value: ''}, null),
 
     });
 
@@ -90,12 +92,21 @@ export class DomainDetailsDialogComponent {
     this.domainForm.controls['signatureKeyAlias'].setValue(this.current.signatureKeyAlias);
 
     this.domainForm.controls['smlRegistered'].setValue(this.current.smlRegistered);
-    this.domainForm.controls['smlBlueCoatAuth'].setValue(this.current.smlBlueCoatAuth);
+    this.domainForm.controls['smlClientCertAuth'].setValue(this.current.smlClientCertAuth);
 
     if (this.current.smlClientKeyAlias) {
       this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
       this.domainForm.controls['smlClientKeyCertificate'].setValue(this.selectedSMLCert );
     }
+
+    this.responsive.observe(Breakpoints.Small)
+      .subscribe(result => {
+
+        if (result.matches) {
+          console.log("screens matches HandsetLandscape");
+        }
+
+      });
   }
 
   submitForm() {
@@ -145,13 +156,13 @@ export class DomainDetailsDialogComponent {
     this.current.smlClientCertHeader = this.domainForm.value['smlClientCertHeader'];
     if (this.domainForm.value['smlClientKeyCertificate']) {
       this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyCertificate'].alias;
-      this.current.smlClientCertHeader = this.domainForm.value['smlClientKeyCertificate'].blueCoatHeader;
+      this.current.smlClientCertHeader = this.domainForm.value['smlClientKeyCertificate'].clientCertHeader;
     } else {
       this.current.smlClientKeyAlias = '';
       this.current.smlClientCertHeader = '';
     }
     this.current.signatureKeyAlias = this.domainForm.value['signatureKeyAlias'];
-    this.current.smlBlueCoatAuth = this.domainForm.value['smlBlueCoatAuth'];
+    this.current.smlClientCertAuth = this.domainForm.value['smlClientCertAuth'];
 
     return this.current;
 

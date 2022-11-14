@@ -18,10 +18,10 @@ public class DBCertificateToCertificateROConverter implements Converter<DBCertif
     public CertificateRO convert(DBCertificate source) {
         CertificateRO target = new CertificateRO();
         if (source.getValidTo() != null) {
-            target.setValidTo(Date.from(source.getValidTo().toInstant(ZoneOffset.UTC)));
+            target.setValidTo(Date.from(source.getValidTo().toInstant()));
         }
         if (source.getValidFrom() != null) {
-            target.setValidFrom(Date.from(source.getValidFrom().toInstant(ZoneOffset.UTC)));
+            target.setValidFrom(Date.from(source.getValidFrom().toInstant()));
         }
         target.setCertificateId(source.getCertificateId());
         target.setSerialNumber(source.getSerialNumber());

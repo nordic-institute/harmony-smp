@@ -3,7 +3,7 @@
 }
 
 .custom-file-upload {
-  display: inline-block;
+  display: block;
   cursor: pointer;
 }
 
@@ -13,6 +13,15 @@
 }
 
 .has-error {
-  color:red;
+  color: red;
   font-size: 70%;
+}
+
+.scroller-div {
+  padding: 4px;
+  width: 100%;
+  height: 308px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-align: justify;
 }

@@ -2,17 +2,23 @@
 import {Router, ActivatedRoute} from '@angular/router';
 import {SecurityService} from '../security/security.service';
 import {HttpEventService} from '../http/http-event.service';
-import {AlertService} from '../alert/alert.service';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
-import {MatDialogRef, MatDialog} from '@angular/material';
+import {MatDialogRef, MatDialog} from '@angular/material/dialog';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
 import {Subscription} from 'rxjs';
-import {ExpiredPasswordDialogComponent} from '../common/expired-password-dialog/expired-password-dialog.component';
+import {ExpiredPasswordDialogComponent} from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
+import {GlobalLookups} from "../common/global-lookups";
+import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
+import {UserDetailsDialogMode} from "../user/user-details-dialog/user-details-dialog.component";
+import {InformationDialogComponent} from "../common/dialogs/information-dialog/information-dialog.component";
+import {DatePipe, formatDate} from "@angular/common";
 
 @Component({
   moduleId: module.id,
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
@@ -21,11 +27,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   returnUrl: string;
   sub: Subscription;
 
+
   constructor(private route: ActivatedRoute,
               private router: Router,
+              public lookups: GlobalLookups,
               private securityService: SecurityService,
               private httpEventService: HttpEventService,
-              private alertService: AlertService,
+              private alertService: AlertMessageService,
               private securityEventService: SecurityEventService,
               private dialog: MatDialog) {
   }
@@ -34,9 +42,17 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
     this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(
-      data => {
-        if (data && data.passwordExpired) {
-          this.dialog.open(ExpiredPasswordDialogComponent).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
+      user => {
+        if (user && user.passwordExpired) {
+          if (user.forceChangeExpiredPassword) {
+            this.dialog.open(PasswordChangeDialogComponent, {data: {user:user,adminUser:false}}).afterClosed().subscribe(res =>
+              this.securityService.finalizeLogout(res)
+            );
+          } else {
+            this.dialog.open(ExpiredPasswordDialogComponent).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
+          }
+        } else if (user?.showPasswordExpirationWarning) {
+          this.showWarningBeforeExpire(user);
         } else {
           this.router.navigate([this.returnUrl]);
         }
@@ -50,20 +66,19 @@ export class LoginComponent implements OnInit, OnDestroy {
         const HTTP_NOTFOUND = 404;
         const HTTP_GATEWAY_TIMEOUT = 504;
         const USER_INACTIVE = 'Inactive';
-        const USER_SUSPENDED = 'Suspended';
         switch (error.status) {
           case HTTP_UNAUTHORIZED:
+            message = error.error.errorDescription;
+            this.model.password = '';
+            break;
           case HTTP_FORBIDDEN:
             const forbiddenCode = error.message;
             switch (forbiddenCode) {
               case USER_INACTIVE:
                 message = 'The user is inactive. Please contact your administrator.';
                 break;
-              case USER_SUSPENDED:
-                message = 'The user is suspended. Please try again later or contact your administrator.';
-                break;
               default:
-                message = 'The username/password combination you provided are not valid. Please try again or contact your administrator.';
+                message = error.status + ' The username/password combination you provided are not valid. Please try again or contact your administrator.';
                 // clear the password
                 this.model.password = '';
                 break;
@@ -87,6 +102,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.securityService.login(this.model.username, this.model.password);
   }
 
+  showWarningBeforeExpire(user: User) {
+    this.dialog.open(InformationDialogComponent, {
+      data: {
+        title: "Warning! Your password is about to expire",
+        description: "Your password is about to expire on " + formatDate(user.passwordExpireOn,"longDate","en-US")+"! Please change the password before the expiration date!"
+      }
+    }).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
+  }
+
   verifyDefaultLoginUsed() {
     const currentUser: User = this.securityService.getCurrentUser();
     if (currentUser.defaultPasswordUsed) {
@@ -94,7 +118,27 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
+  private convertWithMode(config) {
+    return (config && config.data)
+      ? {
+        ...config,
+        data: {
+          ...config.data,
+          mode: config.data.mode || (config.data.edit ? UserDetailsDialogMode.EDIT_MODE : UserDetailsDialogMode.NEW_MODE)
+        }
+      }
+      : config;
+  }
+
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+  }
+
+  isUserAuthSSOEnabled(): boolean {
+    return this.lookups.cachedApplicationInfo?.authTypes.includes('SSO');
+  }
+
+  isUserAuthPasswdEnabled(): boolean {
+    return this.lookups.cachedApplicationInfo?.authTypes.includes('PASSWORD');
   }
 }

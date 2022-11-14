@@ -1,0 +1,54 @@
+version: "3.0"
+services:
+  tomcat-mysql-sml:
+    image: smp-sml-tomcat-mysql:${SMP_VERSION}
+    container_name: smp-sml-tomcat-mysql
+    hostname: eulogin.protected.smp.local
+    environment:
+      - SMP_INIT_PROPERTIES=smp.passwordPolicy.expired.forceChange=false
+        ||smp.cluster.enabled=false
+        ||smp.ui.authentication.types=PASSWORD|SSO
+        ||smp.sso.cas.url=https://eulogin-mock-server:7102/cas
+        ||smp.sso.cas.urlpath.login=login
+        ||smp.sso.cas.token.validation.urlpath=laxValidate
+        ||smp.sso.cas.callback.url=http://eulogin.protected.smp.local:8982/smp/ui/public/rest/security/cas
+        ||bdmsl.integration.enabled=true
+        ||bdmsl.integration.url=http://localhost:8080/edelivery-sml/
+        ||mail.smtp.host=mail-server.smp.local
+        ||mail.smtp.port=2500
+        ||smp.alert.user.login_failure.enabled=true
+        ||smp.alert.user.suspended.enabled=true
+        ||smp.alert.password.imminent_expiration.enabled=true
+        ||smp.alert.password.expired.enabled=true
+        ||smp.alert.accessToken.imminent_expiration.enabled=true
+        ||smp.alert.accessToken.expired.enabled=true
+        ||smp.alert.certificate.imminent_expiration.enabled=true
+        ||smp.alert.certificate.expired.enabled=true
+        ||smp.alert.accessToken.expired.enabled=true
+
+    volumes:
+      - ./properties/db-scripts:/tmp/custom-data/
+      - ./properties/keystores:/tmp/keystores/
+    ports:
+      - "3908:3306"
+      - "8982:8080"
+      - "6902:6901"
+#      - "8953:53"
+#      - "5005:5005"
+
+  eulogin-mock-server:
+    image: edelivery-docker.devops.tech.ec.europa.eu/eulogin/mockserver:6.2.7
+    container_name: eulogin
+    hostname: eulogin-mock-server
+    volumes:
+        - ./eulogin/init-data:/resources/ecas-mock-server
+ # Map this folder to host to be able to change runtime data for manual testing!
+ #       - ./eulogin/ecas-mock-server:/data/ecas-mock-server
+    ports:
+      - "7102:7102"
+
+  mail-service:
+    image: inbucket/inbucket:3.0.0
+    hostname: mail-server.smp.local
+    ports:
+      - "9005:9000"

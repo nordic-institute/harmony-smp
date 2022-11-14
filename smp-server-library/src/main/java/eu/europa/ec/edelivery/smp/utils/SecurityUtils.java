@@ -1,6 +1,9 @@
 package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -11,20 +14,53 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.spec.AlgorithmParameterSpec;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Enumeration;
+import java.util.Random;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 public class SecurityUtils {
+    public static final SMPLogger LOG = SMPLoggerFactory.getLogger(SecurityUtils.class);
+
+    public static class Secret {
+        final byte[] vector;
+        final SecretKey key;
+        AlgorithmParameterSpec ivParameter = null;
+
+        public Secret(byte[] vector, SecretKey key) {
+            this.vector = vector;
+            this.key = key;
+
+        }
+
+        public byte[] getVector() {
+            return vector;
+        }
+
+        public AlgorithmParameterSpec getIVParameter() {
+            if (ivParameter == null && vector != null) {
+                this.ivParameter = new GCMParameterSpec(GCM_TAG_LENGTH_BIT, vector);
+            }
+            return ivParameter;
+        }
+
+        public SecretKey getKey() {
+            return key;
+        }
+    }
 
     private static final String VALID_PW_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
+    private static final String VALID_USER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int DEFAULT_PASSWORD_LENGTH = 16;
+    private static final int DEFAULT_USER_LENGTH = 8;
 
     public static final String ALGORITHM_KEY = "AES";
     public static final String ALGORITHM_ENCRYPTION = "AES/GCM/NoPadding";
@@ -80,13 +116,13 @@ public class SecurityUtils {
         return newAlias;
     }
 
-    public static String generateStrongPassword(){
-        String newKeyPassword = null;
 
+    public static String generateAuthenticationToken(boolean devMode) {
+        String newKeyPassword;
         try {
             newKeyPassword = RandomStringUtils.random(DEFAULT_PASSWORD_LENGTH, 0, VALID_PW_CHARS.length(),
                     false, false,
-                    VALID_PW_CHARS.toCharArray(), SecureRandom.getInstanceStrong());
+                    VALID_PW_CHARS.toCharArray(), devMode ? new Random() : SecureRandom.getInstanceStrong());
 
         } catch (NoSuchAlgorithmException e) {
             String msg = "Error occurred while generation test password: No strong random algorithm. Error:"
@@ -96,75 +132,144 @@ public class SecurityUtils {
         return newKeyPassword;
     }
 
-    public static void generatePrivateSymmetricKey(File path) {
-
+    public static String generateAuthenticationTokenIdentifier() {
+        String newKeyPassword;
         try {
-            // Generates a random key
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM_KEY);
-            keyGenerator.init(KEY_SIZE);
-            SecretKey privateKey = keyGenerator.generateKey();
+            newKeyPassword = RandomStringUtils.random(DEFAULT_USER_LENGTH, 0, VALID_USER_CHARS.length(),
+                    true, false,
+                    VALID_USER_CHARS.toCharArray(), SecureRandom.getInstanceStrong());
 
-            SecureRandom rnd = new SecureRandom();
-            // Using setSeed(byte[]) to reseed a Random object
-            byte[] seed = rnd.generateSeed(IV_GCM_SIZE);
-            rnd.setSeed(seed);
+        } catch (NoSuchAlgorithmException e) {
+            String msg = "Error occurred while generation test password: No strong random algorithm. Error:"
+                    + ExceptionUtils.getRootCauseMessage(e);
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, msg, e.getMessage());
+        }
+        return newKeyPassword;
+    }
 
-            byte[] buffIV = new byte[IV_GCM_SIZE];
-            rnd.nextBytes(buffIV);
+    public static AccessTokenRO generateAccessToken(boolean testMode) {
+        AccessTokenRO accessToken = new AccessTokenRO();
+        accessToken.setGeneratedOn(OffsetDateTime.now());
+        accessToken.setIdentifier(generateAuthenticationTokenIdentifier());
+        accessToken.setValue(generateAuthenticationToken(testMode));
+        return accessToken;
+    }
 
-            try (FileOutputStream out = new FileOutputStream(path)) {
-                // first write IV
-                out.write('#');
-                out.write(buffIV);
-                out.write('#');
-                out.write(privateKey.getEncoded());
-                out.flush();
-            }
-        } catch (Exception exc) {
+    public static Secret generatePrivateSymmetricKey() {
+        // Generates a random key
+        KeyGenerator keyGenerator = null;
+        try {
+            keyGenerator = KeyGenerator.getInstance(ALGORITHM_KEY);
+        } catch (NoSuchAlgorithmException exc) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, exc, "Error occurred while generating secret key for encryption", exc.getMessage());
+        }
+        keyGenerator.init(KEY_SIZE);
+        SecretKey privateKey = keyGenerator.generateKey();
+
+        SecureRandom rnd = new SecureRandom();
+        // Using setSeed(byte[]) to reseed a Random object
+        byte[] seed = rnd.generateSeed(IV_GCM_SIZE);
+        rnd.setSeed(seed);
+
+        byte[] buffIV = new byte[IV_GCM_SIZE];
+        rnd.nextBytes(buffIV);
+
+        return new Secret(buffIV, privateKey);
+    }
+
+    public static void generatePrivateSymmetricKey(File path) {
+        Secret secret = generatePrivateSymmetricKey();
+        try (FileOutputStream out = new FileOutputStream(path)) {
+            // first write IV
+            out.write('#');
+            out.write(secret.getVector());
+            out.write('#');
+            out.write(secret.getKey().getEncoded());
+            out.flush();
+
+        } catch (IOException exc) {
             throw new SMPRuntimeException(INTERNAL_ERROR, exc, "Error occurred while saving key for encryption", exc.getMessage());
         }
     }
 
+
     public static String encryptWrappedToken(File encKeyFile, String token) {
-        if (!StringUtils.isBlank(token) && token.startsWith( SecurityUtils.DECRYPTED_TOKEN_PREFIX) ){
+        if (!StringUtils.isBlank(token) && token.startsWith(SecurityUtils.DECRYPTED_TOKEN_PREFIX)) {
             String unWrapToken = getNonEncryptedValue(token);
-             return SecurityUtils.encrypt(encKeyFile, unWrapToken);
+            return SecurityUtils.encrypt(encKeyFile, unWrapToken);
         }
         return token;
     }
 
-    public static String encrypt(File path, String plainToken) {
-        try {
-            byte[] buff = Files.readAllBytes(path.toPath());
-            AlgorithmParameterSpec iv = getSaltParameter(buff);
-            SecretKey privateKey = getSecretKey(buff);
+    public static String encryptURLSafe(Secret secret, String plainToken) {
+        return encrypt(secret, plainToken, Base64.getUrlEncoder().withoutPadding());
+    }
 
+    public static String encrypt(Secret secret, String plainToken) {
+        return encrypt(secret.getKey(), secret.getIVParameter(), plainToken, Base64.getEncoder());
+    }
+
+    public static String encrypt(Secret secret, String plainToken, Base64.Encoder encoder) {
+        return encrypt(secret.getKey(), secret.getIVParameter(), plainToken, encoder);
+    }
+
+    public static String encrypt(SecretKey privateKey, AlgorithmParameterSpec iv, String plainToken, Base64.Encoder encoder) {
+        try {
             Cipher cipher = Cipher.getInstance(iv == NULL_IV ? ALGORITHM_ENCRYPTION_OBSOLETE : ALGORITHM_ENCRYPTION);
             cipher.init(Cipher.ENCRYPT_MODE, privateKey, iv);
             byte[] encryptedData = cipher.doFinal(plainToken.getBytes());
-            return new String(Base64.getEncoder().encode(encryptedData));
+            return new String(encoder.encode(encryptedData));
         } catch (Exception exc) {
             throw new SMPRuntimeException(INTERNAL_ERROR, exc, "Error occurred while encrypting the password", exc.getMessage());
         }
     }
 
-    public static String decrypt(File keyPath, String encryptedPassword) {
+    public static String encrypt(File path, String plainToken) {
+        byte[] buff;
         try {
-            byte[] buff = Files.readAllBytes(keyPath.toPath());
+            buff = Files.readAllBytes(path.toPath());
+        } catch (Exception exc) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, exc, "Error occurred while reading encryption key [" + path.getAbsolutePath() + "]!  Root cause: " + ExceptionUtils.getRootCauseMessage(exc), exc.getMessage());
+        }
+        AlgorithmParameterSpec iv = getSaltParameter(buff);
+        SecretKey privateKey = getSecretKey(buff);
+        return encrypt(privateKey, iv, plainToken, Base64.getEncoder());
+    }
 
-            AlgorithmParameterSpec iv = getSaltParameter(buff);
-            SecretKey privateKey = getSecretKey(buff);
+    public static String decrypt(File keyPath, String encryptedToken) {
 
-            byte[] decodedEncryptedPassword = Base64.getDecoder().decode(encryptedPassword.getBytes());
+        byte[] buff;
+        try {
+            buff = Files.readAllBytes(keyPath.toPath());
+        } catch (IOException exc) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, exc, "Error occurred while reading the the key: '" + keyPath.getAbsolutePath() + "'! Root cause: " + ExceptionUtils.getRootCauseMessage(exc), exc.getMessage());
+        }
+        AlgorithmParameterSpec iv = getSaltParameter(buff);
+        SecretKey privateKey = getSecretKey(buff);
+        return decrypt(privateKey, iv, encryptedToken, Base64.getDecoder());
+
+    }
+
+    public static String decrypt(Secret secret, String encryptedToken) {
+        return decrypt(secret.getKey(), secret.ivParameter, encryptedToken, Base64.getDecoder());
+    }
+
+    public static String decryptUrlSafe(Secret secret, String encryptedToken) {
+        return decrypt(secret.getKey(), secret.ivParameter, encryptedToken, Base64.getUrlDecoder());
+    }
+
+    public static String decrypt(SecretKey privateKey, AlgorithmParameterSpec iv, String encryptedToken, Base64.Decoder decoder) {
+        try {
+            byte[] decodedEncryptedPassword = decoder.decode(encryptedToken.getBytes());
             // this is for back-compatibility - if key parameter is IV than is CBC else ie GCM
             Cipher cipher = Cipher.getInstance(iv instanceof IvParameterSpec ? ALGORITHM_ENCRYPTION_OBSOLETE : ALGORITHM_ENCRYPTION);
             cipher.init(Cipher.DECRYPT_MODE, privateKey, iv);
             byte[] decrypted = cipher.doFinal(decodedEncryptedPassword);
             return new String(decrypted);
         } catch (BadPaddingException | IllegalBlockSizeException ibse) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, ibse, "Either private key '" + keyPath.getAbsolutePath() + "' or encrypted password might not be correct. Please check both.  Root cause: " + ExceptionUtils.getRootCauseMessage(ibse), ibse.getMessage());
+            throw new SMPRuntimeException(INTERNAL_ERROR, ibse, "Either private key or encrypted password might not be correct. Please check both.  Root cause: " + ExceptionUtils.getRootCauseMessage(ibse), ibse.getMessage());
         } catch (Exception exc) {
-            throw new SMPRuntimeException(INTERNAL_ERROR, exc, "Error occurred while decrypting the password with the key: '" + keyPath.getAbsolutePath() + "'! Root cause: " + ExceptionUtils.getRootCauseMessage(exc), exc.getMessage());
+            throw new SMPRuntimeException(INTERNAL_ERROR, exc, "Error occurred while decrypting the password with the key! Root cause: " + ExceptionUtils.getRootCauseMessage(exc), exc.getMessage());
         }
     }
 

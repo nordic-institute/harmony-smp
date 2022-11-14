@@ -2,16 +2,16 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.Security;
 import java.security.cert.*;
 
@@ -39,11 +39,10 @@ public class CRLVerifierServiceTest extends AbstractServiceIntegrationTest {
     public void beforeMethods() {
         crlVerifierServiceInstance = Mockito.spy(crlVerifierServiceInstance);
         configurationService = Mockito.spy(configurationService);
-        ReflectionTestUtils.setField(crlVerifierServiceInstance,"configurationService",configurationService);
+        ReflectionTestUtils.setField(crlVerifierServiceInstance, "configurationService", configurationService);
         // force veifiction
         Mockito.doReturn(true).when(configurationService).forceCRLValidation();
     }
-
 
 
     @Test
@@ -85,7 +84,7 @@ public class CRLVerifierServiceTest extends AbstractServiceIntegrationTest {
         X509Certificate certificate = loadCertificate("smp-crl-test-all.pem");
 
         expectedEx.expect(SMPRuntimeException.class);
-        expectedEx.expectMessage("Certificate error Error occurred while downloading CRL:'https://localhost/clr.  Error: ConnectException: Connection refused (Connection refused)!");
+        expectedEx.expectMessage("Certificate error [Error occurred while downloading CRL:'https://localhost/clr']. Error: ConnectException: Connection refused (Connection refused)!");
 
         // when-then
         crlVerifierServiceInstance.verifyCertificateCRLs(certificate);
@@ -126,10 +125,10 @@ public class CRLVerifierServiceTest extends AbstractServiceIntegrationTest {
     public void verifyCertificateCRLsRevokedSerialTestThrowIOExceptionHttps() throws CertificateException, IOException, CRLException {
         String crlURL = "https://localhost/crl";
 
-        Mockito.doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL,"IOException: Can not access URL")).when(crlVerifierServiceInstance).downloadCRL("https://localhost/crl", true);
+        Mockito.doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL+"'", "IOException: Can not access URL")).when(crlVerifierServiceInstance).downloadCRL("https://localhost/crl", true);
 
         expectedEx.expect(SMPRuntimeException.class);
-        expectedEx.expectMessage("Certificate error Can not download CRL 'https://localhost/crl.  Error: IOException: Can not access URL!");
+        expectedEx.expectMessage("Certificate error [Can not download CRL 'https://localhost/crl']. Error: IOException: Can not access URL!");
 
         // when-then
         crlVerifierServiceInstance.verifyCertificateCRLs("11", "https://localhost/crl");
