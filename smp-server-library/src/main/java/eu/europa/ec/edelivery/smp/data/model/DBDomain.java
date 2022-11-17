@@ -70,7 +70,7 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "SMP ID used for SML integration")
     String smlSmpId;
     @Column(name = "SML_PARTC_IDENT_REGEXP", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
-    @ColumnDescription(comment = "Reqular expresion for participant ids")
+    @ColumnDescription(comment = "Regular expresion for participant ids")
     String smlParticipantIdentifierRegExp;
     @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
     @ColumnDescription(comment = "Client-Cert header used behind RP - ClientCertHeader for SML integration")

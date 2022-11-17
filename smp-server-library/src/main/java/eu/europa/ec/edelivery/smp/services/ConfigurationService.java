@@ -148,6 +148,10 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
     }
 
+    public List<String> getAllowedDocumentCertificateTypes() {
+        return configurationDAO.getCachedPropertyValue(DOCUMENT_RESTRICTION_CERT_TYPES);
+    }
+
     public boolean getParticipantSchemeMandatory() {
         // not mandatory by default
         Boolean value = configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
