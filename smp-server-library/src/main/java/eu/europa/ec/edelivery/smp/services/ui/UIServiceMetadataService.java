@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
@@ -13,24 +14,30 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.IllegalCharsetNameException;
+import java.security.PublicKey;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.DOCUMENT_RESTRICTION_CERT_TYPES;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 
 /**
- * Serives for managing the Service metadata
+ * Services for managing the Service metadata
  */
 @Service
 public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, ServiceMetadataRO> {
@@ -40,12 +47,20 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
     protected final ServiceMetadataDao serviceMetadataDao;
     protected final UserDao userDao;
     protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final ConfigurationService configurationService;
 
-    public UIServiceMetadataService(DomainDao domainDao, ServiceMetadataDao serviceMetadataDao, UserDao userDao, CaseSensitivityNormalizer caseSensitivityNormalizer) {
+
+    public UIServiceMetadataService(DomainDao domainDao,
+                                    ServiceMetadataDao serviceMetadataDao,
+                                    UserDao userDao,
+                                    CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                    ConfigurationService configurationService) {
         this.domainDao = domainDao;
         this.serviceMetadataDao = serviceMetadataDao;
         this.userDao = userDao;
         this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.configurationService = configurationService;
+
     }
 
     @Override
@@ -152,9 +167,72 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
                     return serviceMetadataRO;
                 }
             }
+            try {
+                validateServiceMetadataCertificates(smd);
+            } catch (CertificateException e) {
+                serviceMetadataRO.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
+                return serviceMetadataRO;
+            }
 
         }
         return serviceMetadataRO;
     }
 
+    /**
+     * Method validates certificates in all endpoints.
+     *
+     * @param smd ServiceMetadata document
+     * @throws CertificateException exception if certificate is not valid or the allowed key type
+     */
+    public void validateServiceMetadataCertificates(ServiceMetadata smd) throws CertificateException {
+        List<EndpointType> endpointTypeList = searchAllEndpoints(smd);
+        for (EndpointType endpointType : endpointTypeList) {
+            validateCertificate(endpointType.getCertificate());
+        }
+    }
+
+    /**
+     * Method returns all EndpointTypes
+     *
+     * @param smd
+     * @return
+     */
+    public List<EndpointType> searchAllEndpoints(ServiceMetadata smd) {
+        List<ProcessType> processTypeList = smd.getServiceInformation() != null ?
+                smd.getServiceInformation().getProcessList().getProcesses() : Collections.emptyList();
+
+        List<EndpointType> endpointTypeList = new ArrayList<>();
+        processTypeList.stream().forEach(processType -> endpointTypeList.addAll(processType.getServiceEndpointList() != null ?
+                processType.getServiceEndpointList().getEndpoints() : Collections.emptyList()));
+
+        return endpointTypeList;
+    }
+
+    /**
+     * Validate the certificate
+     *
+     * @param crtData x509 encoded byte array
+     * @throws CertificateException
+     */
+    public void validateCertificate(byte[] crtData) throws CertificateException {
+        if (crtData == null || crtData.length == 0) {
+            LOG.debug("Skip certificate validation: Empty certificate.");
+            return;
+        }
+        X509Certificate cert = X509CertificateUtils.getX509Certificate(crtData);
+        // validate is certificate is valid
+        cert.checkValidity();
+        // validate if certificate has the right key algorithm
+        PublicKey key = cert.getPublicKey();
+        List<String> allowedKeyAlgs = configurationService.getAllowedDocumentCertificateTypes();
+        if (allowedKeyAlgs == null || allowedKeyAlgs.isEmpty()) {
+            LOG.debug("Ignore the service metadata certificate key type validation (Empty property: [{}]).", DOCUMENT_RESTRICTION_CERT_TYPES.getProperty());
+            return;
+        }
+
+        if (StringUtils.equalsAnyIgnoreCase(key.getAlgorithm(), allowedKeyAlgs.toArray(new String[]{}))) {
+            return;
+        }
+        throw new CertificateException("Certificate does not have allowed key type!");
+    }
 }
