@@ -2,9 +2,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.niis</groupId>
-        <artifactId>harmonysmp-parent-pom</artifactId>
+        <artifactId>harmonysmp-modules</artifactId>
         <version>1.3.0</version>
-        <relativePath>../smp-parent-pom/harmony-pom.xml</relativePath>
+        <relativePath>../harmony-pom.xml</relativePath>
     </parent>
     <artifactId>harmonysmp</artifactId>
     <packaging>war</packaging>
@@ -15,20 +15,8 @@
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
         <buildtimestamp>${maven.build.timestamp}</buildtimestamp>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-
-        <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
-        <ftp.port>2059</ftp.port>
-        <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
-
-        <!-- database - - >
-        <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
-        <jdbc.url>jdbc:mysql://localhost/smpdbdev</jdbc.url>
-        <jdbc.user>smpdev</jdbc.user>
-        <jdbc.password>****</jdbc.password>
-        <target-database>MySQL</target-database>
-        <jdbc.read-connections.max>10</jdbc.read-connections.max>
- -->
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss'Z'</maven.build.timestamp.format>
+        <!-- integration tests execution-->
         <jdbc.driver>org.h2.Driver</jdbc.driver>
         <jdbc.url>jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE</jdbc.url>
         <jdbc.user>smp</jdbc.user>
@@ -75,7 +63,7 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
@@ -105,23 +93,6 @@
             <artifactId>hamcrest-junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency-->
     </dependencies>
 
     <build>
@@ -161,6 +132,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
+                    <warName>${project.artifactId}</warName>
                     <archive>
                         <manifestEntries>
                             <WebLogic-Application-Version>v${project.version}</WebLogic-Application-Version>
@@ -170,44 +142,20 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <configuration>
-                    <target>
-                        <ftp server="${ftp.host}" port="${ftp.port}" passive="yes" remotedir="${ftp.remotedir}" userid="${ftp.user}" password="${ftp.password}">
-                            <fileset dir="${project.build.directory}">
-                                <include name="${project.artifactId}.${project.packaging}" />
-                            </fileset>
-                        </ftp>
-                    </target>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-commons-net</artifactId>
-                        <version>1.6.5</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>commons-net</groupId>
-                        <artifactId>commons-net</artifactId>
-                        <version>1.4.1</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
-            <!-- unit tests, surefire plugin, added here to exclude some tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-test</id>
+                        <id>assembly-smp-setup</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                         <configuration>
-                            <excludesFile>ignoredTests.txt</excludesFile>
+                            <descriptor>src/main/smp-setup/smp-setup.xml</descriptor>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>
