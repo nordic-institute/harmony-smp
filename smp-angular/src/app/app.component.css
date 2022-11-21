@@ -13,6 +13,7 @@ mat-sidenav {
   text-align: center;
   box-shadow: 7px 7px 10px #9B9B9B !important;
   /*border: dashed red;*/
+  background-color: #f0fbfc!important;
 }
 
 mat-sidenav.menu-expanded {
@@ -68,9 +69,7 @@ html, body, material-app, .my-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 18px;
-  padding-bottom: 20px;
-  padding-left: 15px;
+  padding: 18px 20px 20px 15px;
 }
 
 .menu-collapsed #topLogo {
