@@ -13,6 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
@@ -20,15 +22,19 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static eu.europa.ec.smp.api.Identifiers.asString;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * Created by gutowpa on 23/02/2017.
  */
 @Component
 public class CaseSensitivityNormalizer {
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CaseSensitivityNormalizer.class);
 
     protected static ConfigurationService configurationService;
 
@@ -36,13 +42,32 @@ public class CaseSensitivityNormalizer {
         this.configurationService = configurationService;
     }
 
-    public ParticipantIdentifierType normalizeParticipantIdentifier(String scheme, String value) {
+    public ParticipantIdentifierType normalizeParticipantIdentifier(final String scheme, final String partyId) {
         List<String> caseSensitiveParticipantSchemes = configurationService.getCaseSensitiveParticipantScheme();
-        if (scheme==null || caseSensitiveParticipantSchemes == null || !caseSensitiveParticipantSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
-            scheme = StringUtils.lowerCase(scheme);
-            value = StringUtils.lowerCase(value);
+        String pScheme = trim(scheme);
+        String pPartyId = trim(partyId);
+
+        if (isEmpty(pScheme) && !isEmpty(pPartyId)) {
+            Pattern pattern = configurationService.getParticipantIdentifierSplitRexExp();
+            Matcher matcher = pattern.matcher(pPartyId);
+            if (matcher.matches()) {
+                pScheme = matcher.group("scheme");
+                pPartyId = matcher.group("identifier");
+                LOG.debug("Party identifier [{}] match the regular expression to split to scheme [{}]] and identifier [{}]]",
+                        partyId, pScheme, pPartyId);
+            } else {
+                LOG.info("Party identifier [{}] does not match urn regular expression [{}]", partyId, pattern.pattern());
+            }
         }
-        return new ParticipantIdentifierType(value, scheme);
+
+        // set to lower case
+        if (pScheme == null
+                || caseSensitiveParticipantSchemes == null
+                || !caseSensitiveParticipantSchemes.stream().anyMatch(pScheme::equalsIgnoreCase)) {
+            pScheme = lowerCase(pScheme);
+            pPartyId = lowerCase(pPartyId);
+        }
+        return new ParticipantIdentifierType(pPartyId, pScheme);
     }
 
     public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier, boolean schemeMandatory) {
@@ -54,7 +79,7 @@ public class CaseSensitivityNormalizer {
     }
 
     public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
-        return normalize(participantIdentifier,  configurationService.getParticipantSchemeMandatory());
+        return normalize(participantIdentifier, configurationService.getParticipantSchemeMandatory());
     }
 
     public DocumentIdentifier normalize(final DocumentIdentifier documentIdentifier) {
@@ -65,9 +90,9 @@ public class CaseSensitivityNormalizer {
 
     public DocumentIdentifier normalizeDocumentIdentifier(String scheme, String value) {
         List<String> caseSensitiveDocumentSchemes = configurationService.getCaseSensitiveDocumentScheme();
-        if (scheme==null || caseSensitiveDocumentSchemes == null || !caseSensitiveDocumentSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
-            scheme = StringUtils.lowerCase(scheme);
-            value = StringUtils.lowerCase(value);
+        if (scheme == null || caseSensitiveDocumentSchemes == null || !caseSensitiveDocumentSchemes.stream().anyMatch(scheme::equalsIgnoreCase)) {
+            scheme = lowerCase(scheme);
+            value = lowerCase(value);
         }
         return new DocumentIdentifier(value, scheme);
     }

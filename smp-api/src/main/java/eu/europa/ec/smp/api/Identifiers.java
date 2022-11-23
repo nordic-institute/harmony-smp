@@ -27,7 +27,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 /**
  * Factory and utility methods for API classes generated from OASIS XSD.
  * <p>
- * Created by gutowpa on 12/01/2017.
+ * @author gutowpa
+ * @since 3.0
  */
 public class Identifiers {
     private static final Logger LOG = LoggerFactory.getLogger(Identifiers.class);

@@ -276,6 +276,7 @@ public class UITruststoreService {
             LOG.debug("No certificate key types configured. Skip certificate key validation.");
             return;
         }
+
         PublicKey certKey = x509Certificate.getPublicKey();
         if (!StringUtils.equalsAnyIgnoreCase(certKey.getAlgorithm(), allowedCertificateKeyTypes.toArray(new String[]{}))) {
             throw new CertificateException("Certificate does not have allowed key algorithm type! Key type ["

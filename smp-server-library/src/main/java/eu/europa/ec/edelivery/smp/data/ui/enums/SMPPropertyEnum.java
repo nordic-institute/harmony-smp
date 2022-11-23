@@ -43,6 +43,8 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     PARTC_SCH_MANDATORY("identifiersBehaviour.scheme.mandatory", "true", "Scheme for participant identifier is mandatory",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    PARTY_IDENTIFIER_PATTERN("identifiersBehaviour.splitPattern", "^(?i)\\s*?(?<scheme>urn:oasis:names:tc:ebcore:partyid-type:(iso6523:[0-9]{4}|unregistered(:[^:]+)?))::?(?<identifier>.+)?\\s*$",
+             "Regular expression with groups scheme and identifier for splitting the identifiers to scheme and identifier part!",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
 
     PARTC_EBCOREPARTYID_CONCATENATE("identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate", "false",
             "Concatenate ebCore party id in XML responses <ParticipantIdentifier>urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>",
@@ -51,6 +53,9 @@ public enum SMPPropertyEnum {
     CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes", "sensitive-participant-sc1|sensitive-participant-sc2", "Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes", "casesensitive-doc-scheme1|casesensitive-doc-scheme2", "Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
+
+    DOCUMENT_RESTRICTION_CERT_TYPES("document.restriction.allowed.certificate.types", "", "Allowed certificate types registered when composing service metadata. Empty value means no restrictions, for other values see the java KeyFactory Algorithms for example RSA|EC|Ed25519|Ed448",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
 
     // SML integration!
@@ -357,11 +362,10 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     SMP_ALERT_MAIL_FROM("smp.alert.mail.from", "test@alert-send-mail.eu", "Alert send mail",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, EMAIL),
-
+    // deprecated properties
     CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-    DOCUMENT_RESTRICTION_CERT_TYPES("document.restriction.allowed.certificate.types", "", "Allowed certificate types registered when composing service metadata. Empty value means no restrictions, for other values see the java KeyFactory Algorithms as examples: as example RSA|EC|Ed25519|Ed448",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
+
     ;
 
     String property;
