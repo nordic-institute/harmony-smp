@@ -262,6 +262,28 @@ public class UITruststoreService {
         certificateValidator.validateCertificate(x509Certificate);
     }
 
+    /**
+     * Method validates if certificate public key algorithm is allowed. If the allowedCertificateKeyType list is null or empty, then
+     * then all certificate types are allowed.
+     *
+     * @param x509Certificate certificate to validate
+     * @throws CertificateException
+     */
+    public void validateAllowedCertificateKeyTypes(X509Certificate x509Certificate) throws CertificateException {
+        List<String> allowedCertificateKeyTypes = configurationService.getAllowedCertificateKeyTypes();
+        if (allowedCertificateKeyTypes == null
+                || allowedCertificateKeyTypes.isEmpty()) {
+            LOG.debug("No certificate key types configured. Skip certificate key validation.");
+            return;
+        }
+        PublicKey certKey = x509Certificate.getPublicKey();
+        if (!StringUtils.equalsAnyIgnoreCase(certKey.getAlgorithm(), allowedCertificateKeyTypes.toArray(new String[]{}))) {
+            throw new CertificateException("Certificate does not have allowed key algorithm type! Key type ["
+                    + certKey.getAlgorithm() + "] Allowed values ["
+                    + String.join(",", allowedCertificateKeyTypes) + "]!");
+        }
+    }
+
     public void checkFullCertificateValidity(X509Certificate cert) throws CertificateException {
         // test if certificate is valid
         cert.checkValidity();
@@ -276,6 +298,8 @@ public class UITruststoreService {
             throw new CertificateNotTrustedException("Certificate is not trusted!");
         }
 
+        // validate if certificate key type is valid
+        validateAllowedCertificateKeyTypes(cert);
 
         if (trustStore != null) {
             validateCertificateWithTruststore(cert);
@@ -378,7 +402,7 @@ public class UITruststoreService {
         }
 
         try (InputStream truststoreInputStream = new FileInputStream(truststoreFile)) {
-            String type = StringUtils.defaultIfEmpty(configurationService.getTruststoreType(),"JKS");
+            String type = StringUtils.defaultIfEmpty(configurationService.getTruststoreType(), "JKS");
             LOG.info("Load truststore [{}] with type [{}].", truststoreFile, type);
             KeyStore loadedTrustStore = KeyStore.getInstance(type);
             loadedTrustStore.load(truststoreInputStream, token.toCharArray());
