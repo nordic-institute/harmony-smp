@@ -13,9 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -30,10 +28,10 @@ import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.cert.*;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import static org.junit.Assert.*;
-
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrationTest {
@@ -53,9 +51,6 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
 
     Path resourceDirectory = Paths.get("src", "test", "resources", "truststore");
     Path targetDirectory = Paths.get("target", "truststore");
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Autowired
     protected UITruststoreService testInstance;
@@ -261,34 +256,33 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     public void testCheckFullCertificateValidityNotYetValid() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        Calendar from = Calendar.getInstance();
-        Calendar to = Calendar.getInstance();
-        to.add(Calendar.DAY_OF_YEAR, 2);
-        from.add(Calendar.DAY_OF_YEAR, 1);
-        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
-                "10af", certSubject, certSubject, from.getTime(), to.getTime(), Collections.emptyList());
-
-        //then
-        expectedEx.expect(CertificateNotYetValidException.class);
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest("10af", certSubject, certSubject,
+                OffsetDateTime.now().plusDays(1),
+                OffsetDateTime.now().plusDays(1),
+                Collections.emptyList());
         // when
-        testInstance.checkFullCertificateValidity(certificate);
+        CertificateNotYetValidException result = assertThrows(CertificateNotYetValidException.class, () ->
+                testInstance.checkFullCertificateValidity(certificate));
+        //then
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("certificate not valid till"));
     }
 
     @Test
     public void testCheckFullCertificateValidityExpired() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        Calendar from = Calendar.getInstance();
-        Calendar to = Calendar.getInstance();
-        to.add(Calendar.DAY_OF_YEAR, -1);
-        from.add(Calendar.DAY_OF_YEAR, -2);
-        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
-                "10af", certSubject, certSubject, from.getTime(), to.getTime(), Collections.emptyList());
 
-        //then
-        expectedEx.expect(CertificateExpiredException.class);
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
+                "10af", certSubject, certSubject,
+                OffsetDateTime.now().minusDays(2),
+                OffsetDateTime.now().minusDays(1),
+                Collections.emptyList());
+
         // when
-        testInstance.checkFullCertificateValidity(certificate);
+        CertificateExpiredException result = assertThrows(CertificateExpiredException.class, () ->
+                testInstance.checkFullCertificateValidity(certificate));
+        //then
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("certificate expired"));
     }
 
     @Test
@@ -306,11 +300,16 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         to.add(Calendar.DAY_OF_YEAR, 1);
         from.add(Calendar.DAY_OF_YEAR, -2);
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
-                revokedSerialFromList, S_SUBJECT_PEPPOL_NOT_TRUSTED, S_SUBJECT_PEPPOL_NOT_TRUSTED, from.getTime(), to.getTime(), Collections.singletonList(crlUrl));
-        //then
-        expectedEx.expect(CertificateNotTrustedException.class);
+                revokedSerialFromList, S_SUBJECT_PEPPOL_NOT_TRUSTED, S_SUBJECT_PEPPOL_NOT_TRUSTED,
+                OffsetDateTime.now().minusDays(2),
+                OffsetDateTime.now().plusYears(1),
+                Collections.singletonList(crlUrl));
+
         // when
-        testInstance.checkFullCertificateValidity(certificate);
+        CertificateNotTrustedException result = assertThrows(CertificateNotTrustedException.class, () ->
+                testInstance.checkFullCertificateValidity(certificate));
+        //then
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate is not trusted!"));
     }
 
 
@@ -325,20 +324,40 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         Mockito.doReturn(crl).when(crlVerifierService).downloadCRL(ArgumentMatchers.eq(crlUrl), ArgumentMatchers.anyBoolean());
 
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        Calendar from = Calendar.getInstance();
-        Calendar to = Calendar.getInstance();
-        to.add(Calendar.DAY_OF_YEAR, 1);
-        from.add(Calendar.DAY_OF_YEAR, -2);
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
-                revokedSerialFromList, certSubject, certSubject, from.getTime(), to.getTime(), Collections.singletonList(crlUrl));
+                revokedSerialFromList, certSubject, certSubject,
+                OffsetDateTime.now().minusDays(2),
+                OffsetDateTime.now().plusYears(1),
+                Collections.singletonList(crlUrl));
         // add as trusted certificate
         testInstance.addCertificate(UUID.randomUUID().toString(), certificate);
 
+        // when
+        CertificateRevokedException result = assertThrows(CertificateRevokedException.class, () ->
+                testInstance.checkFullCertificateValidity(certificate));
+        //then
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate has been revoked"));
+    }
+
+    @Test
+    public void testCheckFullCertificateValidityInvalidKey() throws Exception {
+        // given
+        String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
+                null, certSubject, certSubject,
+                OffsetDateTime.now().minusDays(2),
+                OffsetDateTime.now().plusYears(1),
+                Collections.emptyList()
+        );
+        Mockito.doReturn(Arrays.asList("InvalidKeyTest")).when(configurationService).getAllowedCertificateKeyTypes();
+        // add as trusted certificate
+        testInstance.addCertificate(UUID.randomUUID().toString(), certificate);
+
+        CertificateException result = assertThrows(CertificateException.class, () ->
+                testInstance.checkFullCertificateValidity(certificate));
 
         //then
-        expectedEx.expect(CertificateRevokedException.class);
-        // when
-        testInstance.checkFullCertificateValidity(certificate);
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate does not have allowed key algorithm type!"));
     }
 
     @Test
@@ -352,12 +371,11 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         Mockito.doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:" + crlUrl, "")).when(crlVerifierService).downloadURL(crlUrl);
 
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        Calendar from = Calendar.getInstance();
-        Calendar to = Calendar.getInstance();
-        to.add(Calendar.DAY_OF_YEAR, 1);
-        from.add(Calendar.DAY_OF_YEAR, -2);
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
-                revokedSerialFromList, certSubject, certSubject, from.getTime(), to.getTime(), Collections.singletonList(crlUrl));
+                revokedSerialFromList, certSubject, certSubject,
+                OffsetDateTime.now().minusDays(2),
+                OffsetDateTime.now().plusYears(1),
+                Collections.singletonList(crlUrl));
         // add as trusted certificate
         testInstance.addCertificate(UUID.randomUUID().toString(), certificate);
 
@@ -371,19 +389,13 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     public void testCheckFullCertificateValidityOK() throws Exception {
         // given
         String crlUrl = "https://localhost/crl";
-        String serialNotInList = "20011FF";
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509CRL crl = (X509CRL) cf.generateCRL(getClass().getResourceAsStream("/certificates/smp-crl-test.crl"));
 
         Mockito.doReturn(crl).when(crlVerifierService).downloadCRL(crlUrl, true);
 
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        Calendar from = Calendar.getInstance();
-        Calendar to = Calendar.getInstance();
-        to.add(Calendar.DAY_OF_YEAR, 1);
-        from.add(Calendar.DAY_OF_YEAR, -2);
-        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(
-                serialNotInList, certSubject, certSubject, from.getTime(), to.getTime(), Collections.singletonList(crlUrl));
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
         // add as trusted certificate
         testInstance.addCertificate(UUID.randomUUID().toString(), certificate);
 
