@@ -1,16 +1,30 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
+import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
+import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import eu.europa.ec.edelivery.smp.testutil.XmlTestUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
@@ -20,8 +34,12 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = {UIServiceGroupSearchService.class, UIServiceMetadataService.class})
 public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest {
 
+    private static final String RES_PATH = "/examples/services/";
+    private static final String RES_PATH_CONV = "/examples/conversion/";
+
     @Autowired
     protected UIServiceMetadataService testInstance;
+
 
     @Before
     @Transactional
@@ -131,5 +149,71 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
 
         smv = testInstance.validateServiceMetadata(smv);
         assertEquals("SAXParseException: Content is not allowed in trailing section.",smv.getErrorMessage());
+    }
+
+    @Test
+    public void testSearchAllEndpoints() throws IOException {
+        //given
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataDifferentCertificatesTypes.xml");
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+
+        List<EndpointType> endpointTypeList =  testInstance.searchAllEndpoints(serviceMetadata);
+        assertEquals(3, endpointTypeList.size());
+    }
+
+    @Test
+    public void testSearchAllEndpointsEmptyList() throws IOException {
+        //given
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH_CONV + "ServiceMetadataWithRedirect.xml");
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+
+        List<EndpointType> endpointTypeList =  testInstance.searchAllEndpoints(serviceMetadata);
+        assertEquals(0, endpointTypeList.size());
+    }
+
+    @Test
+    public void testValidateServiceMetadataCertificatesEmptyOK() throws IOException, CertificateException {
+        //given
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataDifferentCertificatesTypes.xml");
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        // then
+        testInstance.validateServiceMetadataCertificates(serviceMetadata);
+        // no error is expected
+    }
+
+    @Test
+    public void testValidateServiceMetadataCertificatesRSAOK() throws IOException, CertificateException {
+        ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+        UIServiceMetadataService testInstance = new UIServiceMetadataService(null, null,
+                null, null,
+                configurationService);
+
+        Mockito.doReturn(Arrays.asList("RSA","ED25519","ED448")).when(configurationService).getAllowedDocumentCertificateTypes();
+
+        //given
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataDifferentCertificatesTypes.xml");
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        // then
+        testInstance.validateServiceMetadataCertificates(serviceMetadata);
+
+    }
+
+    @Test
+    public void testValidateServiceMetadataCertificatesNotAllowed() throws IOException, CertificateException {
+        ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+        UIServiceMetadataService testInstance = new UIServiceMetadataService(null, null,
+                null, null,
+                configurationService);
+
+        Mockito.doReturn(Collections.singletonList("testKeyAlg")).when(configurationService).getAllowedDocumentCertificateTypes();
+
+        //given
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataDifferentCertificatesTypes.xml");
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        // then
+        CertificateException result  = assertThrows(CertificateException.class, () -> testInstance.validateServiceMetadataCertificates(serviceMetadata));
+        // no error is expected
+        assertEquals("Certificate does not have allowed key type!", result.getMessage());
+
     }
 }

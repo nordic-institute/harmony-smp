@@ -48,7 +48,7 @@ public final class ServiceMetadataSigner {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceMetadataSigner.class);
 
-    private static final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+    private static final String RSA_SHA256 = org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;
 
 
     @Autowired
@@ -97,8 +97,6 @@ public final class ServiceMetadataSigner {
             throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, e);
         }
     }
-
-
 
     private KeyInfo createKeyInfo(String alias) {
         KeyInfoFactory keyInfoFactory = getDomSigFactory().getKeyInfoFactory();

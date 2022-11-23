@@ -148,6 +148,10 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
     }
 
+    public List<String> getAllowedDocumentCertificateTypes() {
+        return configurationDAO.getCachedPropertyValue(DOCUMENT_RESTRICTION_CERT_TYPES);
+    }
+
     public boolean getParticipantSchemeMandatory() {
         // not mandatory by default
         Boolean value = configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
@@ -222,7 +226,11 @@ public class ConfigurationService {
     }
 
     public List<String> getAllowedCertificatePolicies() {
-        return  configurationDAO.getCachedPropertyValue(CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS);
+        return configurationDAO.getCachedPropertyValue(CERTIFICATE_ALLOWED_CERTIFICATEPOLICY_OIDS);
+    }
+
+    public List<String> getAllowedCertificateKeyTypes() {
+        return configurationDAO.getCachedPropertyValue(CERTIFICATE_ALLOWED_KEY_TYPES);
     }
 
     public String getSMLIntegrationServerCertSubjectRegExpPattern() {
@@ -332,6 +340,7 @@ public class ConfigurationService {
     public String getCasURLTokenValidation() {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_URL_PATH);
     }
+
     public URL getCasUserDataURL() {
         URL casUrl = getCasURL();
         if (casUrl == null) {
@@ -355,7 +364,7 @@ public class ConfigurationService {
 
 
     public Map<String, String> getCasTokenValidationParams() {
-        return  configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_PARAMS);
+        return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_PARAMS);
     }
 
     public List<String> getCasURLTokenValidationGroups() {
@@ -551,6 +560,7 @@ public class ConfigurationService {
 
     /**
      * Property is set in "file property configuration and can not be changed via database!
+     *
      * @return true if smp server is started in development mode
      */
     public boolean isSMPStartupInDevMode() {

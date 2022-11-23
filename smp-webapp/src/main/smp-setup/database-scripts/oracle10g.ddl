@@ -213,7 +213,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         'Client key alias used for SML integration';
 
     comment on column SMP_DOMAIN.SML_PARTC_IDENT_REGEXP is
-        'Reqular expresion for participant ids';
+        'Regular expresion for participant ids';
 
     comment on column SMP_DOMAIN.SML_REGISTERED is
         'Flag for: Is domain registered in SML';
