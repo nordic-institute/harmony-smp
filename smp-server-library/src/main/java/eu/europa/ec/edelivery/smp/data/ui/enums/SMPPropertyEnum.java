@@ -106,7 +106,7 @@ public enum SMPPropertyEnum {
     CERTIFICATE_SUBJECT_REGULAR_EXPRESSION("smp.certificate.validation.subjectRegex", ".*", "Regular expression to validate subject of the certificate",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     CERTIFICATE_ALLOWED_KEY_TYPES("smp.certificate.validation.allowed.certificate.types",
-            "", "Allowed user certificate types. Empty value means no restrictions, for other values see the java KeyFactory Algorithms as examples: as example RSA|EC|Ed25519|Ed448",
+            "", "Allowed user certificate types. Empty value means no restrictions, for other values see the java KeyFactory Algorithms for examples: RSA|EC|Ed25519|Ed448",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
 
     SMP_PROPERTY_REFRESH_CRON("smp.property.refresh.cronJobExpression", "0 48 */1 * * *", "Property refresh cron expression (def 12 minutes to each hour). Property change is refreshed at restart!",
@@ -365,7 +365,6 @@ public enum SMPPropertyEnum {
     // deprecated properties
     CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-
     ;
 
     String property;

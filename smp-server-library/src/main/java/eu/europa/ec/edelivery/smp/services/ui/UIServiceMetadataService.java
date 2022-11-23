@@ -231,8 +231,10 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
         }
 
         if (StringUtils.equalsAnyIgnoreCase(key.getAlgorithm(), allowedKeyAlgs.toArray(new String[]{}))) {
+            LOG.debug("Certificate has valid key algorithm [{}]. Allowed algorithms: [{}] .", key.getAlgorithm(), allowedKeyAlgs);
             return;
         }
+        LOG.debug("Certificate has invalid key algorithm [{}]. Allowed algorithms: [{}] .", key.getAlgorithm(), allowedKeyAlgs);
         throw new CertificateException("Certificate does not have allowed key type!");
     }
 }
