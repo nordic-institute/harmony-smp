@@ -41,7 +41,7 @@
         <ant-commons-net.version>1.6.5</ant-commons-net.version>
         <aspectj.version>1.9.9.1</aspectj.version>
         <bdmsl.api.version>4.1.1</bdmsl.api.version>
-        <bouncycastle.version>1.70</bouncycastle.version>
+        <bouncycastle.version>1.72</bouncycastle.version>
         <build.helper.maven.version>1.9.1</build.helper.maven.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-collections.version>3.2.2</commons-collections.version>

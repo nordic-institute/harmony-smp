@@ -7,9 +7,7 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -20,8 +18,6 @@ import static org.junit.Assert.assertNull;
 
 @ContextConfiguration(classes = {UIServiceGroupSearchService.class, UIServiceMetadataService.class})
 public class UIServiceGroupSearchServiceTest extends AbstractServiceIntegrationTest {
-    @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
 
     @Autowired
     protected UIServiceGroupSearchService testInstance;

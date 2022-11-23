@@ -2,7 +2,8 @@ eDelivery SMP 5.0
 - added new properties:
     smp.truststore.type: Truststore type as JKS/PKCS12
     smp.keystore.type: Keystore type as JKS/PKCS12
-
+    document.restriction.allowed.certificate.types: Allowed key algorithms for certificates to be used in service metadata.Empty value means no restrictions, for other values see the java KeyFactory Algorithms for example: RSA|EC|Ed25519|Ed448;
+    smp.certificate.validation.allowed.certificate.type: Allowed user certificate JCE types. Empty value means no restrictions, for other values see the java KeyFactory Algorithms for examples: RSA|EC|Ed25519|Ed448;
 
 eDelivery SMP 4.2
 - added new properties:
