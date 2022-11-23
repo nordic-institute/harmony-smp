@@ -158,6 +158,10 @@ public class ConfigurationService {
         return value != null && value;
     }
 
+    public Pattern getParticipantIdentifierSplitRexExp() {
+        return configurationDAO.getCachedPropertyValue(PARTY_IDENTIFIER_PATTERN);
+    }
+
     public boolean isProxyEnabled() {
         String proxyHost = configurationDAO.getCachedProperty(HTTP_PROXY_HOST);
         return !StringUtils.isBlank(proxyHost);

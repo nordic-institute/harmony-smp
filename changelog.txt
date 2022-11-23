@@ -4,6 +4,7 @@ eDelivery SMP 5.0
     smp.keystore.type: Keystore type as JKS/PKCS12
     document.restriction.allowed.certificate.types: Allowed key algorithms for certificates to be used in service metadata.Empty value means no restrictions, for other values see the java KeyFactory Algorithms as examples: as example RSA|EC|Ed25519|Ed448;
     smp.certificate.validation.allowed.certificate.type: Allowed user certificate JCE types. Empty value means no restrictions, for other values see the java KeyFactory Algorithms as examples: as example RSA|EC|Ed25519|Ed448;
+    identifiersBehaviour.splitPattern: Regular expression with groups scheme and identifier for splitting the URN identifiers to scheme and identifier part!
 
 eDelivery SMP 4.2
 - added new properties:
