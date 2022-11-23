@@ -281,7 +281,7 @@ public class UITruststoreService {
         if (!StringUtils.equalsAnyIgnoreCase(certKey.getAlgorithm(), allowedCertificateKeyTypes.toArray(new String[]{}))) {
             throw new CertificateException("Certificate does not have allowed key algorithm type! Key type ["
                     + certKey.getAlgorithm() + "] Allowed values ["
-                    + String.join(",", allowedCertificateKeyTypes) + "]!");
+                    + allowedCertificateKeyTypes + "]!");
         }
     }
 
