@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
-import com.sun.org.apache.bcel.internal.generic.ARETURN;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
@@ -26,7 +25,7 @@ public class TestDBUtils {
     }
 
     public static DBAlert createDBAlert(String username) {
-        return createDBAlert(username, "mail-subject", "mail.to@test.eu",AlertLevelEnum.MEDIUM, AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION);
+        return createDBAlert(username, "mail-subject", "mail.to@test.eu", AlertLevelEnum.MEDIUM, AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION);
     }
 
     public static DBAlert createDBAlert(String username, String mailSubject,
