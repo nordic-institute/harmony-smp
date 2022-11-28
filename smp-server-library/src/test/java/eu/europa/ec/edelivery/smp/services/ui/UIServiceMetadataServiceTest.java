@@ -1,10 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
-import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
@@ -199,7 +195,7 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
     }
 
     @Test
-    public void testValidateServiceMetadataCertificatesNotAllowed() throws IOException, CertificateException {
+    public void testValidateServiceMetadataCertificatesNotAllowed() throws IOException{
         ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
         UIServiceMetadataService testInstance = new UIServiceMetadataService(null, null,
                 null, null,

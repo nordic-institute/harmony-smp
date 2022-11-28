@@ -13,9 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.XmlTestUtils;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -25,10 +23,7 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.*;
 
@@ -41,81 +36,6 @@ public class ServiceGroupConverterTest {
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
-
-    @Test
-    public void toServiceGroupTest() {
-        // set
-        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
-
-        //when
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, false);
-        assertNotNull(serviceGroup);
-        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
-        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
-        assertEquals(1, serviceGroup.getExtensions().size());
-    }
-
-    @Test
-    public void toServiceGroupTestEBCorePartyIDNotContact() {
-        // set
-
-        DBServiceGroup sg = TestDBUtils.createDBServiceGroup("0088:123456789","urn:oasis:names:tc:ebcore:partyid-type:iso6523");
-
-        //when
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, false);
-        assertNotNull(serviceGroup);
-        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
-        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
-        assertEquals(1, serviceGroup.getExtensions().size());
-    }
-
-    @Test
-    public void toServiceGroupTestEBCorePartyIDContact() {
-        // set
-        DBServiceGroup sg = TestDBUtils.createDBServiceGroup("0088:123456789","urn:oasis:names:tc:ebcore:partyid-type:iso6523");
-        //when
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, true);
-        assertNotNull(serviceGroup);
-        assertEquals(sg.getParticipantScheme() +":" + sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
-        assertNull(serviceGroup.getParticipantIdentifier().getScheme());
-        assertEquals(1, serviceGroup.getExtensions().size());
-    }
-
-    @Test
-    public void toServiceGroupTestMultiExtensions() throws UnsupportedEncodingException, JAXBException, XMLStreamException {
-        // set
-        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
-        sg.setExtension(ExtensionConverter.concatByteArrays(TestDBUtils.generateExtension(), TestDBUtils.generateExtension()));
-
-        //when-then
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, false);
-        assertNotNull(serviceGroup);
-        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
-        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
-        assertEquals(2, serviceGroup.getExtensions().size());
-    }
-
-    @Test
-    public void toServiceGroupTestIsEmpty() {
-        // set
-        //when
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(null, false);
-        assertNull(serviceGroup);
-    }
-
-    @Test
-    public void testInvalidExtension() {
-        //given
-        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
-        sg.setExtension("<This > is invalid extensions".getBytes());
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectCause(Matchers.isA(UnmarshalException.class));
-        expectedExeption.expectMessage(Matchers.startsWith("Invalid extension for service group"));
-
-        //when-then
-        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg, false);
-    }
-
 
     @Test
     public void testUnmashallingServiceGroup() throws IOException {
@@ -140,11 +60,11 @@ public class ServiceGroupConverterTest {
         ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(inputDoc);
 
         //when
-        byte[] val  = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
+        byte[] val = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
 
         //then
         assertNotNull(val);
-        assertEquals(expectedExt, new String(val,"UTF-8"));
+        assertEquals(expectedExt, new String(val, "UTF-8"));
     }
 
     @Test

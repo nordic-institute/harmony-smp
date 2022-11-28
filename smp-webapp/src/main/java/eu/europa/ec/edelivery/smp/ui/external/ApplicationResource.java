@@ -69,14 +69,12 @@ public class ApplicationResource {
     }
 
     protected String getDisplayVersion() {
-        StringBuilder display = new StringBuilder();
-        display.append(artifactName);
-        display.append(" Version [");
-        display.append(artifactVersion);
-        display.append("] Build-Time [");
-        display.append(buildTime + "|" + TimeZone.getDefault().getDisplayName());
-        display.append("]");
-        return display.toString();
+        return artifactName +
+                " Version [" +
+                artifactVersion +
+                "] Build-Time [" +
+                buildTime + "|" + TimeZone.getDefault().getDisplayName() +
+                "]";
     }
 
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN,
@@ -88,7 +86,7 @@ public class ApplicationResource {
         info.setSmlParticipantMultiDomainOn(configurationService.isSMLMultiDomainEnabled());
         info.setParticipantSchemaRegExp(configurationService.getParticipantIdentifierSchemeRexExpPattern());
         info.setParticipantSchemaRegExpMessage(configurationService.getParticipantIdentifierSchemeRexExpMessage());
-        info.setConcatEBCorePartyId(configurationService.getForceConcatenateEBCorePartyId());
+        info.setConcatEBCorePartyId(false);
         info.setPartyIDSchemeMandatory(configurationService.getParticipantSchemeMandatory());
 
         info.setPasswordValidationRegExp(configurationService.getPasswordPolicyRexExpPattern());

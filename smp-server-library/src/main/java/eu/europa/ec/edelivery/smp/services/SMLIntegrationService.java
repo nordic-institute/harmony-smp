@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -34,6 +34,7 @@ import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.*;
 public class SMLIntegrationService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMLIntegrationService.class);
+    private static final String ERROR_MESSAGE_DNS_NOT_ENABLED = "SML integration is not enabled!";
 
     @Autowired
     private ConfigurationService configurationService;
@@ -48,7 +49,7 @@ public class SMLIntegrationService {
     private DomainDao domainDao;
 
     @Autowired
-    private CaseSensitivityNormalizer caseSensitivityNormalizer;
+    private IdentifierService identifierService;
 
 
     /**
@@ -60,7 +61,7 @@ public class SMLIntegrationService {
     @Transactional
     public void registerDomain(DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "SML integration is not enabled!");
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
         }
         domain.setSmlRegistered(true);
         domainDao.update(domain);
@@ -77,7 +78,7 @@ public class SMLIntegrationService {
     @Transactional
     public void unRegisterDomain(DBDomain domain) {
         if (!isSMLIntegrationEnabled()) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, "SML integration is not enabled!");
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
         }
 
         domain.setSmlRegistered(false);
@@ -106,9 +107,8 @@ public class SMLIntegrationService {
         DBServiceGroupDomain serviceGroupDomain = getAndValidateServiceGroupDomain(participantId,
                 participantSchema, domainCode, BUS_SML_REGISTER_SERVICE_GROUP_FAILED);
 
-        ParticipantIdentifierType normalizedParticipantId = caseSensitivityNormalizer
-                .normalizeParticipantIdentifier(participantSchema,
-                        participantId);
+        ParticipantIdentifierType normalizedParticipantId = identifierService
+                .normalizeParticipant(participantSchema, participantId);
 
 
         // register only not registered services
@@ -171,9 +171,8 @@ public class SMLIntegrationService {
     public boolean unregisterParticipantFromSML(String participantId, String participantSchema, DBDomain domain) {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, participantId, participantSchema, domain.getDomainCode());
 
-        ParticipantIdentifierType normalizedParticipantId = caseSensitivityNormalizer
-                .normalizeParticipantIdentifier(participantSchema,
-                        participantId);
+        ParticipantIdentifierType normalizedParticipantId = identifierService
+                .normalizeParticipant(participantSchema, participantId);
 
         // unregister only registered participants
         return smlConnector.unregisterFromDns(normalizedParticipantId, domain);
@@ -191,9 +190,8 @@ public class SMLIntegrationService {
     public boolean registerParticipantToSML(String participantId, String participantSchema, DBDomain domain) {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, participantId, participantSchema, domain.getDomainCode());
 
-        ParticipantIdentifierType normalizedParticipantId = caseSensitivityNormalizer
-                .normalizeParticipantIdentifier(participantSchema,
-                        participantId);
+        ParticipantIdentifierType normalizedParticipantId = identifierService
+                .normalizeParticipant(participantSchema, participantId);
 
         // unregister only  registered participants
         return smlConnector.registerInDns(normalizedParticipantId, domain);

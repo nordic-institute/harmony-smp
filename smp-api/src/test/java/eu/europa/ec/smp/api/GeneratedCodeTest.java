@@ -85,7 +85,7 @@ public class GeneratedCodeTest {
     }
 
     public static ServiceGroup loadServiceGroup(String path) throws JAXBException {
-        InputStream inputStream = IdentifiersTest.class.getResourceAsStream(path);
+        InputStream inputStream = GeneratedCodeTest.class.getResourceAsStream(path);
         JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         Object serviceGroup = unmarshaller.unmarshal(inputStream);

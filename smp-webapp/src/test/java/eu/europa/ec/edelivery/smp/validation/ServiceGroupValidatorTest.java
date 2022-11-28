@@ -13,8 +13,9 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import org.hamcrest.CoreMatchers;
@@ -32,8 +33,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.smp.api.Identifiers.asString;
-
 /**
  * Created by gutowpa on 02/08/2017.
  */
@@ -44,7 +43,7 @@ public class ServiceGroupValidatorTest {
 
     private ServiceGroupValidator validator;
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
-    CaseSensitivityNormalizer normalizer = new CaseSensitivityNormalizer(configurationService);
+    IdentifierService normalizer = new IdentifierService();
 
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection<Object[]> data() {
@@ -55,7 +54,7 @@ public class ServiceGroupValidatorTest {
                 {"Length exceeded", "ength-exceeeeeedsTheCharacters-25chars", "urn:poland:ncpb", true, true, BadRequestException.class, "Service Group scheme does not match allowed pattern:"},
                 {"Too many parts", "too-many-segments-inside", "urn:poland:ncpb", true, true, BadRequestException.class, "Service Group scheme does not match allowed pattern:"},
                 {"Missing parts", "only-two", "urn:poland:ncpb", true, true, BadRequestException.class, "Service Group scheme does not match allowed pattern:"},
-                {"Null not allowed", null, "urn:poland:ncpb", true, true, MalformedIdentifierException.class, "Malformed identifier, scheme and id should be delimited by double colon"},
+                {"Null not allowed", null, "urn:poland:ncpb", true, true, IllegalArgumentException.class, "Invalid Identifier: [urn:poland:ncpb]. Can not detect schema!"},
                 {"EBCorePartyId Oasis", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088", "123456", false, true, null, null},
                 {"EBCorePartyId eDelivery", null, "urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088:123456", false, true, null, null},
         });
@@ -65,6 +64,7 @@ public class ServiceGroupValidatorTest {
     public void init() {
         Mockito.doReturn(Pattern.compile(ALLOWED_SCHEME_REGEXP)).when(configurationService).getParticipantIdentifierSchemeRexExp();
         validator = new ServiceGroupValidator(configurationService, normalizer);
+
     }
 
     @Parameterized.Parameter
@@ -85,7 +85,7 @@ public class ServiceGroupValidatorTest {
 
     @Test
     public void testServiceGroupIdentifier() {
-        Mockito.doReturn(mandatoryScheme).when(configurationService).getParticipantSchemeMandatory();
+        normalizer.configureParticipantIdentifierFormatter(null, mandatoryScheme);
 
         validateScheme(schema, value);
     }
@@ -95,17 +95,11 @@ public class ServiceGroupValidatorTest {
         ParticipantIdentifierType id = new ParticipantIdentifierType(value, scheme);
         sg.setParticipantIdentifier(id);
 
-        try {
-            validator.validate(asString(id), sg);
-            if (expectedThrowError) {
-                Assert.fail();
-            }
-        } catch (RuntimeException exc) {
-            if (!expectedThrowError) {
-                Assert.fail();
-            }
-            Assert.assertEquals(errorClass, exc.getClass());
-            MatcherAssert.assertThat(exc.getMessage(), CoreMatchers.startsWith(errorMessage));
+        if (expectedThrowError)  {
+            Throwable throwable  = Assert.assertThrows(errorClass, () -> validator.validate(normalizer.formatParticipant(id), sg));
+            MatcherAssert.assertThat(throwable.getMessage(), CoreMatchers.startsWith(errorMessage));
+        } else {
+            validator.validate(normalizer.formatParticipant(id), sg);
         }
     }
 

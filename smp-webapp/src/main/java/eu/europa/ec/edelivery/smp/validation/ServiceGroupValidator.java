@@ -13,12 +13,11 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
@@ -38,31 +37,31 @@ public class ServiceGroupValidator {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupValidator.class);
 
     protected final ConfigurationService configurationService;
-    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final IdentifierService caseSensitivityNormalizer;
 
     public ServiceGroupValidator(ConfigurationService configurationService,
-                                 CaseSensitivityNormalizer caseSensitivityNormalizer) {
+                                 IdentifierService caseSensitivityNormalizer) {
         this.configurationService = configurationService;
         this.caseSensitivityNormalizer = caseSensitivityNormalizer;
     }
 
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {
         boolean schemeMandatory = configurationService.getParticipantSchemeMandatory();
-        LOG.debug("Parse service group [{}] with [{}] scheme", serviceGroupId, (schemeMandatory?"mandatory":"optional"));
+        LOG.debug("Parse service group [{}] with [{}] scheme", serviceGroupId, (schemeMandatory ? "mandatory" : "optional"));
 
-        final ParticipantIdentifierType participantId = caseSensitivityNormalizer.normalize(Identifiers.asParticipantId(serviceGroupId, schemeMandatory), schemeMandatory);
-        final ParticipantIdentifierType serviceGroupParticipantId =  caseSensitivityNormalizer.normalize(
-                serviceGroup.getParticipantIdentifier(), schemeMandatory);
+
+        final ParticipantIdentifierType participantId = caseSensitivityNormalizer.normalizeParticipantIdentifier(serviceGroupId);
+        final ParticipantIdentifierType serviceGroupParticipantId = caseSensitivityNormalizer.normalizeParticipant(serviceGroup.getParticipantIdentifier());
 
         if (!participantId.equals(serviceGroupParticipantId)) {
             // Business identifier must equal path
-            throw new BadRequestException(WRONG_FIELD, "Service Group Ids don't match between URL parameter and XML body");
+            throw new BadRequestException(WRONG_FIELD, "Participant identifiers don't match between URL parameter [" + serviceGroupId + "] and XML body: [ scheme: '" + serviceGroupParticipantId.getScheme() + "', value: '" + serviceGroupParticipantId.getValue() + "']");
         }
 
         String scheme = serviceGroupParticipantId.getScheme();
         Pattern schemaPattern = configurationService.getParticipantIdentifierSchemeRexExp();
 
-        if (!schemaPattern.matcher(scheme==null?"":scheme).matches()) {
+        if (!schemaPattern.matcher(scheme == null ? "" : scheme).matches()) {
             throw new BadRequestException(WRONG_FIELD, "Service Group scheme does not match allowed pattern: " + schemaPattern.pattern());
         }
 

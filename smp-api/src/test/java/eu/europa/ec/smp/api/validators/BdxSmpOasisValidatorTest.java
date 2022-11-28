@@ -14,68 +14,63 @@
 package eu.europa.ec.smp.api.validators;
 
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+
 
 import static org.junit.Assert.*;
 
 /**
- * Created by migueti on 20/01/2017.
+ * @author migueti
+ * @since 3.0.0
  */
-@RunWith(JUnitParamsRunner.class)
+@RunWith(Parameterized.class)
 public class BdxSmpOasisValidatorTest {
 
     private static final String UTF_8 = "UTF-8";
 
+    @Parameterized.Parameters(name = "{index}: {0}")
+    public static Collection testCases() {
+        return Arrays.asList(new Object[][]{
+                {"ServiceMetadata_OK.xml",false, null},
+                {"ServiceGroup_OK.xml", false, null},
+                {"ServiceMetadata_ElementAdded.xml", true, "cvc-complex-type.2.4.a: Invalid content was found starting with element \\'\\{?(\\\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\\\")?:?ElementAdded\\}?\\'.*Redirect.* is expected."},
+                {"ServiceMetadata_ElementMissing.xml", true, "cvc-complex-type.2.4.b: The content of element 'Redirect' is not complete. One of \\'\\{?(\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\")?:?CertificateUID\\}?\\' is expected."},
+                {"ServiceGroup_MissingAssignment.xml", true, "Attribute name \"missingAssignment\" associated with an element type \"ServiceMetadataReferenceCollection\" must be followed by the ' = ' character."},
+                {"ServiceGroup_UnexpectedAttribute.xml", true, "cvc-complex-type.3.2.2: Attribute 'unexpectedAttribute' is not allowed to appear in element 'ServiceMetadataReferenceCollection'."},
+                {"ServiceGroup_externalDTD.xml", true, "External DTD: Failed to read external DTD 'any_external_file_address.dtd', because 'file' access is not allowed due to restriction set by the accessExternalDTD property."}
+        });
+    }
+
+    @Parameterized.Parameter
+    public String xmlFilename;
+    @Parameterized.Parameter(1)
+    public boolean throwsError;
+    @Parameterized.Parameter(2)
+    public String errorMessage;
+
     @Test
-    @Parameters({"ServiceMetadata_OK.xml", "ServiceGroup_OK.xml"})
-    public void testValidatePositive(String xmlFilename) throws IOException, XmlInvalidAgainstSchemaException {
+    public void testValidate() throws IOException, XmlInvalidAgainstSchemaException {
         // given
         byte[] xmlBody = loadXMLFileAsByteArray(xmlFilename);
 
+        XmlInvalidAgainstSchemaException result=null;
         // when
-        BdxSmpOasisValidator.validateXSD(xmlBody);
-
-        // then
-        // no exception occur
-    }
-
-    private static Object[] negativeCases() {
-        return new Object[][]{
-                {"ServiceMetadata_ElementAdded.xml", "cvc-complex-type.2.4.a: Invalid content was found starting with element \\'\\{?(\\\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\\\")?:?ElementAdded\\}?\\'.*Redirect.* is expected."},
-                {"ServiceMetadata_ElementMissing.xml", "cvc-complex-type.2.4.b: The content of element 'Redirect' is not complete. One of \\'\\{?(\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\")?:?CertificateUID\\}?\\' is expected."},
-                {"ServiceGroup_MissingAssignment.xml", "Attribute name \"missingAssignment\" associated with an element type \"ServiceMetadataReferenceCollection\" must be followed by the ' = ' character."},
-                {"ServiceGroup_UnexpectedAttribute.xml", "cvc-complex-type.3.2.2: Attribute 'unexpectedAttribute' is not allowed to appear in element 'ServiceMetadataReferenceCollection'."},
-                {"ServiceGroup_externalDTD.xml", "External DTD: Failed to read external DTD 'any_external_file_address.dtd', because 'file' access is not allowed due to restriction set by the accessExternalDTD property."}
-        };
-    }
-
-    @Test
-    @Parameters(method = "negativeCases")
-    public void testValidateNegative(String xmlFilename, String output) throws IOException {
-        // given
-        byte[] xmlBody = loadXMLFileAsByteArray(xmlFilename);
-
-        // when
-        try {
+        if (throwsError){
+            result = assertThrows(XmlInvalidAgainstSchemaException.class, () -> BdxSmpOasisValidator.validateXSD(xmlBody));
+        } else {
             BdxSmpOasisValidator.validateXSD(xmlBody);
-        } catch (XmlInvalidAgainstSchemaException e) {
-            // then
-            assertThat(e.getMessage(), org.hamcrest.Matchers.matchesPattern(output));
-            return;
         }
-        fail();
-    }
-
-    public String loadXMLFile(String path) throws IOException {
-        URL fileUrl = BdxSmpOasisValidatorTest.class.getResource("/XMLValidation/" + path);
-        return IOUtils.toString(fileUrl.openStream(), UTF_8);
+        assertEquals(throwsError, result!=null);
     }
 
     public byte[] loadXMLFileAsByteArray(String path) throws IOException {
