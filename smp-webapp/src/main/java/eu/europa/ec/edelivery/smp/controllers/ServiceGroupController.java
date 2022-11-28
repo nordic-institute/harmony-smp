@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -59,14 +59,14 @@ public class ServiceGroupController {
     protected final SmpUrlBuilder pathBuilder;
     protected final ServiceGroupService serviceGroupService;
     protected final ServiceMetadataService serviceMetadataService;
-    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final IdentifierService caseSensitivityNormalizer;
     protected final PayloadValidatorService payloadValidatorService;
 
     public ServiceGroupController(ServiceGroupValidator serviceGroupValidator,
                                   SmpUrlBuilder pathBuilder,
                                   ServiceGroupService serviceGroupService,
                                   ServiceMetadataService serviceMetadataService,
-                                  CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                  IdentifierService caseSensitivityNormalizer,
                                   PayloadValidatorService payloadValidatorService) {
         this.serviceGroupValidator = serviceGroupValidator;
         this.pathBuilder = pathBuilder;
@@ -83,7 +83,7 @@ public class ServiceGroupController {
         String host = httpReq.getRemoteHost();
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_GROUP, host, serviceGroupId);
 
-        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipantIdentifier(serviceGroupId);
         ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(participantIdentifierType);
         addReferences(serviceGroup);
 
@@ -124,7 +124,7 @@ public class ServiceGroupController {
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_GROUP, authentUser, host, serviceGroupId);
 
-        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
+        ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipantIdentifier(serviceGroupId);
         serviceGroupService.deleteServiceGroup(participantIdentifierType);
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_GROUP, authentUser, host, serviceGroupId);

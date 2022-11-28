@@ -18,11 +18,15 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -31,24 +35,12 @@ import static org.junit.Assert.assertFalse;
 /**
  * Created by gutowpa on 06/03/2017.
  */
-@RunWith(JUnitParamsRunner.class)
-public class CaseSensitivityNormalizerTest {
+@RunWith(Parameterized.class)
+public class IdentifierServiceTests {
 
-    private CaseSensitivityNormalizer normalizer;
-
-    @Before
-    public void init() {
-        ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
-        normalizer = new CaseSensitivityNormalizer(configurationService);
-
-        Mockito.doReturn(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"})).when(configurationService).getCaseSensitiveDocumentScheme();
-        Mockito.doReturn(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"})).when(configurationService).getCaseSensitiveParticipantScheme();
-
-    }
-
-    @SuppressWarnings("unused")
-    private static Object[] testCases() {
-        return new Object[][]{
+    @Parameterized.Parameters(name = "{index}: {0}")
+    public static Collection testCases() {
+        return Arrays.asList(new Object[][]{
                 {"scheme", "value", "scheme", "value"},
                 {"SCHEME", "VALUE", "scheme", "value"},
                 {"SchemE", "ValuE", "scheme", "value"},
@@ -56,17 +48,35 @@ public class CaseSensitivityNormalizerTest {
                 {"CASE-SENSITIVE-SCHEME-1", "Case-Sensitive-Value", "CASE-SENSITIVE-SCHEME-1", "Case-Sensitive-Value"}, //scheme itself checked case-insensitively if should be case-sensitive or not
                 {"case-sensitive-scheme-2", "Case-Sensitive-Value", "case-sensitive-scheme-2", "Case-Sensitive-Value"},
                 {"CASE-SENSITIVE-SCHEME-2", "Case-Sensitive-Value", "CASE-SENSITIVE-SCHEME-2", "Case-Sensitive-Value"}, //scheme itself checked case-insensitively if should be case-sensitive or not
-        };
+        });
     }
 
+    // input parameters
+    @Parameterized.Parameter
+    public String inputScheme;
+    @Parameterized.Parameter(1)
+    public String inputValue;
+    @Parameterized.Parameter(2)
+    public String expectedScheme;
+    @Parameterized.Parameter(3)
+    public String expectedValue;
+
+    private IdentifierService testInstance  = new IdentifierService();;
+
+    @Before
+    public void init() {
+       testInstance.configureDocumentIdentifierFormatter(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"}));
+       testInstance.configureParticipantIdentifierFormatter(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}), false);
+    }
+
+
     @Test
-    @Parameters(method = "testCases")
-    public void testParticipantIdsCaseNormalization(String inputScheme, String inputValue, String expectedScheme, String expectedValue) {
+    public void testParticipantIdsCaseNormalization() {
         //given
         ParticipantIdentifierType inputParticpantId = new ParticipantIdentifierType(inputValue, inputScheme);
 
         //when
-        ParticipantIdentifierType outputParticipantId = normalizer.normalize(inputParticpantId);
+        ParticipantIdentifierType outputParticipantId = testInstance.normalizeParticipant(inputParticpantId);
 
         //then
         assertEquals(expectedScheme, outputParticipantId.getScheme());
@@ -79,13 +89,12 @@ public class CaseSensitivityNormalizerTest {
     }
 
     @Test
-    @Parameters(method = "testCases")
-    public void testDocumentIdsCaseNormalization(String inputScheme, String inputValue, String expectedScheme, String expectedValue) {
+    public void testDocumentIdsCaseNormalization() {
         //given
         DocumentIdentifier inputDocId = new DocumentIdentifier(inputValue, inputScheme);
 
         //when
-        DocumentIdentifier outputDocId = normalizer.normalize(inputDocId);
+        DocumentIdentifier outputDocId = testInstance.normalizeDocument(inputDocId);
 
         //then
         assertEquals(expectedScheme, outputDocId.getScheme());

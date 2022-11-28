@@ -13,23 +13,33 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
+import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
+import javax.xml.stream.XMLStreamException;
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *  Purpose of class is to test ServiceGroupService base methods
@@ -38,9 +48,7 @@ import static org.junit.Assert.assertTrue;
  * @since 4.1
  */
 public class ServiceGroupServiceIntegrationTest extends AbstractServiceIntegrationTest {
-
-    @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
+    public static Pattern DEFAULT_URN_PATTERN = Pattern.compile("^(?i)((urn:)|(mailto:)).*$");
 
     @Autowired
     ServiceGroupService testInstance;
@@ -54,11 +62,9 @@ public class ServiceGroupServiceIntegrationTest extends AbstractServiceIntegrati
     public void validateOwnershipUserNotExists(){
         Optional<DBServiceGroup>  dbsg = serviceGroupDao.findServiceGroup( TEST_SG_ID_2, TEST_SG_SCHEMA_2);
         assertTrue(dbsg.isPresent()); // test if exists
-
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(ErrorCode.USER_NOT_EXISTS.getMessage());
         //test
-        testInstance.validateOwnership("UserNotExist", dbsg.get());
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,  () -> testInstance.validateOwnership("UserNotExist", dbsg.get()));
+        assertEquals(ErrorCode.USER_NOT_EXISTS.getMessage(), result.getMessage());
     }
 
     @Test
@@ -69,12 +75,82 @@ public class ServiceGroupServiceIntegrationTest extends AbstractServiceIntegrati
 
         DBUser u3= TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_3);
         userDao.persistFlushDetach(u3);
-
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(ErrorCode.USER_IS_NOT_OWNER.getMessage(USER_CERT_3,
-                TEST_SG_ID_2, TEST_SG_SCHEMA_2));
         //test
-        testInstance.validateOwnership(USER_CERT_3, dbsg.get());
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,  () ->  testInstance.validateOwnership(USER_CERT_3, dbsg.get()) );
+        assertEquals(ErrorCode.USER_IS_NOT_OWNER.getMessage(USER_CERT_3,
+                TEST_SG_ID_2, TEST_SG_SCHEMA_2), result.getMessage());
 
+    }
+
+    @Test
+    public void toServiceGroupTest() {
+        // set
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+
+        //when
+        ServiceGroup serviceGroup = testInstance.toServiceGroup(sg, DEFAULT_URN_PATTERN);
+        assertNotNull(serviceGroup);
+        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
+        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
+        assertEquals(1, serviceGroup.getExtensions().size());
+    }
+
+    @Test
+    public void toServiceGroupTestEBCorePartyIDNotContact() {
+        // set
+
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup("0088:123456789","urn:oasis:names:tc:ebcore:partyid-type:iso6523");
+
+        //when
+        ServiceGroup serviceGroup = testInstance.toServiceGroup(sg, null);
+        assertNotNull(serviceGroup);
+        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
+        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
+        assertEquals(1, serviceGroup.getExtensions().size());
+    }
+
+    @Test
+    public void toServiceGroupTestEBCorePartyIDContact() {
+        // set
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup("0088:123456789","urn:oasis:names:tc:ebcore:partyid-type:iso6523");
+        //when
+        ServiceGroup serviceGroup = testInstance.toServiceGroup(sg, DEFAULT_URN_PATTERN);
+        assertNotNull(serviceGroup);
+        assertEquals(sg.getParticipantScheme() +":" + sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
+        assertNull(serviceGroup.getParticipantIdentifier().getScheme());
+        assertEquals(1, serviceGroup.getExtensions().size());
+    }
+
+    @Test
+    public void toServiceGroupTestMultiExtensions() {
+        // set
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+        sg.setExtension(ExtensionConverter.concatByteArrays(TestDBUtils.generateExtension(), TestDBUtils.generateExtension()));
+
+        //when-then
+        ServiceGroup serviceGroup = testInstance.toServiceGroup(sg, null);
+        assertNotNull(serviceGroup);
+        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
+        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
+        assertEquals(2, serviceGroup.getExtensions().size());
+    }
+
+    @Test
+    public void toServiceGroupTestIsEmpty() {
+        // set
+        //when
+        ServiceGroup serviceGroup = testInstance.toServiceGroup(null, null);
+        assertNull(serviceGroup);
+    }
+
+    @Test
+    public void testInvalidExtension() {
+        //given
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+        sg.setExtension("<This > is invalid extensions".getBytes());
+
+        //when-then
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,  () -> testInstance.toServiceGroup(sg, null));
+        MatcherAssert.assertThat( result.getMessage(), Matchers.startsWith("Invalid extension for service group"));
     }
 }

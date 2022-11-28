@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
@@ -46,14 +46,14 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
     protected final DomainDao domainDao;
     protected final ServiceMetadataDao serviceMetadataDao;
     protected final UserDao userDao;
-    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final IdentifierService caseSensitivityNormalizer;
     protected final ConfigurationService configurationService;
 
 
     public UIServiceMetadataService(DomainDao domainDao,
                                     ServiceMetadataDao serviceMetadataDao,
                                     UserDao userDao,
-                                    CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                    IdentifierService caseSensitivityNormalizer,
                                     ConfigurationService configurationService) {
         this.domainDao = domainDao;
         this.serviceMetadataDao = serviceMetadataDao;
@@ -119,10 +119,10 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
             }
 
 
-            DocumentIdentifier headerDI = caseSensitivityNormalizer.normalizeDocumentIdentifier(
+            DocumentIdentifier headerDI = caseSensitivityNormalizer.normalizeDocument(
                     serviceMetadataRO.getDocumentIdentifierScheme(),
                     serviceMetadataRO.getDocumentIdentifier());
-            ParticipantIdentifierType headerPI = caseSensitivityNormalizer.normalizeParticipantIdentifier(
+            ParticipantIdentifierType headerPI = caseSensitivityNormalizer.normalizeParticipant(
                     serviceMetadataRO.getParticipantScheme(),
                     serviceMetadataRO.getParticipantIdentifier());
 
@@ -145,8 +145,8 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
             }
 
             if (smd.getServiceInformation() != null) {
-                DocumentIdentifier xmlDI = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
-                ParticipantIdentifierType xmlPI = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getParticipantIdentifier());
+                DocumentIdentifier xmlDI = caseSensitivityNormalizer.normalizeDocument(smd.getServiceInformation().getDocumentIdentifier());
+                ParticipantIdentifierType xmlPI = caseSensitivityNormalizer.normalizeParticipant(smd.getServiceInformation().getParticipantIdentifier());
                 if (!xmlDI.equals(headerDI)) {
                     serviceMetadataRO.setErrorMessage("Document identifier and scheme do not match!");
                     return serviceMetadataRO;

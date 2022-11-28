@@ -47,12 +47,6 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP_MSG);
     }
 
-    public Boolean getForceConcatenateEBCorePartyId() {
-        Boolean value = configurationDAO.getCachedPropertyValue(PARTC_EBCOREPARTYID_CONCATENATE);
-        // true by default
-        return value == null || value;
-    }
-
     public Pattern getPasswordPolicyRexExp() {
         return configurationDAO.getCachedPropertyValue(PASSWORD_POLICY_REGULAR_EXPRESSION);
     }
@@ -159,7 +153,11 @@ public class ConfigurationService {
     }
 
     public Pattern getParticipantIdentifierSplitRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTY_IDENTIFIER_PATTERN);
+        return configurationDAO.getCachedPropertyValue(PARTC_SCH_SPLIT_REGEXP);
+    }
+
+    public Pattern getParticipantIdentifierUrnValidationRexExp() {
+        return configurationDAO.getCachedPropertyValue(PARTC_SCH_URN_REGEXP);
     }
 
     public boolean isProxyEnabled() {

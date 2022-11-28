@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -20,21 +21,17 @@ import eu.europa.ec.edelivery.smp.utils.HttpForwardedHeaders;
 import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
-
-import static eu.europa.ec.smp.api.Identifiers.asUrlEncodedString;
 
 /**
  * This class provides tools to generate SMP's URL in responses. The client can use provided URL for another call to the SMP.
@@ -58,12 +55,14 @@ public class SmpUrlBuilder {
 
     private static final String SMP_DOCUMENT_RESOURCE_TEMPLATE = "/{participantId}/services/{docId}";
 
-    @Autowired
-    ConfigurationService configurationService;
 
-    @Autowired
-    ForwardedHeaderTransformer forwardedHeaderTransformer;
+    private ConfigurationService configurationService;
+    private IdentifierService identifierService;
 
+    public SmpUrlBuilder(ConfigurationService configurationService, IdentifierService identifierService) {
+        this.configurationService = configurationService;
+        this.identifierService = identifierService;
+    }
 
     public URI getCurrentUri() {
         return ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
@@ -75,13 +74,13 @@ public class SmpUrlBuilder {
         HttpForwardedHeaders fh = new HttpForwardedHeaders(req);
         LOG.debug("Generate response uri with headers data: [{}]" + fh.toString());
         UriComponentsBuilder uriBuilder = getSMPUrlBuilder();//
-        if (fh.getHost()!=null) {
+        if (fh.getHost() != null) {
             LOG.debug("Set response uri for forwarded headers: [{}]", fh.toString());
             uriBuilder = uriBuilder.host(fh.getHost());
             String port = fh.getNonDefaultPort();
             if (!StringUtils.isBlank(port)) {
                 uriBuilder = uriBuilder.port(port);
-            } else if (!StringUtils.isBlank(fh.getPort())){
+            } else if (!StringUtils.isBlank(fh.getPort())) {
                 LOG.debug("Set port to null because it is default port: [{}]", fh.toString());
                 uriBuilder = uriBuilder.port(null);
             }
@@ -89,13 +88,14 @@ public class SmpUrlBuilder {
         } else {
             LOG.debug("Ignore settings header because host is null!");
         }
+        String urlEncodedFormatParticipant = identifierService.urlEncodedFormatParticipant(participantId);
+        String urlEncodedFormatDocument = identifierService.urlEncodedFormatDocument(docId);
 
-        String path = uriBuilder
+
+        return uriBuilder
                 .path(SMP_DOCUMENT_RESOURCE_TEMPLATE)
-                .buildAndExpand(asUrlEncodedString(participantId), asUrlEncodedString(docId))
+                .buildAndExpand(urlEncodedFormatParticipant, urlEncodedFormatDocument)
                 .toUriString();
-
-        return path;
     }
 
     public String buildSMPUrlForPath(String path) {

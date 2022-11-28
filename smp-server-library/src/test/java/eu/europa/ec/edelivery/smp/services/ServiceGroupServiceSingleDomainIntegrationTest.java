@@ -43,7 +43,6 @@ import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmars
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
-import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.junit.Assert.*;
 
 /**
@@ -167,7 +166,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(SG_NOT_EXISTS.getMessage("service-group", "not-existing"));
         // when-then
-        testInstance.getServiceGroup(asParticipantId("not-existing::service-group", false) );
+        testInstance.getServiceGroup(new ParticipantIdentifierType("service-group","not-existing") );
     }
 
     @Test
