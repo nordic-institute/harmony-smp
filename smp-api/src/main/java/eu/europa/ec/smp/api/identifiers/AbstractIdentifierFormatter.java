@@ -12,6 +12,8 @@ import org.springframework.web.util.UriUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -45,6 +47,7 @@ public abstract class AbstractIdentifierFormatter<T> {
     protected static final FormatterType DEFAULT_FORMATTER = new OasisSMPFormatterType();
 
     protected boolean schemeMandatory = false;
+    protected Pattern schemeValidationPattern;
     protected List<String> caseSensitiveSchemas;
     protected List<FormatterType> formatterTypes = new ArrayList<>();
 
@@ -64,7 +67,7 @@ public abstract class AbstractIdentifierFormatter<T> {
      * Formats the object according to formatTemplate. If template is 'blank' the scheme and identifier are concatenated
      * with separator
      *
-     * @param scheme scheme part to format it to string
+     * @param scheme     scheme part to format it to string
      * @param identifier Identifier part to format it to string
      * @return String representation of the identifier
      */
@@ -74,7 +77,7 @@ public abstract class AbstractIdentifierFormatter<T> {
                 formatterType.isTypeByScheme(scheme)).findFirst();
 
         if (optionalFormatterType.isPresent()) {
-            return optionalFormatterType.get().format(scheme,identifier);
+            return optionalFormatterType.get().format(scheme, identifier);
         }
         return DEFAULT_FORMATTER.format(scheme, identifier);
     }
@@ -104,9 +107,18 @@ public abstract class AbstractIdentifierFormatter<T> {
         } else {
             parseResult = DEFAULT_FORMATTER.parse(pValue);
         }
-        if (schemeMandatory && isBlank(parseResult[0])) {
+        boolean isSchemeBlank = isBlank(parseResult[0]);
+        if (isSchemeMandatory() && isSchemeBlank) {
             throw new MalformedIdentifierException("Invalid Identifier: [" + pValue + "]. Can not detect schema!");
         }
+
+        if (!isSchemeBlank && schemeValidationPattern != null) {
+            Matcher schemeMatcher = schemeValidationPattern.matcher(parseResult[0]);
+            if (!schemeMatcher.matches()) {
+                throw new MalformedIdentifierException("Invalid Identifier: [" + pValue + "]. Scheme does not match pattern: [" + schemeValidationPattern.pattern() + "]!");
+            }
+        }
+
         return createObject(parseResult[0], parseResult[1]);
     }
 
@@ -137,7 +149,7 @@ public abstract class AbstractIdentifierFormatter<T> {
      * <li><b>oasis SMP example:</b> scheme [urn:oasis:names:tc:ebcore:partyid-type:iso6523], party id: [0088:123456789]</li>
      * <li><b>ebCore party ID example:</b>scheme [urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088], party id: [123456789]/li>
      * </ul>
-     *
+     * <p>
      * Must always result in the same normalized object:
      * scheme [urn:oasis:names:tc:ebcore:partyid-type:iso6523:0088]: party id: [123456789]
      *
@@ -145,7 +157,7 @@ public abstract class AbstractIdentifierFormatter<T> {
      * @return
      */
     public T normalize(final T value) {
-        return normalizeIdentifier(format(value));
+        return normalize(getSchemeFromObject(value),getIdentifierFromObject(value));
     }
 
     public T normalize(String scheme, String identifier) {
@@ -206,5 +218,13 @@ public abstract class AbstractIdentifierFormatter<T> {
 
     public void setSchemeMandatory(boolean schemeMandatory) {
         this.schemeMandatory = schemeMandatory;
+    }
+
+    public Pattern getSchemeValidationPattern() {
+        return schemeValidationPattern;
+    }
+
+    public void setSchemeValidationPattern(Pattern schemeValidationPattern) {
+        this.schemeValidationPattern = schemeValidationPattern;
     }
 }

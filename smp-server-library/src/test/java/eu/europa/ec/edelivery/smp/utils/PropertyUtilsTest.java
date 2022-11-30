@@ -61,7 +61,7 @@ public class PropertyUtilsTest {
                 {EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", Boolean.class},
                 {EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, "true", Boolean.class},
                 {OUTPUT_CONTEXT_PATH, "true", Boolean.class},
-                {PARTC_SCH_REGEXP, ".*", Pattern.class},
+                {PARTC_SCH_VALIDATION_REGEXP, ".*", Pattern.class},
                 {CS_PARTICIPANTS, "casesensitive-participant-scheme1|casesensitive-participant-scheme2", List.class},
                 {CS_DOCUMENTS, "casesensitive-doc-scheme1|casesensitive-doc-scheme2", List.class},
                 {SML_ENABLED, "true", Boolean.class},

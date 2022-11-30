@@ -14,11 +14,8 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
@@ -29,8 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  * Created by gutowpa on 06/03/2017.
@@ -61,12 +57,12 @@ public class IdentifierServiceTests {
     @Parameterized.Parameter(3)
     public String expectedValue;
 
-    private IdentifierService testInstance  = new IdentifierService();;
+    private IdentifierService testInstance = new IdentifierService(Mockito.mock(ConfigurationService.class));
 
     @Before
     public void init() {
-       testInstance.configureDocumentIdentifierFormatter(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"}));
-       testInstance.configureParticipantIdentifierFormatter(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}), false);
+        testInstance.configureDocumentIdentifierFormatter(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"}));
+        testInstance.configureParticipantIdentifierFormatter(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}), false, null);
     }
 
 
@@ -83,7 +79,7 @@ public class IdentifierServiceTests {
         assertEquals(expectedValue, outputParticipantId.getValue());
 
         //input stays untouched
-        assertFalse(inputParticpantId == outputParticipantId);
+        assertNotSame(inputParticpantId, outputParticipantId);
         assertEquals(inputScheme, inputParticpantId.getScheme());
         assertEquals(inputValue, inputParticpantId.getValue());
     }
@@ -101,7 +97,7 @@ public class IdentifierServiceTests {
         assertEquals(expectedValue, outputDocId.getValue());
 
         //input stays untouched
-        assertFalse(inputDocId == outputDocId);
+        assertNotSame(inputDocId, outputDocId);
         assertEquals(inputScheme, inputDocId.getScheme());
         assertEquals(inputValue, inputDocId.getValue());
     }

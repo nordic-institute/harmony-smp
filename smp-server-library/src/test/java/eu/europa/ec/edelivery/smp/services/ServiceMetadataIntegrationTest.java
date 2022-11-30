@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
@@ -21,7 +21,6 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,23 +39,20 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.unmarshal;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsByteArray;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshallToByteArray;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by gutowpa on 15/11/2017.
@@ -64,31 +60,30 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTest {
 
-    static ParticipantIdentifierType PT_ID =null;
-    static DocumentIdentifier DOC_ID  = null;
+    static ParticipantIdentifierType PT_ID = null;
+    static DocumentIdentifier DOC_ID = null;
+
     static {
-        PT_ID  = new ParticipantIdentifierType();
+        PT_ID = new ParticipantIdentifierType();
         PT_ID.setValue(TEST_SG_ID_PL2);
         PT_ID.setScheme(TEST_SG_SCHEMA_PL2);
-        DOC_ID  = new DocumentIdentifier();
+        DOC_ID = new DocumentIdentifier();
         DOC_ID.setValue(TEST_DOC_ID_PL2);
         DOC_ID.setScheme(TEST_DOC_SCHEMA_PL2);
     }
 
-    @Autowired
-    ServiceMetadataService testInstance;
-
-    Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+    Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
 
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
     @Autowired
-    UIKeystoreService uiKeystoreService;
-
+    IdentifierService identifierService;
     @Autowired
-    private ServiceMetadataSigner signer;
-
-
+    ServiceMetadataService testInstance;
+    @Autowired
+    UIKeystoreService uiKeystoreService;
+    @Autowired
+    ServiceMetadataSigner signer;
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
@@ -97,14 +92,16 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Transactional
     public void prepareDatabase() {
         configurationService = Mockito.spy(configurationService);
-        ReflectionTestUtils.setField(uiKeystoreService,"configurationService",configurationService);
-        ReflectionTestUtils.setField(signer,"uiKeystoreService",uiKeystoreService);
-        ReflectionTestUtils.setField(testInstance,"signer",signer);
+        ReflectionTestUtils.setField(uiKeystoreService, "configurationService", configurationService);
+        ReflectionTestUtils.setField(signer, "uiKeystoreService", uiKeystoreService);
+        ReflectionTestUtils.setField(testInstance, "signer", signer);
+        ReflectionTestUtils.setField(testInstance, "identifierService", identifierService);
 
+        identifierService.configureParticipantIdentifierFormatter(null, null, Pattern.compile(".*"));
         // set keystore properties
         File keystoreFile = new File(resourceDirectory.toFile(), "smp-keystore.jks");
-        Mockito.doReturn( keystoreFile).when(configurationService).getKeystoreFile();
-        Mockito.doReturn( resourceDirectory.toFile()).when(configurationService).getConfigurationFolder();
+        Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();
+        Mockito.doReturn(resourceDirectory.toFile()).when(configurationService).getConfigurationFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
         uiKeystoreService.refreshData();
 
@@ -120,8 +117,8 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Test
     public void saveAndReadPositiveScenario() throws IOException, TransformerException, JAXBException {
         //given
-        byte[]  inServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
-   //     byte[] expectedSignedServiceMetadataXml = loadDocumentAsByteArray(SIGNED_SERVICE_METADATA_XML_PATH);
+        byte[] inServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
+        //     byte[] expectedSignedServiceMetadataXml = loadDocumentAsByteArray(SIGNED_SERVICE_METADATA_XML_PATH);
         List<DocumentIdentifier> docIdsBefore = testInstance.findServiceMetadataIdentifiers(PT_ID);
         assertEquals(0, docIdsBefore.size());
 
@@ -136,11 +133,11 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
         assertEquals(DOC_ID.getScheme().toLowerCase(), docIdsAfter.get(0).getScheme()); // normalized
         assertEquals("SignedServiceMetadata", outServiceMetadataDoc.getDocumentElement().getTagName());
         // has signature
-        assertEquals(1, outServiceMetadataDoc.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#","Signature").getLength());
+        assertEquals(1, outServiceMetadataDoc.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#", "Signature").getLength());
         // has service metadata
-        NodeList serviceMetadata = outServiceMetadataDoc.getElementsByTagNameNS("http://docs.oasis-open.org/bdxr/ns/SMP/2016/05","ServiceMetadata");
+        NodeList serviceMetadata = outServiceMetadataDoc.getElementsByTagNameNS("http://docs.oasis-open.org/bdxr/ns/SMP/2016/05", "ServiceMetadata");
         assertEquals(1, serviceMetadata.getLength());
-   //        assertArrayEquals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toByteArray(outServiceMetadataDoc));
+        //        assertArrayEquals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toByteArray(outServiceMetadataDoc));
     }
 
     @Test
@@ -148,7 +145,7 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
 
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(ErrorCode.METADATA_NOT_EXISTS.getMessage(SERVICE_GROUP_ID.getValue().toLowerCase(),
-                SERVICE_GROUP_ID.getScheme().toLowerCase(),DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
+                SERVICE_GROUP_ID.getScheme().toLowerCase(), DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
 
         testInstance.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
     }
@@ -159,7 +156,7 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
         // given
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(ErrorCode.METADATA_NOT_EXISTS.getMessage(SERVICE_GROUP_ID.getValue().toLowerCase(),
-                SERVICE_GROUP_ID.getScheme().toLowerCase(),DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
+                SERVICE_GROUP_ID.getScheme().toLowerCase(), DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
         // when - then
         testInstance.deleteServiceMetadata(null, SERVICE_GROUP_ID, DOC_ID);
     }
@@ -167,13 +164,13 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Test
     public void saveAndDeletePositiveScenario() throws IOException {
         //given
-        byte[]  inServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
+        byte[] inServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
         testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, inServiceMetadataXml);
         List<DocumentIdentifier> docIdsBefore = testInstance.findServiceMetadataIdentifiers(PT_ID);
         assertEquals(1, docIdsBefore.size());
         Optional<DBServiceMetadata> dbServiceMetadata = serviceMetadataDao.findServiceMetadata(
                 PT_ID.getValue().toLowerCase(), PT_ID.getScheme().toLowerCase(),
-                DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase());;
+                DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase());
         assertTrue(dbServiceMetadata.isPresent());
 
         //when
@@ -185,7 +182,7 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
 
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(ErrorCode.METADATA_NOT_EXISTS.getMessage(SERVICE_GROUP_ID.getValue().toLowerCase(),
-                SERVICE_GROUP_ID.getScheme().toLowerCase(),DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
+                SERVICE_GROUP_ID.getScheme().toLowerCase(), DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
 
         testInstance.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
     }
@@ -193,7 +190,7 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Test
     public void updatePositiveScenario() throws IOException, JAXBException, TransformerException {
         //given
-        byte[]  oldServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
+        byte[] oldServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
         testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, oldServiceMetadataXml);
 
         ServiceMetadata newServiceMetadata = unmarshal(loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH));

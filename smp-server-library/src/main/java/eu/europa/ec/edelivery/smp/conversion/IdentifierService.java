@@ -15,6 +15,7 @@ package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.identifiers.DocumentIdentifierFormatter;
 import eu.europa.ec.smp.api.identifiers.ParticipantIdentifierFormatter;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
@@ -22,6 +23,7 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 /**
@@ -37,13 +39,24 @@ public class IdentifierService {
     ParticipantIdentifierFormatter participantIdentifierFormatter = new ParticipantIdentifierFormatter();
     DocumentIdentifierFormatter documentIdentifierFormatter = new DocumentIdentifierFormatter();
 
+    ConfigurationService configurationService;
+
+    public IdentifierService(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
+
+        configureParticipantIdentifierFormatter(configurationService.getCaseSensitiveParticipantScheme(),
+                configurationService.getParticipantSchemeMandatory(),
+                configurationService.getParticipantIdentifierSchemeRexExp());
+        configureDocumentIdentifierFormatter(configurationService.getCaseSensitiveDocumentScheme());
+    }
+
     /**
      * Update ParticipantIdentifierFormatter for non null values. Null values are ignored
      *
      * @param caseInsensitiveSchemas
      * @param mandatoryScheme
      */
-    public void configureParticipantIdentifierFormatter(List<String> caseInsensitiveSchemas, Boolean mandatoryScheme) {
+    public void configureParticipantIdentifierFormatter(List<String> caseInsensitiveSchemas, Boolean mandatoryScheme, Pattern allowedSchemeRegExp) {
         if (caseInsensitiveSchemas != null) {
             participantIdentifierFormatter.setCaseSensitiveSchemas(caseInsensitiveSchemas);
         } else {
@@ -52,8 +65,14 @@ public class IdentifierService {
 
         if (mandatoryScheme != null) {
             participantIdentifierFormatter.setSchemeMandatory(mandatoryScheme.booleanValue());
-        }else {
+        } else {
             LOG.debug("Skip configure ParticipantIdentifierFormatter.mandatoryScheme for null value");
+        }
+
+        if (allowedSchemeRegExp != null) {
+            participantIdentifierFormatter.setSchemeValidationPattern(allowedSchemeRegExp);
+        } else {
+            LOG.debug("Skip configure ParticipantIdentifierFormatter.allowedSchemeRegExp for null value");
         }
     }
 

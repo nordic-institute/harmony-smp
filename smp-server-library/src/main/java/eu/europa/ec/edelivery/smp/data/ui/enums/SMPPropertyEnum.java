@@ -36,7 +36,7 @@ public enum SMPPropertyEnum {
     HTTP_PROXY_USER("smp.proxy.user", "", "The proxy user",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
 
-    PARTC_SCH_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$",
+    PARTC_SCH_VALIDATION_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$",
             "Url expression for validating the participant schema!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     PARTC_SCH_REGEXP_MSG("identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",

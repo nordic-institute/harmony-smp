@@ -97,13 +97,13 @@ public class ServiceMetadataValidator {
         if (!urlParticipantId.equals(xmlParticipantId)) {
             String errorMessage = "Save service metadata was called with bad Participant ID parameters. Message body param: ["
                     + identifierToString(xmlParticipantId) + "] URL param: [" + identifierToString(urlParticipantId) + "]";
-            throw new BadRequestException(FORMAT_ERROR, errorMessage);
+            throw new BadRequestException(WRONG_FIELD, errorMessage);
         }
 
         if (!urlDocumentId.equals(xmlDocumentId)) {
             String errorMessage = "Save service metadata was called with bad Document ID parameters. Message body param: ["
                     + identifierToString(xmlDocumentId) + "] URL param: [" + identifierToString(urlDocumentId) + "]";
-            throw new BadRequestException(FORMAT_ERROR, errorMessage);
+            throw new BadRequestException(WRONG_FIELD, errorMessage);
         }
         validateProcesses(serviceInformation);
         return serviceInformation;
