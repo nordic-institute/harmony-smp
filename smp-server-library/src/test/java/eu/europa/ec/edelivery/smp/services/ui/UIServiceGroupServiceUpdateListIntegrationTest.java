@@ -27,8 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOMAIN_CODE_1;
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOMAIN_CODE_2;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -91,7 +90,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         // given
         DBDomain dbDomain1 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
         DBDomain dbDomain2 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_2).get();
-        ServiceGroupRO serviceGroupRO = TestROUtils.createROServiceGroupForDomains(UUID.randomUUID().toString(), UUID.randomUUID().toString(),
+        ServiceGroupRO serviceGroupRO = TestROUtils.createROServiceGroupForDomains(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
                 dbDomain1, dbDomain2);
         // When
         List<ParticipantSMLRecord> lst = testInstance.addNewServiceGroup(serviceGroupRO);

@@ -36,11 +36,11 @@ public class ConfigurationService {
 
 
     public Pattern getParticipantIdentifierSchemeRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP);
+        return configurationDAO.getCachedPropertyValue(PARTC_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpPattern() {
-        return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP);
+        return configurationDAO.getCachedProperty(PARTC_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpMessage() {

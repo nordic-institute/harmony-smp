@@ -72,16 +72,16 @@ public class SmpUrlBuilder {
         LOG.debug("Build SMP url for participant identifier: [{}] and document identifier [{}].", participantId, docId);
         HttpServletRequest req = getCurrentRequest();
         HttpForwardedHeaders fh = new HttpForwardedHeaders(req);
-        LOG.debug("Generate response uri with headers data: [{}]" + fh.toString());
+        LOG.debug("Generate response uri with headers data: [{}]", fh);
         UriComponentsBuilder uriBuilder = getSMPUrlBuilder();//
         if (fh.getHost() != null) {
-            LOG.debug("Set response uri for forwarded headers: [{}]", fh.toString());
+            LOG.debug("Set response uri for forwarded headers: [{}]", fh);
             uriBuilder = uriBuilder.host(fh.getHost());
             String port = fh.getNonDefaultPort();
             if (!StringUtils.isBlank(port)) {
                 uriBuilder = uriBuilder.port(port);
             } else if (!StringUtils.isBlank(fh.getPort())) {
-                LOG.debug("Set port to null because it is default port: [{}]", fh.toString());
+                LOG.debug("Set port to null because it is default port: [{}]", fh);
                 uriBuilder = uriBuilder.port(null);
             }
             uriBuilder = uriBuilder.scheme(fh.getProto());
@@ -90,7 +90,6 @@ public class SmpUrlBuilder {
         }
         String urlEncodedFormatParticipant = identifierService.urlEncodedFormatParticipant(participantId);
         String urlEncodedFormatDocument = identifierService.urlEncodedFormatDocument(docId);
-
 
         return uriBuilder
                 .path(SMP_DOCUMENT_RESOURCE_TEMPLATE)

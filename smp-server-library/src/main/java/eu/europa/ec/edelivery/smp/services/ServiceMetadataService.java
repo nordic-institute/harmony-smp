@@ -44,7 +44,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SG_NOT_EXISTS;
 public class ServiceMetadataService {
 
     @Autowired
-    private IdentifierService caseSensitivityNormalizer;
+    private IdentifierService identifierService;
 
     @Autowired
     private ServiceMetadataDao serviceMetadataDao;
@@ -62,8 +62,8 @@ public class ServiceMetadataService {
     @Transactional
     public Document getServiceMetadataDocument(ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
 
-        ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
-        DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalizeDocument(documentId);
+        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
+        DocumentIdentifier normalizedDocId = identifierService.normalizeDocument(documentId);
 
         Optional<DBServiceMetadata> osmd = serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme(),normalizedDocId.getValue(),normalizedDocId.getScheme());
@@ -90,8 +90,8 @@ public class ServiceMetadataService {
     @Transactional
     public boolean saveServiceMetadata(String domain, ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId, byte[] xmlContent) {
 
-        ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
-        DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalizeDocument(documentId);
+        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
+        DocumentIdentifier normalizedDocId = identifierService.normalizeDocument(documentId);
 
         Optional<DBServiceGroup> serviceGroup = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme());
@@ -130,8 +130,8 @@ public class ServiceMetadataService {
     @Transactional
     public void deleteServiceMetadata(String domain, ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
 
-        ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalizeParticipant(serviceGroupId);
-        DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalizeDocument(documentId);
+        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
+        DocumentIdentifier normalizedDocId = identifierService.normalizeDocument(documentId);
 
 
         Optional<DBServiceMetadata> oDoc = serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
@@ -148,12 +148,12 @@ public class ServiceMetadataService {
 
     public List<DocumentIdentifier> findServiceMetadataIdentifiers(ParticipantIdentifierType participantId) {
 
-        ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalizeParticipant(participantId);
+        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(participantId);
         List<DBServiceMetadata> metadata = serviceMetadataDao.getAllMetadataForServiceGroup(
                 normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme());
 
-        List<DocumentIdentifier> documentIds = new ArrayList();
+        List<DocumentIdentifier> documentIds = new ArrayList<>();
         for (DBServiceMetadata md : metadata) {
             DocumentIdentifier documentIdentifier = new DocumentIdentifier(md.getDocumentIdentifier(),
                     md.getDocumentIdentifierScheme());

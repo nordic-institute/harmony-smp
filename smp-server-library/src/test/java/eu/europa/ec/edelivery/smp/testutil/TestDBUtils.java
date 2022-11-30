@@ -95,7 +95,7 @@ public class TestDBUtils {
     }
 
     public static DBServiceGroup createDBServiceGroupRandom() {
-        return createDBServiceGroup(UUID.randomUUID().toString(), UUID.randomUUID().toString(), true);
+        return createDBServiceGroup(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1, true);
     }
 
     public static DBServiceGroup createDBServiceGroup(String id, String sch, boolean withExtension) {

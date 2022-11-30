@@ -32,7 +32,7 @@
                         <artifactId>soapui-pro-maven-plugin</artifactId>
                         <version>5.1.2</version>
                         <configuration>
-                            <outputFolder>${build.directory}/soapui-reports/</outputFolder>
+                            <outputFolder>${project.build.directory}/soapui-reports/</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
                             <settingsFile>${basedir}/soapui/soapui-settings.xml</settingsFile>

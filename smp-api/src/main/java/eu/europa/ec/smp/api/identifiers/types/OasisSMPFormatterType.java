@@ -2,8 +2,7 @@ package eu.europa.ec.smp.api.identifiers.types;
 
 import org.apache.commons.lang3.StringUtils;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * Simple OSASIS SMP party identifier formatter.
@@ -28,18 +27,19 @@ public class OasisSMPFormatterType implements FormatterType {
 
     @Override
     public String format(final String scheme, final String identifier) {
-        return (isEmpty(scheme) ? "" : scheme + SEPARATOR) + identifier;
+        // for OASIS SMP 1.0 the separator :: is mandatory also when scheme is null!
+        return (isEmpty(scheme) ? "" : scheme) + SEPARATOR + identifier;
     }
 
     @Override
     public String[] parse(final String value) {
         String pValue = trim(value);
-        String[] splitValue = StringUtils.splitByWholeSeparator(pValue, SEPARATOR, 2);
+        String[] splitValue = StringUtils.splitByWholeSeparatorPreserveAllTokens(pValue, SEPARATOR, 2);
         // if only one value is returned set it to identifier
         // else the first element is scheme and second identifier
         String scheme = trim(splitValue.length == 1 ? null : splitValue[0]);
         String identifier = trim(splitValue[splitValue.length == 1 ? 0 : 1]);
-        return new String[]{scheme, identifier};
+        return new String[]{trimToNull(scheme), trimToNull(identifier)};
 
     }
 }
