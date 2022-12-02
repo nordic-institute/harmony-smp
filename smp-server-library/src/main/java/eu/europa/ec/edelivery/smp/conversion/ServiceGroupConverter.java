@@ -40,7 +40,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  *  Purpose of class is to test ServiceGroupService base methods
  *
  * @author migueti
- * @since 3.0.0.
+ * @since 3.0.0
  */
 public class ServiceGroupConverter {
 
@@ -72,8 +72,8 @@ public class ServiceGroupConverter {
     /**
      * Method unmarshal ServiceGroup from xml string
      *
-     * @param serviceGroupXml
-     * @return
+     * @param serviceGroupXml service group xml
+     * @return java object Object
      */
     public static ServiceGroup unmarshal(String serviceGroupXml) {
         try {

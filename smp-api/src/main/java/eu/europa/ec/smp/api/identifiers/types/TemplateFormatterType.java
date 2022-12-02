@@ -24,9 +24,9 @@ public class TemplateFormatterType implements FormatterType {
     public static final String SPLIT_GROUP_IDENTIFIER_NAME = "identifier";
     protected static final String[] REPLACE_TAGS = new String[]{"${" + SPLIT_GROUP_SCHEME_NAME + "}", "${" + SPLIT_GROUP_IDENTIFIER_NAME + "}"};
 
-    Pattern splitRegularExpression;
-    Pattern schemaPattern;
-    String formatTemplate;
+    private final Pattern splitRegularExpression;
+    private final Pattern schemaPattern;
+    private final String formatTemplate;
 
     public TemplateFormatterType(Pattern matchSchema, String formatTemplate, Pattern splitRegularExpression) {
         this.schemaPattern = matchSchema;
@@ -34,18 +34,26 @@ public class TemplateFormatterType implements FormatterType {
         this.splitRegularExpression = splitRegularExpression;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isTypeByScheme(final String scheme) {
         if (StringUtils.isBlank(scheme)) {
+            LOG.debug("TemplateFormatterType does not support identifiers with Null/Blank scheme");
             return false;
         }
         Matcher matcher = schemaPattern.matcher(scheme);
         return matcher.matches();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isType(final String value) {
         if (StringUtils.isBlank(value)) {
+            LOG.debug("Formatter does not support Null/Blank identifiers ");
             return false;
         }
         Matcher matcher = schemaPattern.matcher(value);
@@ -53,8 +61,14 @@ public class TemplateFormatterType implements FormatterType {
     }
 
     @Override
-    public String format(final String scheme, final String identifier) {
+    public String format(String scheme, String identifier, boolean noDelimiterOnEmptyScheme) {
         return StringUtils.replaceEach(formatTemplate, REPLACE_TAGS, new String[]{scheme, identifier});
+
+    }
+
+    @Override
+    public String format(final String scheme, final String identifier) {
+        return format(scheme, identifier, false);
     }
 
     @Override

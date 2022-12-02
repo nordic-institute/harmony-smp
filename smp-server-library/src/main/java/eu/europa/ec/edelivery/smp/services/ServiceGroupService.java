@@ -40,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -50,13 +49,14 @@ import static java.net.URLDecoder.decode;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
- *  Purpose of class is to test ServiceGroupService base methods
+ * Purpose of class is to test ServiceGroupService base methods
  *
  * @author gutowpa
- * @since 3.0.0.
+ * @since 3.0.0
  */
 @Service
 public class ServiceGroupService {
+
 
 
     private static final String UTF_8 = "UTF-8";
@@ -289,7 +289,8 @@ public class ServiceGroupService {
      * empty ServiceMetadataReferenceCollectionType. If extension can not be converted to jaxb object than
      * ConversionException is thrown.
      *
-     * @param dsg - database service group entity
+     * @param dsg                - database service group entity
+     * @param concatenatePartyId - regular expression if servicegroup in party identifier must be concatenate and returned in string value.
      * @return Oasis ServiceGroup entity or null if parameter is null
      */
     public ServiceGroup toServiceGroup(DBServiceGroup dsg, Pattern concatenatePartyId) {
@@ -302,7 +303,7 @@ public class ServiceGroupService {
         String schema = dsg.getParticipantScheme();
         String value = dsg.getParticipantIdentifier();
 
-        if (StringUtils.isNotBlank(schema) &&  concatenatePartyId!=null && concatenatePartyId.matcher(schema).matches()) {
+        if (StringUtils.isNotBlank(schema) && concatenatePartyId != null && concatenatePartyId.matcher(schema).matches()) {
             value = identifierService.formatParticipant(schema, value);
             schema = null;
         }
@@ -317,7 +318,7 @@ public class ServiceGroupService {
                         dsg.getParticipantScheme(), ExceptionUtils.getRootCauseMessage(e));
             }
         }
-        serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType(new ArrayList()));
+        serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
         return serviceGroup;
     }
 }

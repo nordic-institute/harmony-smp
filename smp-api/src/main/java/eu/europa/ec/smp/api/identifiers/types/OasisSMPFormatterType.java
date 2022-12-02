@@ -26,9 +26,15 @@ public class OasisSMPFormatterType implements FormatterType {
     }
 
     @Override
+    public String format(String scheme, String identifier, boolean noDelimiterOnEmptyScheme) {
+        return (isBlank(scheme) && noDelimiterOnEmptyScheme ? "" : trimToEmpty(scheme) + SEPARATOR) + trimToEmpty(identifier);
+
+    }
+
+    @Override
     public String format(final String scheme, final String identifier) {
         // for OASIS SMP 1.0 the separator :: is mandatory also when scheme is null!
-        return (isEmpty(scheme) ? "" : scheme) + SEPARATOR + identifier;
+        return format(scheme, identifier, false);
     }
 
     @Override

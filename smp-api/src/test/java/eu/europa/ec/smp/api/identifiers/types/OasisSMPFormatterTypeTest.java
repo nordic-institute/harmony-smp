@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.junit.Assert.*;
 
 /**
@@ -22,7 +22,7 @@ public class OasisSMPFormatterTypeTest {
 
 
     @Parameterized.Parameters(name = "{index}: {0}")
-    public static Collection participantIdentifierPositiveCases() {
+    public static Collection<Object> participantIdentifierPositiveCases() {
         return Arrays.asList(new Object[][]{
                 {
                         "Valid peppol party identifier",
@@ -91,8 +91,13 @@ public class OasisSMPFormatterTypeTest {
             return;
         }
 
-        String result = testInstance.format(idPart, schemaPart);
-        assertEquals(trim(idPart) + "::" + trim(schemaPart), result);
+        String result = testInstance.format(schemaPart, idPart);
+        String resultNoDelimiterForNullSchema = testInstance.format(schemaPart, idPart, true);
+
+        String schema = trimToEmpty(schemaPart);
+        assertEquals(schema + "::" + trim(idPart), result);
+
+        assertEquals((isEmpty(schema)?"":schema + "::") + trim(idPart), resultNoDelimiterForNullSchema);
     }
 
     @Test
