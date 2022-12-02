@@ -178,7 +178,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         BadRequestFault ex = new BadRequestFault(ERROR_SMP_NOT_EXISTS);
         mockSml.setThrowException(ex);
 
-        Assertions.assertDoesNotThrow(() -> testInstance.unregisterDomain(DEFAULT_DOMAIN););
+        Assertions.assertDoesNotThrow(() -> testInstance.unregisterDomain(DEFAULT_DOMAIN));
     }
 
     @Test
