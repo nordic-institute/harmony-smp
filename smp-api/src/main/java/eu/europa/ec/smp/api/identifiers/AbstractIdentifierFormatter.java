@@ -83,6 +83,26 @@ public abstract class AbstractIdentifierFormatter<T> {
     }
 
     /**
+     * Formats the object according to formatTemplate. If template is 'blank' the scheme and identifier are concatenated
+     * with separator
+     *
+     * @param scheme     scheme part to format it to string
+     * @param identifier Identifier part to format it to string
+     * @param noDelimiterOnBlankScheme if true not delimiter is added when scheme is blankl
+     * @return String representation of the identifier
+     */
+    public String format(String scheme, String identifier, boolean noDelimiterOnBlankScheme) {
+        // find the formatter
+        Optional<FormatterType> optionalFormatterType = formatterTypes.stream().filter(formatterType ->
+                formatterType.isTypeByScheme(scheme)).findFirst();
+
+        if (optionalFormatterType.isPresent()) {
+            return optionalFormatterType.get().format(scheme, identifier, noDelimiterOnBlankScheme);
+        }
+        return DEFAULT_FORMATTER.format(scheme, identifier, noDelimiterOnBlankScheme);
+    }
+
+    /**
      * Parse identifier.
      * <p>
      * Method parse the identifier.

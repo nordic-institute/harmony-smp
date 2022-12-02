@@ -10,7 +10,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.apache.commons.lang3.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.junit.Assert.*;
 
 /**
@@ -143,8 +143,10 @@ public class EBCorePartyIdFormatterTypeTest {
             return;
         }
 
-        String result = testInstance.format(idPart, schemaPart);
-        assertEquals(trim(idPart) + ":" + trim(schemaPart), result);
+        String result = testInstance.format(schemaPart, idPart);
+
+        String schema = trimToEmpty(schemaPart);
+        assertEquals(schema + ":" + trimToEmpty(idPart), result);
     }
 
     @Test

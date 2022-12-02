@@ -56,7 +56,6 @@ import javax.xml.ws.handler.MessageContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBusdoxParticipantId;
 import static eu.europa.ec.edelivery.smp.exceptions.SMLErrorMessages.*;
@@ -90,7 +89,6 @@ public class SmlConnector implements ApplicationContextAware {
     IdentifierService identifierService;
 
     private ApplicationContext ctx;
-
 
 
     public boolean registerInDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
@@ -176,31 +174,30 @@ public class SmlConnector implements ApplicationContextAware {
             smlSmpRequest.getPublisherEndpoint().setPhysicalAddress(smpPhysicalAddress);
             smlSmpRequest.setServiceMetadataPublisherID(domain.getSmlSmpId());
             getSMPManagerWSClient(domain).create(smlSmpRequest);
-            return true;
         } catch (BadRequestFault e) {
-            return processSMLErrorMessage(e, domain);
+            processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + "" + e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
+        // if not error is thrown - the registration is done OK.
+        return true;
     }
 
-    private boolean processSMLErrorMessage(BadRequestFault e, DBDomain domain) {
+    private void processSMLErrorMessage(BadRequestFault e, DBDomain domain) {
         if (!isOkMessage(domain, e.getMessage())) {
             LOG.error(e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
         LOG.warn(e.getMessage(), e);
-        return true;
     }
 
-    private boolean processSMLErrorMessage(NotFoundFault e, DBDomain domain) {
+    private void processSMLErrorMessage(NotFoundFault e, DBDomain domain) {
         if (!isOkMessage(domain, e.getMessage())) {
             LOG.error(e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
         LOG.warn(e.getMessage(), e);
-        return true;
     }
 
     /**
@@ -248,18 +245,17 @@ public class SmlConnector implements ApplicationContextAware {
         }
     }
 
-    public boolean unregisterDomain(DBDomain domain) {
+    public void unregisterDomain(DBDomain domain) {
         if (!configurationService.isSMLIntegrationEnabled()) {
-            return true;
+            return;
         }
         LOG.info("Removing SMP id (Domain) from BDMSL: {} ", domain.getDomainCode());
         try {
             getSMPManagerWSClient(domain).delete(domain.getSmlSmpId());
-            return true;
         } catch (BadRequestFault e) {
-            return processSMLErrorMessage(e, domain);
+            processSMLErrorMessage(e, domain);
         } catch (NotFoundFault e) {
-            return processSMLErrorMessage(e, domain);
+            processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + "" + e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
@@ -342,7 +338,7 @@ public class SmlConnector implements ApplicationContextAware {
         }
 
         if (!clientCertAuthentication && !useTLS) {
-            LOG.warn("SML integration is wrongly configured. Uses 2-way-SSL HTTPS but URL is not HTTPS! Url: {}.", urlSMPManagment.toString());
+            LOG.warn("SML integration is wrongly configured. Uses 2-way-SSL HTTPS but URL is not HTTPS! Url: [{}].", urlSMPManagment);
         }
 
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
@@ -439,7 +435,7 @@ public class SmlConnector implements ApplicationContextAware {
         LOG.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "******", proxyServer, proxyPort.isPresent() ? proxyPort.get() : "");
         httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);
         httpConduit.getClient().setProxyServer(proxyServer);
-        proxyPort.ifPresent(integer -> httpConduit.getClient().setProxyServerPort(integer));
+        proxyPort.ifPresent(port -> httpConduit.getClient().setProxyServerPort(port));
 
         if (!StringUtils.isBlank(proxyUser)) {
             ProxyAuthorizationPolicy proxyAuth = new ProxyAuthorizationPolicy();

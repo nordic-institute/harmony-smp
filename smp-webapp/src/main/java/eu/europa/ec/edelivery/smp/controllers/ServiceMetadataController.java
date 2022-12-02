@@ -42,7 +42,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 /**
  * @author gutowpa
- * @since 3.0.0.
+ * @since 3.0.0
  */
 @RestController
 @RequestMapping("/{serviceGroupId}/services/{serviceMetadataId}")
