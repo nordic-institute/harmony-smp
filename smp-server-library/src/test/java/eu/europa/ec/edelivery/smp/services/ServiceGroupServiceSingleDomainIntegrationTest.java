@@ -19,6 +19,8 @@ import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,7 +45,6 @@ import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmars
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
-import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.junit.Assert.*;
 
 /**
@@ -54,9 +55,6 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
 
     @Autowired
     protected ServiceGroupService testInstance;
-
-    @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
 
     @Before
     @Transactional
@@ -163,11 +161,11 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
 
     @Test
     public void serviceGroupNotExistsWhenRetrievingSG() {
-        // given
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(SG_NOT_EXISTS.getMessage("service-group", "not-existing"));
         // when-then
-        testInstance.getServiceGroup(asParticipantId("not-existing::service-group", false) );
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()->testInstance.getServiceGroup(new ParticipantIdentifierType("not-existing", "bad-srv-grp") ));
+
+        assertEquals(SG_NOT_EXISTS.getMessage("not-existing", "bad-srv-grp"), result.getMessage());
     }
 
     @Test
@@ -183,13 +181,10 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         testInstance.deleteServiceGroup(inServiceGroup.getParticipantIdentifier());
         serviceGroupDao.clearPersistenceContext();
 
-        //then
-        expectedExeption.expect(SMPRuntimeException.class);
-        // get by null domain so: (all registered domains)
-        expectedExeption.expectMessage(SG_NOT_EXISTS.getMessage( inServiceGroup.getParticipantIdentifier().getValue(),
-                inServiceGroup.getParticipantIdentifier().getScheme()));
-
-        ServiceGroup sg = testInstance.getServiceGroup(inServiceGroup.getParticipantIdentifier());
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()->testInstance.getServiceGroup(inServiceGroup.getParticipantIdentifier()));
+        assertEquals(SG_NOT_EXISTS.getMessage( inServiceGroup.getParticipantIdentifier().getValue(), inServiceGroup.getParticipantIdentifier().getScheme())
+                , result.getMessage());
 
     }
 
@@ -223,16 +218,13 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         assertTrue(dbUser.isPresent()); // test if exists
         assertFalse(dbsg.get().getUsers().contains(dbUser.get())); // test not owner
 
-        //then
-        expectedExeption.expect(SMPRuntimeException.class);
-        // get by null domain so: (all registered domains)
-        expectedExeption.expectMessage(USER_IS_NOT_OWNER.getMessage(TestConstants.USER_CERT_2,
-
-                dbsg.get().getParticipantIdentifier(), dbsg.get().getParticipantScheme()));
-
         // when
-        testInstance.saveServiceGroup(inServiceGroup,null,
-                TestConstants.USER_CERT_2, TestConstants.USER_CERT_2);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()->testInstance.saveServiceGroup(inServiceGroup,null,
+                TestConstants.USER_CERT_2, TestConstants.USER_CERT_2));
+
+        assertEquals(USER_IS_NOT_OWNER.getMessage(TestConstants.USER_CERT_2,
+                dbsg.get().getParticipantIdentifier(), dbsg.get().getParticipantScheme()), result.getMessage());
     }
 
     @Test
@@ -244,15 +236,12 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         Optional<DBUser> dbUser = userDao.findUserByIdentifier(TestConstants.USER_CERT_3);
         assertTrue(dbsg.isPresent()); // test if note exists
         assertFalse(dbUser.isPresent()); // test if exists
-
-        //then
-        expectedExeption.expect(SMPRuntimeException.class);
-        // get by null domain so: (all registered domains)
-        expectedExeption.expectMessage(INVALID_OWNER.getMessage(TestConstants.USER_CERT_3));
-
         // when
-        testInstance.saveServiceGroup(inServiceGroup, null,
-                TestConstants.USER_CERT_3, TestConstants.USER_CERT_3);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()->testInstance.saveServiceGroup(inServiceGroup, null,
+                TestConstants.USER_CERT_3, TestConstants.USER_CERT_3));
+
+        assertEquals(INVALID_OWNER.getMessage(TestConstants.USER_CERT_3), result.getMessage());
     }
 
     @Test
@@ -260,12 +249,12 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         String  username = "test::20%atest";
         //given
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_TEST2_XML_PATH));
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(StringStartsWith.startsWith("Unsupported or invalid encoding"));
 
         //when
-        testInstance.saveServiceGroup(inServiceGroup, null, username, username);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()->testInstance.saveServiceGroup(inServiceGroup, null, username, username));
 
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Unsupported or invalid encoding"));
     }
 
   @Test
@@ -273,11 +262,12 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         //given
         String domain="NOTEXISTINGDOMAIN";
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(DOMAIN_NOT_EXISTS.getMessage(domain));
 
         //execute
-        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_TOKEN_1, USERNAME_TOKEN_1);
+      SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+              ()->testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_TOKEN_1, USERNAME_TOKEN_1));
+
+      assertEquals(DOMAIN_NOT_EXISTS.getMessage(domain), result.getMessage());
     }
 
     @Test
@@ -285,12 +275,13 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         //given
         String domain="notAllowedChars:-_;#$";
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(INVALID_DOMAIN_CODE.getMessage(domain,
-                DomainService.DOMAIN_ID_PATTERN.pattern()));
 
         //execute
-        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_TOKEN_1, USERNAME_TOKEN_1);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()->testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_TOKEN_1, USERNAME_TOKEN_1));
+
+        assertEquals(INVALID_DOMAIN_CODE.getMessage(domain,
+                DomainService.DOMAIN_ID_PATTERN.pattern()), result.getMessage());
     }
 
     @Test

@@ -16,10 +16,7 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.smp.api.Identifiers;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -42,36 +39,35 @@ import java.io.*;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_SMD_XML;
 
-;
-
 /**
- * Created by gutowpa on 05/01/2017.
+ * @author gutowpa
+ * @since 3.0.0
  */
 public class ServiceMetadataConverter {
 
     /**
-     * Class has only static members. Is not ment to create instances  - also SONAR warning.
+     * Class has only static members. Is not meant to create instances  - also SONAR warning.
      */
-    private  ServiceMetadataConverter() {
+    private ServiceMetadataConverter() {
 
     }
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
-    private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\""+NS+"\"/>";
+    private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\"" + NS + "\"/>";
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceMetadataConverter.class);
 
 
-    private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial( () -> {
+    private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial(() -> {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
             return jaxbContext.createUnmarshaller();
-        }catch(JAXBException ex) {
+        } catch (JAXBException ex) {
             LOG.error("Error occurred while initializing JAXBContext for ServiceMetadata. Root Error:" +
                     ExceptionUtils.getRootCauseMessage(ex), ex);
         }
         return null;
-    } );
+    });
 
     private static Unmarshaller getUnmarshaller() {
         return jaxbUnmarshaller.get();
@@ -79,23 +75,24 @@ public class ServiceMetadataConverter {
 
     /**
      * Method parses serviceMetadata XML and envelopes it to SignedServiceMetadata.
+     *
      * @param serviceMetadataXml
      * @return w3d dom element
      */
-    public static Document toSignedServiceMetadataDocument(byte[] serviceMetadataXml)  {
+    public static Document toSignedServiceMetadataDocument(byte[] serviceMetadataXml) {
         try {
             Document docServiceMetadata = parse(serviceMetadataXml);
             Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY.getBytes());
             Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
             root.getDocumentElement().appendChild(imported);
             return root;
-        }catch(ParserConfigurationException | SAXException | IOException ex){
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
             throw new SMPRuntimeException(INVALID_SMD_XML, ex, ExceptionUtils.getRootCauseMessage(ex));
         }
     }
 
 
-    public static ServiceMetadata unmarshal(byte[] serviceMetadataXml){
+    public static ServiceMetadata unmarshal(byte[] serviceMetadataXml) {
         try {
             Document serviceMetadataDoc = parse(serviceMetadataXml);
             ServiceMetadata serviceMetadata = getUnmarshaller().unmarshal(serviceMetadataDoc, ServiceMetadata.class).getValue();
@@ -110,14 +107,14 @@ public class ServiceMetadataConverter {
         return getDocumentBuilder().parse(inputStream);
     }
 
-    public static String toString(Document doc) throws TransformerException, UnsupportedEncodingException {
+    public static String toString(Document doc) throws TransformerException {
         Transformer transformer = createNewSecureTransformer();
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(doc), new StreamResult(writer));
         return writer.toString();
     }
 
-    public static byte[] toByteArray(Document doc) throws TransformerException, UnsupportedEncodingException {
+    public static byte[] toByteArray(Document doc) throws TransformerException {
         Transformer transformer = createNewSecureTransformer();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         transformer.transform(new DOMSource(doc), new StreamResult(stream));
@@ -137,8 +134,4 @@ public class ServiceMetadataConverter {
 
         return factory.newTransformer();
     }
-
-
-
-
 }

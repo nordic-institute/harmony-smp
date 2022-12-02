@@ -1,10 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
-import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
@@ -61,13 +57,13 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
 
     @Test
     public void validateServiceMetadataValid() {
-        DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", "partSch");
+        DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", TEST_SG_SCHEMA_1);
 
         ServiceMetadataValidationRO smv = new ServiceMetadataValidationRO();
         smv.setDocumentIdentifier(md.getDocumentIdentifier());
         smv.setDocumentIdentifierScheme(md.getDocumentIdentifierScheme());
         smv.setParticipantIdentifier("partId");
-        smv.setParticipantScheme("partSch");
+        smv.setParticipantScheme(TEST_SG_SCHEMA_1);
         smv.setXmlContent(new String(md.getXmlContent()));
 
         smv = testInstance.validateServiceMetadata(smv);
@@ -82,7 +78,7 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
         smv.setDocumentIdentifier(md.getDocumentIdentifier());
         smv.setDocumentIdentifierScheme(md.getDocumentIdentifierScheme());
         smv.setParticipantIdentifier("partId");
-        smv.setParticipantScheme("partSch");
+        smv.setParticipantScheme(TEST_SG_SCHEMA_1);
         smv.setXmlContent(new String(md.getXmlContent()));
 
         smv = testInstance.validateServiceMetadata(smv);
@@ -97,7 +93,7 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
         smv.setDocumentIdentifier(md.getDocumentIdentifier());
         smv.setDocumentIdentifierScheme(md.getDocumentIdentifierScheme());
         smv.setParticipantIdentifier("partId");
-        smv.setParticipantScheme("partSch");
+        smv.setParticipantScheme(TEST_SG_SCHEMA_1);
         smv.setXmlContent(new String(md.getXmlContent()));
 
         smv = testInstance.validateServiceMetadata(smv);
@@ -108,13 +104,14 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
 
     @Test
     public void validateServiceMetadataParticipantNotMatch() {
-        DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", "partSch");
+
+        DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", TEST_SG_SCHEMA_1);
 
         ServiceMetadataValidationRO smv = new ServiceMetadataValidationRO();
         smv.setDocumentIdentifier(md.getDocumentIdentifier());
         smv.setDocumentIdentifierScheme(md.getDocumentIdentifierScheme());
         smv.setParticipantIdentifier("partIdNotMatch");
-        smv.setParticipantScheme("partSch");
+        smv.setParticipantScheme(TEST_SG_SCHEMA_1);
         smv.setXmlContent(new String(md.getXmlContent()));
 
         smv = testInstance.validateServiceMetadata(smv);
@@ -123,13 +120,13 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
 
     @Test
     public void validateServiceMetadataDocumentNotMatch() {
-        DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", "partSch");
+        DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", TEST_SG_SCHEMA_1);
 
         ServiceMetadataValidationRO smv = new ServiceMetadataValidationRO();
         smv.setDocumentIdentifier(md.getDocumentIdentifierScheme());
         smv.setDocumentIdentifierScheme(md.getDocumentIdentifier());
         smv.setParticipantIdentifier("partId");
-        smv.setParticipantScheme("partSch");
+        smv.setParticipantScheme(TEST_SG_SCHEMA_1);
         smv.setXmlContent(new String(md.getXmlContent()));
 
         smv = testInstance.validateServiceMetadata(smv);
@@ -138,13 +135,13 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
 
     @Test
     public void validateServiceMetadataInvalidXML() {
-        DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", "partSch");
+        DBServiceMetadata md = TestDBUtils.createDBServiceMetadata("partId", TEST_SG_SCHEMA_1);
 
         ServiceMetadataValidationRO smv = new ServiceMetadataValidationRO();
         smv.setDocumentIdentifier(md.getDocumentIdentifierScheme());
         smv.setDocumentIdentifierScheme(md.getDocumentIdentifier());
         smv.setParticipantIdentifier("partId");
-        smv.setParticipantScheme("partSch");
+        smv.setParticipantScheme(TEST_SG_SCHEMA_1);
         smv.setXmlContent(new String(md.getXmlContent()) + "Something to invalidate xml");
 
         smv = testInstance.validateServiceMetadata(smv);
@@ -199,7 +196,7 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
     }
 
     @Test
-    public void testValidateServiceMetadataCertificatesNotAllowed() throws IOException, CertificateException {
+    public void testValidateServiceMetadataCertificatesNotAllowed() throws IOException{
         ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
         UIServiceMetadataService testInstance = new UIServiceMetadataService(null, null,
                 null, null,

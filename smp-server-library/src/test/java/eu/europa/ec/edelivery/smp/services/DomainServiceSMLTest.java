@@ -18,6 +18,7 @@ import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
 import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
@@ -41,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.ws.http.HTTPException;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.Assert.*;
@@ -62,11 +64,11 @@ public class DomainServiceSMLTest extends AbstractServiceIntegrationTest {
     public ExpectedException expectedExeption = ExpectedException.none();
 
     @Autowired
+    IdentifierService identifierService;
+    @Autowired
     SmlIntegrationConfiguration integrationMock;
-
     @Autowired
     SmlConnector smlConnector;
-
     @Autowired
     private SMLIntegrationService smlIntegrationService;
 
@@ -82,6 +84,9 @@ public class DomainServiceSMLTest extends AbstractServiceIntegrationTest {
 
         ReflectionTestUtils.setField(smlIntegrationService,"smlConnector",smlConnector);
         ReflectionTestUtils.setField(testInstance,"smlIntegrationService",smlIntegrationService);
+
+        ReflectionTestUtils.setField(smlIntegrationService,"identifierService",identifierService);
+        identifierService.configureParticipantIdentifierFormatter(null,false, Pattern.compile(".*"));
 
         resetKeystore();
         setDatabaseProperty(SMPPropertyEnum.SML_PHYSICAL_ADDRESS, "0.0.0.0");

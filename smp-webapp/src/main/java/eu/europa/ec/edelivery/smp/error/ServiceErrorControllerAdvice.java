@@ -56,6 +56,11 @@ public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice 
         return buildAndLog(BAD_REQUEST, FORMAT_ERROR, ex.getMessage(), ex);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleMalformedIdentifierException(IllegalArgumentException ex) {
+        return buildAndLog(BAD_REQUEST, FORMAT_ERROR, ex.getMessage(), ex);
+    }
+
     @ExceptionHandler(WrongInputFieldException.class)
     public ResponseEntity handleWrongInputFieldException(WrongInputFieldException ex) {
         return buildAndLog(BAD_REQUEST, WRONG_FIELD, ex.getMessage(), ex);

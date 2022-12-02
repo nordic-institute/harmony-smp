@@ -14,32 +14,33 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-        import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
-        import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
-        import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
-        import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-        import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
-        import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-        import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-        import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
-        import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-        import org.junit.Before;
-        import org.junit.Rule;
-        import org.junit.Test;
-        import org.junit.rules.ExpectedException;
-        import org.junit.runner.RunWith;
-        import org.mockito.Mockito;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.test.context.ContextConfiguration;
-        import org.springframework.test.context.junit4.SpringRunner;
-        import org.springframework.test.util.ReflectionTestUtils;
+import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
+import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
+import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
+import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
+import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
-        import java.util.UUID;
+import java.util.UUID;
 
-        import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
-        import static org.junit.Assert.*;
-        import static org.mockito.ArgumentMatchers.any;
-        import static org.mockito.Mockito.verify;
+import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by JRC
@@ -67,7 +68,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         testInstance = Mockito.spy(testInstance);
         // default behaviour
         Mockito.doNothing().when(testInstance).configureClient(any(), any(), any());
-        ReflectionTestUtils.setField(testInstance,"configurationService",configurationService);
+        ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
         mockSml.reset();
     }
@@ -127,10 +128,9 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     @Test
     public void testDomainUnregisterFromDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        boolean result = testInstance.unregisterDomain(DEFAULT_DOMAIN);
+        testInstance.unregisterDomain(DEFAULT_DOMAIN);
 
         //then
-        assertTrue(result);
         assertEquals(1, mockSml.getSmpManagerClientMocks().size());
         verify(mockSml.getSmpManagerClientMocks().get(0)).delete(any());
         Mockito.verifyNoMoreInteractions(mockSml.getSmpManagerClientMocks().toArray());
@@ -177,9 +177,8 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_SMP_NOT_EXISTS);
         mockSml.setThrowException(ex);
-        boolean suc = testInstance.unregisterDomain(DEFAULT_DOMAIN);
 
-        assertTrue(suc);
+        Assertions.assertDoesNotThrow(() -> testInstance.unregisterDomain(DEFAULT_DOMAIN););
     }
 
     @Test
@@ -200,7 +199,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     @Test
     public void testGetSmlClientKeyAliasForDomain() {
 
-        DBDomain domain  = new DBDomain();
+        DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(UUID.randomUUID().toString());
         domain.setSmlClientCertAuth(false);
 
@@ -212,7 +211,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
     @Test
     public void testGetSmlClientKeyAliasForDomainNulForSingleKey() {
 
-        DBDomain domain  = new DBDomain();
+        DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(false);
 

@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBRevisionLog;
-import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.RevisionListener;
 import org.slf4j.Logger;
@@ -13,7 +12,7 @@ import java.time.OffsetDateTime;
 
 public class SMPRevisionListener implements RevisionListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceGroupService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SMPRevisionListener.class);
 
     @Override
     public void newRevision(Object revisionEntity) {

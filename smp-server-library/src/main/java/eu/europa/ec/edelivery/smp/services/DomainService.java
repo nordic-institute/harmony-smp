@@ -1,22 +1,17 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
-import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.apache.commons.lang3.StringUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -24,9 +19,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
-import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.BUS_SML_REGISTER_SERVICE_GROUP;
-import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.BUS_SML_REGISTER_SERVICE_GROUP_ALREADY_REGISTERED;
-import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.BUS_SML_REGISTER_SERVICE_GROUP_FAILED;
 
 
 /**

@@ -13,57 +13,48 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
 import org.springframework.stereotype.Component;
-
-import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.WRONG_FIELD;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 
 /**
- * Created by gutowpa on 02/08/2017.
+ * Class provides tools to parse, format and normalize Document and Participant identifiers.
+ *
+ * @author gutowpa
+ * @since 3.0.0
  */
 @Component
 public class ServiceGroupValidator {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupValidator.class);
 
     protected final ConfigurationService configurationService;
-    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final IdentifierService identifierService;
 
     public ServiceGroupValidator(ConfigurationService configurationService,
-                                 CaseSensitivityNormalizer caseSensitivityNormalizer) {
+                                 IdentifierService identifierService) {
         this.configurationService = configurationService;
-        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.identifierService = identifierService;
     }
 
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {
-        boolean schemeMandatory = configurationService.getParticipantSchemeMandatory();
-        LOG.debug("Parse service group [{}] with [{}] scheme", serviceGroupId, (schemeMandatory?"mandatory":"optional"));
+        LOG.debug("Validate URL participant identifier [{}] and XML serviceGroup", serviceGroupId);
 
-        final ParticipantIdentifierType participantId = caseSensitivityNormalizer.normalize(Identifiers.asParticipantId(serviceGroupId, schemeMandatory), schemeMandatory);
-        final ParticipantIdentifierType serviceGroupParticipantId =  caseSensitivityNormalizer.normalize(
-                serviceGroup.getParticipantIdentifier(), schemeMandatory);
+        final ParticipantIdentifierType participantId = identifierService.normalizeParticipantIdentifier(serviceGroupId);
+        final ParticipantIdentifierType serviceGroupParticipantId = identifierService.normalizeParticipant(serviceGroup.getParticipantIdentifier());
 
         if (!participantId.equals(serviceGroupParticipantId)) {
             // Business identifier must equal path
-            throw new BadRequestException(WRONG_FIELD, "Service Group Ids don't match between URL parameter and XML body");
-        }
-
-        String scheme = serviceGroupParticipantId.getScheme();
-        Pattern schemaPattern = configurationService.getParticipantIdentifierSchemeRexExp();
-
-        if (!schemaPattern.matcher(scheme==null?"":scheme).matches()) {
-            throw new BadRequestException(WRONG_FIELD, "Service Group scheme does not match allowed pattern: " + schemaPattern.pattern());
+            throw new BadRequestException(WRONG_FIELD, "Participant identifiers don't match between URL parameter [" + serviceGroupId + "] and XML body: [ scheme: '" + serviceGroupParticipantId.getScheme() + "', value: '" + serviceGroupParticipantId.getValue() + "']");
         }
 
         ServiceMetadataReferenceCollectionType references = serviceGroup.getServiceMetadataReferenceCollection();
@@ -71,5 +62,4 @@ public class ServiceGroupValidator {
             throw new BadRequestException(WRONG_FIELD, "ServiceMetadataReferenceCollection must be empty");
         }
     }
-
 }
