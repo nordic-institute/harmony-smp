@@ -39,7 +39,7 @@ public class ServiceErrorControllerAdviceTest {
 
     @Test
     public void handleMalformedIdentifierException() {
-        ResponseEntity re = testIntance.handleMalformedIdentifierException(new MalformedIdentifierException("MalformedIdentifierExceptionMessage", null));
+        ResponseEntity re = testIntance.handleMalformedIdentifierException(new  MalformedIdentifierException("MalformedIdentifierExceptionMessage", null));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
         assertEquals(ErrorBusinessCode.FORMAT_ERROR.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());

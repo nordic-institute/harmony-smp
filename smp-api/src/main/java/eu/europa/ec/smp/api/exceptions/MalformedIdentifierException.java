@@ -28,4 +28,8 @@ public class MalformedIdentifierException extends IllegalArgumentException {
     public MalformedIdentifierException(String malformedId, Exception cause){
         super(buildMessage(malformedId), cause);
     }
+
+    public MalformedIdentifierException(String message){
+        super(message);
+    }
 }

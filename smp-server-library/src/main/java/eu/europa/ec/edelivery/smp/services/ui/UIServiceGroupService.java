@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
@@ -41,20 +41,20 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     protected final DomainDao domainDao;
     protected final ServiceGroupDao serviceGroupDao;
     protected final UserDao userDao;
-    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final IdentifierService identifierService;
     protected final SMLIntegrationService smlIntegrationService;
     protected final ConfigurationService configurationService;
 
     public UIServiceGroupService(DomainDao domainDao,
                                  ServiceGroupDao serviceGroupDao,
                                  UserDao userDao,
-                                 CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                 IdentifierService identifierService,
                                  SMLIntegrationService smlIntegrationService,
                                  ConfigurationService configurationService) {
         this.domainDao = domainDao;
         this.serviceGroupDao = serviceGroupDao;
         this.userDao = userDao;
-        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.identifierService = identifierService;
         this.smlIntegrationService = smlIntegrationService;
         this.configurationService = configurationService;
     }
@@ -115,7 +115,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     @Transactional
     public ServiceGroupRO getOwnedServiceGroupById(Long userId, Long serviceGroupId) {
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(serviceGroupId);
-        if (isServiceGroupOwner(userId,dbServiceGroup )){
+        if (isServiceGroupOwner(userId, dbServiceGroup)) {
             convertToRo(dbServiceGroup);
         }
         return null;
@@ -123,13 +123,14 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
     /**
      * Method validates if any of the service group users contains userID
+     *
      * @param userId
      * @param dbServiceGroup
      * @return
      */
-    protected boolean isServiceGroupOwner(Long userId,  DBServiceGroup dbServiceGroup){
-        return dbServiceGroup!=null &&
-                dbServiceGroup.getUsers().stream().filter(user ->user.getId().equals(userId)).findAny().isPresent();
+    protected boolean isServiceGroupOwner(Long userId, DBServiceGroup dbServiceGroup) {
+        return dbServiceGroup != null &&
+                dbServiceGroup.getUsers().stream().filter(user -> user.getId().equals(userId)).findAny().isPresent();
     }
 
     @Transactional
@@ -283,11 +284,13 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     }
 
     private void normalizeIdentifiers(ServiceGroupRO sgo) {
-        ParticipantIdentifierType pti = caseSensitivityNormalizer.normalizeParticipant(sgo.getParticipantScheme() + "::" + sgo.getParticipantIdentifier());
+        ParticipantIdentifierType pti = identifierService.normalizeParticipant(sgo.getParticipantScheme(),
+                sgo.getParticipantIdentifier());
         sgo.setParticipantScheme(pti.getScheme());
         sgo.setParticipantIdentifier(pti.getValue());
         sgo.getServiceMetadata().forEach(smd -> {
-            DocumentIdentifier dit = caseSensitivityNormalizer.normalizeDocumentIdentifier(smd.getDocumentIdentifierScheme(), smd.getDocumentIdentifier());
+            DocumentIdentifier dit = identifierService.normalizeDocument(smd.getDocumentIdentifierScheme(),
+                    smd.getDocumentIdentifier());
             smd.setDocumentIdentifierScheme(dit.getScheme());
             smd.setDocumentIdentifier(dit.getValue());
 
@@ -555,7 +558,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
         ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
         if (smd.getServiceInformation() != null) {
-            DocumentIdentifier di = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
+            DocumentIdentifier di = identifierService.normalizeDocument(smd.getServiceInformation().getDocumentIdentifier());
             if (Objects.equals(di.getScheme(), serviceMetadataRO.getDocumentIdentifierScheme())
                     && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier())) {
 
@@ -634,7 +637,8 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
         byte[] buff = validateServiceMetadata(serviceMetadataRO);
         DBServiceMetadata dbServiceMetadata = new DBServiceMetadata();
-        DocumentIdentifier docIdent = caseSensitivityNormalizer.normalizeDocumentIdentifier(serviceMetadataRO.getDocumentIdentifierScheme(), serviceMetadataRO.getDocumentIdentifier());
+        DocumentIdentifier docIdent = identifierService.normalizeDocument(serviceMetadataRO.getDocumentIdentifierScheme(),
+                serviceMetadataRO.getDocumentIdentifier());
         dbServiceMetadata.setDocumentIdentifier(docIdent.getValue());
         dbServiceMetadata.setDocumentIdentifierScheme(docIdent.getScheme());
         dbServiceMetadata.setXmlContent(buff);
@@ -677,9 +681,10 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         } // if new check if service group already exist
 
         if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()) {
-            ParticipantIdentifierType normalizedParticipant = caseSensitivityNormalizer.normalizeParticipantIdentifier(
-                    serviceGroup.getParticipantScheme(),
-                    serviceGroup.getParticipantIdentifier());
+            ParticipantIdentifierType normalizedParticipant = identifierService
+                    .normalizeParticipant(
+                            serviceGroup.getParticipantScheme(),
+                            serviceGroup.getParticipantIdentifier());
             Optional<DBServiceGroup> sg = serviceGroupDao.findServiceGroup(normalizedParticipant.getValue(),
                     normalizedParticipant.getScheme());
             if (sg.isPresent()) {

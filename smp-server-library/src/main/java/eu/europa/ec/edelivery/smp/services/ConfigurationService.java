@@ -36,21 +36,15 @@ public class ConfigurationService {
 
 
     public Pattern getParticipantIdentifierSchemeRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP);
+        return configurationDAO.getCachedPropertyValue(PARTC_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpPattern() {
-        return configurationDAO.getCachedProperty(PARTC_SCH_REGEXP);
+        return configurationDAO.getCachedProperty(PARTC_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpMessage() {
         return configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP_MSG);
-    }
-
-    public Boolean getForceConcatenateEBCorePartyId() {
-        Boolean value = configurationDAO.getCachedPropertyValue(PARTC_EBCOREPARTYID_CONCATENATE);
-        // true by default
-        return value == null || value;
     }
 
     public Pattern getPasswordPolicyRexExp() {
@@ -156,6 +150,14 @@ public class ConfigurationService {
         // not mandatory by default
         Boolean value = configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
         return value != null && value;
+    }
+
+    public Pattern getParticipantIdentifierSplitRexExp() {
+        return configurationDAO.getCachedPropertyValue(PARTC_SCH_SPLIT_REGEXP);
+    }
+
+    public Pattern getParticipantIdentifierUrnValidationRexExp() {
+        return configurationDAO.getCachedPropertyValue(PARTC_SCH_URN_REGEXP);
     }
 
     public boolean isProxyEnabled() {

@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -28,82 +28,88 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.OUT_OF_RANGE;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.WRONG_FIELD;
-import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
-import static eu.europa.ec.smp.api.Identifiers.asString;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.*;
 
 /**
- * Created by gutowpa on 11/09/2017.
+ * Simple Service metadata validator
+ *
+ * @author gutowpa
+ * @since 3.0.0.
  */
 @Component
 public class ServiceMetadataValidator {
 
-    private static final Logger log = LoggerFactory.getLogger(ServiceMetadataValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadataValidator.class);
 
     protected final ConfigurationService configurationService;
-    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final IdentifierService identifierService;
 
     public ServiceMetadataValidator(ConfigurationService configurationService,
-                                    CaseSensitivityNormalizer caseSensitivityNormalizer) {
+                                    IdentifierService caseSensitivityNormalizer) {
         this.configurationService = configurationService;
-        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.identifierService = caseSensitivityNormalizer;
     }
 
-    public void validate(String serviceGroupIdStr,
-                         String serviceMetadataIdStr,
+    public void validate(String participantIdentifierFromUrl,
+                         String documentIdentifierFromUrl,
                          byte[] serviceMetadataBody
     ) throws XmlInvalidAgainstSchemaException {
-        ServiceInformationType serviceInformation = validate(serviceGroupIdStr, serviceMetadataBody);
-        DocumentIdentifier serviceMetadataId = asDocumentId(serviceMetadataIdStr);
 
-        if (serviceInformation != null && !serviceMetadataId.equals(serviceInformation.getDocumentIdentifier())) {
-            String errorMessage = String.format("Save service metadata was called with bad Document ID parameters. Message body param: %s URL param: %s",
-                    asString(serviceInformation.getDocumentIdentifier()),
-                    asString(serviceMetadataId));
-            log.info(errorMessage);
-            throw new BadRequestException(WRONG_FIELD, errorMessage);
-        }
-    }
-
-    public ServiceInformationType validate(String serviceGroupIdStr,
-                                           byte[] serviceMetadataBody
-    ) throws XmlInvalidAgainstSchemaException {
-
+        // validate XML serviceMetadata xml against schema
         BdxSmpOasisValidator.validateXSD(serviceMetadataBody);
 
-        final ParticipantIdentifierType serviceGroupId = caseSensitivityNormalizer.normalizeParticipant(serviceGroupIdStr);
+        // parse serviceMetadataBody
         ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(serviceMetadataBody);
         ServiceInformationType serviceInformation = serviceMetadata.getServiceInformation();
 
-
         if (serviceInformation == null && serviceMetadata.getRedirect() != null) {
-            return null;
+            LOG.debug("Redirect serviceMetadata, skip document/participant identifier validation");
+            return;
         }
 
         if (serviceInformation == null) {
-            String errorMessage = "Missing service information";
-            throw new BadRequestException(WRONG_FIELD, errorMessage);
+            throw new BadRequestException(WRONG_FIELD, "Missing service information or redirect");
         }
 
-        final ParticipantIdentifierType serviceGroupParticipantId = caseSensitivityNormalizer.normalize(
+        ParticipantIdentifierType serviceGroupId = identifierService.normalizeParticipantIdentifier(participantIdentifierFromUrl);
+        DocumentIdentifier documentId = identifierService.normalizeDocumentIdentifier(documentIdentifierFromUrl);
+        validateServiceInformation(serviceGroupId, documentId, serviceInformation);
+
+    }
+
+    /**
+     * Validate participant identifier in the serviceMetadata
+     *
+     * @param urlParticipantId
+     * @param urlDocumentId
+     * @param serviceInformation
+     * @return
+     */
+    public ServiceInformationType validateServiceInformation(final ParticipantIdentifierType urlParticipantId,
+                                                             final DocumentIdentifier urlDocumentId,
+                                                             final ServiceInformationType serviceInformation) {
+
+        final ParticipantIdentifierType xmlParticipantId = identifierService.normalizeParticipant(
                 serviceInformation.getParticipantIdentifier());
+        final DocumentIdentifier xmlDocumentId = identifierService.normalizeDocument
+                (serviceInformation.getDocumentIdentifier());
 
-
-        if (!serviceGroupId.equals(serviceGroupParticipantId)) {
-            String errorMessage = String.format("Save service metadata was called with bad Participant ID parameters. Message body param: %s URL param: %s",
-                    asString(serviceInformation.getParticipantIdentifier()),
-                    asString(serviceGroupId));
-            log.info(errorMessage);
+        if (!urlParticipantId.equals(xmlParticipantId)) {
+            String errorMessage = "Save service metadata was called with bad Participant ID parameters. Message body param: ["
+                    + identifierToString(xmlParticipantId) + "] URL param: [" + identifierToString(urlParticipantId) + "]";
             throw new BadRequestException(WRONG_FIELD, errorMessage);
         }
-        if (serviceInformation != null) {
-            validateServiceInformation(serviceInformation);
+
+        if (!urlDocumentId.equals(xmlDocumentId)) {
+            String errorMessage = "Save service metadata was called with bad Document ID parameters. Message body param: ["
+                    + identifierToString(xmlDocumentId) + "] URL param: [" + identifierToString(urlDocumentId) + "]";
+            throw new BadRequestException(WRONG_FIELD, errorMessage);
         }
+        validateProcesses(serviceInformation);
         return serviceInformation;
     }
 
-    private void validateServiceInformation(ServiceInformationType serviceInformation) {
+    private void validateProcesses(ServiceInformationType serviceInformation) {
         ProcessListType processList = serviceInformation.getProcessList();
         if (processList == null) {
             return;
@@ -112,6 +118,18 @@ public class ServiceMetadataValidator {
         for (ProcessType process : processList.getProcesses()) {
             validateProcess(process);
         }
+    }
+
+    private String identifierToString(ParticipantIdentifierType identifierType) {
+        return "ParticipantIdentifier: " + (identifierType == null ? "NULL" : identifierToString(identifierType.getScheme(), identifierType.getValue()));
+    }
+
+    private String identifierToString(DocumentIdentifier identifierType) {
+        return "DocumentIdentifier: " + (identifierType == null ? "NULL" : identifierToString(identifierType.getScheme(), identifierType.getValue()));
+    }
+
+    private String identifierToString(String scheme, String value) {
+        return "scheme: '" + scheme + "', value: '" + value + "'";
     }
 
     private void validateProcess(ProcessType process) {

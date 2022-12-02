@@ -13,7 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
@@ -28,24 +29,34 @@ import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 import static java.net.URLDecoder.decode;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
- * Created by gutowpa on 14/11/2017.
+ * Purpose of class is to test ServiceGroupService base methods
+ *
+ * @author gutowpa
+ * @since 3.0.0
  */
 @Service
 public class ServiceGroupService {
+
 
 
     private static final String UTF_8 = "UTF-8";
@@ -53,7 +64,7 @@ public class ServiceGroupService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupService.class);
 
     @Autowired
-    private CaseSensitivityNormalizer caseSensitivityNormalizer;
+    private IdentifierService identifierService;
 
     @Autowired
     private ServiceGroupDao serviceGroupDao;
@@ -80,14 +91,14 @@ public class ServiceGroupService {
      */
     public ServiceGroup getServiceGroup(ParticipantIdentifierType participantId) {
         // normalize participant identifier
-        ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(participantId);
+        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(participantId);
         Optional<DBServiceGroup> sg = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme());
         if (!sg.isPresent()) {
             throw new SMPRuntimeException(SG_NOT_EXISTS, normalizedServiceGroupId.getValue(),
                     normalizedServiceGroupId.getScheme());
         }
-        return ServiceGroupConverter.toServiceGroup(sg.get(), configurationService.getForceConcatenateEBCorePartyId());
+        return toServiceGroup(sg.get(), configurationService.getParticipantIdentifierUrnValidationRexExp());
     }
 
     /**
@@ -103,7 +114,7 @@ public class ServiceGroupService {
     public boolean saveServiceGroup(ServiceGroup serviceGroup, String domain, String serviceGroupOwner, String authenticatedUser) {
 
         // normalize participant identifier
-        ParticipantIdentifierType normalizedParticipantId = caseSensitivityNormalizer.normalize(serviceGroup.getParticipantIdentifier());
+        ParticipantIdentifierType normalizedParticipantId = identifierService.normalizeParticipant(serviceGroup.getParticipantIdentifier());
         LOG.businessDebug(SMPMessageCode.BUS_SAVE_SERVICE_GROUP, domain, normalizedParticipantId.getValue(), normalizedParticipantId.getScheme());
 
         // normalize service group owner
@@ -243,7 +254,7 @@ public class ServiceGroupService {
      */
     @Transactional
     public boolean isServiceGroupOwner(String ownerIdentifier, String serviceGroupIdentifier) {
-        ParticipantIdentifierType pt = caseSensitivityNormalizer.normalizeParticipant(serviceGroupIdentifier);
+        ParticipantIdentifierType pt = identifierService.normalizeParticipantIdentifier(serviceGroupIdentifier);
         Optional<DBServiceGroup> osg = serviceGroupDao.findServiceGroup(pt.getValue(), pt.getScheme());
         Optional<DBUser> own = userDao.findUserByIdentifier(ownerIdentifier);
         return osg.isPresent() && own.isPresent() && osg.get().getUsers().contains(own.get());
@@ -252,7 +263,7 @@ public class ServiceGroupService {
 
     @Transactional
     public void deleteServiceGroup(ParticipantIdentifierType serviceGroupId) {
-        final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
+        final ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
 
         Optional<DBServiceGroup> dbServiceGroup = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme());
@@ -271,5 +282,43 @@ public class ServiceGroupService {
         }
 
         serviceGroupDao.removeServiceGroup(dsg);
+    }
+
+    /**
+     * Method returns Oasis ServiceGroup entity with  extension and
+     * empty ServiceMetadataReferenceCollectionType. If extension can not be converted to jaxb object than
+     * ConversionException is thrown.
+     *
+     * @param dsg                - database service group entity
+     * @param concatenatePartyId - regular expression if servicegroup in party identifier must be concatenate and returned in string value.
+     * @return Oasis ServiceGroup entity or null if parameter is null
+     */
+    public ServiceGroup toServiceGroup(DBServiceGroup dsg, Pattern concatenatePartyId) {
+
+        if (dsg == null) {
+            return null;
+        }
+
+        ServiceGroup serviceGroup = new ServiceGroup();
+        String schema = dsg.getParticipantScheme();
+        String value = dsg.getParticipantIdentifier();
+
+        if (StringUtils.isNotBlank(schema) && concatenatePartyId != null && concatenatePartyId.matcher(schema).matches()) {
+            value = identifierService.formatParticipant(schema, value);
+            schema = null;
+        }
+        ParticipantIdentifierType identifier = new ParticipantIdentifierType(value, schema);
+        serviceGroup.setParticipantIdentifier(identifier);
+        if (dsg.getExtension() != null) {
+            try {
+                List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(dsg.getExtension());
+                serviceGroup.getExtensions().addAll(extensions);
+            } catch (JAXBException e) {
+                throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e, dsg.getParticipantIdentifier(),
+                        dsg.getParticipantScheme(), ExceptionUtils.getRootCauseMessage(e));
+            }
+        }
+        serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
+        return serviceGroup;
     }
 }

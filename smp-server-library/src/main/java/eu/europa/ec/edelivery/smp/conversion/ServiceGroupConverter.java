@@ -13,17 +13,12 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -37,15 +32,15 @@ import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_EXTENSION_FOR_SG;
-import static eu.europa.ec.smp.api.Identifiers.EBCORE_IDENTIFIER_PREFIX;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * Created by migueti on 26/01/2017.
+ *  Purpose of class is to test ServiceGroupService base methods
+ *
+ * @author migueti
+ * @since 3.0.0
  */
 public class ServiceGroupConverter {
 
@@ -75,10 +70,10 @@ public class ServiceGroupConverter {
     }
 
     /**
-     * Method umarshal ServiceGroup from xml string
+     * Method unmarshal ServiceGroup from xml string
      *
-     * @param serviceGroupXml
-     * @return
+     * @param serviceGroupXml service group xml
+     * @return java object Object
      */
     public static ServiceGroup unmarshal(String serviceGroupXml) {
         try {
@@ -90,7 +85,7 @@ public class ServiceGroupConverter {
     }
 
     /**
-     * Method umarshal ServiceGroup from xml bytearraz
+     * Method unmarshal ServiceGroup from xml bytearray
      *
      * @param serviceGroupXml
      * @return
@@ -98,67 +93,18 @@ public class ServiceGroupConverter {
     public static ServiceGroup unmarshal(byte[] serviceGroupXml) {
 
         try {
-            System.out.println("UNMARSHAL SERVICE GROUP " + new String(serviceGroupXml));
             Document serviceGroupDoc = parse(serviceGroupXml);
             ServiceGroup serviceGroup = getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
-            /*
-            if (serviceGroup!=null && serviceGroup.getParticipantIdentifier()!=null
-            && StringUtils.isBlank(serviceGroup.getParticipantIdentifier().getScheme())
-            && StringUtils.startsWithAny(serviceGroup.getParticipantIdentifier().getValue(),
-                    EBCORE_IDENTIFIER_PREFIX,
-                    "::"+ EBCORE_IDENTIFIER_PREFIX)){
-                // normalize participant identifier
-                LOG.info("Normalize ebCore identifier: " + serviceGroup.getParticipantIdentifier().getValue());
-                ParticipantIdentifierType participantIdentifierType = Identifiers.asParticipantId(serviceGroup.getParticipantIdentifier().getValue(), allowNullPartcScheme);
-                serviceGroup.setParticipantIdentifier(participantIdentifierType);
-            }*/
             return serviceGroup;
         } catch (ParserConfigurationException | IOException | SAXException | JAXBException ex) {
             throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION, ex, ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));
         }
     }
 
-    /**
-     * Method returns Oasis ServiceGroup entity with  extension and
-     * empty ServiceMetadataReferenceCollectionType. If extension can not be converted to jaxb object than
-     * ConversionException is thrown.
-     *
-     * @param dsg - database service group entity
-     * @return Oasis ServiceGroup entity or null if parameter is null
-     */
-    public static ServiceGroup toServiceGroup(DBServiceGroup dsg, boolean concatenateEBCoreID) {
-
-        if (dsg == null) {
-            return null;
-        }
-
-        ServiceGroup serviceGroup = new ServiceGroup();
-        String schema = dsg.getParticipantScheme();
-        String value = dsg.getParticipantIdentifier();
-        if (concatenateEBCoreID && StringUtils.startsWithIgnoreCase(schema, EBCORE_IDENTIFIER_PREFIX)) {
-            value = schema + ":" + value;
-            schema = null;
-        }
-        ParticipantIdentifierType identifier = new ParticipantIdentifierType(value, schema);
-        serviceGroup.setParticipantIdentifier(identifier);
-        if (dsg.getExtension() != null) {
-            try {
-                List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(dsg.getExtension());
-                serviceGroup.getExtensions().addAll(extensions);
-            } catch (JAXBException e) {
-                throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e, dsg.getParticipantIdentifier(),
-                        dsg.getParticipantScheme(), ExceptionUtils.getRootCauseMessage(e));
-            }
-        }
-        serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType(new ArrayList()));
-        return serviceGroup;
-    }
-
     private static Document parse(String serviceGroupXml) throws ParserConfigurationException, IOException, SAXException {
         InputStream inputStream = new ByteArrayInputStream(serviceGroupXml.getBytes(UTF_8));
         return getDocumentBuilder().parse(inputStream);
     }
-
 
     private static Document parse(byte[] serviceGroupXml) throws ParserConfigurationException, IOException, SAXException {
         InputStream inputStream = new ByteArrayInputStream(serviceGroupXml);
@@ -181,5 +127,4 @@ public class ServiceGroupConverter {
                     ExceptionUtils.getRootCauseMessage(e));
         }
     }
-
 }
