@@ -118,7 +118,7 @@ public class DatabaseConfig {
         if (!StringUtils.isBlank(hibernateDialect)) {
             hibernateJpaVendorAdapter.setDatabasePlatform(hibernateDialect);
         }
-        hibernateJpaVendorAdapter.setGenerateDdl(true);
+        hibernateJpaVendorAdapter.setGenerateDdl(false);
         return hibernateJpaVendorAdapter;
     }
 }
