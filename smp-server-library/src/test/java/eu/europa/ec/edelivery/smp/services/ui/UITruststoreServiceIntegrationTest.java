@@ -73,6 +73,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         File truststoreFile = new File(targetDirectory.toFile(), "smp-truststore.jks");
         Mockito.doReturn("test123").when(configurationService).getTruststoreCredentialToken();
         Mockito.doReturn(truststoreFile).when(configurationService).getTruststoreFile();
+        Mockito.doReturn("JKS").when(configurationService).getTruststoreType();
         Mockito.doReturn(targetDirectory.toFile()).when(configurationService).getConfigurationFolder();
         Mockito.doReturn(true).when(configurationService).forceCRLValidation();
         resetKeystore();
