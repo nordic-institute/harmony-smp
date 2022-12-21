@@ -70,6 +70,7 @@ public class SmlConnectorDomainTest extends AbstractServiceIntegrationTest {
         Mockito.doNothing().when(testInstance).configureClient(any(), any(), any());
         ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
+        //Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
         mockSml.reset();
     }
 

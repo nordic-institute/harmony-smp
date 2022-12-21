@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
@@ -15,9 +16,14 @@
         <!-- Only selected modules are deployed -->
         <maven.deploy.skip>false</maven.deploy.skip>
         <url>http://localhost:8080/smp</url>
-        <SMPAdminUser />
-        <SMPAdminPassword />
+        <SMPAdminUser/>
+        <SMPAdminPassword/>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <http-builder.version>0.7.1</http-builder.version>
+        <reflection.version>0.9.11</reflection.version>
+        <httpcore.version>4.4.3</httpcore.version>
+        <apache.http4.client.version>4.5.14</apache.http4.client.version>
     </properties>
 
     <profiles>
@@ -55,23 +61,46 @@
                             </projectFile>
                             <testSuite>PASSING_AUTO_BAMBOO</testSuite>
                             <!--If you want to execute single test case -->
-                             <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
+                            <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
+                            <!-- testCase>SMP022-Create ServiceMetadata-Basic Flow</testCase -->
                             <projectProperties>
                                 <value>url=${url}</value>
                                 <value>SMPAdminUser=${SMPAdminUser}</value>
                                 <value>SMPAdminPassword=${SMPAdminPassword}</value>
-                            </projectProperties>
-                        </configuration>
+                        </projectProperties>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.reflections</groupId>
+                            <artifactId>reflections</artifactId>
+                            <version>${reflection.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.codehaus.groovy.modules.http-builder</groupId>
+                            <artifactId>http-builder</artifactId>
+                            <version>${http-builder.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.httpcomponents</groupId>
+                            <artifactId>httpcore</artifactId>
+                            <version>${httpcore.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.httpcomponents</groupId>
+                            <artifactId>httpclient</artifactId>
+                            <version>${apache.http4.client.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <phase>integration-test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-                        <executions>
-                            <execution>
-                                <phase>integration-test</phase>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <!-- extract classes so that JACOCO plugin can find the classes
                     to generate a report (use this option to get Code coverage report for SOAPUI project)
                     -->
