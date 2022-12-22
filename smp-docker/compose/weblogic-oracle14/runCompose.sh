@@ -7,7 +7,7 @@ SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/oracl
 #SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
 SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql"
 # soap ui data
-PREFIX="smp-wls-orcl"
+PREFIX="smp-wls14-orcl"
 SMP_VERSION=5.0-SNAPSHOT
 
 

@@ -4,7 +4,7 @@ WORKING_DIR="$(dirname $0)"
 echo "Working Directory: ${WORKING_DIR}"
 cd "$WORKING_DIR"
 
-PREFIX="smp-wls-orcl"
+PREFIX="smp-wls14-orcl"
 
 # clear volume and containers - to run  restart from strach 
 
