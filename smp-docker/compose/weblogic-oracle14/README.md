@@ -1,5 +1,5 @@
 # WebLogic oracle docker plan
-WebLogic Oracle database plan starts up clustered WebLogic 12.2c environment with the Oracle 11xe or oracle 19c database.
+WebLogic Oracle database plan starts up clustered WebLogic 14c environment with the Oracle 11xe or oracle 19c database.
 The cluster is consisted from two nodes and the admin served. DB Connection pool and the SMP application is deployed to all 
 servers.    
 

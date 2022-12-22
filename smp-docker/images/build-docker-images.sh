@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script builds docker images for SMP oracle/weblogic environment. Docker images for database and weblogic are from
 # https://github.com/oracle/docker-images

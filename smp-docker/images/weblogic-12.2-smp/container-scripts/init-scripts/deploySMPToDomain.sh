@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #Define WL_DOMAIN_HOME
 INIT_SCRIPTS=$1

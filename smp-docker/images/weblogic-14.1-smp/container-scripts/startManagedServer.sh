@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
