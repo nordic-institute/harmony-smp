@@ -39,6 +39,7 @@ public class FileProperty {
     public static final String PROPERTY_DB_DIALECT = "hibernate.dialect";
     public static final String PROPERTY_LIB_FOLDER = "libraries.folder";
     public static final String PROPERTY_SMP_MODE_DEVELOPMENT = "smp.mode.development";
+    public static final String PROPERTY_GENERATE_DDL = "spring.jpa.generate-ddl";
 
     protected FileProperty() {
     }

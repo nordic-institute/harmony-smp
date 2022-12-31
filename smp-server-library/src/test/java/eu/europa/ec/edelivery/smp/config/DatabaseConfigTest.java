@@ -19,14 +19,16 @@ public class DatabaseConfigTest {
     public static final String DATABASE_URL="jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE";
     public static final String DATABASE_USERNAME="smp-dev";
     public static final String DATABASE_PASS="smp-dev";
+    public static final String DATABASE_GENERATEDDL="true";
 
     DatabaseConfig testInstance = new DatabaseConfig(){{
         // test properties from persistence-test-h2.properties
-        jndiDatasourceName =null;
+        jndiDatasourceName = null;
         driver = DATABASE_DRIVER;
         url = DATABASE_URL;
-        username =DATABASE_USERNAME;
-        password =DATABASE_PASS;
+        username = DATABASE_USERNAME;
+        password = DATABASE_PASS;
+        generateDdl = DATABASE_GENERATEDDL;
     }};
 
     @Test
