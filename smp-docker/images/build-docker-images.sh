@@ -196,11 +196,11 @@ validateAndPrepareArtefacts() {
 # build docker images
 # -----------------------------------------------------------------------------
 buildImages() {
-  #buildOracleDatabaseImage
-  #buildWebLogicOracleImages12
+  buildOracleDatabaseImage
+  buildWebLogicOracleImages12
   buildWebLogicOracleImages14
-  #buildTomcatMysqlImages
-  #buildUtils
+  buildTomcatMysqlImages
+  buildUtils
 }
 buildTomcatMysqlImages() {
     # build tomcat mysql image  deployment.
