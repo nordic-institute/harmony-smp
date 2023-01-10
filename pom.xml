@@ -50,7 +50,7 @@
         <commons-net.version>3.8.0</commons-net.version>
         <commons-validator.version>1.7</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
-        <cxf.version>3.5.2</cxf.version>
+        <cxf.version>3.5.5</cxf.version>
          <ehcache.version>2.10.9.2</ehcache.version>
         <freemarker.version>2.3.31</freemarker.version>
         <h2.version>1.4.200</h2.version>
