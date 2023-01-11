@@ -23,6 +23,12 @@ public class AlertArea  extends PageComponent {
 	private WebElement closeAlertSpan;
 
 	public AlertMessage getAlertMessage(){
+		try {
+			waitForElementToBeVisible(alertMessage);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		if(!alertMessage.isDisplayed()){
 			log.warn("No messages displayed.");
 			return null;

@@ -15,7 +15,7 @@
 <weblogic-web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.bea.com/ns/weblogic/weblogic-web-app http://www.bea.com/ns/weblogic/weblogic-web-app/1.0/weblogic-web-app.xsd" xmlns="http://www.bea.com/ns/weblogic/weblogic-web-app">
     <container-descriptor>
         <prefer-application-packages>
-
+            <package-name>org.bouncycastle.*</package-name>
             <!-- used by Hibernate and JPA -->
             <package-name>javax.persistence.*</package-name>
             <package-name>javassist.*</package-name>
@@ -26,6 +26,8 @@
 
             <!-- used to switch off bean validation which resulted in failing Spring context to load -->
             <package-name>javax.validation.*</package-name>
+            <!-- use smp fasterxml because weblogic version is to old -->
+            <package-name>com.fasterxml.*</package-name>
 
         </prefer-application-packages>
         <prefer-application-resources>

@@ -140,6 +140,24 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
+    public void registerParticipantNullScheme() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
+        /* given (init database - check setup)
+         * Domain: TEST_DOMAIN_CODE_1
+         * Users: USERNAME_1, USER_CERT_2
+         * ServiceGroup1: TEST_SG_ID_NO_SCHEME, null
+         *    - Domain: TEST_DOMAIN_CODE_1
+         */
+        // when
+        testInstance.registerParticipant(TEST_SG_ID_NO_SCHEME,null,TEST_DOMAIN_CODE_1 );
+
+        //then -- expect on call
+        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
+        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
+        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
+
+    }
+
+    @Test
     public void unRegisterParticipant() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
         /* given (init database - check setup)
          * Domain: TEST_DOMAIN_CODE_1

@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
-<mat-dialog-content style="height:750px;width:1200px">
-  <div fxLayout="column">
-    <mat-card   >
+<mat-dialog-content class="flex-dialog-content">
+  <div fxLayout="column" style="flex-grow: 1;">
+    <mat-card  style="flex-grow: 1;" >
 
       <mat-card-content >
         <div class="panel">
@@ -39,7 +39,7 @@
     </mat-card>
 
 
-    <mat-card>
+    <mat-card style="flex-grow: 1;">
       <mat-card-content>
         <mat-toolbar>
           <mat-toolbar-row>
@@ -101,18 +101,18 @@
     </mat-card>
   </div>
 </mat-dialog-content>
-<mat-dialog-actions>
-  <div class="group-action-button">
-    <button mat-raised-button color="primary" (click)="submitForm()"
-            [disabled]="!dialogForm.valid">
-      <mat-icon>check_circle</mat-icon>
-      <span>OK</span>
-    </button>
 
-    <button mat-raised-button color="primary" mat-dialog-close>
-      <mat-icon>cancel</mat-icon>
-      <span>Cancel</span>
-    </button>
-  </div>
+
+<div class="required-fields">* required fields</div>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="submitForm()"
+          [disabled]="!dialogForm.valid">
+    <mat-icon>check_circle</mat-icon>
+    <span>OK</span>
+  </button>
+
+  <button mat-raised-button color="primary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
 </mat-dialog-actions>
-<div style="text-align: right; font-size: 70%">* required fields</div>

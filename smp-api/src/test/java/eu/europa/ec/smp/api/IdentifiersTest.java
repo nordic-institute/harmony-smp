@@ -66,18 +66,19 @@ public class IdentifiersTest {
         };
     }
 
-    private static final Object[] participantIdentifierNegativeCases() {
-        return new Object[]{
-                "Null value", null,
-                "Empty value", "",
-                "Not double colon and not ebCoreId", "a",
-                "Constant and is not ebCoreId 2", "abc",
-                "Only one colon", "a:b",
-                "Missing identifier", "a::",
-                "Not double colon and not ebCoreId", "ehealth-actorid-qns",
-                "Not double colon and not ebCoreId", "urn:poland:ncpb",
-                "Not double colon and not ebCoreId", "ehealth-resid-qns",
-                "Not double colon and not ebCoreId", "epsos##services:extended:epsos:51",
+    private static final Object[][] participantIdentifierNegativeCases() {
+        return new Object[][]{
+                {"Null value", null, false},
+                {"Empty value", "", false},
+                {"Missing identifier", "a::", false},
+                // following are false only if scheme is mandatory!
+                {"Not double colon and not ebCoreId", "a", true},
+                {"Constant and is not ebCoreId 2", "abc", true},
+                {"Only one colon", "a:b", true},
+                {"Not double colon and not ebCoreId", "ehealth-actorid-qns", true},
+                {"Not double colon and not ebCoreId", "urn:poland:ncpb", true},
+                {"Not double colon and not ebCoreId", "ehealth-resid-qns", true},
+                {"Not double colon and not ebCoreId", "epsos##services:extended:epsos:51", true},
         };
     }
 
@@ -86,6 +87,7 @@ public class IdentifiersTest {
                 {"a::b", "a", "b"},
                 {"a::b::c", "a", "b::c"},
                 {"a:b::c", "a:b", "c"},
+                {"NoSchemeIdentifier", null, "NoSchemeIdentifier"},
                 {"ehealth-actorid-qns::urn:poland:ncpb", "ehealth-actorid-qns", "urn:poland:ncpb"},
                 {"ehealth-resid-qns::urn::epsos##services:extended:epsos::51", "ehealth-resid-qns", "urn::epsos##services:extended:epsos::51"},
                 {"iso6523-actorid-upis::0002:gutek", "iso6523-actorid-upis", "0002:gutek"},
@@ -135,7 +137,7 @@ public class IdentifiersTest {
 
     private static final Object[] ebCoreIdentifiersNegativeCases() {
         return new Object[][]{
-                {"Not an ebCore ", "urn:my:space:tc:ebcore:partyid-type:unregistered:domain:ec.europa.eu", MalformedIdentifierException.class},
+                //{"Not an ebCore ", "urn:my:space:tc:ebcore:partyid-type:unregistered:domain:ec.europa.eu", MalformedIdentifierException.class},
                 {"ebCore iso6523", "urn:oasis:names:tc:ebcore:partyid-type:iso6523:Illegal-value-without-scheme", IllegalArgumentException.class},
                 {"ebCore with no catalog", " urn:oasis:names:tc:ebcore:partyid-type:0088123456789", IllegalArgumentException.class},
         };
@@ -144,15 +146,7 @@ public class IdentifiersTest {
     private static final Object[] negativeCases() {
         return new Object[]{
                 null,
-                "",
-                "a",
-                "abc",
-                "a:b",
                 "a::",
-                "ehealth-actorid-qns",
-                "urn:poland:ncpb",
-                "ehealth-resid-qns",
-                "epsos##services:extended:epsos:51",
         };
     }
 
@@ -174,13 +168,12 @@ public class IdentifiersTest {
         return res;
     }
 
-
     @Test
     @Parameters(method = "participantIdentifierPositiveCases")
     @TestCaseName("{0}")
     public void testParticipantIdPositive(String caseName, String input, String scheme, String value) {
         //when
-        ParticipantIdentifierType participantId = Identifiers.asParticipantId(input);
+        ParticipantIdentifierType participantId = Identifiers.asParticipantId(input, true);
 
         //then
         assertEquals(scheme, participantId.getScheme());
@@ -203,10 +196,11 @@ public class IdentifiersTest {
     @Test
     @Parameters(method = "participantIdentifierNegativeCases")
     @TestCaseName("{0}")
-    public void testParticipantIdNegative(String negativeInput) {
+    public void testParticipantIdNegative(String caseName, String negativeInput, boolean schemeMandatory) {
         try {
             //when
-            Identifiers.asParticipantId(negativeInput);
+            Identifiers.asParticipantId(negativeInput, schemeMandatory);
+            System.out.println(negativeInput);
         } catch (Exception e) {
             //then
             negativeAssertions(negativeInput, e);
@@ -222,7 +216,7 @@ public class IdentifiersTest {
 
         expectedEx.expect(clz);
         //when
-        Identifiers.asParticipantId(negativeInput);
+        Identifiers.asParticipantId(negativeInput, false);
 
     }
 
@@ -247,7 +241,6 @@ public class IdentifiersTest {
         assertEquals(scheme, processId.getScheme());
         assertEquals(value, processId.getValue());
     }
-
 
     @Test
     @Parameters(method = "negativeCases")
@@ -277,7 +270,6 @@ public class IdentifiersTest {
         fail();
     }
 
-
     private void negativeAssertions(String negativeInput, Exception e) {
         assertTrue(e instanceof MalformedIdentifierException);
         assertEquals(MALFORMED_INPUT_MSG + (StringUtils.isBlank(negativeInput) ? "Null/Empty" : negativeInput), e.getMessage());
@@ -293,6 +285,16 @@ public class IdentifiersTest {
     }
 
     @Test
+    public void testUrlEncodingParticipantIdWithSpace() {
+        //given
+        ParticipantIdentifierType participantId = new ParticipantIdentifierType("GPR: 0088:conformance:sg01#", "ehealth:actorid:qns");
+
+        //when-then
+        //Because this is path segment spaces must be percent encoded (not with +)!
+        assertEquals("ehealth%3Aactorid%3Aqns%3A%3AGPR%3A%200088%3Aconformance%3Asg01%23", Identifiers.asUrlEncodedString(participantId));
+    }
+
+    @Test
     public void testUrlEncodingDocumentId() {
         //given
         DocumentIdentifier docId = new DocumentIdentifier("urn::ehealth##services:extended:epsos01::101", "busdox:docid:qns");
@@ -301,5 +303,14 @@ public class IdentifiersTest {
         assertEquals("busdox%3Adocid%3Aqns%3A%3Aurn%3A%3Aehealth%23%23services%3Aextended%3Aepsos01%3A%3A101", Identifiers.asUrlEncodedString(docId));
     }
 
+    @Test
+    public void testUrlEncodingDocumentIdWithSpace() {
+        //given
+        DocumentIdentifier docId = new DocumentIdentifier("urn::ehealth##services:extended:epsos01:: 101", "busdox:docid:qns");
+
+        //when-then
+        //Because this is path segment spaces must be percent encoded (not with +)!
+        assertEquals("busdox%3Adocid%3Aqns%3A%3Aurn%3A%3Aehealth%23%23services%3Aextended%3Aepsos01%3A%3A%20101", Identifiers.asUrlEncodedString(docId));
+    }
 
 }

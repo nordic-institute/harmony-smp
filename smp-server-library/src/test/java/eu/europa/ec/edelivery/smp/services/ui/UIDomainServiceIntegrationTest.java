@@ -83,12 +83,9 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
     public void validateDeleteRequest(){
 
         DeleteEntityValidation dev= new DeleteEntityValidation();
-        dev.getListIds().add((long)10);
-
+        dev.getListIds().add("10");
         DeleteEntityValidation res = testInstance.validateDeleteRequest(dev);
-
         assertEquals(true, res.isValidOperation());
-
     }
 
     @Test
@@ -106,15 +103,15 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
 
         // when
         DeleteEntityValidation dev= new DeleteEntityValidation();
-        dev.getListIds().add(d.getId());
-        dev.getListIds().add(d2.getId());
+        dev.getListIds().add(d.getId()+"");
+        dev.getListIds().add(d2.getId()+"");
 
         DeleteEntityValidation res = testInstance.validateDeleteRequest(dev);
 
         // then
         assertEquals(false, res.isValidOperation());
         assertEquals(1, res.getListDeleteNotPermitedIds().size());
-        assertEquals(d.getId(), res.getListDeleteNotPermitedIds().get(0));
+        assertEquals(d.getId()+"", res.getListDeleteNotPermitedIds().get(0));
         assertEquals("Could not delete domains used by Service groups! Domain: domain (domain ) uses by:1 SG.", res.getStringMessage());
 
     }

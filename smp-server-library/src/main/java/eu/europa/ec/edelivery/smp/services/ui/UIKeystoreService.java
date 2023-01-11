@@ -7,9 +7,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
-import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -28,6 +25,10 @@ import java.util.*;
 import static java.util.Collections.list;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+/**
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 @Service
 public class UIKeystoreService {
 
@@ -53,7 +54,6 @@ public class UIKeystoreService {
     public void init() {
         keystoreKeys = new HashMap();
         keystoreCertificates = new HashMap();
-        X509CertificateUtils.setupJCEProvider();
         refreshData();
     }
 
@@ -66,7 +66,7 @@ public class UIKeystoreService {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
 
         // load keystore
-        File keystoreFile =  configurationService.getKeystoreFile();
+        File keystoreFile = configurationService.getKeystoreFile();
         if (keystoreFile == null) {
             LOG.error("KeystoreFile: is null! Check the keystore and the configuration!");
             return;
@@ -101,7 +101,7 @@ public class UIKeystoreService {
             return;
         }
         LOG.debug("Set keystore certificates:");
-        hmCertificates.forEach((alias, cert)-> LOG.debug(" - {}, {}", alias, cert.getSubjectDN().toString() ));
+        hmCertificates.forEach((alias, cert) -> LOG.debug(" - {}, {}", alias, cert.getSubjectDN().toString()));
         // if got all data from keystore - update data
         keyManagers = keyManagersTemp;
 
@@ -120,7 +120,7 @@ public class UIKeystoreService {
     boolean isKeyStoreChanged() {
         File file = configurationService.getKeystoreFile();
 
-        return file!=null && (!Objects.equals(lastUpdateKeystoreFile, file) || file.lastModified() != lastUpdateKeystoreFileTime);
+        return file != null && (!Objects.equals(lastUpdateKeystoreFile, file) || file.lastModified() != lastUpdateKeystoreFileTime);
     }
 
 
@@ -134,7 +134,7 @@ public class UIKeystoreService {
 
     private KeyStore loadKeystore(File keyStoreFile, String keystoreSecToken) {
         // Load the KeyStore.
-        if (keyStoreFile!=null && !keyStoreFile.exists()) {
+        if (keyStoreFile != null && !keyStoreFile.exists()) {
             LOG.error("Keystore file '{}' does not exists!", keyStoreFile.getAbsolutePath());
             return null;
         }
@@ -193,7 +193,7 @@ public class UIKeystoreService {
         }
 
         if (keystoreKeys.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: " + keyAlias +" from empty keystore!" + configurationService.getKeystoreFile() );
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: " + keyAlias + " from empty keystore!" + configurationService.getKeystoreFile());
         }
 
 

@@ -18,7 +18,7 @@ export class RowLimiterComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.pageSize = this.pageSizes[0].value;
+    this.pageSize = this.pageSizes[2].value;
   }
 
   changePageSize(newPageLimit:number) {

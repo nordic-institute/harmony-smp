@@ -1,5 +1,5 @@
 import {SearchTableController} from '../common/search-table/search-table-controller';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {ServiceGroupDetailsDialogComponent} from './service-group-details-dialog/service-group-details-dialog.component';
 import {ServiceGroupEditRo} from './service-group-edit-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
@@ -11,7 +11,8 @@ import {SearchTableEntity} from "../common/search-table/search-table-entity.mode
 
 export class ServiceGroupEditController implements SearchTableController {
 
-  compareSGProperties = ["extension", "users", "serviceGroupDomains"];
+  compareUpdateSGProperties = ["extension", "users", "serviceGroupDomains"];
+  compareNewSGProperties = ["participantScheme", "participantIdentifier", "", "extension", "users", "serviceGroupDomains"];
 
   constructor(public dialog: MatDialog) {
   }
@@ -24,7 +25,6 @@ export class ServiceGroupEditController implements SearchTableController {
     });
   }
 
-
   public edit(row: any) {
   }
 
@@ -36,7 +36,6 @@ export class ServiceGroupEditController implements SearchTableController {
       metaDataList[index].status = SearchTableEntityStatus.REMOVED;
       metaDataList[index].deleted = true;
     });
-
   }
 
   public newDialog(config?: MatDialogConfig): MatDialogRef<ServiceGroupDetailsDialogComponent> {
@@ -94,19 +93,24 @@ export class ServiceGroupEditController implements SearchTableController {
   }
 
   isRecordChanged(oldModel, newModel): boolean {
+    // different set of properties to compare in case if new entry is reedited or already saved entry is reedited.
+    let propsToCompare = newModel.status === SearchTableEntityStatus.NEW ?
+      this.compareNewSGProperties : this.compareUpdateSGProperties;
+
     // check if other properties were changed
-    let propSize = this.compareSGProperties.length;
+    let propSize = propsToCompare.length;
     for (let i = 0; i < propSize; i++) {
-      let property =  this.compareSGProperties[i];
+      let property = propsToCompare[i];
       let isEqual = false;
 
-      if (property ==='users'
-        || property ==='serviceGroupDomains') {
-        isEqual = this.isEqualListByAttribute(newModel[property], oldModel[property], "id");
-      }else {
-        isEqual = this.isEqual(newModel[property], oldModel[property]);
+      if (property === 'users') {
+        isEqual = this.isEqualListByAttribute(newModel[property], oldModel[property], "userId");
+      } else if (property === 'serviceGroupDomains') {
+        isEqual = this.isEqualListByAttribute(newModel[property], oldModel[property], "domainCode");
+      } else {
+        isEqual = this.isEqual(JSON.stringify(newModel[property]), JSON.stringify(oldModel[property]));
       }
-      console.log("Property: "+property+" new: " +newModel[property] +  "old: " +oldModel[property] + " val: " + isEqual  );
+      console.log("Property: " + property + " new: " + JSON.stringify(newModel[property]) + "old: " + JSON.stringify(oldModel[property]) + " val: " + isEqual);
       if (!isEqual) {
         return true; // Property has changed
       }
@@ -115,22 +119,21 @@ export class ServiceGroupEditController implements SearchTableController {
   }
 
   isEqualListByAttribute(array1, array2, compareByAttribute): boolean {
-    let result1 = array1.filter(function(o1){
+    let result1 = array1.filter(function (o1) {
       // filter out (!) items in result2
-      return !array2.some(function(o2){
+      return !array2.some(function (o2) {
         return o1[compareByAttribute] === o2[compareByAttribute]; //  unique id
       });
     });
 
-    let result2 = array2.filter(function(o1){
+    let result2 = array2.filter(function (o1) {
       // filter out (!) items in result2
-      return !array1.some(function(o2){
+      return !array1.some(function (o2) {
         return o1[compareByAttribute] === o2[compareByAttribute]; //  unique id
       });
     });
 
     return (!result1 || result1.length === 0) && (!result2 || result2.length === 0);
-
   }
 
   isEqual(val1, val2): boolean {

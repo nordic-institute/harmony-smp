@@ -2,11 +2,12 @@
 import {Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 import {SecurityService} from '../security/security.service';
 import {ReplaySubject} from 'rxjs';
+import {AlertMessageService} from "../common/alert-message/alert-message.service";
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
 
-  constructor(private router: Router, private securityService: SecurityService) {
+  constructor(private router: Router, private securityService: SecurityService, private alertService: AlertMessageService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
@@ -15,9 +16,11 @@ export class AuthenticatedGuard implements CanActivate {
       if(isAuthenticated) {
         subject.next(true);
       } else {
+        console.log("User session is not active")
         // not logged in so redirect to login page with the return url
         this.router.navigate(['/login'], {queryParams: {returnUrl: state.url}});
         subject.next(false);
+        this.alertService.error('You have been logged out because of inactivity or missing access permissions.', true);
       }
     });
     return subject.asObservable();

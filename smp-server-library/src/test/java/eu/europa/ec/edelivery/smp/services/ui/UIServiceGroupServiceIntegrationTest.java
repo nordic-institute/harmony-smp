@@ -14,6 +14,7 @@ import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
+import org.hamcrest.text.MatchesPattern;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static org.hamcrest.core.StringContains.containsString;
+import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.*;
 
 
@@ -67,9 +69,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void testGetTableListEmpty() {
-
         // given
-
         //when
         ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1, -1, null, null, null);
         // then
@@ -283,7 +283,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
 
     @Test
-    public void validateExtensionVaild() throws IOException {
+    public void validateExtensionValid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidExtension();
 
@@ -296,7 +296,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void validateExtensionMultipleVaild() throws IOException {
+    public void validateExtensionMultipleValid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidMultipleExtension();
 
@@ -309,7 +309,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void validateExtensionCustomTextInvaldValid() throws IOException {
+    public void validateExtensionCustomTextInvalid() throws IOException {
         // given
         ServiceGroupValidationRO sg = TestROUtils.getValidCustomText();
 
@@ -331,7 +331,8 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
         // then
         assertNotNull(sg.getErrorMessage());
-        assertThat(sg.getErrorMessage(), containsString(" Invalid content was found starting with element 'ExtensionID'."));
+
+        assertThat(sg.getErrorMessage(), matchesPattern(".*cvc-complex-type.2.4.a: Invalid content was found starting with element \\'\\{?(\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\")?:?ExtensionID\\}?\\'.*"));
         assertNotNull(sg.getExtension());
     }
 

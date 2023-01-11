@@ -1,8 +1,12 @@
 package utils.enums;
 
+import utils.TestDataProvider;
+
+import java.util.Map;
+
 public class SMPMessages {
 
-	public static final String MSG_1 = "The username/password combination you provided are not valid. Please try again or contact your administrator.";
+	public static final String MSG_1 = "Login failed; Invalid userID or password";
 	public static final String MSG_2 = "Too many invalid attempts to log in. Access has been temporarily\n" +
 										"suspended. Please try again later with the right credentials.";
 	public static final String MSG_3 = "To abandon all changes performed since last save, click on the \"Cancel\" button.\n" +
@@ -64,7 +68,7 @@ public class SMPMessages {
 	public static final String MSG_21 = "Unable to login. SMP is not running.";
 
 
-	public static final String USERNAME_VALIDATION_MESSAGE = "Username can only contain alphanumeric characters (letters A-Z, numbers 0-9) and must have from 4 to 32 characters!";
+	public static final String USERNAME_VALIDATION_MESSAGE = "Username is case insensitive and can only contain alphanumeric characters (letters a-zA-Z, numbers 0-9) and must have from 4 to 32 characters!";
 	public static final String PASS_POLICY_MESSAGE = "Password should follow all of these rules:\n" +
 			"- Minimum length: 8 characters\n" +
 			"- Maximum length: 32 characters\n" +
@@ -75,9 +79,6 @@ public class SMPMessages {
 	public static final String PASS_NO_MATCH_MESSAGE = "Passwords do not match";
 	public static final String PASS_NO_EMPTY_MESSAGE = "You should type a password";
 
-	
-
-
-
-
+	public static final String KEYSTORE_IMPORTED_MSG = "Keystore %s imported!";
+	public static final String KEYSTORE_DELETION_MSG = "Certificate %s deleted!";
 }

@@ -1,8 +1,5 @@
-#extensionTextArea {
-  border: none;
-  width: 610px;
-  height:340px;
-  -webkit-box-sizing: border-box; /* <=iOS4, <= Android  2.3 */
-  -moz-box-sizing: border-box; /* FF1+ */
-  box-sizing: border-box; /* Chrome, IE8, Opera, Safari 5.1*/
+.flex-dialog-content{
+  display: flex; justify-content: space-around;
+  flex-flow: row;
+  align-items: stretch;height:510px;min-width:950px
 }

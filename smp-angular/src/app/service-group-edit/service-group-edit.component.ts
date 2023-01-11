@@ -1,7 +1,15 @@
-import {ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
-import {MatDialog, MatDialogRef} from '@angular/material';
-import {AlertService} from '../alert/alert.service';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {ServiceGroupEditController} from './service-group-edit-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
@@ -15,23 +23,23 @@ import {SecurityService} from "../security/security.service";
   templateUrl: './service-group-edit.component.html',
   styleUrls: ['./service-group-edit.component.css']
 })
-export class ServiceGroupEditComponent implements OnInit {
+export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
-  @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
-  @ViewChild('rowActions') rowActions: TemplateRef<any>;
-  @ViewChild('rowSMPUrlLinkAction') rowSMPUrlLinkAction: TemplateRef<any>;
-  @ViewChild('searchTable') searchTable: SearchTableComponent;
+  @ViewChild('rowMetadataAction', {static: true}) rowMetadataAction: TemplateRef<any>
+  @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
+  @ViewChild('rowSMPUrlLinkAction', {static: true}) rowSMPUrlLinkAction: TemplateRef<any>;
+  @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
   serviceGroupEditController: ServiceGroupEditController;
   filter: any = {};
-  baseUrl: string = SmpConstants.REST_EDIT;
+  baseUrl: string;
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
 
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
               protected http: HttpClient,
-              protected alertService: AlertService,
+              protected alertService: AlertMessageService,
               public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef) {
 
@@ -40,54 +48,63 @@ export class ServiceGroupEditComponent implements OnInit {
       this.lookups.refreshUserLookup();
       this.lookups.refreshApplicationConfiguration();
     }
+    this.baseUrl = SmpConstants.REST_PUBLIC_SERVICE_GROUP;
   }
 
-  ngOnInit() {
-
-
-
+  ngOnInit(): void {
     this.serviceGroupEditController = new ServiceGroupEditController(this.dialog);
+  }
 
+  initColumns() {
     this.columnPicker.allColumns = [
       {
-        name: 'Metadata size',
+        name: 'Metadata',
         prop: 'serviceMetadata.length',
-        width: 120,
-        maxWidth: 120,
-        resizable: "false"
+        showInitially: true,
+        width: 75,
+        maxWidth: 75,
+        resizable: "false",
       },
       {
-        name: 'Owners size',
+        name: 'Owners',
         prop: 'users.length',
-        width: 120,
-        maxWidth: 120,
+        showInitially: true,
+        width: 75,
+        maxWidth: 75,
         resizable: "false"
       },
       {
         name: 'Participant scheme',
         prop: 'participantScheme',
-        width: 300,
+        showInitially: true,
+        width: 200,
         maxWidth: 300,
         resizable: "false"
       },
       {
         name: 'Participant identifier',
         prop: 'participantIdentifier',
+        showInitially: true,
       },
       {
         cellTemplate: this.rowSMPUrlLinkAction,
         name: 'OASIS ServiceGroup URL',
-        width: 250,
+        showInitially: true,
+        width: 150,
         maxWidth: 250,
         resizable: "false",
         sortable: false
       },
-
     ];
+    this.searchTable.tableColumnInit();
+  }
 
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Metadata size", 'Owners size', "Participant scheme", "Participant identifier", "OASIS ServiceGroup URL"].indexOf(col.name) != -1
-    });
+  ngAfterViewChecked() {
+    this.changeDetector.detectChanges();
+  }
+
+  ngAfterViewInit(): void {
+    this.initColumns();
   }
 
   details(row: any) {
@@ -123,31 +140,34 @@ export class ServiceGroupEditComponent implements OnInit {
     };
   }
 
-  onEditMetadataRow(serviceGroupRow: any,metaDataRow: any) {
+  onEditMetadataRow(serviceGroupRow: any, metaDataRow: any) {
     let metadataRowNumber = serviceGroupRow.serviceMetadata.indexOf(metaDataRow);
 
     const formRef: MatDialogRef<any> = this.serviceGroupEditController.newMetadataDialog({
-      data: {edit: true, serviceGroup: serviceGroupRow, metadata: metaDataRow}
+      data: {
+        edit: metaDataRow.status !== SearchTableEntityStatus.NEW,
+        serviceGroup: serviceGroupRow,
+        metadata: metaDataRow
+      }
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
 
         // method isServiceMetaDataChanged must be called before getCurrent!
-        let isChanged=formRef.componentInstance.isServiceMetaDataChanged();
-        if (!isChanged ){
+        let isChanged = formRef.componentInstance.isServiceMetaDataChanged();
+        if (!isChanged) {
           // nothing to save
           return;
         }
 
-        let statusMetadata =metaDataRow.status === SearchTableEntityStatus.PERSISTED
+        let statusMetadata = metaDataRow.status === SearchTableEntityStatus.PERSISTED
           ? SearchTableEntityStatus.UPDATED
           : metaDataRow;
 
-
         metaDataRow.status = statusMetadata;
-        metaDataRow  = {...formRef.componentInstance.getCurrent()};
+        metaDataRow = {...formRef.componentInstance.getCurrent()};
 
-        serviceGroupRow.serviceMetadata [metadataRowNumber] = {...metaDataRow };
+        serviceGroupRow.serviceMetadata [metadataRowNumber] = {...metaDataRow};
         // change reference to fire table update
         serviceGroupRow.serviceMetadata = [...serviceGroupRow.serviceMetadata]
 
@@ -184,18 +204,17 @@ export class ServiceGroupEditComponent implements OnInit {
   }
 
 
-
   // for dirty guard...
-  isDirty (): boolean {
+  isDirty(): boolean {
     return this.searchTable.isDirty();
   }
 
-  createServiceGroupURL(row: any){
-    return encodeURIComponent((!row.participantScheme? '' : row.participantScheme)+'::'+row.participantIdentifier);
+  createServiceGroupURL(row: any) {
+    return encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
   }
 
-  createServiceMetadataURL(serviceGroupRow: any, rowSMD: any){
-    return encodeURIComponent((!serviceGroupRow.participantScheme? '': serviceGroupRow.participantScheme)+'::'+serviceGroupRow.participantIdentifier)+'/services/'+ encodeURIComponent((!rowSMD.documentIdentifierScheme?'':rowSMD.documentIdentifierScheme)+'::'+rowSMD.documentIdentifier);
+  createServiceMetadataURL(serviceGroupRow: any, rowSMD: any) {
+    return encodeURIComponent((!serviceGroupRow.participantScheme ? '' : serviceGroupRow.participantScheme) + '::' + serviceGroupRow.participantIdentifier) + '/services/' + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
 
   onActivateServiceMetadata(serviceGroupRow: any, event) {

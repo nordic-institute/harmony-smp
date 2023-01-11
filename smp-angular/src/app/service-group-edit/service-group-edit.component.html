@@ -12,19 +12,9 @@
   [allowNewItems]="securityService.isCurrentUserSMPAdmin()"
   [allowDeleteItems]="securityService.isCurrentUserSMPAdmin()"
 >
-
-  <ng-template #rowMetadataAction let-row="row" let-value="value" ngx-datatable-cell-template>
-    <button mat-button color="primary"
-            (click)="metadataRowButtonAction(row)" id="metadataRowButtonAction{{row.$$index}}_id"
-            matTooltip="Show metadata list" >
-      <mat-icon>view_list</mat-icon>
-      <span>Metadata</span>
-    </button>
-  </ng-template>
-
   <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template
     >
-    <a target="_blank"    matTooltip="Open metadata as XML data"
+    <a target="_blank" matTooltip="Open metadata as XML data"
        href="{{contextPath}}{{createServiceGroupURL(row)}}">Open URL</a>
   </ng-template>
 
@@ -51,7 +41,7 @@
 
   <ng-template #additionalToolButtons></ng-template>
 
-  <ng-template #additionalRowActionButtons let-row="row">
+  <ng-template #additionalRowActionButtons let-row="row" >
     <button mat-icon-button color="primary" [disabled]="row?.deleted || loading"
             (click)="onAddMetadataRow(row)" matTooltip="Add service metadata">
       <mat-icon>playlist_add</mat-icon>
@@ -66,7 +56,7 @@
     <div *ngIf="row.serviceMetadata.length !== 0" >
       <ngx-datatable
         class='inner-table material striped'
-        [loadingIndicator]="loading"
+        [loadingIndicator]="false"
         [rows]='row.serviceMetadata'
         [columnMode]='"force"'
         [headerHeight]='50'

@@ -1,10 +1,12 @@
 package pages.components;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import pages.components.baseComponents.Header;
 import pages.components.baseComponents.SMPPage;
 import pages.components.baseComponents.PageComponent;
 import utils.PROPERTIES;
@@ -38,10 +40,17 @@ public class Sidebar extends PageComponent {
 	@FindBy(id = "sidebar_user_id")
 	private WebElement userLnk;
 
+	@FindBy(css = "mat-icon[role=img][mattooltip=Collapse]")
+	private WebElement collapseButton;
+
+	@FindBy(xpath = "//button[@id='sidebar_search_id']//span[text()='Search']")
+	private WebElement sidebarSearchText;
+
 	/* Receives the Page object class as parameter and based on the class name it navigates to the appropriate page
 	 and returns an instance of that class */
 	public <T extends SMPPage> T goToPage(Class<T> expect){
 		log.info("Navigating to " + expect.getSimpleName());
+
 		switch (expect.getSimpleName()) {
 			case "SearchPage":
 				waitForElementToBeClickable(searchLnk).click();
@@ -58,32 +67,33 @@ public class Sidebar extends PageComponent {
 		}
 
 		waitForXMillis(500);
+
+		new Header(driver).waitForTitleToBe();
+
+		waitForRowsToLoad();
+
 		return PageFactory.initElements(driver, expect);
 	}
 
-	public boolean isSearchLnkVisible(){
-		try {
-			return searchLnk.isDisplayed() && searchLnk.isEnabled();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isSearchLnkEnabled(){
+		return isVisible(searchLnk) && isEnabled(searchLnk);
 	}
-	public boolean isEditLnkVisible(){
-		try {
-			return editLnk.isDisplayed() && editLnk.isEnabled();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isEditLnkEnabled(){
+		return isVisible(editLnk) && isEnabled(editLnk);
 	}
-	public boolean isDomainLnkVisible(){
-		try {
-			return domainLnk.isDisplayed() && domainLnk.isEnabled();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isDomainLnkEnabled(){
+		return isVisible(domainLnk) && isEnabled(domainLnk);
 	}
-	public boolean isUsersLnkVisible(){
-		try {
-			return userLnk.isDisplayed() && userLnk.isEnabled();
-		} catch (Exception e) {	}
-		return false;
+	public boolean isUsersLnkEnabled(){
+		return isVisible(userLnk) && isEnabled(userLnk);
 	}
-
+	public boolean isSidebarSearchTextEnable(){
+		return isVisible(sidebarSearchText) && isEnabled(sidebarSearchText);
+	}
+    public void collapsingSideBar(){
+		collapseButton.click();
+	}
+	public void expandingSideBar(){
+		driver.findElement(By.cssSelector("mat-icon[role=img][mattooltip=Expand]")).click();
+	}
 }
