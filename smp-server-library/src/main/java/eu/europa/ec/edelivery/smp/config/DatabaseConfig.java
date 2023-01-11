@@ -65,6 +65,8 @@ public class DatabaseConfig {
     @Value("${" + FileProperty.PROPERTY_DB_DIALECT + ":}")
     protected String hibernateDialect;
 
+    @Value("${" + FileProperty.PROPERTY_GENERATE_DDL + ":}")
+    protected String generateDdl;
 
     @Bean(name = "dataSource")
     public DataSource getDataSource() {
@@ -118,7 +120,7 @@ public class DatabaseConfig {
         if (!StringUtils.isBlank(hibernateDialect)) {
             hibernateJpaVendorAdapter.setDatabasePlatform(hibernateDialect);
         }
-        hibernateJpaVendorAdapter.setGenerateDdl(true);
+        hibernateJpaVendorAdapter.setGenerateDdl(Boolean.parseBoolean(generateDdl));
         return hibernateJpaVendorAdapter;
     }
 }
