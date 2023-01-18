@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.test.testutils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpSession;
@@ -17,7 +17,8 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -32,9 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 4.2
  */
 public class MockMvcUtils {
-    static ObjectMapper mapper = new ObjectMapper(){{
-        registerModule(new JavaTimeModule());
-    }};
+    static ObjectMapper mapper = JsonMapper.builder()
+            .findAndAddModules()
+            .build();
 
     public static final String SYS_ADMIN_USERNAME = "sys_admin";
     public static final String SYS_ADMIN_PASSWD = "test123";
@@ -111,8 +112,8 @@ public class MockMvcUtils {
      */
     public static MockHttpSession loginWithCredentials(MockMvc mvc, String username, String password) throws Exception {
         MvcResult result = mvc.perform(post(CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION)
-                .header(HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-                .content("{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"))
+                        .header(HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+                        .content("{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"))
                 .andExpect(status().isOk()).andReturn();
         // assert successful login
         UserRO userRO = mapper.readValue(result.getResponse().getContentAsString(), UserRO.class);
@@ -130,8 +131,8 @@ public class MockMvcUtils {
      */
     public static UserRO getLoggedUserData(MockMvc mvc, MockHttpSession session) throws Exception {
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY + "/user")
-                .session(session)
-                .with(csrf()))
+                        .session(session)
+                        .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
         return mapper.readValue(result.getResponse().getContentAsString(), UserRO.class);
     }

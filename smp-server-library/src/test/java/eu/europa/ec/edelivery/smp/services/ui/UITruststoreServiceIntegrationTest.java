@@ -31,6 +31,8 @@ import java.security.cert.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -65,9 +67,10 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     public void setup() throws IOException {
         configurationService = Mockito.spy(configurationService);
         crlVerifierService = Mockito.spy(crlVerifierService);
+        testInstance = Mockito.spy(testInstance);
+
 
         ReflectionTestUtils.setField(testInstance, "crlVerifierService", crlVerifierService);
-
         ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
 
         File truststoreFile = new File(targetDirectory.toFile(), "smp-truststore.jks");
@@ -197,6 +200,40 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         assertNotNull(cer.getValidTo());
         assertTrue(cer.getValidFrom().before(cer.getValidTo()));
         assertEquals("Certificate is expired!", cer.getInvalidReason());
+    }
+
+    @Test
+    public void  validateCertificateWithTruststoreNullCertificate()  {
+
+        CertificateException result = assertThrows(CertificateException.class,
+                () ->testInstance.validateCertificateWithTruststore(null));
+
+        assertThat(result.getMessage(), containsString("The X509Certificate is null "));
+    }
+
+    @Test
+    public void  validateCertificateWithTruststoreNullTruststore() throws Exception {
+        String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
+        Mockito.doReturn(null).when(testInstance).getTrustStore();
+        // no error thrown
+        testInstance.validateCertificateWithTruststore(certificate);
+        // invoked once
+        Mockito.verify(testInstance, Mockito.times(1)).getTrustStore();
+    }
+
+    @Test
+    public void testGetCertificateDataError() throws IOException, CertificateException {
+        // given
+
+        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/certificates/cert-not-parsable.pem"));
+
+        // when
+        CertificateRO cer = testInstance.getCertificateData(buff);
+
+        //then
+        assertTrue( cer.isInvalid());
+        assertEquals("Can not read the certificate!", cer.getInvalidReason());
     }
 
     @Test

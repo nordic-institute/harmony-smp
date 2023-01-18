@@ -1,8 +1,11 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import eu.europa.ec.edelivery.smp.data.ui.*;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
+import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
+import eu.europa.ec.edelivery.smp.data.ui.PasswordChangeRO;
+import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Before;
@@ -49,11 +52,13 @@ public class UserResourceIntegrationTest {
 
     private MockMvc mvc;
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = JsonMapper.builder()
+            .findAndAddModules()
+            .build();
 
     @Before
     public void setup() {
-        mapper.registerModule(new JavaTimeModule());
+
         mvc = initializeMockMvc(webAppContext);
     }
 
@@ -107,14 +112,14 @@ public class UserResourceIntegrationTest {
         UserRO userRO = getLoggedUserData(mvc, session);
         assertNotNull(userRO);
 
-        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/" + userRO.getUserId()+"/generate-access-token")
+        MvcResult result = mvc.perform(post(PATH_PUBLIC + "/" + userRO.getUserId() + "/generate-access-token")
                 .with(csrf())
                 .session(session)
                 .contentType(MediaType.TEXT_PLAIN)
                 .content(SG_USER2_PASSWD)
         ).andExpect(status().isOk()).andReturn();
 
-        MvcResult resultUser = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY_USER )
+        MvcResult resultUser = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY_USER)
                 .with(csrf())
                 .session(session)
         ).andExpect(status().isOk()).andReturn();
@@ -141,7 +146,7 @@ public class UserResourceIntegrationTest {
         newPass.setNewPassword(newPassword);
         assertNotEquals(newPassword, SG_USER2_PASSWD);
 
-        mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId()+"/change-password")
+        mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId() + "/change-password")
                 .with(csrf())
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON)

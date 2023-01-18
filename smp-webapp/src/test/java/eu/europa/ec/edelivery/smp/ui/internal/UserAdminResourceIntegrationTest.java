@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
@@ -22,6 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.core.MediaType;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,11 +49,12 @@ public class UserAdminResourceIntegrationTest {
 
     private MockMvc mvc;
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = JsonMapper.builder()
+            .findAndAddModules()
+            .build();
 
     @Before
     public void setup() {
-        mapper.registerModule(new JavaTimeModule());
         mvc = initializeMockMvc(webAppContext);
     }
 
@@ -60,8 +62,8 @@ public class UserAdminResourceIntegrationTest {
     public void getUsers() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_INTERNAL)
-                .session(session)
-                .with(csrf()))
+                        .session(session)
+                        .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         // then
@@ -82,8 +84,8 @@ public class UserAdminResourceIntegrationTest {
 
         SecurityMockMvcRequestPostProcessors.CsrfRequestPostProcessor csrf = csrf();
         MvcResult result = mvc.perform(get(PATH_INTERNAL)
-                .session(session)
-                .with(csrf))
+                        .session(session)
+                        .with(csrf))
                 .andExpect(status().isOk()).andReturn();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         assertNotNull(res);
@@ -102,7 +104,7 @@ public class UserAdminResourceIntegrationTest {
                 .session(session)
                 .with(csrf)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
+                .content(mapper.writeValueAsString(Collections.singletonList(userRO)))
         ).andExpect(status().isOk());
     }
 
@@ -111,8 +113,8 @@ public class UserAdminResourceIntegrationTest {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_INTERNAL)
-                .session(session)
-                .with(csrf()))
+                        .session(session)
+                        .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         assertNotNull(res);
@@ -130,7 +132,7 @@ public class UserAdminResourceIntegrationTest {
         mvc.perform(put(PATH_INTERNAL)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
+                .content(mapper.writeValueAsString(Collections.singletonList(userRO)))
         ).andExpect(status().isUnauthorized());
 
         MockHttpSession sessionSMPAdmin = loginWithSMPAdmin(mvc);
@@ -138,7 +140,7 @@ public class UserAdminResourceIntegrationTest {
                 .session(sessionSMPAdmin)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
+                .content(mapper.writeValueAsString(Collections.singletonList(userRO)))
         ).andExpect(status().isUnauthorized());
 
         MockHttpSession sessionSGAdmin = loginWithServiceGroupUser(mvc);
@@ -146,7 +148,7 @@ public class UserAdminResourceIntegrationTest {
                 .session(sessionSGAdmin)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Arrays.asList(userRO)))
+                .content(mapper.writeValueAsString(Collections.singletonList(userRO)))
         ).andExpect(status().isUnauthorized());
     }
 
@@ -157,8 +159,8 @@ public class UserAdminResourceIntegrationTest {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         // get list
         MvcResult result = mvc.perform(get(PATH_INTERNAL)
-                .with(csrf())
-                .session(session))
+                        .with(csrf())
+                        .session(session))
                 .andExpect(status().isOk()).andReturn();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
         assertNotNull(res);
@@ -166,10 +168,10 @@ public class UserAdminResourceIntegrationTest {
         UserRO userRO = mapper.convertValue(res.getServiceEntities().get(0), UserRO.class);
 
         MvcResult resultDelete = mvc.perform(post(PATH_INTERNAL + "/validate-delete")
-                .with(csrf())
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("[\"" + userRO.getUserId() + "\"]"))
+                        .with(csrf())
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[\"" + userRO.getUserId() + "\"]"))
                 .andExpect(status().isOk()).andReturn();
 
         DeleteEntityValidation dev = mapper.readValue(resultDelete.getResponse().getContentAsString(), DeleteEntityValidation.class);
@@ -185,18 +187,18 @@ public class UserAdminResourceIntegrationTest {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         // get list
-        MvcResult result = mvc.perform(get(PATH_INTERNAL)
-                .with(csrf())
-                .session(session))
+        mvc.perform(get(PATH_INTERNAL)
+                        .with(csrf())
+                        .session(session))
                 .andExpect(status().isOk()).andReturn();
         UserRO userRO = getLoggedUserData(mvc, session);
 
         // note system credential has id 3!
         MvcResult resultDelete = mvc.perform(post(PATH_INTERNAL + "/validate-delete")
-                .with(csrf())
-                .session(session)
-                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .content("[\"" + userRO.getUserId() + "\"]"))
+                        .with(csrf())
+                        .session(session)
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("[\"" + userRO.getUserId() + "\"]"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -213,8 +215,8 @@ public class UserAdminResourceIntegrationTest {
         UserRO userROAdmin = getLoggedUserData(mvc, sessionAdmin);
 
         MvcResult resultUsers = mvc.perform(get(PATH_INTERNAL)
-                .session(sessionAdmin)
-                .with(csrf()))
+                        .session(sessionAdmin)
+                        .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
         ServiceResult res = mapper.readValue(resultUsers.getResponse().getContentAsString(), ServiceResult.class);
         Map userROToUpdate = (Map) res.getServiceEntities().stream()
@@ -241,8 +243,8 @@ public class UserAdminResourceIntegrationTest {
         UserRO userROAdmin = getLoggedUserData(mvc, sessionAdmin);
 
         MvcResult resultUsers = mvc.perform(get(PATH_INTERNAL)
-                .session(sessionAdmin)
-                .with(csrf()))
+                        .session(sessionAdmin)
+                        .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
         ServiceResult res = mapper.readValue(resultUsers.getResponse().getContentAsString(), ServiceResult.class);
         Map userROToUpdate = (Map) res.getServiceEntities().stream()

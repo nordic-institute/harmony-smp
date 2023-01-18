@@ -121,4 +121,6 @@ public class DatabaseConfig {
         hibernateJpaVendorAdapter.setGenerateDdl(true);
         return hibernateJpaVendorAdapter;
     }
+
+
 }

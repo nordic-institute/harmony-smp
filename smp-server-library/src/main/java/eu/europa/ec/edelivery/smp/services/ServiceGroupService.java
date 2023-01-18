@@ -189,7 +189,7 @@ public class ServiceGroupService {
 
     /**
      * Method returns URL decoded serviceGroupOwner if not null/empty, else return authenticated user. If
-     * User dan not be decoded InvalidOwnerException is thrown.
+     * User cannot be decoded SMPRuntimeException is thrown.
      *
      * @param serviceGroupOwner
      * @param authenticatedUser
