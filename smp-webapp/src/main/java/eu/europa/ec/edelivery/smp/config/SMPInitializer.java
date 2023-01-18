@@ -22,8 +22,7 @@ public class SMPInitializer implements WebApplicationInitializer {
     protected static final String PROP_BUILD_NAME = "smp.artifact.name";
     protected static final String PROP_BUILD_VERSION = "smp.artifact.version";
     protected static final String PROP_BUILD_TIME = "smp.artifact.build.time";
-    protected static final String VERSION_LOG_TEMPLATE = "Start application: name: {}, version: {}, build time: {}.";
-
+    protected static final String VERSION_LOG_TEMPLATE = "Start application: name: [{}], version: [{}], build time: [{}].";
 
     private static final Logger LOG = SMPLoggerFactory.getLogger(SMPInitializer.class);
 
@@ -64,7 +63,7 @@ public class SMPInitializer implements WebApplicationInitializer {
                 log.error("Error occurred  while reading application properties. Is file " + FILE_APPLICATION_PROPERTIES + " included in war!", e);
             }
         } else {
-            log.error("Not found application build properties: {}!", FILE_APPLICATION_PROPERTIES);
+            log.error("Not found application build properties: [{}]!", FILE_APPLICATION_PROPERTIES);
         }
     }
 

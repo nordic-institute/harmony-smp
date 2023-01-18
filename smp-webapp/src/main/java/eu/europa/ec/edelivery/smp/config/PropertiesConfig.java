@@ -32,18 +32,18 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPE
  */
 @Configuration
 @ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp","eu.europa.ec.smp"})
+        "eu.europa.ec.edelivery.smp",
+        "eu.europa.ec.smp"})
 @PropertySources({
         @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
 public class PropertiesConfig {
-
-    private static PropertyInitialization PROP_INIT_TOOLS = new PropertyInitialization();
+    private PropertyInitialization PROP_INIT_TOOLS = new PropertyInitialization();
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertiesConfig.class);
 
-
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        LOG.info("STARTUP DomiSMP");
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties fileProperties = FileProperty.getFileProperties();

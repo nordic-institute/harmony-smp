@@ -51,7 +51,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
  */
 public class PropertyInitialization {
 
-    SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyInitialization.class);
+    public static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyInitialization.class);
     // if SMP is initialized without keystore - a demo keystore with test certificate is created
     private static final String TEST_CERT_ISSUER_DN = "CN=rootCNTest,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE";
     private static final String TEST_CERT_SUBJECT_DN = "CN=SMP_TEST-PRE-SET-EXAMPLE, OU=eDelivery, O=DIGITAL, C=BE";
@@ -61,8 +61,10 @@ public class PropertyInitialization {
     protected Properties getDatabaseProperties(Properties fileProperties) {
         String dialect = fileProperties.getProperty(FileProperty.PROPERTY_DB_DIALECT);
         if (StringUtils.isBlank(dialect)) {
-            LOG.warn("The application property: {} is not set!. Database might not initialize!", FileProperty.PROPERTY_DB_DIALECT);
+            LOG.warn("The application property: [{}] is not set!. Database might not initialize!", FileProperty.PROPERTY_DB_DIALECT);
         }
+
+
         // get datasource
         DataSource dataSource = getDatasource(fileProperties);
         EntityManager em = null;
@@ -317,7 +319,7 @@ public class PropertyInitialization {
             File f = null;
             // search for new file
             while ((f = new File(folder, fileName + "." + (++index))).exists()) {
-
+                LOG.debug("File [{}] already exists. Try with next iteration!", f.getAbsolutePath());
             }
             try {
                 Files.move(file.toPath(), f.toPath());
@@ -352,7 +354,7 @@ public class PropertyInitialization {
         }
 
         String configurationDir = databaseProperties.getProperty(CONFIGURATION_DIR.getProperty());
-        File fEncryption = null;
+        File fEncryption;
         if (!databaseProperties.containsKey(ENCRYPTION_FILENAME.getProperty())) {
             fEncryption = initEncryptionKey(configurationDir, em, databaseProperties, fileProperties);
         } else {
@@ -452,6 +454,6 @@ public class PropertyInitialization {
         lef.setJpaProperties(prop);
         lef.afterPropertiesSet();
         EntityManagerFactory enf = lef.getObject();
-        return enf.createEntityManager();
+        return enf!=null?enf.createEntityManager():null;
     }
 }

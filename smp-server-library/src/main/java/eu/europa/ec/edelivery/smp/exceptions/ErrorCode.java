@@ -49,7 +49,6 @@ public enum ErrorCode {
             "do not match metadata request (doc. id: '%s', doc. sch.: '%s')."),
     ILLEGAL_STATE_SMD_ON_MULTIPLE_SGD (500,"SMP:144",ErrorBusinessCode.TECHNICAL,"Found than one service group domain for metadata id [%s] and user id [%s]!"),
 
-
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),
     //
@@ -61,16 +60,15 @@ public enum ErrorCode {
     CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error [%s]. Error: %s!"),
     CONFIGURATION_ERROR (500,"SMP:516",ErrorBusinessCode.TECHNICAL, "Configuration error: %s!"),
 
-
     MAIL_SUBMISSION_ERROR (500,"SMP:550",ErrorBusinessCode.TECHNICAL, "Mail submission error: %s!"),
 
     //
     ;
 
-    int httpCode;
-    String messageTemplate;
-    String errorCode;
-    ErrorBusinessCode errorBusinessCode;
+    private final int httpCode;
+    private final String messageTemplate;
+    private final String errorCode;
+    private final ErrorBusinessCode errorBusinessCode;
 
     public int getHttpCode() {
         return httpCode;

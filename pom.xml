@@ -12,7 +12,8 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.edelivery</groupId>
     <artifactId>smp-modules</artifactId>
@@ -26,6 +27,7 @@
         <module>smp-spi</module>
         <module>smp-server-library</module>
         <module>smp-webapp</module>
+        <module>smp-springboot</module>
         <module>smp-soapui-tests</module>
         <module>smp-examples</module>
         <module>smp-aggregator</module>
@@ -51,7 +53,7 @@
         <commons-validator.version>1.7</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
         <cxf.version>3.5.5</cxf.version>
-         <ehcache.version>2.10.9.2</ehcache.version>
+        <ehcache.version>2.10.9.2</ehcache.version>
         <freemarker.version>2.3.31</freemarker.version>
         <h2.version>1.4.200</h2.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
@@ -59,17 +61,19 @@
         <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
         <hibernate.version>5.6.9.Final</hibernate.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <jackson-databind.version>2.13.4.2</jackson-databind.version>
-        <jackson.version>2.13.4</jackson.version>
+        <jackson-databind.version>2.14.1</jackson-databind.version>
+        <jackson.version>2.14.1</jackson.version>
         <javaee-api.version>7.0</javaee-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.mail.version>1.6.2</javax.mail.version>
-        <jaxb.version>2.2.11</jaxb.version>
+        <jaxb.version>2.3.0.1</jaxb.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb2-basics.version>1.11.1</jaxb2-basics.version>
         <jstl.version>1.2</jstl.version>
         <junit.version>4.13.2</junit.version>
         <junitparams.version>1.1.1</junitparams.version>
         <logback.version>1.2.11</logback.version>
+        <mysql.jdbc.version>8.0.31</mysql.jdbc.version>
         <metro.version>2.2.1-1</metro.version>
         <mockito.version>2.23.4</mockito.version>
         <orika.version>1.5.4</orika.version>
@@ -77,9 +81,10 @@
         <slf4j.version>1.7.36</slf4j.version>
         <soapui.plugin.version>5.1.2</soapui.plugin.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring.boot.version>2.7.4</spring.boot.version>
+        <spring-boot.version>2.7.7</spring-boot.version>
+        <spring-boot.tomcat.version>9.0.70</spring-boot.tomcat.version>
         <spring.security.version>5.7.5</spring.security.version>
-        <spring.version>5.3.23</spring.version>
+        <spring.version>5.3.25</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
         <!-- plugins -->
@@ -113,7 +118,8 @@
         </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
-        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</release.arguments>
+        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
+        </release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
     </properties>
 
@@ -254,7 +260,7 @@
             <dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
-                <version>${jaxb.version}</version>
+                <version>${jaxb-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
@@ -344,6 +350,51 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot.version}</version>
+                <!-- exclude them and then manually include the same version! fix for the springboot jackson dependency conflicts
+             (current springboot uses 2.13.4! and maven upgrade just direct dependencies and not transit
+              dependencies with latest version!! )-->
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.datatype</groupId>
+                        <artifactId>jackson-datatype-jsr310</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.datatype</groupId>
+                        <artifactId>jackson-datatype-jdk8</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.module</groupId>
+                        <artifactId>jackson-module-parameter-names</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-jasper</artifactId>
+                <version>${spring-boot.tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-tomcat</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.jdbc.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-test</artifactId>
                 <version>${spring.security.version}</version>
@@ -417,15 +468,35 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson-databind.version}</version>
+                <!-- exclude them and then manually include the same version! fix for the springboot
+                 (current springboot uses 2.13.4! and maven upgrade just direct dependencies and not transit
+                  dependencies with latest version!! ) >
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.datatype</groupId>
+                        <artifactId>jackson-datatype-jsr310</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.datatype</groupId>
+                        <artifactId>jackson-datatype-jdk8</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.module</groupId>
+                        <artifactId>jackson-module-parameter-names</artifactId>
+                    </exclusion>
+                </exclusions-->
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
@@ -539,12 +610,12 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>${spring-boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>${spring-boot.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -600,6 +671,11 @@
                     <groupId>com.smartbear.soapui</groupId>
                     <artifactId>soapui-maven-plugin</artifactId>
                     <version>${soapui.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -675,7 +751,9 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
-                    <arguments>-DusePreInstallNpm -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</arguments>
+                    <arguments>-DusePreInstallNpm -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true
+                        -Dmaven.test.skip=true
+                    </arguments>
                     <!-- <arguments>${release.arguments}</arguments> and setting it as
                     release:prepare  -Darguments="-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true" -DskipITs=true
                     does not work! -->
