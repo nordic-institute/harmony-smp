@@ -1,5 +1,7 @@
 # tests in this file are ignored in harmony-pom.xml
 
+UserResourceIntegrationTest
+
 # intermittent errors, do not happen when tests are run separately
 ServiceGroupControllerTest
 ApplicationResourceIntegrationTest
