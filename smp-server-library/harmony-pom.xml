@@ -310,6 +310,19 @@
                     <argLine>-Duser.timezone=CET</argLine>
                 </configuration>
             </plugin>
+            <!-- integration tests, failsafe plugin, added here to exclude some tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>integration-tests</id>
+                        <configuration>
+                            <excludesFile>ignoredIntegrationTests.txt</excludesFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -1,3 +1,5 @@
-# integration tests in this file are ignored in harmony-pom.xml
+# tests in this file are ignored in harmony-pom.xml
 
 UIUserServiceIntegrationTest
+UIKeystoreServiceTest
+SmlClientFactoryAuthenticationByClientCertFromKeystoreTest
