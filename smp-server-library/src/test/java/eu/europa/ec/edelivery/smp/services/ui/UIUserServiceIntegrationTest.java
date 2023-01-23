@@ -10,8 +10,6 @@ import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.logging.SMPLogger;
-import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
@@ -45,8 +43,6 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = {UIUserService.class, ConversionTestConfig.class})
 public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIUserServiceIntegrationTest.class);
-
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
 
@@ -68,7 +64,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testGetTableListEmpty() {
-        LOG.info("testGetTableListEmpty");
         // given
 
         //when
@@ -85,7 +80,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testGetTableList15() {
-        LOG.info("testGetTableList15");
         // given
         insertDataObjects(15);
 
@@ -111,7 +105,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testAddUserWithoutCertificate() {
-        LOG.info("testAddUserWithoutCertificate");
         // given
         insertDataObjects(15);
         long iCnt = userDao.getDataListCount(null);
@@ -142,7 +135,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testAddUserWithCertificate() {
-        LOG.info("testAddUserWithCertificate");
         // given
         insertDataObjects(15);
         long iCnt = userDao.getDataListCount(null);
@@ -191,7 +183,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testAddUserWithOnlyCertificate() {
-        LOG.info("testAddUserWithOnlyCertificate");
         // given
         insertDataObjects(15);
         long iCnt = userDao.getDataListCount(null);
@@ -237,7 +228,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUserRemoveCertificate() {
-        LOG.info("testUserRemoveCertificate");
         // given
         OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         OffsetDateTime future = now.plusYears(1);
@@ -277,7 +267,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testDeleteUser() {
-        LOG.info("testDeleteUser");
         // given
         insertDataObjects(15);
         ServiceResult<UserRO> urTest = testInstance.getTableList(-1, -1, null, null, null);
@@ -300,22 +289,17 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     @Test
     @Transactional
     public void testGenerateAccessTokenForUser() {
-        LOG.info("testGenerateAccessTokenForUser");
         String userPassword = UUID.randomUUID().toString();
         DBUser user = new DBUser();
         user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
         user.setUsername(UUID.randomUUID().toString());
         user.setEmailAddress(UUID.randomUUID().toString());
         user.setRole("ROLE");
-        LOG.info("persist");
         userDao.persistFlushDetach(user);
 
-        LOG.info("generateAccessTokenForUser");
         AccessTokenRO token = testInstance.generateAccessTokenForUser(user.getId(), user.getId(), userPassword);
 
-        LOG.info("findUserByAuthenticationToken");
         Optional<DBUser> optResult = userDao.findUserByAuthenticationToken(token.getIdentifier());
-        LOG.info("asserts");
         assertTrue(optResult.isPresent());
         assertNotNull(token);
         DBUser result = optResult.get();
@@ -328,7 +312,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUpdateUserPasswordNotMatchReqExpression() {
-        LOG.info("testUpdateUserPasswordNotMatchReqExpression");
         long authorizedUserId = 1L;
         long userToUpdateId = 1L;
         String authorizedPassword = "testPass";
@@ -342,7 +325,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUpdateUserPasswordUserNotExists() {
-        LOG.info("testUpdateUserPasswordUserNotExists");
         long authorizedUserId = 1L;
         long userToUpdateId = 1L;
         String authorizedPassword = "oldPass";
@@ -356,7 +338,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUpdateUserPasswordUserNotAuthorized() {
-        LOG.info("testUpdateUserPasswordUserNotAuthorized");
         String userPassword = UUID.randomUUID().toString();
         DBUser user = new DBUser();
         user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
@@ -378,7 +359,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUpdateUserPasswordOK() {
-        LOG.info("testUpdateUserPasswordOK");
         String userPassword = UUID.randomUUID().toString();
         DBUser user = new DBUser();
         user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
@@ -397,7 +377,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUpdateUserdataOK() {
-        LOG.info("testUpdateUserdataOK");
         String userPassword = UUID.randomUUID().toString();
         DBUser user = new DBUser();
         user.setPassword(BCrypt.hashpw(userPassword, BCrypt.gensalt()));
@@ -425,7 +404,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUpdateUserdataCertificateOK() throws Exception {
-        LOG.info("testUpdateUserdataCertificateOK");
         String certSubject = "CN=" + UUID.randomUUID().toString() + ",O=eDelivery,C=EU";
         String userPassword = UUID.randomUUID().toString();
         DBUser user = new DBUser();
@@ -455,7 +433,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testUpdateUserdataCertificateWithExistingCertificateOK() throws Exception {
-        LOG.info("testUpdateUserdataCertificateWithExistingCertificateOK");
         String certSubject = "CN=" + UUID.randomUUID().toString() + ",O=eDelivery,C=EU";
         DBUser user = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_2);
         userDao.persistFlushDetach(user);
@@ -479,7 +456,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testValidateDeleteRequest() throws Exception {
-        LOG.info("testValidateDeleteRequest");
         String username1 = "test-user-delete-01";
         String username2 = "test-user-delete-02";
 
