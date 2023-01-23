@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.niis</groupId>
     <artifactId>harmonysmp-modules</artifactId>
-    <version>2.0.0</version>
+    <version>1.4.0</version>
     <relativePath>../harmony-pom.xml</relativePath>
   </parent>
   <artifactId>harmonysmp-spi</artifactId>
