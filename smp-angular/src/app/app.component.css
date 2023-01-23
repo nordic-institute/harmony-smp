@@ -11,6 +11,7 @@ mat-sidenav-container {
 
 mat-sidenav {
   text-align: center;
+  background-color: #f0fbfc;
   box-shadow: 7px 7px 10px #9B9B9B;
   /*border: dashed red;*/
 }

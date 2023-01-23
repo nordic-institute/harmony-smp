@@ -135,10 +135,6 @@ ngx-datatable span:before {
 
 /* --- SIDEBAR --------- */
 /*---------------------- */
-mat-sidenav.mat-drawer {
-  background-color: #f0fbfc;
-  box-shadow: 0px 0px 2px #9B9B9B !important;
-}
 
 /* --- Logo ---*/
 #topLogo {
