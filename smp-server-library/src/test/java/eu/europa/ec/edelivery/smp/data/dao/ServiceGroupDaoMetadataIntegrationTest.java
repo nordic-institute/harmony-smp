@@ -5,8 +5,6 @@ import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
@@ -23,7 +21,7 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class ServiceGroupDaoMetadataIntegrationTest extends ServiceGroupDaoIntegrationBase {
+public class ServiceGroupDaoMetadataIntegrationTest extends AbstractServiceGroupDaoIntegrationTest {
 
 
     @Test

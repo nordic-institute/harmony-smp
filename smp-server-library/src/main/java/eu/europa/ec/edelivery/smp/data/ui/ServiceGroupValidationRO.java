@@ -3,9 +3,9 @@ package eu.europa.ec.edelivery.smp.data.ui;
 public class ServiceGroupValidationRO extends BaseRO {
     private static final long serialVersionUID = -7555221767041516157L;
 
-    public static int ERROR_CODE_OK =0;
-    public static int ERROR_CODE_SERVICE_GROUP_EXISTS =1;
-    public static int ERROR_CODE_INVALID_EXTENSION =2;
+    public static final int ERROR_CODE_OK =0;
+    public static final int ERROR_CODE_SERVICE_GROUP_EXISTS =1;
+    public static final int ERROR_CODE_INVALID_EXTENSION =2;
 
     Long serviceGroupId;
     String extension;

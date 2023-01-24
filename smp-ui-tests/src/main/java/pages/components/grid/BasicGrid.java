@@ -1,6 +1,7 @@
 package pages.components.grid;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -20,7 +21,7 @@ public class BasicGrid extends PageComponent {
 		super(driver);
 		
 		log.info("Loading basic grid");
-		waitToLoad();
+		waitForRowsToLoad();
 		PageFactory.initElements( new DefaultElementLocatorFactory(container) , this);
 
 		for (int i = 0; i < gridHeaders.size(); i++) {
@@ -29,16 +30,7 @@ public class BasicGrid extends PageComponent {
 
 	}
 
-	private By loadingBar = By.className("mat-ripple-element");
 
-	private void waitToLoad(){
-		try {
-			waitForXMillis(500);
-			waitForElementToBeGone(driver.findElement(loadingBar));
-		} catch (Exception e) {
-
-		}
-	}
 
 	@FindBy(css = "datatable-header div.datatable-row-center datatable-header-cell")
 	protected List<WebElement> gridHeaders;
@@ -53,6 +45,7 @@ public class BasicGrid extends PageComponent {
 		log.info("selecting row with number ... " + rowNumber);
 		if(rowNumber>=gridRows.size()){return;}
 		gridRows.get(rowNumber).click();
+		waitForXMillis(500);
 	}
 	
 	public void doubleClickRow(int rowNumber){
@@ -72,9 +65,10 @@ public class BasicGrid extends PageComponent {
 	public int getRowsNo(){
 		return gridRows.size();
 	}
-	
 
-	
-	
-	
+	public void scrollRow(int index) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();",gridRows.get(index));
+		waitForXMillis(500);
+	}
 }

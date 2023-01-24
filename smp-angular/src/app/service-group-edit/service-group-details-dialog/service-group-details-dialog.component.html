@@ -1,209 +1,180 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
-<spinner [show]="showSpinner" [size]="150"> </spinner>
-<mat-dialog-content style="height:600px;width:1200px">
+<spinner [show]="showSpinner" [size]="150"></spinner>
+<mat-dialog-content [class]="'flex-dialog-content'">
 
-  <div fxLayout="row">
-    <div fxLayout="column">
-      <mat-card fxFlex="200px">
-        <!-- mat-card-title>Identifier</mat-card-title -->
-        <mat-card-content style="height: 100px">
-          <div class="panel">
-          <mat-form-field style="width:100%">
-            <input matInput placeholder="Participant identifier" name="participantIdentifier"
-                   id="participantIdentifier_id"
-                   [formControl]="dialogForm.controls['participantIdentifier']" maxlength="50" required>
-            <div
-              *ngIf="(!editMode && dialogForm.controls['participantIdentifier'].touched || editMode) &&  dialogForm.controls['participantIdentifier'].hasError('required')"
-              style="color:red; font-size: 70%">
-              Participant identifier must not be empty and must be up to 50 characters long.
-            </div>
-            <div
-              *ngIf="(!editMode &&  dialogForm.controls['participantIdentifier'].hasError('dbExist'))"
-              style="color:red; font-size: 70%">
-              Participant identifier for given scheme is already defined in database!
-            </div>
-          </mat-form-field>
-
-          <mat-form-field style="width:100%">
-            <input matInput placeholder="Participant scheme" name="participantScheme"
-                   id="participantScheme_id"
-                   [formControl]="dialogForm.controls['participantScheme']"
-                   maxlength="255" required>
-            <div
-              *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&  dialogForm.controls['participantScheme'].hasError('required')"
-              style="color:red; font-size: 70%">
-              Participant scheme must not be empty.
-            </div>
-            <div
-              *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&
-               dialogForm.controls['participantScheme'].hasError('pattern')"
-              style="color:red; font-size: 70%">
-              {{participantSchemeMessage}}
-            </div>
-          </mat-form-field>
+  <div fxLayout="column" style="flex-grow: 1;">
+    <mat-card>
+      <!-- mat-card-title>Identifier</mat-card-title -->
+      <mat-card-content>
+        <mat-form-field style="width:100%">
+          <input matInput placeholder="Participant identifier" name="participantIdentifier"
+                 id="participantIdentifier_id"
+                 [formControl]="dialogForm.controls['participantIdentifier']" maxlength="50" required>
+          <div
+            *ngIf="(!editMode && dialogForm.controls['participantIdentifier'].touched || editMode) &&  dialogForm.controls['participantIdentifier'].hasError('required')"
+            style="color:red; font-size: 70%">
+            Participant identifier must not be empty and must be up to 50 characters long.
           </div>
-        </mat-card-content>
-      </mat-card>
-      <mat-card>
-        <mat-card-content>
-          <mat-accordion id="accordion_panel_id">
-            <mat-expansion-panel *ngIf="securityService.isCurrentUserSMPAdmin()" [expanded]="true" id="owner_expansion_panel_id">
-              <mat-expansion-panel-header id="owner_expansion_header_id">
-                <mat-panel-title>Owners*
-                </mat-panel-title>
-                <mat-panel-description id="owner_expansion_description_id">
-                  <div>
+          <div
+            *ngIf="(!editMode &&  dialogForm.controls['participantIdentifier'].hasError('dbExist'))"
+            style="color:red; font-size: 70%">
+            Participant identifier for given scheme is already defined in database!
+          </div>
+        </mat-form-field>
+
+        <mat-form-field style="width:100%">
+           <input
+                 matInput placeholder="Participant scheme" name="participantScheme"
+                 id="participantScheme_id"
+                 [formControl]="dialogForm.controls['participantScheme']"
+                 maxlength="255">
+          <div
+            *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&  dialogForm.controls['participantScheme'].hasError('required')"
+            style="color:red; font-size: 70%">
+            Participant scheme must not be empty.
+          </div>
+          <div
+            *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&
+               dialogForm.controls['participantScheme'].hasError('pattern')"
+            style="color:red; font-size: 70%">
+            {{participantSchemeMessage}}
+          </div>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <mat-accordion id="accordion_panel_id">
+          <mat-expansion-panel *ngIf="securityService.isCurrentUserSMPAdmin()" [expanded]="true"
+                               id="owner_expansion_panel_id">
+            <mat-expansion-panel-header id="owner_expansion_header_id">
+              <mat-panel-title>Owners*
+              </mat-panel-title>
+              <mat-panel-description id="owner_expansion_description_id">
+                <div>
                   Selected user count: {{usersSelected.selectedOptions?.selected.length}}
                   <div
                     *ngIf="(!editMode && dialogForm.controls['users'].touched || editMode) &&  dialogForm.controls['users'].hasError('minSelectedListCount')"
                     style="color:red; font-size: 70%">
                     At least one user (owner) must be selected!
                   </div>
-                  </div>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <mat-selection-list #usersSelected
-                                  [disabled]="!securityService.isCurrentUserSMPAdmin()"
-                                  [compareWith]="compareTableItemById"
-                                  [formControl]="dialogForm.controls['users']"
-                                  style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
-                <!--                  // if username is null then there must be an cerificate id! -->
-                <mat-list-option  *ngFor="let user of lookups.cachedServiceGroupOwnerList" [value]='user'
-                                  style="max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;">
-                  {{user.username?user.username:user.certificate?.certificateId}}
-                </mat-list-option>
-              </mat-selection-list>
-            </mat-expansion-panel>
+                </div>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-selection-list #usersSelected
+                                [compareWith]="compareUserByUserId"
+                                [formControl]="dialogForm.controls['users']"
+                                style="min-height: 100px; height: 150px; overflow-y: scroll; overflow-x: auto;">
+              <!--                  // if username is null then there must be an cerificate id! -->
+              <mat-list-option *ngFor="let user of lookups.cachedServiceGroupOwnerList" [value]='user'
+                               style="max-width: 400px;max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;">
+                {{user.username ? user.username : user.certificate?.certificateId}}
+              </mat-list-option>
+            </mat-selection-list>
+          </mat-expansion-panel>
 
-            <mat-expansion-panel [expanded]="!securityService.isCurrentUserSMPAdmin()" id="domain_expansion_panel_id">
-              <mat-expansion-panel-header id="domain_expansion_header_id">
-                <mat-panel-title>Domains*</mat-panel-title>
-                <mat-panel-description id="domain_expansion_description_id">
-                  <div>
-                    Selected domain count: {{domainSelector.selectedOptions?.selected.length}}
-                    <div
-                      *ngIf="(!editMode && dialogForm.controls['serviceGroupDomains'].touched || editMode)
+          <mat-expansion-panel [expanded]="!securityService.isCurrentUserSMPAdmin()" id="domain_expansion_panel_id">
+            <mat-expansion-panel-header id="domain_expansion_header_id">
+              <mat-panel-title>Domains*</mat-panel-title>
+              <mat-panel-description id="domain_expansion_description_id">
+                <div>
+                  Selected domain count: {{domainSelector.selectedOptions?.selected.length}}
+                  <div
+                    *ngIf="(!editMode && dialogForm.controls['serviceGroupDomains'].touched || editMode)
                       &&  dialogForm.controls['serviceGroupDomains'].hasError('minSelectedListCount')"
-                      style="color:red; font-size: 70%">
-                      At least one domain must be selected!
-                    </div>
-                    <div
-                      *ngIf="(!editMode && dialogForm.controls['serviceGroupDomains'].touched || editMode)
-                      &&  dialogForm.controls['serviceGroupDomains'].hasError('multiDomainError')"
-                      style="color:red; font-size: 70%">
-                      SMP is in participant single domain mode! Only one domain must be selected.
-                    </div>
-
-
+                    style="color:red; font-size: 70%">
+                    At least one domain must be selected!
                   </div>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <mat-selection-list  #domainSelector
-                                   [disabled]="!securityService.isCurrentUserSMPAdmin()"
-                                   [compareWith]="compareDomain"
-                                   [formControl]="dialogForm.controls['serviceGroupDomains']"
-                                   (selectionChange)="onDomainSelectionChanged($event)"
-                                   style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
-                <mat-list-option *ngFor="let domain of lookups.cachedDomainList" [value]='domain'
-                                 style="max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;"
-                                 [disabled]="!isDomainProperlyConfigured(domain)"
-                                 [matTooltip]="getDomainConfigurationWarning(domain)" >
-                  <span [class]="getDomainCodeClass(domain)">
-                  {{domain.domainCode}} ({{domain.smlSubdomain}})</span>
-                </mat-list-option>
-              </mat-selection-list>
-            </mat-expansion-panel>
-          </mat-accordion>
-        </mat-card-content>
-      </mat-card>
-    </div>
+                  <div
+                    *ngIf="(!editMode && dialogForm.controls['serviceGroupDomains'].touched || editMode)
+                      &&  dialogForm.controls['serviceGroupDomains'].hasError('multiDomainError')"
+                    style="color:red; font-size: 70%">
+                    SMP is in participant single domain mode! Only one domain must be selected.
+                  </div>
 
-    <mat-card fxFlex="60">
-      <mat-card-title>Extension
-        <div style="font-size:70%">
-          Extension is automatically wrapped to root element to form vaild XML! No ExtensionWrapper element is needed.
-        </div>
-      </mat-card-title>
 
-      <mat-card-content >
-        <mat-toolbar>
-          <mat-toolbar-row>
-            <button mat-raised-button color="primary"
-                    matTooltip="Clear the extension content."
-                    matTooltipPosition="below"
-            (click)="onExtensionDelete()" >
-              <mat-icon>clear</mat-icon>
-              <span>Clear</span>
-            </button>
-            <button mat-raised-button color="primary"
-                    matTooltip="Opens wizard for adding new Extension. New extension is appended to existing extensions."
-                    matTooltipPosition="below"
-              (click)="onStartWizardDialog()">
-              <mat-icon>add_box</mat-icon>
-              <span>Extension wizard</span>
-            </button>
-            <button mat-raised-button color="primary"
-                    matTooltip="Validate extension by XSD scheme."
-                    matTooltipPosition="below"
-                    (click)="onExtensionValidate()">
-              <mat-icon>warning</mat-icon>
-              <span>Validate</span>
-            </button>
-            <!--  add and test this fuction on backend
-            button mat-raised-button color="primary"
-                    atTooltip="Pritty print extension!"
-                    matTooltipPosition="below"
-                    (click)="onPrettyPrintExtension()">
-              <mat-icon>warning</mat-icon>
-              <span>format XML</span>
-            </button -->
-          </mat-toolbar-row>
-        </mat-toolbar>
-
-        <div style="display: block;" style="border:1px; solid: #999999;margin:5px 0; padding:3px;">
-          <div class="textwrapper">
-            <textarea matInput style="width:100%;border: #03A9F4 1px solid" cols="2" rows="30"
-                      resizeable="false"
-                      id="extensionTextArea"
-                      placeholder="Extension" name="extension"
-                      [formControl]="dialogForm.controls['extension']"
-            ></textarea>
-          </div>
-          <div
-            *ngIf="extensionValidationMessage"
-            [style.color]="isExtensionValid?'green':'red'">
-            {{extensionValidationMessage}}
-          </div>
-        </div>
-        <!-- mat-form-field>
-          <div>
-          <textarea style="width:100% !important;height: 400px !important;  -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-            box-sizing: border-box;"
-
-                    matInput id="extensionTextArea"
-                    placeholder="Extension" name="extension"
-                    [formControl]="dialogForm.controls['extension']"
-          ></textarea>
-  </div>
-        </mat-form-field -->
+                </div>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-selection-list #domainSelector
+                                [compareWith]="compareDomain"
+                                [formControl]="dialogForm.controls['serviceGroupDomains']"
+                                (selectionChange)="onDomainSelectionChanged($event)"
+                                style="min-height: 100px; height: 150px; overflow-y: scroll; overflow-x: auto;">
+              <mat-list-option *ngFor="let domain of lookups.cachedDomainList" [value]='domain'
+                               style="max-width: 400px;max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;"
+              >
+                <label>{{domain.domainCode}} ({{domain.smlSubdomain}})</label>
+              </mat-list-option>
+            </mat-selection-list>
+          </mat-expansion-panel>
+        </mat-accordion>
       </mat-card-content>
     </mat-card>
   </div>
+
+  <mat-card >
+
+    <mat-card-title>Extension
+      <div style="font-size:50%">
+        Extension is automatically wrapped to root element to form valid XML! No ExtensionWrapper element is needed.
+      </div>
+    </mat-card-title>
+
+    <mat-card-content fxLayout="column" style="flex-grow: 1;display: flex;
+    align-items: stretch;">
+      <mat-toolbar style="flex-grow: 0">
+        <mat-toolbar-row>
+          <button mat-raised-button color="primary"
+                  matTooltip="Clear the extension content."
+                  matTooltipPosition="below"
+                  (click)="onExtensionDelete()">
+            <mat-icon>clear</mat-icon>
+            <span>Clear</span>
+          </button>
+          <button mat-raised-button color="primary"
+                  matTooltip="Opens wizard for adding new Extension. New extension is appended to existing extensions."
+                  matTooltipPosition="below"
+                  (click)="onStartWizardDialog()">
+            <mat-icon>add_box</mat-icon>
+            <span>Extension wizard</span>
+          </button>
+          <button mat-raised-button color="primary"
+                  matTooltip="Validate extension by XSD scheme."
+                  matTooltipPosition="below"
+                  (click)="onExtensionValidate()">
+            <mat-icon>warning</mat-icon>
+            <span>Validate</span>
+          </button>
+        </mat-toolbar-row>
+      </mat-toolbar>
+      <div *ngIf="extensionValidationMessage"
+           [ngClass]="{ 'alert-message': extensionValidationMessage, 'alert-message-success': isExtensionValid, 'alert-message-error':!isExtensionValid }"
+           id="alertmessage_id">
+        <span class="alert-message-close-button" (click)="clearAlert()">&times;</span>
+        {{extensionValidationMessage}}
+      </div>
+
+        <textarea matInput style="min-height:250px;flex-grow: 2;background-color: #e1e4e8"
+                id="extensionTextArea"
+                placeholder="Extension" name="extension"
+                [formControl]="dialogForm.controls['extension']"></textarea>
+
+    </mat-card-content>
+  </mat-card>
 </mat-dialog-content>
 
+<div class="required-fields">* required fields</div>
 <mat-dialog-actions>
-  <div class="group-action-button">
-    <button mat-raised-button color="primary" (click)="submitForm()"
-            [disabled]="!dialogForm.valid">
-      <mat-icon>check_circle</mat-icon>
-      <span>OK</span>
-    </button>
-
-    <button mat-raised-button color="primary" mat-dialog-close>
-      <mat-icon>cancel</mat-icon>
-      <span>Cancel</span>
-    </button>
-  </div>
+  <button mat-raised-button color="primary" (click)="submitForm()"
+          [disabled]="!dialogForm.valid">
+    <mat-icon>check_circle</mat-icon>
+    <span>OK</span>
+  </button>
+  <button mat-raised-button color="primary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
 </mat-dialog-actions>
-<div style="text-align: right; font-size: 70%">* required fields</div>
+
+

@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.data.dao.utils;
 
-import com.google.common.io.Files;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -208,7 +208,7 @@ public class SMPSchemaGenerator {
         }
 
         if (input.delete()) {
-            Files.move(mFile, input);
+            Files.move(mFile.toPath(), input.toPath());
         } else {
             LOG.error("Can not update file {} with comment!" , input.getAbsolutePath() );
         }

@@ -16,13 +16,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
-        <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.1</version>
-        <relativePath>../smp-parent-pom/pom.xml</relativePath>
+        <artifactId>smp-modules</artifactId>
+        <version>4.2</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>smp-api</artifactId>
     <name>smp-api</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <!-- Generated equals() methods need it in runtime -->
@@ -35,12 +36,25 @@
             <artifactId>cxf-xjc-runtime</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>pl.pragmatists</groupId>
             <artifactId>JUnitParams</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -61,6 +75,7 @@
                     <args>
                         <arg>-Xvalue-constructor</arg><!-- generates value constructors -->
                         <arg>-Xequals</arg><!-- generates equals() metods -->
+                        <arg>-XtoString</arg>
                     </args>
                     <plugins>
                         <!-- generates value constructors -->
@@ -76,33 +91,6 @@
                             <version>1.11.1</version>
                         </plugin>
                     </plugins>
-                </configuration>
-            </plugin>
-
-            <!-- just clean code coverage folder before collecting any information.
-            placed in this module as is the first in maven reactor order to collect info
-            about code coverage.
-            do not move this to parent pom or root pom!
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>default-clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${maven.multiModuleProjectDirectory}/code-coverage</directory>
-                        </fileset>
-                    </filesets>
                 </configuration>
             </plugin>
         </plugins>

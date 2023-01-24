@@ -1,21 +1,24 @@
-import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterContentInit, AfterViewInit, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
 import {Observable} from 'rxjs';
-import {AlertService} from '../../alert/alert.service';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import {AlertMessageService} from '../alert-message/alert-message.service';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ColumnPicker} from '../column-picker/column-picker.model';
 import {RowLimiter} from '../row-limiter/row-limiter.model';
 import {SearchTableController} from './search-table-controller';
 import {finalize} from 'rxjs/operators';
 import {SearchTableEntity} from './search-table-entity.model';
 import {SearchTableEntityStatus} from './search-table-entity-status.model';
-import {CancelDialogComponent} from '../cancel-dialog/cancel-dialog.component';
-import {SaveDialogComponent} from '../save-dialog/save-dialog.component';
+import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
+import {SaveDialogComponent} from '../dialogs/save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
 import {HttpParams} from '@angular/common/http';
-import {ConfirmationDialogComponent} from "../confirmation-dialog/confirmation-dialog.component";
+import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SearchTableValidationResult} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
+import {Router} from "@angular/router";
+import {AuthenticatedGuard} from "../../guards/authenticated.guard";
+import ObjectUtils from "../utils/object-utils";
 
 @Component({
   selector: 'smp-search-table',
@@ -23,26 +26,30 @@ import {ExtendedHttpClient} from "../../http/extended-http-client";
   styleUrls: ['./search-table.component.css']
 })
 export class SearchTableComponent implements OnInit {
-  @ViewChild('searchTable') searchTable: any;
-  @ViewChild('rowActions') rowActions: TemplateRef<any>;
-  @ViewChild('rowExpand') rowExpand: TemplateRef<any>;
-  @ViewChild('rowIndex') rowIndex: TemplateRef<any>;
+  @ViewChild('searchTable', {static: true}) searchTable: any;
+  @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
+  @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
+  @ViewChild('rowIndex', {static: true}) rowIndex: TemplateRef<any>;
 
-  @Input() @ViewChild('additionalToolButtons') additionalToolButtons: TemplateRef<any>;
-  @Input() @ViewChild('additionalRowActionButtons') additionalRowActionButtons: TemplateRef<any>;
-  @Input() @ViewChild('searchPanel') searchPanel: TemplateRef<any>;
-  @Input() @ViewChild('tableRowDetailContainer') tableRowDetailContainer: TemplateRef<any>;
+
+  @Input() additionalToolButtons: TemplateRef<any>;
+  @Input() additionalRowActionButtons: TemplateRef<any>;
+  @Input() searchPanel: TemplateRef<any>;
+  @Input() tableRowDetailContainer: TemplateRef<any>;
+  @Input() tableTitle: TemplateRef<any>;
 
   @Input() id: String = "";
   @Input() title: String = "";
   @Input() columnPicker: ColumnPicker;
-  @Input() url: string = '';
+  @Input() url: string = ''; // URL for query (and if manageUrl is null also for "managing")
+  @Input() manageUrl: string = ''; // (for "managing" the entities (add, update, remove) )
   @Input() searchTableController: SearchTableController;
   @Input() filter: any = {};
   @Input() showActionButtons: boolean = true;
   @Input() showSearchPanel: boolean = true;
   @Input() showIndexColumn: boolean = false;
   @Input() allowNewItems: boolean = false;
+  @Input() allowEditItems: boolean = true;
   @Input() allowDeleteItems: boolean = false;
 
   loading = false;
@@ -64,55 +71,69 @@ export class SearchTableComponent implements OnInit {
   asc = false;
   forceRefresh: boolean = false;
   showSpinner: boolean = false;
-
+  currentResult: SearchTableResult = null;
 
   constructor(protected http: ExtendedHttpClient,
-              protected alertService: AlertService,
+              protected alertService: AlertMessageService,
               private downloadService: DownloadService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private router: Router, private authenticatedGuard: AuthenticatedGuard) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.columnIndex = {
       cellTemplate: this.rowIndex,
       name: 'Index',
-      width: 50,
+      width: 30,
       maxWidth: 80,
-      sortable: false
+      sortable: false,
+      showInitially: false
     };
 
     this.columnActions = {
       cellTemplate: this.rowActions,
       name: 'Actions',
-      width: 250,
-      maxWidth: 250,
-      sortable: false
+      width: 100,
+      maxWidth: 150,
+      sortable: false,
+      showInitially: false
     };
     this.columnExpandDetails = {
       cellTemplate: this.rowExpand,
-      name: ' ',
+      name: 'Upd.',
       width: 40,
       maxWidth: 50,
-      sortable: false
+      sortable: false,
+      showInitially: false
     };
+  }
 
+
+  tableColumnInit(){
     // Add actions to last column
     if (this.columnPicker) {
       // prepend columns
       if (!!this.tableRowDetailContainer) {
+        console.log("show table row details!")
+        this.columnExpandDetails.showInitially = true
         this.columnPicker.allColumns.unshift(this.columnExpandDetails);
-        this.columnPicker.selectedColumns.unshift(this.columnExpandDetails);
       }
       if (this.showIndexColumn) {
+        console.log("show table index!")
+        this.columnIndex.showInitially = true
         this.columnPicker.allColumns.unshift(this.columnIndex);
-        this.columnPicker.selectedColumns.unshift(this.columnIndex);
       }
 
       if (this.showActionButtons) {
+        console.log("show action buttons!")
+        this.columnActions.showInitially = true
         this.columnPicker.allColumns.push(this.columnActions);
-        this.columnPicker.selectedColumns.push(this.columnActions);
       }
+      this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
+    } else {
+      console.log("Column picker is not registered for the table!")
     }
+
   }
 
   getRowClass(row) {
@@ -164,12 +185,12 @@ export class SearchTableComponent implements OnInit {
 
   private pageInternal(offset: number, pageSize: number, orderBy: string, asc: boolean) {
     this.getTableDataEntries$(offset, pageSize, orderBy, asc).subscribe((result: SearchTableResult) => {
-
       // empty page - probably refresh from delete...check if we can go one page back
       // try again
       if (result.count < 1 && offset > 0) {
         this.pageInternal(offset--, pageSize, orderBy, asc)
       } else {
+        this.currentResult = result;
         this.offset = offset;
         this.rowLimiter.pageSize = pageSize;
         this.orderBy = orderBy;
@@ -186,7 +207,7 @@ export class SearchTableComponent implements OnInit {
         });
       }
     }, (error: any) => {
-      this.alertService.error("Error occurred:" + error);
+      console.error("Error occurred while retrieving table data:" + JSON.stringify(error));
     });
   }
 
@@ -221,11 +242,15 @@ export class SearchTableComponent implements OnInit {
   }
 
 
-  onDeleteRowActionClicked(row: SearchTableEntity) {
-    this.deleteSearchTableEntities([row]);
+  onNewButtonClicked() {
+    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
+      if (authorized) {
+        this.fireCreateNewEntityEvent();
+      }
+    })
   }
 
-  onNewButtonClicked() {
+  fireCreateNewEntityEvent() {
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
       data: {edit: false}
     });
@@ -242,16 +267,42 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteButtonClicked() {
+    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
+      if (authorized) {
+        this.fireDeleteEntityEvent();
+      }
+    })
+  }
+
+  fireDeleteEntityEvent() {
     this.deleteSearchTableEntities(this.selected);
   }
 
+  onDeleteRowActionClicked(row: SearchTableEntity) {
+    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
+      if (authorized) {
+        this.deleteSearchTableEntities([row]);
+      }
+    })
+
+  }
+
   onEditButtonClicked() {
+    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
+      if (authorized) {
+        this.fireEditEntityEvent();
+      }
+    })
+  }
+
+  fireEditEntityEvent() {
     if (this.rowNumber >= 0 && this.rows[this.rowNumber] && this.rows[this.rowNumber].deleted) {
       this.alertService.error('You cannot edit a deleted entry.', false);
       return;
     }
     this.editSearchTableEntity(this.rowNumber);
   }
+
 
   onSaveButtonClicked(withDownloadCSV: boolean) {
     try {
@@ -261,7 +312,7 @@ export class SearchTableComponent implements OnInit {
           const modifiedRowEntities = this.rows.filter(el => el.status !== SearchTableEntityStatus.PERSISTED);
           // this.isBusy = true;
           this.showSpinner = true;
-          this.http.put(this.url, modifiedRowEntities).toPromise().then(res => {
+          this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(res => {
             this.showSpinner = false;
             // this.isBusy = false;
             // this.getUsers();
@@ -277,10 +328,10 @@ export class SearchTableComponent implements OnInit {
             try {
               console.log("eror: " + err)
               let parser = new DOMParser();
-              let xmlDoc = parser.parseFromString(err.error,"text/xml");
+              let xmlDoc = parser.parseFromString(err.error, "text/xml");
               let errDesc = xmlDoc.getElementsByTagName("ErrorDescription")[0].childNodes[0].nodeValue;
               this.alertService.exception('The operation \'update\' not completed successfully.', errDesc, false);
-            }catch (err2){
+            } catch (err2) {
               // if parse failed
               this.alertService.exception('The operation \'update\' not completed successfully.', err, false);
             }
@@ -314,9 +365,16 @@ export class SearchTableComponent implements OnInit {
   getRowsAsString(): number {
     return this.rows.length;
   }
+  getCurrentResult(){
+    return this.currentResult;
+  }
 
   get editButtonEnabled(): boolean {
     return this.selected && this.selected.length == 1 && !this.selected[0].deleted;
+  }
+
+  get managementUrl(): string {
+    return (this.manageUrl == null || this.manageUrl.length === 0)? this.url:this.manageUrl;
   }
 
   get deleteButtonEnabled(): boolean {
@@ -340,13 +398,13 @@ export class SearchTableComponent implements OnInit {
   private editSearchTableEntity(rowNumber: number) {
     const row = this.rows[rowNumber];
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
-      data: {edit: true, row}
+      data: {edit: row?.status!=SearchTableEntityStatus.NEW, row}
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
         const changed = this.searchTableController.isRecordChanged(row, formRef.componentInstance.getCurrent());
         if (changed) {
-          const status = row.status === SearchTableEntityStatus.PERSISTED
+          const status = ObjectUtils.isEqual(row.status, SearchTableEntityStatus.PERSISTED)
             ? SearchTableEntityStatus.UPDATED
             : row.status;
           this.rows[rowNumber] = {...formRef.componentInstance.getCurrent(), status};

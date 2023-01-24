@@ -3,15 +3,10 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
@@ -29,7 +24,7 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class ServiceGroupDaoIntegrationTest extends ServiceGroupDaoIntegrationBase {
+public class ServiceGroupDaoIntegrationTest extends AbstractServiceGroupDaoIntegrationTest {
 
     @Test
     @Transactional
@@ -51,6 +46,30 @@ public class ServiceGroupDaoIntegrationTest extends ServiceGroupDaoIntegrationBa
         assertNotNull(res.getId());
         assertEquals(TEST_SG_ID_1, res.getParticipantIdentifier()); // test equal method - same entity
         assertEquals(TEST_SG_SCHEMA_1, res.getParticipantScheme()); // test equal method - same entity
+        assertEquals(1, res.getServiceGroupDomains().size()); // domain must be loaded
+        assertEquals(d.getDomainCode(), res.getServiceGroupDomains().get(0).getDomain().getDomainCode()); // test loaded Domain
+
+    }
+    @Test
+    @Transactional
+    public void persistServiceGroupNullScheme() {
+        //  given
+        DBDomain d = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+
+        DBServiceGroup sg = new DBServiceGroup();
+        sg.setParticipantIdentifier(TEST_SG_ID_1);
+        sg.setParticipantScheme(null);
+        sg.addDomain(d);
+
+        // when
+        testInstance.persistFlushDetach(sg);
+
+        // then
+        DBServiceGroup res = testInstance.findServiceGroup(TEST_SG_ID_1, null).get();
+        assertTrue(sg != res); // test different object instance
+        assertNotNull(res.getId());
+        assertEquals(TEST_SG_ID_1, res.getParticipantIdentifier()); // test equal method - same entity
+        assertNull( res.getParticipantScheme()); // test equal method - same entity
         assertEquals(1, res.getServiceGroupDomains().size()); // domain must be loaded
         assertEquals(d.getDomainCode(), res.getServiceGroupDomains().get(0).getDomain().getDomainCode()); // test loaded Domain
 

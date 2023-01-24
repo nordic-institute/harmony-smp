@@ -1,0 +1,25 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<mat-dialog-content>{{text}}</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div *ngIf="isConfirmationDialog()" class="divTableCell">
+    <button mat-raised-button color="primary" (click)="dialogRef.close(true)" id="yesbuttondialog_id" tabindex="0">
+      <mat-icon>check_circle</mat-icon>
+      <span>Yes</span>
+    </button>
+  </div>
+
+  <div *ngIf="isConfirmationDialog()" class="divTableCell">
+    <button mat-raised-button color="primary" (click)="dialogRef.close(false)" id="nobuttondialog_id" tabindex="1">
+      <mat-icon>cancel</mat-icon>
+      <span>No</span>
+    </button>
+  </div>
+
+  <div *ngIf="isInformationDialog()" class="divTableCell">
+    <button mat-raised-button color="primary" (click)="dialogRef.close(true)" id="okbuttondialog_id" tabindex="3">
+      <mat-icon>warning</mat-icon>
+      <span>OK</span>
+    </button>
+  </div>
+</mat-dialog-actions>

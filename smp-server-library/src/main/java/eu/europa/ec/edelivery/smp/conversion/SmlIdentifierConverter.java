@@ -29,7 +29,7 @@ public class SmlIdentifierConverter {
         if (isBlank(smpId)) {
             throw new IllegalStateException("SMP ID is null or empty");
         }
-        if (participantId == null || isBlank(participantId.getScheme()) || isBlank(participantId.getValue())) {
+        if (participantId == null || isBlank(participantId.getValue())) {
             throw new IllegalStateException("Participant Scheme or Id is null or empty");
         }
 

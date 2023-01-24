@@ -13,13 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.edelivery.smp.AbstractTest;
-import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
-import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import eu.europa.ec.edelivery.smp.testutils.X509CertificateTestUtils;
+import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +23,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -40,7 +34,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
 import java.io.IOException;
 
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.*;
@@ -48,25 +41,21 @@ import static java.lang.String.format;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by gutowpa on 02/08/2017.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        PropertiesTestConfig.class,
-        SmpAppConfig.class,
-        SmpWebAppConfig.class,
-        SpringSecurityConfig.class,
-        UIKeystoreService.class
-})
+@RunWith(SpringRunner.class)
 @WebAppConfiguration
+@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
 @Sql(scripts = {"classpath:/cleanup-database.sql",
-        "classpath:/webapp_integration_test_data_one_domain.sql"}
-)
+        "classpath:/webapp_integration_test_data_one_domain.sql"},
+        executionPhase = BEFORE_TEST_METHOD)
 public class ServiceGroupControllerSingleDomainTest {
 
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
@@ -82,10 +71,9 @@ public class ServiceGroupControllerSingleDomainTest {
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
     private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
 
+    private static final String OTHER_OWNER_NAME = "CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08";
 
-    private static final String OTHER_OWNER_NAME_URL_ENCODED = "CN=utf-8_%C5%BC_SMP,O=EC,C=BE:0000000000000666";
-
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "test123");
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -224,7 +212,7 @@ public class ServiceGroupControllerSingleDomainTest {
         mvc.perform(put(URL_PATH)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
-                .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME_URL_ENCODED)
+                .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME)
                 .content(SERVICE_GROUP_INPUT_BODY))
                 .andExpect(status().isCreated());
     }

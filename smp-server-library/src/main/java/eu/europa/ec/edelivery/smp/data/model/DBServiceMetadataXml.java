@@ -4,12 +4,12 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * Database optimization: load service metadata xml only when needed and
  * keep blobs/clobs in separate table!
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -36,11 +36,6 @@ public class DBServiceMetadataXml extends BaseEntity {
     @JoinColumn(name = "ID")
     @MapsId
     DBServiceMetadata serviceMetadata;
-
-    @Column(name = "CREATED_ON" , nullable = false)
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    LocalDateTime lastUpdatedOn;
 
     @Override
     public Long getId() {
@@ -79,36 +74,5 @@ public class DBServiceMetadataXml extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id);
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if(createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
     }
 }

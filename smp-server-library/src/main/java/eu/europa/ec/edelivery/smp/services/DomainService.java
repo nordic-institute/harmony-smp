@@ -54,7 +54,7 @@ public class DomainService {
 
 
     /**
-     * Method checks if domain is in right format. Domain must contains only alphanomeric chars and it shoud
+     * Method checks if domain is in right format. Domain must contains only alphanomeric chars and it must
      * not be longer than 50 chars.
      *
      * @param domain

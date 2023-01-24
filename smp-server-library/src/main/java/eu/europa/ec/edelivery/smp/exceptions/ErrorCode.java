@@ -44,9 +44,11 @@ public enum ErrorCode {
     ILLEGAL_STATE_SMD_MULTIPLE_ENTRY (500,"SMP:140",ErrorBusinessCode.TECHNICAL,"More than one service metadata ( doc. id: %s, doc. sch.: '%s') for participant ( part. id %s, part. sch. : '%s') is defined in database!"),
     METADATA_NOT_EXISTS(404,"SMP:141",ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not found (part. id: '%s', part. sch.: '%s',doc. id: '%s', doc. sch.: '%s')!"),
     SMD_NOT_EXISTS_FOR_DOMAIN(404,"SMP:142",ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not found for domain (domain: %s, part. id: '%s', part. sch.: '%s')!"),
-    INVALID_SMD_XML (400,"SMP:143",ErrorBusinessCode.XSD_INVALID,"Invalid service metada. Error: %s"),
+    INVALID_SMD_XML (400,"SMP:143",ErrorBusinessCode.XSD_INVALID,"Invalid service metadata. Error: %s"),
     INVALID_SMD_DOCUMENT_DATA(400,"SMP:143",ErrorBusinessCode.INVALID_INPUT_DATA,"XML serviceMetadata document (doc. id: '%s', doc. sch.: '%s') " +
             "do not match metadata request (doc. id: '%s', doc. sch.: '%s')."),
+    ILLEGAL_STATE_SMD_ON_MULTIPLE_SGD (500,"SMP:144",ErrorBusinessCode.TECHNICAL,"Found than one service group domain for metadata id [%s] and user id [%s]!"),
+
 
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),
@@ -55,12 +57,15 @@ public enum ErrorCode {
     //
     XML_SIGNING_EXCEPTION (500,"SMP:500",ErrorBusinessCode.TECHNICAL,"Error occurred while signing response!"),
 
-    JAXB_INITIALIZATION (500,"SMP:511",ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class %s!"),
-    XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for %s.  Error: %s!"),
-    INVALID_REQUEST(500,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request %s.  Error: %s!"),
-    INTERNAL_ERROR (500,"SMP:514",ErrorBusinessCode.TECHNICAL, "Internal error %s.  Error: %s!"),
-    CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error %s.  Error: %s!"),
+    JAXB_INITIALIZATION (500,"SMP:511",ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class [%s]!"),
+    XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for [%s].  Error: %s!"),
+    INVALID_REQUEST(400,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request [%s]. Error: %s!"),
+    INTERNAL_ERROR (500,"SMP:514",ErrorBusinessCode.TECHNICAL, "Internal error [%s]. Error: %s!"),
+    CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error [%s]. Error: %s!"),
     CONFIGURATION_ERROR (500,"SMP:516",ErrorBusinessCode.TECHNICAL, "Configuration error: %s!"),
+
+
+    MAIL_SUBMISSION_ERROR (500,"SMP:550",ErrorBusinessCode.TECHNICAL, "Mail submission error: %s!"),
 
     //
     ;

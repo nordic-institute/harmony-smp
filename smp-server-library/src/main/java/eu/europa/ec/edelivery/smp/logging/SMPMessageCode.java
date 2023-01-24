@@ -43,13 +43,15 @@ public enum SMPMessageCode implements MessageCode {
     BUS_INVALID_XML("BUS-030", "Invalid XML for {}. Error: [{}]"),
 
     SEC_UNSECURED_LOGIN_ALLOWED("SEC-001", "Unsecure login is allowed, no authentication will be performed"),
-    SEC_USER_AUTHENTICATED("SEC-002", "User {} is authenticated with role {}."),
-    SEC_USER_NOT_EXISTS("SEC-003", "User {} not exists."),
-    SEC_INVALID_PASSWORD("SEC-004", "User {} has invalid password."),
-    SEC_USER_NOT_AUTHENTICATED("SEC-007", "User {}. Reason: {}."),
-    SEC_USER_CERT_NOT_EXISTS("SEC-005", "User certificate {} not exists."),
-    SEC_USER_CERT_INVALID("SEC-006", "User certificate {} is invalid: {}."),
-
+    SEC_USER_AUTHENTICATED("SEC-002", "User [{}] is authenticated with role [{}]."),
+    SEC_USER_NOT_EXISTS("SEC-003", "User [{}] not exists."),
+    SEC_INVALID_PASSWORD("SEC-004", "User [{}] has invalid password."),
+    SEC_USER_CERT_NOT_EXISTS("SEC-005", "User certificate [{}] not exists."),
+    SEC_USER_CERT_INVALID("SEC-006", "User certificate [{}] is invalid: [{}]."),
+    SEC_USER_NOT_AUTHENTICATED("SEC-007", "User [{}]. Reason: [{}]."),
+    SEC_USER_SUSPENDED("SEC-008", "User [{}] is temporarily suspended."),
+    SEC_INVALID_TOKEN("SEC-009", "User [{}] has invalid token value for token id: [{}]."),
+    SEC_TRUSTSTORE_CERT_INVALID("SEC-010", "Truststore certificate with alias [{}] is invalid: [{}]."),
     ;
 
     String code;

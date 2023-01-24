@@ -20,13 +20,7 @@ public class PrivilegesTests extends BaseTest {
 
 	@AfterMethod
 	public void logoutAndReset(){
-		SMPPage page = new SMPPage(driver);
-		page.refreshPage();
-
-		if(page.pageHeader.sandwichMenu.isLoggedIn()){
-			logger.info("Logout!!");
-			page.pageHeader.sandwichMenu.logout();
-		}
+		genericLogoutProcedure();
 	}
 
 	@Test(description = "RGT-0")
@@ -36,19 +30,19 @@ public class PrivilegesTests extends BaseTest {
 
 		SearchPage page = new SearchPage(driver);
 
-		soft.assertTrue(page.sidebar.isSearchLnkVisible(), "Search link is visible on Search page");
-		soft.assertFalse(page.sidebar.isEditLnkVisible(), "Edit link is NOT visible on Search page");
-		soft.assertFalse(page.sidebar.isDomainLnkVisible(), "Domain link is NOT visible on Search page");
-		soft.assertFalse(page.sidebar.isUsersLnkVisible(), "Users link is NOT visible on Search page");
+		soft.assertTrue(page.sidebar.isSearchLnkEnabled(), "Search link is visible on Search page");
+		soft.assertFalse(page.sidebar.isEditLnkEnabled(), "Edit link is NOT visible on Search page");
+		soft.assertFalse(page.sidebar.isDomainLnkEnabled(), "Domain link is NOT visible on Search page");
+		soft.assertFalse(page.sidebar.isUsersLnkEnabled(), "Users link is NOT visible on Search page");
 
 		logger.info("Going to the login page");
 		page.pageHeader.goToLogin();
 
 		LoginPage loginPage = new LoginPage(driver);
-		soft.assertTrue(loginPage.sidebar.isSearchLnkVisible(), "Search link is visible on Login page");
-		soft.assertFalse(loginPage.sidebar.isEditLnkVisible(), "Edit link is NOT visible on Login page");
-		soft.assertFalse(loginPage.sidebar.isDomainLnkVisible(), "Domain link is NOT visible on Login page");
-		soft.assertFalse(loginPage.sidebar.isUsersLnkVisible(), "Users link is NOT visible on Login page");
+		soft.assertTrue(loginPage.sidebar.isSearchLnkEnabled(), "Search link is visible on Login page");
+		soft.assertFalse(loginPage.sidebar.isEditLnkEnabled(), "Edit link is NOT visible on Login page");
+		soft.assertFalse(loginPage.sidebar.isDomainLnkEnabled(), "Domain link is NOT visible on Login page");
+		soft.assertFalse(loginPage.sidebar.isUsersLnkEnabled(), "Users link is NOT visible on Login page");
 
 		soft.assertAll();
 	}
@@ -80,11 +74,11 @@ public class PrivilegesTests extends BaseTest {
 
 		soft.assertTrue(loginPage.pageHeader.sandwichMenu.isLoggedIn(), "Check that the user is logged in");
 
-		soft.assertTrue(loginPage.sidebar.isSearchLnkVisible(), "Search link is visible after login for SG_ADMIN");
-		soft.assertTrue(loginPage.sidebar.isEditLnkVisible(), "Edit link is visible after login for SG_ADMIN");
+		soft.assertTrue(loginPage.sidebar.isSearchLnkEnabled(), "Search link is visible after login for SG_ADMIN");
+		soft.assertTrue(loginPage.sidebar.isEditLnkEnabled(), "Edit link is visible after login for SG_ADMIN");
 
-		soft.assertFalse(loginPage.sidebar.isDomainLnkVisible(), "Domain link is NOT visible after login for SG_ADMIN");
-		soft.assertFalse(loginPage.sidebar.isUsersLnkVisible(), "Users link is NOT visible after login for SG_ADMIN");
+		soft.assertFalse(loginPage.sidebar.isDomainLnkEnabled(), "Domain link is NOT visible after login for SG_ADMIN");
+		soft.assertFalse(loginPage.sidebar.isUsersLnkEnabled(), "Users link is NOT visible after login for SG_ADMIN");
 
 //		going to check privileges on Edit page for SG_ADMIN
 		logger.info("Going to edit page");
@@ -105,11 +99,11 @@ public class PrivilegesTests extends BaseTest {
 
 		soft.assertFalse(loginPage.pageHeader.sandwichMenu.isLoggedIn(), "Check that the user is logged out");
 
-		soft.assertTrue(loginPage.sidebar.isSearchLnkVisible(), "Search link is visible after logout");
-		soft.assertFalse(loginPage.sidebar.isEditLnkVisible(), "Edit link is NOT visible after logout");
+		soft.assertTrue(loginPage.sidebar.isSearchLnkEnabled(), "Search link is visible after logout");
+		soft.assertFalse(loginPage.sidebar.isEditLnkEnabled(), "Edit link is NOT visible after logout");
 
-		soft.assertFalse(loginPage.sidebar.isDomainLnkVisible(), "Domain link is NOT visible after logout");
-		soft.assertFalse(loginPage.sidebar.isUsersLnkVisible(), "Users link is NOT visible after logout");
+		soft.assertFalse(loginPage.sidebar.isDomainLnkEnabled(), "Domain link is NOT visible after logout");
+		soft.assertFalse(loginPage.sidebar.isUsersLnkEnabled(), "Users link is NOT visible after logout");
 
 		SMPRestClient.deleteSG(pi);
 
@@ -130,11 +124,11 @@ public class PrivilegesTests extends BaseTest {
 
 		soft.assertTrue(loginPage.pageHeader.sandwichMenu.isLoggedIn());
 
-		soft.assertTrue(loginPage.sidebar.isSearchLnkVisible());
-		soft.assertFalse(loginPage.sidebar.isEditLnkVisible());
+		soft.assertTrue(loginPage.sidebar.isSearchLnkEnabled());
+		soft.assertFalse(loginPage.sidebar.isEditLnkEnabled());
 
-		soft.assertTrue(loginPage.sidebar.isDomainLnkVisible());
-		soft.assertTrue(loginPage.sidebar.isUsersLnkVisible());
+		soft.assertTrue(loginPage.sidebar.isDomainLnkEnabled());
+		soft.assertTrue(loginPage.sidebar.isUsersLnkEnabled());
 
 
 		soft.assertAll();
@@ -158,11 +152,11 @@ public class PrivilegesTests extends BaseTest {
 
 		soft.assertTrue(loginPage.pageHeader.sandwichMenu.isLoggedIn(), "Check that the user is logged in");
 
-		soft.assertTrue(loginPage.sidebar.isSearchLnkVisible(), "Search link is visible after login for SMP_ADMIN");
-		soft.assertTrue(loginPage.sidebar.isEditLnkVisible(), "Edit link is visible after login for SMP_ADMIN");
+		soft.assertTrue(loginPage.sidebar.isSearchLnkEnabled(), "Search link is visible after login for SMP_ADMIN");
+		soft.assertTrue(loginPage.sidebar.isEditLnkEnabled(), "Edit link is visible after login for SMP_ADMIN");
 
-		soft.assertFalse(loginPage.sidebar.isDomainLnkVisible(), "Domain link is NOT visible after login for SMP_ADMIN");
-		soft.assertFalse(loginPage.sidebar.isUsersLnkVisible(), "Users link is NOT visible after login for SMP_ADMIN");
+		soft.assertFalse(loginPage.sidebar.isDomainLnkEnabled(), "Domain link is NOT visible after login for SMP_ADMIN");
+		soft.assertFalse(loginPage.sidebar.isUsersLnkEnabled(), "Users link is NOT visible after login for SMP_ADMIN");
 
 //		going to check privileges on Edit page for SMP_ADMIN
 		logger.info("Going to edit page");
@@ -183,11 +177,11 @@ public class PrivilegesTests extends BaseTest {
 
 		soft.assertFalse(loginPage.pageHeader.sandwichMenu.isLoggedIn(), "Check that the user is logged out");
 
-		soft.assertTrue(loginPage.sidebar.isSearchLnkVisible(), "Search link is visible after logout");
-		soft.assertFalse(loginPage.sidebar.isEditLnkVisible(), "Edit link is NOT visible after logout");
+		soft.assertTrue(loginPage.sidebar.isSearchLnkEnabled(), "Search link is visible after logout");
+		soft.assertFalse(loginPage.sidebar.isEditLnkEnabled(), "Edit link is NOT visible after logout");
 
-		soft.assertFalse(loginPage.sidebar.isDomainLnkVisible(), "Domain link is NOT visible after logout");
-		soft.assertFalse(loginPage.sidebar.isUsersLnkVisible(), "Users link is NOT visible after logout");
+		soft.assertFalse(loginPage.sidebar.isDomainLnkEnabled(), "Domain link is NOT visible after logout");
+		soft.assertFalse(loginPage.sidebar.isUsersLnkEnabled(), "Users link is NOT visible after logout");
 
 		soft.assertAll();
 	}
