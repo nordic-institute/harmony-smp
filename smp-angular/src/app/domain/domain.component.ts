@@ -1,8 +1,16 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 
-import {AlertService} from '../alert/alert.service';
+import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {DomainController} from './domain-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
@@ -10,11 +18,10 @@ import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {SecurityService} from "../security/security.service";
 import {DomainRo} from "./domain-ro.model";
-import {ConfirmationDialogComponent} from "../common/confirmation-dialog/confirmation-dialog.component";
+import {ConfirmationDialogComponent} from "../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
 import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-dialog.component";
 import {SmpInfoService} from "../app-info/smp-info.service";
-import {SmpInfo} from "../app-info/smp-info.model";
 import {SmlIntegrationService} from "./sml-integration.service";
 import {SMLResult} from "./sml-result.model";
 
@@ -23,50 +30,45 @@ import {SMLResult} from "./sml-result.model";
   templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css']
 })
-export class DomainComponent implements OnInit {
+export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
-  @ViewChild('signKeyColumnTemplate') signKeyColumnTemplate: TemplateRef<any>;
-  @ViewChild('smlKeyColumnTemplate') smlKeyColumnTemplate: TemplateRef<any>;
+  @ViewChild('certificateAliasTemplate') certificateAliasColumn: TemplateRef<any>;
   @ViewChild('domainCodeColumnTemplate') domainCodeColumnTemplate: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
 
 
-  baseUrl = SmpConstants.REST_DOMAIN;
+  baseUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE;
   columnPicker: ColumnPicker = new ColumnPicker();
   domainController: DomainController;
   filter: any = {};
-  isSMPIntegrationOn: boolean = false;
-
 
   constructor(public securityService: SecurityService,
               protected smpInfoService: SmpInfoService,
               protected smlIntegrationService: SmlIntegrationService,
               protected lookups: GlobalLookups,
               protected http: HttpClient,
-              protected alertService: AlertService,
-              public dialog: MatDialog) {
+              protected alertService: AlertMessageService,
+              public dialog: MatDialog,
+              private changeDetector: ChangeDetectorRef) {
 
     // check application settings
-    this.smpInfoService.getSmpInfo().subscribe((smpInfo: SmpInfo) => {
-        this.isSMPIntegrationOn = smpInfo.smlIntegrationOn;
-      }
-    );
 
-    // if system admin refresh certificate list!
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      this.lookups.refreshCertificateLookup();
-    }
+
   }
 
   ngOnInit() {
     this.domainController = new DomainController(this.http, this.lookups, this.dialog);
+  }
 
+  initColumns() {
     this.columnPicker.allColumns = [
       {
         name: 'Domain code',
         title: "Unique domain code.",
+        prop: 'domainCode',
+        showInitially: true,
         cellTemplate: this.domainCodeColumnTemplate,
         width: 250
 
@@ -75,48 +77,62 @@ export class DomainComponent implements OnInit {
         name: 'SML Domain',
         title: "Informative: SML domain name.",
         prop: 'smlSubdomain',
-
+        showInitially: true,
       },
       {
         name: 'Signature CertAlias',
         title: "Certificate for signing REST responses",
-        cellTemplate: this.signKeyColumnTemplate,
+        prop: 'signatureKeyAlias',
+        showInitially: true,
+        cellTemplate: this.certificateAliasColumn,
         width: 150
       },
-
       {
         name: 'SML SMP Id',
         title: "SMP identifier for SML integration",
         prop: 'smlSmpId',
+        showInitially: true,
         width: 150
       },
       {
         name: 'SML ClientCert Alias',
-        cellTemplate: this.smlKeyColumnTemplate,
+        prop: 'smlClientKeyAlias',
+        showInitially: true,
+        cellTemplate: this.certificateAliasColumn,
         width: 150
       },
       {
         name: 'Is SML Registered',
         prop: 'smlRegistered',
+        showInitially: true,
         width: 120
       },
       {
-        name: 'SML BueCoat Auth.',
-        prop: 'smlBlueCoatAuth',
+        name: 'SML ClientCert Auth.',
+        prop: 'smlClientCertAuth',
+        showInitially: true,
         width: 130
       },
     ];
+    this.searchTable.tableColumnInit();
+  }
 
-    this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ['Domain code', 'SML Domain', 'Signature CertAlias', 'SML SMP Id', 'SML ClientCert Alias', 'Is SML Registered', 'SML BueCoat Auth.'].indexOf(col.name) != -1
-    });
+  ngAfterViewChecked() {
+    this.changeDetector.detectChanges();
+  }
+
+  ngAfterViewInit() {
+    this.initColumns();
+    // if system admin refresh certificate list!
+    if (this.securityService.isCurrentUserSystemAdmin()) {
+      this.lookups.refreshCertificateLookup();
+    }
   }
 
   certificateAliasExists(alias: string): boolean {
     if (alias) {
       return this.lookups.cachedCertificateAliasList.includes(alias);
     } else {
-
       return false;
     }
   }
@@ -145,21 +161,19 @@ export class DomainComponent implements OnInit {
       return 'deleted';
     }
   }
+
   getDomainConfigurationWarning(domain: DomainRo) {
-    let msg =null;
+    let msg = null;
     if (!domain.signatureKeyAlias) {
       msg = "The domain should have a defined signature CertAlias."
     }
-    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
-      if( !domain.smlSmpId || !domain.smlClientCertHeader){
-        msg = (!msg?"": msg+" ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
+    if (this.lookups.cachedApplicationConfig.smlIntegrationOn) {
+      if (!domain.smlSmpId || !domain.smlClientCertHeader) {
+        msg = (!msg ? "" : msg + " ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
       }
     }
     return msg;
-
   }
-
-
 
   details(row: any) {
     this.domainController.showDetails(row);
@@ -170,17 +184,20 @@ export class DomainComponent implements OnInit {
     return this.searchTable.isDirty();
   }
 
+  get isSMPIntegrationOn() {
+    return this.lookups.cachedApplicationConfig?.smlIntegrationOn
+  }
 
   enableSMLRegister(): boolean {
-    if (this.searchTable.selected.length !== 1 || !this.isSMPIntegrationOn) {
+    if (!this.selectedOneRow || !this.isSMPIntegrationOn) {
       return false;
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
 
-    if (!domainRo.smlClientCertHeader && domainRo.smlBlueCoatAuth) {
+    if (!domainRo.smlClientCertHeader && domainRo.smlClientCertAuth) {
       return false;
     }
-    if (!domainRo.smlClientKeyAlias && !domainRo.smlBlueCoatAuth) {
+    if (!domainRo.smlClientKeyAlias && !domainRo.smlClientCertAuth) {
       return false;
     }
 
@@ -192,15 +209,15 @@ export class DomainComponent implements OnInit {
   }
 
   enableSMLUnregister(): boolean {
-    if (this.searchTable.selected.length !== 1 || !this.isSMPIntegrationOn) {
+    if (!this.selectedOneRow || !this.isSMPIntegrationOn) {
       return false;
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
 
-    if (!domainRo.smlClientCertHeader && domainRo.smlBlueCoatAuth) {
+    if (!domainRo.smlClientCertHeader && domainRo.smlClientCertAuth) {
       return false;
     }
-    if (!domainRo.smlClientKeyAlias && !domainRo.smlBlueCoatAuth) {
+    if (!domainRo.smlClientKeyAlias && !domainRo.smlClientCertAuth) {
       return false;
     }
 
@@ -212,8 +229,12 @@ export class DomainComponent implements OnInit {
     return domainRo.smlRegistered;
   }
 
+  get selectedOneRow(): boolean {
+    return this.searchTable?.selected.length === 1
+  }
+
   smlUnregisterSelectedDomain() {
-    if (this.searchTable.selected.length !== 1) {
+    if (!this.selectedOneRow) {
       return false;
     }
 
@@ -221,7 +242,7 @@ export class DomainComponent implements OnInit {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Unregister domain to SML!",
+        title: "Unregister domain to SML",
         description: "Action will unregister domain: " + domainRo.domainCode + " and all its service groups from SML. Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
@@ -240,7 +261,7 @@ export class DomainComponent implements OnInit {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Register domain to SML!",
+        title: "Register domain to SML",
         description: "Action will register domain: " + domainRo.domainCode + " and all its service groups to SML. Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
@@ -251,13 +272,13 @@ export class DomainComponent implements OnInit {
   }
 
   smlRegisterDomain(domain: DomainRo) {
-    this.searchTable.showSpinner=true;
+    this.searchTable.showSpinner = true;
     this.smlIntegrationService.registerDomainToSML$(domain.domainCode).toPromise().then((res: SMLResult) => {
-        this.searchTable.showSpinner=false;
+        this.searchTable.showSpinner = false;
         if (res) {
           if (res.success) {
             this.alertService.success("Domain " + domain.domainCode + " registered to sml!");
-            this.lookups.refreshDomainLookup();
+            this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = true;
           } else {
             this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, res.errorMessage);
@@ -267,20 +288,20 @@ export class DomainComponent implements OnInit {
         }
       },
       err => {
-        this.searchTable.showSpinner=false;
+        this.searchTable.showSpinner = false;
         this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, err);
       }
     )
   }
 
   smlUnregisterDomain(domain: DomainRo) {
-    this.searchTable.showSpinner=true;
+    this.searchTable.showSpinner = true;
     this.smlIntegrationService.unregisterDomainToSML$(domain.domainCode).toPromise().then((res: SMLResult) => {
-        this.searchTable.showSpinner=false;
+        this.searchTable.showSpinner = false;
         if (res) {
           if (res.success) {
             this.alertService.success("Domain " + domain.domainCode + " unregistered from sml!");
-            this.lookups.refreshDomainLookup();
+            this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = false;
           } else {
             this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, res.errorMessage);
@@ -291,7 +312,7 @@ export class DomainComponent implements OnInit {
       }
       ,
       err => {
-        this.searchTable.showSpinner=false;
+        this.searchTable.showSpinner = false;
         this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, err);
       }
     )

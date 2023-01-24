@@ -48,28 +48,30 @@ public class DatabaseConfig {
 
 
     @Value("${" + FileProperty.PROPERTY_DB_DRIVER + ":}")
-    private String driver;
+    protected String driver;
 
     @Value("${" + FileProperty.PROPERTY_DB_USER + ":}")
-    private String username;
+    protected String username;
 
     @Value("${" + FileProperty.PROPERTY_DB_TOKEN + ":}")
-    private String password;
+    protected String password;
 
     @Value("${" + FileProperty.PROPERTY_DB_URL + ":}")
-    private String url;
+    protected String url;
     // set default jdbc
     @Value("${" + FileProperty.PROPERTY_DB_JNDI + ":jdbc/smpDatasource}")
-    private String jndiDatasourceName;
+    protected String jndiDatasourceName;
 
     @Value("${" + FileProperty.PROPERTY_DB_DIALECT + ":}")
-    private String hibernateDialect;
+    protected String hibernateDialect;
 
+    @Value("${" + FileProperty.PROPERTY_GENERATE_DDL + ":}")
+    protected String generateDdl;
 
     @Bean(name = "dataSource")
     public DataSource getDataSource() {
 
-        DataSource dataSource = null;
+        DataSource dataSource;
         if (!StringUtils.isBlank(url)) {
             LOG.info("create datasource with URL: " + url);
             DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
@@ -118,7 +120,7 @@ public class DatabaseConfig {
         if (!StringUtils.isBlank(hibernateDialect)) {
             hibernateJpaVendorAdapter.setDatabasePlatform(hibernateDialect);
         }
-        hibernateJpaVendorAdapter.setGenerateDdl(true);
+        hibernateJpaVendorAdapter.setGenerateDdl(Boolean.parseBoolean(generateDdl));
         return hibernateJpaVendorAdapter;
     }
 }

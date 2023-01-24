@@ -1,5 +1,6 @@
 package pages.users;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -18,7 +19,7 @@ public class UsersPage extends SMPPage {
 	public UsersPage(WebDriver driver) {
 		super(driver);
 		this.pageHeader.waitForTitleToBe("Users");
-		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
+		PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 	}
 
 
@@ -26,87 +27,104 @@ public class UsersPage extends SMPPage {
 
 	@FindBy(id = "searchTable")
 	private WebElement userTableContainer;
-	
+
 	@FindBy(id = "cancelButton")
 	private WebElement cancelBtn;
-	
+
 	@FindBy(id = "saveButton")
 	private WebElement saveBtn;
-	
+
 	@FindBy(id = "newButton")
 	private WebElement newBtn;
-	
+
 	@FindBy(id = "editButton")
 	private WebElement editBtn;
-	
+
 	@FindBy(id = "deleteButton")
 	private WebElement deleteBtn;
-	
-	
-	public boolean isLoaded(){
-		
-		if(!cancelBtn.isDisplayed()){return false;}
-		if(!saveBtn.isDisplayed()){return false;}
-		if(!newBtn.isDisplayed()){return false;}
-		if(!newBtn.isEnabled()){return false;}
-		if(!editBtn.isDisplayed()){return false;}
-		return deleteBtn.isDisplayed();
-	}
-	
-	public boolean isCancelButtonEnabled(){
-		waitForElementToBeEnabled(cancelBtn);
-		return cancelBtn.isEnabled();
-	}
-	public boolean isSaveButtonEnabled(){
-		waitForElementToBeEnabled(saveBtn);
-		return saveBtn.isEnabled();
-	}
-	public boolean isDeleteButtonEnabled(){
-		waitForXMillis(200);
-		return deleteBtn.isEnabled();
+
+
+	public boolean isLoaded() {
+		log.info("checking Users page is loaded");
+
+		return isVisible(cancelBtn)
+				&& isVisible(saveBtn)
+				&& isVisible(newBtn)
+				&& isEnabled(newBtn)
+				&& isVisible(editBtn)
+				&& isVisible(deleteBtn);
 	}
 
-	public ConfirmationDialog clickCancel(){
+	public boolean isCancelButtonEnabled() {
+		log.info("cancel button");
+		return isEnabled(cancelBtn);
+	}
+
+	public boolean isSaveButtonEnabled() {
+		log.info("save button");
+		return isEnabled(saveBtn);
+	}
+
+	public boolean isDeleteButtonEnabled() {
+		waitForXMillis(200);
+		log.info("delete button");
+		return isEnabled(deleteBtn);
+	}
+
+	public ConfirmationDialog clickCancel() {
+		log.info("click cancel button");
 		waitForElementToBeClickable(cancelBtn).click();
 		return new ConfirmationDialog(driver);
 	}
-	
-	public ConfirmationDialog clickSave(){
+
+	public ConfirmationDialog clickSave() {
+		log.info("click save button");
 		waitForElementToBeClickable(saveBtn).click();
 		return new ConfirmationDialog(driver);
 	}
-	
-	public void clickDelete(){
+
+	public void clickDelete() {
+		log.info("click delete button");
 		waitForElementToBeClickable(deleteBtn).click();
+		waitForRowsToLoad();
 	}
-	public UserPopup clickNew(){
+
+	public UserPopup clickNew() {
+		log.info("click new button");
 		waitForElementToBeClickable(newBtn).click();
 		return new UserPopup(driver);
 	}
-	public UserPopup clickEdit(){
+
+	public UserPopup clickEdit() {
+		log.info("click edit button");
 		waitForElementToBeClickable(editBtn).click();
 		return new UserPopup(driver);
 	}
-	
-	
-	public UsersGrid grid(){
+
+
+	public UsersGrid grid() {
 		return new UsersGrid(driver, userTableContainer);
 	}
-	
 
 
-	public void createUser(){
+	public void createUser() {
+		log.info("create user");
+
 		waitForElementToBeClickable(newBtn).click();
 
 		UserPopup popup = new UserPopup(driver);
-//		popup.fillData(user,"",role,password,password);
 		popup.clickOK();
 
 	}
-	
-	
-	
-	
-	
-	
+
+	public boolean isNewButtonEnabled() {
+		try {
+			return newBtn.isEnabled();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+
 }

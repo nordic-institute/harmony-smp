@@ -1,4 +1,4 @@
-<mat-sidenav-container >
+<mat-sidenav-container>
   <mat-sidenav mode="side" opened="true" ngClass="{{menuClass}}">
 
     <!-- sidenav content -->
@@ -11,24 +11,37 @@
       <mat-icon matTooltip="Search" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">search</mat-icon>
       <span>Search</span>
     </button>
-    <button mat-raised-button class="sideNavButton" *ngIf="isCurrentUserSMPAdmin() || isCurrentUserServiceGroupAdmin()" [routerLink]="['/edit']" id="sidebar_edit_id">
+    <button mat-raised-button class="sideNavButton" *ngIf="isCurrentUserSMPAdmin() || isCurrentUserServiceGroupAdmin()"
+            [routerLink]="['/edit']" id="sidebar_edit_id">
       <mat-icon matTooltip="Edit" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">edit</mat-icon>
       <span>Edit</span>
     </button>
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']" *ngIf="isCurrentUserSystemAdmin()" id="sidebar_domain_id">
-      <mat-icon matTooltip="Domain" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">domain</mat-icon>
-      <span>Domain</span>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']" *ngIf="isCurrentUserSystemAdmin()"
+            id="sidebar_domain_id">
+      <mat-icon matTooltip="Domains" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">domain</mat-icon>
+      <span>Domains</span>
     </button>
-
     <!-- button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id" -->
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="isCurrentUserSystemAdmin()" id="sidebar_user_id">
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="isCurrentUserSystemAdmin()"
+            id="sidebar_user_id">
       <mat-icon matTooltip="Users" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">people</mat-icon>
       <span>Users</span>
+    </button>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/alert']" *ngIf="isCurrentUserSystemAdmin()"
+            id="sidebar_alert_id">
+      <mat-icon matTooltip="Alerts" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">add_alert</mat-icon>
+      <span>Alerts</span>
+    </button>
+
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/property']" *ngIf="isCurrentUserSystemAdmin()"
+            id="sidebar_property_id">
+      <mat-icon matTooltip="Properties" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">settings</mat-icon>
+      <span>Properties</span>
     </button>
 
     <div class="bottom-link" *ngIf="fullMenu">
       <a target="_blank"
-         href="https://edelivery.digital/smp-licence-info">Licence info</a>
+         href="https://edelivery.digital/smp-licence-info">License info</a>
     </div>
 
     <div class="collapse-button">
@@ -48,11 +61,10 @@
        [style.margin-left]="fullMenu? '225px' : '65px'">
     <alert></alert>
 
-    <div  id="sandwichMenuHolder" style="z-index: 500">
+    <div id="sandwichMenuHolder" style="z-index: 500">
       <div id="sandwichMenu">
-
-        <a *ngIf="!currentUser" [routerLink]="['/login']" (click)="clearWarning()" > Login   </a>
-        <span *ngIf="currentUser" >{{currentUserRoleDescription}}: {{currentUser}}  </span >
+        <a *ngIf="!currentUser" [routerLink]="['/login']" (click)="clearWarning()"> Login </a>
+        <span *ngIf="currentUser">{{currentUserRoleDescription}}: {{currentUser}}  </span>
 
         <button mat-icon-button [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id" matTooltip="Menu">
           <mat-icon>menu</mat-icon>
@@ -61,9 +73,16 @@
         <mat-menu x-position="before" #settingsMenu="matMenu">
           <div *ngIf="currentUser">
 
+
             <button mat-menu-item id="currentuser_id" (click)="editCurrentUser()">
               <mat-icon>person</mat-icon>
               <span>{{currentUser}}</span>
+            </button>
+            <button *ngIf="isUserAuthPasswdEnabled" mat-menu-item id="changePassword_id" (click)="changeCurrentUserPassword()">
+              <span>Change password</span>
+            </button>
+            <button *ngIf="isWebServiceUserTokenAuthPasswdEnabled" mat-menu-item id="getAccessToken_id" (click)="regenerateCurrentUserAccessToken()">
+              <span>Generated access token</span>
             </button>
 
             <hr/>
@@ -85,7 +104,7 @@
       </div>
     </div>
 
-    <div fxFill="100" fxFlex="<grow> <shrink> <basis>" id="routerHolder" style="min-height: 100%" >
+    <div fxFill="100" fxFlex="<grow> <shrink> <basis>" id="routerHolder" style="min-height: 100%">
       <div style="margin:15px;height: 100%;">
         <router-outlet class="full-height"></router-outlet>
       </div>

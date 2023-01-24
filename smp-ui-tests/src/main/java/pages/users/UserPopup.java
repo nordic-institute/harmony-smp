@@ -1,5 +1,6 @@
 package pages.users;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -15,27 +16,25 @@ public class UserPopup extends PageComponent {
 	}
 
 
-
-	
 	@FindBy(id = "userDetailsToggle_id")
 	WebElement userDetailsToggle;
-	
+
 	@FindBy(css = "#active_id > label > div > div")
 	WebElement activeToggle;
 
 	@FindBy(id = "username_id")
 	WebElement userNameInput;
-	
+
 	@FindBy(id = "emailAddress_id")
 	WebElement emailInput;
-	
+
 	@FindBy(id = "password_id")
 	WebElement passwordInput;
-	
+
 	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "usernameconfirmation_id")
 	WebElement confirmationInput;
-	
+
 	@FindBy(css = "mat-form-field.username> div > div.mat-form-field-flex > div > div")
 	WebElement usernameValidationError;
 
@@ -45,56 +44,60 @@ public class UserPopup extends PageComponent {
 	@FindBy(css = "mat-form-field.password-confirmation > div > div.mat-form-field-flex > div > div")
 	WebElement passConfirmationValidationError;
 
-	@FindBy(css = "mat-dialog-content > table > tbody > tr > td > button:nth-child(1)")
+	@FindBy(css = ".mat-form-field-infix > div.has-error")
+	WebElement passMatchValidationError;
+
+	@FindBy(css = "mat-dialog-content > table > tr > td > button:nth-child(1)")
 	WebElement okBtn;
-	
-	@FindBy(css = "mat-dialog-content > table > tbody > tr > td > button:nth-child(2)")
+
+	@FindBy(css = "mat-dialog-content > table > tr > td > button:nth-child(2)")
 	WebElement cancelBtn;
-	
+
 	@FindBy(css = "#role_id")
 	WebElement rolesSelectContainer;
 	public GenericSelect rolesSelect;
-	
-	
 
 
-	public boolean isOKButtonActive(){
-		return waitForElementToBeVisible(okBtn).isEnabled();
-	}
-	
-	public boolean isCancelButtonActive(){
-		return waitForElementToBeVisible(cancelBtn).isEnabled();
+	public boolean isOKButtonActive() {
+		return isEnabled(okBtn);
 	}
 
-	public void fillData(String user, String email, String role, String password, String confirmation){
+	public boolean isCancelButtonActive() {
+		return isEnabled(cancelBtn);
+	}
+
+	public void fillData(String user, String email, String role, String password, String confirmation) {
 		clearAndFillInput(userNameInput, user);
 		clearAndFillInput(emailInput, email);
 		clearAndFillInput(passwordInput, password);
 		clearAndFillInput(confirmationInput, confirmation);
-		
+
 		GenericSelect rolesSelect = new GenericSelect(driver, rolesSelectContainer);
 		rolesSelect.selectOptionByText(role);
 
 	}
-	
-	public void clickOK(){
+
+	public void clickOK() {
+		log.info("click OK");
 		waitForElementToBeClickable(okBtn);
 		okBtn.click();
 		waitForElementToBeGone(okBtn);
 	}
-	
-	public void clickCancel(){
+
+	public void clickCancel() {
+		log.info("click cancel");
 		waitForElementToBeClickable(cancelBtn);
 		cancelBtn.click();
 		waitForElementToBeGone(cancelBtn);
 	}
-	
-	
+
+
 	public void clickUserDetailsToggle() {
-		userDetailsToggle.click();
+		log.info("details toggle");
+		waitForElementToBeClickable(userDetailsToggle).click();
 		waitForElementToBeEnabled(userNameInput);
 	}
-	
+
 	public void fillDetailsForm(String username, String pass, String confirmation) {
 		clearAndFillInput(userNameInput, username);
 		clearAndFillInput(passwordInput, pass);
@@ -103,26 +106,45 @@ public class UserPopup extends PageComponent {
 	}
 
 
-	public String getUsernameValidationError(){
+	public String getUsernameValidationError() {
 		try {
+			waitForElementToBeVisible(usernameValidationError);
 			return usernameValidationError.getText();
-		} catch (Exception e) {	}
+		} catch (Exception e) {
+		}
 		return null;
 	}
 
-	public String getPassValidationError(){
-
+	public String getPassValidationError() {
 		try {
+			waitForElementToBeVisible(passValidationError);
 			return passValidationError.getText();
-		} catch (Exception e) {	}
+		} catch (Exception e) {
+		}
 		return null;
 	}
 
-	public String getConfirmationPassValidationError(){
+	public String getConfirmationPassValidationError() {
 
 		try {
+			waitForElementToBeVisible(passConfirmationValidationError);
 			return passConfirmationValidationError.getText();
-		} catch (Exception e) {	}
+		} catch (Exception e) {
+		}
 		return null;
+	}
+
+	public boolean isDuplicateUserNameErrorMsgDisPlayed() {
+		try {
+			return driver.findElement(By.cssSelector("mat-form-field.username > div .has-error")).isDisplayed();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public String getPassDontMatchValidationMsg() {
+//		WebElement passwordUnmatchingMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.has-error"));
+		return passMatchValidationError.getText();
 	}
 }

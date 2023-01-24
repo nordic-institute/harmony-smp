@@ -14,10 +14,10 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 /**
  * Created by gutowpa on 16/01/2018.
@@ -54,8 +54,8 @@ import java.time.LocalDateTime;
 public class DBDomain extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "domain_generator", sequenceName = "SMP_DOMAIN_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "domain_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOMAIN_SEQ")
+    @GenericGenerator(name = "SMP_DOMAIN_SEQ", strategy = "native")
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique domain id")
     Long id;
@@ -73,7 +73,7 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "Reqular expresion for participant ids")
     String smlParticipantIdentifierRegExp;
     @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
-    @ColumnDescription(comment = "Client-Cert header used behind RP - BlueCoat for SML integration")
+    @ColumnDescription(comment = "Client-Cert header used behind RP - ClientCertHeader for SML integration")
     String smlClientCertHeader;
     @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Client key alias used for SML integration")
@@ -82,22 +82,13 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "Signature key alias used for SML integration")
     String signatureKeyAlias;
 
-    @Column(name = "CREATED_ON", nullable = false)
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    LocalDateTime lastUpdatedOn;
-
     @Column(name = "SML_REGISTERED", nullable = false)
     @ColumnDescription(comment = "Flag for: Is domain registered in SML")
     private boolean smlRegistered = false;
 
     @Column(name = "SML_BLUE_COAT_AUTH", nullable = false)
-    @ColumnDescription(comment = "Flag for SML authentication type - use CLientCert header or  HTTPS ClientCertificate (key)")
-    private boolean smlBlueCoatAuth = false;
-
-    public DBDomain() {
-
-    }
+    @ColumnDescription(comment = "Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)")
+    private boolean smlClientCertAuth = false;
 
     @Override
     public Long getId() {
@@ -172,42 +163,11 @@ public class DBDomain extends BaseEntity {
         this.smlRegistered = smlRegistered;
     }
 
-    public boolean isSmlBlueCoatAuth() {
-        return smlBlueCoatAuth;
+    public boolean isSmlClientCertAuth() {
+        return smlClientCertAuth;
     }
 
-    public void setSmlBlueCoatAuth(boolean smlBlueCoatAuth) {
-        this.smlBlueCoatAuth = smlBlueCoatAuth;
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
+    public void setSmlClientCertAuth(boolean smlClientCertAuth) {
+        this.smlClientCertAuth = smlClientCertAuth;
     }
 }

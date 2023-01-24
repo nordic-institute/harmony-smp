@@ -20,12 +20,12 @@ package eu.europa.ec.edelivery.smp.services;
  */
 
 
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
-import eu.europa.ec.edelivery.smp.utils.X509CertificateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.helpers.IOUtils;
@@ -56,7 +56,7 @@ public class CRLVerifierService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CRLVerifierService.class);
 
-    public static final int DEF_PROXY_PORT=80;
+    public static final int DEF_PROXY_PORT = 80;
 
     Map<String, X509CRL> crlCacheMap = new HashMap<>();
     Map<String, Long> crlCacheNextRefreshMap = new HashMap<>();
@@ -70,11 +70,11 @@ public class CRLVerifierService {
     ConfigurationService configurationService;
 
 
-    public void verifyCertificateCRLs(X509Certificate cert) throws CertificateRevokedException {
+    public void verifyCertificateCRLs(X509Certificate cert) throws CertificateRevokedException, CertificateParsingException {
 
         List<String> crlDistPoints = X509CertificateUtils.getCrlDistributionPoints(cert);
         if (crlDistPoints.isEmpty()) {
-            LOG.warn("The certificate: '{}' has no CRL Lists.", cert.getSubjectX500Principal() );
+            LOG.warn("The certificate: '{}' has no CRL Lists.", cert.getSubjectX500Principal());
             return;
         }
         String crlUrl = X509CertificateUtils.extractHttpCrlDistributionPoint(crlDistPoints);
@@ -91,7 +91,7 @@ public class CRLVerifierService {
 
 
     public void verifyCertificateCRLs(BigInteger serial, String crlDistributionPointURL) throws CertificateRevokedException {
-        LOG.info("Download CRL {}." ,crlDistributionPointURL);
+        LOG.info("Download CRL {}.", crlDistributionPointURL);
         X509CRL crl = getCRLByURL(crlDistributionPointURL);
         if (crl != null && crl.getRevokedCertificates() != null) {
             validateCertificateCRL(crl, serial);
@@ -110,7 +110,7 @@ public class CRLVerifierService {
         if (x509CRL == null) {
             // if CRL is null try to get one
             boolean mandatoryCrlValidation = configurationService.forceCRLValidation();
-            x509CRL = downloadCRL(crlURL,mandatoryCrlValidation);
+            x509CRL = downloadCRL(crlURL, mandatoryCrlValidation);
             // calculate next update in milliseconds...
             Long nextRefresh = x509CRL != null && x509CRL.getNextUpdate() != null ? x509CRL.getNextUpdate().getTime()
                     : currentDate.getTime() + REFRESH_CRL_INTERVAL;
@@ -147,25 +147,25 @@ public class CRLVerifierService {
 
         X509CRL crl = null;
         SMPRuntimeException exception = null;
-        try ( InputStream crlStream = downloadURL(crlURL)){
+        try (InputStream crlStream = downloadURL(crlURL)) {
             if (crlStream != null) {
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");
                 crl = (X509CRL) cf.generateCRL(crlStream);
             }
         } catch (IOException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL+"'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
         } catch (CertificateException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL list is not supported '" + crlURL+"'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
         } catch (CRLException e) {
-            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL
+            exception = new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "CRL can not be read: '" + crlURL+"'"
                     , ExceptionUtils.getRootCauseMessage(e), e);
-        } catch(SMPRuntimeException exc) {
+        } catch (SMPRuntimeException exc) {
             exception = exc;
         }
         // if exception occurred
-        if (exception != null ) {
+        if (exception != null) {
             if (mandatoryCRLValidation) {
                 throw exception;
             } else {
@@ -190,7 +190,7 @@ public class CRLVerifierService {
                     String decryptedPassword = configurationService.getProxyCredentialToken();
                     Optional<Integer> proxyPort = configurationService.getHttpProxyPort();
                     inputStream = downloadURLViaProxy(crlURL, configurationService.getHttpProxyHost(),
-                            proxyPort.isPresent()?proxyPort.get():DEF_PROXY_PORT,
+                            proxyPort.isPresent() ? proxyPort.get() : DEF_PROXY_PORT,
                             configurationService.getProxyUsername(), decryptedPassword);
                 } else {
                     inputStream = downloadURLDirect(crlURL);
@@ -198,7 +198,7 @@ public class CRLVerifierService {
             }
             return inputStream;
         } catch (Exception exc) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL, ExceptionUtils.getRootCauseMessage(exc));
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Error occurred while downloading CRL:'" + crlURL+"'", ExceptionUtils.getRootCauseMessage(exc) );
         }
     }
 
@@ -220,8 +220,8 @@ public class CRLVerifierService {
             HttpGet httpget = new HttpGet(url);
             httpget.setConfig(config);
             // log username
-            String logUserName = credentialsProvider == null ? "None" :  proxyUser;
-            LOG.debug("Executing request '{}' via proxy '{}' with user: '{}'.",url, proxyHost,
+            String logUserName = credentialsProvider == null ? "None" : proxyUser;
+            LOG.debug("Executing request '{}' via proxy '{}' with user: '{}'.", url, proxyHost,
                     logUserName);
 
             return execute(httpclient, httpget);
@@ -269,8 +269,6 @@ public class CRLVerifierService {
             throw new CertificateRevokedException(entry.getRevocationDate(),
                     entry.getRevocationReason() == null ? NULL_CRL_REASON : entry.getRevocationReason(),
                     entry.getCertificateIssuer() == null ? NULL_ISSUER : entry.getCertificateIssuer(), map);
-
         }
     }
-
 }

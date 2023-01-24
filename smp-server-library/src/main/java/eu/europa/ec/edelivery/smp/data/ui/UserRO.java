@@ -1,9 +1,12 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import javax.persistence.Column;
+import java.time.OffsetDateTime;
+import java.util.Collection;
 
 
 /**
@@ -12,25 +15,45 @@ import java.util.List;
  */
 public class UserRO extends BaseRO {
 
-    private static final long serialVersionUID = 2821447495333163882L;
+    static final long serialVersionUID = 2821447495333163882L;
 
-    private String username;
-    private String password;
-    private String emailAddress;
-    private List<String> authorities;
-    private boolean active = true;
-    private String role;
-    private Long id;
-    private CertificateRO certificate;
-    private int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
-    private boolean passwordExpired;
+    String username;
+    String password;
+    OffsetDateTime passwordExpireOn;
+    Integer sequentialLoginFailureCount;
+    OffsetDateTime lastFailedLoginAttempt;
+    OffsetDateTime suspendedUtil;
+    String accessTokenId;
+    OffsetDateTime accessTokenExpireOn;
+    Integer sequentialTokenLoginFailureCount;
+    OffsetDateTime lastTokenFailedLoginAttempt;
+    OffsetDateTime tokenSuspendedUtil;
+    String emailAddress;
+    Collection<SMPAuthority> authorities;
+    boolean active = true;
+    String role;
+    String userId;
+    CertificateRO certificate;
+    int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
+    boolean passwordExpired = false;
+    boolean showPasswordExpirationWarning = false;
+    boolean forceChangeExpiredPassword = false;
+    boolean casAuthenticated = false;
 
-    public Long getId() {
-        return id;
+    String casUserDataUrl;
+
+    /**
+     * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
+     * expose internal database user identity
+     *
+     * @return hash value of database user entity.
+     */
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -47,6 +70,14 @@ public class UserRO extends BaseRO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAccessTokenId() {
+        return accessTokenId;
+    }
+
+    public void setAccessTokenId(String accessTokenId) {
+        this.accessTokenId = accessTokenId;
     }
 
     public String getEmailAddress() {
@@ -73,6 +104,22 @@ public class UserRO extends BaseRO {
         this.active = active;
     }
 
+    public OffsetDateTime getPasswordExpireOn() {
+        return passwordExpireOn;
+    }
+
+    public void setPasswordExpireOn(OffsetDateTime passwordExpireOn) {
+        this.passwordExpireOn = passwordExpireOn;
+    }
+
+    public OffsetDateTime getAccessTokenExpireOn() {
+        return accessTokenExpireOn;
+    }
+
+    public void setAccessTokenExpireOn(OffsetDateTime accessTokenExpireOn) {
+        this.accessTokenExpireOn = accessTokenExpireOn;
+    }
+
     public String getRole() {
         return role;
     }
@@ -89,11 +136,11 @@ public class UserRO extends BaseRO {
         this.certificate = certificate;
     }
 
-    public List<String> getAuthorities() {
+    public Collection<SMPAuthority> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(List<String> authorities) {
+    public void setAuthorities(Collection<SMPAuthority> authorities) {
         this.authorities = authorities;
     }
 
@@ -103,5 +150,85 @@ public class UserRO extends BaseRO {
 
     public void setStatusPassword(int statusPassword) {
         this.statusPassword = statusPassword;
+    }
+
+    public boolean isShowPasswordExpirationWarning() {
+        return showPasswordExpirationWarning;
+    }
+
+    public void setShowPasswordExpirationWarning(boolean showPasswordExpirationWarning) {
+        this.showPasswordExpirationWarning = showPasswordExpirationWarning;
+    }
+
+    public boolean isForceChangeExpiredPassword() {
+        return forceChangeExpiredPassword;
+    }
+
+    public void setForceChangePassword(boolean forceChangeExpiredPassword) {
+        this.forceChangeExpiredPassword = forceChangeExpiredPassword;
+    }
+
+    public String getCasUserDataUrl() {
+        return casUserDataUrl;
+    }
+
+    public void setCasUserDataUrl(String casUserDataUrl) {
+        this.casUserDataUrl = casUserDataUrl;
+    }
+
+    public boolean isCasAuthenticated() {
+        return casAuthenticated;
+    }
+
+    public void setCasAuthenticated(boolean casAuthenticated) {
+        this.casAuthenticated = casAuthenticated;
+    }
+
+    public Integer getSequentialLoginFailureCount() {
+        return sequentialLoginFailureCount;
+    }
+
+    public void setSequentialLoginFailureCount(Integer sequentialLoginFailureCount) {
+        this.sequentialLoginFailureCount = sequentialLoginFailureCount;
+    }
+
+    public OffsetDateTime getLastFailedLoginAttempt() {
+        return lastFailedLoginAttempt;
+    }
+
+    public void setLastFailedLoginAttempt(OffsetDateTime lastFailedLoginAttempt) {
+        this.lastFailedLoginAttempt = lastFailedLoginAttempt;
+    }
+
+    public OffsetDateTime getSuspendedUtil() {
+        return suspendedUtil;
+    }
+
+    public void setSuspendedUtil(OffsetDateTime suspendedUtil) {
+        this.suspendedUtil = suspendedUtil;
+    }
+
+    public Integer getSequentialTokenLoginFailureCount() {
+        return sequentialTokenLoginFailureCount;
+    }
+
+    public void setSequentialTokenLoginFailureCount(Integer sequentialTokenLoginFailureCount) {
+        this.sequentialTokenLoginFailureCount = sequentialTokenLoginFailureCount;
+    }
+
+    public OffsetDateTime getLastTokenFailedLoginAttempt() {
+        return lastTokenFailedLoginAttempt;
+    }
+
+    public void setLastTokenFailedLoginAttempt(OffsetDateTime lastTokenFailedLoginAttempt) {
+        this.lastTokenFailedLoginAttempt = lastTokenFailedLoginAttempt;
+    }
+
+    public OffsetDateTime getTokenSuspendedUtil() {
+        return tokenSuspendedUtil;
+    }
+
+    public void setTokenSuspendedUtil(OffsetDateTime tokenSuspendedUtil) {
+        this.tokenSuspendedUtil = tokenSuspendedUtil;
     }
 }

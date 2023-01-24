@@ -1,5 +1,5 @@
 import {SearchTableController} from '../common/search-table/search-table-controller';
-import {MatDialog, MatDialogConfig} from '@angular/material';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {ServiceGroupSearchRo} from './service-group-search-ro.model';
 import {of} from "rxjs/internal/observable/of";
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";

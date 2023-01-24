@@ -9,6 +9,6 @@ export interface DomainRo extends SearchTableEntity {
   smlClientKeyAlias: string;
   signatureKeyAlias: string;
   smlRegistered: boolean;
-  smlBlueCoatAuth: boolean;
+  smlClientCertAuth: boolean;
 }
 

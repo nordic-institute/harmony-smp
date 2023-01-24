@@ -2,9 +2,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
-        <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.1</version>
-        <relativePath>../smp-parent-pom/pom.xml</relativePath>
+        <artifactId>smp-modules</artifactId>
+        <version>4.2</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>smp</artifactId>
     <packaging>war</packaging>
@@ -15,20 +15,8 @@
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
         <buildtimestamp>${maven.build.timestamp}</buildtimestamp>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-
-        <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
-        <ftp.port>2059</ftp.port>
-        <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
-
-        <!-- database - - >
-        <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
-        <jdbc.url>jdbc:mysql://localhost/smpdbdev</jdbc.url>
-        <jdbc.user>smpdev</jdbc.user>
-        <jdbc.password>****</jdbc.password>
-        <target-database>MySQL</target-database>
-        <jdbc.read-connections.max>10</jdbc.read-connections.max>
- -->
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss'Z'</maven.build.timestamp.format>
+        <!-- integration tests execution-->
         <jdbc.driver>org.h2.Driver</jdbc.driver>
         <jdbc.url>jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE</jdbc.url>
         <jdbc.user>smp</jdbc.user>
@@ -105,23 +93,6 @@
             <artifactId>hamcrest-junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency-->
     </dependencies>
 
     <build>
@@ -184,31 +155,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <configuration>
-                    <target>
-                        <ftp server="${ftp.host}" port="${ftp.port}" passive="yes" remotedir="${ftp.remotedir}" userid="${ftp.user}" password="${ftp.password}">
-                            <fileset dir="${project.build.directory}">
-                                <include name="${project.artifactId}.${project.packaging}" />
-                            </fileset>
-                        </ftp>
-                    </target>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>ant</groupId>
-                        <artifactId>ant-commons-net</artifactId>
-                        <version>1.6.5</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>commons-net</groupId>
-                        <artifactId>commons-net</artifactId>
-                        <version>1.4.1</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

@@ -10,58 +10,57 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMLAction;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMLStatusEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
+import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.XMLConstants;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_INVALID_EXTENSION;
-import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_OK;
-import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_SERVICE_GROUP_EXISTS;
+import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 
 @Service
 public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, ServiceGroupRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceGroupService.class);
 
-    @Autowired
-    DomainDao domainDao;
+    protected final DomainDao domainDao;
+    protected final ServiceGroupDao serviceGroupDao;
+    protected final UserDao userDao;
+    protected final CaseSensitivityNormalizer caseSensitivityNormalizer;
+    protected final SMLIntegrationService smlIntegrationService;
+    protected final ConfigurationService configurationService;
 
-    @Autowired
-    ServiceGroupDao serviceGroupDao;
-
-    @Autowired
-    UserDao userDao;
-
-    @Autowired
-    CaseSensitivityNormalizer caseSensitivityNormalizer;
-
-    @Autowired
-    SMLIntegrationService smlIntegrationService;
-
+    public UIServiceGroupService(DomainDao domainDao,
+                                 ServiceGroupDao serviceGroupDao,
+                                 UserDao userDao,
+                                 CaseSensitivityNormalizer caseSensitivityNormalizer,
+                                 SMLIntegrationService smlIntegrationService,
+                                 ConfigurationService configurationService) {
+        this.domainDao = domainDao;
+        this.serviceGroupDao = serviceGroupDao;
+        this.userDao = userDao;
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+        this.smlIntegrationService = smlIntegrationService;
+        this.configurationService = configurationService;
+    }
 
     @Override
     protected BaseDao<DBServiceGroup> getDatabaseDao() {
@@ -90,11 +89,11 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
-            int iStartIndex = pageSize<0?-1:page * pageSize;
-            if (iStartIndex >= iCnt && page > 0){
-                page = page -1;
+            int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
+            if (iStartIndex >= iCnt && page > 0) {
+                page = page - 1;
                 sg.setPage(page); // go back for a page
-                iStartIndex = pageSize<0?-1:page * pageSize;
+                iStartIndex = pageSize < 0 ? -1 : page * pageSize;
             }
 
             List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
@@ -130,7 +129,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         return ex;
     }
 
-    private String getConvertExtensionToString(Long id,  byte[] extension){
+    private String getConvertExtensionToString(Long id, byte[] extension) {
         try {
             return new String(extension, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -163,34 +162,34 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     /**
      * Final process of SML records. If participant is to be unregistered it does not update status to database because
      * it should not be there anymore! For registering it update status!
+     *
      * @param lstRecords
      */
-    public void processSMLRecords( List<ParticipantSMLRecord> lstRecords){
-        if (!smlIntegrationService.isSMLIntegrationEnabled()){
+    public void processSMLRecords(List<ParticipantSMLRecord> lstRecords) {
+        if (!smlIntegrationService.isSMLIntegrationEnabled()) {
             return;
         }
-        for (ParticipantSMLRecord record: lstRecords){
-            if (record.getStatus()== SMLAction.REGISTER){
+        for (ParticipantSMLRecord record : lstRecords) {
+            if (record.getStatus() == SMLStatusEnum.REGISTER) {
                 boolean result = smlIntegrationService.registerParticipantToSML(record.getParticipantIdentifier(),
                         record.getParticipantScheme(), record.getDomain());
 
                 updateServiceGroupDomainStatus(result, record);
-            }else if (record.getStatus()== SMLAction.UNREGISTER){
+            } else if (record.getStatus() == SMLStatusEnum.UNREGISTER) {
                 boolean result = smlIntegrationService.unregisterParticipantFromSML(record.getParticipantIdentifier(),
                         record.getParticipantScheme(), record.getDomain());
                 // no need to update database because record is deleted
                 updateServiceGroupDomainStatus(result, record);
-
             }
         }
     }
 
-    protected void updateServiceGroupDomainStatus(boolean smlActionStatus, ParticipantSMLRecord record){
+    protected void updateServiceGroupDomainStatus(boolean smlActionStatus, ParticipantSMLRecord record) {
         Optional<DBServiceGroupDomain> optionalServiceGroupDomain = serviceGroupDao.findServiceGroupDomain(record.getParticipantIdentifier(),
                 record.getParticipantScheme(), record.getDomain().getDomainCode());
         if (optionalServiceGroupDomain.isPresent()) {
             DBServiceGroupDomain serviceGroupDomain = optionalServiceGroupDomain.get();
-            if (serviceGroupDomain.isSmlRegistered()!= smlActionStatus){
+            if (serviceGroupDomain.isSmlRegistered() != smlActionStatus) {
                 serviceGroupDomain.setSmlRegistered(smlActionStatus);
                 serviceGroupDao.updateServiceGroupDomain(serviceGroupDomain);
             }
@@ -200,23 +199,23 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
     /**
      * Remove service group
+     *
      * @param dRo
      * @return
      */
-    public List<ParticipantSMLRecord> removeServiceGroup(ServiceGroupRO dRo){
+    public List<ParticipantSMLRecord> removeServiceGroup(ServiceGroupRO dRo) {
         List<ParticipantSMLRecord> participantSMLRecordList = new ArrayList<>();
 
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(dRo.getId());
         // first update domains
         List<DBServiceGroupDomain> dbServiceGroupDomainList = dbServiceGroup.getServiceGroupDomains();
         dbServiceGroupDomainList.forEach(dro -> {
-                participantSMLRecordList.add( new ParticipantSMLRecord(SMLAction.UNREGISTER, dro.getServiceGroup().getParticipantIdentifier(),
-                        dro.getServiceGroup().getParticipantScheme(),dro.getDomain()));
+            participantSMLRecordList.add(new ParticipantSMLRecord(SMLStatusEnum.UNREGISTER, dro.getServiceGroup().getParticipantIdentifier(),
+                    dro.getServiceGroup().getParticipantScheme(), dro.getDomain()));
         });
         serviceGroupDao.removeServiceGroup(dbServiceGroup);
         return participantSMLRecordList;
     }
-
 
 
     /**
@@ -288,11 +287,11 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
         // validate (if domains are added only once) and  create domain list for service group.
         serviceGroupDomainROList.forEach(dro -> {
-            // everting ok  find domain and add it to service group
+            // everything ok  find domain and add it to service group
             Optional<DBDomain> dmn = domainDao.getDomainByCode(dro.getDomainCode());
             if (dmn.isPresent()) {
-                DBServiceGroupDomain domain =  dbServiceGroup.addDomain(dmn.get());
-                participantSMLRecordList.add( new ParticipantSMLRecord(SMLAction.REGISTER,
+                DBServiceGroupDomain domain = dbServiceGroup.addDomain(dmn.get());
+                participantSMLRecordList.add(new ParticipantSMLRecord(SMLStatusEnum.REGISTER,
                         serviceGroupRO.getParticipantIdentifier(),
                         serviceGroupRO.getParticipantScheme(),
                         domain.getDomain()));
@@ -320,7 +319,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         updateUsersOnServiceGroup(serviceGroupRO, dbServiceGroup);
 
         // update domain
-        List<ParticipantSMLRecord> participantSMLRecordList =  updateDomainsForServiceGroup(serviceGroupRO, dbServiceGroup);
+        List<ParticipantSMLRecord> participantSMLRecordList = updateDomainsForServiceGroup(serviceGroupRO, dbServiceGroup);
 
         //update service metadata
         List<ServiceMetadataRO> serviceMetadataROList = serviceGroupRO.getServiceMetadata();
@@ -363,28 +362,27 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
                     if (!Objects.equals(serviceMetadataRO.getDomainCode(), dbServiceGroupDomain.getDomain().getDomainCode())) {
                         // remove from old domain
-                        LOG.info("Move service metadata from domain {} to domain: {}" , dbServiceGroupDomain.getDomain().getDomainCode(),
-                                serviceMetadataRO.getDomainCode( ));
+                        LOG.info("Move service metadata from domain {} to domain: {}", dbServiceGroupDomain.getDomain().getDomainCode(),
+                                serviceMetadataRO.getDomainCode());
 
                         DBServiceMetadata smd = dbServiceGroupDomain.removeServiceMetadata(serviceMetadataRO.getDocumentIdentifier(),
                                 serviceMetadataRO.getDocumentIdentifierScheme());
 
 
-
                         // find new domain and add
                         Optional<DBServiceGroupDomain> optNewDomain = dbServiceGroup.getServiceGroupForDomain(serviceMetadataRO.getDomainCode());
                         if (optNewDomain.isPresent()) {
-                            LOG.info("ADD service metadata to domain {} " , optNewDomain.get().getDomain().getDomainCode(),
-                                    serviceMetadataRO.getDomainCode( ));
-                                // create new because the old service metadata will be deleted
-                                DBServiceMetadata smdNew = new DBServiceMetadata();
-                                smdNew.setDocumentIdentifier(dbServiceMetadata.getDocumentIdentifier());
-                                smdNew.setDocumentIdentifierScheme(dbServiceMetadata.getDocumentIdentifierScheme());
-                                smdNew.setServiceGroupDomain(optNewDomain.get());
-                                smdNew.setServiceMetadataXml(dbServiceMetadata.getServiceMetadataXml());
-                                smdNew.setCreatedOn(dbServiceMetadata.getCreatedOn());
+                            LOG.info("ADD service metadata to domain {} ", optNewDomain.get().getDomain().getDomainCode(),
+                                    serviceMetadataRO.getDomainCode());
+                            // create new because the old service metadata will be deleted
+                            DBServiceMetadata smdNew = new DBServiceMetadata();
+                            smdNew.setDocumentIdentifier(dbServiceMetadata.getDocumentIdentifier());
+                            smdNew.setDocumentIdentifierScheme(dbServiceMetadata.getDocumentIdentifierScheme());
+                            smdNew.setServiceGroupDomain(optNewDomain.get());
+                            smdNew.setServiceMetadataXml(dbServiceMetadata.getServiceMetadataXml());
+                            smdNew.setCreatedOn(dbServiceMetadata.getCreatedOn());
 
-                                optNewDomain.get().addServiceMetadata(smdNew);
+                            optNewDomain.get().addServiceMetadata(smdNew);
 
                         } else {
                             throw new SMPRuntimeException(SG_NOT_REGISTRED_FOR_DOMAIN, serviceMetadataRO.getDomainCode(),
@@ -422,7 +420,6 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         List<ParticipantSMLRecord> participantSMLRecordList = new ArrayList<>();
 
         // / validate (if domains are added only once) and  create domain list for service group.
-       // List<ServiceGroupDomainRO> serviceGroupDomainROList = validateDomainList(serviceGroupRO);
         List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
         // copy array list of old domains and then put them back. Domain not added back will be deleted by hibernate
         // ...
@@ -443,8 +440,8 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 Optional<DBDomain> dmn = domainDao.getDomainByCode(serviceGroupDomainRO.getDomainCode());
                 if (dmn.isPresent()) {
 
-                    DBServiceGroupDomain sgd =  dbServiceGroup.addDomain(dmn.get());
-                    participantSMLRecordList.add(new ParticipantSMLRecord( SMLAction.REGISTER,
+                    DBServiceGroupDomain sgd = dbServiceGroup.addDomain(dmn.get());
+                    participantSMLRecordList.add(new ParticipantSMLRecord(SMLStatusEnum.REGISTER,
                             sgd.getServiceGroup().getParticipantIdentifier(),
                             sgd.getServiceGroup().getParticipantScheme(),
                             sgd.getDomain()));
@@ -455,7 +452,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         });
         // remove old domains
         lstOldSGDomains.forEach(dbServiceGroupDomain -> {
-            participantSMLRecordList.add(new ParticipantSMLRecord( SMLAction.UNREGISTER,
+            participantSMLRecordList.add(new ParticipantSMLRecord(SMLStatusEnum.UNREGISTER,
                     dbServiceGroupDomain.getServiceGroup().getParticipantIdentifier(),
                     dbServiceGroupDomain.getServiceGroup().getParticipantScheme(),
                     dbServiceGroupDomain.getDomain()));
@@ -465,28 +462,6 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         });
         return participantSMLRecordList;
     }
-
-    /**
-     * Method validates if domain list in consistent - code and sml subdomain are used only oncet
-     *
-     * @param serviceGroupRO
-     * @return
-     *
-    protected List<ServiceGroupDomainRO> validateDomainList(ServiceGroupRO serviceGroupRO) {
-        List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
-        // validate (if domains are added only once) and  create domain list for service group.
-        serviceGroupDomainROList.forEach(dro -> {
-            List<ServiceGroupDomainRO> result = serviceGroupDomainROList.stream()
-                    .filter(domainToAdd -> Objects.equals(domainToAdd.getDomainCode(), dro.getDomainCode())
-                            || Objects.equals(domainToAdd.getSmlSubdomain(), dro.getSmlSubdomain()))
-                    .collect(Collectors.toList());
-            if (result.size() != 1) {
-                throw new SMPRuntimeException(DUPLICATE_DOMAIN_FOR_SG, serviceGroupRO.getParticipantIdentifier(),
-                        serviceGroupRO.getParticipantScheme(), dro.getDomainCode(), dro.getSmlSubdomain());
-            }
-        });
-        return serviceGroupDomainROList;
-    }*/
 
     /**
      * Update users on service group. Method is OK for update and add new domain
@@ -499,12 +474,13 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         dbServiceGroup.getUsers().clear();
         List<UserRO> lstUsers = serviceGroupRO.getUsers();
         for (UserRO userRO : lstUsers) {
-            DBUser du = userDao.find(userRO.getId());
-            if (du==null) {
+            Long userid = SessionSecurityUtils.decryptEntityId(userRO.getUserId());
+            Optional<DBUser> optUser = userDao.findUser(userid);
+            if (!optUser.isPresent()) {
                 throw new SMPRuntimeException(INTERNAL_ERROR,
-                        "Database changed",  "User "+userRO.getUsername()+ " not exists! (Refresh data)");
+                        "Database changed", "User " + userRO.getUsername() + " not exists! (Refresh data)");
             }
-            dbServiceGroup.getUsers().add(du);
+            dbServiceGroup.getUsers().add(optUser.get());
         }
     }
 
@@ -520,9 +496,14 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             throw new SMPRuntimeException(MISSING_SG_ID, serviceGroupRO.getParticipantIdentifier(), serviceGroupRO.getParticipantScheme());
         }
         // validate service group id
+        boolean schemeMandatory = configurationService.getParticipantSchemeMandatory();
+        LOG.debug("Validate service group [{}] with [{}] scheme", serviceGroupRO.getParticipantIdentifier(), (schemeMandatory ? "mandatory" : "optional"));
+
+
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(serviceGroupRO.getId());
         if (!Objects.equals(serviceGroupRO.getParticipantIdentifier(), dbServiceGroup.getParticipantIdentifier())
-                || !Objects.equals(serviceGroupRO.getParticipantScheme(), dbServiceGroup.getParticipantScheme())) {
+                || schemeMandatory &&
+                !Objects.equals(serviceGroupRO.getParticipantScheme(), dbServiceGroup.getParticipantScheme())) {
             throw new SMPRuntimeException(INVALID_SG_ID, serviceGroupRO.getParticipantIdentifier(),
                     serviceGroupRO.getParticipantScheme(), serviceGroupRO.getId());
         }
@@ -543,15 +524,24 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         } catch (UnsupportedEncodingException e) {
             throw new SMPRuntimeException(INVALID_ENCODING, "UTF-8");
         }
-        ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
-        DocumentIdentifier di = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
-        if (Objects.equals(di.getScheme(), serviceMetadataRO.getDocumentIdentifierScheme())
-                && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier())) {
-            return buff;
-        } else {
-            throw new SMPRuntimeException(INVALID_SMD_DOCUMENT_DATA, di.getValue(), di.getScheme(),
-                    serviceMetadataRO.getDocumentIdentifier(), serviceMetadataRO.getDocumentIdentifierScheme());
+        try {
+            BdxSmpOasisValidator.validateXSD(buff);
+        } catch (XmlInvalidAgainstSchemaException e) {
+            throw new SMPRuntimeException(INVALID_SMD_XML, ExceptionUtils.getRootCauseMessage(e));
         }
+
+        ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
+        if (smd.getServiceInformation() != null) {
+            DocumentIdentifier di = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
+            if (Objects.equals(di.getScheme(), serviceMetadataRO.getDocumentIdentifierScheme())
+                    && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier())) {
+
+            } else {
+                throw new SMPRuntimeException(INVALID_SMD_DOCUMENT_DATA, di.getValue(), di.getScheme(),
+                        serviceMetadataRO.getDocumentIdentifier(), serviceMetadataRO.getDocumentIdentifierScheme());
+            }
+        }
+        return buff;
     }
 
 
@@ -586,14 +576,10 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             //also add domain to service group
             serviceGroupRo.getServiceGroupDomains().add(servGrpDomain);
         });
-        // add users
+        // add users add just encrypted ID
         dbServiceGroup.getUsers().forEach(usr -> {
             UserRO userRO = new UserRO();
-            userRO.setId(usr.getId());
-            userRO.setUsername(usr.getUsername());
-            userRO.setActive(usr.isActive());
-            userRO.setEmailAddress(usr.getEmailAddress());
-            userRO.setRole(usr.getRole());
+            userRO.setUserId(SessionSecurityUtils.encryptedEntityId(usr.getId()));
             serviceGroupRo.getUsers().add(userRO);
         });
         // do not add service extension to gain performance.
@@ -625,7 +611,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
         byte[] buff = validateServiceMetadata(serviceMetadataRO);
         DBServiceMetadata dbServiceMetadata = new DBServiceMetadata();
-        DocumentIdentifier docIdent=  caseSensitivityNormalizer.normalizeDocumentIdentifier(serviceMetadataRO.getDocumentIdentifierScheme(),serviceMetadataRO.getDocumentIdentifier() );
+        DocumentIdentifier docIdent = caseSensitivityNormalizer.normalizeDocumentIdentifier(serviceMetadataRO.getDocumentIdentifierScheme(), serviceMetadataRO.getDocumentIdentifier());
         dbServiceMetadata.setDocumentIdentifier(docIdent.getValue());
         dbServiceMetadata.setDocumentIdentifierScheme(docIdent.getScheme());
         dbServiceMetadata.setXmlContent(buff);
@@ -667,14 +653,14 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             throw new SMPRuntimeException(INVALID_REQUEST, "Validate extension", "Missing Extension parameter");
         } // if new check if service group already exist
 
-        if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()){
-            ParticipantIdentifierType headerPI = caseSensitivityNormalizer.normalizeParticipantIdentifier(
+        if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()) {
+            ParticipantIdentifierType normalizedParticipant = caseSensitivityNormalizer.normalizeParticipantIdentifier(
                     serviceGroup.getParticipantScheme(),
                     serviceGroup.getParticipantIdentifier());
-            Optional<DBServiceGroup> sg= serviceGroupDao.findServiceGroup(serviceGroup.getParticipantIdentifier(),
-                    serviceGroup.getParticipantScheme());
+            Optional<DBServiceGroup> sg = serviceGroupDao.findServiceGroup(normalizedParticipant.getValue(),
+                    normalizedParticipant.getScheme());
             if (sg.isPresent()) {
-                serviceGroup.setErrorMessage("Service group: " +serviceGroup.getParticipantScheme()+ ":"+serviceGroup.getParticipantIdentifier()+
+                serviceGroup.setErrorMessage("Service group: " + serviceGroup.getParticipantScheme() + ":" + serviceGroup.getParticipantIdentifier() +
                         " already exists!");
                 serviceGroup.setErrorCode(ERROR_CODE_SERVICE_GROUP_EXISTS);
                 return serviceGroup;
@@ -682,7 +668,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         }
 
         if (StringUtils.isBlank(serviceGroup.getExtension())) {
-            // emtpy extension is also a valid extension;
+            // empty extension is also a valid extension
             serviceGroup.setErrorMessage(null);
         } else {
             try {
@@ -690,10 +676,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 ExtensionConverter.validateExtensionBySchema(buff); // validate by schema
                 serviceGroup.setErrorMessage(null);
                 serviceGroup.setErrorCode(ERROR_CODE_OK);
-            } catch (XmlInvalidAgainstSchemaException e) {
-                serviceGroup.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
-                serviceGroup.setErrorCode(ERROR_CODE_INVALID_EXTENSION);
-            } catch (UnsupportedEncodingException e) {
+            } catch (XmlInvalidAgainstSchemaException | UnsupportedEncodingException e) {
                 serviceGroup.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
                 serviceGroup.setErrorCode(ERROR_CODE_INVALID_EXTENSION);
             }
@@ -720,39 +703,4 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                     serviceGroupRO.getParticipantScheme(), ExceptionUtils.getRootCauseMessage(e));
         }
     }
-
-    /**
-     * Method
-     *
-     * @param sgExtension
-     * @return
-     */
-    public ServiceGroupValidationRO formatExtension(ServiceGroupValidationRO sgExtension) {
-        if (sgExtension == null) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "Format extension", "Missing Extension parameter");
-        } else if (StringUtils.isBlank(sgExtension.getExtension())) {
-            sgExtension.setErrorMessage("Empty extension");
-        } else {
-            try {
-                Source xmlInput = new StreamSource(new StringReader(sgExtension.getExtension()));
-                StringWriter stringWriter = new StringWriter();
-                StreamResult xmlOutput = new StreamResult(stringWriter);
-
-                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                transformerFactory.setAttribute("indent-number", 4);
-
-                Transformer transformer = transformerFactory.newTransformer();
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                transformer.transform(xmlInput, xmlOutput);
-                sgExtension.setExtension(xmlOutput.getWriter().toString());
-            } catch (TransformerConfigurationException e) {
-                sgExtension.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
-            } catch (TransformerException e) {
-                sgExtension.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
-            }
-        }
-        return sgExtension;
-    }
-
 }

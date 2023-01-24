@@ -105,7 +105,7 @@ public class ServiceMetadataConverterTest {
     public void testUnmarshalMalformedInput() throws ParserConfigurationException, IOException, SAXException, JAXBException {
 
         expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metada. Error"));
+        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metadata. Error"));
         //when
         ServiceMetadataConverter.unmarshal("this is malformed XML body".getBytes());
     }
@@ -131,7 +131,7 @@ public class ServiceMetadataConverterTest {
         byte[]  inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
 
         //when
-        Document signedServiceMetadataDoc = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(inputDoc);
+        Document signedServiceMetadataDoc = ServiceMetadataConverter.toSignedServiceMetadataDocument(inputDoc);
 
         //then
         Element root = signedServiceMetadataDoc.getDocumentElement();
@@ -148,9 +148,9 @@ public class ServiceMetadataConverterTest {
     public void testToSignedServiceMetadataDocumentMalformedInput() throws ParserConfigurationException, IOException, SAXException, JAXBException {
 
         expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metada. Error:"));
+        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metadata. Error:"));
         //when
-        ServiceMetadataConverter.toSignedServiceMetadatadaDocument("this is malformed XML body".getBytes());
+        ServiceMetadataConverter.toSignedServiceMetadataDocument("this is malformed XML body".getBytes());
     }
 
     @Test

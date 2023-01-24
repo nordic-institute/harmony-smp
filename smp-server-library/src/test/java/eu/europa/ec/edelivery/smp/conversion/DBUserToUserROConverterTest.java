@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.ConversionService;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,9 +28,11 @@ public class DBUserToUserROConverterTest {
 
     @Mock
     private ConversionService conversionService;
+    @Mock
+    private ConfigurationService configurationService;
 
     @InjectMocks
-    private DBUserToUserROConverter converter = new DBUserToUserROConverter();
+    private DBUserToUserROConverter converter = new DBUserToUserROConverter(configurationService, conversionService);
 
     @Test
     public void returnsThePasswordAsNotExpiredForCertificateOnlyUsers() {
@@ -46,7 +49,8 @@ public class DBUserToUserROConverterTest {
 
         whenConvertingTheExistingUser();
 
-        thenThePasswordIsMarkedAsExpired("The passwords should be marked as expired when converting users having passwords that have been reset by SystemAdministrators");
+        thenThePasswordIsMarkedAsExpired("The passwords should be marked as expired when converting users" +
+                " having passwords that have been reset by SystemAdministrators");
     }
 
     @Test
@@ -77,18 +81,19 @@ public class DBUserToUserROConverterTest {
 
     private void givenAnExistingUserHavingAPasswordThatChangedNoLongerThanThreeMonthsAgo() {
         // some month has less than 29 days -therefore -27
-        givenAnExistingUser("password", LocalDateTime.now().minusMonths(2).minusDays(27), null);
+        givenAnExistingUser("password", OffsetDateTime.now().minusMonths(2).minusDays(27), null);
     }
 
     private void givenAnExistingUserHavingAPasswordThatChangedMoreThanThreeMonthsAgo() {
-        givenAnExistingUser("password", LocalDateTime.now().minusMonths(3).minusDays(10), null);
+        givenAnExistingUser("password", OffsetDateTime.now().minusMonths(3).minusDays(10), null);
     }
 
-    private void givenAnExistingUser(String password, LocalDateTime passwordChange, DBCertificate certificate) {
+    private void givenAnExistingUser(String password, OffsetDateTime passwordChange, DBCertificate certificate) {
         source = new DBUser();
         source.setCertificate(certificate);
         source.setPassword(password);
         source.setPasswordChanged(passwordChange);
+        source.setPasswordExpireOn(passwordChange!=null?passwordChange.plusMonths(3):null);
     }
 
     private void whenConvertingTheExistingUser() {

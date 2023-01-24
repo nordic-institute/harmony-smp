@@ -1,3 +1,4 @@
+package eu.europa.ec.edelivery.smp.data.model;
 /*
  * Copyright 2017 European Commission | CEF eDelivery
  *
@@ -11,14 +12,12 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.data.model;
-
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -32,9 +31,10 @@ import java.util.*;
 @org.hibernate.annotations.Table(appliesTo = "SMP_SERVICE_GROUP", comment = "Service group data - Identifier and scheme")
 @NamedQueries({
         @NamedQuery(name = "DBServiceGroup.getServiceGroupByID", query = "SELECT d FROM DBServiceGroup d WHERE d.id = :id"),
-        @NamedQuery(name = "DBServiceGroup.getServiceGroup", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier and d.participantScheme = :participantScheme"),
-        @NamedQuery(name = "DBServiceGroup.getServiceGroupList", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier and d.participantScheme = :participantScheme"),
-        @NamedQuery(name = "DBServiceGroup.deleteById", query = "DELETE FROM DBServiceGroup d WHERE d.id = :id"),
+        @NamedQuery(name = "DBServiceGroup.getServiceGroupByIdentifier", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier " +
+                " AND (:participantScheme IS NULL AND d.participantScheme IS NULL " +
+                " OR d.participantScheme = :participantScheme)"),
+       @NamedQuery(name = "DBServiceGroup.deleteById", query = "DELETE FROM DBServiceGroup d WHERE d.id = :id"),
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBServiceGroup.deleteAllOwnerships", query = "DELETE FROM SMP_OWNERSHIP WHERE FK_SG_ID=:serviceGroupId")
@@ -43,19 +43,18 @@ import java.util.*;
 public class DBServiceGroup extends BaseEntity {
 
     @Id
-    @SequenceGenerator(name = "sg_generator", sequenceName = "SMP_SERVICE_GROUP_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sg_generator" )
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SERVICE_GROUP_SEQ")
+    @GenericGenerator(name = "SMP_SERVICE_GROUP_SEQ", strategy = "native")
     @Column(name = "ID")
-    @ColumnDescription(comment = "Unique Servicegroup id")
+    @ColumnDescription(comment = "Unique ServiceGroup id")
     Long id;
-
 
     @OneToMany(
             mappedBy = "serviceGroup",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    List<DBServiceGroupDomain> serviceGroupDomains= new ArrayList<>();
+    List<DBServiceGroupDomain> serviceGroupDomains;
 
 
     // fetch in on demand - reduce performance issue on big SG table (set it better option)
@@ -71,21 +70,12 @@ public class DBServiceGroup extends BaseEntity {
     @Column(name = "PARTICIPANT_IDENTIFIER", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH, nullable = false)
     String participantIdentifier;
 
-    @Column(name = "PARTICIPANT_SCHEME", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH, nullable = false)
+    @Column(name = "PARTICIPANT_SCHEME", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH)
     String participantScheme;
 
 
     @OneToOne(mappedBy = "dbServiceGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private DBServiceGroupExtension serviceGroupExtension;
-
-    @Column(name = "CREATED_ON" , nullable = false)
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    LocalDateTime lastUpdatedOn;
-
-
-    public DBServiceGroup() {
-    }
 
     @Override
     public Long getId() {
@@ -141,37 +131,36 @@ public class DBServiceGroup extends BaseEntity {
     }
 
     public List<DBServiceGroupDomain> getServiceGroupDomains() {
+        if (serviceGroupDomains == null) {
+            serviceGroupDomains = new ArrayList<>();
+        }
         return serviceGroupDomains;
-    }
-
-    public void setServiceGroupDomains(List<DBServiceGroupDomain> serviceGroupDomains) {
-        this.serviceGroupDomains = serviceGroupDomains;
     }
 
 
     public DBServiceGroupDomain addDomain(DBDomain domain) {
         DBServiceGroupDomain sgd = new DBServiceGroupDomain(this, domain);
-        serviceGroupDomains.add(sgd);
+        getServiceGroupDomains().add(sgd);
         return sgd;
     }
 
     public void removeDomain(String domainCode) {
         // find connecting object
-        Optional<DBServiceGroupDomain> osgd =  serviceGroupDomains.stream()
+        Optional<DBServiceGroupDomain> osgd = getServiceGroupDomains().stream()
                 .filter(psgd -> domainCode.equals(psgd.getDomain().getDomainCode())).findFirst();
-        if (osgd.isPresent()){
+        if (osgd.isPresent()) {
             DBServiceGroupDomain dsg = osgd.get();
-            serviceGroupDomains.remove(dsg);
+            getServiceGroupDomains().remove(dsg);
             dsg.setDomain(null);
             dsg.setServiceGroup(null);
         }
     }
 
-    public Optional<DBServiceGroupDomain> findServiceGroupDomainForMetadata(String docId, String docSch){
-        for (DBServiceGroupDomain serviceGroupDomain : serviceGroupDomains) {
+    public Optional<DBServiceGroupDomain> findServiceGroupDomainForMetadata(String docId, String docSch) {
+        for (DBServiceGroupDomain serviceGroupDomain : getServiceGroupDomains()) {
             for (DBServiceMetadata dbServiceMetadata : serviceGroupDomain.getServiceMetadata()) {
                 if (Objects.equals(docId, dbServiceMetadata.getDocumentIdentifier())
-                        && Objects.equals(docId, dbServiceMetadata.getDocumentIdentifier()) ) {
+                        && Objects.equals(docSch, dbServiceMetadata.getDocumentIdentifierScheme())) {
                     return Optional.of(serviceGroupDomain);
                 }
             }
@@ -180,11 +169,10 @@ public class DBServiceGroup extends BaseEntity {
     }
 
 
-
     @Transient
     public Optional<DBServiceGroupDomain> getServiceGroupForDomain(String domainCode) {
         // find connecting object
-        return StringUtils.isBlank(domainCode)?Optional.empty():serviceGroupDomains.stream()
+        return StringUtils.isBlank(domainCode) ? Optional.empty() : getServiceGroupDomains().stream()
                 .filter(psgd -> domainCode.equals(psgd.getDomain().getDomainCode())).findFirst();
     }
 
@@ -209,8 +197,6 @@ public class DBServiceGroup extends BaseEntity {
     }
 
 
-
-
     /**
      * Id is database suragete id + natural key!
      *
@@ -230,38 +216,16 @@ public class DBServiceGroup extends BaseEntity {
     }
 
     @Override
+    public String toString() {
+        return new StringJoiner(", ", DBServiceGroup.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("participantIdentifier='" + participantIdentifier + "'")
+                .add("participantScheme='" + participantScheme + "'")
+                .toString();
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, participantIdentifier, participantScheme);
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if(createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
-
-    // @Where annotation not working with entities that use inheritance
-    // https://hibernate.atlassian.net/browse/HHH-12016
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
     }
 }
