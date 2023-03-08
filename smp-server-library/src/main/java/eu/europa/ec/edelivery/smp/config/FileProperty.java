@@ -3,11 +3,11 @@ package eu.europa.ec.edelivery.smp.config;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -109,13 +109,19 @@ public class FileProperty {
      * @return
      */
     public static Properties updateDeprecatedValues(Properties properties) {
-        if (!properties.containsKey(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty())
-                && properties.containsKey(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty())) {
 
-            properties.setProperty(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED.getProperty(),
-                    properties.getProperty(CLIENT_CERT_HEADER_ENABLED_DEPRECATED.getProperty()));
+        updateDeprecatedProperty(properties, EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, CLIENT_CERT_HEADER_ENABLED_DEPRECATED);
+
+        return properties;
+    }
+
+    public static Properties updateDeprecatedProperty(Properties properties, SMPPropertyEnum newProperty, SMPPropertyEnum deprecatedProperty) {
+        if (!properties.containsKey(newProperty.getProperty())
+                && properties.containsKey(deprecatedProperty.getProperty())) {
+
+            properties.setProperty(newProperty.getProperty(),
+                    properties.getProperty(deprecatedProperty.getProperty()));
         }
-
         return properties;
     }
 
