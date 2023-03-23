@@ -14,27 +14,17 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
+import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
+import eu.europa.ec.edelivery.smp.services.spi.SmpXmlSignatureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-
-import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.toSignedServiceMetadataDocument;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.METADATA_NOT_EXISTS;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SG_NOT_EXISTS;
 
 
 /**
@@ -47,25 +37,25 @@ public class ServiceMetadataService {
     private IdentifierService identifierService;
 
     @Autowired
-    private ServiceMetadataDao serviceMetadataDao;
+    private SubresourceDao serviceMetadataDao;
 
     @Autowired
-    private ServiceGroupDao serviceGroupDao;
+    private ResourceDao serviceGroupDao;
 
     @Autowired
     private DomainService domainService;
 
     @Autowired
-    private ServiceMetadataSigner signer;
+    private SmpXmlSignatureService signer;
 
 
     @Transactional
-    public Document getServiceMetadataDocument(ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
+    public Document getServiceMetadataDocument(Identifier serviceGroupId, Identifier documentId) {
+/*
+        Identifier normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
+        Identifier normalizedDocId = identifierService.normalizeDocument(documentId);
 
-        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
-        DocumentIdentifier normalizedDocId = identifierService.normalizeDocument(documentId);
-
-        Optional<DBServiceMetadata> osmd = serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
+        Optional<DBSubresource> osmd = serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme(),normalizedDocId.getValue(),normalizedDocId.getScheme());
 
 
@@ -73,13 +63,19 @@ public class ServiceMetadataService {
             throw new SMPRuntimeException(METADATA_NOT_EXISTS,normalizedServiceGroupId.getValue(),
                     normalizedServiceGroupId.getScheme(),normalizedDocId.getValue(),normalizedDocId.getScheme());
         }
-        DBServiceMetadata smd = osmd.get();
+        DBSubresource smd = osmd.get();
 
         Document signedServiceMetadata = toSignedServiceMetadataDocument(smd.getXmlContent());
-        String sigCertAlias = smd.getServiceGroupDomain().getDomain().getSignatureKeyAlias();
+        DBDomain resourceDomain = smd.getResource().getDomainResourceDef().getDomain();
+        String sigCertAlias = resourceDomain.getSignatureKeyAlias();
+        String signatureAlgorithm = resourceDomain.getSignatureAlgorithm();
+        String signatureDigestMethod = resourceDomain.getSignatureDigestMethod();
 
-        signer.sign(signedServiceMetadata, sigCertAlias);
+        signer.sign(signedServiceMetadata, sigCertAlias, signatureAlgorithm,signatureDigestMethod );
         return signedServiceMetadata;
+
+ */
+        return null;
     }
 
     /**
@@ -88,12 +84,12 @@ public class ServiceMetadataService {
      * @return True if new ServiceMetadata was created. False if existing one was updated.
      */
     @Transactional
-    public boolean saveServiceMetadata(String domain, ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId, byte[] xmlContent) {
+    public boolean saveServiceMetadata(String domain, Identifier serviceGroupId, Identifier documentId, byte[] xmlContent) {
+/*
+        Identifier normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
+        Identifier normalizedDocId = identifierService.normalizeDocument(documentId);
 
-        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
-        DocumentIdentifier normalizedDocId = identifierService.normalizeDocument(documentId);
-
-        Optional<DBServiceGroup> serviceGroup = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
+        Optional<DBResource> serviceGroup = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme());
         if (!serviceGroup.isPresent()) {
             throw new SMPRuntimeException(SG_NOT_EXISTS, normalizedServiceGroupId.getValue(),
@@ -102,64 +98,73 @@ public class ServiceMetadataService {
         //test and retrieve domain
         DBDomain dbDomain = domainService.getDomain(domain);
 
-        Optional<DBServiceMetadata> doc =  serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
+        Optional<DBSubresource> doc =  serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme(), normalizedDocId.getValue(), normalizedDocId.getScheme());
 
         boolean alreadyExisted;
         if (doc.isPresent()){
-            DBServiceMetadata smd = doc.get();
+            DBSubresource smd = doc.get();
             smd.setXmlContent(xmlContent);
             serviceMetadataDao.update(smd);
             alreadyExisted = true;
         } else {
-            DBServiceGroup sg = serviceGroup.get();
-            DBServiceMetadata smd = new DBServiceMetadata();
+            DBResource sg = serviceGroup.get();
+            DBSubresource smd = new DBSubresource();
             smd.setDocumentIdentifier(normalizedDocId.getValue());
             smd.setDocumentIdentifierScheme(normalizedDocId.getScheme());
             smd.setXmlContent(xmlContent);
-            Optional<DBServiceGroupDomain> osgd =  sg.getServiceGroupForDomain(domain);
-            DBServiceGroupDomain sgd = osgd.isPresent()?osgd.get(): sg.addDomain(dbDomain);
+            Optional<DBDomainResourceDef> osgd =  sg.getServiceGroupForDomain(domain);
+            DBDomainResourceDef sgd = osgd.isPresent()?osgd.get(): sg.addDomain(dbDomain);
             sgd.addServiceMetadata(smd);
             serviceGroupDao.update(sg);
             alreadyExisted = false;
         }
 
         return !alreadyExisted;
+
+ */
+        return  false;
+
     }
 
     @Transactional
-    public void deleteServiceMetadata(String domain, ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
-
+    public void deleteServiceMetadata(String domain, Identifier serviceGroupId, Identifier documentId) {
+/*
         ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
         DocumentIdentifier normalizedDocId = identifierService.normalizeDocument(documentId);
 
 
-        Optional<DBServiceMetadata> oDoc = serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
+        Optional<DBSubresource> oDoc = serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme(), normalizedDocId.getValue(), normalizedDocId.getScheme());
         if (!oDoc.isPresent()){
             throw new SMPRuntimeException(METADATA_NOT_EXISTS,normalizedServiceGroupId.getValue(),
                     normalizedServiceGroupId.getScheme(),normalizedDocId.getValue(),normalizedDocId.getScheme());
         }
-        DBServiceMetadata doc = oDoc.get();
-        DBServiceGroupDomain sgd = doc.getServiceGroupDomain();
+        DBSubresource doc = oDoc.get();
+        DBDomainResourceDef sgd = doc.getServiceGroupDomain();
         sgd.removeServiceMetadata(doc);
         serviceGroupDao.update(sgd.getServiceGroup());
+
+ */
     }
 
-    public List<DocumentIdentifier> findServiceMetadataIdentifiers(ParticipantIdentifierType participantId) {
-
-        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(participantId);
-        List<DBServiceMetadata> metadata = serviceMetadataDao.getAllMetadataForServiceGroup(
+    public List<Identifier> findServiceMetadataIdentifiers(Identifier participantId) {
+/*
+        Identifier normalizedServiceGroupId = identifierService.normalizeParticipant(participantId);
+        List<DBSubresource> metadata = serviceMetadataDao.getAllMetadataForServiceGroup(
                 normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme());
 
-        List<DocumentIdentifier> documentIds = new ArrayList<>();
-        for (DBServiceMetadata md : metadata) {
-            DocumentIdentifier documentIdentifier = new DocumentIdentifier(md.getDocumentIdentifier(),
-                    md.getDocumentIdentifierScheme());
+        List<Identifier> documentIds = new ArrayList<>();
+        for (DBSubresource md : metadata) {
+            Identifier documentIdentifier = new Identifier(md.getIdentifierValue(),
+                    md.getIdentifierScheme());
             documentIds.add(documentIdentifier);
         }
         return documentIds;
+
+ */
+        return Collections.emptyList();
     }
 
 

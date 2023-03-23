@@ -88,7 +88,6 @@ public class DomainResourceIntegrationTest {
             assertNull(sgro.getId());
             assertNull(sgro.getSmlSmpId());
             assertNull(sgro.getSignatureKeyAlias());
-            assertNull(sgro.getSmlParticipantIdentifierRegExp());
         });
     }
 }

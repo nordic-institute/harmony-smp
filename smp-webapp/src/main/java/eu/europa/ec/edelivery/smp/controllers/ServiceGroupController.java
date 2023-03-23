@@ -14,43 +14,36 @@
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
-import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
+import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
-import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.apache.commons.lang3.StringUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.MimeTypeUtils;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
-import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.controllers.WebConstants.HTTP_PARAM_DOMAIN;
-import static eu.europa.ec.edelivery.smp.controllers.WebConstants.HTTP_PARAM_OWNER;
+import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_PARAM_DOMAIN;
+import static eu.europa.ec.edelivery.smp.servlet.WebConstants.HTTP_PARAM_OWNER;
 import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.*;
-import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
 /**
  * Created by gutowpa on 12/07/2017.
  */
 
-@RestController
-@RequestMapping("/{serviceGroupId:^(?!ui).*}")
+//@RestController
+//@RequestMapping("/{serviceGroupId:^(?!ui).*}")
+@Service
 public class ServiceGroupController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);
@@ -75,8 +68,8 @@ public class ServiceGroupController {
         this.caseSensitivityNormalizer = caseSensitivityNormalizer;
         this.payloadValidatorService = payloadValidatorService;
     }
-
-    @GetMapping(produces = "text/xml; charset=UTF-8")
+/*
+   // @GetMapping(produces = "text/xml; charset=UTF-8")
     public ServiceGroup getServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
 
 
@@ -91,15 +84,15 @@ public class ServiceGroupController {
         return serviceGroup;
     }
 
-
-    @PutMapping
+*/
+   // @PutMapping
     @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_WS_SMP_ADMIN })
     public ResponseEntity saveServiceGroup(HttpServletRequest httpReq,
                                            @PathVariable String serviceGroupId,
                                            @RequestHeader(name = HTTP_PARAM_OWNER, required = false) String serviceGroupOwner,
                                            @RequestHeader(name = HTTP_PARAM_DOMAIN, required = false) String domain,
                                            @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
-
+/*
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP, authentUser, host, serviceGroupOwner, domain, serviceGroupId);
@@ -115,22 +108,27 @@ public class ServiceGroupController {
 
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP, authentUser, host, serviceGroupOwner, domain, serviceGroupId, newServiceGroupCreated);
         return newServiceGroupCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
+
+ */
+        return ok().build();
     }
 
-    @DeleteMapping
+ //   @DeleteMapping
     @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_WS_SMP_ADMIN })
     public ResponseEntity deleteServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_GROUP, authentUser, host, serviceGroupId);
-
+/*
         ParticipantIdentifierType participantIdentifierType = caseSensitivityNormalizer.normalizeParticipantIdentifier(serviceGroupId);
         serviceGroupService.deleteServiceGroup(participantIdentifierType);
-
+*/
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_GROUP, authentUser, host, serviceGroupId);
         return ok().build();
-    }
 
+
+    }
+/*
     private void addReferences(ServiceGroup serviceGroup) {
         ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();
         List<DocumentIdentifier> docIds = serviceMetadataService.findServiceMetadataIdentifiers(participantId);
@@ -140,7 +138,7 @@ public class ServiceGroupController {
             referenceIds.add(new ServiceMetadataReferenceType(url));
         }
     }
-
+*/
     public String getRemoteHost(HttpServletRequest httpReq) {
         String host = httpReq.getHeader("X-Forwarded-For");
         return StringUtils.isBlank(host) ? httpReq.getRemoteHost() : host;

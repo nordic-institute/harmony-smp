@@ -13,14 +13,17 @@
 
 package eu.europa.ec.edelivery.smp.test;
 
-import eu.europa.ec.edelivery.smp.config.FileProperty;
-import eu.europa.ec.edelivery.smp.config.PropertiesConfig;
+import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 
 /**
  * Created by gutowpa on 11/01/2018.
@@ -30,45 +33,37 @@ import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
         @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
         @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
-@ComponentScan(basePackages = "eu.europa.ec.edelivery.smp",
-        excludeFilters = {
-                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = PropertiesConfig.class)})
+@ComponentScan(basePackages = "eu.europa.ec.edelivery.smp")
 public class PropertiesTestConfig {
+    public static final String DATABASE_URL = "jdbc:h2:file:./target/DomiSmpTestDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE;";
+    public static final String DATABASE_USERNAME = "smp";
+    public static final String DATABASE_PASS = "smp";
+    public static final String DATABASE_DRIVER = "org.h2.Driver";
+    public static final String DATABASE_DIALECT = "org.hibernate.dialect.H2Dialect";
 
-    public static final String DATABASE_URL="jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE";
-    public static final String DATABASE_USERNAME="smp";
-    public static final String DATABASE_PASS="smp";
-    public static final String DATABASE_DRIVER="org.h2.Driver";
-    public static final String DATABASE_DIALECT="org.hibernate.dialect.H2Dialect";
+    public static final String BUILD_FOLDER = "target";
+    public static final Path SECURITY_PATH= Paths.get(BUILD_FOLDER, "keystores");
+
+    static {
+        System.setProperty(JDBC_DRIVER.getProperty(), DATABASE_DRIVER);
+        System.setProperty(HIBERNATE_DIALECT.getProperty(), DATABASE_DIALECT);
+        System.setProperty(JDBC_URL.getProperty(), DATABASE_URL);
+        System.setProperty(JDBC_USER.getProperty(), DATABASE_USERNAME);
+        System.setProperty(JDBC_PASSWORD.getProperty(), DATABASE_PASS);
+        // show generates sql statements
+        //System.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
+        System.setProperty(DATABASE_SHOW_SQL.getProperty(), "true");
+        //System.setProperty("spring.jpa.properties.hibernate.format_sql", "true");
+        System.setProperty("logging.level.org.hibernate.type", "trace");
 
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        // update keystore
-        PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
+        System.setProperty(KEYSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
+        System.setProperty(TRUSTSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
+        System.setProperty(PARTC_SCH_MANDATORY.getProperty(), "false");
 
-        Properties localProps = new Properties();
-        localProps.setProperty(FileProperty.PROPERTY_DB_DIALECT, DATABASE_DIALECT);
-        localProps.setProperty(FileProperty.PROPERTY_DB_DRIVER, DATABASE_DRIVER);
-        localProps.setProperty(FileProperty.PROPERTY_DB_URL, DATABASE_URL);
-        localProps.setProperty(FileProperty.PROPERTY_DB_USER,DATABASE_USERNAME);
-        localProps.setProperty(FileProperty.PROPERTY_DB_TOKEN, DATABASE_PASS);
-        // create database objects if not exists for the test
-        localProps.setProperty("spring.jpa.generate-ddl", "true");
-        localProps.setProperty("spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
+        System.setProperty(SMP_MODE_DEVELOPMENT.getProperty(), "true");
+        System.setProperty(DATABASE_CREATE_DDL.getProperty(), "true");
+        System.setProperty(SECURITY_FOLDER.getProperty(), SECURITY_PATH.toFile().getPath());
 
-        localProps.setProperty("configuration.dir", "./target/");
-
-        localProps.setProperty(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
-        // even thought keystore is generated but secure password generation can be very slow on some server
-        // create test password..
-        localProps.setProperty(KEYSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
-        localProps.setProperty(TRUSTSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
-        localProps.setProperty(PARTC_SCH_MANDATORY.getProperty(),"false");
-
-        propertiesConfig.setProperties(localProps);
-        propertiesConfig.setLocalOverride(true);
-
-        return propertiesConfig;
     }
 }

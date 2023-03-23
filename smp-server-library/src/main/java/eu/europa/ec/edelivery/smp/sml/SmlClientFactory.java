@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 public class SmlClientFactory {
 
     private static final String SERVICE_METADATA_CONTEXT = "manageservicemetadata";
-    private static final String PARTICIPANT_IDENTIFIER_CONTEXT = "manageparticipantidentifier";
+    private static final String IDENTIFIER_CONTEXT = "manageparticipantidentifier";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmlClientFactory.class);
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";

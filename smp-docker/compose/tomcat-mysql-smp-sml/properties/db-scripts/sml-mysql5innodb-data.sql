@@ -1,4 +1,4 @@
-insert into bdmsl_configuration(property, value, description, created_on, last_updated_on) values
+insert into bdmsl_configuration(PROPERTY_NAME, PROPERTY_VALUE, description, created_on, last_updated_on) values
 ('useProxy','false','true if a proxy is required to connect to the internet. Possible values: true/false', NOW(), NOW()),
 ('unsecureLoginAllowed','true','true if the use of HTTPS is not required. If the value is set to true, then the user unsecure-http-client is automatically created. Possible values: true/false', NOW(), NOW()),
 ('signResponse','false','true if the responses must be signed. Possible values: true/false', NOW(), NOW()),

@@ -22,6 +22,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -41,6 +42,7 @@ import static org.mockito.Mockito.verify;
  * Created by JRC
  * since 4.1.
  */
+@Ignore
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class})
 public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {

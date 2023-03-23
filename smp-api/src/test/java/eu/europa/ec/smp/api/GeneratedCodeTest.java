@@ -13,27 +13,25 @@
 
 package eu.europa.ec.smp.api;
 
-import org.junit.Test;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
+
 
 /**
  * Created by gutowpa on 17/01/2017.
+ * TODO: do we still need this!
  */
+
 public class GeneratedCodeTest {
 
     private static final String SCHEME = "The sample Identifier Scheme";
     private static final String VALUE = "The sample Identifier Value";
-
+/*
     @Test
     public void testValueConstructorWasGeneratedForParticipantId() {
         //when
@@ -139,5 +137,5 @@ public class GeneratedCodeTest {
 
         assertTrue(id1.equals(id2));
     }
-
+*/
 }

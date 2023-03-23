@@ -18,9 +18,6 @@ import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
 import org.springframework.stereotype.Component;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.WRONG_FIELD;
@@ -45,7 +42,7 @@ public class ServiceGroupValidator {
         this.configurationService = configurationService;
         this.identifierService = identifierService;
     }
-
+/*
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {
         LOG.debug("Validate URL participant identifier [{}] and XML serviceGroup", serviceGroupId);
 
@@ -62,4 +59,6 @@ public class ServiceGroupValidator {
             throw new BadRequestException(WRONG_FIELD, "ServiceMetadataReferenceCollection must be empty");
         }
     }
+
+ */
 }

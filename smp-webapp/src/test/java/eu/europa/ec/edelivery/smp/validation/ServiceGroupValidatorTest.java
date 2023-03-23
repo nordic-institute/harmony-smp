@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.validation;
 
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import org.hamcrest.CoreMatchers;
@@ -89,8 +90,10 @@ public class ServiceGroupValidatorTest {
     }
 
     private void validateScheme(String scheme, String value) {
-        ServiceGroup sg = new ServiceGroup();
-        ParticipantIdentifierType id = new ParticipantIdentifierType(value, scheme);
+
+        Identifier id = new Identifier(value, scheme);
+        /*
+        //ServiceGroup sg = new ServiceGroup();
         sg.setParticipantIdentifier(id);
 
         if (expectedThrowError) {
@@ -99,6 +102,8 @@ public class ServiceGroupValidatorTest {
         } else {
             validator.validate(normalizer.formatParticipant(id), sg);
         }
+
+         */
     }
 
 

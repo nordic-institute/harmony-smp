@@ -15,7 +15,6 @@ public class DomainRO extends BaseRO {
     String domainCode;
     String smlSubdomain;
     String smlSmpId;
-    String smlParticipantIdentifierRegExp;
     String smlClientCertHeader;
     String smlClientKeyAlias;
     String signatureKeyAlias;
@@ -52,14 +51,6 @@ public class DomainRO extends BaseRO {
 
     public void setSmlSmpId(String smlSmpId) {
         this.smlSmpId = smlSmpId;
-    }
-
-    public String getSmlParticipantIdentifierRegExp() {
-        return smlParticipantIdentifierRegExp;
-    }
-
-    public void setSmlParticipantIdentifierRegExp(String smlParticipantIdentifierRegExp) {
-        this.smlParticipantIdentifierRegExp = smlParticipantIdentifierRegExp;
     }
 
     public String getSmlClientCertHeader() {

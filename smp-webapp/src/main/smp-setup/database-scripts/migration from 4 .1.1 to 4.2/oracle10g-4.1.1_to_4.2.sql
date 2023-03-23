@@ -104,8 +104,8 @@ CREATE TABLE smp_configuration_aud (
 
 -- set option that service group scheme can be also null
 
-ALTER TABLE smp_service_group MODIFY (
-    participant_scheme NULL
+ALTER TABLE SMP_RESOURCE MODIFY (
+    IDENTIFIER_SCHEME NULL
 );
 
 -- modify user table

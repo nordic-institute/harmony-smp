@@ -17,8 +17,7 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import org.apache.commons.lang3.time.DateUtils;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 

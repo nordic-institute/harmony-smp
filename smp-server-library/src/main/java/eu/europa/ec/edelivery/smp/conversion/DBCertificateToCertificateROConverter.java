@@ -1,12 +1,11 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
-import java.time.ZoneOffset;
 
 /**
  * @author Sebastian-Ion TINCU
@@ -16,6 +15,7 @@ public class DBCertificateToCertificateROConverter implements Converter<DBCertif
 
     @Override
     public CertificateRO convert(DBCertificate source) {
+        /*
         CertificateRO target = new CertificateRO();
         if (source.getValidTo() != null) {
             target.setValidTo(Date.from(source.getValidTo().toInstant()));
@@ -30,5 +30,8 @@ public class DBCertificateToCertificateROConverter implements Converter<DBCertif
         target.setCrlUrl(source.getCrlUrl());
         target.setEncodedValue(source.getPemEncoding());
         return target;
+
+         */
+        return null;
     }
 }

@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.utils;
 
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum.*;
 import static org.junit.Assert.*;
 
 @RunWith(JUnitParamsRunner.class)
@@ -79,7 +79,6 @@ public class PropertyUtilsTest {
                 {TRUSTSTORE_PASSWORD, "ASDFs+dfswWE+=", String.class},
                 {TRUSTSTORE_FILENAME, "truststore.jks", File.class},
                 {CERTIFICATE_CRL_FORCE, "true", Boolean.class},
-                {CONFIGURATION_DIR, "./", File.class},
                 {ENCRYPTION_FILENAME, "enc.key", File.class},
                 {KEYSTORE_PASSWORD_DECRYPTED, "test", String.class}
         };
@@ -129,7 +128,7 @@ public class PropertyUtilsTest {
             PropertyUtils.isValidProperty(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT,
                     "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", ROOT_FOLDER));
 
-        assertEquals("Configuration error: Subject must have less than 256 character!", result.getMessage());
+        assertEquals("Configuration error: [Subject must have less than 256 character]!", result.getMessage());
     }
 
 
@@ -139,7 +138,7 @@ public class PropertyUtilsTest {
                 PropertyUtils.isValidProperty(ALERT_USER_SUSPENDED_LEVEL,
                         "value", ROOT_FOLDER));
 
-        assertEquals("Configuration error: Allowed values are: LOW, MEDIUM, HIGH!", result.getMessage());
+        assertEquals("Configuration error: [Allowed values are: LOW, MEDIUM, HIGH]!", result.getMessage());
     }
 
 

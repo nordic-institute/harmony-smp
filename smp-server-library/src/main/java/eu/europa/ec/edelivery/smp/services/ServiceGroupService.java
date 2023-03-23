@@ -13,34 +13,27 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
-import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
+import eu.europa.ec.edelivery.smp.security.ResourceGuard;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -57,8 +50,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Service
 public class ServiceGroupService {
 
-
-
     private static final String UTF_8 = "UTF-8";
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupService.class);
@@ -67,7 +58,10 @@ public class ServiceGroupService {
     private IdentifierService identifierService;
 
     @Autowired
-    private ServiceGroupDao serviceGroupDao;
+    private ResourceGuard resourceGuard;
+
+    @Autowired
+    private ResourceDao serviceGroupDao;
 
     @Autowired
     private UserDao userDao;
@@ -89,10 +83,10 @@ public class ServiceGroupService {
      * @param participantId participant identifier object
      * @return ServiceGroup for participant id
      */
-    public ServiceGroup getServiceGroup(ParticipantIdentifierType participantId) {
+    public ServiceGroup getServiceGroup(Identifier participantId) {
         // normalize participant identifier
-        ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(participantId);
-        Optional<DBServiceGroup> sg = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
+        Identifier normalizedServiceGroupId = identifierService.normalizeParticipant(participantId);
+        Optional<DBResource> sg = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme());
         if (!sg.isPresent()) {
             throw new SMPRuntimeException(SG_NOT_EXISTS, normalizedServiceGroupId.getValue(),
@@ -114,7 +108,7 @@ public class ServiceGroupService {
     public boolean saveServiceGroup(ServiceGroup serviceGroup, String domain, String serviceGroupOwner, String authenticatedUser) {
 
         // normalize participant identifier
-        ParticipantIdentifierType normalizedParticipantId = identifierService.normalizeParticipant(serviceGroup.getParticipantIdentifier());
+        Identifier normalizedParticipantId = identifierService.normalizeParticipant(serviceGroup.getParticipantIdentifier().getScheme(), serviceGroup.getParticipantIdentifier().getValue());
         LOG.businessDebug(SMPMessageCode.BUS_SAVE_SERVICE_GROUP, domain, normalizedParticipantId.getValue(), normalizedParticipantId.getScheme());
 
         // normalize service group owner
@@ -141,20 +135,20 @@ public class ServiceGroupService {
         // get domain
         DBDomain dmn = domainService.getDomain(domain);
         // get servicegroup
-        Optional<DBServiceGroup> dbServiceGroup = serviceGroupDao.findServiceGroup(normalizedParticipantId.getValue(),
+        Optional<DBResource> dbServiceGroup = serviceGroupDao.findServiceGroup(normalizedParticipantId.getValue(),
                 normalizedParticipantId.getScheme());
 
-
+/*
         byte[] extensions = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
 
         if (dbServiceGroup.isPresent()) {
             // service already exists.
             // check if user has rights to modified
             // test service owner
-            DBServiceGroup sg = dbServiceGroup.get();
+            DBResource sg = dbServiceGroup.get();
             validateOwnership(ownerName, sg);
             //check is domain exists
-            Optional<DBServiceGroupDomain> sgd = sg.getServiceGroupForDomain(dmn.getDomainCode());
+            Optional<DBDomainResourceDef> sgd = sg.getServiceGroupForDomain(dmn.getDomainCode());
             if (!sgd.isPresent()) {
                 SMPRuntimeException ex = new SMPRuntimeException(SG_NOT_REGISTRED_FOR_DOMAIN, domain, normalizedParticipantId.getValue(), normalizedParticipantId.getScheme());
                 LOG.businessError(SMPMessageCode.BUS_SAVE_SERVICE_GROUP_FAILED, domain, normalizedParticipantId.getValue(), normalizedParticipantId.getScheme(), ex.getMessage());
@@ -166,25 +160,28 @@ public class ServiceGroupService {
             return false;
         } else {
             //Save ServiceGroup
-            DBServiceGroup newSg = new DBServiceGroup();
-            newSg.setParticipantIdentifier(normalizedParticipantId.getValue());
-            newSg.setParticipantScheme(normalizedParticipantId.getScheme());
+            DBResource newSg = new DBResource();
+            newSg.setIdentifierValue(normalizedParticipantId.getValue());
+            newSg.setIdentifierScheme(normalizedParticipantId.getScheme());
             newSg.setExtension(extensions);
             newSg.addDomain(dmn); // add initial domain
             // set initial domain as not registered
-            newSg.getServiceGroupDomains().get(0).setSmlRegistered(false);
-            newSg.getUsers().add(newOwner.get());
+            newSg.getResourceDomains().get(0).setSmlRegistered(false);
+
             // persist (make sure this is not in transaction)
             serviceGroupDao.persistFlushDetach(newSg);
             // register to SML
             boolean registered = smlConnector.registerInDns(normalizedParticipantId, dmn);
             if (registered) {
                 // update status in database
-                newSg.getServiceGroupDomains().get(0).setSmlRegistered(registered);
+                newSg.getResourceDomains().get(0).setSmlRegistered(registered);
                 serviceGroupDao.update(newSg);
             }
             return true;
         }
+
+ */
+        return false;
     }
 
     /**
@@ -223,15 +220,15 @@ public class ServiceGroupService {
      * @param ownerIdentifier
      * @param dbsg
      */
-    protected void validateOwnership(String ownerIdentifier, DBServiceGroup dbsg) {
-
+    protected void validateOwnership(String ownerIdentifier, DBResource dbsg) {
         Optional<DBUser> own = userDao.findUserByIdentifier(ownerIdentifier);
         if (!own.isPresent()) {
             throw new SMPRuntimeException(USER_NOT_EXISTS);
         }
-        if (!dbsg.getUsers().contains(own.get())) {
+
+        if (!resourceGuard.isResourceAdmin(ownerIdentifier, dbsg.getIdentifierValue(), dbsg.getIdentifierScheme())){
             throw new SMPRuntimeException(USER_IS_NOT_OWNER, ownerIdentifier,
-                    dbsg.getParticipantIdentifier(), dbsg.getParticipantScheme());
+                    dbsg.getIdentifierValue(), dbsg.getIdentifierScheme());
         }
     }
 
@@ -246,42 +243,32 @@ public class ServiceGroupService {
         return serviceGroupDao.findServiceGroupDomainForUserIdAndMetadataId(userId, serviceMetadataID).isPresent();
     }
 
-    /**
-     * Method validates if user owner with identifier is owner of servicegroup
-     *
-     * @param ownerIdentifier
-     * @param serviceGroupIdentifier
-     */
-    @Transactional
-    public boolean isServiceGroupOwner(String ownerIdentifier, String serviceGroupIdentifier) {
-        ParticipantIdentifierType pt = identifierService.normalizeParticipantIdentifier(serviceGroupIdentifier);
-        Optional<DBServiceGroup> osg = serviceGroupDao.findServiceGroup(pt.getValue(), pt.getScheme());
-        Optional<DBUser> own = userDao.findUserByIdentifier(ownerIdentifier);
-        return osg.isPresent() && own.isPresent() && osg.get().getUsers().contains(own.get());
-    }
 
 
     @Transactional
-    public void deleteServiceGroup(ParticipantIdentifierType serviceGroupId) {
+    public void deleteServiceGroup(Identifier serviceGroupId) {
+        /*
         final ParticipantIdentifierType normalizedServiceGroupId = identifierService.normalizeParticipant(serviceGroupId);
 
-        Optional<DBServiceGroup> dbServiceGroup = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
+        Optional<DBResource> dbServiceGroup = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme());
 
         if (!dbServiceGroup.isPresent()) {
             throw new SMPRuntimeException(SG_NOT_EXISTS, normalizedServiceGroupId.getValue(),
                     normalizedServiceGroupId.getScheme());
         }
-        DBServiceGroup dsg = dbServiceGroup.get();
+        DBResource dsg = dbServiceGroup.get();
         // register to SML
         // unergister all the domains
-        for (DBServiceGroupDomain sgdom : dsg.getServiceGroupDomains()) {
+        for (DBDomainResourceDef sgdom : dsg.getResourceDomains()) {
             if (sgdom.isSmlRegistered()) {
                 smlConnector.unregisterFromDns(normalizedServiceGroupId, sgdom.getDomain());
             }
         }
 
         serviceGroupDao.removeServiceGroup(dsg);
+
+         */
     }
 
     /**
@@ -293,32 +280,35 @@ public class ServiceGroupService {
      * @param concatenatePartyId - regular expression if servicegroup in party identifier must be concatenate and returned in string value.
      * @return Oasis ServiceGroup entity or null if parameter is null
      */
-    public ServiceGroup toServiceGroup(DBServiceGroup dsg, Pattern concatenatePartyId) {
-
+    public ServiceGroup toServiceGroup(DBResource dsg, Pattern concatenatePartyId) {
+/*todo
         if (dsg == null) {
             return null;
         }
 
         ServiceGroup serviceGroup = new ServiceGroup();
-        String schema = dsg.getParticipantScheme();
-        String value = dsg.getParticipantIdentifier();
+        String schema = dsg.getIdentifierScheme();
+        String value = dsg.getIdentifierValue();
 
         if (StringUtils.isNotBlank(schema) && concatenatePartyId != null && concatenatePartyId.matcher(schema).matches()) {
             value = identifierService.formatParticipant(schema, value);
             schema = null;
         }
-        ParticipantIdentifierType identifier = new ParticipantIdentifierType(value, schema);
+        Identifier identifier = new Identifier(value, schema);
         serviceGroup.setParticipantIdentifier(identifier);
         if (dsg.getExtension() != null) {
             try {
                 List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(dsg.getExtension());
                 serviceGroup.getExtensions().addAll(extensions);
             } catch (JAXBException e) {
-                throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e, dsg.getParticipantIdentifier(),
-                        dsg.getParticipantScheme(), ExceptionUtils.getRootCauseMessage(e));
+                throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e, dsg.getIdentifierValue(),
+                        dsg.getIdentifierScheme(), ExceptionUtils.getRootCauseMessage(e));
             }
         }
         serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
+
         return serviceGroup;
+
+ */ return  null;
     }
 }

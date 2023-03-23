@@ -3,7 +3,7 @@ package eu.europa.ec.edelivery.smp.ui.external;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
 import eu.europa.ec.edelivery.smp.data.ui.PasswordChangeRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;

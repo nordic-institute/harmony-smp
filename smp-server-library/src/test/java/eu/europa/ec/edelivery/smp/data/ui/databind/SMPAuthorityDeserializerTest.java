@@ -21,14 +21,14 @@ public class SMPAuthorityDeserializerTest {
 
     @Test
     public void deserialize() throws IOException {
-        String value = "{\"username\":\"smp\",\"password\":null,\"emailAddress\":null,\"authorities\":[\"ROLE_SMP_ADMIN\"],\"active\":true,\"role\":\"SMP_ADMIN\",\"certificate\":null,\"statusPassword\":0,\"passwordExpired\":true}";
+        String value = "{\"username\":\"smp\",\"password\":null,\"emailAddress\":null,\"authorities\":[\"ROLE_USER\"],\"active\":true,\"role\":\"ROLE_USER\",\"certificate\":null,\"statusPassword\":0,\"passwordExpired\":true}";
         ObjectMapper mapper = new ObjectMapper();
         UserRO userRO = mapper.readValue(value, UserRO.class);
 
         assertNotNull(userRO);
         assertNotNull(userRO.getAuthorities());
-        assertEquals(userRO.getAuthorities().size(), 1);
-        assertEquals(SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(), userRO.getAuthorities().toArray(new SMPAuthority[]{})[0].getAuthority());
+        assertEquals(1, userRO.getAuthorities().size());
+        assertEquals(SMPAuthority.S_AUTHORITY_USER.getAuthority(), userRO.getAuthorities().toArray(new SMPAuthority[]{})[0].getAuthority());
 
     }
 }

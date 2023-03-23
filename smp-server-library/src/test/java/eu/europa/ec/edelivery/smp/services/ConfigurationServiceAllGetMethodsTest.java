@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -71,7 +71,6 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {TRUSTSTORE_PASSWORD, TEST_STRING, "getTruststoreCredentialToken", true},
                 {TRUSTSTORE_FILENAME, TEST_FILE, "getTruststoreFile", true},
                 {CERTIFICATE_CRL_FORCE, Boolean.FALSE, "forceCRLValidation", true},
-                {CONFIGURATION_DIR, TEST_FILE, "getConfigurationFolder", true},
                 //{ENCRYPTION_FILENAME, TEST_STRING, "", true},
                 //{KEYSTORE_PASSWORD_DECRYPTED, TEST_STRING, "", true},
                 //{TRUSTSTORE_PASSWORD_DECRYPTED, TEST_STRING, "", true},

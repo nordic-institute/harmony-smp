@@ -1,15 +1,17 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.security.utils.KeystoreUtils;
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +40,7 @@ public class UIKeystoreService {
     @Autowired
     private ConversionService conversionService;
 
-
-    @Autowired
+   @Autowired
     private ConfigurationService configurationService;
 
     private Map<String, Key> keystoreKeys;
@@ -55,7 +56,6 @@ public class UIKeystoreService {
     public void init() {
         keystoreKeys = new HashMap();
         keystoreCertificates = new HashMap();
-        refreshData();
     }
 
     /**
@@ -246,7 +246,7 @@ public class UIKeystoreService {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
         if (keyStore != null) {
-            SecurityUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
+            KeystoreUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
             // store keystore
             storeKeystore(keyStore);
             // refresh

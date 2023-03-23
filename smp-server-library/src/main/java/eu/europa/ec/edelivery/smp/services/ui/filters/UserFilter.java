@@ -1,8 +1,5 @@
 package eu.europa.ec.edelivery.smp.services.ui.filters;
 
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
-
 import java.util.List;
 
 public class UserFilter {

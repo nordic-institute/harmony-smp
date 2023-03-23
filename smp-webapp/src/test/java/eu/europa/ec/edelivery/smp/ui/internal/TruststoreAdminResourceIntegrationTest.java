@@ -69,7 +69,7 @@ public class TruststoreAdminResourceIntegrationTest {
         byte[] buff = (new String("Not a certificate :) ")).getBytes();
 
         // login
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
 
@@ -86,7 +86,7 @@ public class TruststoreAdminResourceIntegrationTest {
     public void validateCertificateSystemAdmin() throws Exception {
         byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
         // login
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
         // given when
@@ -111,7 +111,7 @@ public class TruststoreAdminResourceIntegrationTest {
     @Test
     public void validateCertificateIdWithEmailSerialNumberInSubjectCertIdTest() throws Exception {
         // login
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
 

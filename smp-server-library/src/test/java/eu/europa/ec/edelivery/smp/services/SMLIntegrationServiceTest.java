@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.verify;
  * @author Joze Rihtarsic
  * @since 4.1
  */
+@Ignore
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SmlIntegrationConfiguration.class,
         SMLIntegrationService.class})

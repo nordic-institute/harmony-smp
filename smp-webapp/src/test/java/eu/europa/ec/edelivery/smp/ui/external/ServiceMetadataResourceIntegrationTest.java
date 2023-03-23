@@ -61,7 +61,7 @@ public class ServiceMetadataResourceIntegrationTest {
     @Test
     public void getServiceGroupMetadataById() throws Exception {
         // given when
-        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
+        MockHttpSession sessionAdmin = loginWithUserGroupAdmin(mvc);
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SERVICE_METADATA + "/" + SERVICE_METADATA_ID)
                 .session(sessionAdmin).with(csrf())
         ).andExpect(status().isOk()).andReturn();
@@ -80,7 +80,7 @@ public class ServiceMetadataResourceIntegrationTest {
     @Test
     public void getServiceGroupMetadataByIdNotAuthorized() throws Exception {
         // given when
-        MockHttpSession session = loginWithServiceGroupUser2(mvc);
+        MockHttpSession session = loginWithUser2(mvc);
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SERVICE_METADATA + "/" + SERVICE_METADATA_ID)
                 .session(session).with(csrf())
         ).andExpect(status().isUnauthorized()).andReturn();
@@ -120,7 +120,7 @@ public class ServiceMetadataResourceIntegrationTest {
         smv.setParticipantScheme("partSch");
         smv.setXmlContent("Invalid content");
 
-        MockHttpSession session = loginWithServiceGroupUser(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
 
         MvcResult result = mvc.perform(post(CONTEXT_PATH_PUBLIC_SERVICE_METADATA + "/validate")
                 .session(session)

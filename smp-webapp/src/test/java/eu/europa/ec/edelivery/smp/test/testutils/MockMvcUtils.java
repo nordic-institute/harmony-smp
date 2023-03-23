@@ -82,22 +82,11 @@ public class MockMvcUtils {
      * @return
      * @throws Exception
      */
-    public static MockHttpSession loginWithSMPAdmin(MockMvc mvc) throws Exception {
-        return loginWithCredentials(mvc, SMP_ADMIN_USERNAME, SMP_ADMIN_PASSWD);
-    }
-
-    /**
-     * Login with SMP admin the username and data
-     *
-     * @param mvc
-     * @return
-     * @throws Exception
-     */
-    public static MockHttpSession loginWithServiceGroupUser(MockMvc mvc) throws Exception {
+    public static MockHttpSession loginWithUserGroupAdmin(MockMvc mvc) throws Exception {
         return loginWithCredentials(mvc, SG_USER_USERNAME, SG_USER_PASSWD);
     }
 
-    public static MockHttpSession loginWithServiceGroupUser2(MockMvc mvc) throws Exception {
+    public static MockHttpSession loginWithUser2(MockMvc mvc) throws Exception {
         return loginWithCredentials(mvc, SG_USER2_USERNAME, SG_USER2_PASSWD);
     }
 

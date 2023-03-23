@@ -65,7 +65,7 @@ public class UserResourceIntegrationTest {
     @Test
     public void testUpdateCurrentUserOK() throws Exception {
         // login
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
         userRO.setActive(!userRO.isActive());
@@ -87,7 +87,7 @@ public class UserResourceIntegrationTest {
 
         // given when - log as SMP admin
         // then change values and list uses for changed value
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         assertNotNull(userRO);
         // when
@@ -108,7 +108,7 @@ public class UserResourceIntegrationTest {
 
     @Test
     public void generateAccessTokenForUser() throws Exception {
-        MockHttpSession session = loginWithServiceGroupUser2(mvc);
+        MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         assertNotNull(userRO);
 
@@ -137,7 +137,7 @@ public class UserResourceIntegrationTest {
     public void changePassword() throws Exception {
         String newPassword = "TESTtest1234!@#$";
 
-        MockHttpSession session = loginWithServiceGroupUser2(mvc);
+        MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         assertNotNull(userRO);
         PasswordChangeRO newPass = new PasswordChangeRO();

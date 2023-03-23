@@ -20,31 +20,32 @@ import javax.persistence.*;
 import java.util.Objects;
 
 /**
+ * Database configuration entity for DomiSMP configuration properties
+ *
+ * @since 4.2
  * Created by Joze Rihtarsic .
  */
 @Entity
 @Audited
 @Table(name = "SMP_CONFIGURATION")
-@NamedQueries({
-        @NamedQuery(name = "DBConfiguration.getAll", query = "SELECT d FROM DBConfiguration d"),
-        @NamedQuery(name = "DBConfiguration.maxUpdateDate",
-                query = "SELECT max(config.lastUpdatedOn) from DBConfiguration config"
-        ),
-        @NamedQuery(name = "DBConfiguration.getPendingProperties",
-                query = "SELECT config from DBConfiguration config where config.lastUpdatedOn > :updateDate"
-        ),
-        @NamedQuery(name = "DBConfiguration.getPendingRestartProperties",
-                query = "SELECT config from DBConfiguration config where config.property in (:restartPropertyList) and config.lastUpdatedOn > :serverStartedDate"
-        ),
-})
+@NamedQuery(name = "DBConfiguration.getAll", query = "SELECT d FROM DBConfiguration d")
+@NamedQuery(name = "DBConfiguration.maxUpdateDate",
+        query = "SELECT max(config.lastUpdatedOn) from DBConfiguration config"
+)
+@NamedQuery(name = "DBConfiguration.getPendingProperties",
+        query = "SELECT config from DBConfiguration config where config.lastUpdatedOn > :updateDate"
+)
+@NamedQuery(name = "DBConfiguration.getPendingRestartProperties",
+        query = "SELECT config from DBConfiguration config where config.property in (:restartPropertyList) and config.lastUpdatedOn > :serverStartedDate"
+)
 @org.hibernate.annotations.Table(appliesTo = "SMP_CONFIGURATION", comment = "SMP user certificates")
 public class DBConfiguration extends BaseEntity {
 
     @Id
-    @Column(name = "PROPERTY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512, nullable = false, unique = true)
+    @Column(name = "PROPERTY_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512, nullable = false, unique = true)
     @ColumnDescription(comment = "Property name/key")
     String property;
-    @Column(name = "VALUE", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
+    @Column(name = "PROPERTY_VALUE", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
     @ColumnDescription(comment = "Property value")
     String value;
 
