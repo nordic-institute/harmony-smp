@@ -2,11 +2,11 @@ package eu.europa.ec.edelivery.smp.monitor;
 
 
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
+import eu.europa.ec.smp.spi.converter.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -51,7 +51,7 @@ public class MonitorResource {
     private DomainDao domainDao;
 
     @Autowired
-    private ServiceGroupDao serviceGroupDao;
+    private ResourceDao serviceGroupDao;
 
     private static final String TEST_PART_SCHEMA = "test-actorid-qns";
     private static final String TEST_PART_ID = "urn:test:is:alive";
@@ -62,7 +62,8 @@ public class MonitorResource {
     @RequestMapping(method = RequestMethod.GET, path = "/is-alive")
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN,SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN})
     public ResponseEntity isAlive() {
-
+        boolean suc = false;
+/*
         String user = SecurityContextHolder.getContext().getAuthentication().getName();
         LOG.debug("Start isAlive function for user: " + SecurityContextHolder.getContext().getAuthentication().getName());
         byte[] bServiceGroup = null;
@@ -85,7 +86,7 @@ public class MonitorResource {
             LOG.error("Error reading testing resource file", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        boolean suc = false;
+
         try {
             suc = testDatabase();
         } catch (SMPTestIsALiveException ex) {
@@ -93,6 +94,8 @@ public class MonitorResource {
         } catch (RuntimeException th) {
             LOG.error("Error occurred while testing database connection: Msg:" + ExceptionUtils.getRootCauseMessage(th), th);
         }
+
+ */
         return suc ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
     }
@@ -104,11 +107,11 @@ public class MonitorResource {
             return false;
         }
 
-        DBServiceGroup newSg = new DBServiceGroup();
-        newSg.setParticipantIdentifier(TEST_PART_ID);
-        newSg.setParticipantScheme(TEST_PART_SCHEMA);
+        DBResource newSg = new DBResource();
+        newSg.setIdentifierValue(TEST_PART_ID);
+        newSg.setIdentifierScheme(TEST_PART_SCHEMA);
         newSg.setExtension(TEST_EXTENSION_XML.getBytes());
-        newSg.addDomain(lstDomain.get(0)); // add initial domain
+        //newSg.addDomain(lstDomain.get(0)); // add initial domain
         // persist (make sure this is not in transaction)
         serviceGroupDao.testPersist(newSg, true, TEST_DB_SUCCESSFUL_ROLLBACK);
         return true;

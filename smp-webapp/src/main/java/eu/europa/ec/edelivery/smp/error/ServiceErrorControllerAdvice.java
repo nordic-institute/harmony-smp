@@ -36,7 +36,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 /**
  * Created by gutowpa on 14/09/2017.
  */
-@RestControllerAdvice({"eu.europa.ec.edelivery.smp.controllers", "eu.europa.ec.edelivery.smp.controllers"})
+@RestControllerAdvice({"eu.europa.ec.edelivery.smp.controllers"})
 public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice {
 
     @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class, SMPResponseStatusException.class, AuthenticationException.class,})

@@ -1,11 +1,11 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -14,10 +14,8 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,15 +23,10 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.io.StringWriter;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -130,7 +123,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      */
     @Transactional
     public AccessTokenRO generateAccessTokenForUser(Long authorizedUserId, Long userToUpdateId, String currentPassword, boolean validateCurrentPassword) {
-
+/*
         DBUser dbUser = userDao.find(authorizedUserId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", authorizedUserId);
@@ -147,7 +140,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
 
         Boolean testMode = configurationService.isSMPStartupInDevMode();
-        AccessTokenRO token = SecurityUtils.generateAccessToken(testMode);
+        AccessTokenRO token = generateAccessToken(testMode);
         OffsetDateTime generatedTime = token.getGeneratedOn();
         token.setExpireOn(adminUpdate ? null : generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays()));
         dbUserToUpdate.setAccessTokenIdentifier(token.getIdentifier());
@@ -156,6 +149,17 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUserToUpdate.setAccessTokenExpireOn(token.getExpireOn());
 
         return token;
+
+ */
+        return null;
+    }
+
+    public static AccessTokenRO generateAccessToken(boolean devMode) {
+        AccessTokenRO accessToken = new AccessTokenRO();
+        accessToken.setGeneratedOn(OffsetDateTime.now());
+        accessToken.setIdentifier(SecurityUtils.generateAuthenticationTokenIdentifier(devMode));
+        accessToken.setValue(SecurityUtils.generateAuthenticationToken(devMode));
+        return accessToken;
     }
 
     /**
@@ -193,7 +197,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             LOG.error("Can not update user password because user for id [{}] does not exist!", authorizedUserId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-
+/*
         if (validateCurrentPassword && !BCrypt.checkpw(authorizationPassword, dbAuthorizedUser.getPassword())) {
             throw new BadCredentialsException("Password change failed; Invalid current password!");
         }
@@ -211,7 +215,11 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         OffsetDateTime currentTime = OffsetDateTime.now();
         dbUserToUpdate.setPasswordChanged(currentTime);
         dbUserToUpdate.setPasswordExpireOn(adminUpdate ? null : currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
+
         return dbUserToUpdate;
+
+ */
+        return null;
     }
 
     /**
@@ -237,6 +245,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     @Transactional
     public void updateUserdata(Long userId, UserRO user) {
+        /*
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
@@ -307,9 +316,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         certRo.setAlias(certificateAlias);
 
+         */
+
     }
 
     protected void createOrUpdateUser(UserRO userRO, OffsetDateTime passwordChange) {
+        /*
         if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
             DBUser dbUser = convertFromRo(userRO);
             if (!StringUtils.isBlank(userRO.getPassword())) {
@@ -360,7 +372,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             userDao.update(dbUser);
         } else if (userRO.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
             userDao.removeById(dbUser.getId());
-        }
+        }*/
 
     }
 

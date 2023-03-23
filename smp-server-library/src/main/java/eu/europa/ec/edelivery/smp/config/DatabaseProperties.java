@@ -13,6 +13,13 @@ import java.util.Properties;
 
 import static org.apache.commons.lang3.StringUtils.trim;
 
+
+/**
+ * Reads all Database configurations and sets read timestamp.
+ *
+ * @author Joze Rihtarsic
+ * @since 4.2
+ */
 public class DatabaseProperties extends Properties {
     SMPLogger LOG = SMPLoggerFactory.getLogger(DatabaseProperties.class);
     private static final long serialVersionUID = 1L;
@@ -36,4 +43,10 @@ public class DatabaseProperties extends Properties {
     public OffsetDateTime getLastUpdate() {
         return lastUpdate;
     }
+
+    public void setLastUpdate(OffsetDateTime lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+
 }

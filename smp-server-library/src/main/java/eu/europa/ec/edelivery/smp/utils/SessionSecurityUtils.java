@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;

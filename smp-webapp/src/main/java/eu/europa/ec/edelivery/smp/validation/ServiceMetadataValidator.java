@@ -14,12 +14,12 @@
 package eu.europa.ec.edelivery.smp.validation;
 
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
-import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
+import eu.europa.ec.smp.spi.converter.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -54,6 +54,7 @@ public class ServiceMetadataValidator {
                          String documentIdentifierFromUrl,
                          byte[] serviceMetadataBody
     ) throws XmlInvalidAgainstSchemaException {
+/*
 
         // validate XML serviceMetadata xml against schema
         BdxSmpOasisValidator.validateXSD(serviceMetadataBody);
@@ -71,10 +72,10 @@ public class ServiceMetadataValidator {
             throw new BadRequestException(WRONG_FIELD, "Missing service information or redirect");
         }
 
-        ParticipantIdentifierType serviceGroupId = identifierService.normalizeParticipantIdentifier(participantIdentifierFromUrl);
-        DocumentIdentifier documentId = identifierService.normalizeDocumentIdentifier(documentIdentifierFromUrl);
+        Identifier serviceGroupId = identifierService.normalizeParticipantIdentifier(participantIdentifierFromUrl);
+        Identifier documentId = identifierService.normalizeDocumentIdentifier(documentIdentifierFromUrl);
         validateServiceInformation(serviceGroupId, documentId, serviceInformation);
-
+*/
     }
 
     /**
@@ -85,13 +86,13 @@ public class ServiceMetadataValidator {
      * @param serviceInformation
      * @return
      */
-    public ServiceInformationType validateServiceInformation(final ParticipantIdentifierType urlParticipantId,
-                                                             final DocumentIdentifier urlDocumentId,
+  /*  public ServiceInformationType validateServiceInformation(final Identifier urlParticipantId,
+                                                             final Identifier urlDocumentId,
                                                              final ServiceInformationType serviceInformation) {
 
-        final ParticipantIdentifierType xmlParticipantId = identifierService.normalizeParticipant(
+        final Identifier xmlParticipantId = identifierService.normalizeParticipant(
                 serviceInformation.getParticipantIdentifier());
-        final DocumentIdentifier xmlDocumentId = identifierService.normalizeDocument
+        final Identifier xmlDocumentId = identifierService.normalizeDocument
                 (serviceInformation.getDocumentIdentifier());
 
         if (!urlParticipantId.equals(xmlParticipantId)) {
@@ -124,7 +125,7 @@ public class ServiceMetadataValidator {
         return "ParticipantIdentifier: " + (identifierType == null ? "NULL" : identifierToString(identifierType.getScheme(), identifierType.getValue()));
     }
 
-    private String identifierToString(DocumentIdentifier identifierType) {
+    private String identifierToString(Identifier identifierType) {
         return "DocumentIdentifier: " + (identifierType == null ? "NULL" : identifierToString(identifierType.getScheme(), identifierType.getValue()));
     }
 
@@ -156,4 +157,6 @@ public class ServiceMetadataValidator {
             }
         }
     }
+
+   */
 }

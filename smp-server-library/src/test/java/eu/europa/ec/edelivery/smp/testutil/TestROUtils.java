@@ -11,13 +11,13 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.conversion.ExtensionConverterTest.RES_PATH;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_DOCUMENT_XML;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_EXTENSION_XML;
 
 public class TestROUtils {
 
     public static final X509CertificateToCertificateROConverter CERT_CONVERTER = new X509CertificateToCertificateROConverter();
+    private static final String RES_PATH = "";
 
 
     public static ServiceMetadataRO createServiceMetadataDomain(DBDomain domain, ServiceGroupRO sgo, String docid, String docSch) {
@@ -83,22 +83,6 @@ public class TestROUtils {
 
     public static String generateServiceMetadata(String partId, String partSch, String docId, String docSch) {
         return String.format(SIMPLE_DOCUMENT_XML, partSch, partId, docSch, docId, UUID.randomUUID().toString());
-    }
-
-    public static ServiceGroupValidationRO getValidExtension() throws IOException {
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionValidOne.xml");
-        return getExtensionRO(inputDoc);
-    }
-
-
-    public static ServiceGroupValidationRO getValidMultipleExtension() throws IOException {
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionValidMultiple.xml");
-        return getExtensionRO(inputDoc);
-    }
-
-    public static ServiceGroupValidationRO getValidCustomText() throws IOException {
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionCustomText.xml");
-        return getExtensionRO(inputDoc);
     }
 
     public static ServiceGroupValidationRO getInvalid() throws IOException {

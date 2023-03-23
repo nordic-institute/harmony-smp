@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -34,10 +34,10 @@ public class SMPAuthorizationService {
     private static final String ERR_INVALID_OR_NULL = "Invalid or null authentication for the session!";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthorizationService.class);
 
-    final private ServiceGroupService serviceGroupService;
-    final private ConversionService conversionService;
-    final private ConfigurationService configurationService;
-    final private UserDao userDao;
+    private final ServiceGroupService serviceGroupService;
+    private final ConversionService conversionService;
+    private final ConfigurationService configurationService;
+    private final UserDao userDao;
 
     public SMPAuthorizationService(ServiceGroupService serviceGroupService,
                                    ConversionService conversionService,
@@ -109,7 +109,7 @@ public class SMPAuthorizationService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            userRO.setAuthorities(authentication.getAuthorities().stream().map(val -> (SMPAuthority) val).collect(Collectors.toList()));
+            userRO.setAuthorities(authentication.getAuthorities().stream().map(SMPAuthority.class::cast).collect(Collectors.toList()));
         }
         return userRO;
     }

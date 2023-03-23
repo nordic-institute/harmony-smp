@@ -4,11 +4,21 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 public class TestConstants {
 
+    public static final String TEST_GROUP_A = "group-a";
+    public static final String TEST_GROUP_B = "group-b";
+
+    public static final String TEST_EXTENSION_IDENTIFIER = "oasis-smp-extension";
+    public static final String TEST_RESOURCE_DEF_SMP10 = "oasis-smp-1";
+    public static final String TEST_SUBRESOURCE_DEF_SMP10 = "services";
+    public static final String TEST_RESOURCE_DEF_CPP = "oasis-cpp";
+
+
     public static final String TEST_DOMAIN_CODE_1 = "utestPeppol01";
     public static final String TEST_DOMAIN_CODE_2 = "utestEHhealth02";
 
     public static final String TEST_SML_SUBDOMAIN_CODE_1 = ""; // peppol subdomain is empty string
     public static final String TEST_SML_SUBDOMAIN_CODE_2 = "ehealth";
+
 
 
     public static final String TEST_SG_ID_1 = "0007:001:utest";

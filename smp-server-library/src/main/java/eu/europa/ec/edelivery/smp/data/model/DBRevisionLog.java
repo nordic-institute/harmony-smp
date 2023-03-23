@@ -91,5 +91,13 @@ public class DBRevisionLog {
         return result;
     }
 
-
+    @Override
+    public String toString() {
+        return "DBRevisionLog{" +
+                "id=" + id +
+                ", timestamp=" + timestamp +
+                ", userName='" + userName + '\'' +
+                ", revisionDate=" + revisionDate +
+                '}';
+    }
 }

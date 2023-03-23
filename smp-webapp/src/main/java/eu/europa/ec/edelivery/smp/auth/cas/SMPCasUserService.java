@@ -1,12 +1,12 @@
 package eu.europa.ec.edelivery.smp.auth.cas;
 
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +63,10 @@ public class SMPCasUserService implements AuthenticationUserDetailsService<CasAs
 		} catch (SMPRuntimeException ex) {
 			throw new UsernameNotFoundException("User with the username ["+username+"] is not registered in SMP", ex);
 		}
-		SMPAuthority authority = SMPAuthority.getAuthorityByRoleName(dbuser.getRole());
+
+		SMPAuthority authority = SMPAuthority.getAuthorityByApplicationRole(dbuser.getApplicationRole());
 		// generate secret for the session
-		SMPUserDetails smpUserDetails = new SMPUserDetails(dbuser, SecurityUtils.generatePrivateSymmetricKey(),Collections.singletonList(authority));
+		SMPUserDetails smpUserDetails = new SMPUserDetails(dbuser, SecurityUtils.generatePrivateSymmetricKey(true), Collections.singletonList(authority));
 		smpUserDetails.setCasAuthenticated(true);
 		LOG.info("Return authenticated user details for username: [{}]", username);
 		return smpUserDetails;

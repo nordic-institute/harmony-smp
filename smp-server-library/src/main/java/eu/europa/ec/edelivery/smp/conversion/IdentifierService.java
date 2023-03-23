@@ -13,13 +13,12 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
+import eu.europa.ec.edelivery.smp.identifiers.IdentifierFormatter;
+import eu.europa.ec.edelivery.smp.identifiers.types.OasisSMPFormatterType;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.smp.api.identifiers.DocumentIdentifierFormatter;
-import eu.europa.ec.smp.api.identifiers.ParticipantIdentifierFormatter;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,18 +35,16 @@ import java.util.regex.Pattern;
 public class IdentifierService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(IdentifierService.class);
 
-    ParticipantIdentifierFormatter participantIdentifierFormatter = new ParticipantIdentifierFormatter();
-    DocumentIdentifierFormatter documentIdentifierFormatter = new DocumentIdentifierFormatter();
+    IdentifierFormatter participantIdentifierFormatter = IdentifierFormatter.Builder
+            .create()
+            .addFormatterTypes(new OasisSMPFormatterType())
+            .build();
+    IdentifierFormatter documentIdentifierFormatter = IdentifierFormatter.Builder.create().build();
 
     ConfigurationService configurationService;
 
     public IdentifierService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
-
-        configureParticipantIdentifierFormatter(configurationService.getCaseSensitiveParticipantScheme(),
-                configurationService.getParticipantSchemeMandatory(),
-                configurationService.getParticipantIdentifierSchemeRexExp());
-        configureDocumentIdentifierFormatter(configurationService.getCaseSensitiveDocumentScheme());
     }
 
     /**
@@ -84,35 +81,35 @@ public class IdentifierService {
         }
     }
 
-    public DocumentIdentifier normalizeDocument(final DocumentIdentifier documentIdentifier) {
+    public Identifier normalizeDocument(final Identifier documentIdentifier) {
         return documentIdentifierFormatter.normalize(documentIdentifier);
     }
 
-    public DocumentIdentifier normalizeDocument(final String scheme, final String identifier) {
+    public Identifier normalizeDocument(final String scheme, final String identifier) {
         return documentIdentifierFormatter.normalize(scheme, identifier);
     }
 
-    public DocumentIdentifier normalizeDocumentIdentifier(String value) {
+    public Identifier normalizeDocumentIdentifier(String value) {
         return documentIdentifierFormatter.normalizeIdentifier(value);
     }
 
-    public ParticipantIdentifierType normalizeParticipant(final String scheme, final String identifier) {
+    public Identifier normalizeParticipant(final String scheme, final String identifier) {
         return participantIdentifierFormatter.normalize(scheme, identifier);
     }
 
-    public ParticipantIdentifierType normalizeParticipant(final ParticipantIdentifierType participantIdentifier) {
+    public Identifier normalizeParticipant(final Identifier participantIdentifier) {
         return participantIdentifierFormatter.normalize(participantIdentifier);
     }
 
-    public ParticipantIdentifierType normalizeParticipantIdentifier(final String participantId) {
+    public Identifier normalizeParticipantIdentifier(final String participantId) {
         return participantIdentifierFormatter.normalizeIdentifier(participantId);
     }
 
-    public String formatParticipant(final ParticipantIdentifierType participantIdentifier) {
+    public String formatParticipant(final Identifier participantIdentifier) {
         return participantIdentifierFormatter.format(participantIdentifier);
     }
 
-    public String urlEncodedFormatParticipant(final ParticipantIdentifierType participantIdentifier) {
+    public String urlEncodedFormatParticipant(final Identifier participantIdentifier) {
         return participantIdentifierFormatter.urlEncodedFormat(participantIdentifier);
     }
 
@@ -120,11 +117,11 @@ public class IdentifierService {
         return participantIdentifierFormatter.format(scheme, identifier);
     }
 
-    public String formatDocument(final DocumentIdentifier documentIdentifier) {
+    public String formatDocument(final Identifier documentIdentifier) {
         return documentIdentifierFormatter.format(documentIdentifier);
     }
 
-    public String urlEncodedFormatDocument(final DocumentIdentifier documentIdentifier) {
+    public String urlEncodedFormatDocument(final Identifier documentIdentifier) {
         return documentIdentifierFormatter.urlEncodedFormat(documentIdentifier);
     }
 

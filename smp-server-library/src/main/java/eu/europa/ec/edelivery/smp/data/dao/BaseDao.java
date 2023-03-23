@@ -50,7 +50,7 @@ public abstract class BaseDao<E extends BaseEntity> {
 
     private final Class<E> entityClass;
 
-    public BaseDao() {
+    BaseDao() {
         entityClass = (Class<E>) GenericTypeResolver.resolveTypeArgument(getClass(), BaseDao.class);
     }
 
@@ -80,9 +80,15 @@ public abstract class BaseDao<E extends BaseEntity> {
      */
     @Transactional
     public void persistFlushDetach(E entity) {
-        memEManager.persist(entity);
+        persist(entity);
         memEManager.flush();
         memEManager.detach(entity);
+    }
+
+
+    public void persist(E entity) {
+        memEManager.persist(entity);
+
     }
 
     /**
@@ -95,6 +101,10 @@ public abstract class BaseDao<E extends BaseEntity> {
         memEManager.merge(entity);
         memEManager.flush();
         memEManager.detach(entity);
+    }
+
+    public E merge(E entity) {
+        return memEManager.merge(entity);
     }
 
 

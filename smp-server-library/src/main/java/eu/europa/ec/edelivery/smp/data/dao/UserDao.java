@@ -13,9 +13,9 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
-import eu.europa.ec.edelivery.smp.data.ui.enums.CredentialTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -35,7 +35,8 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_CERT
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY;
 
 /**
- * Created by gutowpa on 14/11/2017.
+ * @author gutowpa
+ * @since 3.0
  */
 @Repository
 public class UserDao extends BaseDao<DBUser> {
@@ -54,6 +55,7 @@ public class UserDao extends BaseDao<DBUser> {
     @Override
     @Transactional
     public void persistFlushDetach(DBUser user) {
+        /*
         if (StringUtils.isBlank(user.getUsername())
                 && (user.getCertificate() == null || StringUtils.isBlank(user.getCertificate().getCertificateId()))) {
             throw new SMPRuntimeException(ErrorCode.INVALID_USER_NO_IDENTIFIERS);
@@ -67,7 +69,7 @@ public class UserDao extends BaseDao<DBUser> {
         if (user.getCertificate() != null && StringUtils.isBlank(user.getCertificate().getCertificateId())) {
             user.setCertificate(null);
         }
-
+*/
         super.persistFlushDetach(user);
     }
 
@@ -275,8 +277,9 @@ public class UserDao extends BaseDao<DBUser> {
     }
 
     @Transactional
-    public void updateAlertSentForUserCredentials(Long userId, CredentialTypeEnum credentialType, OffsetDateTime dateTime) {
+    public void updateAlertSentForUserCredentials(Long userId, CredentialType credentialType, OffsetDateTime dateTime) {
         DBUser user = find(userId);
+        /*
         switch (credentialType) {
             case USERNAME_PASSWORD:
                 user.setPasswordExpireAlertOn(dateTime);
@@ -285,12 +288,13 @@ public class UserDao extends BaseDao<DBUser> {
                 user.setAccessTokenExpireAlertOn(dateTime);
                 break;
             case CERTIFICATE:
-                if (user.getCertificate() == null) {
+                / *if (user.getCertificate() == null) {
                     LOG.warn("Can not set certificate alert sent date for user [{}] without certificate!", user.getUsername());
                 } else {
                     user.getCertificate().setCertificateLastExpireAlertOn(dateTime);
-                }
+                }* /
                 break;
         }
+        */
     }
 }

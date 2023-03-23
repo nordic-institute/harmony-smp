@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SMPSecurityExceptionHandler;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -85,7 +86,7 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public WSSecurityConfigurerAdapter(SMPAuthenticationProvider smpAuthenticationProvider,
-                                       ConfigurationService configurationService,
+                                       @Lazy ConfigurationService configurationService,
                                        @Lazy MDCLogRequestFilter mdcLogRequestFilter,
                                        @Lazy CsrfTokenRepository csrfTokenRepository,
                                        @Lazy RequestMatcher csrfURLMatcher,
@@ -148,11 +149,11 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .regexMatchers(HttpMethod.DELETE, "^/(?!ui/)[^/]*(/services/.*)?$").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
-                SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN)
+                        ApplicationRoleType.USER.getAPIRole(),
+                        ApplicationRoleType.SYSTEM_ADMIN.getAPIRole())
                 .regexMatchers(HttpMethod.PUT, "^/(?!ui/)[^/]*(/services/.*)?$").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
-                SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN)
+                        ApplicationRoleType.USER.getAPIRole(),
+                        ApplicationRoleType.SYSTEM_ADMIN.getAPIRole())
                 .regexMatchers(HttpMethod.GET, "^/(?!ui/)[^/]*(/services/.*)?$").permitAll().and()
         ;
     }

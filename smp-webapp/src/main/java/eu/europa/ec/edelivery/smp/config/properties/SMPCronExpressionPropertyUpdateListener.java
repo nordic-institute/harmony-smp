@@ -3,7 +3,7 @@ package eu.europa.ec.edelivery.smp.config.properties;
 import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.config.SMPTaskSchedulerConfig;
 import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 
 /**
  * Property change listener for cron expression. Component updates crone version for the trigger with matching

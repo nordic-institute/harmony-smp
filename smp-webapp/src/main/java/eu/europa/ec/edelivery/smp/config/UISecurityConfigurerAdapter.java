@@ -104,18 +104,15 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.PUT).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.GET).permitAll().and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/ui/**").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
+                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
                 SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
         ;
     }
@@ -187,8 +184,7 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     @Bean
     public CsrfTokenRepository tokenRepository() {
-        CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        return repository;
+        return CookieCsrfTokenRepository.withHttpOnlyFalse();
     }
 
     @Bean

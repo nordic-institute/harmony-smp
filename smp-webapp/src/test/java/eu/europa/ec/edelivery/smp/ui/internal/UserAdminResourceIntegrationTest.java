@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.core.MediaType;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -135,15 +134,7 @@ public class UserAdminResourceIntegrationTest {
                 .content(mapper.writeValueAsString(Collections.singletonList(userRO)))
         ).andExpect(status().isUnauthorized());
 
-        MockHttpSession sessionSMPAdmin = loginWithSMPAdmin(mvc);
-        mvc.perform(put(PATH_INTERNAL)
-                .session(sessionSMPAdmin)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Collections.singletonList(userRO)))
-        ).andExpect(status().isUnauthorized());
-
-        MockHttpSession sessionSGAdmin = loginWithServiceGroupUser(mvc);
+        MockHttpSession sessionSGAdmin = loginWithUserGroupAdmin(mvc);
         mvc.perform(put(PATH_INTERNAL)
                 .session(sessionSGAdmin)
                 .with(csrf())

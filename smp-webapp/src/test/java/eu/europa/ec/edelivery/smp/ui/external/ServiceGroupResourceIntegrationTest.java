@@ -1,8 +1,8 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
@@ -15,29 +15,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import java.io.IOException;
 import java.util.Arrays;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SERVICE_METADATA;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -57,12 +48,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ServiceGroupResourceIntegrationTest {
 
     @Autowired
-    ServiceGroupDao serviceGroupDao;
+    ResourceDao serviceGroupDao;
 
     private static final String PATH_PUBLIC = ResourceConstants.CONTEXT_PATH_PUBLIC_SERVICE_GROUP;
 
-    private static final String PARTICIPANT_IDENTIFIER = "urn:australia:ncpb";
-    private static final String PARTICIPANT_SCHEME = "ehealth-actorid-qns";
+    private static final String IDENTIFIER_VALUE = "urn:australia:ncpb";
+    private static final String IDENTIFIER_SCHEME = "ehealth-actorid-qns";
 
     private String validExtension = null;
 
@@ -79,7 +70,7 @@ public class ServiceGroupResourceIntegrationTest {
     @Test
     public void getServiceGroupListForSMPAdmin() throws Exception {
         // given when
-        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
+        MockHttpSession sessionAdmin = loginWithUserGroupAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_PUBLIC)
                 .session(sessionAdmin).with(csrf())
         ).andExpect(status().isOk()).andReturn();
@@ -104,7 +95,7 @@ public class ServiceGroupResourceIntegrationTest {
     @Test
     public void getServiceGroupListForServiceGroupAdmin() throws Exception {
         // given when
-        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
+        MockHttpSession sessionAdmin = loginWithUserGroupAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_PUBLIC)
                 .session(sessionAdmin).with(csrf())
         ).andExpect(status().isOk()).andReturn();
@@ -129,7 +120,7 @@ public class ServiceGroupResourceIntegrationTest {
     @Test
     public void getServiceGroupById() throws Exception {
         // given when
-        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
+        MockHttpSession sessionAdmin = loginWithUserGroupAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_PUBLIC + "/100000")
                 .session(sessionAdmin).with(csrf())).
                 andExpect(status().isOk()).andReturn();
@@ -140,8 +131,8 @@ public class ServiceGroupResourceIntegrationTest {
 
         assertNotNull(res);
         assertEquals(100000, res.getId().intValue());
-        assertEquals(PARTICIPANT_IDENTIFIER, res.getParticipantIdentifier());
-        assertEquals(PARTICIPANT_SCHEME, res.getParticipantScheme());
+        assertEquals(IDENTIFIER_VALUE, res.getParticipantIdentifier());
+        assertEquals(IDENTIFIER_SCHEME, res.getParticipantScheme());
         assertEquals(1, res.getUsers().size());
         assertNotNull(res.getUsers().get(0).getUserId());
 
@@ -154,12 +145,12 @@ public class ServiceGroupResourceIntegrationTest {
     @Test
     public void getExtensionServiceGroupById() throws Exception {
 
-        DBServiceGroup sg = serviceGroupDao.findServiceGroup(PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME).get();
+        DBResource sg = serviceGroupDao.findServiceGroup(IDENTIFIER_VALUE, IDENTIFIER_SCHEME).get();
         sg.setExtension(validExtension.getBytes());
         serviceGroupDao.update(sg);
 
         // given when
-        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
+        MockHttpSession sessionAdmin = loginWithUserGroupAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_PUBLIC + "/100000/extension")
                 .session(sessionAdmin).with(csrf()))
                 .andExpect(status().isOk()).andReturn();
@@ -170,8 +161,8 @@ public class ServiceGroupResourceIntegrationTest {
 
         assertNotNull(res);
         assertEquals(100000, res.getServiceGroupId().longValue());
-        assertEquals(PARTICIPANT_IDENTIFIER, res.getParticipantIdentifier());
-        assertEquals(PARTICIPANT_SCHEME, res.getParticipantScheme());
+        assertEquals(IDENTIFIER_VALUE, res.getParticipantIdentifier());
+        assertEquals(IDENTIFIER_SCHEME, res.getParticipantScheme());
         assertEquals(new String(sg.getExtension()), res.getExtension());
     }
 
@@ -190,7 +181,7 @@ public class ServiceGroupResourceIntegrationTest {
         validate.setExtension(validExtension + "<ADFA>sdfadsf");
 
         // given when
-        MockHttpSession sessionAdmin = loginWithSMPAdmin(mvc);
+        MockHttpSession sessionAdmin = loginWithUserGroupAdmin(mvc);
         MvcResult result = mvc.perform(post(PATH_PUBLIC + "/extension/validate")
                 .session(sessionAdmin)
                 .header("Content-Type","application/json")

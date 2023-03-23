@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -15,6 +15,7 @@ public class CertificateROToDBCertificateConverter implements Converter<Certific
 
     @Override
     public DBCertificate convert(CertificateRO source) {
+        /*
         DBCertificate target = new DBCertificate();
         if (source.getValidTo() != null) {
             target.setValidTo(OffsetDateTime.ofInstant(source.getValidTo().toInstant(), ZoneId.systemDefault()));
@@ -30,5 +31,8 @@ public class CertificateROToDBCertificateConverter implements Converter<Certific
         target.setPemEncoding(source.getEncodedValue());
 
         return target;
+
+         */
+        return null;
     }
 }

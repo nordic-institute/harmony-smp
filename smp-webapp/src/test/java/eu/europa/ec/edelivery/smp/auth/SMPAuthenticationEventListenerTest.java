@@ -26,7 +26,7 @@ public class SMPAuthenticationEventListenerTest {
     @Test
     public void getSessionTimeoutForRolesSMPAdmin() {
         // Given
-        Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_SMP_ADMIN);
+        Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_USER);
         // when then
         assertTimeoutForAuthorities(authorities, true);
     }
@@ -42,7 +42,7 @@ public class SMPAuthenticationEventListenerTest {
     @Test
     public void getSessionTimeoutForRolesUser() {
         // Given
-        Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_SERVICE_GROUP);
+        Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_USER);
         // when then
         assertTimeoutForAuthorities(authorities, false);
     }
@@ -50,7 +50,7 @@ public class SMPAuthenticationEventListenerTest {
     @Test
     public void getSessionTimeoutForRolesUserAndSystem() {
         // Given
-        Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_SERVICE_GROUP,SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN);
+        Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_USER,SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN);
         // when then
         assertTimeoutForAuthorities(authorities, true);
     }
@@ -58,7 +58,7 @@ public class SMPAuthenticationEventListenerTest {
     @Test
     public void getSessionTimeoutForRolesUserAndSMP() {
         // Given
-        Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_SERVICE_GROUP,SMPAuthority.S_AUTHORITY_SMP_ADMIN);
+        Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_USER);
         // when then
         assertTimeoutForAuthorities(authorities, true);
     }

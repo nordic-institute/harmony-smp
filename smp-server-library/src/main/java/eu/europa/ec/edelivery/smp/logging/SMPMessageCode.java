@@ -45,7 +45,7 @@ public enum SMPMessageCode implements MessageCode {
     SEC_UNSECURED_LOGIN_ALLOWED("SEC-001", "Unsecure login is allowed, no authentication will be performed"),
     SEC_USER_AUTHENTICATED("SEC-002", "User [{}] is authenticated with role [{}]."),
     SEC_USER_NOT_EXISTS("SEC-003", "User [{}] not exists."),
-    SEC_INVALID_PASSWORD("SEC-004", "User [{}] has invalid password."),
+        SEC_INVALID_USER_CREDENTIALS("SEC-004", "User [{}] has invalid credential [{}] type [{}] for target [{}]."),
     SEC_USER_CERT_NOT_EXISTS("SEC-005", "User certificate [{}] not exists."),
     SEC_USER_CERT_INVALID("SEC-006", "User certificate [{}] is invalid: [{}]."),
     SEC_USER_NOT_AUTHENTICATED("SEC-007", "User [{}]. Reason: [{}]."),

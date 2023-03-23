@@ -1,11 +1,12 @@
 package eu.europa.ec.edelivery.smp.sml;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 
 public class SmlConnectorTestConstants {
-    protected static final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
+    protected static final Identifier PARTICIPANT_ID = new Identifier("sample:value", "sample:scheme");
     protected static final DBDomain DEFAULT_DOMAIN;
 
     static {

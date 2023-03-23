@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -29,7 +29,6 @@ public class SMPAuthorizationServiceTest {
     UserRO user = null;
     SecurityContext mockSecurityContextSystemAdmin = null;
     SecurityContext mockSecurityContextSMPAdmin = null;
-    SecurityContext mockSecurityContextSGAdmin = null;
     ServiceGroupService serviceGroupService = Mockito.mock(ServiceGroupService.class);
     ConversionService conversionService = Mockito.mock(ConversionService.class);
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
@@ -48,11 +47,8 @@ public class SMPAuthorizationServiceTest {
             setUsername("sys_admin");
         }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN));
         SMPUserDetails smpUserDetails = new SMPUserDetails(new DBUser() {{
-            setUsername("smp_admin");
-        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SMP_ADMIN));
-        SMPUserDetails sgUserDetails = new SMPUserDetails(new DBUser() {{
-            setUsername("smp_admin");
-        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SERVICE_GROUP));
+            setUsername("smp_user");
+        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_USER));
 
         mockSecurityContextSystemAdmin = new SecurityContext() {
             SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", sysUserDetails);
@@ -78,24 +74,13 @@ public class SMPAuthorizationServiceTest {
             public void setAuthentication(Authentication authentication) {
             }
         };
-        mockSecurityContextSGAdmin = new SecurityContext() {
-            SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", sgUserDetails);
 
-            @Override
-            public Authentication getAuthentication() {
-                return smpa;
-            }
-
-            @Override
-            public void setAuthentication(Authentication authentication) {
-            }
-        };
     }
 
     @Test
     public void isSystemAdministratorNotLoggedIn() {
         // given
-        SecurityContextHolder.setContext(mockSecurityContextSGAdmin);
+        SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
         // when then
         boolean bVal = testInstance.isSystemAdministrator();
         assertFalse(bVal);
@@ -111,7 +96,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test(expected = BadCredentialsException.class)
-    public void isCurrentlyLoggedInNotLogedIn() {
+    public void isCurrentlyLoggedInNotLoggedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
 
