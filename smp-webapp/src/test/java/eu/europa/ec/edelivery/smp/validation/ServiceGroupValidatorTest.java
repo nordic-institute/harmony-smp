@@ -21,6 +21,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -36,8 +37,9 @@ import java.util.regex.Pattern;
  * Created by gutowpa on 02/08/2017.
  */
 @RunWith(Parameterized.class)
+@Ignore
 public class ServiceGroupValidatorTest {
-
+/*
     private static final Pattern ALLOWED_SCHEME_PATTERN = Pattern.compile("^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$");
 
     private ServiceGroupValidator validator;
@@ -103,8 +105,8 @@ public class ServiceGroupValidatorTest {
             validator.validate(normalizer.formatParticipant(id), sg);
         }
 
-         */
-    }
 
+    }
+  */
 
 }

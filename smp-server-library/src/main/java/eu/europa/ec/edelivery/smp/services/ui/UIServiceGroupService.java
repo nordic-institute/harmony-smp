@@ -127,6 +127,7 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
 
     @Transactional
     public ServiceGroupValidationRO getServiceGroupExtensionById(Long serviceGroupId) {
+        /*
         ServiceGroupValidationRO ex = new ServiceGroupValidationRO();
         DBResource dbServiceGroup = getDatabaseDao().find(serviceGroupId);
         ex.setServiceGroupId(dbServiceGroup.getId());
@@ -137,6 +138,9 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
             ex.setExtension(getConvertExtensionToString(serviceGroupId, dbServiceGroup.getExtension()));
         }
         return ex;
+
+         */
+        return null;
     }
 
     private String getConvertExtensionToString(Long id, byte[] extension) {
@@ -270,12 +274,14 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
                         serviceGroupRO.getParticipantIdentifier(), serviceGroupRO.getParticipantScheme());
             }
         });
-*/
+
         // add extension
         if (serviceGroupRO.getExtension() != null) {
             byte[] buff = validateExtension(serviceGroupRO);
             dbServiceGroup.setExtension(buff);
         }
+
+ */
         getDatabaseDao().persistFlushDetach(dbServiceGroup);
         return listOfActions;
     }
@@ -422,14 +428,14 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
             }
 
         });
-*/
+
         //
         // add extension
         if (serviceGroupRO.getExtensionStatus() != EntityROStatus.PERSISTED.getStatusNumber()) {
             byte[] buff = validateExtension(serviceGroupRO);
             dbServiceGroup.setExtension(buff);
         }
-
+*/
 
         // persist it to database
         getDatabaseDao().update(dbServiceGroup);

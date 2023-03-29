@@ -1,6 +1,6 @@
 import {AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {GlobalLookups} from "../../common/global-lookups";
 import {HttpClient} from "@angular/common/http";
@@ -31,7 +31,7 @@ export class KeystoreEditDialogComponent implements AfterViewChecked{
               private dialogRef: MatDialogRef<KeystoreEditDialogComponent>,
               private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private changeDetector: ChangeDetectorRef) {
     this.formTitle = "Keystore edit dialog";
   }

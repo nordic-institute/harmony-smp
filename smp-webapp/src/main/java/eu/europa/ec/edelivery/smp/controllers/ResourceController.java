@@ -5,20 +5,24 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.security.DomainGuard;
-import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceService;
+import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
-import eu.europa.ec.edelivery.smp.servlet.WebConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +44,10 @@ import static org.apache.commons.lang3.StringUtils.lowerCase;
 public class ResourceController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceController.class);
-    private static final List<String> SUPPORTED_HEADERS = Arrays.asList(HTTP_PARAM_DOMAIN, HTTP_PARAM_OWNER, HTTP_PARAM_RESOURCE_TYPE);
+    // set them to lower case for fast comparing with the  http headers
+    private static final List<String> SUPPORTED_HEADERS = Arrays.asList(lowerCase(HTTP_PARAM_DOMAIN),
+            lowerCase(HTTP_PARAM_OWNER),
+            lowerCase(HTTP_PARAM_RESOURCE_TYPE));
     final ResourceService resourceService;
     final DomainGuard domainGuard;
 
@@ -87,13 +94,21 @@ public class ResourceController {
         handleRequest(httpReq, httpRes, Arrays.asList(parameter1, parameter2, parameter3, parameter4, parameter5));
     }
 
+    /**
+     * Method validates the domain authorization for the requester user and action ad handles the request
+     *
+     * @param httpReq        a http request
+     * @param httpRes        a http response to write the result
+     * @param pathParameters path parameters
+     */
     protected void handleRequest(HttpServletRequest httpReq, HttpServletResponse httpRes, List<String> pathParameters) {
 
         ResourceRequest resourceRequest = fromServletRequest(httpReq, pathParameters);
+        LOG.debug("Got resource request [{}]", resourceRequest);
         SMPUserDetails user = authorizeForDomain(resourceRequest);
         ResourceResponse resourceResponse = fromServletResponse(httpRes);
-
-        resourceService.handleRequest(user,resourceRequest, resourceResponse );
+        // handle the request
+        resourceService.handleRequest(user, resourceRequest, resourceResponse);
     }
 
     /**
@@ -116,6 +131,13 @@ public class ResourceController {
         return user;
     }
 
+    /**
+     * Method builds resource request from the http requests and url path segment parameters
+     *
+     * @param httpReq        http request
+     * @param pathParameters path parameters
+     * @return the resource request.
+     */
 
     protected ResourceRequest fromServletRequest(HttpServletRequest httpReq, List<String> pathParameters) {
         ResourceAction resourceAction = ResourceAction.resolveForHeader(httpReq.getMethod());
@@ -130,11 +152,11 @@ public class ResourceController {
 
         // note: If there are multiple headers with the same name, this method returns the first header in the request.
         Map<String, String> headersMap = Collections.list(httpReq.getHeaderNames()).stream()
-                .map(StringUtils::lowerCase )
+                .map(StringUtils::lowerCase)
                 .filter(SUPPORTED_HEADERS::contains)
                 .collect(Collectors.toMap(name -> name, httpReq::getHeader));
 
-        return new ResourceRequest(resourceAction,headersMap, pathParameters, inputStream);
+        return new ResourceRequest(resourceAction, headersMap, pathParameters, inputStream);
     }
 
     protected ResourceResponse fromServletResponse(HttpServletResponse httpRes) {

@@ -1,4 +1,3 @@
-package eu.europa.ec.edelivery.smp.data.model.doc;
 /*
  * Copyright 2017 European Commission | CEF eDelivery
  *
@@ -11,6 +10,8 @@ package eu.europa.ec.edelivery.smp.data.model.doc;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
+
+package eu.europa.ec.edelivery.smp.data.model.doc;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
@@ -64,27 +65,6 @@ public class DBResource extends BaseEntity {
     @ColumnDescription(comment = "Unique ServiceGroup id")
     Long id;
 
-    // resource groups
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "SMP_GROUP_RESOURCE",
-            joinColumns = @JoinColumn(name = "FK_GROUP_ID"),
-            inverseJoinColumns = @JoinColumn(name = "FK_RESOURCE_ID")
-    )
-    private List<DBGroup> groups = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FK_DOREDEF_ID")
-    private DBDomainResourceDef domainResourceDef;
-
-
-    // Resource members
-    @OneToMany(
-            mappedBy = "resource",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
-    )
-    List<DBResourceMember> resourceMembers = new ArrayList<>();
-
     @Column(name = "IDENTIFIER_VALUE", length = CommonColumnsLengths.MAX_IDENTIFIER_VALUE_VALUE_LENGTH, nullable = false)
     String identifierValue;
 
@@ -94,17 +74,44 @@ public class DBResource extends BaseEntity {
     @Column(name = "SML_REGISTERED", nullable = false)
     private boolean smlRegistered = false;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "FK_DOCUMENT_ID")
-    private DBDocument document;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "VISIBILITY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
     private VisibilityType visibility = VisibilityType.PUBLIC;
 
+    // The domain group list which handles the resource
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "SMP_GROUP_RESOURCE",
+            joinColumns = @JoinColumn(name = "FK_GROUP_ID"),
+            inverseJoinColumns = @JoinColumn(name = "FK_RESOURCE_ID")
+    )
+    private List<DBGroup> groups = new ArrayList<>();
 
-    @OneToOne(mappedBy = "dbServiceGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private DBServiceGroupExtension serviceGroupExtension;
+    // The domain to which the resource belongs
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "FK_DOREDEF_ID")
+    private DBDomainResourceDef domainResourceDef;
+
+
+    // set only the remove to cascade!
+    @OneToMany(
+            mappedBy = "resource",
+            cascade = CascadeType.REMOVE,
+            fetch = FetchType.LAZY
+    )
+    private List<DBResourceMember> resourceMembers = new ArrayList<>();
+
+    // set only the remove to cascade!
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "FK_DOCUMENT_ID")
+    private DBDocument document;
+
+
+    @OneToMany(
+            mappedBy = "resource",
+            cascade = CascadeType.REMOVE,
+            fetch = FetchType.LAZY
+    )
+    private List<DBSubresource> subresources = new ArrayList<>();
 
     @Override
     public Long getId() {
@@ -152,8 +159,8 @@ public class DBResource extends BaseEntity {
     }
 
 
-    public DBServiceGroupExtension getServiceGroupExtension() {
-        return serviceGroupExtension;
+    public List<DBSubresource> getSubresources() {
+        return subresources;
     }
 
     public DBDocument getDocument() {
@@ -187,38 +194,6 @@ public class DBResource extends BaseEntity {
     public void setSmlRegistered(boolean smlRegistered) {
         this.smlRegistered = smlRegistered;
     }
-
-    public void setServiceGroupExtension(DBServiceGroupExtension serviceGroupExtension) {
-        if (serviceGroupExtension == null) {
-            if (this.serviceGroupExtension != null) {
-                this.serviceGroupExtension.setDbServiceGroup(null);
-            }
-        } else {
-            serviceGroupExtension.setDbServiceGroup(this);
-        }
-        this.serviceGroupExtension = serviceGroupExtension;
-    }
-
-    @Transient
-    public byte[] getExtension() {
-        return getServiceGroupExtension() != null ? getServiceGroupExtension().getExtension() : null;
-    }
-
-    public void setExtension(byte[] extension) {
-
-        if (extension == null) {
-            if (this.serviceGroupExtension != null) {
-                this.serviceGroupExtension.setExtension(null);
-            }
-        } else {
-            if (this.serviceGroupExtension == null) {
-                this.serviceGroupExtension = new DBServiceGroupExtension();
-                this.serviceGroupExtension.setDbServiceGroup(this);
-            }
-            this.serviceGroupExtension.setExtension(extension);
-        }
-    }
-
 
     /**
      * Id is database suragete id + natural key!

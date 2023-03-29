@@ -102,7 +102,7 @@ public class SessionSecurityUtilsTest {
     @Test
     public void getSessionAuthenticationClasses() {
         List<Class> list = SessionSecurityUtils.getSessionAuthenticationClasses();
-        Assert.assertEquals(2, list.size());
+        Assert.assertEquals(4, list.size());
         Assert.assertTrue(list.contains(SMPAuthenticationToken.class));
         Assert.assertTrue(list.contains(CasAuthenticationToken.class));
     }

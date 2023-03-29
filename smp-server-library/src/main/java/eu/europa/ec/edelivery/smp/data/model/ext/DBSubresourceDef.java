@@ -11,7 +11,6 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_RESOURCE_DEF_URL_SEGMENT;
 
 /**
  * Database table containing registered extensions data/description
@@ -27,11 +26,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_RESOURCE_DEF_
                 @Index(name = "SMP_RESDEF_UNIQ_IDENTIFIER", columnList = "IDENTIFIER", unique = true)
 })
 @org.hibernate.annotations.Table(appliesTo = "SMP_SUBRESOURCE_DEF", comment = "SMP extension subresource definitions")
-@NamedQueries({
-        @NamedQuery(name = QUERY_SUBRESOURCE_DEF_ALL, query = "SELECT d FROM DBSubresourceDef d order by d.id asc"),
-        @NamedQuery(name = QUERY_SUBRESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBSubresourceDef d WHERE d.identifier = :identifier"),
-        @NamedQuery(name = QUERY_SUBRESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBSubresourceDef d WHERE d.urlSegment = :url_segment"),
-})
+@NamedQuery(name = QUERY_SUBRESOURCE_DEF_ALL, query = "SELECT d FROM DBSubresourceDef d order by d.id asc")
+@NamedQuery(name = QUERY_SUBRESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBSubresourceDef d WHERE d.identifier = :identifier")
+@NamedQuery(name = QUERY_SUBRESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBSubresourceDef d WHERE d.urlSegment = :url_segment")
 public class DBSubresourceDef extends BaseEntity {
 
     @Id
@@ -49,7 +46,6 @@ public class DBSubresourceDef extends BaseEntity {
     @Column(name = "DESCRIPTION", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
     private String description;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FK_RESOURCE_DEF_ID")
     private DBResourceDef resourceDef;
@@ -59,7 +55,7 @@ public class DBSubresourceDef extends BaseEntity {
 
     @Column(name = "URL_SEGMENT", length = CommonColumnsLengths.MAX_TEXT_LENGTH_64)
     @ColumnDescription(comment = "Subresources are published under url_segment. It must be unique for resource type")
-    String urlSegment;
+    private String urlSegment;
 
 
     @Override

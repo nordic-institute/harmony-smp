@@ -1,11 +1,9 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
@@ -17,8 +15,8 @@ import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.security.ResourceGuard;
-import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SML_INVALID_IDENTIFIER;
 import static eu.europa.ec.edelivery.smp.logging.SMPLogger.SECURITY_MARKER;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.join;
@@ -104,11 +103,13 @@ public class ResourceResolverService {
         }
 
         Identifier resourceId = identifierService.normalizeParticipantIdentifier(currentParameter);
+        // validate identifier
+        validateResourceIdentifier(resourceId);
         DBResource resource = resolveResourceIdentifier(domain, resourceDef, resourceId);
-        if (resource == null){
+        if (resource == null) {
             // the resource must be found because it is not create action nor the last parameter to be resolved
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE
-                    || pathParameters.size() > iParameterIndex+1){
+                    || pathParameters.size() > iParameterIndex + 1) {
                 throw new SMPRuntimeException(ErrorCode.SG_NOT_EXISTS, resourceId.getValue(), resourceId.getScheme());
             }
             resource = createNewResource(resourceId, resourceDef, domain);
@@ -119,7 +120,7 @@ public class ResourceResolverService {
             LOG.info(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]", user, resourceRequest.getAction(), resource);
             throw new SMPRuntimeException(ErrorCode.USER_IS_NOT_OWNER, user.getUsername(), resource.getIdentifierValue(), resource.getIdentifierScheme());
         } else {
-            LOG.info(SECURITY_MARKER,"User: [{}] is authorized for action [{}] on the resource [{}]", user, resourceRequest.getAction(), resource);
+            LOG.info(SECURITY_MARKER, "User: [{}] is authorized for action [{}] on the resource [{}]", user, resourceRequest.getAction(), resource);
         }
 
         if (pathParameters.size() == ++iParameterIndex) {
@@ -128,10 +129,22 @@ public class ResourceResolverService {
         }
 
         if (pathParameters.size() == iParameterIndex + 2) {
-            DBSubresource subresource = resolveSubResourceIdentifier(resource, pathParameters.get(iParameterIndex), pathParameters.get(++iParameterIndex));
-            LOG.info("Got subresource [{}] for def [{}]", subresource, subresource.getSubresourceDef());
+            String subResourceDefUrl = pathParameters.get(iParameterIndex);
+            // test if subresourceDef exists
+            DBSubresourceDef subresourceDef = getSubresource(resourceDef, subResourceDefUrl);
+
+            Identifier subResourceId = identifierService.normalizeParticipantIdentifier(pathParameters.get(++iParameterIndex));
+            DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId);
+            LOG.debug("Got subresource [{}]", subresource);
+            if (subresource == null) {
+                if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
+                    throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS, resource.getIdentifierValue(), resource.getIdentifierScheme(), resourceId.getValue(), resourceId.getScheme());
+                }
+                subresource = createNewSubResource(subResourceId, resource, subresourceDef);
+            }
+
             locationVector.setSubresource(subresource);
-            locationVector.setSubResourceDef(subresource.getSubresourceDef());
+            locationVector.setSubResourceDef(subresourceDef);
             locationVector.setResolved(true);
             return locationVector;
         }
@@ -141,9 +154,10 @@ public class ResourceResolverService {
 
     /**
      * Method executes basic  resource request data validation
+     *
      * @param resourceRequest the entity to validated.
      */
-    public void validateRequestData(ResourceRequest resourceRequest){
+    public void validateRequestData(ResourceRequest resourceRequest) {
         List<String> pathParameters = resourceRequest.getUrlPathParameters();
         if (pathParameters == null || pathParameters.isEmpty()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Null", "Resource Location vector coordinates must not be null!");
@@ -222,7 +236,7 @@ public class ResourceResolverService {
         return resourceDefs.get(0);
     }
 
-    public DBResource resolveResourceIdentifier(DBDomain domain, DBResourceDef resourceDef,  Identifier resourceIdentifier) {
+    public DBResource resolveResourceIdentifier(DBDomain domain, DBResourceDef resourceDef, Identifier resourceIdentifier) {
         LOG.info("Resolve resourceIdentifier for parameter [{}]", resourceIdentifier);
         // if domain is null get default domain
         Optional<DBResource> optResource = resourceDao.getResource(resourceIdentifier.getValue(), resourceIdentifier.getScheme(), resourceDef, domain);
@@ -234,21 +248,16 @@ public class ResourceResolverService {
      *
      * @param resource
      * @param subresourceDefCtx
-     * @param subresIdentifier
+     * @param subResourceId
      * @return
      */
-    public DBSubresource resolveSubResourceIdentifier(DBResource resource, String subresourceDefCtx, String subresIdentifier) {
-        LOG.info("Resolve subResourceIdentifier for doctType [{}] identifier [{}]", subresourceDefCtx, subresIdentifier);
-        Identifier resourceId = identifierService.normalizeDocumentIdentifier(subresIdentifier);
-
-
-        Optional<DBSubresource> optSubResource = subresourceDao.getSubResource(resourceId, resource, subresourceDefCtx);
-
-        return optSubResource.orElseThrow(() ->
-                new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS, resource.getIdentifierValue(), resource.getIdentifierScheme(), resourceId.getValue(), resourceId.getScheme()));
+    public DBSubresource resolveSubResourceIdentifier(DBResource resource, String subresourceDefCtx, Identifier subResourceId) {
+        LOG.info("Resolve subResourceIdentifier for doctType [{}] identifier [{}]", subresourceDefCtx, subResourceId);
+        Optional<DBSubresource> optSubResource = subresourceDao.getSubResource(subResourceId, resource, subresourceDefCtx);
+        return optSubResource.orElse(null);
     }
 
-    public DBResource createNewResource(Identifier resourceId, DBResourceDef resourceDef, DBDomain domain ){
+    public DBResource createNewResource(Identifier resourceId, DBResourceDef resourceDef, DBDomain domain) {
         DBResource resource = new DBResource();
         resource.setIdentifierValue(resourceId.getValue());
         resource.setIdentifierScheme(resourceId.getScheme());
@@ -257,6 +266,34 @@ public class ResourceResolverService {
         resource.getDocument().setMimeType(resourceDef.getMimeType());
         resource.setDomainResourceDef(domainResourceDefDao.getResourceDefConfigurationForDomainAndResourceDef(domain, resourceDef).get());
         return resource;
+    }
+
+    public DBSubresource createNewSubResource(Identifier resourceId, DBResource resource, DBSubresourceDef subresourceDef) {
+        DBSubresource subresource = new DBSubresource();
+        subresource.setIdentifierValue(resourceId.getValue());
+        subresource.setIdentifierScheme(resourceId.getScheme());
+        subresource.setResource(resource);
+        subresource.setSubresourceDef(subresourceDef);
+        subresource.setDocument(new DBDocument());
+        subresource.getDocument().setName(subresourceDef.getName());
+        subresource.getDocument().setMimeType(subresourceDef.getMimeType());
+        return subresource;
+    }
+
+    public DBSubresourceDef getSubresource(DBResourceDef resourceDef, String urlPathSegment) {
+        return resourceDef.getSubresources()
+                .stream()
+                .filter(subresourceDef -> StringUtils.equals(subresourceDef.getUrlSegment(), urlPathSegment))
+                .findFirst().orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST,
+                        urlPathSegment, "Subresource [" + urlPathSegment + "] does not exist for resource type [" + resourceDef.getName() + "]"));
+    }
+
+    public void validateResourceIdentifier(Identifier identifier) {
+        LOG.debug("Validate resource identifier: [{}]", identifier);
+        if (configurationService.getParticipantSchemeMandatory() && StringUtils.isBlank(identifier.getScheme())) {
+            throw new SMPRuntimeException(SML_INVALID_IDENTIFIER, identifier.getValue());
+        }
+
     }
 
 }

@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateService} from "../../user/certificate.service";
@@ -18,7 +18,7 @@ import {KeystoreService} from "../keystore.service";
 })
 export class KeystoreImportDialogComponent {
   formTitle: string;
-  dialogForm: FormGroup;
+  dialogForm: UntypedFormGroup;
 
   selectedFile: File;
 
@@ -29,14 +29,14 @@ export class KeystoreImportDialogComponent {
               private dialogRef: MatDialogRef<KeystoreImportDialogComponent>,
               private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
 
     this.formTitle = "Keystore import dialog";
 
     this.dialogForm = fb.group({
-      'file': new FormControl({value: ''}, [Validators.required]),
-      'keystoreType': new FormControl({value: ''}, [Validators.required]),
-      'password': new FormControl({value: ''}, [Validators.required]),
+      'file': new UntypedFormControl({value: ''}, [Validators.required]),
+      'keystoreType': new UntypedFormControl({value: ''}, [Validators.required]),
+      'password': new UntypedFormControl({value: ''}, [Validators.required]),
     });
     this.dialogForm.controls['keystoreType'].setValue("JKS");
     this.dialogForm.controls['password'].setValue("");

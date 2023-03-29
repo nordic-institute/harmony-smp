@@ -76,15 +76,11 @@ public class SMPAuthenticationProviderForUI extends AbstracdtAuthenticationProvi
                 throw BAD_CREDENTIALS_EXCEPTION;
             }
             credential = dbCredential.get();
-        } catch (AuthenticationException ex) {
-            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
-            delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
-            throw BAD_CREDENTIALS_EXCEPTION;
-
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, username, ExceptionUtils.getRootCause(ex), ex);
             delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
             throw BAD_CREDENTIALS_EXCEPTION;
+
         }
 
 
@@ -98,7 +94,7 @@ public class SMPAuthenticationProviderForUI extends AbstracdtAuthenticationProvi
                 SecurityUtils.generatePrivateSymmetricKey(SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode()),
                 Collections.singletonList(authority));
 
-        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(username, userCredentialToken,
+        UILoginAuthenticationToken smpAuthenticationToken = new UILoginAuthenticationToken(username, userCredentialToken,
                 userDetails);
         try {
             if (!BCrypt.checkpw(userCredentialToken, credential.getValue())) {

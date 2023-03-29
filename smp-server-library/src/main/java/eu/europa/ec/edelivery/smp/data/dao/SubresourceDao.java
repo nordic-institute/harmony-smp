@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,5 +81,8 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
         return query.getResultList();
     }
 
-
+    @Transactional
+    public void remove(DBSubresource subresource) {
+        removeById(subresource.getId());
+    }
 }

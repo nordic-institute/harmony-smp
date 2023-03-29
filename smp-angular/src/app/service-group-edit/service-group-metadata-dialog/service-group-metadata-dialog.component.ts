@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {ServiceMetadataEditRo} from "../service-metadata-edit-ro.model";
@@ -31,7 +31,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   formTitle: string;
   current: ServiceMetadataEditRo & { confirmation?: string };
   currentServiceGroup: ServiceGroupEditRo;
-  dialogForm: FormGroup;
+  dialogForm: UntypedFormGroup;
   metadataValidationMessage: string;
   xmlServiceMetadataObserver: Observable<ServiceMetadataEditRo>;
   isMetadataValid: boolean = true;
@@ -43,7 +43,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
               private dialogRef: MatDialogRef<ServiceGroupMetadataDialogComponent>,
               private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
 
     this.editMode = data.edit;
     this.formTitle = !!data.metadata ? ServiceGroupMetadataDialogComponent.EDIT_MODE : ServiceGroupMetadataDialogComponent.NEW_MODE;
@@ -63,18 +63,18 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
       };
 
     this.dialogForm = fb.group({
-      'participantIdentifier': new FormControl({value: this.currentServiceGroup.participantIdentifier, disabled: true}),
-      'participantScheme': new FormControl({value: this.currentServiceGroup.participantScheme, disabled: true}),
-      'domainCode': new FormControl({}, [Validators.required]),
+      'participantIdentifier': new UntypedFormControl({value: this.currentServiceGroup.participantIdentifier, disabled: true}),
+      'participantScheme': new UntypedFormControl({value: this.currentServiceGroup.participantScheme, disabled: true}),
+      'domainCode': new UntypedFormControl({}, [Validators.required]),
 
-      'documentIdentifier': new FormControl({value: this.current.documentIdentifier, disabled: this.editMode},
+      'documentIdentifier': new UntypedFormControl({value: this.current.documentIdentifier, disabled: this.editMode},
         [Validators.required]),
-      'documentIdentifierScheme': new FormControl({
+      'documentIdentifierScheme': new UntypedFormControl({
           value: this.current.documentIdentifierScheme,
           disabled: this.editMode
         },
         []),
-      'xmlContent': new FormControl({value: ''}, [Validators.required]),
+      'xmlContent': new UntypedFormControl({value: ''}, [Validators.required]),
     });
 
     // update values
@@ -97,7 +97,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
 
   }
 
-  checkValidity(g: FormGroup) {
+  checkValidity(g: UntypedFormGroup) {
     Object.keys(g.controls).forEach(key => {
       g.get(key).markAsDirty();
     });

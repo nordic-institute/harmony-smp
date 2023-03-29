@@ -156,13 +156,17 @@ public class TestDBUtils {
 
 
     public static DBResource createDBResource(String id, String sch, boolean withExtension) {
-        DBResource grp = new DBResource();
-        grp.setIdentifierValue(id);
-        grp.setIdentifierScheme(sch);
+        DBResource resource = new DBResource();
+        resource.setIdentifierValue(id);
+        resource.setIdentifierScheme(sch);
         if (withExtension) {
-            grp.setExtension(generateExtension());
+            DBDocument document = createDBDocument();
+            DBDocumentVersion documentVersion = createDBDocumentVersion();
+            createDBDocumentVersion().setContent(generateExtension());
+            document.addNewDocumentVersion(documentVersion);
+            resource.setDocument(document);
         }
-        return grp;
+        return resource;
     }
 
     public static DBDocument createDBDocument() {

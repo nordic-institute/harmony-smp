@@ -23,7 +23,7 @@ import 'hammerjs';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
-import {HomeComponent} from './home/home.component';
+import {SidenavComponent} from './window/sidenav/sidenav.component';
 import {AuthenticatedGuard} from './guards/authenticated.guard';
 import {AuthorizedGuard} from './guards/authorized.guard';
 import {routing} from './app.routes';
@@ -53,10 +53,8 @@ import {CancelDialogComponent} from './common/dialogs/cancel-dialog/cancel-dialo
 import {DirtyGuard} from './common/dirty.guard';
 import {SaveDialogComponent} from './common/dialogs/save-dialog/save-dialog.component';
 import {ColumnPickerComponent} from './common/column-picker/column-picker.component';
-import {PageHelperComponent} from './common/page-helper/page-helper.component';
 import {SharedModule} from './common/module/shared.module';
 import {ClearInvalidDirective} from './custom-date/clear-invalid.directive';
-import {PageHeaderComponent} from './common/page-header/page-header.component';
 import {DomainSelectorComponent} from './common/domain-selector/domain-selector.component';
 import {SearchTableComponent} from './common/search-table/search-table.component';
 import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-group-metadata-dialog/service-group-metadata-dialog.component';
@@ -90,13 +88,27 @@ import {MatCheckbox, MatCheckboxModule} from "@angular/material/checkbox";
 import {AutoFocusDirective} from "./common/directive/autofocus/auto-focus.directive";
 import {ObjectPropertiesDialogComponent} from "./common/dialogs/object-properties-dialog/object-properties-dialog.component";
 import {MatTableModule} from "@angular/material/table";
+import {ToolbarComponent} from "./window/toolbar/toolbar.component";
+import {SpacerComponent} from "./common/spacer/spacer.component";
+import {BreadcrumbComponent} from "./window/breadcrumb/breadcrumb.component";
+import {BreadcrumbItemComponent} from "./window/breadcrumb/breadcrumb-item/breadcrumb-item.component";
+import {MatTreeModule} from "@angular/material/tree";
+import {NavTree} from "./window/sidenav/nav-tree/nav-tree.component";
+import {NavTreeMenu} from "./window/sidenav/nav-tree-menu/nav-tree-menu.component";
+import {NavigationModel} from "./window/sidenav/navigation-model.service";
 
 
 @NgModule({
   declarations: [
     AppComponent,
+    NavTree,
+    NavTreeMenu,
+    BreadcrumbComponent,
+    BreadcrumbItemComponent,
+    SpacerComponent,
+    ToolbarComponent,
     LoginComponent,
-    HomeComponent,
+    SidenavComponent,
     ServiceGroupEditComponent,
     ServiceGroupSearchComponent,
     AlertComponent,
@@ -123,9 +135,7 @@ import {MatTableModule} from "@angular/material/table";
     ServiceGroupExtensionWizardDialogComponent,
     ServiceMetadataWizardDialogComponent,
     ColumnPickerComponent,
-    PageHelperComponent,
     ClearInvalidDirective,
-    PageHeaderComponent,
     DomainSelectorComponent,
     SearchTableComponent,
     UserDetailsDialogComponent,
@@ -171,11 +181,13 @@ import {MatTableModule} from "@angular/material/table";
     SharedModule,
     MatExpansionModule,
     MatTableModule,
+    MatTreeModule,
   ],
   providers: [
     AuthenticatedGuard,
     AuthorizedGuard,
     AuthorizedAdminGuard,
+    NavigationModel,
     DirtyGuard,
     HttpEventService,
     SecurityService,

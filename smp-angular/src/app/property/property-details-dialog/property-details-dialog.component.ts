@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 import {PropertyRo} from "../property-ro.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
@@ -24,7 +24,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
   editMode: boolean;
   formTitle: string;
   current: PropertyRo & { confirmation?: string };
-  propertyForm: FormGroup;
+  propertyForm: UntypedFormGroup;
   disabled: true;
   showSpinner: boolean = false;
 
@@ -35,7 +35,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<PropertyDetailsDialogComponent>,
     private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder) {
+    private fb: UntypedFormBuilder) {
 
     this.editMode = data.edit;
     this.formTitle = this.editMode ? PropertyDetailsDialogComponent.EDIT_MODE : PropertyDetailsDialogComponent.NEW_MODE;
@@ -53,12 +53,12 @@ export class PropertyDetailsDialogComponent implements OnInit {
       };
 
     this.propertyForm = fb.group({
-      'property': new FormControl({value: '', readonly: true}, null),
-      'desc': new FormControl({value: '', readonly: true}, null),
-      'type': new FormControl({value: '', readonly: true}, null),
-      'value': new FormControl({value: ''}),
-      'valuePattern': new FormControl({value: ''}),
-      'errorMessage': new FormControl({value: ''}),
+      'property': new UntypedFormControl({value: '', readonly: true}, null),
+      'desc': new UntypedFormControl({value: '', readonly: true}, null),
+      'type': new UntypedFormControl({value: '', readonly: true}, null),
+      'value': new UntypedFormControl({value: ''}),
+      'valuePattern': new UntypedFormControl({value: ''}),
+      'errorMessage': new UntypedFormControl({value: ''}),
 
     });
 
@@ -98,7 +98,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
     });
   }
 
-  checkValidity(g: FormGroup) {
+  checkValidity(g: UntypedFormGroup) {
     Object.keys(g.controls).forEach(key => {
       g.get(key).markAsDirty();
     });

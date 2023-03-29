@@ -21,7 +21,6 @@ import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
-import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
@@ -48,20 +47,18 @@ public class ServiceGroupController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);
 
-    protected final ServiceGroupValidator serviceGroupValidator;
     protected final SmpUrlBuilder pathBuilder;
     protected final ServiceGroupService serviceGroupService;
     protected final ServiceMetadataService serviceMetadataService;
     protected final IdentifierService caseSensitivityNormalizer;
     protected final PayloadValidatorService payloadValidatorService;
 
-    public ServiceGroupController(ServiceGroupValidator serviceGroupValidator,
+    public ServiceGroupController(
                                   SmpUrlBuilder pathBuilder,
                                   ServiceGroupService serviceGroupService,
                                   ServiceMetadataService serviceMetadataService,
                                   IdentifierService caseSensitivityNormalizer,
                                   PayloadValidatorService payloadValidatorService) {
-        this.serviceGroupValidator = serviceGroupValidator;
         this.pathBuilder = pathBuilder;
         this.serviceGroupService = serviceGroupService;
         this.serviceMetadataService = serviceMetadataService;

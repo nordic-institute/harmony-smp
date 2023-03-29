@@ -20,12 +20,9 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.security.DomainGuard;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
-import javax.xml.registry.infomodel.User;
-
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -51,12 +48,12 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
     }
 
     public boolean isUserResourceMemberWithRole(Long userId, Long resourceId, MembershipRoleType roleType) {
-        LOG.debug("User id [{}], Domain id [{}], role [{}]", userId, resourceId,roleType );
+        LOG.debug("User id [{}], Domain id [{}], role [{}]", userId, resourceId, roleType);
         TypedQuery<DBResourceMember> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE, DBResourceMember.class);
 
         query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_RESOURCE_ID, resourceId);
-        return query.getResultList().stream().anyMatch(member ->member.getRole() == roleType );
+        return query.getResultList().stream().anyMatch(member -> member.getRole() == roleType);
     }
 
     public boolean isUserAnyDomainResourceMember(DBUser user, DBDomain domain) {
@@ -76,8 +73,26 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
         return query.getSingleResult() > 0;
     }
 
+    public void setAdminMemberShip(DBUser user, DBResource resource) {
+        LOG.info(SMPLogger.SECURITY_MARKER, "Set user [{}], resource admin for resource [{}]", user, resource);
+        // attach user or resource
+        TypedQuery<DBResourceMember> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE, DBResourceMember.class);
+        query.setParameter(PARAM_USER_ID, user.getId());
+        query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+        List<DBResourceMember> resourceMembers = query.getResultList();
+        if (resourceMembers.isEmpty()) {
+            DBResource managedResource = memEManager.contains(resource) ? resource : memEManager.find(DBResource.class, resource.getId());
+            DBUser managedUser = memEManager.contains(user) ? user : memEManager.find(DBUser.class, user.getId());
 
-
+            DBResourceMember dbResourceMember = new DBResourceMember();
+            dbResourceMember.setResource(managedResource);
+            dbResourceMember.setUser(managedUser);
+            dbResourceMember.setRole(MembershipRoleType.ADMIN);
+            persist(dbResourceMember);
+        } else if (resourceMembers.get(0).getRole() != MembershipRoleType.ADMIN) {
+            resourceMembers.get(0).setRole(MembershipRoleType.ADMIN);
+        }
+    }
 
 
 }

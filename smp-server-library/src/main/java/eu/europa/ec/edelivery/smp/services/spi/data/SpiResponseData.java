@@ -21,7 +21,7 @@ public class SpiResponseData implements ResponseData {
     OutputStream outputStream;
     Map<String, String> httpHeaders = new HashMap();
     String contentType;
-
+    Integer responseCode;
 
     public SpiResponseData(OutputStream outputStream) {
         this.outputStream= outputStream;
@@ -49,5 +49,13 @@ public class SpiResponseData implements ResponseData {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public Integer getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(Integer responseCode) {
+        this.responseCode = responseCode;
     }
 }

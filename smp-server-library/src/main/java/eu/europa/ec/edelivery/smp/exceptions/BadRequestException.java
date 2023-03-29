@@ -11,7 +11,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.error.exceptions;
+package eu.europa.ec.edelivery.smp.exceptions;
 
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 

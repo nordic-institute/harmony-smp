@@ -8,7 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {GlobalLookups} from "../../common/global-lookups";
 import {HttpClient} from "@angular/common/http";
@@ -43,7 +43,7 @@ export class TruststoreEditDialogComponent implements AfterViewInit, AfterViewCh
               private dialogRef: MatDialogRef<TruststoreEditDialogComponent>,
               private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private changeDetector: ChangeDetectorRef) {
     this.formTitle = "Truststore edit dialog";
     // bind to trusted certificate list events

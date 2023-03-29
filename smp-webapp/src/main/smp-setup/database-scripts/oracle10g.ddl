@@ -549,7 +549,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         SML_REGISTERED number(1,0) not null,
         VISIBILITY varchar2(128 char),
         FK_DOCUMENT_ID number(19,0) not null,
-        FK_DOREDEF_ID number(19,0),
+        FK_DOREDEF_ID number(19,0) not null,
         primary key (ID)
     );
 
@@ -780,7 +780,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
        add constraint UK_3x3rvf6hkim9fg16caurkgg6f unique (CERTIFICATE_ID);
 
     alter table SMP_CREDENTIAL 
-       add constraint SMP_CREDENTIAL_USER_NAME_TYPE_IDX unique (FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_TYPE);
+       add constraint SMP_CREDENTIAL_USER_NAME_TYPE_IDX unique (CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET);
 create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_DOCUMENT_VERSION 

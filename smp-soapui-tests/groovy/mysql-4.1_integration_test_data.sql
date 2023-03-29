@@ -8,7 +8,31 @@ insert into SMP_USER (ID, USERNAME, ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_U
 (2, 'user', 1, 'USER',  NOW(),  NOW());
 insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
 (4, 2, 'user', '$2a$06$FDmjewn/do3C219uysNm9.XG8mIn.ubHnMydAzC8lsv61HsRpOR36', 'USERNAME_PASSWORD','UI',  NOW(),  NOW()),
-(5, 2, 'user', '$2a$06$FDmjewn/do3C219uysNm9.XG8mIn.ubHnMydAzC8lsv61HsRpOR36', 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW());
+(5, 2, 'user', '$2a$06$FDmjewn/do3C219uysNm9.XG8mIn.ubHnMydAzC8lsv61HsRpOR36', 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW()),
+(6, 2, 'LvglqPCs', '$2a$10$zaFAFqFIfLUZx15ZDPMvDeWBtsZLaAkrY3Vmya5e3/yCCkFq/FJCu', 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW()) ;
+
+insert into SMP_USER (ID, USERNAME, ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_UPDATED_ON) values
+(3, 'soapui_test_01', 1, 'USER',  NOW(),  NOW()),
+(4, 'soapui_test_02', 1, 'USER',  NOW(),  NOW()),
+(5, 'soapui_test_03', 1, 'USER',  NOW(),  NOW());
+
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
+(7, 3, 'VIhnrCJK', '$2a$10$BtInQBIycY2BSN28PD7TxO9ipAR3lhxUT2FLeShptGmjt6HaLpR7O', 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW()),
+(8, 5, 'CN=EHEALTH_SMP_EC,O=European Commission,C=BE:f71ee8b11cb3b787', null, 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW()),
+(9, 4, 'CN=EHEALTH&SMP_EC,O=European&Commission,C=B&E:f71ee8b11cb3b787', null, 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW()),
+(10, 4, 'CN=EHEALTH_SMP_EC,O=European Commission,C=BE:000000000000100f', null, 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW()),
+(11, 5, 'CN=blue_gw,O=eDelivery,C=BE:E07B6b956330a19a', null, 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW()),
+(12, 5, 'CN=red_gw,O=eDelivery,C=BE:9792ce69BC89F14C', null, 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW()),
+(13, 5, 'CN=SMP_0112992001,O=DIGIT,C=BE', null, 'ACCESS_TOKEN', 'REST_API',  NOW(),  NOW());
+
+insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values
+(8, 'CN=EHEALTH_SMP_EC,O=European Commission,C=BE:f71ee8b11cb3b787', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
+(9, 'CN=EHEALTH&SMP_EC,O=European&Commission,C=B&E:f71ee8b11cb3b787', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
+(10, 'CN=EHEALTH_SMP_EC,O=European Commission,C=BE:000000000000100f', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
+(11, 'CN=blue_gw,O=eDelivery,C=BE:E07B6b956330a19a', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
+(12, 'CN=red_gw,O=eDelivery,C=BE:9792ce69BC89F14C', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW()),
+(13, 'CN=SMP_0112992001,O=DIGIT,C=BE', date_add(NOW(),interval -1 year), date_add(NOW(),interval 1 year), NOW(), NOW());
+
 
 insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, SML_CLIENT_CERT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values
 (1, 'testdomain','PUBLIC', 'test-domain', 'CEF-SMP-002','sample_key',1,0, NOW(),  NOW());
@@ -59,4 +83,6 @@ insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE
 (1, 1, 2, 'ADMIN', NOW(),  NOW());
 
 insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 2, 'ADMIN', NOW(),  NOW());
+(1, 1, 2, 'ADMIN', NOW(),  NOW()),
+(2, 1, 3, 'ADMIN', NOW(),  NOW()),
+(3, 1, 4, 'ADMIN', NOW(),  NOW());

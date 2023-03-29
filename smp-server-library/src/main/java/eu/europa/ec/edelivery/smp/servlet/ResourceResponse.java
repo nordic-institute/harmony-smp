@@ -47,4 +47,5 @@ public class ResourceResponse {
             throw new SMPRuntimeException(INVALID_REQUEST, "Can not open output stream for response!", e);
         }
     }
+
 }

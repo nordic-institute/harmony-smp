@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AbstractResourceHandler {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(AbstractResourceHandler.class);
@@ -39,10 +40,16 @@ public class AbstractResourceHandler {
     protected ResourceDefinitionSpi getResourceDefinition(DBResourceDef resourceDef) {
         LOG.debug("Get resource definition for the [{}]", resourceDef);
         Optional<ResourceDefinitionSpi> definitionSpi = resourceDefinitionSpiList.stream()
-                .filter(resourceDefinitionSpi -> StringUtils.equals(resourceDef.getIdentifier(), resourceDefinitionSpi.identifier()))
+                .filter(rdspi -> StringUtils.equals(resourceDef.getIdentifier(), rdspi.identifier()))
                 .findFirst();
 
-        return definitionSpi.orElseThrow(() -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Can not find resource definition: [" + resourceDef.getIdentifier() + "]"));
+        return definitionSpi.orElseThrow(() -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR,
+                resourceDef.getIdentifier(),
+                "Can not find resource definition for identifier: [" + resourceDef.getIdentifier() + "] Registered resource SPI IDs ["
+                        + resourceDefinitionSpiList.stream()
+                        .map(rd -> rd.identifier())
+                        .collect(Collectors.joining(","))
+                        + "]"));
     }
 
     protected ResourceHandlerSpi getResourceHandler(DBResourceDef resourceDef) {
@@ -51,16 +58,20 @@ public class AbstractResourceHandler {
     }
 
     protected SubresourceDefinitionSpi getSubresourceDefinition(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
-        LOG.debug("Get resource definition for the [{}]", subresourceDef);
+        LOG.debug("Get resource definition for the [{}] for resource [{}]", subresourceDef, resourceDef);
         ResourceDefinitionSpi resourceDefinitionSpi = getResourceDefinition(resourceDef);
         String subResourceId = subresourceDef.getIdentifier();
-
         // get subresource implementation by identifier
         Optional<SubresourceDefinitionSpi> optSubresourceDefinitionSpi = resourceDefinitionSpi.getSuresourceSpiList().stream()
                 .filter(def -> StringUtils.equals(def.identifier(), subResourceId)).findFirst();
 
         return optSubresourceDefinitionSpi.orElseThrow(
-                () -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Can not find subresource definition: [" + subResourceId + "]"));
+                () -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, subResourceId,
+                        "Can not find subresource definition: [" + subResourceId + "]. Registered subresource IDs ["
+                                + resourceDefinitionSpi.getSuresourceSpiList().stream()
+                                .map(rd -> rd.identifier())
+                                .collect(Collectors.joining(","))
+                                + "]"));
     }
 
     protected ResourceHandlerSpi getSubresourceHandler(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
@@ -70,7 +81,8 @@ public class AbstractResourceHandler {
 
     /**
      * Build handler RequestData and add resource from the database
-     * @param domain for the resource
+     *
+     * @param domain   for the resource
      * @param resource an entity
      * @return data handler request data
      */
@@ -89,10 +101,15 @@ public class AbstractResourceHandler {
                 inputStream);
     }
 
-
     protected RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
+        return new SpiRequestData(domain.getDomainCode(),
+                SPIUtils.toUrlIdentifier(resource),
+                SPIUtils.toUrlIdentifier(subresource),
+                new ByteArrayInputStream(content));
+    }
+
+    protected RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {
         return new SpiRequestData(domain.getDomainCode(),
                 SPIUtils.toUrlIdentifier(resource),
                 SPIUtils.toUrlIdentifier(subresource),

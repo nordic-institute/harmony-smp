@@ -1,84 +1,61 @@
-@import '~@angular/material/theming';
-// Plus imports for other components in your app.
+@use '@angular/material' as mat;
+@use 'sass:map';
+@import '@angular/material/theming';
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat-core();
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue.
+//The core mixin must be included exactly once for your application, even if you define multiple themes.
+// Including the core mixin multiple times will result in duplicate CSS in your application.
+@include mat.core();
 
-$input-app-primary: mat-palette($mat-blue);
-$input-app-accent: mat-palette($mat-light-blue);
+$smp-primary: mat.define-palette(mat.$green-palette);
+$smp-accent: mat.define-palette(mat.$light-green-palette);
+// The "warn" palette is optional and defaults to red if not specified.
+$smp-warn: mat.define-palette(mat.$red-palette);
 
-// Create the theme object (a Sass map containing all of the palettes).
-$input-app-theme: mat-light-theme($input-app-primary, $input-app-accent);
+// The "warn" palette is optional and defaults to red if not specified.
+$smp-theme: mat.define-light-theme((
+  color: (
+    primary: $smp-primary,
+    accent: $smp-accent,
+    warn: $smp-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($input-app-theme);
+@include mat.all-component-themes($smp-theme);
 
-$datatable_background_color_hover: map-get($mat-grey, 600);
-$datatable_background_color_focus: map-get($mat-grey, 600);
-$datatable_background_color_active: map-get($mat-grey, 600);
 
-.ngx-datatable.material.cell-selection .datatable-body-cell.active,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active .datatable-row-group {
-  background-color: $datatable_background_color_active;
-  //color: #0d0d0d;
+/// Gets the CSS property and it's computed color value
+/// @param {String} $property The css property to set. ex: background, color, background-color, border-color etc.
+/// @param {String} $color Theme color. Accepted values are: primary(default), accent, or warn.
+/// @param {String | Number} $hue The hue from the palette to use. If this is a value between 0 and 1, it will be treated as opacity. Ex values: 500, 500-contrast, darker, darker-contrast
+/// @returns {CssProperty} CSS property with it's computed value for the both light and dark themes.
+@mixin set-property-theme-color($property: null, $color: primary, $hue: null) {
+  // Get the color config from the theme.
+  $color-value: get-theme-color($color, $hue);
+  #{$property}: $color-value;
 }
 
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:hover,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:hover .datatable-row-group {
-  background-color: $datatable_background_color_hover;
-  //color: #0d0d0d;
+@mixin set-property-theme-shadow-color($property: null, $color: primary, $hue: null) {
+  // Get the color config from the theme.
+  $color-value: get-theme-color($color, $hue);
+  #{$property}: 1px 1px $color-value;
 }
 
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:focus,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:focus .datatable-row-group {
-  background-color: $datatable_background_color_focus;
-  //color: #0d0d0d;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active,
-.ngx-datatable.material.single-selection .datatable-body-row.active .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active,
-.ngx-datatable.material.multi-selection .datatable-body-row.active .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active .datatable-row-group {
-  background-color: $datatable_background_color_active;
-  color: #FFF;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.single-selection .datatable-body-row.active:hover .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.multi-selection .datatable-body-row.active:hover .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active:hover .datatable-row-group {
-  background-color: $datatable_background_color_hover;
-  color: #FFF;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.single-selection .datatable-body-row.active:focus .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.multi-selection .datatable-body-row.active:focus .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active:focus .datatable-row-group {
-  background-color: $datatable_background_color_focus;
-  color: #0d0d0d;
-}
-
-.smpLink {
-  color: #03A9F4;//map-get($mat-blue, A200);
-}
-
-.searchArea {
-  margin: 20px 0 0 0;
-  display:block;
-  a {
-    @extend .smpLink;
-    vertical-align: bottom;
-    margin-left: 10px;
-    color: #03A9F4;
+@function get-theme-color($color: primary, $hue: null) {
+  // Get the color config from the theme.
+  $color-config: mat.get-color-config($smp-theme);
+  // Get the required color palette from the color-config.
+  $color-palette: map.get($color-config, $color);
+  @if $hue != null {
+    // Finally get the desired color with the specified hue.
+    @return mat.get-color-from-palette($color-palette, $hue);
+  } @else {
+    // Finally get the desired color with the specified hue.
+    @return mat.get-color-from-palette($color-palette);
   }
 }
-

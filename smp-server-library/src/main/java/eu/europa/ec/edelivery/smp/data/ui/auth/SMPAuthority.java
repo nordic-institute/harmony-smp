@@ -79,4 +79,9 @@ public class SMPAuthority implements GrantedAuthority {
                 return S_AUTHORITY_ANONYMOUS;
         }
     }
+
+    @Override
+    public String toString() {
+        return role;
+    }
 }

@@ -84,7 +84,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
             return Optional.empty();
         }
         try {
-            TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_USER_BY_CREDENTIAL_USERNAME, DBCredential.class);
+            TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, DBCredential.class);
             query.setParameter(PARAM_USER_USERNAME, StringUtils.trim(username));
             query.setParameter(PARAM_CREDENTIAL_TYPE, CredentialType.USERNAME_PASSWORD);
             query.setParameter(PARAM_CREDENTIAL_TARGET, CredentialTargetType.UI);
@@ -110,7 +110,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
             return Optional.empty();
         }
         try {
-            TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_USER_BY_CREDENTIAL_NAME_CREDENTIAL_TYPE_TARGET, DBCredential.class);
+            TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_BY_CREDENTIAL_NAME_TYPE_TARGET, DBCredential.class);
             query.setParameter(PARAM_CREDENTIAL_NAME, StringUtils.trimToEmpty(accessToken));
             query.setParameter(PARAM_CREDENTIAL_TYPE, CredentialType.ACCESS_TOKEN);
             query.setParameter(PARAM_CREDENTIAL_TARGET, CredentialTargetType.REST_API);
