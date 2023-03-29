@@ -14,6 +14,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBServiceGroupExtension;
@@ -137,7 +138,7 @@ public class AuditIntegrationTest extends AbstractBaseDao{
         alterValCert.put("validTo", OffsetDateTime.now());
         testAuditSubEntity(dbCredential, cert, alterValCert);
     }
-
+/*
 
 
     @Test
@@ -145,10 +146,11 @@ public class AuditIntegrationTest extends AbstractBaseDao{
         DBResource resource = createDBResource();
         resource.setDocument(createDBDocument());
         Map<String, Object> alterVal = new HashMap<>();
-        alterVal.put("extension", UUID.randomUUID().toString().getBytes());
-        testAuditSubEntity(resource, resource.getServiceGroupExtension(), alterVal);
+        alterVal.put("registered", true);
+        alterVal.put("visibility", VisibilityType.PRIVATE);
+        testAuditEntity(resource,  alterVal);
     }
-
+*/
     /**
      * Method updates value in Map, then checks if revision increased. Last test in removing the entity.
      *

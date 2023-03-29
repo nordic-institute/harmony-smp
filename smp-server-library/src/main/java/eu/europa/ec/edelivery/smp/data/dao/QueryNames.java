@@ -2,9 +2,8 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 public class QueryNames {
 
-    public static final String QUERY_CREDENTIAL_USER_BY_CREDENTIAL_NAME_CREDENTIAL_TYPE_TARGET = "DBCredential.getUserByCredentialNameInsensitiveAndCredentialTypeAndTarget";
-    public static final String QUERY_CREDENTIAL_USER_BY_CREDENTIAL_USERNAME = "DBCredential.getUserByCredentialUsername";
-    public static final String QUERY_CREDENTIAL_USER_BY_ACCESS_TOKEN = "DBCredential.getUserByAccessTokenNameAndTarkget";
+    public static final String QUERY_CREDENTIAL_BY_CREDENTIAL_NAME_TYPE_TARGET = "DBCredential.getUserByCredentialNameTypeAndTarget";
+    public static final String QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET = "DBCredential.getUserByUsernameCredentialTypeAndTarget";
 
 
 
@@ -74,6 +73,13 @@ public class QueryNames {
     public static final String QUERY_GROUP_MEMBER_BY_USER_GROUPS = "DBGroupMember.getByUserAndGroups";
     public static final String QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT = "DBGroupMember.getByUserAndDomainGroupsAmdRoleCount";
 
+    public static final String QUERY_USER_BY_CI_USERNAME = "DBUser.getUserByUsernameInsensitive";
+
+    public static final String QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET = "DBUser.getUserByCredentialNameTypeTarget";
+    public static final String QUERY_USER_BY_CI_CREDENTIAL_NAME_TYPE_TARGET = "DBUser.getUserByCaseInsensitiveCredentialNameTypeTarget";
+
+
+
     public static final String PARAM_NAME = "name";
     public static final String PARAM_CODE = "code";
     public static final String PARAM_IDENTIFIER = "identifier";
@@ -111,8 +117,8 @@ public class QueryNames {
     public static final String IDENTIFIER_SCHEME = "identifier_scheme";
 
     public static final String PARAM_CREDENTIAL_NAME = "credential_name";
-    public static final String PARAM_CREDENTIAL_TYPE = "credentialType";
-    public static final String PARAM_CREDENTIAL_TARGET = "credentialTarget";
+    public static final String PARAM_CREDENTIAL_TYPE = "credential_type";
+    public static final String PARAM_CREDENTIAL_TARGET = "credential_target";
 
 
 

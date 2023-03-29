@@ -1,10 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
-import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
-import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.auth.*;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -71,7 +68,7 @@ public class AuthenticationResource {
         CsrfToken csfrToken = csrfTokenRepository.generateToken(request);
         csrfTokenRepository.saveToken(csfrToken, request, response);
 
-        SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(),
+        UILoginAuthenticationToken authentication = (UILoginAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(),
                 loginRO.getPassword());
         SMPUserDetails user = authentication.getUserDetails();
 

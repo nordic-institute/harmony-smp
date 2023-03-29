@@ -136,15 +136,16 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
     /**
-     * Method removes service group from DB. Related entities:Extension, ownerships,
-     * metadata clobs, metadata are also deleted.
+     * Method removes the resource from DB. Related entities (cascade): sub-resources, Document, Document version,
+     * group memberships,
      *
-     * @param dbServiceGroup
+     * @param resource
      */
     @Transactional
-    public void removeServiceGroup(DBResource dbServiceGroup) {
-        memEManager.remove(memEManager.contains(dbServiceGroup) ? dbServiceGroup : memEManager.merge(dbServiceGroup));
+    public void remove(DBResource resource) {
+        removeById(resource.getId());
     }
+
 
     public long getServiceGroupCount(ResourceFilter filters) {
 

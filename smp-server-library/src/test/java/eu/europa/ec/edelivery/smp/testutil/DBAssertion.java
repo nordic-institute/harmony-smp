@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +45,9 @@ public class DBAssertion {
     @Transactional
     public byte[] getExtensionForServiceGroup(String partId, String partSchema) {
         DBResource sg = serviceGroupDao.findServiceGroup(partId, partSchema).get();
-        return sg.getExtension();
+        DBDocumentVersion currentVersion =  sg.getDocument()!=null && !sg.getDocument().getDocumentVersions().isEmpty()?
+        sg.getDocument().getDocumentVersions().stream().filter(res -> res.getVersion() == sg.getDocument().getCurrentVersion()).findFirst().orElse(null)  :null;
+        return currentVersion!=null? currentVersion.getContent():null;
     }
 
     @Transactional

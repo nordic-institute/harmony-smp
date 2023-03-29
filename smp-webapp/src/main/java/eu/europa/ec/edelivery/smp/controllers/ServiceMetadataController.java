@@ -19,7 +19,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
-import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
@@ -42,18 +41,17 @@ public class ServiceMetadataController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceMetadataController.class);
 
-    protected final ServiceMetadataValidator serviceMetadataValidator;
     protected final ServiceMetadataService serviceMetadataService;
     protected final SmpUrlBuilder pathBuilder;
     protected final IdentifierService identifierService;
     protected final PayloadValidatorService payloadValidatorService;
 
-    public ServiceMetadataController(ServiceMetadataValidator serviceMetadataValidator,
+    public ServiceMetadataController(
                                      ServiceMetadataService serviceMetadataService,
                                      SmpUrlBuilder pathBuilder,
                                      IdentifierService identifierService,
                                      PayloadValidatorService payloadValidatorService) {
-        this.serviceMetadataValidator = serviceMetadataValidator;
+
         this.serviceMetadataService = serviceMetadataService;
         this.pathBuilder = pathBuilder;
         this.identifierService = identifierService;

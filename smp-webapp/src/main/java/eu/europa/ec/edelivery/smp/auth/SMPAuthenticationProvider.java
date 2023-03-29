@@ -93,7 +93,7 @@ public class SMPAuthenticationProvider  extends AbstracdtAuthenticationProvider 
                 LOG.debug("Ignore CAS authentication and leave it to cas authentication module");
                 return null;
             }
-            authentication = authenticateByUsernameToken((UsernamePasswordAuthenticationToken) authenticationToken);
+            authentication = authenticateByAuthenticationToken((UsernamePasswordAuthenticationToken) authenticationToken);
         }
 
         // set anonymous token
@@ -200,14 +200,17 @@ public class SMPAuthenticationProvider  extends AbstracdtAuthenticationProvider 
                 throw new AuthenticationServiceException(msg);
             }
         }
+        DBUser user = credential.getUser();
+        SMPAuthority authority = SMPAuthority.getAuthorityByRoleName(user.getApplicationRole().apiName());
+        // the webservice authentication does not support session set the session secret is null!
+        SMPUserDetails userDetails = new SMPUserDetails(user, null, Collections.singletonList(authority));
 
-        String role = credential.getUser().getApplicationRole().getAPIRole();
-        LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, userToken, role);
-        SMPCertificateAuthentication authentication = new SMPCertificateAuthentication(principal, Collections.singletonList(
-                SMPAuthority.getAuthorityByRoleName(role)), credential.getUser());
+        SMPAuthenticationToken smpAuthenticationToken = new SMPAuthenticationToken(principal,
+                userToken,
+                userDetails);
 
-        authentication.setAuthenticated(true);
-        return authentication;
+
+        return smpAuthenticationToken;
     }
 
 
@@ -241,7 +244,7 @@ public class SMPAuthenticationProvider  extends AbstracdtAuthenticationProvider 
         throw new AuthenticationServiceException(excMessage);
     }
 
-    public Authentication authenticateByUsernameToken(UsernamePasswordAuthenticationToken auth)
+    public Authentication authenticateByAuthenticationToken(UsernamePasswordAuthenticationToken auth)
             throws AuthenticationException {
 
         String authenticationTokenId = auth.getName();
@@ -261,15 +264,11 @@ public class SMPAuthenticationProvider  extends AbstracdtAuthenticationProvider 
                 throw BAD_CREDENTIALS_EXCEPTION;
             }
             credential = dbCredential.get();
-        } catch (AuthenticationException ex) {
-            LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
-            delayResponse(CredentialType.ACCESS_TOKEN, startTime);
-            throw BAD_CREDENTIALS_EXCEPTION;
-
         } catch (RuntimeException ex) {
             LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_AUTHENTICATED, authenticationTokenId, ExceptionUtils.getRootCause(ex), ex);
             delayResponse(CredentialType.ACCESS_TOKEN, startTime);
             throw BAD_CREDENTIALS_EXCEPTION;
+
         }
 
         validateIfCredentialIsSuspended(credential, startTime);
@@ -288,7 +287,6 @@ public class SMPAuthenticationProvider  extends AbstracdtAuthenticationProvider 
             loginAttemptFailedAndThrowError(credential, true, startTime);
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, ex, authenticationTokenId);
         }
-        // the webservice authentication with corresponding web-service authority
         SMPAuthority authority = SMPAuthority.getAuthorityByRoleName(user.getApplicationRole().apiName());
         // the webservice authentication does not support session set the session secret is null!
         SMPUserDetails userDetails = new SMPUserDetails(user, null, Collections.singletonList(authority));

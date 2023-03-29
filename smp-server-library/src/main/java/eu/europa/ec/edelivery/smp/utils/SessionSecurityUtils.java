@@ -2,7 +2,9 @@ package eu.europa.ec.edelivery.smp.utils;
 
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
+import eu.europa.ec.edelivery.smp.auth.SMPCertificateAuthentication;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -25,11 +27,14 @@ public class SessionSecurityUtils {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SessionSecurityUtils.class);
 
     /**
-     * '
-     * Currently authentication tokens supported to create na UI session.
+     *
+     * Current supported SMP authentication tokens.
      */
-    protected static final List<Class> sessionAuthenticationClasses = Arrays.asList(SMPAuthenticationToken.class,
-            CasAuthenticationToken.class);
+    protected static final List<Class> sessionAuthenticationClasses = Arrays.asList(
+            UILoginAuthenticationToken.class,
+            CasAuthenticationToken.class,
+            SMPAuthenticationToken.class,
+            SMPCertificateAuthentication.class);
 
     /**
      * SMP uses entity ids type long. Because the keys are sequence keys, SMP encrypts ids for the User.
@@ -82,6 +87,11 @@ public class SessionSecurityUtils {
         if (authentication == null) {
             LOG.warn("No active SMP session Authentication!");
             return null;
+        }
+
+        if (authentication instanceof UILoginAuthenticationToken) {
+            LOG.debug("Return user details from SMPAuthenticationToken");
+            return ((UILoginAuthenticationToken) authentication).getUserDetails();
         }
 
         if (authentication instanceof SMPAuthenticationToken) {

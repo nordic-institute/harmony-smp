@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFill="100" style=" top: 5px; bottom: 5px; left: 5px; right: 5px;">
-  <h1 flex id="{{id}}_header_id" style="margin: 0 !important;">{{title}}</h1>
+  <!-- h1 flex id="{{id}}_header_id" style="margin: 0 !important;">{{title}}</h1 -->
   <spinner [show]="showSpinner" [size]="150"></spinner>
   <div *ngIf="showSearchPanel" fxFlex="170px" class="selectionCriteria">
     <mat-card>
@@ -111,8 +111,9 @@
           <mat-icon>save</mat-icon>
           <span>Save</span>
         </button>
-        <span *ngIf="allowNewItems || allowEditItems || allowDeleteItems"
-              style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
+
+        <tool-button-spacer *ngIf="allowNewItems || allowEditItems || allowDeleteItems"></tool-button-spacer>
+
         <!-- new button enabled -->
         <button *ngIf="allowNewItems" id="newButton" mat-raised-button (click)="onNewButtonClicked()"
                 [disabled]="loading || !allowNewItems" color="primary">

@@ -15,7 +15,7 @@ public class ResourceException extends Exception {
         INTERNAL_ERROR,
     }
 
-    ErrorCode errorCode;
+    final ErrorCode errorCode;
     public ResourceException(ErrorCode code, String message) {
         super(message);
         this.errorCode = code;

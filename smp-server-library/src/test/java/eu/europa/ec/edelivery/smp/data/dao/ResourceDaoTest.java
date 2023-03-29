@@ -3,7 +3,6 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -111,5 +110,26 @@ public class ResourceDaoTest extends AbstractBaseDao {
     public void getResourceWrongResourceDef() {
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefCpp(), testUtilsDao.getD1());
         Assert.assertFalse(optResource.isPresent());
+    }
+
+    @Test
+    public void deleteResourceSimpleOK() {
+        Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
+        Assert.assertTrue(optResource.isPresent());
+        // then
+        testInstance.remove(optResource.get());
+        Optional<DBResource> optResult = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
+        Assert.assertFalse(optResult.isPresent());
+    }
+
+    @Test
+    public void deleteResourceJoinTableOK() {
+        testUtilsDao.createSubresources();
+        Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
+        Assert.assertTrue(optResource.isPresent());
+        // then
+        testInstance.remove(optResource.get());
+        Optional<DBResource> optResult = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
+        Assert.assertFalse(optResult.isPresent());
     }
 }

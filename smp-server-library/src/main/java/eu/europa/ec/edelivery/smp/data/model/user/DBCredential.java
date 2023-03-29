@@ -30,16 +30,17 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Entity
 @Audited
 @Table(name = "SMP_CREDENTIAL",
-        indexes = {@Index(name = "SMP_CREDENTIAL_USER_NAME_TYPE_IDX", columnList = "FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_TYPE", unique = true),
+        indexes = {
+            @Index(name = "SMP_CREDENTIAL_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true),
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_CREDENTIAL", comment = "Credentials for the users")
 @NamedQueries({
         @NamedQuery(name = QUERY_CREDENTIAL_ALL, query = "SELECT u FROM DBCredential u"),
-        @NamedQuery(name = QUERY_CREDENTIAL_USER_BY_CREDENTIAL_USERNAME, query = "SELECT c FROM DBCredential c " +
-                "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credentialType and c.credentialTarget = :credentialTarget"),
+        @NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
+                "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
         // case-insensitive search
-        @NamedQuery(name = QUERY_CREDENTIAL_USER_BY_CREDENTIAL_NAME_CREDENTIAL_TYPE_TARGET, query = "SELECT u FROM DBCredential u " +
-                "WHERE u.name = :credential_name and u.credentialType = :credentialType and u.credentialTarget = :credentialTarget"),
+        @NamedQuery(name = QUERY_CREDENTIAL_BY_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
+                "WHERE c.name = :credential_name and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
         @NamedQuery(name = QUERY_CREDENTIAL_BY_CERTIFICATE_ID, query = "SELECT u FROM DBCredential u WHERE u.certificate.certificateId = :certificate_identifier"),
         @NamedQuery(name = QUERY_CREDENTIAL_BY_CI_CERTIFICATE_ID, query = "SELECT u FROM DBCredential u WHERE upper(u.certificate.certificateId) = upper(:certificate_identifier)"),
 

@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../domain-ro.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
@@ -33,7 +33,7 @@ export class DomainDetailsDialogComponent {
   editMode: boolean;
   formTitle: string;
   current: DomainRo & { confirmation?: string };
-  domainForm: FormGroup;
+  domainForm: UntypedFormGroup;
   domain;
   selectedSMLCert: CertificateRo = null;
 
@@ -53,7 +53,7 @@ export class DomainDetailsDialogComponent {
     private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
     private alertService: AlertMessageService,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder) {
+    private fb: UntypedFormBuilder) {
 
     this.editMode = data.edit;
     this.formTitle = this.editMode ? DomainDetailsDialogComponent.EDIT_MODE : DomainDetailsDialogComponent.NEW_MODE;
@@ -71,22 +71,22 @@ export class DomainDetailsDialogComponent {
       };
 
     this.domainForm = fb.group({
-      'domainCode': new FormControl({value: '', disabled: this.editMode}, [Validators.pattern(this.domainCodePattern),
+      'domainCode': new UntypedFormControl({value: '', disabled: this.editMode}, [Validators.pattern(this.domainCodePattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.domainCode), this.current.domainCode)]),
-      'smlSubdomain': new FormControl({
+      'smlSubdomain': new UntypedFormControl({
         value: '',
         disabled: this.editMode
       }, [Validators.pattern(this.subDomainPattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSubdomain), this.current.smlSubdomain)]),
-      'smlSmpId': new FormControl({value: ''}, [Validators.pattern(this.smpIdDomainPattern),
+      'smlSmpId': new UntypedFormControl({value: ''}, [Validators.pattern(this.smpIdDomainPattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSmpId), this.current.smlSmpId)]),
-      'smlClientCertHeader': new FormControl({value: ''}, null),
-      'smlClientKeyAlias': new FormControl({value: ''}, null),
-      'smlClientKeyCertificate': new FormControl({value: this.selectedSMLCert}, null),
-      'signatureKeyAlias': new FormControl({value: ''}, null),
+      'smlClientCertHeader': new UntypedFormControl({value: ''}, null),
+      'smlClientKeyAlias': new UntypedFormControl({value: ''}, null),
+      'smlClientKeyCertificate': new UntypedFormControl({value: this.selectedSMLCert}, null),
+      'signatureKeyAlias': new UntypedFormControl({value: ''}, null),
 
-      'smlRegistered': new FormControl({value: ''}, null),
-      'smlClientCertAuth': new FormControl({value: ''}, null),
+      'smlRegistered': new UntypedFormControl({value: ''}, null),
+      'smlClientCertAuth': new UntypedFormControl({value: ''}, null),
 
     });
 
@@ -127,7 +127,7 @@ export class DomainDetailsDialogComponent {
     if (this.current.status === SearchTableEntityStatus.NEW
       && !this.domainForm.value['smlSubdomain']) {
 
-      var domainWithNullSML = this.lookups.cachedDomainList.filter(function (dmn) {
+      let domainWithNullSML = this.lookups.cachedDomainList.filter(function (dmn) {
         return !dmn.smlSubdomain;
       })[0];
 
@@ -142,7 +142,7 @@ export class DomainDetailsDialogComponent {
     }
   }
 
-  checkValidity(g: FormGroup) {
+  checkValidity(g: UntypedFormGroup) {
     Object.keys(g.controls).forEach(key => {
       g.get(key).markAsDirty();
     });
@@ -204,7 +204,7 @@ export class DomainDetailsDialogComponent {
     return cert.alias === alias;
   }
 
-  compareCertificate(certificate: CertificateRo, alias: String): boolean {
+  compareCertificate(certificate: CertificateRo, alias: string): boolean {
     return certificate.alias === alias;
   }
 

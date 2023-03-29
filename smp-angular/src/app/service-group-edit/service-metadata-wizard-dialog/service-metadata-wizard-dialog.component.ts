@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import {CertificateService} from "../../user/certificate.service";
 import {CertificateRo} from "../../user/certificate-ro.model";
@@ -22,7 +22,7 @@ export class ServiceMetadataWizardDialogComponent {
   isNewServiceMetadata: boolean;
   current: ServiceMetadataWizardRo
     & { confirmation?: string };
-  dialogForm: FormGroup;
+  dialogForm: UntypedFormGroup;
   certificateValidationMessage: string;
   isCertificateValid: string;
   selectedFile: File;
@@ -32,7 +32,7 @@ export class ServiceMetadataWizardDialogComponent {
     private http: HttpClient,
     private dialogRef: MatDialogRef<ServiceMetadataWizardDialogComponent>,
     private alertService: AlertMessageService,
-    private dialogFormBuilder: FormBuilder,
+    private dialogFormBuilder: UntypedFormBuilder,
     private certificateService: CertificateService,
     private lookups: GlobalLookups,
   ) {
@@ -41,20 +41,20 @@ export class ServiceMetadataWizardDialogComponent {
     this.current = {...this.data}
 
     this.dialogForm = dialogFormBuilder.group({
-      'participantIdentifier': new FormControl({value: '', disabled: true}, null),
-      'participantScheme': new FormControl({value: '', disabled: true}, null),
+      'participantIdentifier': new UntypedFormControl({value: '', disabled: true}, null),
+      'participantScheme': new UntypedFormControl({value: '', disabled: true}, null),
 
-      'documentIdentifier': new FormControl({value: '', disabled: !this.isNewServiceMetadata}, [Validators.required]),
-      'documentIdentifierScheme': new FormControl({value: '', disabled: !this.isNewServiceMetadata}, null),
-      'processScheme': new FormControl({value: ''}, null),
-      'processIdentifier': new FormControl({value: ''}, [Validators.required]),
+      'documentIdentifier': new UntypedFormControl({value: '', disabled: !this.isNewServiceMetadata}, [Validators.required]),
+      'documentIdentifierScheme': new UntypedFormControl({value: '', disabled: !this.isNewServiceMetadata}, null),
+      'processScheme': new UntypedFormControl({value: ''}, null),
+      'processIdentifier': new UntypedFormControl({value: ''}, [Validators.required]),
 
-      'transportProfile': new FormControl({value: ''}, [Validators.required]),
-      'endpointUrl': new FormControl({value: ''}, [Validators.required]),
-      'endpointCertificate': new FormControl({value: ''}, [Validators.required]),
+      'transportProfile': new UntypedFormControl({value: ''}, [Validators.required]),
+      'endpointUrl': new UntypedFormControl({value: ''}, [Validators.required]),
+      'endpointCertificate': new UntypedFormControl({value: ''}, [Validators.required]),
 
-      'serviceDescription': new FormControl({value: ''}, null),
-      'technicalContactUrl': new FormControl({value: ''}, null),
+      'serviceDescription': new UntypedFormControl({value: ''}, null),
+      'technicalContactUrl': new UntypedFormControl({value: ''}, null),
     });
 
     this.dialogForm.controls['participantIdentifier'].setValue(this.current.participantIdentifier);

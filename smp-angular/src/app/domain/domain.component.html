@@ -21,7 +21,7 @@
   </ng-template>
 
   <ng-template #additionalToolButtons >
-    <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
+    <tool-button-spacer></tool-button-spacer>
 
     <button  id="registerButton" mat-raised-button (click)="smlRegisterSelectedDomain()"
             [disabled]="!enableSMLRegister()" color="primary">
@@ -33,7 +33,7 @@
       <mat-icon>link_off</mat-icon>
       <span>Unregister</span>
     </button>
-    <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
+    <tool-button-spacer></tool-button-spacer>
 
     <button mat-raised-button color="primary" (click)="openEditKeystoreDialog()">
       <mat-icon>vpn_key</mat-icon>

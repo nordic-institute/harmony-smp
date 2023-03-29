@@ -140,14 +140,4 @@ public class ServiceGroupServiceIntegrationTest extends AbstractServiceIntegrati
         assertNull(serviceGroup);
     }
 
-    @Test
-    public void testInvalidExtension() {
-        //given
-        DBResource sg = TestDBUtils.createDBResource();
-        sg.setExtension("<This > is invalid extensions".getBytes());
-
-        //when-then
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,  () -> testInstance.toServiceGroup(sg, null));
-        MatcherAssert.assertThat( result.getMessage(), Matchers.startsWith("Invalid extension for service group"));
-    }
 }

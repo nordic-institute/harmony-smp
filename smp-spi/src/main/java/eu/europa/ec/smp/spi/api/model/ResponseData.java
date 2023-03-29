@@ -20,4 +20,8 @@ public interface ResponseData {
 
     void setContentType(String contentType);
 
+    void setResponseCode(Integer responseCode);
+
+    Integer getResponseCode();
+
 }

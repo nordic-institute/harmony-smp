@@ -12,6 +12,7 @@
  */
 package eu.europa.ec.edelivery.smp.data.model.user;
 
+import eu.europa.ec.edelivery.smp.data.dao.QueryNames;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
@@ -28,9 +29,17 @@ import java.util.Objects;
 @Audited
 @Table(name = "SMP_USER")
 @org.hibernate.annotations.Table(appliesTo = "SMP_USER", comment = "SMP can handle multiple domains. This table contains domain specific data")
-@NamedQueries({
-        // case insensitive search
-        @NamedQuery(name = "DBUser.getUserByUsernameInsensitive", query = "SELECT u FROM DBUser u WHERE upper(u.username) = upper(:username)"),
+@NamedQuery(name = QueryNames.QUERY_USER_BY_CI_USERNAME, query = "SELECT u FROM DBUser u WHERE upper(u.username) = upper(:username)")
+@NamedQuery(name = QueryNames.QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT u FROM DBCredential c JOIN c.user u " +
+    " WHERE c.name = :credential_name" +
+    " AND c.credentialType = :credential_type " +
+    " AND c.credentialTarget = :credential_target")
+@NamedQuery(name = QueryNames.QUERY_USER_BY_CI_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT u FROM DBCredential c JOIN c.user u " +
+    " WHERE upper(c.name) = upper(:credential_name) " +
+    " AND c.credentialType = :credential_type " +
+    " AND c.credentialTarget = :credential_target")
+//@NamedQueries({
+
        // @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
         //@NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.accessTokenIdentifier = :patId"),
         //@NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE upper(u.certificate.certificateId) = upper(:certificateId)"),
@@ -74,11 +83,10 @@ import java.util.Objects;
                         " AND u.certificate.validTo <= :expireDate" +
                         " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
                         "     OR u.certificate.certificateLastExpireAlertOn <= u.certificate.validTo " +
+
                         "     OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )")
-        */
-
-})
-
+                        })
+         */
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
                 resultSetMapping = "DBUserDeleteValidationMapping",

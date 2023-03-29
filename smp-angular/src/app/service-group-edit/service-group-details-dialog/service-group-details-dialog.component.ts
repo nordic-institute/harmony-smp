@@ -4,7 +4,7 @@ import {Observable} from "rxjs/internal/Observable";
 import {HttpClient} from "@angular/common/http";
 import {SmpConstants} from "../../smp.constants";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {ServiceGroupEditRo} from "../service-group-edit-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
@@ -38,7 +38,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   current: ServiceGroupEditRo & { confirmation?: string };
   showSpinner: boolean = false;
 
-  dialogForm: FormGroup;
+  dialogForm: UntypedFormGroup;
   extensionObserver: Observable<ServiceGroupValidationRo>;
 
   extensionValidationMessage: String = null;
@@ -70,7 +70,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
               private alertService: AlertMessageService,
               public lookups: GlobalLookups,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private dialogFormBuilder: FormBuilder,
+              private dialogFormBuilder: UntypedFormBuilder,
               private changeDetector: ChangeDetectorRef) {
     this.editMode = this.data.edit;
 
@@ -103,25 +103,25 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     // allow to change data but warn on error!
 
     this.dialogForm = this.dialogFormBuilder.group({
-      'participantIdentifier': new FormControl({
+      'participantIdentifier': new UntypedFormControl({
           value: '',
           disabled: this.current.status !== SearchTableEntityStatus.NEW
         },
         this.current.status === SearchTableEntityStatus.NEW ? Validators.required : null),
-      'participantScheme': new FormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
+      'participantScheme': new UntypedFormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
         this.current.status === SearchTableEntityStatus.NEW ?
           [Validators.pattern(this.participantSchemePattern)] : null),
-      'serviceGroupDomains': new FormControl({
+      'serviceGroupDomains': new UntypedFormControl({
           value: [],
           disabled: !securityService.isCurrentUserSMPAdmin()
         },
         [this.minSelectedListCount(1),
           this.multiDomainOn(this.lookups.cachedApplicationConfig.smlParticipantMultiDomainOn)]),
-      'users': new FormControl({
+      'users': new UntypedFormControl({
         value: [],
         disabled: !securityService.isCurrentUserSMPAdmin()
       }, [this.minSelectedListCount(1)]),
-      'extension': new FormControl({value: ''}, []),
+      'extension': new UntypedFormControl({value: ''}, []),
 
 
     });
@@ -192,7 +192,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     });
   }
 
-  checkValidity(g: FormGroup) {
+  checkValidity(g: UntypedFormGroup) {
     Object.keys(g.controls).forEach(key => {
       g.get(key).markAsDirty();
     });

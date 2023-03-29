@@ -19,7 +19,6 @@ import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 
 import javax.xml.bind.JAXBException;
 import java.io.BufferedInputStream;
@@ -52,7 +51,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMP10Handler {
 
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
         if (resourceData.getResourceInputStream() == null) {
-            LOG.warn("Empty document input stream for service-group!", identifier);
+            LOG.warn("Empty document input stream for service-group [{}]!", identifier);
             return;
         }
 
@@ -114,17 +113,15 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMP10Handler {
             inputStream = new BufferedInputStream(inputStream);
         }
         inputStream.mark(Integer.MAX_VALUE - 2);
-        validateResource(resourceData, responseData);
+        ServiceGroup serviceGroup = validateAndParse(resourceData);
+        // set participant to "lowercase" to match it as is saved in the database
+        // this is just for back-compatibility issue!
+        serviceGroup.getParticipantIdentifier().setValue(resourceData.getResourceIdentifier().getValue());
+        serviceGroup.getParticipantIdentifier().setScheme(resourceData.getResourceIdentifier().getScheme());
 
         try {
-            inputStream.reset();
-        } catch (IOException e) {
-            throw new ResourceException(PARSE_ERROR, "Can not reset input stream", e);
-        }
-
-        try {
-            StreamUtils.copy(inputStream, responseData.getOutputStream());
-        } catch (IOException e) {
+            ServiceGroupConverter.marshalToOutputStream(serviceGroup, responseData.getOutputStream());
+        } catch (JAXBException e) {
             throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
         }
 
@@ -139,6 +136,11 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMP10Handler {
      */
     @Override
     public void validateResource(RequestData resourceData, ResponseData responseData) throws ResourceException {
+
+        validateAndParse(resourceData);
+    }
+
+    public ServiceGroup validateAndParse(RequestData resourceData) throws ResourceException {
         // get service group identifier
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
         // validate by schema
@@ -156,12 +158,12 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMP10Handler {
         final ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();
         ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getScheme());
 
-
-        ResourceIdentifier urlIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getScheme());
-
-        if (!xmlResourceIdentifier.equals(urlIdentifier)) {
+        if (!xmlResourceIdentifier.equals(identifier)) {
             // Business identifier must equal path
-            throw new ResourceException(INVALID_RESOURCE, "Participant identifiers don't match between URL parameter [" + identifier + "] and XML body: [ scheme: '" + participantId.getScheme() + "', value: '" + participantId.getValue() + "']");
+            throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + identifier + "] and XML body: [ scheme: '" + participantId.getScheme() + "', value: '" + participantId.getValue() + "']");
         }
+
+
+        return serviceGroup;
     }
 }

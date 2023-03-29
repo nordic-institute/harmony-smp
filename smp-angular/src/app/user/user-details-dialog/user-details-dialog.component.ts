@@ -3,9 +3,9 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 
 import {
   AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
   ValidationErrors,
   ValidatorFn,
   Validators
@@ -47,7 +47,7 @@ export class UserDetailsDialogComponent {
   certificateValidationMessage: string = null;
   isCertificateInvalid: boolean = true;
   existingRoles = [];
-  userForm: FormGroup;
+  userForm: UntypedFormGroup;
   current: UserRo;
   tempStoreForCertificate: CertificateRo = this.newCertificateRo();
   tempStoreForUser: UserRo = this.newUserRo();
@@ -55,7 +55,7 @@ export class UserDetailsDialogComponent {
   userController: UserController;
 
 
-  private certificateValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+  private certificateValidator: ValidatorFn = (control: UntypedFormGroup): ValidationErrors | null => {
     const certificateId = control.get('certificateId');
     const subject = control.get('subject');
     const validFrom = control.get('validFrom');
@@ -69,7 +69,7 @@ export class UserDetailsDialogComponent {
       ? {certificateDetailsRequired: true} : null;
   };
 
-  private certificateExistValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+  private certificateExistValidator: ValidatorFn = (control: UntypedFormGroup): ValidationErrors | null => {
     const certificateId = control.get('certificateId');
     // get all persisted
     const listIds = this.lookups.cachedServiceGroupOwnerList.map(a => a.certificate ? a.certificate.certificateId : "NoId");
@@ -99,7 +99,7 @@ export class UserDetailsDialogComponent {
               private securityService: SecurityService,
               private datePipe: DatePipe,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
 
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
@@ -141,41 +141,41 @@ export class UserDetailsDialogComponent {
     // set empty form ! do not bind it to current object !
     this.userForm = fb.group({
       // common values
-      'active': new FormControl({value: ''}, []),
-      'emailAddress': new FormControl({value: ''}, [Validators.pattern(this.emailPattern), Validators.maxLength(255)]),
-      'role': new FormControl({
+      'active': new UntypedFormControl({value: ''}, []),
+      'emailAddress': new UntypedFormControl({value: ''}, [Validators.pattern(this.emailPattern), Validators.maxLength(255)]),
+      'role': new UntypedFormControl({
         value: '',
         disabled: this.mode === UserDetailsDialogMode.PREFERENCES_MODE
       }, Validators.required),
       // username/password authentication
-      'username': new FormControl({value: '', disabled: this.editMode},
+      'username': new UntypedFormControl({value: '', disabled: this.editMode},
         !this.editMode || !this.current.username
           ? [Validators.nullValidator, Validators.pattern(this.usernamePattern), this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))]
           : null),
-      'passwordExpireOn': new FormControl({value: '', disabled: true}),
-      'sequentialLoginFailureCount': new FormControl({value: '', disabled: true}),
-      'lastFailedLoginAttempt': new FormControl({value: '', disabled: true}),
-      'suspendedUtil': new FormControl({value: '', disabled: true}),
+      'passwordExpireOn': new UntypedFormControl({value: '', disabled: true}),
+      'sequentialLoginFailureCount': new UntypedFormControl({value: '', disabled: true}),
+      'lastFailedLoginAttempt': new UntypedFormControl({value: '', disabled: true}),
+      'suspendedUtil': new UntypedFormControl({value: '', disabled: true}),
 
-      'accessTokenId': new FormControl({value: '', disabled: true}),
-      'accessTokenExpireOn': new FormControl({value: '', disabled: true}),
-      'sequentialTokenLoginFailureCount': new FormControl({value: '', disabled: true}),
-      'lastTokenFailedLoginAttempt': new FormControl({value: '', disabled: true}),
-      'tokenSuspendedUtil': new FormControl({value: '', disabled: true}),
-      'casUserDataUrl': new FormControl({value: '', disabled: true}),
+      'accessTokenId': new UntypedFormControl({value: '', disabled: true}),
+      'accessTokenExpireOn': new UntypedFormControl({value: '', disabled: true}),
+      'sequentialTokenLoginFailureCount': new UntypedFormControl({value: '', disabled: true}),
+      'lastTokenFailedLoginAttempt': new UntypedFormControl({value: '', disabled: true}),
+      'tokenSuspendedUtil': new UntypedFormControl({value: '', disabled: true}),
+      'casUserDataUrl': new UntypedFormControl({value: '', disabled: true}),
 
 
-      'confirmation': new FormControl({value: '', disabled: !bSetPassword}),
+      'confirmation': new UntypedFormControl({value: '', disabled: !bSetPassword}),
       // certificate authentication
-      'subject': new FormControl({value: '', disabled: true}, Validators.required),
-      'validFrom': new FormControl({value: '', disabled: true}, Validators.required),
-      'validTo': new FormControl({value: '', disabled: true}, Validators.required),
-      'issuer': new FormControl({value: '', disabled: true}, Validators.required),
-      'serialNumber': new FormControl({value: '', disabled: true}, Validators.required),
-      'crlUrl': new FormControl({value: '', disabled: true}),
-      'encodedValue': new FormControl({value: '', disabled: true}),
-      'certificateId': new FormControl({value: '', disabled: true,}, [Validators.required]),
-      'isCertificateValid': new FormControl({value: 'true', disabled: true,}, [Validators.requiredTrue]
+      'subject': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+      'validFrom': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+      'validTo': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+      'issuer': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+      'serialNumber': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+      'crlUrl': new UntypedFormControl({value: '', disabled: true}),
+      'encodedValue': new UntypedFormControl({value: '', disabled: true}),
+      'certificateId': new UntypedFormControl({value: '', disabled: true,}, [Validators.required]),
+      'isCertificateValid': new UntypedFormControl({value: 'true', disabled: true,}, [Validators.requiredTrue]
       ),
     }, {
       validator: [

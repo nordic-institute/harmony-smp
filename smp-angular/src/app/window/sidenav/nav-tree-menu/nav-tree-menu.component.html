@@ -1,0 +1,11 @@
+<ng-container *ngIf="data.children; else menuItem">
+  <button mat-menu-item [matMenuTriggerFor]="itemMenu" (click)="menuClickHandler(data)">{{ data.name }}</button>
+  <mat-menu #itemMenu="matMenu" xPosition="before" yPosition="below">
+    <ng-container *ngFor="let item of data.children; let i = index">
+      <nav-tree-menu [trigger]="item.code" [data]="item"></nav-tree-menu>
+    </ng-container>
+  </mat-menu>
+</ng-container>
+<ng-template #menuItem>
+  <button mat-menu-item (click)="triggerClickEvent()">{{ data.name }}</button>
+</ng-template>
