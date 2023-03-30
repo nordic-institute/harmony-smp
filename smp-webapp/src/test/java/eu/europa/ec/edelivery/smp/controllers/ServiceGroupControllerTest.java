@@ -55,8 +55,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/webapp_integration_test_data.sql",
         },
         statements = {
-                "update SMP_CONFIGURATION set VALUE='false', LAST_UPDATED_ON=CURRENT_TIMESTAMP() where PROPERTY='identifiersBehaviour.scheme.mandatory';",
-                "update SMP_CONFIGURATION set VALUE='true', LAST_UPDATED_ON=CURRENT_TIMESTAMP() where PROPERTY='smp.automation.authentication.external.tls.clientCert.enabled';"
+                "update SMP_CONFIGURATION set PROPERTY_VALUE='false', LAST_UPDATED_ON=NOW() where PROPERTY_NAME='identifiersBehaviour.scheme.mandatory';",
+                "update SMP_CONFIGURATION set PROPERTY_VALUE='true', LAST_UPDATED_ON=NOW() where PROPERTY_NAME='smp.automation.authentication.external.tls.clientCert.enabled';"
         },
         executionPhase = BEFORE_TEST_METHOD)
 public class ServiceGroupControllerTest {

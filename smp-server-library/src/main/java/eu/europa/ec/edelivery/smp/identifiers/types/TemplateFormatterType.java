@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.identifiers.types;
 
-import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
+import eu.europa.ec.edelivery.smp.exceptions.MalformedIdentifierException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -35,7 +35,7 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 })
 @ComponentScan(basePackages = "eu.europa.ec.edelivery.smp")
 public class PropertiesTestConfig {
-    public static final String DATABASE_URL = "jdbc:h2:file:./target/DomiSmpTestDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE;";
+    public static final String DATABASE_URL = "jdbc:h2:file:./target/DomiSmpWebDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE;";
     public static final String DATABASE_USERNAME = "smp";
     public static final String DATABASE_PASS = "smp";
     public static final String DATABASE_DRIVER = "org.h2.Driver";

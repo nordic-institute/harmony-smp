@@ -36,11 +36,11 @@ public class SMPAuthenticationProviderForUITest {
 
     @Test
     public void testValidateIfTokenIsSuspendedReset(){
-     /*   int starFailCount = 5;
+        int starFailCount = 5;
         DBUser user = new DBUser();
         user.setUsername("TestToken");
         int suspensionSeconds =100;
-
+/*
         user.setLastFailedLoginAttempt(OffsetDateTime.now().minusSeconds(suspensionSeconds+10));
         user.setSequentialLoginFailureCount(starFailCount);
         doReturn(suspensionSeconds).when(mockConfigurationService).getLoginSuspensionTimeInSeconds();

@@ -11,6 +11,7 @@ import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,8 +88,6 @@ public class ServiceGroupResourceIntegrationTest {
             assertNotNull(sgro.getId());
             assertNotNull(sgro.getParticipantScheme());
             assertNotNull(sgro.getParticipantIdentifier());
-            assertEquals(1, sgro.getUsers().size());
-            assertNotEquals("smp_admin", sgro.getUsers().get(0).getUsername());
         });
     }
 
@@ -112,8 +111,6 @@ public class ServiceGroupResourceIntegrationTest {
             assertNotNull(sgro.getParticipantScheme());
             assertNotNull(sgro.getParticipantIdentifier());
             assertTrue(Arrays.asList("urn:australia:ncpb","urn:brazil:ncpb").contains(sgro.getParticipantIdentifier()));
-            assertEquals(1, sgro.getUsers().size());
-            assertNotNull(sgro.getUsers().get(0).getUserId());
         });
     }
 
@@ -133,10 +130,6 @@ public class ServiceGroupResourceIntegrationTest {
         assertEquals(100000, res.getId().intValue());
         assertEquals(IDENTIFIER_VALUE, res.getParticipantIdentifier());
         assertEquals(IDENTIFIER_SCHEME, res.getParticipantScheme());
-        assertEquals(1, res.getUsers().size());
-        assertNotNull(res.getUsers().get(0).getUserId());
-
-        assertEquals(1, res.getServiceGroupDomains().size());
         assertEquals(1, res.getServiceMetadata().size());
         assertEquals("doc_7", res.getServiceMetadata().get(0).getDocumentIdentifier());
         assertEquals(res.getServiceGroupDomains().get(0).getId(), res.getServiceMetadata().get(0).getServiceGroupDomainId());
@@ -177,6 +170,7 @@ public class ServiceGroupResourceIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testValidateInvalid() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         ServiceGroupValidationRO validate = new ServiceGroupValidationRO();

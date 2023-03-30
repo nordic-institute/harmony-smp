@@ -77,7 +77,6 @@ public class ServiceGroupConverter {
      * @return
      */
     public static ServiceGroup unmarshal(byte[] serviceGroupXml) throws ResourceException {
-
         try {
             Document serviceGroupDoc = parse(serviceGroupXml);
             return getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();

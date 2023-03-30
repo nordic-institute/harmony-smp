@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -47,7 +46,7 @@ public class MonitorResource {
     private static final String TEST_DB_SUCCESSFUL_ROLLBACK = "TEST_DB_SUCCESSFUL_ROLLBACK MESSAGE";
 
     @GetMapping(path = "/is-alive")
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_USER, SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN})
     public ResponseEntity isAlive() {
         boolean suc = false;
 /*

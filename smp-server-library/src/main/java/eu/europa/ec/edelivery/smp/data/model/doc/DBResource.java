@@ -81,8 +81,8 @@ public class DBResource extends BaseEntity {
     // The domain group list which handles the resource
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "SMP_GROUP_RESOURCE",
-            joinColumns = @JoinColumn(name = "FK_GROUP_ID"),
-            inverseJoinColumns = @JoinColumn(name = "FK_RESOURCE_ID")
+            joinColumns = @JoinColumn(name = "FK_RESOURCE_ID"),
+            inverseJoinColumns = @JoinColumn(name = "FK_GROUP_ID")
     )
     private List<DBGroup> groups = new ArrayList<>();
 

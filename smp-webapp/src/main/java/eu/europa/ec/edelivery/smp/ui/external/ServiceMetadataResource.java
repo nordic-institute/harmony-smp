@@ -8,7 +8,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceMetadataService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
@@ -39,7 +38,7 @@ public class ServiceMetadataResource {
     }
 
     @PostMapping(path = "validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceMetadataValidationRO validateServiceMetadata(@RequestBody ServiceMetadataValidationRO serviceMetadataValidationRO) {
         LOG.info("Validate service group metadata");
         return uiServiceMetadataService.validateServiceMetadata(serviceMetadataValidationRO);

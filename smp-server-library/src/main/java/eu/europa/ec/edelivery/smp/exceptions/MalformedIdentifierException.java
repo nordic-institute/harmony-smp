@@ -11,23 +11,25 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.security;
-
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+package eu.europa.ec.edelivery.smp.exceptions;
 
 /**
- * Created by gutowpa on 07/04/2017.
+ * Thrown when used identifier does not fulfill requirements specified in OASIS SMP specs:
+ * http://docs.oasis-open.org/bdxr/bdx-smp/v1.0/bdx-smp-v1.0.html
+ * 
+ * Created by gutowpa on 12/01/2017.
  */
+public class MalformedIdentifierException extends IllegalArgumentException {
 
-@Controller
-public class UsernameReturningTestController {
+    private static String buildMessage(String malformedId){
+        return "Malformed identifier, scheme and id should be delimited by double colon: "+malformedId;
+    }
 
-    @RequestMapping(SecurityConfigurationTest.RETURN_LOGGED_USER_PATH)
-    @ResponseBody
-    public String getLoggedUsername(){
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    public MalformedIdentifierException(String malformedId, Exception cause){
+        super(buildMessage(malformedId), cause);
+    }
+
+    public MalformedIdentifierException(String message){
+        super(message);
     }
 }

@@ -113,6 +113,7 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
     @Transactional
     public ServiceGroupRO getServiceGroupById(Long serviceGroupId) {
         DBResource dbServiceGroup = getDatabaseDao().find(serviceGroupId);
+        dbServiceGroup.getSubresources().size();
         return convertToRo(dbServiceGroup);
     }
 
@@ -592,7 +593,12 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
         serviceGroupRo.setId(dbServiceGroup.getId());
         serviceGroupRo.setParticipantIdentifier(dbServiceGroup.getIdentifierValue());
         serviceGroupRo.setParticipantScheme(dbServiceGroup.getIdentifierScheme());
-        /* TODO
+
+        dbServiceGroup.getSubresources().stream().map(this::convertServiceMetadataToRo)
+                .forEach(smdro -> {
+                    serviceGroupRo.getServiceMetadata().add(smdro);
+                });
+/*
         // add domains
         dbServiceGroup.getResourceDomains().forEach(sgd -> {
             ServiceGroupDomainRO servGrpDomain = new ServiceGroupDomainRO();
@@ -612,8 +618,8 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
             //also add domain to service group
             serviceGroupRo.getServiceGroupDomains().add(servGrpDomain);
         });
+*/
 
-         */
         /*TODO
         // add users add just encrypted ID
         dbServiceGroup.getUsers().forEach(usr -> {

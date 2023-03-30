@@ -97,7 +97,7 @@ public class AuthenticationResource {
     }
 
     @GetMapping(value = "user")
-    @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_SMP_ADMIN, S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({S_AUTHORITY_TOKEN_SYSTEM_ADMIN, S_AUTHORITY_TOKEN_USER})
     public UserRO getUser() {
         return authorizationService.getLoggedUserData();
     }

@@ -26,8 +26,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
@@ -58,6 +60,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@TestPropertySource(properties = {
+        "external.tls.clientCert.enabled=true",
+})
 public class SecurityConfigurationClientCertTest {
 
     //Jul++9+23:59:00+2019+GMT"
@@ -155,8 +160,8 @@ public class SecurityConfigurationClientCertTest {
 
     @Before
     public void setup() throws IOException {
+
         X509CertificateTestUtils.reloadKeystores();
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED,"true", null);
         mvc = MockMvcUtils.initializeMockMvc(context);
         configurationDao.contextRefreshedEvent();
     }

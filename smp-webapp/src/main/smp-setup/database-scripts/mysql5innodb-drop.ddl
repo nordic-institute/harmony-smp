@@ -101,11 +101,11 @@
 
     alter table SMP_GROUP_RESOURCE 
        drop 
-       foreign key FKlqye84uvqu0rk9xhmlkd418rk;
+       foreign key FK4i7qwh2ydleesw4pkf6c17t9t;
 
     alter table SMP_GROUP_RESOURCE 
        drop 
-       foreign key FKt6ri3quy5f038vi3a2ddx11tq;
+       foreign key FKt3a5ucm55flr00fj8a7gwchs9;
 
     alter table SMP_GROUP_RESOURCE_AUD 
        drop 
