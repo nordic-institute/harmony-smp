@@ -49,6 +49,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-io.version>2.11.0</commons-io.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-fileupload.version>1.5</commons-fileupload.version>
         <commons-net.version>3.8.0</commons-net.version>
         <commons-validator.version>1.7</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
@@ -73,7 +74,7 @@
         <junit.version>4.13.2</junit.version>
         <junitparams.version>1.1.1</junitparams.version>
         <logback.version>1.2.11</logback.version>
-        <mysql.jdbc.version>8.0.31</mysql.jdbc.version>
+        <mysql.jdbc.version>8.0.32</mysql.jdbc.version>
         <metro.version>2.2.1-1</metro.version>
         <mockito.version>2.23.4</mockito.version>
         <orika.version>1.5.4</orika.version>
@@ -81,10 +82,10 @@
         <slf4j.version>1.7.36</slf4j.version>
         <soapui.plugin.version>5.1.2</soapui.plugin.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring-boot.version>2.7.7</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.70</spring-boot.tomcat.version>
-        <spring.security.version>5.7.5</spring.security.version>
-        <spring.version>5.3.25</spring.version>
+        <spring-boot.version>2.7.10</spring-boot.version>
+        <spring-boot.tomcat.version>9.0.73</spring-boot.tomcat.version>
+        <spring.security.version>5.8.2</spring.security.version>
+        <spring.version>5.3.26</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
         <!-- plugins -->
@@ -516,6 +517,12 @@
                 <version>${commons-lang3.version}</version>
             </dependency>
             <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
                 <version>${javaee-api.version}</version>
@@ -776,7 +783,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>7.4.4</version>
+                        <version>8.1.2</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
