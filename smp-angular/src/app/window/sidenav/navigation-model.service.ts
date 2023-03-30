@@ -158,19 +158,23 @@ let NAVIGATION_TREE: NavigationNode[] = [
     children: [
       {
         code: "user-data-profile",
-        name: "User profile"
+        name: "User profile",
+        icon: "account_circle",
       },
       {
         code: "user-data-access-token",
-        name: "Access tokens"
+        name: "Access tokens",
+        icon: "key",
       },
       {
         code: "user-data-certificates",
-        name: "Certificates"
+        name: "Certificates",
+        icon: "article",
       },
       {
         code: "user-data-membership",
-        name: "Membership"
+        name: "Membership",
+        icon: "person",
       }
     ]
   },

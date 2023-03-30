@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -13,6 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
+
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_DOMAIN_CODE;
 
 
 /**
@@ -24,15 +26,20 @@ import java.util.Optional;
 @Service
 public class DomainResolverService {
 
+    /**
+     * Domain pattern as defined in documentation since SMP 3.0.0
+     */
+    public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
     final DomainDao domainDao;
     final ConfigurationService configurationService;
 
-    public DomainResolverService(DomainDao domainDao,  ConfigurationService configurationService) {
+    public DomainResolverService(DomainDao domainDao, ConfigurationService configurationService) {
         this.domainDao = domainDao;
         this.configurationService = configurationService;
     }
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainResolverService.class);
+
     /**
      * DomiSMP resolves the domain in the following order.
      * <ol>
@@ -52,6 +59,8 @@ public class DomainResolverService {
      */
     public DBDomain resolveDomain(String headerParameter, String pathParameter) {
         LOG.info("Resolve domain for HTTP header [{}] and path parameter [{}]", headerParameter, pathParameter);
+
+
         // get single domain
         Optional<DBDomain> optDomain = domainDao.getTheOnlyDomain();
         if (optDomain.isPresent()) {
@@ -60,7 +69,7 @@ public class DomainResolverService {
         }
         // get
         if (StringUtils.isNotBlank(headerParameter)) {
-            optDomain = domainDao.getDomainByCode(headerParameter);
+            optDomain = validatedAndReturnDomainByCode(headerParameter);
             if (optDomain.isPresent()) {
                 LOG.debug("Located domain by the http header [{}]", headerParameter);
                 return optDomain.get();
@@ -88,5 +97,15 @@ public class DomainResolverService {
             return domain;
         }
         throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "No domain is configured for the DomiSMP instance!");
+    }
+
+    public Optional<DBDomain> validatedAndReturnDomainByCode(final String domain) {
+
+        // else test if domain is ok.
+        if (!DOMAIN_ID_PATTERN.matcher(domain).matches()) {
+            throw new SMPRuntimeException(INVALID_DOMAIN_CODE, domain, DOMAIN_ID_PATTERN);
+        }
+        // get domain by code
+        return domainDao.getDomainByCode(domain);
     }
 }

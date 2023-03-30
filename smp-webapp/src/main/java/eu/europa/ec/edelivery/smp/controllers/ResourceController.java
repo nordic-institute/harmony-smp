@@ -34,7 +34,7 @@ import static eu.europa.ec.edelivery.smp.servlet.WebConstants.*;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 
 /**
- * Resource controller - allows only HTTP methods
+ * Resource controller - allows HTTP methods for resource handling
  * - GET - for reading the resource
  * - PUT for Creating (HTTP RESPONSE 201) and updating ((HTTP RESPONSE 200)) the objects
  * - DELETE for deleting the object

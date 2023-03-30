@@ -46,6 +46,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
@@ -140,8 +141,11 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .addFilter(getEDeliveryX509AuthenticationFilter());
 
 
-        httpSecurity.httpBasic().authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
-                .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
+        httpSecurity
+                .httpBasic()
+                .authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
+                .anonymous()
+                .authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
                 .antMatchers(HttpMethod.POST, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()

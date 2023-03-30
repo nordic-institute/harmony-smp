@@ -192,14 +192,9 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         URLCsrfIgnoreMatcher requestMatcher = new URLCsrfIgnoreMatcher();
         // init pages
         requestMatcher.addIgnoreUrl("^$", HttpMethod.GET);
-        //ignore CSRF for SMP rest API
+        //ignore CSRF for SMP rest API (or use CSRF for the UI)
         requestMatcher.addIgnoreUrl("^/(?!ui/)[^/]*(/services/.*)?$", HttpMethod.GET, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.POST);
-
-        //requestMatcher.addIgnoreUrl("^(/smp)?/$", HttpMethod.GET);
-        //requestMatcher.addIgnoreUrl("/favicon(-[0-9x]{2,7})?.(png|ico)$", HttpMethod.GET);
         requestMatcher.addIgnoreUrl("^(/smp)?/(index.html|ui/(#/)?|)$", HttpMethod.GET);
-        // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
-        //requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
         // ignore for login and logout
         requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY + "/authentication", HttpMethod.DELETE, HttpMethod.POST);
         requestMatcher.addIgnoreUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE, HttpMethod.GET);

@@ -6,7 +6,7 @@
     <li class="mat-tree-node nav-tree-leaf" [ngClass]="{ 'background-highlight': navigationModel.selected === node}">
       <button mat-menu-item (click)="menuClickHandler(node)" >
         <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
-        <span>{{node.name}}</span>
+        <span *ngIf="fullMenu">{{node.name}}</span>
       </button>
     </li>
   </mat-tree-node>

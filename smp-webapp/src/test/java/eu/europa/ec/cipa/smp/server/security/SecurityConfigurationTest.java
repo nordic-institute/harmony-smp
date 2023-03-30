@@ -30,6 +30,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -145,7 +146,7 @@ public class SecurityConfigurationTest {
     public void validClientCertHeaderAuthorizedForPutTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER);
-        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
+        String result = mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .headers(headers)
                 .with(csrf()))
                 .andExpect(status().isOk())
@@ -197,7 +198,7 @@ public class SecurityConfigurationTest {
                 .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT__DB_UPPER_SN)));
+                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT__DB_UPPER_SN))).toString();
     }
 
     @Test

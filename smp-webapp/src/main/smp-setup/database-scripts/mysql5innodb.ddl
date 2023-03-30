@@ -348,16 +348,16 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_GROUP_RESOURCE (
-       FK_GROUP_ID bigint not null,
-        FK_RESOURCE_ID bigint not null
+       FK_RESOURCE_ID bigint not null,
+        FK_GROUP_ID bigint not null
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_GROUP_RESOURCE_AUD (
        REV bigint not null,
-        FK_GROUP_ID bigint not null,
         FK_RESOURCE_ID bigint not null,
+        FK_GROUP_ID bigint not null,
         REVTYPE tinyint,
-        primary key (REV, FK_GROUP_ID, FK_RESOURCE_ID)
+        primary key (REV, FK_RESOURCE_ID, FK_GROUP_ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_RESOURCE (
@@ -728,13 +728,13 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        references SMP_REV_INFO (id);
 
     alter table SMP_GROUP_RESOURCE 
-       add constraint FKlqye84uvqu0rk9xhmlkd418rk 
-       foreign key (FK_RESOURCE_ID) 
+       add constraint FK4i7qwh2ydleesw4pkf6c17t9t 
+       foreign key (FK_GROUP_ID) 
        references SMP_GROUP (ID);
 
     alter table SMP_GROUP_RESOURCE 
-       add constraint FKt6ri3quy5f038vi3a2ddx11tq 
-       foreign key (FK_GROUP_ID) 
+       add constraint FKt3a5ucm55flr00fj8a7gwchs9 
+       foreign key (FK_RESOURCE_ID) 
        references SMP_RESOURCE (ID);
 
     alter table SMP_GROUP_RESOURCE_AUD 

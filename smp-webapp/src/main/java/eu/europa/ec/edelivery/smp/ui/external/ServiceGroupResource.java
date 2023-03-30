@@ -49,7 +49,7 @@ public class ServiceGroupResource {
     }
 
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceResult<ServiceGroupRO> getServiceGroupList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
@@ -83,7 +83,7 @@ public class ServiceGroupResource {
     }
 
     @GetMapping(path = "{serviceGroupId}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceGroupRO getServiceGroupById(@PathVariable Long serviceGroupId) {
         LOG.info("Get service group [{}]", serviceGroupId);
         // SMP administrators are authorized by default
@@ -98,14 +98,14 @@ public class ServiceGroupResource {
     }
 
     @GetMapping(path = "{service-group-id}/extension", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceGroupValidationRO getExtensionServiceGroupById(@PathVariable("service-group-id") Long sgId) {
         LOG.info("Get service group extension [{}]", sgId);
         return uiServiceGroupService.getServiceGroupExtensionById(sgId);
     }
 
     @PostMapping(path = "extension/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceGroupValidationRO getValidateExtensionService(@RequestBody ServiceGroupValidationRO sg) {
         LOG.info("Validate service group extension");
         LOG.debug("Extension: [{}]", sg.getExtension());
@@ -113,7 +113,7 @@ public class ServiceGroupResource {
     }
 
     @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public void updateServiceGroupList(@RequestBody ServiceGroupRO[] updateEntities) {
         LOG.info("Update ServiceGroupRO count: " + updateEntities.length);
         uiServiceGroupService.updateServiceGroupList(Arrays.asList(updateEntities), authorizationService.isSMPAdministrator());

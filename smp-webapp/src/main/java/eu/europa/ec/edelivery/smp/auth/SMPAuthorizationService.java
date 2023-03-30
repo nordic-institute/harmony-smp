@@ -58,7 +58,7 @@ public class SMPAuthorizationService {
 
     public boolean isSMPAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        boolean hasRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, userDetails);
+        boolean hasRole = hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails);
         LOG.debug("Logged user [{}] is SMP administrator role [{}]", userDetails.getUsername(), hasRole);
         return hasRole;
     }
@@ -78,14 +78,10 @@ public class SMPAuthorizationService {
 
     public boolean isAuthorizedForManagingTheServiceMetadataGroup(Long serviceMetadataId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        if (hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, userDetails)) {
+        if (hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails)) {
             LOG.debug("SMP admin is authorized to manage service metadata: [{}]" + serviceMetadataId);
             return true;
 
-        }
-        if (!hasSessionUserRole(S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN, userDetails)) {
-            LOG.debug("User is Service group admin nor SMP admin. User is not allowed to manage service metadata: [{}]" + serviceMetadataId);
-            return false;
         }
         Long userId = userDetails.getUser().getId();
         return serviceGroupService.isServiceGroupOwnerForMetadataID(userId, serviceMetadataId);

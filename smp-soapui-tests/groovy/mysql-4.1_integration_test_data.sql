@@ -56,7 +56,6 @@ insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_
 insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
 (1,1,  1, '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW());
 
-
 insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_UPDATED_ON) values
 (2, 1, 'application/xml', 'service-metadta', NOW(),  NOW());
 

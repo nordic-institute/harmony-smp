@@ -43,7 +43,6 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ComponentScan(basePackages = {
         "eu.europa.ec.edelivery.smp",
         "eu.europa.ec.edelivery.smp.config",
-        "eu.europa.ec.edelivery.smp.validation",
         "eu.europa.ec.edelivery.smp.monitor",
         "eu.europa.ec.edelivery.smp.ui",
         "eu.europa.ec.smp.spi",})

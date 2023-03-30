@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
 @Sql(scripts = {"classpath:/cleanup-database.sql",
-        "classpath:/webapp_integration_test_data_one_domain.sql"},
+        "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
 public class ServiceGroupControllerSingleDomainTest {
 

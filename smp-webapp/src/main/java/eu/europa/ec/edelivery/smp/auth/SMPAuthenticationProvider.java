@@ -103,6 +103,7 @@ public class SMPAuthenticationProvider  extends AbstracdtAuthenticationProvider 
             authentication.setAuthenticated(false);
         }
 
+
         return authentication;
     }
 
@@ -209,7 +210,7 @@ public class SMPAuthenticationProvider  extends AbstracdtAuthenticationProvider 
                 userToken,
                 userDetails);
 
-
+        LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, principal, authority.getRole());
         return smpAuthenticationToken;
     }
 

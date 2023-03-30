@@ -23,7 +23,7 @@
     <!--
     set variable to force use of pre-installed npm-->
     <!-- To build  with preinstalled nodejs build with usePreInstalledNpm argument as example
-    (works only on linux for windows update arguments in exec plugin below)
+    (works only on linux for Windows update arguments in exec plugin below)
     mvn clean install -DusePreInstalledNpm -Dnpm.path=/opt/programs/node-v14.17.0-linux-x64/bin
     -->
     <npm.path>${env.bamboo_CITNET_NODEJS_14_LINUX_PATH}</npm.path>
