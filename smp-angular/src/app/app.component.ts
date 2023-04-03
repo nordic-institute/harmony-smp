@@ -1,17 +1,17 @@
-import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {SecurityService} from './security/security.service';
 import {Router} from '@angular/router';
 import {Authority} from "./security/authority.model";
 import {AlertMessageService} from "./common/alert-message/alert-message.service";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {GlobalLookups} from "./common/global-lookups";
 import {UserController} from "./user/user-controller";
 import {HttpClient} from "@angular/common/http";
-import {SearchTableEntityStatus} from "./common/search-table/search-table-entity-status.model";
-import {UserService} from "./user/user.service";
-import {UserDetailsDialogMode} from "./user/user-details-dialog/user-details-dialog.component";
 import {SidenavComponent} from "./window/sidenav/sidenav.component";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
+import {ThemeService} from "./common/theme-service/theme.service";
+import {AlertRo} from "./alert/alert-ro.model";
+import {AlertMessageComponent} from "./common/alert-message/alert-message.component";
 
 @Component({
   selector: 'app-root',
@@ -19,6 +19,8 @@ import {ToolbarComponent} from "./window/toolbar/toolbar.component";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+
+  @ViewChild('alertMessage') alertMessage: AlertMessageComponent;
 
   @ViewChild('sidenav') sidenav: SidenavComponent;
   @ViewChild('windowToolbar') windowToolbar: ToolbarComponent;
@@ -35,12 +37,11 @@ export class AppComponent {
     private http: HttpClient,
     private dialog: MatDialog,
     private lookups: GlobalLookups,
+    private themeService: ThemeService,
   ) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
-
-
-
+    themeService.updateThemeFromLocalStorage();
   }
 
 
@@ -74,8 +75,8 @@ export class AppComponent {
   }
 
   logout(event: Event): void {
-    this.router.navigate(['/search']).then((result)=> {
-      if (result){
+    this.router.navigate(['/search']).then((result) => {
+      if (result) {
         this.securityService.logout();
       }
     });
@@ -100,6 +101,11 @@ export class AppComponent {
 
   clearWarning() {
     this.alertService.clearAlert();
+  }
+
+  onDrawerContentScroll(scrollEvent: any){
+    let scrollTop = scrollEvent.srcElement.scrollTop;
+    this.alertMessage.setSticky(scrollTop > 0)
   }
 
 }

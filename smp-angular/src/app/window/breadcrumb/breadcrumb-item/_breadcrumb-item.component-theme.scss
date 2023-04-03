@@ -1,0 +1,25 @@
+@use '../../../../_smp-theme-helper' as smp;
+
+@mixin set-component-colors($theme) {
+
+  .smp-breadcrumb-item {
+    color: linear-gradient(to right, rgba(0, 0, 0, 0) 150px, smp.get-theme-color($theme, primary, 500-contrast));
+  }
+  .smp-breadcrumb-item:hover {
+    color: linear-gradient(to right, rgba(0, 0, 0, 0) 150px, smp.get-theme-color($theme, accent, 500-lighter-contrast));
+  }
+  .smp-breadcrumb-item:hover .smp-breadcrumb-arrow {
+    background-color: smp.get-theme-color($theme, primary, lighter);
+    border-color: smp.get-theme-color($theme, primary,  50-lighter);
+  }
+  .smp-breadcrumb-item .smp-breadcrumb-arrow {
+    background-color: smp.get-theme-color($theme, primary);
+    border-color: smp.get-theme-color($theme, primary);
+  }
+  .smp-breadcrumb-arrow {
+    border-color: smp.get-theme-color($theme, primary, 50);
+  }
+
+
+}
+

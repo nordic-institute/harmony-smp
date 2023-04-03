@@ -34,6 +34,7 @@ export class SecurityService {
       {headers})
       .subscribe((response: User) => {
           this.updateUserDetails(response);
+          this.securityEventService.notifyLoginSuccessEvent(response);
         },
         (error: any) => {
           this.securityEventService.notifyLoginErrorEvent(error);
@@ -41,12 +42,13 @@ export class SecurityService {
   }
 
   refreshLoggedUserFromServer() {
-    this.getCurrentUsernameFromServer().subscribe((res: User) => {
-      this.updateUserDetails(res);
-      if (res?.forceChangeExpiredPassword) {
+    this.getCurrentUsernameFromServer().subscribe((userDetails: User) => {
+      this.updateUserDetails(userDetails);
+      this.securityEventService.notifyLoginSuccessEvent(userDetails);
+      if (userDetails?.forceChangeExpiredPassword) {
         this.dialog.open(PasswordChangeDialogComponent, {
           data: {
-            user: res,
+            user: userDetails,
             adminUser: false
           }
         }).afterClosed().subscribe(res =>
@@ -113,6 +115,9 @@ export class SecurityService {
     return this.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
   }
 
+
+
+
   isCurrentUserSMPAdmin(): boolean {
     return this.isCurrentUserInRole([Authority.SMP_ADMIN]);
   }
@@ -147,8 +152,8 @@ export class SecurityService {
   }
 
   updateUserDetails(userDetails: User) {
+    // store user data to local storage!
     this.populateLocalStorage(JSON.stringify(userDetails));
-    this.securityEventService.notifyLoginSuccessEvent(userDetails);
   }
 
   private populateLocalStorage(userDetails: string) {

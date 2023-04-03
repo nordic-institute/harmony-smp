@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY;
 
 /**
@@ -56,21 +55,10 @@ public class UserDao extends BaseDao<DBUser> {
     @Override
     @Transactional
     public void persistFlushDetach(DBUser user) {
-        /*
-        if (StringUtils.isBlank(user.getUsername())
-                && (user.getCertificate() == null || StringUtils.isBlank(user.getCertificate().getCertificateId()))) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_USER_NO_IDENTIFIERS);
-        }
         // update username to lower caps
         if (!StringUtils.isBlank(user.getUsername())) {
             user.setUsername(user.getUsername().toLowerCase());
         }
-        // if certificate id is null/empty then do not store certificate object to database
-        // because of unique constraint  and empty value in mysql is also subject to the constraint!
-        if (user.getCertificate() != null && StringUtils.isBlank(user.getCertificate().getCertificateId())) {
-            user.setCertificate(null);
-        }
-*/
         super.persistFlushDetach(user);
     }
 
@@ -153,9 +141,9 @@ public class UserDao extends BaseDao<DBUser> {
             return Optional.empty();
         }
         // Certificate identifier is used only for REST_API
-        return  findUserByCredentialNameTargetName(caseInsensitive, certificateId,
+        return findUserByCredentialNameTargetName(caseInsensitive, certificateId,
                 CredentialType.CERTIFICATE,
-                CredentialTargetType.REST_API );
+                CredentialTargetType.REST_API);
     }
 
 
@@ -163,25 +151,25 @@ public class UserDao extends BaseDao<DBUser> {
      * Method finds user by user credentials for credential name, type and target. If user identity token not exist
      * Optional  with isPresent - false is returned.
      *
-     * @param credentialName the name of the credential
-     * @param credentialType the type of the credential
+     * @param credentialName       the name of the credential
+     * @param credentialType       the type of the credential
      * @param credentialTargetType the target of the credential
      * @return returns Optional DBUser for username
      */
-    public Optional<DBUser> findUserByCredentialNameTargetName( boolean caseInsensitive,
-                                                                String credentialName,
-                                                                CredentialType credentialType,
-                                                                CredentialTargetType credentialTargetType) {
+    public Optional<DBUser> findUserByCredentialNameTargetName(boolean caseInsensitive,
+                                                               String credentialName,
+                                                               CredentialType credentialType,
+                                                               CredentialTargetType credentialTargetType) {
         // check if blank
         if (StringUtils.isBlank(credentialName)) {
             return Optional.empty();
         }
         try {
-            String queryName = caseInsensitive ? QUERY_USER_BY_CI_CREDENTIAL_NAME_TYPE_TARGET: QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET;
+            String queryName = caseInsensitive ? QUERY_USER_BY_CI_CREDENTIAL_NAME_TYPE_TARGET : QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET;
             TypedQuery<DBUser> query = memEManager.createNamedQuery(queryName, DBUser.class);
             query.setParameter(PARAM_CREDENTIAL_NAME, StringUtils.trim(credentialName));
             query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType);
-            query.setParameter(PARAM_CREDENTIAL_TARGET,credentialTargetType);
+            query.setParameter(PARAM_CREDENTIAL_TARGET, credentialTargetType);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();

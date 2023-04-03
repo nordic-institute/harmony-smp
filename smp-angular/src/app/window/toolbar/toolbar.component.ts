@@ -5,12 +5,11 @@ import {Authority} from "../../security/authority.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {UserDetailsDialogMode} from "../../user/user-details-dialog/user-details-dialog.component";
-import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
+import {EntityStatus} from "../../common/model/entity-status.model";
 import {UserService} from "../../user/user.service";
 import {UserController} from "../../user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../common/global-lookups";
-import {NavigationModel} from "../sidenav/navigation-model.service";
 
 /**
  * Expanded side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
@@ -69,8 +68,14 @@ export class ToolbarComponent implements OnInit {
 
   get currentUser(): string {
     let user = this.securityService.getCurrentUser();
-    return user ? user.username : "";
+    let userDesc =  user ? (
+        user.fullName? user.fullName +" ["+user.username+"]":user.username)
+      :"";
+
+    return  (userDesc.length>25)?userDesc.slice(0,25) + "...":userDesc
   }
+
+
 
   editCurrentUser() {
     const formRef: MatDialogRef<any> = this.userController.newDialog({
@@ -78,7 +83,7 @@ export class ToolbarComponent implements OnInit {
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        const user = {...formRef.componentInstance.getCurrent(), status: SearchTableEntityStatus.UPDATED};
+        const user = {...formRef.componentInstance.getCurrent(), status: EntityStatus.UPDATED};
         this.userService.updateUser(user);
       }
     });
@@ -87,12 +92,8 @@ export class ToolbarComponent implements OnInit {
   get currentUserRoleDescription(): string {
     if (this.securityService.isCurrentUserSystemAdmin()) {
       return "System administrator";
-    } else if (this.securityService.isCurrentUserSMPAdmin()) {
-      return "SMP administrator";
-    } else if (this.securityService.isCurrentUserServiceGroupAdmin()) {
-      return "Service group administrator";
     }
-    return "";
+    return "SMP user";
   }
 
   openCurrentCasUserData() {
@@ -110,7 +111,6 @@ export class ToolbarComponent implements OnInit {
   get isUserAuthSSOEnabled(): boolean {
     return this.lookups.cachedApplicationInfo?.authTypes?.includes('SSO');
   }
-
 
   changeCurrentUserPassword() {
     const formRef: MatDialogRef<any> = this.userController.changePasswordDialog({

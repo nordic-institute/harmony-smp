@@ -1,0 +1,11 @@
+// class contains links to all DomiSMP scss files for updating the theme (useful when building application with multiple themes )
+
+@use 'app/window/toolbar/_toolbar.component-theme' as toolbar;
+@use 'app/window/breadcrumb/breadcrumb-item/_breadcrumb-item.component-theme' as breadcrumb-item;
+@use 'app/window/sidenav/nav-tree/_nav-tree.component-theme' as nav-tree;
+
+@mixin all-component-colors($theme) {
+  @include toolbar.set-component-colors($theme);
+  @include breadcrumb-item.set-component-colors($theme);
+  @include nav-tree.set-component-colors($theme);
+}

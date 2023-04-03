@@ -16,7 +16,7 @@ import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {SecurityService} from "../security/security.service";
-import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
+import {EntityStatus} from "../common/model/entity-status.model";
 
 
 @Component({
@@ -97,11 +97,11 @@ export class PropertyComponent implements OnInit, AfterViewInit, AfterViewChecke
   }
 
   aliasCssClass(alias: string, row) {
-    if (row.status === SearchTableEntityStatus.NEW) {
+    if (row.status === EntityStatus.NEW) {
       return 'table-row-new';
-    } else if (row.status === SearchTableEntityStatus.UPDATED) {
+    } else if (row.status === EntityStatus.UPDATED) {
       return 'table-row-updated';
-    } else if (row.status === SearchTableEntityStatus.REMOVED) {
+    } else if (row.status === EntityStatus.REMOVED) {
       return 'deleted';
     } else if (row.updateDate) {
       return 'table-row-pending';

@@ -166,4 +166,18 @@ public class DBCertificate extends BaseEntity {
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, certificateId);
     }
+
+    @Override
+    public String toString() {
+        return "DBCertificate{" +
+                "id=" + id +
+                ", certificateId='" + certificateId + '\'' +
+                ", validFrom=" + validFrom +
+                ", validTo=" + validTo +
+                ", subject='" + subject + '\'' +
+                ", issuer='" + issuer + '\'' +
+                ", serialNumber='" + serialNumber + '\'' +
+                ", crlUrl='" + crlUrl + '\'' +
+                '}';
+    }
 }

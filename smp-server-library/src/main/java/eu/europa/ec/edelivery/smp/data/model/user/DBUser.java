@@ -13,8 +13,8 @@
 package eu.europa.ec.edelivery.smp.data.model.user;
 
 import eu.europa.ec.edelivery.smp.data.dao.QueryNames;
-import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
@@ -31,18 +31,18 @@ import java.util.Objects;
 @org.hibernate.annotations.Table(appliesTo = "SMP_USER", comment = "SMP can handle multiple domains. This table contains domain specific data")
 @NamedQuery(name = QueryNames.QUERY_USER_BY_CI_USERNAME, query = "SELECT u FROM DBUser u WHERE upper(u.username) = upper(:username)")
 @NamedQuery(name = QueryNames.QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT u FROM DBCredential c JOIN c.user u " +
-    " WHERE c.name = :credential_name" +
-    " AND c.credentialType = :credential_type " +
-    " AND c.credentialTarget = :credential_target")
+        " WHERE c.name = :credential_name" +
+        " AND c.credentialType = :credential_type " +
+        " AND c.credentialTarget = :credential_target")
 @NamedQuery(name = QueryNames.QUERY_USER_BY_CI_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT u FROM DBCredential c JOIN c.user u " +
-    " WHERE upper(c.name) = upper(:credential_name) " +
-    " AND c.credentialType = :credential_type " +
-    " AND c.credentialTarget = :credential_target")
+        " WHERE upper(c.name) = upper(:credential_name) " +
+        " AND c.credentialType = :credential_type " +
+        " AND c.credentialTarget = :credential_target")
 //@NamedQueries({
 
-       // @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
-        //@NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.accessTokenIdentifier = :patId"),
-        //@NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE upper(u.certificate.certificateId) = upper(:certificateId)"),
+// @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
+//@NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.accessTokenIdentifier = :patId"),
+//@NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE upper(u.certificate.certificateId) = upper(:certificateId)"),
         /*@NamedQuery(name = "DBUser.getUsersForBeforePasswordExpireAlerts",
                 query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
                         " AND u.passwordExpireOn <= :startAlertDate " +
@@ -113,9 +113,6 @@ public class DBUser extends BaseEntity {
     @Column(name = "ID")
     @ColumnDescription(comment = "Unique user id")
     Long id;
-    @Column(name = "EMAIL", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
-    @ColumnDescription(comment = "User email")
-    private String emailAddress;
     // username
     @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true, nullable = false)
     @ColumnDescription(comment = "Unique username identifier. The Username must not be null")
@@ -123,11 +120,22 @@ public class DBUser extends BaseEntity {
     @Column(name = "ACTIVE", nullable = false)
     @ColumnDescription(comment = "Is user active")
     private boolean active = true;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "APPLICATION_ROLE", length = CommonColumnsLengths.MAX_USER_ROLE_LENGTH)
     @ColumnDescription(comment = "User application role as USER, SYSTEM_ADMIN")
     private ApplicationRoleType applicationRole;
+
+    @Column(name = "EMAIL", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
+    @ColumnDescription(comment = "User email")
+    private String emailAddress;
+
+    @Column(name = "FULL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
+    @ColumnDescription(comment = "User full name (name and lastname)")
+    private String fullName;
+
+    @Column(name = "SMP_THEME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_64)
+    @ColumnDescription(comment = "DomiSMP theme for the user")
+    private String smpTheme;
 
     @Override
     public Long getId() {
@@ -168,6 +176,22 @@ public class DBUser extends BaseEntity {
 
     public void setApplicationRole(ApplicationRoleType applicationRole) {
         this.applicationRole = applicationRole;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getSmpTheme() {
+        return smpTheme;
+    }
+
+    public void setSmpTheme(String smpTheme) {
+        this.smpTheme = smpTheme;
     }
 
     @Override

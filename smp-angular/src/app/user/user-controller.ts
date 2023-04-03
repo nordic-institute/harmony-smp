@@ -2,7 +2,7 @@ import {SearchTableController} from '../common/search-table/search-table-control
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {UserDetailsDialogComponent, UserDetailsDialogMode} from './user-details-dialog/user-details-dialog.component';
 import {UserRo} from './user-ro.model';
-import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
+import {EntityStatus} from '../common/model/entity-status.model';
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
@@ -72,8 +72,8 @@ export class UserController implements SearchTableController {
       emailAddress: '',
       role: '',
       active: true,
-      status: SearchTableEntityStatus.NEW,
-      statusPassword: SearchTableEntityStatus.NEW
+      status: EntityStatus.NEW,
+      statusPassword: EntityStatus.NEW
     }
   }
 

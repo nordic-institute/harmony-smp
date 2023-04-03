@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 import {PropertyRo} from "../property-ro.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
+import {EntityStatus} from "../../common/model/entity-status.model";
 import {ServiceGroupValidationRo} from "../../service-group-edit/service-group-details-dialog/service-group-validation-edit-ro.model";
 import {SmpConstants} from "../../smp.constants";
 import {ServiceGroupValidationErrorCodeModel} from "../../service-group-edit/service-group-details-dialog/service-group-validation-error-code.model";
@@ -49,7 +49,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
         type: '',
         desc: '',
         readonly: false,
-        status: SearchTableEntityStatus.NEW,
+        status: EntityStatus.NEW,
       };
 
     this.propertyForm = fb.group({

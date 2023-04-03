@@ -38,6 +38,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         @NamedQuery(name = QUERY_CREDENTIAL_ALL, query = "SELECT u FROM DBCredential u"),
         @NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
                 "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
+        @NamedQuery(name = QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
+                "WHERE c.user.id = :user_id and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
+
+
         // case-insensitive search
         @NamedQuery(name = QUERY_CREDENTIAL_BY_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
                 "WHERE c.name = :credential_name and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
@@ -121,10 +125,19 @@ public class DBCredential extends BaseEntity {
     @JoinColumn(name = "FK_USER_ID")
     private DBUser user;
 
+    @Column(name = "CREDENTIAL_ACTIVE", nullable = false)
+    @ColumnDescription(comment = "Is credential active")
+    private boolean active = true;
+
     // username
     @Column(name = "CREDENTIAL_NAME", length = CommonColumnsLengths.MAX_IDENTIFIER_VALUE_VALUE_LENGTH, nullable = false)
     @ColumnDescription(comment = "Unique username identifier. The Username must not be null")
     private String name;
+
+    @Column(name = "CREDENTIAL_DESC",
+            length = CommonColumnsLengths.MAX_IDENTIFIER_VALUE_VALUE_LENGTH)
+    @ColumnDescription(comment = "Credential description")
+    private String description;
     @Column(name = "CREDENTIAL_VALUE", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
     @ColumnDescription(comment = "Credential value - it can be encrypted value")
     private String value;
@@ -159,7 +172,9 @@ public class DBCredential extends BaseEntity {
     private CredentialTargetType credentialTarget = CredentialTargetType.UI;
 
 
-    @OneToOne(mappedBy = "credential", cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    @OneToOne(mappedBy = "credential",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
             orphanRemoval = true)
     private DBCertificate certificate;
 
@@ -190,6 +205,22 @@ public class DBCredential extends BaseEntity {
 
     public String getValue() {
         return value;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setValue(String value) {

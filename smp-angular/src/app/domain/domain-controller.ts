@@ -2,7 +2,7 @@ import {SearchTableController} from '../common/search-table/search-table-control
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {DomainDetailsDialogComponent} from './domain-details-dialog/domain-details-dialog.component';
 import {DomainRo} from './domain-ro.model';
-import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
+import {EntityStatus} from '../common/model/entity-status.model';
 import {GlobalLookups} from "../common/global-lookups";
 import {of} from "rxjs/internal/observable/of";
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
@@ -43,7 +43,7 @@ export class DomainController implements SearchTableController {
       smlClientCertHeader: '',
       smlClientKeyAlias: '',
       signatureKeyAlias: '',
-      status: SearchTableEntityStatus.NEW,
+      status: EntityStatus.NEW,
       smlRegistered: false,
       smlClientCertAuth: false,
     }

@@ -7,6 +7,14 @@
   z-index: 1000;
 }
 
+.stickyError {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  left: 180px;
+}
+
 .alert-error {background-color: #f44336;}
 .alert-success {background-color: #4CAF50;}
 .alert-info {background-color: #2196F3;}

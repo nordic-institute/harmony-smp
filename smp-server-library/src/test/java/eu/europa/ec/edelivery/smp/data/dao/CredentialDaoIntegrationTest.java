@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
@@ -15,8 +16,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.upperCase;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 /**
  * @author Joze Rihtarsic
@@ -74,4 +74,30 @@ public class CredentialDaoIntegrationTest extends AbstractBaseDao {
         assertEquals(u.getEmailAddress(), ou.get().getUser().getEmailAddress());
         assertEquals(u.getUsername(), ou.get().getUser().getUsername());
     }
+
+    @Test
+    public void findCertificateCredential() {
+        String username = lowerCase(TestConstants.USERNAME_1);
+        DBCredential credential = TestDBUtils.createDBCredential(username, "TEST", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        DBCertificate certificate = TestDBUtils.createDBCertificate();
+        credential.setCertificate(certificate);
+        DBUser u = TestDBUtils.createDBUserByUsername(username);
+        // execute
+        userDao.persistFlushDetach(u);
+        credential.setUser(u);
+        testInstance.persistFlushDetach(credential);
+
+        //test
+        Optional<DBCredential> ou = testInstance.findCredential(credential.getId());
+        assertNotSame(credential, ou.get());
+        assertEquals(credential, ou.get());
+        assertEquals(credential.getCredentialType(), ou.get().getCredentialType());
+        assertEquals(credential.getCredentialTarget(), ou.get().getCredentialTarget());
+        assertEquals(credential.getName(), ou.get().getName());
+        assertEquals(credential.getValue(), ou.get().getValue());
+        assertNotNull(credential.getCertificate());
+
+    }
+
+
 }

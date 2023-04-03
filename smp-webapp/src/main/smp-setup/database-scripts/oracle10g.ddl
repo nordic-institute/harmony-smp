@@ -184,10 +184,12 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
+        CREDENTIAL_ACTIVE number(1,0) not null,
         ACTIVE_FROM timestamp,
         CHANGED_ON timestamp,
         CREDENTIAL_TARGET varchar2(255 char) not null,
         CREDENTIAL_TYPE varchar2(255 char) not null,
+        CREDENTIAL_DESC varchar2(256 char),
         LAST_ALERT_ON timestamp,
         EXPIRE_ON timestamp,
         LAST_FAILED_LOGIN_ON timestamp,
@@ -204,6 +206,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_CREDENTIAL.ID is
         'Unique id';
 
+    comment on column SMP_CREDENTIAL.CREDENTIAL_ACTIVE is
+        'Is credential active';
+
     comment on column SMP_CREDENTIAL.ACTIVE_FROM is
         'Date when credential starts to be active';
 
@@ -215,6 +220,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     comment on column SMP_CREDENTIAL.CREDENTIAL_TYPE is
         'Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS';
+
+    comment on column SMP_CREDENTIAL.CREDENTIAL_DESC is
+        'Credential description';
 
     comment on column SMP_CREDENTIAL.LAST_ALERT_ON is
         'Generated last password expire alert';
@@ -240,10 +248,12 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         REVTYPE number(3,0),
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
+        CREDENTIAL_ACTIVE number(1,0),
         ACTIVE_FROM timestamp,
         CHANGED_ON timestamp,
         CREDENTIAL_TARGET varchar2(255 char),
         CREDENTIAL_TYPE varchar2(255 char),
+        CREDENTIAL_DESC varchar2(256 char),
         LAST_ALERT_ON timestamp,
         EXPIRE_ON timestamp,
         LAST_FAILED_LOGIN_ON timestamp,
@@ -740,7 +750,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp not null,
         ACTIVE number(1,0) not null,
         APPLICATION_ROLE varchar2(256 char),
-        EMAIL varchar2(256 char),
+        EMAIL varchar2(128 char),
+        FULL_NAME varchar2(128 char),
+        SMP_THEME varchar2(64 char),
         USERNAME varchar2(256 char) not null,
         primary key (ID)
     );
@@ -760,6 +772,12 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_USER.EMAIL is
         'User email';
 
+    comment on column SMP_USER.FULL_NAME is
+        'User full name (name and lastname)';
+
+    comment on column SMP_USER.SMP_THEME is
+        'DomiSMP theme for the user';
+
     comment on column SMP_USER.USERNAME is
         'Unique username identifier. The Username must not be null';
 
@@ -771,7 +789,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         LAST_UPDATED_ON timestamp,
         ACTIVE number(1,0),
         APPLICATION_ROLE varchar2(256 char),
-        EMAIL varchar2(256 char),
+        EMAIL varchar2(128 char),
+        FULL_NAME varchar2(128 char),
+        SMP_THEME varchar2(64 char),
         USERNAME varchar2(256 char),
         primary key (ID, REV)
     );

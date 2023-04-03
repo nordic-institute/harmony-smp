@@ -13,12 +13,12 @@ export class NavTreeMenu {
   @Input() trigger = "Trigger";
   @Input() isRootNode = false;
 
-  constructor() {
-  }
-
-
   triggerClickEvent() {
     this.notifyClickMenu.emit(this.data);
+  }
+
+  get isLeaf(){
+    return !this.data.children || this.data.children.length ==0
   }
 
 }

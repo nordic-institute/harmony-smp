@@ -19,7 +19,7 @@ import {SearchTableComponent} from "../common/search-table/search-table.componen
 import {SecurityService} from "../security/security.service";
 import {DomainRo} from "./domain-ro.model";
 import {ConfirmationDialogComponent} from "../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
+import {EntityStatus} from "../common/model/entity-status.model";
 import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-dialog.component";
 import {SmpInfoService} from "../app-info/smp-info.service";
 import {SmlIntegrationService} from "./sml-integration.service";
@@ -140,11 +140,11 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
   aliasCssClass(alias: string, row) {
     if (!this.certificateAliasExists(alias)) {
       return 'missingKey';
-    } else if (row.status === SearchTableEntityStatus.NEW) {
+    } else if (row.status === EntityStatus.NEW) {
       return 'table-row-new';
-    } else if (row.status === SearchTableEntityStatus.UPDATED) {
+    } else if (row.status === EntityStatus.UPDATED) {
       return 'table-row-updated';
-    } else if (row.status === SearchTableEntityStatus.REMOVED) {
+    } else if (row.status === EntityStatus.REMOVED) {
       return 'deleted';
     }
   }
@@ -153,11 +153,11 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
     let domainWarning = this.getDomainConfigurationWarning(domain)
     if (!!domainWarning) {
       return 'domainWarning';
-    } else if (domain.status === SearchTableEntityStatus.NEW) {
+    } else if (domain.status === EntityStatus.NEW) {
       return 'table-row-new';
-    } else if (domain.status === SearchTableEntityStatus.UPDATED) {
+    } else if (domain.status === EntityStatus.UPDATED) {
       return 'table-row-updated';
-    } else if (domain.status === SearchTableEntityStatus.REMOVED) {
+    } else if (domain.status === EntityStatus.REMOVED) {
       return 'deleted';
     }
   }
@@ -201,7 +201,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
       return false;
     }
 
-    if (domainRo.status != SearchTableEntityStatus.PERSISTED) {
+    if (domainRo.status != EntityStatus.PERSISTED) {
       return false;
     }
     // entity must be first persisted in order to be enabled to registering to SML
@@ -221,7 +221,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
       return false;
     }
 
-    if (domainRo.status != SearchTableEntityStatus.PERSISTED) {
+    if (domainRo.status != EntityStatus.PERSISTED) {
       return false;
     }
 

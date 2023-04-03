@@ -98,6 +98,31 @@ public class CredentialDao extends BaseDao<DBCredential> {
     }
 
     /**
+     * Method finds username/password credential for user id.If user does not exist
+     * an empty Optional is returned. If there are more than one credential the SMPRuntimeException is thrown
+     *
+     * @param userId
+     * @return returns Optional DBUser for username
+     * @throws SMPRuntimeException if more than one username/password credential is found!
+     */
+    public Optional<DBCredential> findUsernamePasswordCredentialForUserIdAndUI(Long userId) {
+        // check if blank
+        if (userId == null) {
+            return Optional.empty();
+        }
+        List<DBCredential> list = findUserCredentialForByUserIdTypeAndTarget(userId,
+                CredentialType.USERNAME_PASSWORD,
+                CredentialTargetType.UI);
+
+        if (list.isEmpty()) {
+            return Optional.empty();
+        } else if (list.size() > 1) {
+            throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, userId);
+        }
+        return Optional.of(list.get(0));
+    }
+
+    /**
      * Method finds user by username.If user does not exist
      * Optional  with isPresent - false is returned.
      *
@@ -121,6 +146,17 @@ public class CredentialDao extends BaseDao<DBCredential> {
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, accessToken);
         }
+    }
+
+    public List<DBCredential> findUserCredentialForByUserIdTypeAndTarget(Long userId,
+                                                                         CredentialType credentialType,
+                                                                         CredentialTargetType credentialTargetType) {
+
+        TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET, DBCredential.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType);
+        query.setParameter(PARAM_CREDENTIAL_TARGET, credentialTargetType);
+        return query.getResultList();
     }
 
     public List<DBCredential> findAll() {
@@ -300,4 +336,7 @@ public class CredentialDao extends BaseDao<DBCredential> {
         }
         */
     }
+
+
+
 }

@@ -9,9 +9,14 @@ import {DirtyGuard} from "./common/dirty.guard";
 import {AuthorizedAdminGuard} from "./guards/authorized-admin.guard";
 import {AlertComponent} from "./alert/alert.component";
 import {PropertyComponent} from "./property/property.component";
+import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
+import { authGuard} from "./guards/auth.guard";
+import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
+import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
 
 
 const appRoutes: Routes = [
+
   {path: '', component: ServiceGroupSearchComponent},
   {path: 'search', redirectTo: ''},
   {path: 'edit', component: ServiceGroupEditComponent, canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
@@ -40,7 +45,17 @@ const appRoutes: Routes = [
     canDeactivate: [DirtyGuard]
   },
   {path: 'login', component: LoginComponent},
-  {path: '**', redirectTo: ''}
+  {
+    path: 'user-settings',
+    canActivateChild: [authGuard],
+    children: [
+      { path: 'user-profile', component: UserProfileComponent  },
+      { path: 'user-access-token', component: UserAccessTokensComponent  },
+      { path: 'user-certificate', component: UserCertificatesComponent },
+      { path: 'user-membership', component: UserProfileComponent },
+    ]
+  },
+  {path: '**', redirectTo: ''},
 ];
 
 export const routing = RouterModule.forRoot(appRoutes, {useHash: true});

@@ -9,9 +9,6 @@ export class SecurityEventService {
   private logoutSuccessSubject = new Subject<any>();
   private logoutErrorSubject = new Subject<any>();
 
-  constructor() {
-  }
-
   notifyLoginSuccessEvent(res) {
     this.loginSuccessSubject.next(res);
   }

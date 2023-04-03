@@ -12,14 +12,13 @@ import {
 } from '@angular/forms';
 import {Role} from '../../security/role.model';
 import {UserRo} from '../user-ro.model';
-import {SearchTableEntityStatus} from '../../common/search-table/search-table-entity-status.model';
+import {EntityStatus} from '../../common/model/entity-status.model';
 import {AlertMessageService} from '../../common/alert-message/alert-message.service';
 import {CertificateService} from '../certificate.service';
 import {CertificateRo} from "../certificate-ro.model";
 import {DatePipe} from "../../custom-date/date.pipe";
 import {GlobalLookups} from "../../common/global-lookups";
 import {UserDetailsService} from "./user-details.service";
-import {MatSlideToggleChange} from "@angular/material/slide-toggle";
 import {SecurityService} from "../../security/security.service";
 import {UserController} from "../user-controller";
 import {HttpClient} from "@angular/common/http";
@@ -128,8 +127,8 @@ export class UserDetailsDialogComponent {
         role: '',
         encodedValue: '',
         crlUrl: '',
-        status: SearchTableEntityStatus.NEW,
-        statusPassword: SearchTableEntityStatus.NEW,
+        status: EntityStatus.NEW,
+        statusPassword: EntityStatus.NEW,
         certificate: this.newCertificateRo(),
       };
 
@@ -138,46 +137,47 @@ export class UserDetailsDialogComponent {
     // calculate allowed roles
     this.existingRoles = this.getAllowedRoles(this.current.role);
 
-    // set empty form ! do not bind it to current object !
-    this.userForm = fb.group({
-      // common values
-      'active': new UntypedFormControl({value: ''}, []),
-      'emailAddress': new UntypedFormControl({value: ''}, [Validators.pattern(this.emailPattern), Validators.maxLength(255)]),
-      'role': new UntypedFormControl({
-        value: '',
-        disabled: this.mode === UserDetailsDialogMode.PREFERENCES_MODE
-      }, Validators.required),
-      // username/password authentication
-      'username': new UntypedFormControl({value: '', disabled: this.editMode},
-        !this.editMode || !this.current.username
-          ? [Validators.nullValidator, Validators.pattern(this.usernamePattern), this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))]
-          : null),
-      'passwordExpireOn': new UntypedFormControl({value: '', disabled: true}),
-      'sequentialLoginFailureCount': new UntypedFormControl({value: '', disabled: true}),
-      'lastFailedLoginAttempt': new UntypedFormControl({value: '', disabled: true}),
-      'suspendedUtil': new UntypedFormControl({value: '', disabled: true}),
+      // set empty form ! do not bind it to current object !
+      this.userForm = fb.group({
+        // common values
+        'active': new UntypedFormControl({value: ''}, []),
+        'emailAddress': new UntypedFormControl({value: ''}, [Validators.pattern(this.emailPattern),
+          Validators.maxLength(255)]),
+        'role': new UntypedFormControl({
+          value: '',
+          disabled: this.mode === UserDetailsDialogMode.PREFERENCES_MODE
+        }, Validators.required),
+        // username/password authentication
+        'username': new UntypedFormControl({value: '', disabled: this.editMode},
+          !this.editMode || !this.current.username
+            ? [Validators.nullValidator, Validators.pattern(this.usernamePattern), this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))]
+            : null),
+        'passwordExpireOn': new UntypedFormControl({value: '', disabled: true}),
+        'sequentialLoginFailureCount': new UntypedFormControl({value: '', disabled: true}),
+        'lastFailedLoginAttempt': new UntypedFormControl({value: '', disabled: true}),
+        'suspendedUtil': new UntypedFormControl({value: '', disabled: true}),
 
-      'accessTokenId': new UntypedFormControl({value: '', disabled: true}),
-      'accessTokenExpireOn': new UntypedFormControl({value: '', disabled: true}),
-      'sequentialTokenLoginFailureCount': new UntypedFormControl({value: '', disabled: true}),
-      'lastTokenFailedLoginAttempt': new UntypedFormControl({value: '', disabled: true}),
-      'tokenSuspendedUtil': new UntypedFormControl({value: '', disabled: true}),
-      'casUserDataUrl': new UntypedFormControl({value: '', disabled: true}),
+        'accessTokenId': new UntypedFormControl({value: '', disabled: true}),
+        'accessTokenExpireOn': new UntypedFormControl({value: '', disabled: true}),
+        'sequentialTokenLoginFailureCount': new UntypedFormControl({value: '', disabled: true}),
+        'lastTokenFailedLoginAttempt': new UntypedFormControl({value: '', disabled: true}),
+        'tokenSuspendedUtil': new UntypedFormControl({value: '', disabled: true}),
+        'casUserDataUrl': new UntypedFormControl({value: '', disabled: true}),
 
 
-      'confirmation': new UntypedFormControl({value: '', disabled: !bSetPassword}),
-      // certificate authentication
-      'subject': new UntypedFormControl({value: '', disabled: true}, Validators.required),
-      'validFrom': new UntypedFormControl({value: '', disabled: true}, Validators.required),
-      'validTo': new UntypedFormControl({value: '', disabled: true}, Validators.required),
-      'issuer': new UntypedFormControl({value: '', disabled: true}, Validators.required),
-      'serialNumber': new UntypedFormControl({value: '', disabled: true}, Validators.required),
-      'crlUrl': new UntypedFormControl({value: '', disabled: true}),
-      'encodedValue': new UntypedFormControl({value: '', disabled: true}),
-      'certificateId': new UntypedFormControl({value: '', disabled: true,}, [Validators.required]),
-      'isCertificateValid': new UntypedFormControl({value: 'true', disabled: true,}, [Validators.requiredTrue]
-      ),
-    }, {
+        'confirmation': new UntypedFormControl({value: '', disabled: !bSetPassword}),
+        // certificate authentication
+        'subject': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+        'validFrom': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+        'validTo': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+        'issuer': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+        'serialNumber': new UntypedFormControl({value: '', disabled: true}, Validators.required),
+        'crlUrl': new UntypedFormControl({value: '', disabled: true}),
+        'encodedValue': new UntypedFormControl({value: '', disabled: true}),
+        'certificateId': new UntypedFormControl({value: '', disabled: true,}, [Validators.required]),
+        'isCertificateValid': new UntypedFormControl({value: 'true', disabled: true,}, [Validators.requiredTrue]
+        ),
+      }, {
       validator: [
         this.certificateValidator,
         this.certificateExistValidator,
@@ -321,7 +321,6 @@ export class UserDetailsDialogComponent {
         this.alertService.exception('Error uploading certificate file ' + file.name, err.error?.errorDescription);
       }
     );
-
   }
 
 
@@ -391,8 +390,8 @@ export class UserDetailsDialogComponent {
       emailAddress: '',
       role: '',
       active: true,
-      status: SearchTableEntityStatus.NEW,
-      statusPassword: SearchTableEntityStatus.NEW
+      status: EntityStatus.NEW,
+      statusPassword: EntityStatus.NEW
     }
   }
 
