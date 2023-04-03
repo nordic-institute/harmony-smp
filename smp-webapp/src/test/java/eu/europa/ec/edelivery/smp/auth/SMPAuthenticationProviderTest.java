@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.auth;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.services.CredentialService;
 import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.*;
  */
 public class SMPAuthenticationProviderTest {
 
-    UserDao mockUserDao = Mockito.mock(UserDao.class);
+    CredentialService mockCredentialService = Mockito.mock(CredentialService.class);
     CredentialDao mockCredentialDao = Mockito.mock(CredentialDao.class);
     ConversionService mockConversionService = Mockito.mock(ConversionService.class);
     CRLVerifierService mockCrlVerifierService = Mockito.mock(CRLVerifierService.class);
@@ -39,13 +40,7 @@ public class SMPAuthenticationProviderTest {
     ConfigurationService mockConfigurationService = Mockito.mock(ConfigurationService.class);
     CredentialsAlertService mocAlertService = Mockito.mock(CredentialsAlertService.class);
 
-    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockUserDao,
-            mockCredentialDao,
-            mockConversionService,
-            mockCrlVerifierService,
-            mockTruststoreService,
-            mockConfigurationService,
-            mocAlertService);
+    SMPAuthenticationProvider testInstance = new SMPAuthenticationProvider(mockCredentialService);
 
     // response time for existing and non existing user should be "approx. equal"
     @Test

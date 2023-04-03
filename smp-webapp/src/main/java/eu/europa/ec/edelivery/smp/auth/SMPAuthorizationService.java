@@ -101,7 +101,6 @@ public class SMPAuthorizationService {
      * @return the sanitized user resource
      */
     public UserRO sanitize(UserRO userRO) {
-        userRO.setPassword("");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {

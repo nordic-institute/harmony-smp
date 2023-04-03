@@ -93,7 +93,7 @@ public class UserAdminResourceIntegrationTest {
         // then
         userRO.setActive(!userRO.isActive());
         userRO.setEmailAddress("test@mail.com");
-        userRO.setPassword(UUID.randomUUID().toString());
+
         if (userRO.getCertificate() == null) {
             userRO.setCertificate(new CertificateRO());
         }
@@ -122,7 +122,6 @@ public class UserAdminResourceIntegrationTest {
         // then
         userRO.setActive(!userRO.isActive());
         userRO.setEmailAddress("test@mail.com");
-        userRO.setPassword(UUID.randomUUID().toString());
         if (userRO.getCertificate() == null) {
             userRO.setCertificate(new CertificateRO());
         }

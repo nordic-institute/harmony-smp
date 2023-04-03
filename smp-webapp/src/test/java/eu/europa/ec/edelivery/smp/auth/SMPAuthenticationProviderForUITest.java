@@ -1,45 +1,23 @@
 package eu.europa.ec.edelivery.smp.auth;
 
-import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
-import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
+import eu.europa.ec.edelivery.smp.services.CredentialService;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.core.convert.ConversionService;
-
-import java.time.OffsetDateTime;
-import java.util.Calendar;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.doReturn;
 
 public class SMPAuthenticationProviderForUITest {
 
-    UserDao mockUserDao = Mockito.mock(UserDao.class);
-    CredentialDao mockCredentialDao = Mockito.mock(CredentialDao.class);
-    ConversionService mockConversionService = Mockito.mock(ConversionService.class);
-    CRLVerifierService mockCrlVerifierService = Mockito.mock(CRLVerifierService.class);
-    UITruststoreService mockTruststoreService = Mockito.mock(UITruststoreService.class);
-    ConfigurationService mockConfigurationService = Mockito.mock(ConfigurationService.class);
-    CredentialsAlertService mocAlertService = Mockito.mock(CredentialsAlertService.class);
-    SMPAuthenticationProviderForUI testInstance = new SMPAuthenticationProviderForUI(mockUserDao,
-            mockCredentialDao,
-            mockConversionService,
-            mockCrlVerifierService,
-            mocAlertService,
-            mockTruststoreService,
-            mockConfigurationService);
+
+    CredentialService mockCredentialService = Mockito.mock(CredentialService.class);
+
+    SMPAuthenticationProviderForUI testInstance = new SMPAuthenticationProviderForUI(mockCredentialService);
 
     @Test
-    public void testValidateIfTokenIsSuspendedReset(){
+    public void testValidateIfTokenIsSuspendedReset() {
         int starFailCount = 5;
         DBUser user = new DBUser();
         user.setUsername("TestToken");
-        int suspensionSeconds =100;
+        int suspensionSeconds = 100;
 /*
         user.setLastFailedLoginAttempt(OffsetDateTime.now().minusSeconds(suspensionSeconds+10));
         user.setSequentialLoginFailureCount(starFailCount);

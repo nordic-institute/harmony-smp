@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 /**
  * @author Joze Rihtarsic
@@ -20,8 +20,8 @@ public class CertificateRO extends BaseRO {
     private String clientCertHeader;
     private boolean isInvalid;
     private String invalidReason;
-    private Date validFrom;
-    private Date validTo;
+    private OffsetDateTime validFrom;
+    private OffsetDateTime validTo;
 
     public CertificateRO() {
     }
@@ -70,19 +70,19 @@ public class CertificateRO extends BaseRO {
         this.serialNumber = serialNumber;
     }
 
-    public Date getValidFrom() {
+    public OffsetDateTime getValidFrom() {
         return validFrom;
     }
 
-    public void setValidFrom(Date validFrom) {
+    public void setValidFrom(OffsetDateTime validFrom) {
         this.validFrom = validFrom;
     }
 
-    public Date getValidTo() {
+    public OffsetDateTime getValidTo() {
         return validTo;
     }
 
-    public void setValidTo(Date validTo) {
+    public void setValidTo(OffsetDateTime validTo) {
         this.validTo = validTo;
     }
 

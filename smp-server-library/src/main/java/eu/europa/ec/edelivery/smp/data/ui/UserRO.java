@@ -1,10 +1,9 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
-import javax.persistence.Column;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 
@@ -17,8 +16,18 @@ public class UserRO extends BaseRO {
 
     static final long serialVersionUID = 2821447495333163882L;
 
+    String userId;
     String username;
-    String password;
+    boolean active = true;
+    ApplicationRoleType role;
+    String emailAddress;
+    String fullName;
+    String smpTheme;
+    // operational UI data
+    boolean casAuthenticated = false;
+    String casUserDataUrl;
+
+
     OffsetDateTime passwordExpireOn;
     Integer sequentialLoginFailureCount;
     OffsetDateTime lastFailedLoginAttempt;
@@ -28,19 +37,15 @@ public class UserRO extends BaseRO {
     Integer sequentialTokenLoginFailureCount;
     OffsetDateTime lastTokenFailedLoginAttempt;
     OffsetDateTime tokenSuspendedUtil;
-    String emailAddress;
+
     Collection<SMPAuthority> authorities;
-    boolean active = true;
-    String role;
-    String userId;
+
     CertificateRO certificate;
     int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
     boolean passwordExpired = false;
     boolean showPasswordExpirationWarning = false;
     boolean forceChangeExpiredPassword = false;
-    boolean casAuthenticated = false;
 
-    String casUserDataUrl;
 
     /**
      * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
@@ -56,6 +61,14 @@ public class UserRO extends BaseRO {
         this.userId = userId;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -64,20 +77,12 @@ public class UserRO extends BaseRO {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public ApplicationRoleType getRole() {
+        return role;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAccessTokenId() {
-        return accessTokenId;
-    }
-
-    public void setAccessTokenId(String accessTokenId) {
-        this.accessTokenId = accessTokenId;
+    public void setRole(ApplicationRoleType role) {
+        this.role = role;
     }
 
     public String getEmailAddress() {
@@ -88,6 +93,31 @@ public class UserRO extends BaseRO {
         this.emailAddress = email;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getSmpTheme() {
+        return smpTheme;
+    }
+
+    public void setSmpTheme(String smpTheme) {
+        this.smpTheme = smpTheme;
+    }
+
+    public String getAccessTokenId() {
+        return accessTokenId;
+    }
+
+    public void setAccessTokenId(String accessTokenId) {
+        this.accessTokenId = accessTokenId;
+    }
+
+
     public boolean isPasswordExpired() {
         return passwordExpired;
     }
@@ -96,13 +126,6 @@ public class UserRO extends BaseRO {
         this.passwordExpired = passwordExpired;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 
     public OffsetDateTime getPasswordExpireOn() {
         return passwordExpireOn;
@@ -118,14 +141,6 @@ public class UserRO extends BaseRO {
 
     public void setAccessTokenExpireOn(OffsetDateTime accessTokenExpireOn) {
         this.accessTokenExpireOn = accessTokenExpireOn;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public CertificateRO getCertificate() {

@@ -199,7 +199,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         assertEquals("3", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
-        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
+        assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
         assertEquals("Certificate is expired!", cer.getInvalidReason());
     }
 
@@ -252,7 +252,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         assertEquals("1", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
-        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
+        assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
     }
 
     @Test
@@ -270,7 +270,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         assertEquals("3cfe6b37e4702512c01e71f9b9175464", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
-        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
+        assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
     }
 
     @Test
@@ -288,7 +288,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         assertEquals("474980c51478cf62761667461aef5e8e", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
-        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
+        assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
     }
 
     @Test

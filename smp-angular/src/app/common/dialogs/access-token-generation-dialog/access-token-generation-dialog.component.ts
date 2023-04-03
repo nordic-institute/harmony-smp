@@ -7,7 +7,7 @@ import {UserDetailsService} from "../../../user/user-details-dialog/user-details
 import {AccessTokenRo} from "./access-token-ro.model";
 import {SecurityService} from "../../../security/security.service";
 import {SmpConstants} from "../../../smp.constants";
-import {SearchTableEntityStatus} from "../../search-table/search-table-entity-status.model";
+import {EntityStatus} from "../../model/entity-status.model";
 
 @Component({
   selector: 'smp-access-token-generation-dialog',
@@ -103,8 +103,8 @@ export class AccessTokenGenerationDialogComponent {
           this.dialogForm.controls['accessTokenId'].setValue(this.current.accessTokenId);
           this.dialogForm.controls['accessTokenExpireOn'].setValue(this.current.accessTokenExpireOn);
           // save new values
-          const user = {...this.current, status: SearchTableEntityStatus.UPDATED};
-          this.securityService.updateUserDetails(user);
+          const user = {...this.current, status: EntityStatus.UPDATED};
+          //this.securityService.updateUserDetails(user);
           this.tokenChanged = true;
         },
         (err) => {

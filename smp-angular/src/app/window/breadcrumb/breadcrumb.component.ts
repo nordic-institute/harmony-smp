@@ -1,5 +1,5 @@
 ﻿import {Component, OnInit} from '@angular/core';
-import {NavigationModel, NavigationNode} from "../sidenav/navigation-model.service";
+import {NavigationService, NavigationNode} from "../sidenav/navigation-model.service";
 
 
 /**
@@ -14,17 +14,11 @@ import {NavigationModel, NavigationNode} from "../sidenav/navigation-model.servi
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.css']
 })
-export class BreadcrumbComponent implements OnInit {
+export class BreadcrumbComponent{
 
-  constructor(public navigationModel: NavigationModel) {
-
-  }
-
-  ngOnInit(): void {
-    console.log("BreadcrumbComponent onInit")
+  constructor(public navigationModel: NavigationService) {
 
   }
-
   itemClickHandler(node: NavigationNode) {
     this.navigationModel.select(node);
   }

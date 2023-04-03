@@ -99,7 +99,8 @@ public class UserAdminResource {
         }
 
         // no need to validate password if cas authenticated
-        return uiUserService.generateAccessTokenForUser(authorizedUserId, changeUserId, password,!currentUser.isCasAuthenticated());
+        return null;
+        //return uiUserService.generateAccessTokenForUser(authorizedUserId, changeUserId, password,!currentUser.isCasAuthenticated());
     }
 
 

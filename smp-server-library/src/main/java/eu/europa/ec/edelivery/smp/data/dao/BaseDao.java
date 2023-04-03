@@ -125,6 +125,21 @@ public abstract class BaseDao<E extends BaseEntity> {
         return false;
     }
 
+    /**
+     * Remove managed object
+     * @param objectToRemove
+     * @return true of object is removed
+     * @param <T>
+     */
+    public <T> boolean remove(T objectToRemove) {
+        // Do not use query delete else envers will not work!!
+        if (objectToRemove != null) {
+            memEManager.remove(objectToRemove);
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Clear the persistence context, causing all managed entities to become detached.

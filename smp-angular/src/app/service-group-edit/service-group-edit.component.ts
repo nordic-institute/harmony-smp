@@ -13,7 +13,7 @@ import {AlertMessageService} from '../common/alert-message/alert-message.service
 import {ServiceGroupEditController} from './service-group-edit-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
-import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
+import {EntityStatus} from "../common/model/entity-status.model";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {GlobalLookups} from "../common/global-lookups";
 import {SecurityService} from "../security/security.service";
@@ -120,8 +120,8 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterVi
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        const status = row.status === SearchTableEntityStatus.PERSISTED
-          ? SearchTableEntityStatus.UPDATED
+        const status = row.status === EntityStatus.PERSISTED
+          ? EntityStatus.UPDATED
           : row.status;
 
         let data = formRef.componentInstance.getCurrent();
@@ -134,9 +134,9 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterVi
 
   getRowClass(row) {
     return {
-      'table-row-new': (row.status === SearchTableEntityStatus.NEW),
-      'table-row-updated': (row.status === SearchTableEntityStatus.UPDATED),
-      'deleted': (row.status === SearchTableEntityStatus.REMOVED)
+      'table-row-new': (row.status === EntityStatus.NEW),
+      'table-row-updated': (row.status === EntityStatus.UPDATED),
+      'deleted': (row.status === EntityStatus.REMOVED)
     };
   }
 
@@ -145,7 +145,7 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterVi
 
     const formRef: MatDialogRef<any> = this.serviceGroupEditController.newMetadataDialog({
       data: {
-        edit: metaDataRow.status !== SearchTableEntityStatus.NEW,
+        edit: metaDataRow.status !== EntityStatus.NEW,
         serviceGroup: serviceGroupRow,
         metadata: metaDataRow
       }
@@ -160,8 +160,8 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterVi
           return;
         }
 
-        let statusMetadata = metaDataRow.status === SearchTableEntityStatus.PERSISTED
-          ? SearchTableEntityStatus.UPDATED
+        let statusMetadata = metaDataRow.status === EntityStatus.PERSISTED
+          ? EntityStatus.UPDATED
           : metaDataRow;
 
         metaDataRow.status = statusMetadata;
@@ -172,8 +172,8 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterVi
         serviceGroupRow.serviceMetadata = [...serviceGroupRow.serviceMetadata]
 
         // set row as updated
-        const status = serviceGroupRow.status === SearchTableEntityStatus.PERSISTED
-          ? SearchTableEntityStatus.UPDATED
+        const status = serviceGroupRow.status === EntityStatus.PERSISTED
+          ? EntityStatus.UPDATED
           : serviceGroupRow.status;
         serviceGroupRow.status = status;
 
@@ -186,14 +186,14 @@ export class ServiceGroupEditComponent implements OnInit, AfterViewInit, AfterVi
   onDeleteMetadataRowActionClicked(serviceGroupRow: any, metaDataRow: any) {
     let rowNumber = this.searchTable.rows.indexOf(serviceGroupRow);
 
-    if (metaDataRow.status === SearchTableEntityStatus.NEW) {
+    if (metaDataRow.status === EntityStatus.NEW) {
       serviceGroupRow.splice(serviceGroupRow.indexOf(metaDataRow), 1);
     } else {
-      metaDataRow.status = SearchTableEntityStatus.REMOVED;
+      metaDataRow.status = EntityStatus.REMOVED;
       metaDataRow.deleted = true;
       // set row as updated
-      const status = serviceGroupRow.status === SearchTableEntityStatus.PERSISTED
-        ? SearchTableEntityStatus.UPDATED
+      const status = serviceGroupRow.status === EntityStatus.PERSISTED
+        ? EntityStatus.UPDATED
         : serviceGroupRow.status;
       serviceGroupRow.status = status;
 

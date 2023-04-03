@@ -11,6 +11,7 @@ import {SmpInfo} from "../app-info/smp-info.model";
 import {SmpConfig} from "../app-config/smp-config.model";
 import {SecurityEventService} from "../security/security-event.service";
 import {Subject} from "rxjs";
+import {DateAdapter} from "@angular/material/core";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -39,7 +40,8 @@ export class GlobalLookups {
   constructor(protected alertService: AlertMessageService,
               protected securityService: SecurityService,
               protected http: HttpClient,
-              private securityEventService: SecurityEventService) {
+              private securityEventService: SecurityEventService,
+              private dateAdapter: DateAdapter<Date>) {
     this.refreshApplicationInfo();
     this.refreshDomainLookupFromPublic();
     this.securityService.refreshLoggedUserFromServer();
@@ -53,6 +55,9 @@ export class GlobalLookups {
         this.clearCachedLookups();
       }
     );
+
+    this.dateAdapter.setLocale('fr');
+
   }
 
   public refreshLookupsOnLogin() {

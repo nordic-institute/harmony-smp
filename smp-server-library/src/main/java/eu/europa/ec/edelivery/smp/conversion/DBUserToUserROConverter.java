@@ -41,6 +41,10 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         target.setActive(source.isActive());
         // do not expose internal id
         target.setUserId(SessionSecurityUtils.encryptedEntityId(source.getId()));
+        target.setRole(source.getApplicationRole());
+        target.setEmailAddress(source.getEmailAddress());
+        target.setFullName(source.getFullName());
+        target.setSmpTheme(source.getSmpTheme());
 /*
         Optional<DBCredential> optUserPassCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.USERNAME_PASSWORD).findFirst();
         Optional<DBCredential> optTokenCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.ACCESS_TOKEN).findFirst();

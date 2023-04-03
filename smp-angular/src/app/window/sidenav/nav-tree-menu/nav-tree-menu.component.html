@@ -1,4 +1,4 @@
-<ng-container *ngIf="data.children; else menuItem">
+<ng-container *ngIf="!isLeaf; else menuItem">
   <button mat-menu-item [matMenuTriggerFor]="itemMenu" (click)="triggerClickEvent()">
     <mat-icon *ngIf="data.icon">{{data.icon}}</mat-icon>
     <span>{{ data.name }}</span>

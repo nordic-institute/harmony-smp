@@ -1,12 +1,11 @@
-@use '../../../../theme' as theme;
 
 .nav-tree-invisible {
   display: none;
 }
 
 .nav-tree .mat-tree-node {
-  min-height: 2.5em !important;
-  height: 2.5em;
+  min-height: 3em !important;
+  height: 3em;
   padding: 0 !important;
   margin: 0 !important;
 }
@@ -15,12 +14,12 @@
 .nav-tree li {
   list-style-type: none;
   margin: 0 !important;
-  padding-left: 0.5em !important;
+  padding-left: 1.0em !important;
 }
 
 /* Draw the bottom menu line */
 li::before {
-  height: 2.5em;
+  height: 3em;
   position:absolute;
   left: 0;
   right: 0;
@@ -30,15 +29,13 @@ li::before {
 .nav-tree li button {
   min-height: 2.5em !important;
   height: 2.5em;
-  padding-left: 0.5em !important;
+  padding-left: 1.0em !important;
   padding-right: 0 !important;
   margin: 0 !important;
 }
 
 .nav-tree-leaf {
   flex: 1 1 auto;
-  @include theme.set-property-theme-color(background-color, primary, lighter);
-  @include theme.set-property-theme-color(color, primary, 500-contrast);
 }
 
 /*override the mat-icon-button */
@@ -59,10 +56,6 @@ li::before {
   margin-right: 0.2rem
 }
 
-.background-highlight {
-  @include theme.set-property-theme-color(border, primary, 900);
+.navigation-selected {
   border: 1px solid;
-
-  @include theme.set-property-theme-color(background-color, primary, 600);
-  @include theme.set-property-theme-color(color, primary, 800-contrast);
 }

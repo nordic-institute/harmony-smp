@@ -1,9 +1,9 @@
 ﻿<mat-toolbar color="primary" id="window-toolbar" >
     <mat-toolbar-row>
       <smp-breadcrumb  [style.padding-left]="fullMenu ? '180px' : '60px'"></smp-breadcrumb>
-      <div id="topLogo" >
-        <img src="assets/images/DomiSMP_logo.svg" [attr.height]="fullMenu ? '140px' : '40px'"
-             [attr.width]="fullMenu ? '124px' : '40px'"/>
+      <div id="topLogo"  class="mat-mdc-card">
+        <img src="assets/images/DomiSMP_logo.svg" [attr.height]="fullMenu ? '140px' : '30px'"
+             [attr.width]="fullMenu ? '180px' : '50px'"/>
         <!-- div id="topLogoText" *ngIf="fullMenu">
           <div style="font-weight: bold;font-size: 15px">eDelivery SMP <span style="font-weight: normal;font-size: 14px">Administration <br>Console</span>
           </div>
@@ -16,6 +16,7 @@
              matTooltip="Menu"  >
       <mat-icon>menu</mat-icon>
     </button>
+
     <mat-menu x-position="before" #settingsMenu="matMenu">
       <div *ngIf="currentUser">
         <button mat-menu-item id="currentuser_id" (click)="editCurrentUser()">
@@ -41,7 +42,6 @@
         </button>
 
       </div>
-
       <div *ngIf="!currentUser" style="text-align: center; vertical-align: middle;margin: 2px;">
         <button mat-menu-item disabled="true">
           <mat-icon>person_outline</mat-icon>

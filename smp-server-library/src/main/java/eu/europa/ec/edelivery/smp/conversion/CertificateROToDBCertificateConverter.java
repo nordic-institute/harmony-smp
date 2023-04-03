@@ -15,7 +15,7 @@ public class CertificateROToDBCertificateConverter implements Converter<Certific
 
     @Override
     public DBCertificate convert(CertificateRO source) {
-        /*
+
         DBCertificate target = new DBCertificate();
         if (source.getValidTo() != null) {
             target.setValidTo(OffsetDateTime.ofInstant(source.getValidTo().toInstant(), ZoneId.systemDefault()));
@@ -29,10 +29,6 @@ public class CertificateROToDBCertificateConverter implements Converter<Certific
         target.setSubject(source.getSubject());
         target.setCrlUrl(source.getCrlUrl());
         target.setPemEncoding(source.getEncodedValue());
-
         return target;
-
-         */
-        return null;
     }
 }

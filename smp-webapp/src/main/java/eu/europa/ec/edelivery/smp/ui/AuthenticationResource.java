@@ -72,6 +72,7 @@ public class AuthenticationResource {
                 loginRO.getPassword());
         SMPUserDetails user = authentication.getUserDetails();
 
+
         return authorizationService.getUserData(user.getUser());
     }
 

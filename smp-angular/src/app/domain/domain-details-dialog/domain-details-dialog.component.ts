@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../domain-ro.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
+import {EntityStatus} from "../../common/model/entity-status.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {BreakpointObserver} from "@angular/cdk/layout";
@@ -67,7 +67,7 @@ export class DomainDetailsDialogComponent {
         smlSmpId: '',
         smlClientKeyAlias: '',
         signatureKeyAlias: '',
-        status: SearchTableEntityStatus.NEW,
+        status: EntityStatus.NEW,
       };
 
     this.domainForm = fb.group({
@@ -124,7 +124,7 @@ export class DomainDetailsDialogComponent {
     this.checkValidity(this.domainForm)
 
     // check if empty domain already exists
-    if (this.current.status === SearchTableEntityStatus.NEW
+    if (this.current.status === EntityStatus.NEW
       && !this.domainForm.value['smlSubdomain']) {
 
       let domainWithNullSML = this.lookups.cachedDomainList.filter(function (dmn) {

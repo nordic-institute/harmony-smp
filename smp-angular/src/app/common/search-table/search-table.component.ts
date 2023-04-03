@@ -1,4 +1,4 @@
-import {AfterContentInit, AfterViewInit, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {SearchTableResult} from './search-table-result.model';
 import {Observable} from 'rxjs';
 import {AlertMessageService} from '../alert-message/alert-message.service';
@@ -8,7 +8,7 @@ import {RowLimiter} from '../row-limiter/row-limiter.model';
 import {SearchTableController} from './search-table-controller';
 import {finalize} from 'rxjs/operators';
 import {SearchTableEntity} from './search-table-entity.model';
-import {SearchTableEntityStatus} from './search-table-entity-status.model';
+import {EntityStatus} from '../model/entity-status.model';
 import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
 import {SaveDialogComponent} from '../dialogs/save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
@@ -138,9 +138,9 @@ export class SearchTableComponent implements OnInit {
 
   getRowClass(row) {
     return {
-      'table-row-new': (row.status === SearchTableEntityStatus.NEW),
-      'table-row-updated': (row.status === SearchTableEntityStatus.UPDATED),
-      'deleted': (row.status === SearchTableEntityStatus.REMOVED)
+      'table-row-new': (row.status === EntityStatus.NEW),
+      'table-row-updated': (row.status === EntityStatus.UPDATED),
+      'deleted': (row.status === EntityStatus.REMOVED)
     };
   }
 
@@ -201,7 +201,7 @@ export class SearchTableComponent implements OnInit {
         this.rows = result.serviceEntities.map(serviceEntity => {
           return {
             ...serviceEntity,
-            status: SearchTableEntityStatus.PERSISTED,
+            status: EntityStatus.PERSISTED,
             deleted: false
           }
         });
@@ -309,7 +309,7 @@ export class SearchTableComponent implements OnInit {
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
         if (result) {
           // this.unselectRows();
-          const modifiedRowEntities = this.rows.filter(el => el.status !== SearchTableEntityStatus.PERSISTED);
+          const modifiedRowEntities = this.rows.filter(el => el.status !== EntityStatus.PERSISTED);
           // this.isBusy = true;
           this.showSpinner = true;
           this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(res => {
@@ -383,7 +383,7 @@ export class SearchTableComponent implements OnInit {
 
   get submitButtonsEnabled(): boolean {
     const rowsDeleted = !!this.rows.find(row => row.deleted);
-    const dirty = rowsDeleted || !!this.rows.find(el => el.status !== SearchTableEntityStatus.PERSISTED);
+    const dirty = rowsDeleted || !!this.rows.find(el => el.status !== EntityStatus.PERSISTED);
     return dirty;
   }
 
@@ -398,14 +398,14 @@ export class SearchTableComponent implements OnInit {
   private editSearchTableEntity(rowNumber: number) {
     const row = this.rows[rowNumber];
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
-      data: {edit: row?.status!=SearchTableEntityStatus.NEW, row}
+      data: {edit: row?.status!=EntityStatus.NEW, row}
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
         const changed = this.searchTableController.isRecordChanged(row, formRef.componentInstance.getCurrent());
         if (changed) {
-          const status = ObjectUtils.isEqual(row.status, SearchTableEntityStatus.PERSISTED)
-            ? SearchTableEntityStatus.UPDATED
+          const status = ObjectUtils.isEqual(row.status, EntityStatus.PERSISTED)
+            ? EntityStatus.UPDATED
             : row.status;
           this.rows[rowNumber] = {...formRef.componentInstance.getCurrent(), status};
           this.rows = [...this.rows];
@@ -414,7 +414,7 @@ export class SearchTableComponent implements OnInit {
     });
   }
 
-  public updateTableRow(rowNumber: number, row: any, status: SearchTableEntityStatus) {
+  public updateTableRow(rowNumber: number, row: any, status: EntityStatus) {
     this.rows[rowNumber] = {...row, status};
     this.rows = [...this.rows];
   }
@@ -435,11 +435,11 @@ export class SearchTableComponent implements OnInit {
         this.alertService.exception("Delete validation error", res.stringMessage, false);
       } else {
         for (const row of rows) {
-          if (row.status === SearchTableEntityStatus.NEW) {
+          if (row.status === EntityStatus.NEW) {
             this.rows.splice(this.rows.indexOf(row), 1);
           } else {
             this.searchTableController.delete(row);
-            row.status = SearchTableEntityStatus.REMOVED;
+            row.status = EntityStatus.REMOVED;
             row.deleted = true;
           }
         }

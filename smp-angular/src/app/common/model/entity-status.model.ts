@@ -1,4 +1,4 @@
-export enum SearchTableEntityStatus {
+export enum EntityStatus {
   PERSISTED,
   UPDATED,
   NEW,

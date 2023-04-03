@@ -4,6 +4,7 @@ import {SecurityService} from '../../security/security.service';
 import {User} from '../../security/user.model';
 import {Authority} from "../../security/authority.model";
 import {NavTree} from "./nav-tree/nav-tree.component";
+import {SmpConstants} from "../../smp.constants";
 
 /**
  * Expanded side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
@@ -54,5 +55,13 @@ export class SidenavComponent implements OnInit {
   logout(event: Event): void {
     event.preventDefault();
     this.securityService.logout();
+  }
+
+  get expandedSideNavSize(){
+    return SmpConstants.EXPANDED_MENU_WIDTH;
+  }
+
+  get collapsedSideNavSize(){
+    return SmpConstants.COLLAPSED_MENU_WIDTH;
   }
 }

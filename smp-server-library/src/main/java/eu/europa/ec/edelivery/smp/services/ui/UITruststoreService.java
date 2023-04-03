@@ -37,6 +37,7 @@ import java.security.cert.Certificate;
 import java.security.cert.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -327,14 +328,12 @@ public class UITruststoreService {
 
     public void checkFullCertificateValidity(CertificateRO cert) throws CertificateException {
         // trust data in database
-
-        Date currentDate = Calendar.getInstance().getTime();
-        if (cert.getValidFrom() != null && currentDate.before(cert.getValidFrom())) {
+        if (cert.getValidFrom() != null && OffsetDateTime.now().isBefore(cert.getValidFrom())) {
             throw new CertificateNotYetValidException("Certificate: " + cert.getCertificateId() + " is valid from: "
                     + dateFormatLocal.get().format(cert.getValidFrom()) + ".");
 
         }
-        if (cert.getValidTo() != null && currentDate.after(cert.getValidTo())) {
+        if (cert.getValidTo() != null && OffsetDateTime.now().isAfter(cert.getValidTo())) {
             throw new CertificateExpiredException("Certificate: " + cert.getCertificateId() + " was valid to: "
                     + dateFormatLocal.get().format(cert.getValidTo()) + ".");
         }

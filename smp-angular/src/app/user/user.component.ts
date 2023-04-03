@@ -16,7 +16,7 @@ import {SearchTableComponent} from "../common/search-table/search-table.componen
 import {SecurityService} from "../security/security.service";
 import {GlobalLookups} from "../common/global-lookups";
 import {TruststoreEditDialogComponent} from "./truststore-edit-dialog/truststore-edit-dialog.component";
-import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
+import {EntityStatus} from "../common/model/entity-status.model";
 import {SmpConstants} from "../smp.constants";
 
 @Component({
@@ -91,11 +91,11 @@ export class UserComponent implements OnInit, AfterViewInit, AfterViewChecked {
       return 'invalidCertificate';
     } else if (!row.certificate?.subject || !row.certificate?.issuer) {
       return 'certificateWarning';
-    } else if (row.status === SearchTableEntityStatus.NEW) {
+    } else if (row.status === EntityStatus.NEW) {
       return 'table-row-new';
-    } else if (row.status === SearchTableEntityStatus.UPDATED) {
+    } else if (row.status === EntityStatus.UPDATED) {
       return 'table-row-updated';
-    } else if (row.status === SearchTableEntityStatus.REMOVED) {
+    } else if (row.status === EntityStatus.REMOVED) {
       return 'deleted';
     } else {
       return 'table-row';
