@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -34,10 +34,10 @@ public class SMPAuthorizationService {
     private static final String ERR_INVALID_OR_NULL = "Invalid or null authentication for the session!";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthorizationService.class);
 
-    final private ServiceGroupService serviceGroupService;
-    final private ConversionService conversionService;
-    final private ConfigurationService configurationService;
-    final private UserDao userDao;
+    private final ServiceGroupService serviceGroupService;
+    private final ConversionService conversionService;
+    private final ConfigurationService configurationService;
+    private final UserDao userDao;
 
     public SMPAuthorizationService(ServiceGroupService serviceGroupService,
                                    ConversionService conversionService,
@@ -58,7 +58,7 @@ public class SMPAuthorizationService {
 
     public boolean isSMPAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        boolean hasRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, userDetails);
+        boolean hasRole = hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails);
         LOG.debug("Logged user [{}] is SMP administrator role [{}]", userDetails.getUsername(), hasRole);
         return hasRole;
     }
@@ -78,14 +78,10 @@ public class SMPAuthorizationService {
 
     public boolean isAuthorizedForManagingTheServiceMetadataGroup(Long serviceMetadataId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        if (hasSessionUserRole(S_AUTHORITY_TOKEN_SMP_ADMIN, userDetails)) {
+        if (hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails)) {
             LOG.debug("SMP admin is authorized to manage service metadata: [{}]" + serviceMetadataId);
             return true;
 
-        }
-        if (!hasSessionUserRole(S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN, userDetails)) {
-            LOG.debug("User is Service group admin nor SMP admin. User is not allowed to manage service metadata: [{}]" + serviceMetadataId);
-            return false;
         }
         Long userId = userDetails.getUser().getId();
         return serviceGroupService.isServiceGroupOwnerForMetadataID(userId, serviceMetadataId);
@@ -105,11 +101,10 @@ public class SMPAuthorizationService {
      * @return the sanitized user resource
      */
     public UserRO sanitize(UserRO userRO) {
-        userRO.setPassword("");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            userRO.setAuthorities(authentication.getAuthorities().stream().map(val -> (SMPAuthority) val).collect(Collectors.toList()));
+            userRO.setAuthorities(authentication.getAuthorities().stream().map(SMPAuthority.class::cast).collect(Collectors.toList()));
         }
         return userRO;
     }

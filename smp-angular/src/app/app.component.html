@@ -1,126 +1,20 @@
-<mat-sidenav-container>
-  <mat-sidenav mode="side" opened="true" ngClass="{{menuClass}}">
-
-    <!-- sidenav content -->
-    <div id="topLogo">
-      <img src="assets/images/smp_logo_icon.svg" [attr.height]="fullMenu ? '74px' : '40px'"
-           [attr.width]="fullMenu ? '74px' : '40px'"/>
-      <div id="topLogoText" *ngIf="fullMenu">
-        <div style="font-weight: bold;font-size: 15px">eDelivery SMP <span style="font-weight: normal;font-size: 14px">Administration <br>Console</span>
-        </div>
-      </div>
-    </div>
-
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/']" id="sidebar_search_id">
-      <mat-icon matTooltip="Search" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">search</mat-icon>
-      <span>Search</span>
-    </button>
-    <button mat-raised-button class="sideNavButton" *ngIf="isCurrentUserSMPAdmin() || isCurrentUserServiceGroupAdmin()"
-            [routerLink]="['/edit']" id="sidebar_edit_id">
-      <mat-icon matTooltip="Edit" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">edit</mat-icon>
-      <span>Edit</span>
-    </button>
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']" *ngIf="isCurrentUserSystemAdmin()"
-            id="sidebar_domain_id">
-      <mat-icon matTooltip="Domains" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">domain</mat-icon>
-      <span>Domains</span>
-    </button>
-    <!-- button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id" -->
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="isCurrentUserSystemAdmin()"
-            id="sidebar_user_id">
-      <mat-icon matTooltip="Users" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">people</mat-icon>
-      <span>Users</span>
-    </button>
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/alert']" *ngIf="isCurrentUserSystemAdmin()"
-            id="sidebar_alert_id">
-      <mat-icon matTooltip="Alerts" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">add_alert</mat-icon>
-      <span>Alerts</span>
-    </button>
-
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/property']" *ngIf="isCurrentUserSystemAdmin()"
-            id="sidebar_property_id">
-      <mat-icon matTooltip="Properties" matTooltipDisabled="{{fullMenu}}" [matTooltipPosition]="'right'">settings</mat-icon>
-      <span>Properties</span>
-    </button>
-
-    <div class="collapse-button">
-      <button *ngIf="fullMenu" mat-raised-button id="expand_id" (click)="toggleMenu()">
-        <mat-icon matTooltip="Collapse" [matTooltipPosition]="'right'">chevron_left</mat-icon>
-      </button>
-
-      <button *ngIf="!fullMenu" mat-raised-button id="collapse_id" (click)="toggleMenu()">
-        <mat-icon matTooltip="Expand" [matTooltipPosition]="'right'">chevron_right</mat-icon>
-      </button>
-    </div>
-
-    <div id="bottomLogo" *ngIf="fullMenu">
-      <div>
-        <img src="assets/images/EC+Logo2.png"/>
-      </div>
-      <div class="smpTextSmall"
-           style="display: flex;flex-direction: column-reverse;text-align: left;color:#004494;padding-left: 5px;">
-        <div>
-          Connecting Europe
-        </div>
-        <div style="font-size: 10pt">
-          CEF Digital
-        </div>
-      </div>
-    </div>
-
-  </mat-sidenav>
-
-  <!-- primary content -->
-  <div fxLayout="column" id=".my-content" style="position:absolute; bottom:5px; top:5px; right: 5px; left: 5px"
-       [style.margin-left]="fullMenu? '225px' : '65px'">
-    <alert></alert>
-
-    <div id="sandwichMenuHolder" style="z-index: 500">
-      <div id="sandwichMenu">
-        <a *ngIf="!currentUser" [routerLink]="['/login']" (click)="clearWarning()"> Login </a>
-        <span *ngIf="currentUser">{{currentUserRoleDescription}}: {{currentUser}}  </span>
-
-        <button mat-icon-button [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id" matTooltip="Menu">
-          <mat-icon>menu</mat-icon>
+<div style="display:flex; flex-direction: column;height: 100%">
+  <window-toolbar #windowToolbar/>
+  <mat-drawer-container id="smp-window" [hasBackdrop]="false" style="flex: 1 1 auto;">
+    <mat-drawer #drawer [mode]="'side'" opened="true">
+      <smp-sidenav #sidenav />
+      <div class="collapse-button">
+        <button *ngIf="fullMenu" mat-raised-button id="expand_id" (click)="toggleMenu()">
+          <mat-icon matTooltip="Collapse" [matTooltipPosition]="'right'">chevron_left</mat-icon>Collapse sidebar
         </button>
-
-        <mat-menu x-position="before" #settingsMenu="matMenu">
-          <div *ngIf="currentUser">
-
-
-            <button mat-menu-item id="currentuser_id" (click)="editCurrentUser()">
-              <mat-icon>person</mat-icon>
-              <span>{{currentUser}}</span>
-            </button>
-            <button *ngIf="isUserAuthPasswdEnabled" mat-menu-item id="changePassword_id" (click)="changeCurrentUserPassword()">
-              <span>Change password</span>
-            </button>
-            <button *ngIf="isUserAuthSSOEnabled" mat-menu-item id="showSSODetails_id" (click)="openCurrentCasUserData()">
-              <span>Open CAS user data</span>
-            </button>
-            <button *ngIf="isWebServiceUserTokenAuthPasswdEnabled" mat-menu-item id="getAccessToken_id" (click)="regenerateCurrentUserAccessToken()">
-              <span>Generated access token</span>
-            </button>
-            <hr/>
-            <button mat-menu-item (click)="logout($event)" id="logout_id">
-              <mat-icon>power_settings_new</mat-icon>
-              <span>Logout</span>
-            </button>
-
-          </div>
-
-          <div *ngIf="!currentUser" style="text-align: center; vertical-align: middle;margin: 2px;">
-            <button mat-menu-item disabled="true">
-              <mat-icon>person_outline</mat-icon>
-              <span>Not logged in</span>
-            </button>
-          </div>
-        </mat-menu>
+        <button *ngIf="!fullMenu" mat-raised-button id="collapse_id" (click)="toggleMenu()">
+          <mat-icon matTooltip="Expand" [matTooltipPosition]="'right'">chevron_right</mat-icon>
+        </button>
       </div>
-    </div>
-
-    <div fxFill="100" fxFlex="<grow> <shrink> <basis>" id="routerHolder" style="min-height: 100%">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-</mat-sidenav-container>
+    </mat-drawer>
+    <mat-drawer-content (scroll)="onDrawerContentScroll($event);">
+      <alert #alertMessage></alert>
+        <router-outlet></router-outlet>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

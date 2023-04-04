@@ -1,15 +1,13 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.util.Collections;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -19,7 +17,7 @@ import static org.mockito.Mockito.verify;
 public class CredentialValidatorServiceTest {
 
     ConfigurationService mockConfigService = Mockito.mock(ConfigurationService.class);
-    AlertService mockAlertService = Mockito.mock(AlertService.class);
+    CredentialsAlertService mockAlertService = Mockito.mock(CredentialsAlertService.class);
     UserDao mockUserDao = Mockito.mock(UserDao.class);
 
     CredentialValidatorService testInstance = new CredentialValidatorService(mockConfigService, mockAlertService, mockUserDao);

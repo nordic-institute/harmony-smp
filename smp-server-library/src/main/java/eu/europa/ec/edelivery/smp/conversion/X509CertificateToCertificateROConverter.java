@@ -18,6 +18,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.TimeZone;
 
@@ -56,8 +57,12 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         cro.setCrlUrl(url);
         // set serial as HEX
         cro.setSerialNumber(serial);
-        cro.setValidFrom(cert.getNotBefore());
-        cro.setValidTo(cert.getNotAfter());
+        if (cert.getNotBefore() != null) {
+            cro.setValidFrom(cert.getNotBefore().toInstant().atOffset(ZoneOffset.UTC));
+        }
+        if (cert.getNotAfter() != null) {
+            cro.setValidTo(cert.getNotAfter().toInstant().atOffset(ZoneOffset.UTC));
+        }
         try {
             cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
         } catch (CertificateEncodingException cex) {

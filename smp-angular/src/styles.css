@@ -1,8 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-@import '~@swimlane/ngx-datatable/index.css';
-@import '~@swimlane/ngx-datatable/themes/material.css';
-@import '~@swimlane/ngx-datatable/assets/icons.css';
+
 
 /*--------------------------------------------------
     [NORMALIZE]
@@ -14,6 +10,7 @@ html, body {
   width: 100%;
   font-family: 'Open Sans', sans-serif;
 }
+
 
 .mat-dialog-title {
   font-family: 'Open Sans', sans-serif !important;
@@ -51,24 +48,6 @@ table.buttonsMoveRow,
 mat-input-container:before,
 ngx-datatable span:before {
   content: " " !important;
-}
-
-/* selection for datatable */
-.ngx-datatable .datatable-body-cell, .ngx-datatable .datatable-header-cell {
-  -webkit-user-select: auto !important;
-  -moz-user-select: auto !important;
-  -ms-user-select: auto !important;
-  -o-user-select: auto !important;
-  user-select: auto !important;
-}
-
-.ngx-datatable .datatable-body-cell, .ngx-datatable .datatable-header-cell {
-  -webkit-user-select: auto !important;
-  -moz-user-select: auto !important;
-  -ms-user-select: auto !important;
-  -o-user-select: auto !important;
-  user-select: auto !important;
-  padding: 0.5em  !important;
 }
 
 .ngx-datatable span {
@@ -127,83 +106,16 @@ ngx-datatable span:before {
     [STRUCTURE]
 ----------------------------------------------------*/
 
-/* --- CONTAINER --------- */
-/*------------------------ */
-.mat-sidenav-container {
-  background-color: #F5F5F5;
-  color: rgba(0, 0, 0, .99);
-}
-
-/* --- SIDEBAR --------- */
-/*---------------------- */
-mat-sidenav[_ngcontent-c0] {
-  box-shadow: 0px 0px 2px #9B9B9B !important;
-}
-
-/* --- Logo ---*/
-#topLogoText {
-  margin-left: 5px;
-  text-align: left;
-}
-
-#topLogo {
-  vertical-align: middle;
-}
-
-#topLogoText h1 {
-  margin-top: 10px;
-  font-size: 18px;
-  font-weight: 900;
-}
-
-#topLogoText h1 span {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 16px;
-}
-
-/* --- Menu ---*/
-.mat-sidenav button {
-  box-shadow: none;
-  border-radius: 0;
-  line-height: 50px !important;
-  letter-spacing: 1px;
-
-}
-
-.sideNavButton {
-  padding-left: 20px !important;
-}
-
 /* --- Collapse button ---*/
 .collapse-button {
   position: absolute;
   bottom: 0;
 }
 
-/* --- EC Logo ---*/
-#bottomLogo {
-  display: none;
-}
-
-/* --- MAIN CONTENT --------- */
-/*--------------------------- */
-.mat-sidenav-content {
-  min-height: 100vh;
-  margin-left: 0 !important;
-}
-
-/* --- Hamburger Menu ---*/
-/*Hamburger wrapper*/
-#sandwichMenuHolder {
-  position: relative;
-  display: block;
-}
-
 /*Hamburger button*/
 #sandwichMenu {
+
+  width: 100%;
   position: absolute;
   right: 10px;
   top: 0;
@@ -284,7 +196,7 @@ a:hover {
 .panel {
   margin-bottom: 10px;
   padding: 10px;
-  background: #FFF;
+
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
 }
 

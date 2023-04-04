@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {AlertMessageService} from './alert-message.service';
 
 @Component({
@@ -9,6 +9,8 @@ import {AlertMessageService} from './alert-message.service';
 })
 
 export class AlertMessageComponent implements OnInit {
+  @ViewChild('alertMessage') alertMessage;
+  showSticky:boolean = false;
   message: any=null;
 
 
@@ -22,10 +24,15 @@ export class AlertMessageComponent implements OnInit {
     this.alertService.clearAlert();
   }
 
+  setSticky(sticky: boolean):void {
+    console.log("set sticky " + sticky)
+    this.showSticky = sticky;
+
+  }
+
   get messageText(){
     if (!!this.message){
       return this.message.text;
     }
-    return;
   }
 }

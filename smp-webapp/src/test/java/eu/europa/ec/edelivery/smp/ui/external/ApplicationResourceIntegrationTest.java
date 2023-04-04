@@ -3,7 +3,7 @@ package eu.europa.ec.edelivery.smp.ui.external;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.data.ui.SmpConfigRO;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.hamcrest.MatcherAssert;
@@ -116,19 +116,10 @@ public class ApplicationResourceIntegrationTest {
 
     @Test
     public void testGetApplicationConfigAuthorized() throws Exception {
-        //  SMP admin
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+
+        //  User
+        MockHttpSession sessionUser = loginWithUserGroupAdmin(mvc);
         String val = mvc.perform(get(PATH + "/config")
-                .session(session)
-                .with(csrf()))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        assertNotNull(val);
-        //  service group
-        MockHttpSession sessionUser = loginWithServiceGroupUser(mvc);
-        val = mvc.perform(get(PATH + "/config")
                 .session(sessionUser)
                 .with(csrf()))
                 .andExpect(status().isOk())
@@ -149,9 +140,9 @@ public class ApplicationResourceIntegrationTest {
     }
 
     @Test
-    public void testGetApplicationConfigSMPAdmin() throws Exception {
+    public void testGetApplicationConfigUser() throws Exception {
         // when
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         String value = mvc.perform(get(PATH + "/config")
                 .session(session)
                 .with(csrf()))

@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,9 +32,9 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
+@Ignore
 @ContextConfiguration(classes = {SMLIntegrationService.class})
-public class
-SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest {
+public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

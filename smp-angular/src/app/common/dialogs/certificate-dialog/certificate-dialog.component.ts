@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {CertificateRo} from "../../../user/certificate-ro.model";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
+import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
 import {SecurityService} from "../../../security/security.service";
 import {SmpConstants} from "../../../smp.constants";
 
@@ -12,28 +12,28 @@ import {SmpConstants} from "../../../smp.constants";
 export class CertificateDialogComponent {
   readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
   formTitle: string;
-  certificateForm: FormGroup;
+  certificateForm: UntypedFormGroup;
   current: CertificateRo;
 
   constructor(
     private securityService: SecurityService,
     private dialogRef: MatDialogRef<CertificateDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder) {
+    private fb: UntypedFormBuilder) {
 
     this.formTitle = "Certificate details";
     this.current = { ...data.row}
 
 // set empty form ! do not bind it to current object !
     this.certificateForm = fb.group({
-      'alias': new FormControl({value: '', readonly: true}, null),
-      'subject': new FormControl({value: '', readonly: true}, null),
-      'validFrom': new FormControl({value: '', readonly: true}, null),
-      'validTo': new FormControl({value: '', readonly: true}, null),
-      'issuer': new FormControl({value: '', readonly: true}, null),
-      'serialNumber': new FormControl({value: '', readonly: true}, null),
-      'certificateId': new FormControl({value: '', readonly: true}, null),
-      'encodedValue': new FormControl({value: '', readonly: true}, null)
+      'alias': new UntypedFormControl({value: '', readonly: true}, null),
+      'subject': new UntypedFormControl({value: '', readonly: true}, null),
+      'validFrom': new UntypedFormControl({value: '', readonly: true}, null),
+      'validTo': new UntypedFormControl({value: '', readonly: true}, null),
+      'issuer': new UntypedFormControl({value: '', readonly: true}, null),
+      'serialNumber': new UntypedFormControl({value: '', readonly: true}, null),
+      'certificateId': new UntypedFormControl({value: '', readonly: true}, null),
+      'encodedValue': new UntypedFormControl({value: '', readonly: true}, null)
 
     });
 

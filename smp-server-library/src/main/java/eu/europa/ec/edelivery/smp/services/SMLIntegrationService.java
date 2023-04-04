@@ -3,24 +3,21 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
-import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
+import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.BUS_SML_UNREGISTER_SERVICE_GROUP;
 
 
 /**
@@ -43,7 +40,7 @@ public class SMLIntegrationService {
     private SmlConnector smlConnector;
 
     @Autowired
-    private ServiceGroupDao serviceGroupDao;
+    private ResourceDao serviceGroupDao;
 
     @Autowired
     private DomainDao domainDao;
@@ -98,13 +95,14 @@ public class SMLIntegrationService {
 
     @Transactional
     public void registerParticipant(String participantId, String participantSchema, String domainCode) {
+        /*
         LOG.businessDebug(BUS_SML_REGISTER_SERVICE_GROUP, participantId, participantSchema, domainCode);
         if (!isSMLIntegrationEnabled()) {
             String msg = "SML integration is not enabled!";
             LOG.businessError(BUS_SML_REGISTER_SERVICE_GROUP_FAILED, participantId, participantSchema, domainCode, msg);
             throw new SMPRuntimeException(CONFIGURATION_ERROR, msg);
         }
-        DBServiceGroupDomain serviceGroupDomain = getAndValidateServiceGroupDomain(participantId,
+        DBDomainResourceDef serviceGroupDomain = getAndValidateServiceGroupDomain(participantId,
                 participantSchema, domainCode, BUS_SML_REGISTER_SERVICE_GROUP_FAILED);
 
         ParticipantIdentifierType normalizedParticipantId = identifierService
@@ -121,7 +119,7 @@ public class SMLIntegrationService {
         } else {
             LOG.businessWarn(BUS_SML_REGISTER_SERVICE_GROUP_ALREADY_REGISTERED, participantId, participantSchema, domainCode);
         }
-
+*/
     }
 
     /**
@@ -138,7 +136,7 @@ public class SMLIntegrationService {
 
     @Transactional
     public void unregisterParticipant(String participantId, String participantSchema, String domainCode) {
-        LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, participantId, participantSchema, domainCode);
+      /*  LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, participantId, participantSchema, domainCode);
         if (!isSMLIntegrationEnabled()) {
             String msg = "SML integration is not enabled!";
             LOG.businessError(BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED, participantId, participantSchema, domainCode, msg);
@@ -146,7 +144,7 @@ public class SMLIntegrationService {
         }
 
 
-        DBServiceGroupDomain serviceGroupDomain = getAndValidateServiceGroupDomain(participantId, participantSchema, domainCode, BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED);
+        DBDomainResourceDef serviceGroupDomain = getAndValidateServiceGroupDomain(participantId, participantSchema, domainCode, BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED);
 
         // unregister only  registered participants
         if (serviceGroupDomain.isSmlRegistered()) {
@@ -158,6 +156,8 @@ public class SMLIntegrationService {
         } else {
             LOG.businessWarn(BUS_SML_UNREGISTER_SERVICE_GROUP_ALREADY_REGISTERED, participantId, participantSchema, domainCode);
         }
+
+       */
     }
 
     /**
@@ -171,7 +171,7 @@ public class SMLIntegrationService {
     public boolean unregisterParticipantFromSML(String participantId, String participantSchema, DBDomain domain) {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, participantId, participantSchema, domain.getDomainCode());
 
-        ParticipantIdentifierType normalizedParticipantId = identifierService
+        Identifier normalizedParticipantId = identifierService
                 .normalizeParticipant(participantSchema, participantId);
 
         // unregister only registered participants
@@ -190,7 +190,7 @@ public class SMLIntegrationService {
     public boolean registerParticipantToSML(String participantId, String participantSchema, DBDomain domain) {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, participantId, participantSchema, domain.getDomainCode());
 
-        ParticipantIdentifierType normalizedParticipantId = identifierService
+        Identifier normalizedParticipantId = identifierService
                 .normalizeParticipant(participantSchema, participantId);
 
         // unregister only  registered participants
@@ -198,22 +198,26 @@ public class SMLIntegrationService {
 
     }
 
-    private DBServiceGroupDomain getAndValidateServiceGroupDomain(String participantId, String participantSchema, String domainCode, SMPMessageCode messageCode) {
-        // retrieve participant (session must be on - lazy loading... )
-        Optional<DBServiceGroup> optionalServiceGroup = serviceGroupDao.findServiceGroup(participantId, participantSchema);
+    private DBDomainResourceDef getAndValidateServiceGroupDomain(String participantId, String participantSchema, String domainCode, SMPMessageCode messageCode) {
+     /* // retrieve participant (session must be on - lazy loading... )
+        Optional<DBResource> optionalServiceGroup = serviceGroupDao.findServiceGroup(participantId, participantSchema);
         if (!optionalServiceGroup.isPresent()) {
             String msg = "Service group not exists anymore !";
             LOG.businessError(messageCode, participantId, participantId, domainCode, msg);
             throw new SMPRuntimeException(SG_NOT_EXISTS, participantId, participantSchema);
         }
-        DBServiceGroup serviceGroup = optionalServiceGroup.get();
-        Optional<DBServiceGroupDomain> optionalServiceGroupDomain = serviceGroup.getServiceGroupForDomain(domainCode);
+
+        DBResource serviceGroup = optionalServiceGroup.get();
+        Optional<DBDomainResourceDef> optionalServiceGroupDomain = serviceGroup.getServiceGroupForDomain(domainCode);
         if (!optionalServiceGroupDomain.isPresent()) {
             String msg = "Service group is not registered for domain on this SMP - register participant on domain first!";
             LOG.businessError(messageCode, participantId, participantId, domainCode, msg);
             throw new SMPRuntimeException(SG_NOT_REGISTRED_FOR_DOMAIN, domainCode, participantId, participantSchema);
         }
-        return optionalServiceGroupDomain.get();
+
+
+        return optionalServiceGroupDomain.get(); */
+        return null;
     }
 
     public boolean isSMLIntegrationEnabled() {

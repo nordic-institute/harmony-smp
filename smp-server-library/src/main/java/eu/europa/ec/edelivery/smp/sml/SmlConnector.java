@@ -20,9 +20,10 @@ import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -44,7 +45,6 @@ import org.apache.cxf.transports.http.configuration.ProxyServerType;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -72,7 +72,7 @@ public class SmlConnector implements ApplicationContextAware {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmlConnector.class);
 
     private static final String SERVICE_METADATA_CONTEXT = "manageservicemetadata";
-    private static final String PARTICIPANT_IDENTIFIER_CONTEXT = "manageparticipantidentifier";
+    private static final String IDENTIFIER_VALUE_CONTEXT = "manageparticipantidentifier";
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
@@ -91,7 +91,7 @@ public class SmlConnector implements ApplicationContextAware {
     private ApplicationContext ctx;
 
 
-    public boolean registerInDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
+    public boolean registerInDns(Identifier normalizedParticipantId, DBDomain domain) {
 
 
         if (!configurationService.isSMLIntegrationEnabled()) {
@@ -120,7 +120,7 @@ public class SmlConnector implements ApplicationContextAware {
         }
     }
 
-    protected boolean processSMLErrorMessage(BadRequestFault e, ParticipantIdentifierType participantIdentifierType) {
+    protected boolean processSMLErrorMessage(BadRequestFault e, Identifier participantIdentifierType) {
         if (!isOkMessage(participantIdentifierType, e.getMessage())) {
             LOG.error(e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
@@ -129,7 +129,7 @@ public class SmlConnector implements ApplicationContextAware {
         return true;
     }
 
-    protected boolean processSMLErrorMessage(NotFoundFault e, ParticipantIdentifierType participantIdentifierType) {
+    protected boolean processSMLErrorMessage(NotFoundFault e, Identifier participantIdentifierType) {
         if (!isOkMessage(participantIdentifierType, e.getMessage())) {
             LOG.error(e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
@@ -145,7 +145,7 @@ public class SmlConnector implements ApplicationContextAware {
      * @param errorMessage
      * @return
      */
-    protected boolean isOkMessage(ParticipantIdentifierType patId, String errorMessage) {
+    protected boolean isOkMessage(Identifier patId, String errorMessage) {
         if (errorMessage == null) {
             return false;
         }
@@ -218,7 +218,7 @@ public class SmlConnector implements ApplicationContextAware {
     }
 
 
-    public boolean unregisterFromDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
+    public boolean unregisterFromDns(Identifier normalizedParticipantId, DBDomain domain) {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
@@ -267,7 +267,7 @@ public class SmlConnector implements ApplicationContextAware {
         IManageParticipantIdentifierWS iManageServiceMetadataWS = ctx.getBean(IManageParticipantIdentifierWS.class, getSmlClientKeyAliasForDomain(domain),
                 domain.getSmlClientCertHeader(), domain.isSmlClientCertAuth());
         // configure connection
-        configureClient(PARTICIPANT_IDENTIFIER_CONTEXT, iManageServiceMetadataWS, domain);
+        configureClient(IDENTIFIER_VALUE_CONTEXT, iManageServiceMetadataWS, domain);
 
         return iManageServiceMetadataWS;
     }

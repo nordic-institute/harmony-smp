@@ -11,6 +11,7 @@ import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.time.ZoneOffset;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -102,8 +103,8 @@ public class X509CertificateToCertificateROConverterTest {
         assertEquals(clientCertHeader, certRo.getClientCertHeader());
         assertEquals(certificateId, certRo.getCertificateId());
         assertNotNull(certRo.getEncodedValue());
-        assertEquals(certificate.getNotBefore(), certRo.getValidFrom());
-        assertEquals(certificate.getNotAfter(), certRo.getValidTo());
+        assertEquals(certificate.getNotBefore().toInstant().atOffset(ZoneOffset.UTC), certRo.getValidFrom());
+        assertEquals(certificate.getNotAfter().toInstant().atOffset(ZoneOffset.UTC), certRo.getValidTo());
 
     }
 

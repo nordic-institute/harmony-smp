@@ -1,13 +1,13 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {User} from "../../../security/user.model";
 import {GlobalLookups} from "../../global-lookups";
-import {UserDetailsService} from "../../../user/user-details-dialog/user-details.service";
+import {UserDetailsService} from "../../../system-settings/user/user-details-dialog/user-details.service";
 import {AccessTokenRo} from "./access-token-ro.model";
 import {SecurityService} from "../../../security/security.service";
 import {SmpConstants} from "../../../smp.constants";
-import {SearchTableEntityStatus} from "../../search-table/search-table-entity-status.model";
+import {EntityStatus} from "../../model/entity-status.model";
 
 @Component({
   selector: 'smp-access-token-generation-dialog',
@@ -18,7 +18,7 @@ export class AccessTokenGenerationDialogComponent {
 
   dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
   formTitle = "Access token generation dialog";
-  dialogForm: FormGroup;
+  dialogForm: UntypedFormGroup;
   hideCurrPwdFiled: boolean = true;
   hideNewPwdFiled: boolean = true;
   hideConfPwdFiled: boolean = true;
@@ -35,7 +35,7 @@ export class AccessTokenGenerationDialogComponent {
     private lookups: GlobalLookups,
     private userDetailsService: UserDetailsService,
     public securityService: SecurityService,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
   ) {
     dialogRef.disableClose = true;//disable default close operation
 
@@ -44,11 +44,11 @@ export class AccessTokenGenerationDialogComponent {
 
 
     this.dialogForm = fb.group({
-      'email': new FormControl({value: null, readonly: true}, null),
-      'username': new FormControl({value: null, readonly: true}, null),
-      'accessTokenId': new FormControl({value: null, readonly: true}, null),
-      'accessTokenExpireOn': new FormControl({value: null, readonly: true}, null),
-      'current-password': new FormControl({value: null, readonly: false}, this.securityService.getCurrentUser().casAuthenticated?null:[Validators.required]),
+      'email': new UntypedFormControl({value: null, readonly: true}, null),
+      'username': new UntypedFormControl({value: null, readonly: true}, null),
+      'accessTokenId': new UntypedFormControl({value: null, readonly: true}, null),
+      'accessTokenExpireOn': new UntypedFormControl({value: null, readonly: true}, null),
+      'current-password': new UntypedFormControl({value: null, readonly: false}, this.securityService.getCurrentUser().casAuthenticated?null:[Validators.required]),
     });
 
     this.dialogForm.controls['email'].setValue(this.isEmptyEmailAddress ? "Empty email address!" : this.current.emailAddress);
@@ -103,8 +103,8 @@ export class AccessTokenGenerationDialogComponent {
           this.dialogForm.controls['accessTokenId'].setValue(this.current.accessTokenId);
           this.dialogForm.controls['accessTokenExpireOn'].setValue(this.current.accessTokenExpireOn);
           // save new values
-          const user = {...this.current, status: SearchTableEntityStatus.UPDATED};
-          this.securityService.updateUserDetails(user);
+          const user = {...this.current, status: EntityStatus.UPDATED};
+          //this.securityService.updateUserDetails(user);
           this.tokenChanged = true;
         },
         (err) => {

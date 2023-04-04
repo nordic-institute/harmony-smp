@@ -1,0 +1,54 @@
+<div class="panel"  [formGroup]="credentialForm" (ngSubmit)="onSaveButtonClicked()">
+  <div style="display: flex;flex-flow: row wrap;">
+    <mat-form-field style="flex-grow: 2">
+      <mat-label>Certificate ID</mat-label>
+      <input matInput placeholder="Access token ID"
+             [value]="credential?.name"
+             maxlength="255" readonly>
+    </mat-form-field>
+    <div style="display: inline">
+      <button id="deleteButton" mat-raised-button
+              (click)="onDeleteButtonClicked()"
+              color="primary" >
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
+      </button>
+      <button id="saveButton" mat-raised-button
+              (click)="onSaveButtonClicked()"
+              color="primary"
+              [disabled]="!submitButtonEnabled" >
+        <mat-icon>save</mat-icon>
+        <span>Save</span>
+      </button>
+      <button id="showButton" mat-raised-button
+              (click)="onShowCertificateButtonClicked()"
+              color="primary"
+               >
+        <mat-icon>article</mat-icon>
+        <span>Show</span>
+      </button>
+    </div>
+  </div>
+  <mat-form-field style="width: 100%">
+    <mat-label>Description</mat-label>
+    <input matInput placeholder="Description"
+           formControlName="description"
+           maxlength="255">
+  </mat-form-field>
+  <div style="display: flex;flex-flow: row wrap;">
+    <mat-checkbox formControlName="active">
+      Active
+    </mat-checkbox>
+    <mat-form-field appearance="fill" style="flex-grow: 1">
+      <mat-label>Enter a valid date range</mat-label>
+      <mat-date-range-input [rangePicker]="picker" >
+        <input matStartDate formControlName="activeFrom" placeholder="Start date">
+        <input matEndDate formControlName="expireOn" placeholder="End date">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+      <mat-error *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">Invalid active from date</mat-error>
+      <mat-error *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">Invalid expire on date</mat-error>
+    </mat-form-field>
+  </div>
+</div>

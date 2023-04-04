@@ -34,13 +34,13 @@ INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('domain1', 'DEFAULT-SMP-ID')
 
 
 
-ALTER TABLE smp_service_group ADD
+ALTER TABLE SMP_RESOURCE ADD
   domainId  VARCHAR(50)
             CHARACTER SET utf8
             COLLATE utf8_bin NOT NULL
             DEFAULT 'domain1';
 
-ALTER TABLE smp_service_group ADD
+ALTER TABLE SMP_RESOURCE ADD
   CONSTRAINT
     FK_srv_group_domain FOREIGN KEY (domainId)
     REFERENCES smp_domain (domainId);

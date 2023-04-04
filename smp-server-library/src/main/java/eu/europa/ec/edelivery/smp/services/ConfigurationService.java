@@ -1,11 +1,10 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
-import eu.europa.ec.edelivery.smp.config.FileProperty;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -21,17 +20,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 
 
 @Service
 public class ConfigurationService {
+
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationService.class);
 
     private final ConfigurationDao configurationDAO;
 
     public ConfigurationService(ConfigurationDao configurationDAO) {
         this.configurationDAO = configurationDAO;
+    }
+
+
+    public String getDefaultDomainCode(){
+        return configurationDAO.getCachedPropertyValue(DEFAULT_DOMAIN);
     }
 
 
@@ -261,8 +266,8 @@ public class ConfigurationService {
         return value != null && value;
     }
 
-    public File getConfigurationFolder() {
-        return configurationDAO.getCachedPropertyValue(CONFIGURATION_DIR);
+    public File getSecurityFolder() {
+        return  configurationDAO.getSecurityFolder();
     }
 
     public File getTruststoreFile() {
@@ -558,15 +563,6 @@ public class ConfigurationService {
 
     public String getAlertEmailFrom() {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_MAIL_FROM);
-    }
-
-    /**
-     * Property is set in "file property configuration and can not be changed via database!
-     *
-     * @return true if smp server is started in development mode
-     */
-    public boolean isSMPStartupInDevMode() {
-        return Boolean.parseBoolean(configurationDAO.getCachedProperty(FileProperty.PROPERTY_SMP_MODE_DEVELOPMENT, "false"));
     }
 
 

@@ -13,9 +13,9 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.junit.Test;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -32,7 +32,7 @@ public class SmlIdentifierConverterTest {
     @Test
     public void positiveCase() {
         //given
-        ParticipantIdentifierType participantId = new ParticipantIdentifierType(ID_VALUE, ID_SCHEME);
+        Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
         //when
         ServiceMetadataPublisherServiceForParticipantType result = SmlIdentifierConverter.toBusdoxParticipantId(participantId, SMP_ID);
@@ -46,7 +46,7 @@ public class SmlIdentifierConverterTest {
     @Test(expected = IllegalStateException.class)
     public void negativeCaseMissingSmpId() {
         //given
-        ParticipantIdentifierType participantId = new ParticipantIdentifierType(ID_VALUE, ID_SCHEME);
+        Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
         //when
         SmlIdentifierConverter.toBusdoxParticipantId(participantId, null);
@@ -55,7 +55,7 @@ public class SmlIdentifierConverterTest {
     @Test
     public void positiveCaseWithNullScheme() {
         //given
-        ParticipantIdentifierType participantId = new ParticipantIdentifierType(ID_VALUE, null);
+        Identifier participantId = new Identifier(ID_VALUE, null);
 
         //when
         ServiceMetadataPublisherServiceForParticipantType result = SmlIdentifierConverter.toBusdoxParticipantId(participantId, SMP_ID);
@@ -68,7 +68,7 @@ public class SmlIdentifierConverterTest {
     @Test(expected = IllegalStateException.class)
     public void negativeCaseMissingValue() {
         //given
-        ParticipantIdentifierType participantId = new ParticipantIdentifierType(null, ID_SCHEME);
+        Identifier participantId = new Identifier(null, ID_SCHEME);
 
         //when
         SmlIdentifierConverter.toBusdoxParticipantId(participantId, SMP_ID);
