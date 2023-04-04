@@ -29,7 +29,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_SUBRESOURCE_B
 @Entity
 @Audited
 @Table(name = "SMP_SUBRESOURCE",
-        indexes = {@Index(name = "SMP_SRS_UNIQ_IDENT_RES_SRTYPE_IDX", columnList = "FK_RESOURCE_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME", unique = true),
+        indexes = {@Index(name = "SMP_SRS_UNIQ_ID_RES_SRT_IDX", columnList = "FK_RESOURCE_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME", unique = true),
                 @Index(name = "SMP_SMD_DOC_ID_IDX", columnList = "IDENTIFIER_VALUE", unique = false),
                 @Index(name = "SMP_SMD_DOC_SCH_IDX", columnList = "IDENTIFIER_SCHEME", unique = false)
         })

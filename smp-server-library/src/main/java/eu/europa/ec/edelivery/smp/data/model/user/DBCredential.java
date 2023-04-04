@@ -31,7 +31,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Audited
 @Table(name = "SMP_CREDENTIAL",
         indexes = {
-            @Index(name = "SMP_CREDENTIAL_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true),
+            @Index(name = "SMP_CRD_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true),
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_CREDENTIAL", comment = "Credentials for the users")
 @NamedQueries({

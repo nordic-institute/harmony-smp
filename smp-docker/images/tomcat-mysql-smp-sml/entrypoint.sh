@@ -90,9 +90,9 @@ init_smp_properties() {
     echo "[INFO] init smp properties:"
 
     { echo "# SMP init parameters"
-      echo "libraries.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs"
+      echo "smp.libraries.folder=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs"
       echo "bdmsl.integration.logical.address=${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
-      echo "authentication.blueCoat.enabled=true"
+      echo "smp.automation.authentication.external.tls.clientCert.enabled=true"
       echo "bdmsl.integration.enabled=true"
       echo "bdmsl.integration.physical.address=0.0.0.0"
       echo "bdmsl.participant.multidomain.enabled=false"

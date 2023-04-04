@@ -113,7 +113,7 @@ public class SMPKeystoreConfBuilder {
                 .folder(outputFolder)
                 .secretToken(trustToken)
                 .subjectChain(subjectChain)
-                .aliasList(subjectChain)
+                .aliasList(aliasList)
                 .testMode(testMode).build();
 
         // store file to database

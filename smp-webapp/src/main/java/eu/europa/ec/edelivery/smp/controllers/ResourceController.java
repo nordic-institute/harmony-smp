@@ -11,6 +11,7 @@ import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +24,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.*;
+import static java.net.URLDecoder.decode;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 
 /**
@@ -42,7 +47,7 @@ import static org.apache.commons.lang3.StringUtils.lowerCase;
 @RestController
 @RequestMapping(value = "/{parameter1:^(?!ui).*}", method = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
 public class ResourceController {
-
+    private static final String UTF_8 = "UTF-8";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceController.class);
     // set them to lower case for fast comparing with the  http headers
     private static final List<String> SUPPORTED_HEADERS = Arrays.asList(lowerCase(HTTP_PARAM_DOMAIN),
@@ -154,10 +159,19 @@ public class ResourceController {
         Map<String, String> headersMap = Collections.list(httpReq.getHeaderNames()).stream()
                 .map(StringUtils::lowerCase)
                 .filter(SUPPORTED_HEADERS::contains)
-                .collect(Collectors.toMap(name -> name, httpReq::getHeader));
-
+                .collect(Collectors.toMap(name -> name, name -> urlDecode(httpReq.getHeader(name))));
         return new ResourceRequest(resourceAction, headersMap, pathParameters, inputStream);
     }
+
+    public static String  urlDecode(String header){
+        try {
+            return header==null?null: URLDecoder.decode(header, UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            throw new SMPRuntimeException(INTERNAL_ERROR,"DecodeHeader", ExceptionUtils.getRootCauseMessage( e));
+        }
+    }
+
+
 
     protected ResourceResponse fromServletResponse(HttpServletResponse httpRes) {
         ResourceResponse resourceResponse = new ResourceResponse(httpRes);

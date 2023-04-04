@@ -11,11 +11,15 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
+import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
 import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_OWNER;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -119,13 +123,38 @@ public class ResourceService {
         LOG.debug("Resource is new [{}] and owner header is [{}]", isNewResource, owner);
         // the owner can be set via http owner parameter
         if (isNewResource && isNotBlank(owner)) {
-            ownerUser = userDao.findUserByIdentifier(owner).orElseThrow(
-                    () -> new SMPRuntimeException(ErrorCode.INVALID_OWNER, owner));
-
+            ownerUser = findOwner(owner);
         } else if (isNotBlank(owner)) {
             LOG.warn("Owner [{}] is given for existing resource [{}]. The owner parameter is ignored!", owner, resolvedData.getResource());
         }
+
+
         resourceHandlerService.createResource(ownerUser, resourceRequest, resourceResponse);
+    }
+
+    protected DBUser findOwner(final String ownerName) {
+        Optional<DBUser> optOwnerUser = userDao.findUserByIdentifier(ownerName);
+        // if user still not present
+        if (!optOwnerUser.isPresent()
+                && !StringUtils.isBlank(ownerName) && ownerName.contains(":")) {
+            // try harder
+            String[] val = splitSerialFromSubject(ownerName);
+            String newOwnerName = DistinguishedNamesCodingUtil.normalizeDN(val[0]) + ':' + val[1];
+            LOG.info("Owner not found: [{}] try with normalized owner: [{}].", ownerName, newOwnerName);
+            optOwnerUser = userDao.findUserByIdentifier(newOwnerName);
+        }
+
+        return optOwnerUser.orElseThrow(
+                () -> new SMPRuntimeException(ErrorCode.INVALID_OWNER, ownerName));
+    }
+
+    public static String[] splitSerialFromSubject(String certificateId) {
+        int idx = certificateId.lastIndexOf(":");
+        if (idx <= 0) {
+            throw new SMPRuntimeException(INVALID_OWNER, certificateId);
+        }
+        return new String[]{certificateId.substring(0, idx), certificateId.substring(idx + 1)};
+
     }
 
 }

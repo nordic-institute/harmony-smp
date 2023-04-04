@@ -15,6 +15,7 @@ package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.identifiers.IdentifierFormatter;
+import eu.europa.ec.edelivery.smp.identifiers.types.EBCorePartyIdFormatterType;
 import eu.europa.ec.edelivery.smp.identifiers.types.OasisSMPFormatterType;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -37,7 +38,7 @@ public class IdentifierService {
 
     IdentifierFormatter participantIdentifierFormatter = IdentifierFormatter.Builder
             .create()
-            .addFormatterTypes(new OasisSMPFormatterType())
+            .addFormatterTypes(new EBCorePartyIdFormatterType())
             .build();
     IdentifierFormatter documentIdentifierFormatter = IdentifierFormatter.Builder.create().build();
 
