@@ -183,7 +183,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING
     ),
 
-    EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("external.tls.clientCert.enabled", "false",
+    EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED("smp.automation.authentication.external.tls.clientCert.enabled", "false",
             "Authentication with external module as: reverse proxy. Authenticated data are send send to application using 'Client-Cert' HTTP header. Do not enable this feature " +
                     "without properly configured reverse-proxy!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),

@@ -16,9 +16,9 @@ public enum SMPEnvPropertyEnum {
 
     DATABASE_JNDI("smp.datasource.jndi",null,"he JNDI name for datasource as example:" +
             "* weblogic datasource JNDI example " +
-            "datasource.jndi=jdbc/eDeliverySmpDs " +
+            "smp.datasource.jndi=jdbc/eDeliverySmpDs " +
             "* tomcat datasource JNDI example" +
-            "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs"),
+            "smp.datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs"),
     DATABASE_CREATE_DDL("smp.database.create-ddl","false","Auto create/update database objects. The property is effective only when smp.mode.development=true!"),
 
     DATABASE_SHOW_SQL("smp.database.show-sql","false","Print generated sql queries to logs. The property is effective only when smp.mode.development=true!"),

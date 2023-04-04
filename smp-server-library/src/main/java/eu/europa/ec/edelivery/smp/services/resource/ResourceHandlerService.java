@@ -56,12 +56,15 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         LOG.debug("Handle the READ action for resource request [{}]", resourceRequest);
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         ResourceHandlerSpi handlerSpi = getResourceHandler(resolvedData.getResourceDef());
+        // set default mimetype - it can be overwritten by handler
+        resourceResponse.setContentType(resolvedData.getResourceDef().getMimeType());
 
         RequestData requestData = buildRequestDataForResource(resolvedData.getDomain(), resolvedData.getResource());
         ResponseData responseData = new SpiResponseData(resourceResponse.getOutputStream());
         // get resource byte array
 
         handleReadResource(handlerSpi, requestData, responseData, resourceResponse);
+
     }
 
     @Transactional
@@ -71,6 +74,9 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         LOG.debug("Handle the READ action for subresource request [{}]", resourceRequest);
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         DBSubresource resolvedSubresource = resolvedData.getSubresource();
+        // set default mimetype - it can be overwritten by handler
+        resourceResponse.setContentType(resolvedSubresource.getSubresourceDef().getMimeType());
+
         ResourceHandlerSpi handlerSpi = getSubresourceHandler(resolvedSubresource.getSubresourceDef(), resolvedData.getResourceDef());
         // generate request and respond
         RequestData requestData = buildRequestDataForSubResource(resolvedData.getDomain(), resolvedData.getResource(), resolvedData.getSubresource());

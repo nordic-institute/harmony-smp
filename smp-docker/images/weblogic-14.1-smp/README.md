@@ -125,9 +125,9 @@ Weblogic database configured based on the file `/u01/init/datasource.properties`
 SMP initial configuration can be provided in file  `/smp.config.properties`
 
     # example of the SMP configuration file (please note the example where SMP uses JNDI datasource!)
-    hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
-    datasource.jndi=jdbc/eDeliverySmpDs
-    configuration.dir=/data/smp/security
-    authentication.blueCoat.enabled=true
-    log.folder=./logs/
+    smp.jdbc.hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+    smp.datasource.jndi=jdbc/eDeliverySmpDs
+    smp.security.folder=/data/smp/security
+    smp.automation.authentication.external.tls.clientCert.enabled=true
+    smp.log.folder=./logs/
     

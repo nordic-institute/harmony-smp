@@ -54,10 +54,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMP10Handler {
             LOG.warn("Empty document input stream for service-group [{}]!", identifier);
             return;
         }
-
         ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(resourceData.getResourceInputStream());
-
-
         // get references
         serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
         List<ServiceMetadataReferenceType> referenceTypes = buildReferences(identifier);
@@ -65,7 +62,6 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMP10Handler {
 
         try {
             ServiceGroupConverter.marshalToOutputStream(serviceGroup, responseData.getOutputStream());
-            responseData.setContentType("application/xml");
         } catch (JAXBException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
 
@@ -114,6 +110,12 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMP10Handler {
         }
         inputStream.mark(Integer.MAX_VALUE - 2);
         ServiceGroup serviceGroup = validateAndParse(resourceData);
+
+        // ServiceMetadataReferenceCollection must be empty because they are automatically generated
+        if (serviceGroup.getServiceMetadataReferenceCollection()!=null
+                && !serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences().isEmpty() ) {
+            throw new ResourceException(INVALID_PARAMETERS, "ServiceMetadataReferenceCollection must be empty!");
+        }
         // set participant to "lowercase" to match it as is saved in the database
         // this is just for back-compatibility issue!
         serviceGroup.getParticipantIdentifier().setValue(resourceData.getResourceIdentifier().getValue());
