@@ -264,7 +264,8 @@ public class ResourceResolverService {
         resource.setDocument(new DBDocument());
         resource.getDocument().setName(resourceDef.getName());
         resource.getDocument().setMimeType(resourceDef.getMimeType());
-        resource.setDomainResourceDef(domainResourceDefDao.getResourceDefConfigurationForDomainAndResourceDef(domain, resourceDef).get());
+        resource.setDomainResourceDef(domainResourceDefDao.getResourceDefConfigurationForDomainAndResourceDef(domain, resourceDef)
+                .orElse(null));
         return resource;
     }
 

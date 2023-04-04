@@ -16,7 +16,9 @@ import org.springframework.security.core.GrantedAuthority;
 public class SMPAuthority implements GrantedAuthority {
 
     // static constants for annotations!
-    public static final String S_AUTHORITY_TOKEN_WS_SMP_ADMIN = "ROLE_WS_SMP_ADMIN";
+    public static final String S_AUTHORITY_TOKEN_WS_SYSTEM_ADMIN = "ROLE_WS_SYSTEM_ADMIN";
+
+    public static final String S_AUTHORITY_TOKEN_WS_USER= "ROLE_WS_USER";
     // ui
     public static final String S_AUTHORITY_TOKEN_SYSTEM_ADMIN = "ROLE_SYSTEM_ADMIN";
     public static final String S_AUTHORITY_TOKEN_USER = "ROLE_USER";
@@ -25,9 +27,8 @@ public class SMPAuthority implements GrantedAuthority {
     public static final SMPAuthority S_AUTHORITY_SYSTEM_ADMIN = new SMPAuthority(SMPRole.SYSTEM_ADMIN.getCode());
     public static final SMPAuthority S_AUTHORITY_USER = new SMPAuthority(SMPRole.USER.getCode());
     public static final SMPAuthority S_AUTHORITY_ANONYMOUS = new SMPAuthority(SMPRole.ANONYMOUS.getCode());
-
     public static final SMPAuthority S_AUTHORITY_WS_USER = new SMPAuthority(SMPRole.WS_USER.getCode());
-    public static final SMPAuthority S_AUTHORITY_WS_SYSTEM_ADMIN = new SMPAuthority(SMPRole.SYSTEM_ADMIN.getCode());
+    public static final SMPAuthority S_AUTHORITY_WS_SYSTEM_ADMIN = new SMPAuthority(SMPRole.WS_SYSTEM_ADMIN.getCode());
 
     String role;
 
@@ -62,6 +63,8 @@ public class SMPAuthority implements GrantedAuthority {
                 return S_AUTHORITY_WS_USER;
             case SYSTEM_ADMIN:
                 return S_AUTHORITY_SYSTEM_ADMIN;
+            case WS_SYSTEM_ADMIN:
+                return S_AUTHORITY_WS_SYSTEM_ADMIN;
             default:
                 return S_AUTHORITY_ANONYMOUS;
         }

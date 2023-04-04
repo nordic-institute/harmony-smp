@@ -155,10 +155,12 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
         return result;
     }
 
+    @Transactional
     public String getCachedProperty(SMPPropertyEnum key) {
         return getCachedProperty(key.getProperty(), key.getDefValue());
     }
 
+    @Transactional
     public String getCachedProperty(String property, String defValue) {
         if (lastUpdate == null) {
             // init properties
