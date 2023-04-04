@@ -4,10 +4,10 @@ import {AlertMessageService} from "../../common/alert-message/alert-message.serv
 import {FormBuilder, FormControl, FormGroup, Validators,} from "@angular/forms";
 import {ThemeService} from "../../common/theme-service/theme.service";
 import {User} from "../../security/user.model";
-import {UserService} from "../../user/user.service";
+import {UserService} from "../../system-settings/user/user.service";
 import {SmpConstants} from "../../smp.constants";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {UserController} from "../../user/user-controller";
+import {UserController} from "../../system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../common/global-lookups";
 import {Credential} from "../../security/credential.model";

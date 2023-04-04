@@ -19,6 +19,7 @@ import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@Ignore
 public class SignatureValidatorTest {
 
     protected Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");

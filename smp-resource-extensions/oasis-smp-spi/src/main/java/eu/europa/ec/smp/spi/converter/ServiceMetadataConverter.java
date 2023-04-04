@@ -95,10 +95,11 @@ public class ServiceMetadataConverter {
 
     public static ServiceMetadata unmarshal(byte[] serviceMetadataXml) throws ResourceException {
         try {
-            Document serviceMetadataDoc = parse(serviceMetadataXml);
-            ServiceMetadata serviceMetadata = getUnmarshaller().unmarshal(serviceMetadataDoc, ServiceMetadata.class).getValue();
+            InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);
+            ServiceMetadata serviceMetadata = (ServiceMetadata)getUnmarshaller()
+                    .unmarshal(inputStream);
             return serviceMetadata;
-        } catch (SAXException | IOException | ParserConfigurationException | JAXBException ex) {
+        } catch (JAXBException ex) {
             throw new ResourceException(PARSE_ERROR, "Error occurred while parsing resource: " + ExceptionUtils.getRootCauseMessage(ex), ex);
         }
     }

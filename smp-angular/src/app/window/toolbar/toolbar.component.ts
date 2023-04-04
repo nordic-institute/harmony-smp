@@ -4,10 +4,10 @@ import {SecurityService} from '../../security/security.service';
 import {Authority} from "../../security/authority.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {UserDetailsDialogMode} from "../../user/user-details-dialog/user-details-dialog.component";
+import {UserDetailsDialogMode} from "../../system-settings/user/user-details-dialog/user-details-dialog.component";
 import {EntityStatus} from "../../common/model/entity-status.model";
-import {UserService} from "../../user/user.service";
-import {UserController} from "../../user/user-controller";
+import {UserService} from "../../system-settings/user/user.service";
+import {UserController} from "../../system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../common/global-lookups";
 

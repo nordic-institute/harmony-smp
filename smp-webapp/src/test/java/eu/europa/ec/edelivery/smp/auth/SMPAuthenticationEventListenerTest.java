@@ -28,7 +28,7 @@ public class SMPAuthenticationEventListenerTest {
         // Given
         Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_USER);
         // when then
-        assertTimeoutForAuthorities(authorities, true);
+        assertTimeoutForAuthorities(authorities, false);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class SMPAuthenticationEventListenerTest {
         // Given
         Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_USER);
         // when then
-        assertTimeoutForAuthorities(authorities, true);
+        assertTimeoutForAuthorities(authorities, false);
     }
 
     public void assertTimeoutForAuthorities(Collection<? extends GrantedAuthority> authorities, boolean isAdmin){

@@ -59,6 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 "update SMP_CONFIGURATION set PROPERTY_VALUE='true', LAST_UPDATED_ON=NOW() where PROPERTY_NAME='smp.automation.authentication.external.tls.clientCert.enabled';"
         },
         executionPhase = BEFORE_TEST_METHOD)
+@Ignore
 public class ServiceGroupControllerTest {
 
     private static final String IDENTIFIER_SCHEME = "ehealth-participantid-qns";

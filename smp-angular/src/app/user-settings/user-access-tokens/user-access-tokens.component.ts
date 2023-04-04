@@ -1,6 +1,6 @@
 import {Component,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
-import {UserService} from "../../user/user.service";
+import {UserService} from "../../system-settings/user/user.service";
 import {Credential} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";

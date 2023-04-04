@@ -32,13 +32,6 @@ let PUBLIC_NAVIGATION_TREE: NavigationNode = {
           tooltip: "Search registered resources",
           routerLink: "search-resources",
 
-        },
-        {
-          code: "search-lookup",
-          name: "DNS lookup",
-          icon: "dns",
-          tooltip: "DNS lookup tool",
-          routerLink: "dns-lookup",
         }
       ]
     }

@@ -71,12 +71,12 @@ public class UIServiceMetadataService extends UIServiceBase<DBSubresource, Servi
     @Transactional
     public ServiceMetadataRO getServiceMetadataXMLById(Long serviceMetadataId) {
         LOG.debug("Get service metadata: {}", serviceMetadataId);
-        DBSubresource DBSubresource = serviceMetadataDao.find(serviceMetadataId);
+        DBSubresource dbSubresource = serviceMetadataDao.find(serviceMetadataId);
         ServiceMetadataRO serviceMetadataRO = new ServiceMetadataRO();
 
-        serviceMetadataRO.setId(DBSubresource.getId());
-        serviceMetadataRO.setDocumentIdentifier(DBSubresource.getIdentifierValue());
-        serviceMetadataRO.setDocumentIdentifierScheme(DBSubresource.getIdentifierScheme());
+        serviceMetadataRO.setId(dbSubresource.getId());
+        serviceMetadataRO.setDocumentIdentifier(dbSubresource.getIdentifierValue());
+        serviceMetadataRO.setDocumentIdentifierScheme(dbSubresource.getIdentifierScheme());
 
         return serviceMetadataRO;
     }

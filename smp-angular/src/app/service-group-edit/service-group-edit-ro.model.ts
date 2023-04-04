@@ -1,6 +1,6 @@
 import {ServiceMetadataEditRo} from './service-metadata-edit-ro.model';
 import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
-import {UserRo} from "../user/user-ro.model";
+import {UserRo} from "../system-settings/user/user-ro.model";
 import {ServiceGroupDomainEditRo} from "./service-group-domain-edit-ro.model";
 import {EntityStatus} from "../common/model/entity-status.model";
 

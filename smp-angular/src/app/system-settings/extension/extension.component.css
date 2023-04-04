@@ -1,0 +1,41 @@
+/* --- Select ---*/
+.mat-select{
+  padding:20px 0;
+}
+
+/* --- Button  ---*/
+.group-btn {
+   margin-top:20px;
+ }
+
+#hiddenButtonId {
+  position: fixed;
+}
+
+::ng-deep .missingKey {
+  text-decoration: line-through !important;
+  font-weight: bold;
+  color:red;
+}
+
+::ng-deep .domainWarning {
+  text-decoration: line-through !important;
+  font-weight: bold;
+  color:#c6c639;
+}
+
+::ng-deep .deleted  {
+  text-decoration: line-through !important;
+  font-weight: bold;
+}
+::ng-deep .table-row-new  {
+
+  color: darkgreen !important;
+  font-weight: bold;
+}
+::ng-deep .table-row-updated  {
+  font-weight: bold;
+}
+::ng-deep .table-row  {
+  font-weight: normal;
+}

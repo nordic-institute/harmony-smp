@@ -62,8 +62,7 @@ public class SMPAuthenticationEventListener implements ApplicationListener<Authe
     public int getSessionTimeoutForRoles(Collection<? extends GrantedAuthority> authorities) {
         boolean hasAdminRole = authorities.stream().anyMatch(grantedAuthority ->
                 StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
-                        || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_USER.getAuthority())
-                        || StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_WS_USER.getAuthority())
+
         );
         LOG.debug("has admin role [{}]", hasAdminRole);
         LOG.debug("configurationService [{}]", configurationService);

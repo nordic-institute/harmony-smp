@@ -20,7 +20,7 @@ public class URLCsrfMatcherTest {
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection cookieWriterTestParameters() {
         return asList(new Object[][]{
-                {"/ui/", false, asList("/.*"), null},
+                {"/test/", false, asList("/.*"), null},
                 {"/ui/resource", true, asList("/!(ui/).*"), null},
                 {"/test/resource", false, asList("^/(?!ui/).*"), null},
                 {"/ui/resource", true, asList("^/(?!ui/).*"), null},
@@ -46,7 +46,7 @@ public class URLCsrfMatcherTest {
         URLCsrfIgnoreMatcher testInstance = new URLCsrfIgnoreMatcher(regExp, httpMethods);
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.doReturn(patInfo).when(request).getPathInfo();
+        Mockito.doReturn(patInfo).when(request).getRequestURI();
         Mockito.doReturn("").when(request).getServletPath();
 
         boolean result = testInstance.matches(request);

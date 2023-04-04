@@ -3,11 +3,11 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {User} from "../../../security/user.model";
 import {GlobalLookups} from "../../global-lookups";
-import {UserDetailsService} from "../../../user/user-details-dialog/user-details.service";
+import {UserDetailsService} from "../../../system-settings/user/user-details-dialog/user-details.service";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {SecurityService} from "../../../security/security.service";
 import {InformationDialogComponent} from "../information-dialog/information-dialog.component";
-import {UserRo} from "../../../user/user-ro.model";
+import {UserRo} from "../../../system-settings/user/user-ro.model";
 
 @Component({
   selector: 'smp-password-change-dialog',

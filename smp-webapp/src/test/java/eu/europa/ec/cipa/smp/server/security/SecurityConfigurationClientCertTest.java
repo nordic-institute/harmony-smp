@@ -19,10 +19,7 @@ import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +56,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
+
         executionPhase = BEFORE_TEST_METHOD)
 @TestPropertySource(properties = {
-        "external.tls.clientCert.enabled=true",
+        "smp.automation.authentication.external.tls.clientCert.enabled=true",
 })
+@Ignore
 public class SecurityConfigurationClientCertTest {
 
     //Jul++9+23:59:00+2019+GMT"

@@ -1,12 +1,4 @@
--- Copyright 2018 European Commission | CEF eDelivery
---
--- Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
--- You may not use this work except in compliance with the Licence.
---
--- You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
---
--- Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
 insert into SMP_CONFIGURATION (PROPERTY_NAME, PROPERTY_VALUE, CREATED_ON, LAST_UPDATED_ON) values ('encryption.key.filename','encryptionKey.key', NOW(),  NOW());
 insert into SMP_CONFIGURATION (PROPERTY_NAME, PROPERTY_VALUE, CREATED_ON, LAST_UPDATED_ON) values ('smp.keystore.password', 'FarFJE2WUfY39SVRTFOqSg==', NOW(),  NOW());
 insert into SMP_CONFIGURATION (PROPERTY_NAME, PROPERTY_VALUE, CREATED_ON, LAST_UPDATED_ON) values ('smp.keystore.filename', 'smp-keystore_multiple_domains.jks', NOW(),  NOW());
@@ -26,45 +18,44 @@ insert into SMP_CONFIGURATION (PROPERTY_NAME, PROPERTY_VALUE, CREATED_ON, LAST_U
 
 insert into SMP_USER (ID, USERNAME, ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_UPDATED_ON)
 values (1, 'smp_admin', 1, 'SYSTEM_ADMIN',  NOW(),  NOW());
-insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'smp_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
-(2, 1, 'pat_smp_admin', '$2a$10$bP44Ij/mE6U6OUo/QrKCvOb7ouSClKnyE0Ak6t58BLob9OTI534IO','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
+(1, 1, 1, 'smp_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
+(2, 1, 1, 'pat_smp_admin', '$2a$10$bP44Ij/mE6U6OUo/QrKCvOb7ouSClKnyE0Ak6t58BLob9OTI534IO','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
 
 insert into SMP_USER (ID, USERNAME, ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (2, 'sg_admin', 1, 'USER',  NOW(),  NOW());
-insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
-(3, 2, 'sg_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
-(4, 2, 'pat_sg_admin', '$2a$10$bP44Ij/mE6U6OUo/QrKCvOb7ouSClKnyE0Ak6t58BLob9OTI534IO','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
+(3, 2, 1, 'sg_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
+(4, 2, 1, 'pat_sg_admin', '$2a$10$bP44Ij/mE6U6OUo/QrKCvOb7ouSClKnyE0Ak6t58BLob9OTI534IO','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
 
 insert into SMP_USER (ID, USERNAME, ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (3, 'sys_admin', 1, 'SYSTEM_ADMIN',  NOW(),  NOW());
-insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
-(5, 3, 'sys_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
-(6, 3, 'pat_sys_admin', '$2a$10$bP44Ij/mE6U6OUo/QrKCvOb7ouSClKnyE0Ak6t58BLob9OTI534IO','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
+(5, 3, 1, 'sys_admin', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
+(6, 3, 1, 'pat_sys_admin', '$2a$10$bP44Ij/mE6U6OUo/QrKCvOb7ouSClKnyE0Ak6t58BLob9OTI534IO','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
 
 insert into SMP_USER(ID, USERNAME,  ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (4, 'test_user_hashed_pass', 1, 'USER',  NOW(),  NOW());
-insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
-(7, 4, 'test_user_hashed_pass', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
-(8, 4, 'test_pat_hashed_pass', '$2a$10$bP44Ij/mE6U6OUo/QrKCvOb7ouSClKnyE0Ak6t58BLob9OTI534IO','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
+(7, 4, 1, 'test_user_hashed_pass', '$2a$06$AXSSUDJlpzzq/gPZb7eIBeb8Mi0.PTKqDjzujZH.bWPwj5.ePEInW','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
+(8, 4, 1, 'test_pat_hashed_pass', '$2a$10$bP44Ij/mE6U6OUo/QrKCvOb7ouSClKnyE0Ak6t58BLob9OTI534IO','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
 
 insert into SMP_USER(ID, USERNAME, ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (5, 'test_user_clear_pass', 1, 'USER',  NOW(),  NOW());
-insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
-(9, 5, 'test_user_clear_pass', 'test123','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
-(10, 5, 'test_pat_clear_pass', 'test123','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
+(9, 5, 1, 'test_user_clear_pass', 'test123','USERNAME_PASSWORD','UI' , NOW(),  NOW()),
+(10, 5, 1, 'test_pat_clear_pass', 'test123','ACCESS_TOKEN','REST_API' , NOW(),  NOW());
 
 insert into SMP_USER(ID, USERNAME, ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (6, 'cert1',  1, 'USER',  NOW(),  NOW());
-insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
-(11, 6, 'CN=common name,O=org,C=BE:000000000000bb66', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
-(12, 6, 'CN=GRP:test_proxy_01,O=European Commission,C=BE:0000000000001234', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
-(13, 6, 'CN=GRP:TEST_\+\,& \=eau!,O=European Commission,C=BE:0000000000001234', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
-(14, 6, 'CN=ncp.fi.ehealth.testa.eu,O=Kansanelakelaitos,C=FI:f71ee8b11cb3b787', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
-(15, 6, 'CN=Internal Business CA 2,O=T-Systems International GmbH,C=DE:f71ee8b11cb3b787', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
-(16, 6, 'CN=common name UPPER database SN,O=org,C=BE:000000000000BB66', null,'CERTIFICATE','REST_API' , NOW(),  NOW())
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
+(11, 6, 1, 'CN=common name,O=org,C=BE:000000000000bb66', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
+(12, 6, 1, 'CN=GRP:test_proxy_01,O=European Commission,C=BE:0000000000001234', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
+(13, 6, 1, 'CN=GRP:TEST_\+\,& \=eau!,O=European Commission,C=BE:0000000000001234', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
+(14, 6, 1, 'CN=ncp.fi.ehealth.testa.eu,O=Kansanelakelaitos,C=FI:f71ee8b11cb3b787', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
+(15, 6, 1, 'CN=Internal Business CA 2,O=T-Systems International GmbH,C=DE:f71ee8b11cb3b787', null,'CERTIFICATE','REST_API' , NOW(),  NOW()),
+(16, 6, 1, 'CN=common name UPPER database SN,O=org,C=BE:000000000000BB66', null,'CERTIFICATE','REST_API' , NOW(),  NOW())
 ;
-
 
 insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values
 (11, 'CN=common name,O=org,C=BE:000000000000bb66', null,null, NOW(),  NOW()),
@@ -76,8 +67,8 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_O
 
 insert into SMP_USER(ID, USERNAME, ACTIVE, APPLICATION_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (7, 'cert2',  1, 'USER',  NOW(),  NOW());
-insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
-(17, 7, 'CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08', null,'CERTIFICATE','REST_API' , NOW(),  NOW());
+insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, CREDENTIAL_VALUE, CREDENTIAL_TYPE, CREDENTIAL_TARGET, CREATED_ON, LAST_UPDATED_ON) values
+(17, 7, 1, 'CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08', null,'CERTIFICATE','REST_API' , NOW(),  NOW());
 insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values
 (17, 'CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08', null,null, NOW(),  NOW());
 
@@ -152,9 +143,10 @@ insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREA
 -- set ownership
 insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 100000, 1, 'ADMIN', NOW(),  NOW()),
-(2, 100000, 5, 'ADMIN', NOW(),  NOW()),
-(3, 100000, 2, 'ADMIN', NOW(),  NOW()),
-(4, 100000, 6, 'ADMIN', NOW(),  NOW());
+(2, 200000, 1, 'ADMIN', NOW(),  NOW()),
+(3, 100000, 5, 'ADMIN', NOW(),  NOW()),
+(4, 100000, 2, 'ADMIN', NOW(),  NOW()),
+(5, 100000, 6, 'ADMIN', NOW(),  NOW());
 
 
 

@@ -3,10 +3,10 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {SmpConstants} from "../../../smp.constants";
 import {AccessTokenRo} from "../access-token-generation-dialog/access-token-ro.model";
-import {UserService} from "../../../user/user.service";
+import {UserService} from "../../../system-settings/user/user.service";
 import {Credential} from "../../../security/credential.model";
-import {CertificateRo} from "../../../user/certificate-ro.model";
-import {CertificateService} from "../../../user/certificate.service";
+import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
+import {CertificateService} from "../../../system-settings/user/certificate.service";
 
 
 @Component({
