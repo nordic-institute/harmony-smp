@@ -1,0 +1,24 @@
+<smp-search-table
+  #searchTable
+  page_id= 'extension_id'
+  [title]= "'Extensions'"
+  [columnPicker] = "columnPicker"
+  [url]="baseUrl"
+
+
+  [showSearchPanel]="false"
+  [filter]="filter"
+  [allowNewItems]="securityService.isCurrentUserSystemAdmin()"
+  [allowDeleteItems]="securityService.isCurrentUserSystemAdmin()"
+>
+
+  <ng-template #domainCodeColumnTemplate let-row="row" let-value="value"  ngx-datatable-cell-template>
+    <span [class]='aliasCssForDomainCodeClass(row)'   >{{value}}</span>
+  </ng-template>
+
+  <ng-template #certificateAliasTemplate let-row="row" let-value="value" ngx-datatable-cell-template>
+    <span [class]='aliasCssClass(value, row)'>{{value}}</span>
+  </ng-template>
+
+
+</smp-search-table>

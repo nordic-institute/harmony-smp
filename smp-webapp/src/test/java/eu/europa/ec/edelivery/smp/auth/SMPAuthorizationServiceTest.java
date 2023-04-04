@@ -78,15 +78,6 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void isSystemAdministratorNotLoggedIn() {
-        // given
-        SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
-        // when then
-        boolean bVal = testInstance.isSystemAdministrator();
-        assertFalse(bVal);
-    }
-
-    @Test
     public void isSystemAdministratorLoggedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);

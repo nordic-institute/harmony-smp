@@ -2,17 +2,18 @@ import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './login/login.component';
 import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
 import {ServiceGroupEditComponent} from './service-group-edit/service-group-edit.component';
-import {DomainComponent} from './domain/domain.component';
+import {DomainComponent} from './system-settings/domain/domain.component';
 import {AuthenticatedGuard} from './guards/authenticated.guard';
-import {UserComponent} from './user/user.component';
+import {UserComponent} from './system-settings/user/user.component';
 import {DirtyGuard} from "./common/dirty.guard";
 import {AuthorizedAdminGuard} from "./guards/authorized-admin.guard";
 import {AlertComponent} from "./alert/alert.component";
-import {PropertyComponent} from "./property/property.component";
+import {PropertyComponent} from "./system-settings/property/property.component";
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
-import { authGuard} from "./guards/auth.guard";
+import {authGuard} from "./guards/auth.guard";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
 import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
+import {ExtensionComponent} from "./system-settings/extension/extension.component";
 
 
 const appRoutes: Routes = [
@@ -20,32 +21,22 @@ const appRoutes: Routes = [
   {path: '', component: ServiceGroupSearchComponent},
   {path: 'search', redirectTo: ''},
   {path: 'edit', component: ServiceGroupEditComponent, canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
-  {
-    path: 'domain',
-    component: DomainComponent,
-    canActivate: [AuthenticatedGuard, AuthorizedAdminGuard],
-    canDeactivate: [DirtyGuard]
-  },
-  {
-    path: 'user',
-    component: UserComponent,
-    canActivate: [AuthenticatedGuard, AuthorizedAdminGuard],
-    canDeactivate: [DirtyGuard]
-  },
-  {
-    path: 'alert',
-    component: AlertComponent,
-    canActivate: [AuthenticatedGuard, AuthorizedAdminGuard],
-    canDeactivate: [DirtyGuard]
-  },
-  {
-    path: 'property',
-    component: PropertyComponent,
-    canActivate: [AuthenticatedGuard, AuthorizedAdminGuard],
-    canDeactivate: [DirtyGuard]
-  },
   {path: 'login', component: LoginComponent},
   {
+    path: 'system-settings',
+    canActivateChild: [authGuard],
+    canDeactivate: [DirtyGuard],
+    children: [
+      { path: 'domain', component: DomainComponent  },
+      { path: 'user', component: UserComponent  },
+      { path: 'properties', component: PropertyComponent  },
+      { path: 'keystore', component: DomainComponent  },
+      { path: 'truststore', component: DomainComponent  },
+      { path: 'extension', component: ExtensionComponent  },
+      { path: 'alert', component: AlertComponent  },
+    ]
+  },
+{
     path: 'user-settings',
     canActivateChild: [authGuard],
     children: [

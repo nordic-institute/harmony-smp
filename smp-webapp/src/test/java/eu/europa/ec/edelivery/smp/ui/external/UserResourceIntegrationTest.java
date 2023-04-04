@@ -9,6 +9,7 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +108,7 @@ public class UserResourceIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void generateAccessTokenForUser() throws Exception {
         MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);

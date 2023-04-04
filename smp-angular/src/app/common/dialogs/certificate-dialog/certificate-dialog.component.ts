@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
-import {CertificateRo} from "../../../user/certificate-ro.model";
+import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
 import {SecurityService} from "../../../security/security.service";
 import {SmpConstants} from "../../../smp.constants";
 

@@ -1,6 +1,6 @@
 import {Authority} from "./authority.model";
 import {EntityStatus} from "../common/model/entity-status.model";
-import {CertificateRo} from "../user/certificate-ro.model";
+import {CertificateRo} from "../system-settings/user/certificate-ro.model";
 
 export interface Credential {
 

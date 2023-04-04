@@ -17,6 +17,7 @@ package eu.europa.ec.smp.spi.converter;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import gen.eu.europa.ec.ddc.api.smp10.ExtensionType;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceGroup;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,8 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.PARSE_
  * @author migueti
  * @since 3.0.0
  */
+// move this tests to extension
+@Ignore
 public class ServiceGroupConverter {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceGroupConverter.class);
 

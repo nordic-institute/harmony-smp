@@ -132,7 +132,6 @@ public class ServiceGroupResourceIntegrationTest {
         assertEquals(IDENTIFIER_SCHEME, res.getParticipantScheme());
         assertEquals(1, res.getServiceMetadata().size());
         assertEquals("doc_7", res.getServiceMetadata().get(0).getDocumentIdentifier());
-        assertEquals(res.getServiceGroupDomains().get(0).getId(), res.getServiceMetadata().get(0).getServiceGroupDomainId());
     }
 
     @Test

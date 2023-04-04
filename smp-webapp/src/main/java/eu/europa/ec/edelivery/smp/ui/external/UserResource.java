@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.ui.external;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -103,9 +104,13 @@ public class UserResource {
     @GetMapping(path = "/{user-id}/navigation-tree")
     public NavigationTreeNodeRO getUserNavigationTree(@PathVariable("user-id") String userId) {
         LOG.info("get User Navigation tree for user ID: {}", userId);
-        // Update the user and mark the password as changed at this very instant of time
+        Long entityId = decryptEntityId(userId);
+        DBUser user = uiUserService.findUser(entityId);
         NavigationTreeNodeRO home = new NavigationTreeNodeRO("home", "Home", "home", "");
         home.addChild(createPublicNavigationTreeNode());
+        if (user.getApplicationRole() == ApplicationRoleType.SYSTEM_ADMIN) {
+            home.addChild(createSystemAdminNavigationTreeNode());
+        }
         home.addChild(createUserProfileNavigationTreeNode());
         return home;
     }
@@ -235,7 +240,7 @@ public class UserResource {
     protected NavigationTreeNodeRO createPublicNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("search-tools", "Search", "search", "public");
         node.addChild(new NavigationTreeNodeRO("search-resources", "Resources", "find_in_page", "search-resource","Search registered resources"));
-        node.addChild(new NavigationTreeNodeRO("search-lookup", "DNS lookup", "dns", "dns-lookup" , "DNS lookup tools"));
+  //      node.addChild(new NavigationTreeNodeRO("search-lookup", "DNS lookup", "dns", "dns-lookup" , "DNS lookup tools"));
         return node;
     }
 
@@ -244,7 +249,20 @@ public class UserResource {
         node.addChild(new NavigationTreeNodeRO("user-data-profile", "Profile", "account_circle", "user-profile"));
         node.addChild(new NavigationTreeNodeRO("user-data-access-token", "Access tokens", "key", "user-access-token"));
         node.addChild(new NavigationTreeNodeRO("user-data-certificates", "Certificates", "article", "user-certificate"));
-        node.addChild(new NavigationTreeNodeRO("user-data-membership", "Membership", "person", "user-membership"));
+  //      node.addChild(new NavigationTreeNodeRO("user-data-membership", "Membership", "person", "user-membership"));
+        return node;
+    }
+
+    protected NavigationTreeNodeRO createSystemAdminNavigationTreeNode() {
+        NavigationTreeNodeRO node = new NavigationTreeNodeRO("system-settings", "System settings", "admin_panel_settings", "system-settings");
+        node.addChild(new NavigationTreeNodeRO("system-admin-domain", "Domains", "domain", "domain"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-user", "Users", "people", "user"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-properties", "Properties", "properties", "properties"));
+       // node.addChild(new NavigationTreeNodeRO("system-admin-authentication", "Authentication", "shield", "authentication"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-keystore", "Keystore", "key", "keystore"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-truststore", "Truststore", "article", "truststore"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-extension", "Extensions", "extension", "extension"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-alert", "Alerts", "notifications", "alert"));
         return node;
     }
 }

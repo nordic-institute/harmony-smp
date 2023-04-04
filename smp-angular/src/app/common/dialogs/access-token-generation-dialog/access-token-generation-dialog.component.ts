@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {User} from "../../../security/user.model";
 import {GlobalLookups} from "../../global-lookups";
-import {UserDetailsService} from "../../../user/user-details-dialog/user-details.service";
+import {UserDetailsService} from "../../../system-settings/user/user-details-dialog/user-details.service";
 import {AccessTokenRo} from "./access-token-ro.model";
 import {SecurityService} from "../../../security/security.service";
 import {SmpConstants} from "../../../smp.constants";

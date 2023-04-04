@@ -18,7 +18,7 @@ import {CancelDialogComponent} from './common/dialogs/cancel-dialog/cancel-dialo
 import {CapitalizeFirstPipe} from './common/capitalize-first.pipe';
 import {CertificateDialogComponent} from "./common/dialogs/certificate-dialog/certificate-dialog.component";
 import {CertificatePanelComponent} from "./user-settings/user-certificates/certificate-panel/certificate-panel.component";
-import {CertificateService} from './user/certificate.service';
+import {CertificateService} from './system-settings/user/certificate.service';
 import {ClearInvalidDirective} from './custom-date/clear-invalid.directive';
 import {ColumnPickerComponent} from './common/column-picker/column-picker.component';
 import {ConfirmationDialogComponent} from './common/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -27,8 +27,8 @@ import {DatePipe} from './custom-date/date.pipe';
 import {DefaultPasswordDialogComponent} from './security/default-password-dialog/default-password-dialog.component';
 import {DialogComponent} from './common/dialogs/dialog/dialog.component';
 import {DirtyGuard} from './common/dirty.guard';
-import {DomainComponent} from './domain/domain.component';
-import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domain-details-dialog.component';
+import {DomainComponent} from './system-settings/domain/domain.component';
+import {DomainDetailsDialogComponent} from './system-settings/domain/domain-details-dialog/domain-details-dialog.component';
 import {DomainSelectorComponent} from './common/domain-selector/domain-selector.component';
 import {DomainService} from './security/domain.service';
 import {DownloadService} from './download/download.service';
@@ -42,9 +42,9 @@ import {HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/commo
 import {HttpEventService} from './http/http-event.service';
 import {InformationDialogComponent} from "./common/dialogs/information-dialog/information-dialog.component";
 import {IsAuthorized} from './security/is-authorized.directive';
-import {KeystoreEditDialogComponent} from "./domain/keystore-edit-dialog/keystore-edit-dialog.component";
-import {KeystoreImportDialogComponent} from "./domain/keystore-import-dialog/keystore-import-dialog.component";
-import {KeystoreService} from "./domain/keystore.service";
+import {KeystoreEditDialogComponent} from "./system-settings/domain/keystore-edit-dialog/keystore-edit-dialog.component";
+import {KeystoreImportDialogComponent} from "./system-settings/domain/keystore-import-dialog/keystore-import-dialog.component";
+import {KeystoreService} from "./system-settings/domain/keystore.service";
 import {LoginComponent} from './login/login.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
@@ -73,8 +73,8 @@ import {NgModule} from '@angular/core';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {ObjectPropertiesDialogComponent} from "./common/dialogs/object-properties-dialog/object-properties-dialog.component";
 import {PasswordChangeDialogComponent} from "./common/dialogs/password-change-dialog/password-change-dialog.component";
-import {PropertyComponent} from "./property/property.component";
-import {PropertyDetailsDialogComponent} from "./property/property-details-dialog/property-details-dialog.component";
+import {PropertyComponent} from "./system-settings/property/property.component";
+import {PropertyDetailsDialogComponent} from "./system-settings/property/property-details-dialog/property-details-dialog.component";
 import {RowLimiterComponent} from './common/row-limiter/row-limiter.component';
 import {SaveDialogComponent} from './common/dialogs/save-dialog/save-dialog.component';
 import {SearchTableComponent} from './common/search-table/search-table.component';
@@ -88,22 +88,23 @@ import {ServiceGroupSearchComponent} from './service-group-search/service-group-
 import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
 import {SharedModule} from './common/module/shared.module';
 import {SidenavComponent} from './window/sidenav/sidenav.component';
-import {SmlIntegrationService} from "./domain/sml-integration.service";
+import {SmlIntegrationService} from "./system-settings/domain/sml-integration.service";
 import {SmpInfoService} from './app-info/smp-info.service';
 import {SpacerComponent} from "./common/spacer/spacer.component";
 import {SpinnerComponent} from './common/spinner/spinner.component';
 import {ThemeService} from "./common/theme-service/theme.service";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
-import {TruststoreEditDialogComponent} from "./user/truststore-edit-dialog/truststore-edit-dialog.component";
-import {TruststoreService} from "./user/truststore.service";
+import {TruststoreEditDialogComponent} from "./system-settings/user/truststore-edit-dialog/truststore-edit-dialog.component";
+import {TruststoreService} from "./system-settings/user/truststore.service";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
 import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
-import {UserComponent} from './user/user.component';
-import {UserDetailsDialogComponent} from './user/user-details-dialog/user-details-dialog.component';
-import {UserDetailsService} from './user/user-details-dialog/user-details.service';
+import {UserComponent} from './system-settings/user/user.component';
+import {UserDetailsDialogComponent} from './system-settings/user/user-details-dialog/user-details-dialog.component';
+import {UserDetailsService} from './system-settings/user/user-details-dialog/user-details.service';
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
-import {UserService} from './user/user.service';
+import {UserService} from './system-settings/user/user.service';
 import {routing} from './app.routes';
+import {ExtensionComponent} from "./system-settings/extension/extension.component";
 
 
 @NgModule({
@@ -132,6 +133,7 @@ import {routing} from './app.routes';
     DomainDetailsDialogComponent,
     DomainSelectorComponent,
     ExpiredPasswordDialogComponent,
+    ExtensionComponent,
     FooterComponent,
     InformationDialogComponent,
     IsAuthorized,
