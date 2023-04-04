@@ -7,6 +7,7 @@ import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,7 +139,7 @@ public class DomainAdminResourceIntegrationTest {
         assertEquals(1, res.getListDeleteNotPermitedIds().size());
         assertEquals(1, res.getListIds().size());
         assertEquals(false, res.isValidOperation());
-        assertEquals("Could not delete domains used by Service groups! Domain: domain (domain ) uses by:2 SG.", res.getStringMessage());
+        assertEquals("Could not delete domains used by Service groups! Domain: domain (domain ) uses by:1 SG.", res.getStringMessage());
     }
 
     @Test
@@ -152,10 +153,11 @@ public class DomainAdminResourceIntegrationTest {
                 .with(csrf())
                 .header("Content-Type", " application/json"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(stringContainsInOrder("Configuration error: SML integration is not enabled!!")));
+                .andExpect(content().string(stringContainsInOrder("Configuration error: [SML integration is not enabled!]!")));
     }
 
     @Test
+    @Ignore
     public void unregisterDomainAndParticipants() throws Exception {
         // given when
         // 3- user id

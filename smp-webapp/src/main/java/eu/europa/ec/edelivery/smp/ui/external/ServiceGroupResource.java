@@ -12,7 +12,7 @@ import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
-import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +20,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
@@ -37,10 +36,10 @@ public class ServiceGroupResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupResource.class);
 
-    final private UIServiceGroupService uiServiceGroupService;
-    final private DomainDao domainDao;
-    final private UserDao userDao;
-    final private SMPAuthorizationService authorizationService;
+    private final UIServiceGroupService uiServiceGroupService;
+    private final DomainDao domainDao;
+    private final UserDao userDao;
+    private final SMPAuthorizationService authorizationService;
 
     public ServiceGroupResource(UIServiceGroupService uiServiceGroupService, DomainDao domainDao, UserDao userDao, SMPAuthorizationService authorizationService) {
         this.uiServiceGroupService = uiServiceGroupService;
@@ -50,7 +49,7 @@ public class ServiceGroupResource {
     }
 
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceResult<ServiceGroupRO> getServiceGroupList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
@@ -66,9 +65,9 @@ public class ServiceGroupResource {
 
         LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain {}", page, pageSize, participantIdentifierDecoded,
                 participantSchemeDecoded, domainCodeDecoded);
-        ServiceGroupFilter sgf = new ServiceGroupFilter();
-        sgf.setParticipantIdentifierLike(participantIdentifierDecoded);
-        sgf.setParticipantSchemeLike(participantSchemeDecoded);
+        ResourceFilter sgf = new ResourceFilter();
+        sgf.setIdentifierValueLike(participantIdentifierDecoded);
+        sgf.setIdentifierSchemeLike(participantSchemeDecoded);
         // add domain search parameter
         sgf.setDomain(domainDao.validateDomainCode(domainCodeDecoded));
 
@@ -84,7 +83,7 @@ public class ServiceGroupResource {
     }
 
     @GetMapping(path = "{serviceGroupId}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceGroupRO getServiceGroupById(@PathVariable Long serviceGroupId) {
         LOG.info("Get service group [{}]", serviceGroupId);
         // SMP administrators are authorized by default
@@ -99,14 +98,14 @@ public class ServiceGroupResource {
     }
 
     @GetMapping(path = "{service-group-id}/extension", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceGroupValidationRO getExtensionServiceGroupById(@PathVariable("service-group-id") Long sgId) {
         LOG.info("Get service group extension [{}]", sgId);
         return uiServiceGroupService.getServiceGroupExtensionById(sgId);
     }
 
     @PostMapping(path = "extension/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceGroupValidationRO getValidateExtensionService(@RequestBody ServiceGroupValidationRO sg) {
         LOG.info("Validate service group extension");
         LOG.debug("Extension: [{}]", sg.getExtension());
@@ -114,7 +113,7 @@ public class ServiceGroupResource {
     }
 
     @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public void updateServiceGroupList(@RequestBody ServiceGroupRO[] updateEntities) {
         LOG.info("Update ServiceGroupRO count: " + updateEntities.length);
         uiServiceGroupService.updateServiceGroupList(Arrays.asList(updateEntities), authorizationService.isSMPAdministrator());

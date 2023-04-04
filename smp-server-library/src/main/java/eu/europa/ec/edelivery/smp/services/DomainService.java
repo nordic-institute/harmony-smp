@@ -2,13 +2,13 @@ package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class DomainService {
     private SMLIntegrationService smlIntegrationService;
 
     @Autowired
-    private ServiceGroupDao serviceGroupDao;
+    private ResourceDao serviceGroupDao;
 
     @Autowired
     private DomainDao domainDao;
@@ -91,27 +91,27 @@ public class DomainService {
         smlIntegrationService.registerDomain(domain);
 
         // get all participant for domain and register them
-        ServiceGroupFilter serviceGroupFilter = new ServiceGroupFilter();
+        ResourceFilter serviceGroupFilter = new ResourceFilter();
         serviceGroupFilter.setDomain(domain);
 
         // register all service groups
-        List<DBServiceGroup> serviceGroupList = serviceGroupDao.getServiceGroupList(-1, -1, null, null, serviceGroupFilter);
-        for (DBServiceGroup sg: serviceGroupList){
-            smlIntegrationService.registerParticipant(sg.getParticipantIdentifier(), sg.getParticipantScheme(), domain.getDomainCode());
+        List<DBResource> serviceGroupList = serviceGroupDao.getServiceGroupList(-1, -1, null, null, serviceGroupFilter);
+        for (DBResource sg: serviceGroupList){
+            smlIntegrationService.registerParticipant(sg.getIdentifierValue(), sg.getIdentifierScheme(), domain.getDomainCode());
         }
     }
 
     public void unregisterDomainAndParticipantsFromSml(DBDomain domain){
 
         // get all participant for domain and register them
-        ServiceGroupFilter serviceGroupFilter = new ServiceGroupFilter();
+        ResourceFilter serviceGroupFilter = new ResourceFilter();
         serviceGroupFilter.setDomain(domain);
 
         // register all service groups
-        List<DBServiceGroup> serviceGroupList = serviceGroupDao.getServiceGroupList(-1, -1, null, null, serviceGroupFilter);
+        List<DBResource> serviceGroupList = serviceGroupDao.getServiceGroupList(-1, -1, null, null, serviceGroupFilter);
         LOG.info("Unregister participants (count: {}) for domain: {}: ", serviceGroupList.size(), domain.getDomainCode());
-        for (DBServiceGroup sg: serviceGroupList){
-            smlIntegrationService.unregisterParticipant(sg.getParticipantIdentifier(), sg.getParticipantScheme(), domain.getDomainCode());
+        for (DBResource sg: serviceGroupList){
+            smlIntegrationService.unregisterParticipant(sg.getIdentifierValue(), sg.getIdentifierScheme(), domain.getDomainCode());
         }
 
         smlIntegrationService.unRegisterDomain(domain);

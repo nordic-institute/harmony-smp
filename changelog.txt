@@ -1,4 +1,7 @@
 eDelivery SMP 5.0
+
+- environment properties have now 'smp.' prefix
+- application property: 'configuration.dir' was replaced by the environment 'smp.security.folder' property
 - added new properties:
     smp.truststore.type: Truststore type as JKS/PKCS12
     smp.keystore.type: Keystore type as JKS/PKCS12
@@ -52,4 +55,3 @@ eDelivery SMP 4.2
 
 - added new table SMP_ALERT
 
-    

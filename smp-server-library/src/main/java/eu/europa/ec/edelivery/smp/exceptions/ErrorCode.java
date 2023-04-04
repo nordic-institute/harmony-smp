@@ -18,11 +18,12 @@ public enum ErrorCode {
     INVALID_DOMAIN_CODE(400,"SMP:112",ErrorBusinessCode.FORMAT_ERROR,"Provided Domain Code '%s' does not match required pattern: '%s'"),
     ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY(500,"SMP:113",ErrorBusinessCode.TECHNICAL,"More than one domain entry  (domain: '%s') is defined in database!"),
     MISSING_DOMAIN(400,"SMP:114",ErrorBusinessCode.MISSING_FIELD,"More than one domain registered on SMP. The domain must be defined!"),
+    ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY(500,"SMP:115",ErrorBusinessCode.TECHNICAL,"More than one group for domain entry  (group: '%s',  domain: '%s') is defined in database!"),
 
 
     // user error messages
     INVALID_USER_NO_IDENTIFIERS (400,"SMP:120",ErrorBusinessCode.MISSING_FIELD,"Invalid user - no identifiers!"),
-    ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY(500,"SMP:121",ErrorBusinessCode.TECHNICAL,"More than one user entry (username: '%s') is defined in database!"),
+    ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY(500,"SMP:121",ErrorBusinessCode.TECHNICAL,"More than one user entry (credential token: '%s') is defined in database!"),
     ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY(504,"SMP:122",ErrorBusinessCode.TECHNICAL,"More than one certificate entry (cert. id: '%s') is defined in database!"),
     USER_NOT_EXISTS(400,"SMP:123",ErrorBusinessCode.USER_NOT_FOUND,"User not exists or wrong password!"), // OWASP recommendation\
     USER_IS_NOT_OWNER(400,"SMP:124",ErrorBusinessCode.UNAUTHORIZED,"User %s is not owner of service group (part. id: %s, part. sch.: '%s')!"), // OWASP recommendation
@@ -58,9 +59,16 @@ public enum ErrorCode {
     INVALID_REQUEST(400,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request [%s]. Error: %s!"),
     INTERNAL_ERROR (500,"SMP:514",ErrorBusinessCode.TECHNICAL, "Internal error [%s]. Error: %s!"),
     CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error [%s]. Error: %s!"),
-    CONFIGURATION_ERROR (500,"SMP:516",ErrorBusinessCode.TECHNICAL, "Configuration error: %s!"),
+    CONFIGURATION_ERROR (500,"SMP:516",ErrorBusinessCode.TECHNICAL, "Configuration error: [%s]!"),
 
     MAIL_SUBMISSION_ERROR (500,"SMP:550",ErrorBusinessCode.TECHNICAL, "Mail submission error: %s!"),
+
+    RESOURCE_DOCUMENT_MISSING(500,"SMP:180",ErrorBusinessCode.TECHNICAL, "Missing document for the resource: [id: '%s', sch.: '%s']!"),
+    RESOURCE_DOCUMENT_ERROR(500,"SMP:180",ErrorBusinessCode.TECHNICAL, "Error occurred while reading the resource document: [id: '%s', sch.: '%s']! Error [%s]"),
+
+
+
+
 
     //
     ;

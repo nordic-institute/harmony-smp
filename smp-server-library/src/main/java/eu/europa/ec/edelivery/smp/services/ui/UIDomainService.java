@@ -65,7 +65,6 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
                 upd.setSmlSmpId(dRo.getSmlSmpId());
                 upd.setSmlClientKeyAlias(dRo.getSmlClientKeyAlias());
                 upd.setSmlClientCertHeader(dRo.getSmlClientCertHeader());
-                upd.setSmlParticipantIdentifierRegExp(dRo.getSmlParticipantIdentifierRegExp());
                 upd.setSmlSubdomain(dRo.getSmlSubdomain());
                 upd.setDomainCode(dRo.getDomainCode());
                 upd.setSignatureKeyAlias(dRo.getSignatureKeyAlias());

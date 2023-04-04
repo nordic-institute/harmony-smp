@@ -123,18 +123,18 @@ alter table SMP_CONFIGURATION_AUD
 
 SET FOREIGN_KEY_CHECKS = 0;
 ALTER TABLE SMP_REV_INFO MODIFY COLUMN id bigint not null auto_increment;
-ALTER TABLE SMP_SERVICE_GROUP MODIFY COLUMN ID bigint not null auto_increment comment 'Unique ServiceGroup id';
-ALTER TABLE SMP_SERVICE_GROUP_DOMAIN MODIFY COLUMN ID bigint not null auto_increment;
-ALTER TABLE SMP_SERVICE_METADATA MODIFY COLUMN ID bigint not null auto_increment comment 'Shared primary key with master table SMP_SERVICE_METADATA';
+ALTER TABLE SMP_RESOURCE MODIFY COLUMN ID bigint not null auto_increment comment 'Unique ServiceGroup id';
+ALTER TABLE SMP_RESOURCE_DOMAIN MODIFY COLUMN ID bigint not null auto_increment;
+ALTER TABLE SMP_SUBRESOURCE MODIFY COLUMN ID bigint not null auto_increment comment 'Shared primary key with master table SMP_SUBRESOURCE';
 ALTER TABLE SMP_USER MODIFY COLUMN ID bigint not null auto_increment comment 'Unique user id';
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- drop sequence tables , because the are not needed anymore!
 drop table SMP_DOMAIN_SEQ;
 drop table SMP_REVISION_SEQ;
-drop table SMP_SERVICE_GROUP_DOMAIN_SEQ;
-drop table SMP_SERVICE_GROUP_SEQ;
-drop table SMP_SERVICE_METADATA_SEQ;
+drop table SMP_RESOURCE_DOMAIN_SEQ;
+drop table SMP_RESOURCE_SEQ;
+drop table SMP_SUBRESOURCE_SEQ;
 drop table SMP_USER_SEQ;
 -- set init back-compatible credentials to access tokens
 UPDATE SMP_USER set ACCESS_TOKEN_ID = SMP_USER.USERNAME, ACCESS_TOKEN=SMP_USER.PASSWORD;

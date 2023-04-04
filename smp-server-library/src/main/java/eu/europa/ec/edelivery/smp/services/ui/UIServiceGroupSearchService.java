@@ -2,45 +2,37 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
-import org.apache.commons.lang3.StringUtils;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 
 @Service
-public class UIServiceGroupSearchService extends UIServiceBase<DBServiceGroup, ServiceGroupSearchRO> {
+public class UIServiceGroupSearchService extends UIServiceBase<DBResource, ServiceGroupSearchRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceGroupSearchService.class);
 
     @Autowired
     DomainDao domainDao;
 
     @Autowired
-    ServiceGroupDao serviceGroupDao;
+    ResourceDao serviceGroupDao;
 
     @Autowired
     UserDao userDao;
 
 
     @Override
-    protected BaseDao<DBServiceGroup> getDatabaseDao() {
+    protected BaseDao<DBResource> getDatabaseDao() {
         return serviceGroupDao;
     }
 
@@ -57,7 +49,7 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBServiceGroup, S
     @Transactional
     public ServiceResult<ServiceGroupSearchRO> getTableList(int page, int pageSize,
                                                             String sortField,
-                                                            String sortOrder, ServiceGroupFilter filter) {
+                                                            String sortOrder, ResourceFilter filter) {
 
         ServiceResult<ServiceGroupSearchRO> sg = new ServiceResult<>();
         sg.setPage(page < 0 ? 0 : page);
@@ -74,9 +66,9 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBServiceGroup, S
             }
 
 
-            List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
+            List<DBResource> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
             List<ServiceGroupSearchRO> lstRo = new ArrayList<>();
-            for (DBServiceGroup dbServiceGroup : lst) {
+            for (DBResource dbServiceGroup : lst) {
                 ServiceGroupSearchRO serviceGroupRo = convertToRo(dbServiceGroup);
                 serviceGroupRo.setIndex(iStartIndex++);
                 lstRo.add(serviceGroupRo);
@@ -92,14 +84,16 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBServiceGroup, S
      * @param dbServiceGroup - database  entity
      * @return ServiceGroupRO
      */
-    public ServiceGroupSearchRO convertToRo(DBServiceGroup dbServiceGroup) {
+    public ServiceGroupSearchRO convertToRo(DBResource dbServiceGroup) {
         ServiceGroupSearchRO serviceGroupRo = new ServiceGroupSearchRO();
+
         serviceGroupRo.setId(dbServiceGroup.getId());
-        serviceGroupRo.setParticipantIdentifier(dbServiceGroup.getParticipantIdentifier());
-        serviceGroupRo.setParticipantScheme(dbServiceGroup.getParticipantScheme());
-        dbServiceGroup.getServiceGroupDomains().forEach(sgd -> {
+        serviceGroupRo.setParticipantIdentifier(dbServiceGroup.getIdentifierValue());
+        serviceGroupRo.setParticipantScheme(dbServiceGroup.getIdentifierScheme());
+        /*
+        dbServiceGroup.getResourceDomains().forEach(sgd -> {
             DomainRO dmn = new DomainRO();
-            sgd.getServiceMetadata().forEach(sgmd -> {
+            sgd.getSubresourcesList().forEach(sgmd -> {
                 ServiceMetadataRO smdro = new ServiceMetadataRO();
                 smdro.setDocumentIdentifier(sgmd.getDocumentIdentifier());
                 smdro.setDocumentIdentifierScheme(sgmd.getDocumentIdentifierScheme());
@@ -108,6 +102,8 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBServiceGroup, S
                 serviceGroupRo.getServiceMetadata().add(smdro);
             });
         });
+
+         */
         return serviceGroupRo;
     }
 }

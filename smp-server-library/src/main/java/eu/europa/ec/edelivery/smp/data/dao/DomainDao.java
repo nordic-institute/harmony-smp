@@ -20,13 +20,12 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
@@ -37,9 +36,11 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMA
 @Repository
 public class DomainDao extends BaseDao<DBDomain> {
 
+
+
     /**
      * Returns the only single record from smp_domain table.
-     * Returns Optional.empty() if there is more than 1 records present.
+     * Returns Optional.empty() if there is more than 1 record present.
      *
      * @return the only single record from smp_domain table
      * @throws IllegalStateException if no domain is configured
@@ -47,7 +48,7 @@ public class DomainDao extends BaseDao<DBDomain> {
     public Optional<DBDomain> getTheOnlyDomain() {
         try {
             // expected is only one domain,
-            TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getAll", DBDomain.class);
+            TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
             return Optional.empty();
@@ -63,21 +64,37 @@ public class DomainDao extends BaseDao<DBDomain> {
      * @throws IllegalStateException if no domain is configured
      */
     public List<DBDomain> getAllDomains() {
-        TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getAll", DBDomain.class);
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
+
         return query.getResultList();
+    }
+
+
+    public Optional<DBDomain> getFirstDomain() {
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
+        query.setMaxResults(1);
+        try {
+            // expected is only one domain,
+            return Optional.of(query.getSingleResult());
+        } catch (NonUniqueResultException e) {
+            return Optional.empty();
+        }
     }
 
     /**
      * Returns the domain by code.
-     * Returns Returns the domain or Optional.empty() if there is no domain.
+     * Returns the domain or Optional.empty() if there is no domain.
      *
      * @return the only single record for domain code from smp_domain table or empty value
-     * @throws IllegalStateException if no domain is not configured
+     * @throws IllegalStateException if more than one domain is not configured for the code!
      */
     public Optional<DBDomain> getDomainByCode(String domainCode) {
+        if (StringUtils.isEmpty(domainCode)) {
+            return Optional.empty();
+        }
         try {
-            TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getDomainByCode", DBDomain.class);
-            query.setParameter("domainCode", domainCode);
+            TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_CODE, DBDomain.class);
+            query.setParameter(PARAM_DOMAIN_CODE, domainCode);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();

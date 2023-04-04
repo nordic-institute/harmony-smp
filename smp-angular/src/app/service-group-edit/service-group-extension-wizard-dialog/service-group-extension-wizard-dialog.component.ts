@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 
 @Component({
   selector: 'service-group-extension-wizard',
@@ -8,7 +8,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
   styleUrls:  ['./service-group-extension-wizard-dialog.component.css']
 })
 export class ServiceGroupExtensionWizardDialogComponent  {
-  dialogForm: FormGroup;
+  dialogForm: UntypedFormGroup;
 
   dummyXML: string ="<!-- Custom element is mandatory by OASIS SMP schema.\n    Replace following element with your XML structure. -->\n<ext:example xmlns:ext=\"http://my.namespace.eu\">my mandatory content</ext:example>"
 
@@ -25,13 +25,13 @@ export class ServiceGroupExtensionWizardDialogComponent  {
     ];
 
   constructor(public dialogRef: MatDialogRef<ServiceGroupExtensionWizardDialogComponent>,
-              private dialogFormBuilder: FormBuilder) {
+              private dialogFormBuilder: UntypedFormBuilder) {
 
     this.dialogForm = this.dialogFormBuilder.group({ });
 
     let arrayLength = this.elements.length;
     for (var i = 0; i < arrayLength; i++) {
-      this.dialogForm.addControl(this.elements[i].name, new FormControl(''));
+      this.dialogForm.addControl(this.elements[i].name, new UntypedFormControl(''));
     }
   }
 

@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -16,8 +16,6 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,7 +44,7 @@ public class UserAdminResource {
     }
 
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_USER})
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
@@ -101,7 +99,8 @@ public class UserAdminResource {
         }
 
         // no need to validate password if cas authenticated
-        return uiUserService.generateAccessTokenForUser(authorizedUserId, changeUserId, password,!currentUser.isCasAuthenticated());
+        return null;
+        //return uiUserService.generateAccessTokenForUser(authorizedUserId, changeUserId, password,!currentUser.isCasAuthenticated());
     }
 
 

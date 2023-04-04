@@ -77,8 +77,7 @@ public class ApplicationResource {
                 "]";
     }
 
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN,
-            SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_USER})
     @GetMapping(path = "config")
     public SmpConfigRO getApplicationConfig() {
         SmpConfigRO info = new SmpConfigRO();

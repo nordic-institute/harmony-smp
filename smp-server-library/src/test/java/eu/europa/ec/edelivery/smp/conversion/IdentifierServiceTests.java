@@ -13,14 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,10 +68,10 @@ public class IdentifierServiceTests {
     @Test
     public void testParticipantIdsCaseNormalization() {
         //given
-        ParticipantIdentifierType inputParticpantId = new ParticipantIdentifierType(inputValue, inputScheme);
+        Identifier inputParticpantId = new Identifier(inputValue, inputScheme);
 
         //when
-        ParticipantIdentifierType outputParticipantId = testInstance.normalizeParticipant(inputParticpantId);
+        Identifier outputParticipantId = testInstance.normalizeParticipant(inputParticpantId);
 
         //then
         assertEquals(expectedScheme, outputParticipantId.getScheme());
@@ -87,10 +86,10 @@ public class IdentifierServiceTests {
     @Test
     public void testDocumentIdsCaseNormalization() {
         //given
-        DocumentIdentifier inputDocId = new DocumentIdentifier(inputValue, inputScheme);
+        Identifier inputDocId = new Identifier(inputValue, inputScheme);
 
         //when
-        DocumentIdentifier outputDocId = testInstance.normalizeDocument(inputDocId);
+        Identifier outputDocId = testInstance.normalizeDocument(inputDocId);
 
         //then
         assertEquals(expectedScheme, outputDocId.getScheme());

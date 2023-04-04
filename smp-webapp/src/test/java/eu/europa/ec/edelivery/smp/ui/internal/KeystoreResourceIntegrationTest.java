@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
@@ -77,7 +78,7 @@ public class KeystoreResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
 
 
@@ -105,7 +106,7 @@ public class KeystoreResourceIntegrationTest {
                 andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
@@ -125,7 +126,7 @@ public class KeystoreResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
@@ -146,7 +147,7 @@ public class KeystoreResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();;
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
@@ -168,13 +169,19 @@ public class KeystoreResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
         assertNull(res.getErrorMessage());
         uiKeystoreService.refreshData();
         assertEquals(countStart - 1, uiKeystoreService.getKeystoreEntriesList().size());
+    }
+
+    protected  ObjectMapper getObjectMapper(){
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
 
 }

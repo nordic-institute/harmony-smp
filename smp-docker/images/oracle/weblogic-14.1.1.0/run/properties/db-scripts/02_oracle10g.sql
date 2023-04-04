@@ -7,9 +7,9 @@ create sequence SMP_ALERT_PROP_SEQ start with 1 increment by  1;
 create sequence SMP_ALERT_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_SEQ start with 1 increment by  1;
 create sequence SMP_REVISION_SEQ start with 1 increment by  1;
-create sequence SMP_SERVICE_GROUP_DOMAIN_SEQ start with 1 increment by  1;
-create sequence SMP_SERVICE_GROUP_SEQ start with 1 increment by  1;
-create sequence SMP_SERVICE_METADATA_SEQ start with 1 increment by  1;
+create sequence SMP_RESOURCE_DOMAIN_SEQ start with 1 increment by  1;
+create sequence SMP_RESOURCE_SEQ start with 1 increment by  1;
+create sequence SMP_SUBRESOURCE_SEQ start with 1 increment by  1;
 create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     create table SMP_ALERT (
@@ -243,13 +243,13 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         primary key (ID, REV)
     );
 
-    create table SMP_OWNERSHIP (
+    create table SMP_RESOURCE_MEMBER (
        FK_SG_ID number(19,0) not null,
         FK_USER_ID number(19,0) not null,
         primary key (FK_SG_ID, FK_USER_ID)
     );
 
-    create table SMP_OWNERSHIP_AUD (
+    create table SMP_RESOURCE_MEMBER_AUD (
        REV number(19,0) not null,
         FK_SG_ID number(19,0) not null,
         FK_USER_ID number(19,0) not null,
@@ -265,33 +265,33 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         primary key (id)
     );
 
-    create table SMP_SERVICE_GROUP (
+    create table SMP_RESOURCE (
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
-        PARTICIPANT_IDENTIFIER varchar2(256 char) not null,
-        PARTICIPANT_SCHEME varchar2(256 char),
+        IDENTIFIER_VALUE varchar2(256 char) not null,
+        IDENTIFIER_SCHEME varchar2(256 char),
         primary key (ID)
     );
 
-    comment on table SMP_SERVICE_GROUP is
+    comment on table SMP_RESOURCE is
         'Service group data - Identifier and scheme';
 
-    comment on column SMP_SERVICE_GROUP.ID is
+    comment on column SMP_RESOURCE.ID is
         'Unique ServiceGroup id';
 
-    create table SMP_SERVICE_GROUP_AUD (
+    create table SMP_RESOURCE_AUD (
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
-        PARTICIPANT_IDENTIFIER varchar2(256 char),
-        PARTICIPANT_SCHEME varchar2(256 char),
+        IDENTIFIER_VALUE varchar2(256 char),
+        IDENTIFIER_SCHEME varchar2(256 char),
         primary key (ID, REV)
     );
 
-    create table SMP_SERVICE_GROUP_DOMAIN (
+    create table SMP_RESOURCE_DOMAIN (
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
@@ -301,7 +301,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         primary key (ID)
     );
 
-    create table SMP_SERVICE_GROUP_DOMAIN_AUD (
+    create table SMP_RESOURCE_DOMAIN_AUD (
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
@@ -313,35 +313,35 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         primary key (ID, REV)
     );
 
-    create table SMP_SERVICE_METADATA (
+    create table SMP_SUBRESOURCE (
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
-        DOCUMENT_IDENTIFIER varchar2(500 char) not null,
-        DOCUMENT_SCHEME varchar2(500 char),
+        IDENTIFIER_VALUE varchar2(500 char) not null,
+        IDENTIFIER_SCHEME varchar2(500 char),
         FK_SG_DOM_ID number(19,0) not null,
         primary key (ID)
     );
 
-    comment on table SMP_SERVICE_METADATA is
+    comment on table SMP_SUBRESOURCE is
         'Service metadata';
 
-    comment on column SMP_SERVICE_METADATA.ID is
-        'Shared primary key with master table SMP_SERVICE_METADATA';
+    comment on column SMP_SUBRESOURCE.ID is
+        'Shared primary key with master table SMP_SUBRESOURCE';
 
-    create table SMP_SERVICE_METADATA_AUD (
+    create table SMP_SUBRESOURCE_AUD (
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
-        DOCUMENT_IDENTIFIER varchar2(500 char),
-        DOCUMENT_SCHEME varchar2(500 char),
+        IDENTIFIER_VALUE varchar2(500 char),
+        IDENTIFIER_SCHEME varchar2(500 char),
         FK_SG_DOM_ID number(19,0),
         primary key (ID, REV)
     );
 
-    create table SMP_SERVICE_METADATA_XML (
+    create table SMP_DOCUMENT (
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
@@ -349,13 +349,13 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         primary key (ID)
     );
 
-    comment on table SMP_SERVICE_METADATA_XML is
+    comment on table SMP_DOCUMENT is
         'Service group metadata xml blob';
 
-    comment on column SMP_SERVICE_METADATA_XML.XML_CONTENT is
+    comment on column SMP_DOCUMENT.XML_CONTENT is
         'XML service metadata ';
 
-    create table SMP_SERVICE_METADATA_XML_AUD (
+    create table SMP_DOCUMENT_AUD (
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
@@ -504,16 +504,16 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     alter table SMP_DOMAIN 
        add constraint UK_likb3jn0nlxlekaws0xx10uqc unique (SML_SUBDOMAIN);
-create index SMP_SG_PART_ID_IDX on SMP_SERVICE_GROUP (PARTICIPANT_IDENTIFIER);
-create index SMP_SG_PART_SCH_IDX on SMP_SERVICE_GROUP (PARTICIPANT_SCHEME);
+create index SMP_SG_PART_ID_IDX on SMP_RESOURCE (IDENTIFIER_VALUE);
+create index SMP_SG_PART_SCH_IDX on SMP_RESOURCE (IDENTIFIER_SCHEME);
 
-    alter table SMP_SERVICE_GROUP 
-       add constraint SMP_SG_UNIQ_PARTC_IDX unique (PARTICIPANT_SCHEME, PARTICIPANT_IDENTIFIER);
-create index SMP_SMD_DOC_ID_IDX on SMP_SERVICE_METADATA (DOCUMENT_IDENTIFIER);
-create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
+    alter table SMP_RESOURCE
+       add constraint SMP_SG_UNIQ_PARTC_IDX unique (IDENTIFIER_SCHEME, IDENTIFIER_VALUE);
+create index SMP_SMD_DOC_ID_IDX on SMP_SUBRESOURCE (IDENTIFIER_VALUE);
+create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
 
-    alter table SMP_SERVICE_METADATA 
-       add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME);
+    alter table SMP_SUBRESOURCE
+       add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME);
 
     alter table SMP_USER 
        add constraint UK_tk9bjsmd2mevgt3b997i6pl27 unique (ACCESS_TOKEN_ID);
@@ -556,57 +556,57 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
        foreign key (REV) 
        references SMP_REV_INFO;
 
-    alter table SMP_OWNERSHIP 
+    alter table SMP_RESOURCE_MEMBER
        add constraint FKrnqwq06lbfwciup4rj8nvjpmy 
        foreign key (FK_USER_ID) 
        references SMP_USER;
 
-    alter table SMP_OWNERSHIP 
+    alter table SMP_RESOURCE_MEMBER
        add constraint FKgexq5n6ftsid8ehqljvjh8p4i 
        foreign key (FK_SG_ID) 
-       references SMP_SERVICE_GROUP;
+       references SMP_RESOURCE;
 
-    alter table SMP_OWNERSHIP_AUD 
+    alter table SMP_RESOURCE_MEMBER_AUD
        add constraint FK1lqynlbk8ow1ouxetf5wybk3k 
        foreign key (REV) 
        references SMP_REV_INFO;
 
-    alter table SMP_SERVICE_GROUP_AUD 
+    alter table SMP_RESOURCE_AUD
        add constraint FKj3caimhegwyav1scpwrxoslef 
        foreign key (REV) 
        references SMP_REV_INFO;
 
-    alter table SMP_SERVICE_GROUP_DOMAIN 
+    alter table SMP_RESOURCE_DOMAIN
        add constraint FKo186xtefda6avl5p1tuqchp3n 
        foreign key (FK_DOMAIN_ID) 
        references SMP_DOMAIN;
 
-    alter table SMP_SERVICE_GROUP_DOMAIN 
+    alter table SMP_RESOURCE_DOMAIN
        add constraint FKgcvhnk2n34d3c6jhni5l3s3x3 
        foreign key (FK_SG_ID) 
-       references SMP_SERVICE_GROUP;
+       references SMP_RESOURCE;
 
-    alter table SMP_SERVICE_GROUP_DOMAIN_AUD 
+    alter table SMP_RESOURCE_DOMAIN_AUD
        add constraint FK6uc9r0eqw16baooxtmqjkih0j 
        foreign key (REV) 
        references SMP_REV_INFO;
 
-    alter table SMP_SERVICE_METADATA 
+    alter table SMP_SUBRESOURCE
        add constraint FKfvcml6b8x7kn80m30h8pxs7jl 
        foreign key (FK_SG_DOM_ID) 
-       references SMP_SERVICE_GROUP_DOMAIN;
+       references SMP_RESOURCE_DOMAIN;
 
-    alter table SMP_SERVICE_METADATA_AUD 
+    alter table SMP_SUBRESOURCE_AUD
        add constraint FKbqr9pdnik1qxx2hi0xn4n7f61 
        foreign key (REV) 
        references SMP_REV_INFO;
 
-    alter table SMP_SERVICE_METADATA_XML 
+    alter table SMP_DOCUMENT
        add constraint FK4b1x06xlavcgbjnuilgksi7nm 
        foreign key (ID) 
-       references SMP_SERVICE_METADATA;
+       references SMP_SUBRESOURCE;
 
-    alter table SMP_SERVICE_METADATA_XML_AUD 
+    alter table SMP_DOCUMENT_AUD
        add constraint FKevatmlvvwoxfnjxkvmokkencb 
        foreign key (REV) 
        references SMP_REV_INFO;
@@ -614,7 +614,7 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
     alter table SMP_SG_EXTENSION 
        add constraint FKtf0mfonugp2jbkqo2o142chib 
        foreign key (ID) 
-       references SMP_SERVICE_GROUP;
+       references SMP_RESOURCE;
 
     alter table SMP_SG_EXTENSION_AUD 
        add constraint FKmdo9v2422adwyebvl34qa3ap6 

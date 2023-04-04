@@ -1,10 +1,13 @@
 export class SmpConstants {
 
+  public static EXPANDED_MENU_WIDTH:string = "180px"
+  public static COLLAPSED_MENU_WIDTH:string = "50px"
   public static readonly NULL_VALUE: string = "-----------"
   public static readonly DATE_TIME_FORMAT = 'dd/MM/yyyy HH:mm:ss z';
   public static readonly DATE_FORMAT = 'dd/MM/yyyy';
 
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
+  public static readonly PATH_PARAM_ENC_CREDENTIAL_ID = '{credential-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
   public static readonly PATH_PARAM_SRV_GROUP_ID = '{service-group-id}';
 
@@ -59,4 +62,27 @@ export class SmpConstants {
   public static readonly REST_INTERNAL_KEYSTORE = SmpConstants.REST_INTERNAL + 'keystore';
   public static readonly REST_INTERNAL_TRUSTSTORE = SmpConstants.REST_INTERNAL + 'truststore';
   public static readonly REST_INTERNAL_TRUSTSTORE_UPLOAD_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'upload-certificate';
+
+
+  public static readonly REST_PUBLIC_USER_NAVIGATION_TREE = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'navigation-tree';
+  public static readonly REST_PUBLIC_USER_CREDENTIAL_STATUS = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'username-credential-status';
+
+  public static readonly REST_PUBLIC_USER_ACCESS_TOKEN_CREDENTIALS = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'access-token-credentials';
+  public static readonly REST_PUBLIC_USER_CERTIFICATE_CREDENTIALS = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'certificate-credentials';
+
+  public static readonly REST_PUBLIC_USER_CERTIFICATE_CREDENTIAL = SmpConstants.REST_PUBLIC_USER + '/'
+    + SmpConstants.PATH_PARAM_ENC_USER_ID + '/'
+    + 'certificate-credential' + '/'
+    + SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID
+  public static readonly REST_PUBLIC_USER_MANAGE_ACCESS_TOKEN_CREDENTIAL = SmpConstants.REST_PUBLIC_USER + '/'
+    + SmpConstants.PATH_PARAM_ENC_USER_ID + '/'
+    + 'access-token-credential' + '/'
+    + SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID
+
+  public static readonly REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL = SmpConstants.REST_PUBLIC_USER + '/'
+    + SmpConstants.PATH_PARAM_ENC_USER_ID + '/'
+    + 'certificate-credential' + '/'
+    + SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID
+
+
 }

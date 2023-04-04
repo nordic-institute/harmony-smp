@@ -11,7 +11,7 @@ import {Subscription} from 'rxjs';
 import {ExpiredPasswordDialogComponent} from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
 import {GlobalLookups} from "../common/global-lookups";
 import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
-import {UserDetailsDialogMode} from "../user/user-details-dialog/user-details-dialog.component";
+import {UserDetailsDialogMode} from "../system-settings/user/user-details-dialog/user-details-dialog.component";
 import {InformationDialogComponent} from "../common/dialogs/information-dialog/information-dialog.component";
 import {DatePipe, formatDate} from "@angular/common";
 

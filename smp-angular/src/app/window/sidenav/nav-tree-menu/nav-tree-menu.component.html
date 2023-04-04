@@ -1,0 +1,16 @@
+<ng-container *ngIf="!isLeaf; else menuItem">
+  <button mat-menu-item [matMenuTriggerFor]="itemMenu" (click)="triggerClickEvent()">
+    <mat-icon *ngIf="data.icon">{{data.icon}}</mat-icon>
+    <span>{{ data.name }}</span>
+  </button>
+  <mat-menu #itemMenu="matMenu" xPosition="before" yPosition="below">
+    <ng-container *ngFor="let item of data.children; let i = index">
+      <nav-tree-menu [trigger]="item.code" [data]="item"></nav-tree-menu>
+    </ng-container>
+  </mat-menu>
+</ng-container>
+<ng-template #menuItem>
+  <button mat-menu-item (click)="triggerClickEvent()">
+    <mat-icon *ngIf="data.icon">{{data.icon}}</mat-icon>
+    <span>{{ data.name }}</span></button>
+</ng-template>

@@ -1,16 +1,21 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 
 /**
@@ -22,7 +27,7 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
     private ConfigurationService configurationService;
     private ConversionService conversionService;
 
-    public DBUserToUserROConverter(ConfigurationService configurationService, ConversionService conversionService) {
+    public DBUserToUserROConverter(ConfigurationService configurationService, @Lazy ConversionService conversionService) {
         this.configurationService = configurationService;
         this.conversionService = conversionService;
     }
@@ -33,37 +38,57 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         UserRO target = new UserRO();
         target.setEmailAddress(source.getEmailAddress());
         target.setUsername(source.getUsername());
-        target.setRole(source.getRole());
-        target.setPassword(source.getPassword());
-        target.setAccessTokenId(source.getAccessTokenIdentifier());
-        target.setPasswordExpireOn(source.getPasswordExpireOn());
-        target.setAccessTokenExpireOn(source.getAccessTokenExpireOn());
-        target.setPasswordExpired(isPasswordExpired(source));
-
-        target.setSequentialLoginFailureCount(source.getSequentialLoginFailureCount());
-        target.setLastFailedLoginAttempt(source.getLastFailedLoginAttempt());
-        target.setSuspendedUtil(getSuspensionUntilDate(source.getLastFailedLoginAttempt(),source.getSequentialLoginFailureCount(),
-                configurationService.getLoginSuspensionTimeInSeconds(), configurationService.getLoginMaxAttempts()));
-        target.setSequentialTokenLoginFailureCount(source.getSequentialTokenLoginFailureCount());
-        target.setLastTokenFailedLoginAttempt(source.getLastTokenFailedLoginAttempt());
-        target.setTokenSuspendedUtil(getSuspensionUntilDate(source.getLastTokenFailedLoginAttempt(),
-                source.getSequentialTokenLoginFailureCount(),
-                configurationService.getAccessTokenLoginSuspensionTimeInSeconds(),
-                configurationService.getAccessTokenLoginMaxAttempts()));
-
         target.setActive(source.isActive());
         // do not expose internal id
         target.setUserId(SessionSecurityUtils.encryptedEntityId(source.getId()));
-        if (source.getCertificate() != null) {
-            CertificateRO certificateRO = conversionService.convert(source.getCertificate(), CertificateRO.class);
+        target.setRole(source.getApplicationRole());
+        target.setEmailAddress(source.getEmailAddress());
+        target.setFullName(source.getFullName());
+        target.setSmpTheme(source.getSmpTheme());
+/*
+        Optional<DBCredential> optUserPassCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.USERNAME_PASSWORD).findFirst();
+        Optional<DBCredential> optTokenCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.ACCESS_TOKEN).findFirst();
+        Optional<DBCredential> optCertCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.CERTIFICATE).findFirst();
+
+        if (optUserPassCred.isPresent()){
+            DBCredential credential = optUserPassCred.get();
+            target.setPassword(credential.getValue());
+            target.setPasswordExpireOn(credential.getExpireOn());
+            target.setPasswordExpired(isCredentialExpired(credential));
+            target.setSequentialLoginFailureCount(credential.getSequentialLoginFailureCount());
+            target.setLastFailedLoginAttempt(credential.getLastFailedLoginAttempt());
+            target.setSuspendedUtil(getSuspensionUntilDate(credential.getLastFailedLoginAttempt(),credential.getSequentialLoginFailureCount(),
+                    configurationService.getLoginSuspensionTimeInSeconds(), configurationService.getLoginMaxAttempts()));
+        }
+
+        if (optTokenCred.isPresent()){
+            DBCredential credential = optUserPassCred.get();
+
+            target.setAccessTokenId(credential.getName());
+            target.setAccessTokenExpireOn(credential.getExpireOn());
+
+            target.setSequentialTokenLoginFailureCount(credential.getSequentialLoginFailureCount());
+            target.setLastTokenFailedLoginAttempt(credential.getLastFailedLoginAttempt());
+            target.setTokenSuspendedUtil(getSuspensionUntilDate(credential.getLastFailedLoginAttempt(),
+                    credential.getSequentialLoginFailureCount(),
+                    configurationService.getAccessTokenLoginSuspensionTimeInSeconds(),
+                    configurationService.getAccessTokenLoginMaxAttempts()));
+        }
+
+        if (optCertCred.isPresent()) {
+            DBCredential credential = optCertCred.get();
+            DBCertificate certificate = credential.getCertificate();
+            CertificateRO certificateRO = conversionService.convert(certificate, CertificateRO.class);
             target.setCertificate(certificateRO);
-            if (StringUtils.equalsIgnoreCase(source.getCertificate().getCertificateId(), source.getUsername())) {
+            if (StringUtils.equalsIgnoreCase(certificate.getCertificateId(), source.getUsername())) {
                 // clear username if is the same as certificate id.
                 // username as cert id is set to database to force unique users
                 // and to fix issue with mysql - where null value is also unique...
                 target.setUsername(null);
             }
         }
+*/
+
         return target;
     }
 
@@ -81,9 +106,8 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         return suspendedUtil;
     }
 
-    private boolean isPasswordExpired(DBUser source) {
-        return StringUtils.isNotEmpty(source.getPassword())
-                && (source.getPasswordExpireOn() == null
-                || OffsetDateTime.now().isAfter(source.getPasswordExpireOn()));
+    private boolean isCredentialExpired(DBCredential source) {
+        return  (source.getExpireOn() == null
+                || OffsetDateTime.now().isAfter(source.getExpireOn()));
     }
 }

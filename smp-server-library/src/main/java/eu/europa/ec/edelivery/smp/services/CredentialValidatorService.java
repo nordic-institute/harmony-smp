@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
@@ -21,12 +21,12 @@ import java.util.List;
 public class CredentialValidatorService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialValidatorService.class);
 
-    private final AlertService alertService;
+    private final CredentialsAlertService alertService;
     private final ConfigurationService configurationService;
     private final UserDao userDao;
 
     public CredentialValidatorService(ConfigurationService configurationService,
-                                      AlertService alertService,
+                                      CredentialsAlertService alertService,
                                       UserDao userDao) {
         this.configurationService = configurationService;
         this.alertService = alertService;

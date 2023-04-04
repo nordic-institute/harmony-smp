@@ -1,0 +1,32 @@
+<smp-search-table
+  #searchTable
+  page_id="user_id"
+  [title]="'Users'"
+  [columnPicker]="columnPicker"
+  [url]="baseUrl"
+  [additionalToolButtons]="additionalToolButtons"
+  [searchTableController]="userController"
+  [showSearchPanel]="false"
+  [filter]="filter"
+  [allowNewItems]="securityService.isCurrentUserSystemAdmin()"
+  [allowDeleteItems]="securityService.isCurrentUserSystemAdmin()"
+>
+
+  <ng-template #roleCellTemplate let-value="value" ngx-datatable-cell-template>{{getRoleLabel(value)}}</ng-template>
+
+  <ng-template #certificateTemplate let-row="row" let-value="value" ngx-datatable-cell-template>
+    <span [class]='certCssClass(row)' [title]="getCertToolTip(value)">{{value?.certificateId}}</span>
+  </ng-template>
+
+  <ng-template #additionalToolButtons >
+    <tool-button-spacer></tool-button-spacer>
+
+    <button mat-raised-button color="primary"
+            (click)="openEditTruststoreDialog()"
+            matTooltip="Add remove certificates from truststore" >
+      <mat-icon>vpn_key</mat-icon>
+      <span> Edit truststore</span>
+    </button>
+  </ng-template>
+
+</smp-search-table>

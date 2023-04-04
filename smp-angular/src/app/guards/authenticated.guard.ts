@@ -4,6 +4,9 @@ import {SecurityService} from '../security/security.service';
 import {ReplaySubject} from 'rxjs';
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
 
+/**
+ * Authentication guard validates if user is logged in. If not it re
+ */
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
 

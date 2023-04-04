@@ -1,0 +1,36 @@
+.smp-breadcrumb-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-left: 0.3em;
+  padding: 0 .4em;
+}
+
+.smp-breadcrumb-content {
+  z-index: 1;
+  // user parent
+  color:unset;
+}
+
+.smp-breadcrumb-arrow  {
+  position: absolute;
+  width: 100%;
+  min-width: 20px;
+  height: 50%;  //background:  var(--color-primary);
+  border-left: 1px solid;
+  border-right: 1px solid;
+}
+
+.smp-breadcrumb-arrow.top {
+  top: 0;
+  transform: skew(22deg, 0deg);
+  border-top: 1px solid;
+}
+
+.smp-breadcrumb-arrow.bottom {
+  bottom: -1px;
+  transform: skew(-22deg, 0deg);
+  border-bottom: 1px solid;
+}

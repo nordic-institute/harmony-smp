@@ -1,0 +1,115 @@
+<div id="user-profile-panel">
+  <form [formGroup]="userForm" (ngSubmit)="onSaveButtonClicked()">
+    <data-panel title="Account"
+                text="Account data">
+      <mat-form-field class="user-profile-pane-field">
+        <mat-label>Username</mat-label>
+        <input matInput placeholder="Username" formControlName="username"
+               id="username_id" maxlength="255">
+      </mat-form-field>
+      <mat-form-field class="user-profile-pane-field">
+        <mat-label>Role</mat-label>
+        <input matInput placeholder="role" formControlName="role"
+               id="Role" maxlength="255">
+      </mat-form-field>
+    </data-panel>
+
+    <data-panel title="User profile"
+                text="User profile data and settings">
+      <mat-form-field class="user-profile-pane-field">
+        <mat-label>E-Mail Address</mat-label>
+        <input matInput placeholder="EMail Address" formControlName="emailAddress"
+               id="emailAddress_id" maxlength="255">
+        <div
+          *ngIf="userForm.controls['emailAddress'].hasError('pattern') && userForm.controls['emailAddress'].touched"
+          class="has-error">Email is invalid!
+        </div>
+      </mat-form-field>
+      <mat-form-field class="user-profile-pane-field">
+        <mat-label>Full name (name and last name)</mat-label>
+        <input matInput placeholder="Full name" formControlName="fullName"
+               id="fullName" maxlength="255">
+      </mat-form-field>
+
+      <mat-form-field class="user-profile-pane-field">
+        <mat-label>Theme</mat-label>
+        <select matNativeControl
+                (change)="onThemeSelect($event.target.value)"
+                formControlName="smpTheme">
+          <option *ngFor="let item of themeItems" [value]="item.className">{{item.name}}</option>
+        </select>
+      </mat-form-field>
+      <!-- buttons  -->
+      <div id="user-profile-panel-toolbar" class="panel">
+        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+                [disabled]="!resetButtonEnabled">
+          <mat-icon>refresh</mat-icon>
+          <span>Reset</span>
+        </button>
+        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+                [disabled]="!submitButtonEnabled">
+          <mat-icon>save</mat-icon>
+          <span>Save</span>
+        </button>
+      </div>
+    </data-panel>
+  </form>
+  <form [formGroup]="userCredentialForm" (ngSubmit)="onSaveButtonClicked()">
+    <data-panel *ngIf="true" title="Username/password credentials"
+                text="Reset username password for the UI login">
+      <div style="display: flex;flex-flow: row wrap;">
+        <mat-form-field style="flex-grow: 1">
+          <mat-label>Last set</mat-label>
+          <input matInput placeholder="Last set"
+                 value="{{!userCredentialForm.get('passwordUpdatedOn').value?nullValue:userCredentialForm.get('passwordUpdatedOn').value | date:dateTimeFormat}}"
+                 maxlength="255" disabled>
+        </mat-form-field>
+
+        <mat-form-field style="flex-grow: 1">
+          <mat-label>Password expire on</mat-label>
+          <input *ngIf="!!userCredentialForm.get('passwordExpireOn').value; else noPasswordExpirySet " matInput
+                 placeholder="Valid until"
+                 value="{{userCredentialForm.get('passwordExpireOn').value | date:dateTimeFormat}}"
+                 maxlength="255" disabled>
+          <ng-template #noPasswordExpirySet>
+            <input matInput placeholder="Valid until" style="color: red"
+                   matTooltip="Default password set by system admin! User must change password immediately!"
+                   value="Default or null password"
+                   maxlength="255" disabled>
+          </ng-template>
+        </mat-form-field>
+      </div>
+      <div style="display: flex;flex-flow: row wrap;">
+        <mat-form-field style="flex-grow: 2">
+          <mat-label>Seq. failed attempts</mat-label>
+          <input matInput placeholder="Seq. failed attempts"
+                 [value]="userCredentialForm.controls['sequentialLoginFailureCount'].value"
+                 id="sequentialLoginFailureCount_id" maxlength="255" disabled readonly>
+        </mat-form-field>
+        <mat-form-field style="flex-grow: 1">
+          <mat-label>Last failed attempt</mat-label>
+          <input matInput placeholder="Last failed attempt"
+                 value="{{!userCredentialForm.get('lastFailedLoginAttempt').value?nullValue:userCredentialForm.get('lastFailedLoginAttempt').value | date:dateTimeFormat}}"
+                 maxlength="255" disabled>
+        </mat-form-field>
+      </div>
+      <div style="display: flex;flex-flow: row wrap;">
+        <mat-form-field style="flex-grow: 1">
+          <mat-label>Suspended until</mat-label>
+          <input matInput placeholder="Suspended until"
+                 value="{{!userCredentialForm.get('suspendedUtil').value?nullValue:userCredentialForm.get('suspendedUtil').value | date:dateTimeFormat}}"
+                 maxlength="255" disabled>
+        </mat-form-field>
+      </div>
+
+
+      <div id="user-password-reset-panel-toolbar" class="panel">
+        <button mat-flat-button color="primary" id="changePassword_id"
+                (click)="changeCurrentUserPassword()">
+          <span>Set/change password</span>
+        </button>
+      </div>
+    </data-panel>
+  </form>
+</div>
+

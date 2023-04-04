@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 import static org.junit.Assert.*;
 
 public class PropertyUpdateListenerTest {

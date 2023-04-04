@@ -18,14 +18,12 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtilsTest;
-import org.apache.commons.beanutils.BeanUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
@@ -41,9 +39,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static org.junit.Assert.*;
 
 public class ConfigurationDAOImplTest extends AbstractBaseDao {
@@ -55,17 +52,16 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     @Before
     public void before() throws IOException {
         resetKeystore();
+
         // make sure sql properties are loaded
         configurationDao.reloadPropertiesFromDatabase();
     }
 
     @Test
-    public void testFindConfigurationProperty() {
-        Optional<DBConfiguration> resultBO = configurationDao.findConfigurationProperty(SMPPropertyEnum.CONFIGURATION_DIR.getProperty());
+    public void testGetSecurityFolder() {
+        File folder = configurationDao.getSecurityFolder();
 
-        //THEN
-        assertTrue(resultBO.isPresent());
-        assertEquals("./target/keystores/", resultBO.get().getValue());
+        assertEquals("target/smp", folder.getPath());
     }
 
     @Test
@@ -191,17 +187,17 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
     @Test
     public void testGetCachedProperty() {
-        String path = configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR);
+        String value = configurationDao.getCachedProperty(SMPPropertyEnum.ALERT_ACCESS_TOKEN_EXPIRED_PERIOD);
 
-        assertEquals("./target/keystores/", path);
+        assertEquals("30", value);
     }
 
     @Test
     public void testGetCachedPropertyValue() {
-        Object objPath = configurationDao.getCachedPropertyValue(SMPPropertyEnum.CONFIGURATION_DIR);
+        Object objPath = configurationDao.getCachedPropertyValue(SMPPropertyEnum.ALERT_ACCESS_TOKEN_EXPIRED_PERIOD);
 
         assertNotNull(objPath);
-        assertEquals(File.class, objPath.getClass());
+        assertEquals(Integer.class, objPath.getClass());
     }
 
     @Test
@@ -209,23 +205,24 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
         // give
         configurationDao.setPropertyToDatabase(SMP_CLUSTER_ENABLED, "true", null);
-        String path = configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR);
-        Object objPath = configurationDao.getCachedPropertyValue(SMPPropertyEnum.CONFIGURATION_DIR);
+
+        String testValue = configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
+        Object objValue = configurationDao.getCachedPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
         OffsetDateTime localDateTime = configurationDao.getLastUpdate();
         // set new value
-        String pathNew = Paths.get("src", "test", "resources", "keystores").toFile().getAbsolutePath();
-        assertNotEquals(path, pathNew);
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.CONFIGURATION_DIR, pathNew, "New configuration path");
+        String pathNew = "123456";
+        assertNotEquals(testValue, pathNew);
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN, pathNew, "New value");
         // assert value is not yet changed
-        assertEquals(path, configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR));
+        assertEquals(testValue, configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
 
         // when
         configurationDao.reloadPropertiesFromDatabase();
 
         // then
-        assertEquals(pathNew, configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR));
+        assertEquals(pathNew, configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
         assertTrue(localDateTime.isBefore(configurationDao.getLastUpdate()));
-        assertNotEquals(objPath, configurationDao.getCachedPropertyValue(SMPPropertyEnum.CONFIGURATION_DIR));
+        assertNotEquals(objValue, configurationDao.getCachedPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
     }
 
 
@@ -233,15 +230,15 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     public void testRefreshPropertiesWithReload() {
 
         // give
-        String path = configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR);
-        Object objPath = configurationDao.getCachedPropertyValue(SMPPropertyEnum.CONFIGURATION_DIR);
+        String testValue = configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
+        Object objValue = configurationDao.getCachedPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
         OffsetDateTime localDateTime = configurationDao.getLastUpdate();
         // set new value
-        String pathNew = Paths.get("src", "test", "resources", "keystores").toFile().getAbsolutePath();
-        assertNotEquals(path, pathNew);
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.CONFIGURATION_DIR, pathNew, "New configuration path");
+        String pathNew = "123455";
+        assertNotEquals(testValue, pathNew);
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN, pathNew, "New value");
         // assert value is not yet changed
-        assertEquals(path, configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR));
+        assertEquals(testValue, configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
 
 
         // when
@@ -249,9 +246,9 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         configurationDao.refreshProperties();
 
         // then
-        assertEquals(pathNew, configurationDao.getCachedProperty(SMPPropertyEnum.CONFIGURATION_DIR));
+        assertEquals(pathNew, configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
         assertTrue(localDateTime.isBefore(configurationDao.getLastUpdate()));
-        assertNotEquals(objPath, configurationDao.getCachedPropertyValue(SMPPropertyEnum.CONFIGURATION_DIR));
+        assertNotEquals(objValue, configurationDao.getCachedPropertyValue(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN));
     }
 
     @Test
@@ -293,7 +290,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     @Test
     public void encryptDefault() throws IOException {
         // given
-        File f = SecurityUtilsTest.generateRandomPrivateKey();
+        File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
 
         // when
@@ -319,7 +316,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     @Test
     public void decryptDefault() throws IOException {
         // given
-        File f = SecurityUtilsTest.generateRandomPrivateKey();
+        File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
         String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
 
@@ -333,7 +330,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     @Test
     public void decryptDefaultError() throws IOException {
         // given
-        File f = SecurityUtilsTest.generateRandomPrivateKey();
+        File f = generateRandomPrivateKey();
         File fErr = new File("no.key");
         String password = "TEST11002password1@!." + System.currentTimeMillis();
         String encPassword = configurationDao.encryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, password, f);
@@ -474,30 +471,30 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetPendingRestartProperties(){
+    public void testGetPendingRestartProperties() {
         // set start  "yesterday" - but all properties have update today!
         configurationDao.setInitializedTime(OffsetDateTime.now().minusDays(1));
         // when
-        List<DBConfiguration> restartProp =  configurationDao.getPendingRestartProperties();
+        List<DBConfiguration> restartProp = configurationDao.getPendingRestartProperties();
         // then
         assertFalse(restartProp.isEmpty());
     }
 
     @Test
-    public void testUpdateListener(){
+    public void testUpdateListener() {
 
         configurationDao.contextRefreshedEvent();
         PropertyUpdateListener listener = Mockito.mock(PropertyUpdateListener.class);
         Mockito.doReturn(Arrays.asList(SMP_ALERT_BATCH_SIZE)).when(listener).handledProperties();
         Mockito.doNothing().when(listener).updateProperties(Mockito.anyMap());
         ArgumentCaptor<Map<SMPPropertyEnum, Object>> argCaptor = ArgumentCaptor.forClass(Map.class);
-        configurationDao.updateListener("testListener",listener);
+        configurationDao.updateListener("testListener", listener);
         // when
 
 
         Mockito.verify(listener, Mockito.times(1)).updateProperties(argCaptor.capture());
-        assertEquals(1,argCaptor.getValue().size() );
-        assertTrue(argCaptor.getValue().containsKey(SMP_ALERT_BATCH_SIZE) );
+        assertEquals(1, argCaptor.getValue().size());
+        assertTrue(argCaptor.getValue().containsKey(SMP_ALERT_BATCH_SIZE));
     }
 
     public void updateOrCreatePropertyToDB(SMPPropertyEnum propertyEnum, String value) {
@@ -512,5 +509,12 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         }
         dbProp.setValue(value);
         configurationDao.update(dbProp);
+    }
+
+    public static File generateRandomPrivateKey() throws IOException {
+        File resource = Paths.get("target", UUID.randomUUID() + ".key").toFile();
+        SecurityUtils.generatePrivateSymmetricKey(resource, true);
+        return resource;
+
     }
 }

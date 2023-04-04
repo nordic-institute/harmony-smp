@@ -34,10 +34,11 @@ import static java.lang.String.format;
  * @author Joze Rihtarsic
  * @since 4.2
  */
-@RestControllerAdvice("eu.europa.ec.edelivery.smp.ui")
+@RestControllerAdvice("eu.europa.ec.edelivery.smp.ui.external")
 public class UIErrorControllerAdvice extends AbstractErrorControllerAdvice {
 
 
+    @Override
     @ExceptionHandler({BadCredentialsException.class, RuntimeException.class, SMPRuntimeException.class, SMPResponseStatusException.class, AuthenticationException.class,})
     public ResponseEntity handleRuntimeException(RuntimeException ex) {
         return super.handleRuntimeException(ex);

@@ -2,16 +2,15 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
-import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
+import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
-import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -19,7 +18,9 @@ import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,27 +32,26 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.DOCUMENT_RESTRICTION_CERT_TYPES;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.DOCUMENT_RESTRICTION_CERT_TYPES;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 
 /**
  * Services for managing the Service metadata
  */
 @Service
-public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, ServiceMetadataRO> {
+public class UIServiceMetadataService extends UIServiceBase<DBSubresource, ServiceMetadataRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceMetadataService.class);
 
     protected final DomainDao domainDao;
-    protected final ServiceMetadataDao serviceMetadataDao;
+    protected final SubresourceDao serviceMetadataDao;
     protected final UserDao userDao;
     protected final IdentifierService caseSensitivityNormalizer;
     protected final ConfigurationService configurationService;
 
 
     public UIServiceMetadataService(DomainDao domainDao,
-                                    ServiceMetadataDao serviceMetadataDao,
+                                    SubresourceDao serviceMetadataDao,
                                     UserDao userDao,
                                     IdentifierService caseSensitivityNormalizer,
                                     ConfigurationService configurationService) {
@@ -64,20 +64,20 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
     }
 
     @Override
-    protected BaseDao<DBServiceMetadata> getDatabaseDao() {
+    protected BaseDao<DBSubresource> getDatabaseDao() {
         return serviceMetadataDao;
     }
 
     @Transactional
     public ServiceMetadataRO getServiceMetadataXMLById(Long serviceMetadataId) {
         LOG.debug("Get service metadata: {}", serviceMetadataId);
-        DBServiceMetadata dbServiceMetadata = serviceMetadataDao.find(serviceMetadataId);
+        DBSubresource dbSubresource = serviceMetadataDao.find(serviceMetadataId);
         ServiceMetadataRO serviceMetadataRO = new ServiceMetadataRO();
 
-        serviceMetadataRO.setId(dbServiceMetadata.getId());
-        serviceMetadataRO.setDocumentIdentifier(dbServiceMetadata.getDocumentIdentifier());
-        serviceMetadataRO.setDocumentIdentifierScheme(dbServiceMetadata.getDocumentIdentifierScheme());
-        serviceMetadataRO.setXmlContent(getConvertServiceMetadataToString(serviceMetadataId, dbServiceMetadata.getXmlContent()));
+        serviceMetadataRO.setId(dbSubresource.getId());
+        serviceMetadataRO.setDocumentIdentifier(dbSubresource.getIdentifierValue());
+        serviceMetadataRO.setDocumentIdentifierScheme(dbSubresource.getIdentifierScheme());
+
         return serviceMetadataRO;
     }
 
@@ -119,10 +119,10 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
             }
 
 
-            DocumentIdentifier headerDI = caseSensitivityNormalizer.normalizeDocument(
+            Identifier headerDI = caseSensitivityNormalizer.normalizeDocument(
                     serviceMetadataRO.getDocumentIdentifierScheme(),
                     serviceMetadataRO.getDocumentIdentifier());
-            ParticipantIdentifierType headerPI = caseSensitivityNormalizer.normalizeParticipant(
+            Identifier headerPI = caseSensitivityNormalizer.normalizeParticipant(
                     serviceMetadataRO.getParticipantScheme(),
                     serviceMetadataRO.getParticipantIdentifier());
 
@@ -134,7 +134,7 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
                 serviceMetadataRO.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
                 return serviceMetadataRO;
             }
-
+/* TODO
             // validate data
             ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
             if (smd.getRedirect() != null) {
@@ -145,7 +145,7 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
             }
 
             if (smd.getServiceInformation() != null) {
-                DocumentIdentifier xmlDI = caseSensitivityNormalizer.normalizeDocument(smd.getServiceInformation().getDocumentIdentifier());
+                Identifier xmlDI = caseSensitivityNormalizer.normalizeDocument(smd.getServiceInformation().getDocumentIdentifier());
                 ParticipantIdentifierType xmlPI = caseSensitivityNormalizer.normalizeParticipant(smd.getServiceInformation().getParticipantIdentifier());
                 if (!xmlDI.equals(headerDI)) {
                     serviceMetadataRO.setErrorMessage("Document identifier and scheme do not match!");
@@ -160,7 +160,7 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
 
             if (serviceMetadataRO.getStatusAction() == EntityROStatus.NEW.getStatusNumber()) {
                 // check if service metadata already exists
-                Optional<DBServiceMetadata> exists = serviceMetadataDao.findServiceMetadata(headerPI.getValue(), headerPI.getScheme(),
+                Optional<DBSubresource> exists = serviceMetadataDao.findServiceMetadata(headerPI.getValue(), headerPI.getScheme(),
                         headerDI.getValue(), headerDI.getScheme());
                 if (exists.isPresent()) {
                     serviceMetadataRO.setErrorMessage("Document identifier and scheme already exist in database!");
@@ -173,7 +173,7 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
                 serviceMetadataRO.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
                 return serviceMetadataRO;
             }
-
+*/
         }
         return serviceMetadataRO;
     }

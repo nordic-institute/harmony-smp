@@ -3,7 +3,7 @@ package eu.europa.ec.edelivery.smp.services.ui;
 import eu.europa.ec.edelivery.security.cert.CertificateValidator;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -18,6 +18,7 @@ import org.bouncycastle.asn1.x509.CertificatePolicies;
 import org.bouncycastle.asn1.x509.PolicyInformation;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ import java.security.cert.Certificate;
 import java.security.cert.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -78,7 +80,7 @@ public class UITruststoreService {
     TrustManager[] trustManagers;
     KeyStore trustStore = null;
 
-    public UITruststoreService(ConfigurationService configurationService, CRLVerifierService crlVerifierService, ConversionService conversionService, UserDao userDao) {
+    public UITruststoreService(ConfigurationService configurationService, CRLVerifierService crlVerifierService, @Lazy ConversionService conversionService, UserDao userDao) {
         this.configurationService = configurationService;
         this.crlVerifierService = crlVerifierService;
         this.conversionService = conversionService;
@@ -88,7 +90,6 @@ public class UITruststoreService {
     @PostConstruct
     public void init() {
         setupJCEProvider();
-        refreshData();
     }
 
     private void setupJCEProvider() {
@@ -327,14 +328,12 @@ public class UITruststoreService {
 
     public void checkFullCertificateValidity(CertificateRO cert) throws CertificateException {
         // trust data in database
-
-        Date currentDate = Calendar.getInstance().getTime();
-        if (cert.getValidFrom() != null && currentDate.before(cert.getValidFrom())) {
+        if (cert.getValidFrom() != null && OffsetDateTime.now().isBefore(cert.getValidFrom())) {
             throw new CertificateNotYetValidException("Certificate: " + cert.getCertificateId() + " is valid from: "
                     + dateFormatLocal.get().format(cert.getValidFrom()) + ".");
 
         }
-        if (cert.getValidTo() != null && currentDate.after(cert.getValidTo())) {
+        if (cert.getValidTo() != null && OffsetDateTime.now().isAfter(cert.getValidTo())) {
             throw new CertificateExpiredException("Certificate: " + cert.getCertificateId() + " was valid to: "
                     + dateFormatLocal.get().format(cert.getValidTo()) + ".");
         }

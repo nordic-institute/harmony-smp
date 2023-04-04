@@ -4,7 +4,6 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -20,7 +19,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Properties;
 
 
@@ -46,7 +44,7 @@ public class MailService {
     }
 
 
-    public <T extends MailModel<Properties> > void sendMail(final T model, final String from, final String to) {
+    public <T extends MailModel<Properties>> void sendMail(final T model, final String from, final String to) {
         if (StringUtils.isBlank(to)) {
             throw new IllegalArgumentException("The 'to' property cannot be null");
         }

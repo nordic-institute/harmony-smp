@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
@@ -69,7 +70,7 @@ public class TruststoreAdminResourceIntegrationTest {
         byte[] buff = (new String("Not a certificate :) ")).getBytes();
 
         // login
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
 
@@ -86,7 +87,7 @@ public class TruststoreAdminResourceIntegrationTest {
     public void validateCertificateSystemAdmin() throws Exception {
         byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
         // login
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
         // given when
@@ -97,7 +98,8 @@ public class TruststoreAdminResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
+
         CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
 
         assertNotNull(res);
@@ -111,7 +113,7 @@ public class TruststoreAdminResourceIntegrationTest {
     @Test
     public void validateCertificateIdWithEmailSerialNumberInSubjectCertIdTest() throws Exception {
         // login
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
 
@@ -127,7 +129,7 @@ public class TruststoreAdminResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper =getObjectMapper();
         CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
 
         assertEquals("CN=common name,O=org,C=BE:0000000001234321", res.getCertificateId());
@@ -160,7 +162,7 @@ public class TruststoreAdminResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();;
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
 
 
@@ -191,7 +193,7 @@ public class TruststoreAdminResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         // given when
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
         CertificateRO res = mapper.readValue(prepRes.getResponse().getContentAsString(), CertificateRO.class);
         assertNotNull(res);
         uiTruststoreService.refreshData();
@@ -205,6 +207,11 @@ public class TruststoreAdminResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
         uiTruststoreService.refreshData();
         assertEquals(countStart, uiTruststoreService.getNormalizedTrustedList().size());
+    }
 
+    protected  ObjectMapper getObjectMapper(){
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
 }
