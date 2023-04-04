@@ -2,6 +2,8 @@ package eu.europa.ec.edelivery.smp.services.spi;
 
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
@@ -19,6 +21,7 @@ import java.util.regex.Pattern;
  */
 @Service
 public class SmpIdentifierService implements SmpIdentifierServiceApi {
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmpIdentifierService.class);
 
     final IdentifierService identifierService;
     final ConfigurationService configurationService;
@@ -77,9 +80,14 @@ public class SmpIdentifierService implements SmpIdentifierServiceApi {
     @Override
     public boolean concatenateResourceIdentifier(ResourceIdentifier identifier) {
         Pattern concatenatePartyId = configurationService.getParticipantIdentifierUrnValidationRexExp();
+        if (identifier == null || StringUtils.isBlank(identifier.getScheme())) {
+            LOG.debug("Return false for null or empty scheme identifier!");
+            return false;
+        }
 
-        return identifier == null
-                && StringUtils.isNotBlank(identifier.getScheme()) && concatenatePartyId != null && concatenatePartyId.matcher(identifier.getScheme()).matches();
+        return concatenatePartyId != null
+                && concatenatePartyId.matcher(identifier.getScheme())
+                .matches();
     }
 
     private Identifier toIdentifier(ResourceIdentifier identifier) {

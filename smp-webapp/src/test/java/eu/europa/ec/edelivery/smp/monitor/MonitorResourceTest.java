@@ -26,7 +26,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,11 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-@Ignore
 public class MonitorResourceTest {
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     private static final String URL = "/monitor/is-alive";
     private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "123456");
@@ -76,7 +72,6 @@ public class MonitorResourceTest {
         listener.contextInitialized(event);
     }
 
-
     @Test
     public void isAliveNotAuthorized() throws Exception {
         mvc.perform(get(URL))
@@ -92,12 +87,10 @@ public class MonitorResourceTest {
 
     @Test
     public void testDatabase() {
-        // given
-        expectedEx.expectMessage("TEST_DB_SUCCESSFUL_ROLLBACK MESSAGE");
-        expectedEx.expect(SMPTestIsALiveException.class);
         // when
-        boolean bval = testInstance.testDatabase();
-        //then
-        assertTrue(bval);
+        boolean result = testInstance.testDatabase();
+
+        assertTrue(result);
+
     }
 }

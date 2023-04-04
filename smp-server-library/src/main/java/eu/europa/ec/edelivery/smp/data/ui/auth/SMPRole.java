@@ -6,6 +6,7 @@ public enum SMPRole {
     USER("USER"),
     WS_USER("WS_USER"),
     SYSTEM_ADMIN("SYSTEM_ADMIN"),
+    WS_SYSTEM_ADMIN("WS_SYSTEM_ADMIN")
   ;
 
     String code;

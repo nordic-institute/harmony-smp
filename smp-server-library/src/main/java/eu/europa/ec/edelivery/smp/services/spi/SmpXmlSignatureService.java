@@ -86,8 +86,7 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
     public void createEnvelopedSignature(RequestData resourceMetadata, Element parentSignatureNode, List<String> signedElementURIList) throws SignatureException {
         // Find the domain for the identifier
 
-
-        if (resourceMetadata == null && resourceMetadata.getResourceIdentifier() == null) {
+        if (resourceMetadata == null || resourceMetadata.getResourceIdentifier() == null) {
             throw new SignatureException(SignatureException.ErrorCode.INVALID_PARAMETERS, "Missing resource identifier");
         }
 
@@ -97,14 +96,7 @@ public final class SmpXmlSignatureService implements SmpXmlSignatureApi {
         Optional<DBDomain> optDomain = domainDao.getDomainByCode(resourceMetadata.getDomainCode());
         DBDomain domain = optDomain.orElseThrow(
                 () -> new SignatureException(SignatureException.ErrorCode.INVALID_PARAMETERS, "Domain for the domain code [" + resourceMetadata.getDomainCode() + "] does not exists!"));
-        ;
 
-        // get domain for the document
-
-        // get alias for the
-        //  type is known
-        //
-        // get
         createEnvelopedSignature(parentSignatureNode,
                 Collections.emptyList(),
                 domain.getSignatureKeyAlias(),
