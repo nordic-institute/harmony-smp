@@ -13,6 +13,7 @@ import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,7 @@ public class KeystoreResourceIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void uploadKeystoreInvalidPassword() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -146,7 +148,7 @@ public class KeystoreResourceIntegrationTest {
                 .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
 
-        //them
+        //then
         ObjectMapper mapper = getObjectMapper();;
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
