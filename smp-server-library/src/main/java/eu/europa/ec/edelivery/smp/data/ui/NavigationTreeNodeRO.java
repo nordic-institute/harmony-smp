@@ -10,14 +10,14 @@ import java.util.List;
  */
 public class NavigationTreeNodeRO extends BaseRO {
 
-    static final long serialVersionUID = 2821447495333163882L;
+    private static final long serialVersionUID = 9008583888835630011L;
 
-    String code;
-    String name;
-    String icon;
-    String tooltip;
-    String routerLink;
-    List<NavigationTreeNodeRO> children = new ArrayList<>();
+    private String code;
+    private String name;
+    private String icon;
+    private String tooltip;
+    private String routerLink;
+    private List<NavigationTreeNodeRO> children = new ArrayList<>();
 
     public NavigationTreeNodeRO() {
     }

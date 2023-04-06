@@ -6,6 +6,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -21,8 +22,8 @@ import static org.apache.commons.lang3.StringUtils.trim;
  * @since 4.2
  */
 public class DatabaseProperties extends Properties {
-    SMPLogger LOG = SMPLoggerFactory.getLogger(DatabaseProperties.class);
-    private static final long serialVersionUID = 1L;
+    @Transient
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DatabaseProperties.class);
 
     private OffsetDateTime lastUpdate;
 

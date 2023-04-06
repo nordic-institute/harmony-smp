@@ -11,12 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 public class ServiceMetadataRO extends BaseRO {
 
 
-    private static final long serialVersionUID = 67944640449327185L;
+    private static final long serialVersionUID = 9008583888835630018L;
     private Long id;
     String documentIdentifier;
     String documentIdentifierScheme;
-    Long serviceGroupDomainId;
-   // Long domainId;
     String smlSubdomain;
     String domainCode;
     private int xmlContentStatus = EntityROStatus.PERSISTED.getStatusNumber();
@@ -30,22 +28,6 @@ public class ServiceMetadataRO extends BaseRO {
         this.id = id;
     }
 
-    public Long getServiceGroupDomainId() {
-        return serviceGroupDomainId;
-    }
-
-    public void setServiceGroupDomainId(Long serviceGroupDomainId) {
-        this.serviceGroupDomainId = serviceGroupDomainId;
-    }
-/*
-    public Long getDomainId() {
-        return domainId;
-    }
-
-    public void setDomainId(Long domainId) {
-        this.domainId = domainId;
-    }
-*/
     public String getDocumentIdentifier() {
         return documentIdentifier;
     }

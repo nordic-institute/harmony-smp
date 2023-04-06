@@ -103,8 +103,9 @@ insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDA
 
 -- --------------
 -- configure extension and document types service group and servicemetadata
-insert into SMP_EXTENSION ( ID, DESCRIPTION, EXTENSION_TYPE, IMPLEMENTATION_NAME, NAME, VERSION, CREATED_ON, LAST_UPDATED_ON) values
-(1, 'ServiceMetadata','RESOURCE',  'OasisSMPExtension','Oasis SMP 1.0 and 2.0', '1.0',  NOW(),  NOW());
+insert into SMP_EXTENSION ( ID, IDENTIFIER,  IMPLEMENTATION_NAME, NAME, VERSION, DESCRIPTION, CREATED_ON, LAST_UPDATED_ON) values
+(1, 'edelivery-oasis-smp-extension',  'OasisSMPExtension','Oasis SMP 1.0 and 2.0','1.0', 'Oasis SMP 1.0 and 2.0 extension',  NOW(),  NOW());
+
 insert into SMP_RESOURCE_DEF ( ID, FK_EXTENSION_ID, URL_SEGMENT, IDENTIFIER, DESCRIPTION, MIME_TYPE, NAME, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'smp-1', 'edelivery-oasis-smp-1.0-servicegroup', 'Service group', 'application/xml','Oasis SMP ServiceGroup', NOW(),  NOW());
 insert into SMP_SUBRESOURCE_DEF (ID,FK_RESOURCE_DEF_ID,URL_SEGMENT, IDENTIFIER, DESCRIPTION, MIME_TYPE, NAME, CREATED_ON, LAST_UPDATED_ON) values

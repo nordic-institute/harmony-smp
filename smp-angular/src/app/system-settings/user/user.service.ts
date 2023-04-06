@@ -5,7 +5,7 @@ import {User} from "../../security/user.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SecurityService} from "../../security/security.service";
 import {Observable, Subject} from "rxjs";
-import {Credential} from "../../security/credential.model";
+import {CredentialRo} from "../../security/credential.model";
 import {AccessTokenRo} from "../../common/dialogs/access-token-generation-dialog/access-token-ro.model";
 
 /**
@@ -16,13 +16,13 @@ export class UserService {
 
   private userProfileDataUpdateSubject = new Subject<User>();
 
-  private userPwdCredentialsUpdateSubject = new Subject<Credential>();
+  private userPwdCredentialsUpdateSubject = new Subject<CredentialRo>();
 
-  private userAccessTokenCredentialsUpdateSubject = new Subject<Credential[]>();
-  private userAccessTokenCredentialUpdateSubject = new Subject<Credential>();
+  private userAccessTokenCredentialsUpdateSubject = new Subject<CredentialRo[]>();
+  private userAccessTokenCredentialUpdateSubject = new Subject<CredentialRo>();
 
-  private userCertificateCredentialsUpdateSubject = new Subject<Credential[]>();
-  private userCertificateCredentialUpdateSubject = new Subject<Credential>();
+  private userCertificateCredentialsUpdateSubject = new Subject<CredentialRo[]>();
+  private userCertificateCredentialUpdateSubject = new Subject<CredentialRo>();
 
 
   constructor(
@@ -48,9 +48,9 @@ export class UserService {
     if (user == null) {
       return;
     }
-    this.http.get<Credential>(SmpConstants.REST_PUBLIC_USER_CREDENTIAL_STATUS
+    this.http.get<CredentialRo>(SmpConstants.REST_PUBLIC_USER_CREDENTIAL_STATUS
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId))
-      .subscribe((response: Credential) => {
+      .subscribe((response: CredentialRo) => {
         this.notifyPwdStatusUpdated(response)
       }, error => {
         this.alertService.error(error.error?.errorDescription)
@@ -62,76 +62,76 @@ export class UserService {
     if (!user) {
       return;
     }
-    this.http.get<Credential[]>(SmpConstants.REST_PUBLIC_USER_ACCESS_TOKEN_CREDENTIALS
+    this.http.get<CredentialRo[]>(SmpConstants.REST_PUBLIC_USER_ACCESS_TOKEN_CREDENTIALS
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId))
-      .subscribe((response: Credential[]) => {
+      .subscribe((response: CredentialRo[]) => {
         this.notifyAccessTokensUpdated(response)
       }, error => {
         this.alertService.error(error.error?.errorDescription)
       });
   }
 
-  deleteUserAccessTokenCredential(credential: Credential) {
+  deleteUserAccessTokenCredential(credential: CredentialRo) {
     let user = this.getCurrentUser();
     if (!user || !credential) {
       return;
     }
-    this.http.delete<Credential>(SmpConstants.REST_PUBLIC_USER_MANAGE_ACCESS_TOKEN_CREDENTIAL
+    this.http.delete<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_ACCESS_TOKEN_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId))
-      .subscribe((response: Credential) => {
+      .subscribe((response: CredentialRo) => {
         this.notifyAccessTokenUpdated(response)
       }, error => {
         this.alertService.error(error.error?.errorDescription)
       });
   }
 
-  updateUserAccessTokenCredential(credential: Credential) {
+  updateUserAccessTokenCredential(credential: CredentialRo) {
     let user = this.getCurrentUser();
     if (!user || !credential) {
       return;
     }
-    this.http.post<Credential>(SmpConstants.REST_PUBLIC_USER_MANAGE_ACCESS_TOKEN_CREDENTIAL
+    this.http.post<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_ACCESS_TOKEN_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId), credential)
-      .subscribe((response: Credential) => {
+      .subscribe((response: CredentialRo) => {
         this.notifyAccessTokenUpdated(response)
       }, error => {
         this.alertService.error(error.error?.errorDescription)
       });
   }
 
-  updateUserCertificateCredential(credential: Credential) {
+  updateUserCertificateCredential(credential: CredentialRo) {
     let user = this.getCurrentUser();
     if (!user || !credential) {
       return;
     }
-    this.http.post<Credential>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
+    this.http.post<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId), credential)
-      .subscribe((response: Credential) => {
+      .subscribe((response: CredentialRo) => {
         this.notifyCertificateUpdated(response)
       }, error => {
         this.alertService.error(error.error?.errorDescription)
       });
   }
 
-  deleteUserCertificateCredential(credential: Credential) {
+  deleteUserCertificateCredential(credential: CredentialRo) {
     let user = this.getCurrentUser();
     if (!user || !credential) {
       return;
     }
-    this.http.delete<Credential>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
+    this.http.delete<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId))
-      .subscribe((response: Credential) => {
+      .subscribe((response: CredentialRo) => {
         this.notifyCertificateUpdated(response)
       }, error => {
         this.alertService.error(error.error?.errorDescription)
       });
   }
 
-  generateUserAccessTokenCredential(credential: Credential) {
+  generateUserAccessTokenCredential(credential: CredentialRo) {
     let user = this.getCurrentUser();
     if (!user || !credential) {
       return;
@@ -142,15 +142,15 @@ export class UserService {
       credential);
   }
 
-  storeUserCertificateCredential(credential: Credential) {
+  storeUserCertificateCredential(credential: CredentialRo) {
     let user = this.getCurrentUser();
     if (!user || !credential) {
       return;
     }
-    this.http.put<Credential>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
+    this.http.put<CredentialRo>(SmpConstants.REST_PUBLIC_USER_MANAGE_CERTIFICATE_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId), credential)
-      .subscribe((response: Credential) => {
+      .subscribe((response: CredentialRo) => {
         this.notifyCertificateUpdated(response)
       }, error => {
         this.alertService.error(error.error?.errorDescription)
@@ -165,21 +165,21 @@ export class UserService {
     if (!user) {
       return;
     }
-    this.http.get<Credential[]>(SmpConstants.REST_PUBLIC_USER_CERTIFICATE_CREDENTIALS
+    this.http.get<CredentialRo[]>(SmpConstants.REST_PUBLIC_USER_CERTIFICATE_CREDENTIALS
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId))
-      .subscribe((response: Credential[]) => {
+      .subscribe((response: CredentialRo[]) => {
         this.notifyCertificatesUpdated(response)
       }, error => {
         this.alertService.error(error.error?.errorDescription)
       });
   }
 
-  getUserCertificateCredentialObservable(credential: Credential) {
+  getUserCertificateCredentialObservable(credential: CredentialRo) {
     let user = this.getCurrentUser();
     if (!user) {
       return null;
     }
-    return this.http.get<Credential>(SmpConstants.REST_PUBLIC_USER_CERTIFICATE_CREDENTIAL
+    return this.http.get<CredentialRo>(SmpConstants.REST_PUBLIC_USER_CERTIFICATE_CREDENTIAL
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, user.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID, credential.credentialId));
   }
@@ -189,23 +189,23 @@ export class UserService {
     this.userProfileDataUpdateSubject.next(res);
   }
 
-  notifyPwdStatusUpdated(res: Credential) {
+  notifyPwdStatusUpdated(res: CredentialRo) {
     this.userPwdCredentialsUpdateSubject.next(res);
   }
 
-  notifyAccessTokensUpdated(res: Credential[]) {
+  notifyAccessTokensUpdated(res: CredentialRo[]) {
     this.userAccessTokenCredentialsUpdateSubject.next(res);
   }
 
-  notifyAccessTokenUpdated(res: Credential) {
+  notifyAccessTokenUpdated(res: CredentialRo) {
     this.userAccessTokenCredentialUpdateSubject.next(res);
   }
 
-  notifyCertificatesUpdated(res: Credential[]) {
+  notifyCertificatesUpdated(res: CredentialRo[]) {
     this.userCertificateCredentialsUpdateSubject.next(res);
   }
 
-  notifyCertificateUpdated(res: Credential) {
+  notifyCertificateUpdated(res: CredentialRo) {
     this.userCertificateCredentialUpdateSubject.next(res);
   }
 
@@ -214,24 +214,24 @@ export class UserService {
     return this.userProfileDataUpdateSubject.asObservable();
   }
 
-  onPwdCredentialsUpdateEvent(): Observable<Credential> {
+  onPwdCredentialsUpdateEvent(): Observable<CredentialRo> {
     return this.userPwdCredentialsUpdateSubject.asObservable();
   }
 
 
-  onAccessTokenCredentialsUpdateSubject(): Observable<Credential[]> {
+  onAccessTokenCredentialsUpdateSubject(): Observable<CredentialRo[]> {
     return this.userAccessTokenCredentialsUpdateSubject.asObservable();
   }
 
-  onAccessTokenCredentialUpdateSubject(): Observable<Credential> {
+  onAccessTokenCredentialUpdateSubject(): Observable<CredentialRo> {
     return this.userAccessTokenCredentialUpdateSubject.asObservable();
   }
 
-  onCertificateCredentiasUpdateSubject(): Observable<Credential[]> {
+  onCertificateCredentiasUpdateSubject(): Observable<CredentialRo[]> {
     return this.userCertificateCredentialsUpdateSubject.asObservable();
   }
 
-  onCertificateCredentialUpdateSubject(): Observable<Credential> {
+  onCertificateCredentialUpdateSubject(): Observable<CredentialRo> {
     return this.userCertificateCredentialUpdateSubject.asObservable();
   }
 

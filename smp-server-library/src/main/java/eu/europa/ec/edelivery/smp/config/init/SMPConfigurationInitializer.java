@@ -14,13 +14,15 @@ import javax.persistence.EntityManager;
 import java.io.File;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
-import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.SECURITY_FOLDER;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.SMP_MODE_DEVELOPMENT;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 
 /**
+ * Class initialize and validates the DomiSMP configurations. For the first time SMPConfigurationInitializer reads all
+ * properties from external configuration properties and stores them into the database.
+ *
  * @author Joze Rihtarsic
  * @since 4.2
  */

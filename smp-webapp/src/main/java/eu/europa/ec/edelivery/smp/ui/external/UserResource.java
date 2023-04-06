@@ -255,13 +255,13 @@ public class UserResource {
 
     protected NavigationTreeNodeRO createSystemAdminNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("system-settings", "System settings", "admin_panel_settings", "system-settings");
+        node.addChild(new NavigationTreeNodeRO("system-admin-extension", "Extensions", "extension", "extension"));
         node.addChild(new NavigationTreeNodeRO("system-admin-domain", "Domains", "domain", "domain"));
         node.addChild(new NavigationTreeNodeRO("system-admin-user", "Users", "people", "user"));
         node.addChild(new NavigationTreeNodeRO("system-admin-properties", "Properties", "properties", "properties"));
        // node.addChild(new NavigationTreeNodeRO("system-admin-authentication", "Authentication", "shield", "authentication"));
         node.addChild(new NavigationTreeNodeRO("system-admin-keystore", "Keystore", "key", "keystore"));
         node.addChild(new NavigationTreeNodeRO("system-admin-truststore", "Truststore", "article", "truststore"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-extension", "Extensions", "extension", "extension"));
         node.addChild(new NavigationTreeNodeRO("system-admin-alert", "Alerts", "notifications", "alert"));
         return node;
     }

@@ -35,7 +35,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.TypedQuery;
 import java.io.File;
@@ -47,7 +49,10 @@ import java.util.stream.Collectors;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
 
-
+/**
+ * @author Joze Rihtarsic
+ * @since 4.2
+ */
 @Repository(value = "configurationDao")
 public class ConfigurationDao extends BaseDao<DBConfiguration> implements InitializingBean {
 
@@ -57,20 +62,32 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
     Map<String, Object> cachedPropertyValues = new HashMap();
     OffsetDateTime lastUpdate = null;
     OffsetDateTime initiateDate = null;
-    ApplicationContext applicationContext;
+
+
     boolean serverRestartNeeded = false;
 
-    SMPEnvironmentProperties environmentProperties = SMPEnvironmentProperties.getInstance();
+    protected final SMPEnvironmentProperties environmentProperties = SMPEnvironmentProperties.getInstance();
+    protected final ApplicationContext applicationContext;
+    protected PlatformTransactionManager txManager;
 
-    public ConfigurationDao(ApplicationContext applicationContext) {
+    public ConfigurationDao(ApplicationContext applicationContext, PlatformTransactionManager txManager) {
         this.applicationContext = applicationContext;
+        this.txManager = txManager;
     }
 
-
-    @Transactional
-    public void afterPropertiesSet() throws Exception {
-        LOG.info("RELOAD PROPERTIES");
-        applicationContext.getBean(ConfigurationDao.class).reloadPropertiesFromDatabase();
+    /**
+     * Validate and initialize database configurations
+     */
+    public void afterPropertiesSet() {
+        LOG.debug("Reload DomiSMP properties");
+        // Transaction might not be yet initialized (@Transactional on this method does not help :) ).
+        // Wrap the method to TransactionTemplate to make possible database property initialization
+        TransactionTemplate tmpl = new TransactionTemplate(txManager);
+        tmpl.execute(status -> {
+            LOG.info("Start initial (re)load of the DomiSMP properties with transaction status object [{}]",  status);
+            reloadPropertiesFromDatabasePrivate();
+            return null;
+        });
     }
 
     /**
@@ -206,12 +223,13 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
     public void reloadPropertiesFromDatabase() {
         reloadPropertiesFromDatabasePrivate();
     }
+
     protected void reloadPropertiesFromDatabasePrivate() {
         if (!isRefreshProcess) {
             isRefreshProcess = true;
             DatabaseProperties newProperties = new DatabaseProperties(memEManager);
             if (newProperties.isEmpty()) {
-                LOG.info("INITIALIZE DATABASE PROPERTIES");
+                LOG.info("Database property table is empty! INITIALIZE DATABASE PROPERTIES");
                 SMPConfigurationInitializer configurationInitializer = new SMPConfigurationInitializer(memEManager, environmentProperties);
                 newProperties = configurationInitializer.getDatabaseProperties();
                 newProperties.setLastUpdate(OffsetDateTime.now());
@@ -303,7 +321,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
 
     protected void updateListener(String name, PropertyUpdateListener listener) {
         LOG.debug("updateListener [{}]", name);
-        Map<SMPPropertyEnum, Object> mapProp = new HashMap<>();
+        EnumMap<SMPPropertyEnum, Object> mapProp = new EnumMap<>(SMPPropertyEnum.class);
         for (SMPPropertyEnum prop : listener.handledProperties()) {
             LOG.debug("Put property [{}]", prop.getProperty());
             if (this.cachedPropertyValues == null) {
@@ -367,7 +385,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
 
         // check SML integration data
         Boolean isSMLEnabled = (Boolean) propertyValues.get(SML_ENABLED.getProperty());
-        if (isSMLEnabled!=null && isSMLEnabled.booleanValue()) {
+        if (isSMLEnabled != null && isSMLEnabled.booleanValue()) {
             // if SML is enabled then following properties are mandatory
             validateIfExists(propertyValues, SML_URL);
             validateIfExists(propertyValues, SML_PHYSICAL_ADDRESS);

@@ -19,10 +19,15 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author Joze Rihtarsic
+ * @since 5.0
+ */
+
 @Service
 public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainService.class);
+
     @Autowired
     DomainDao domainDao;
 
@@ -45,6 +50,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
      * @return
      */
     @Transactional
+    @Override
     public ServiceResult<DomainRO> getTableList(int page, int pageSize,
                                                 String sortField,
                                                 String sortOrder, Object filter) {
@@ -55,7 +61,6 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
     @Transactional
     public void updateDomainList(List<DomainRO> lst) {
-        boolean suc = false;
         for (DomainRO dRo : lst) {
             if (dRo.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
                 DBDomain dDb = convertFromRo(dRo);

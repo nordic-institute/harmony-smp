@@ -77,6 +77,24 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
             throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef with url context:" + resourceDeftUrlSegment));
         }
     }
+    /**
+     * Returns the ResourceDef by url path segment.
+     * Returns the ResourceDef or Optional.empty() if there is no ResourceDef.
+     *
+     * @return the only single record for ResourceDef url segment or empty value
+     * @throws IllegalStateException if more than one ResourceDef is returned
+     */
+    public Optional<DBResourceDef> getResourceDefByIdentifier(String resourceIdentifier) {
+        try {
+            TypedQuery<DBResourceDef> query = memEManager.createNamedQuery(QUERY_RESOURCE_DEF_BY_IDENTIFIER, DBResourceDef.class);
+            query.setParameter(PARAM_IDENTIFIER, resourceIdentifier);
+            return Optional.of(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef with identifier:" + resourceIdentifier));
+        }
+    }
 
     /**
      * Returns the DBResourceDef by the resource definition code.

@@ -22,7 +22,7 @@ import {CertificateService} from './system-settings/user/certificate.service';
 import {ClearInvalidDirective} from './custom-date/clear-invalid.directive';
 import {ColumnPickerComponent} from './common/column-picker/column-picker.component';
 import {ConfirmationDialogComponent} from './common/dialogs/confirmation-dialog/confirmation-dialog.component';
-import {DataPanelComponent} from "./user-settings/data-panel/data-panel.component";
+import {DataPanelComponent} from "./common/data-panel/data-panel.component";
 import {DatePipe} from './custom-date/date.pipe';
 import {DefaultPasswordDialogComponent} from './security/default-password-dialog/default-password-dialog.component';
 import {DialogComponent} from './common/dialogs/dialog/dialog.component';
@@ -105,6 +105,12 @@ import {UserProfileComponent} from "./user-settings/user-profile/user-profile.co
 import {UserService} from './system-settings/user/user.service';
 import {routing} from './app.routes';
 import {ExtensionComponent} from "./system-settings/extension/extension.component";
+import {MatPaginatorModule} from "@angular/material/paginator";
+import {ExtensionPanelComponent} from "./system-settings/extension/extension-panel/extension-panel.component";
+import {
+  ResourceDetailsDialogComponent
+} from "./system-settings/extension/resource-details-dialog/resource-details-dialog.component";
+import {ExtensionService} from "./system-settings/extension/extension.service";
 
 
 @NgModule({
@@ -134,6 +140,7 @@ import {ExtensionComponent} from "./system-settings/extension/extension.componen
     DomainSelectorComponent,
     ExpiredPasswordDialogComponent,
     ExtensionComponent,
+    ExtensionPanelComponent,
     FooterComponent,
     InformationDialogComponent,
     IsAuthorized,
@@ -146,6 +153,7 @@ import {ExtensionComponent} from "./system-settings/extension/extension.componen
     PasswordChangeDialogComponent,
     PropertyComponent,
     PropertyDetailsDialogComponent,
+    ResourceDetailsDialogComponent,
     RowLimiterComponent,
     SaveDialogComponent,
     SearchTableComponent,
@@ -187,6 +195,7 @@ import {ExtensionComponent} from "./system-settings/extension/extension.componen
     MatListModule,
     MatMenuModule,
     MatNativeDateModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
     MatSelectModule,
     MatSidenavModule,
@@ -211,6 +220,7 @@ import {ExtensionComponent} from "./system-settings/extension/extension.componen
     DirtyGuard,
     DomainService,
     DownloadService,
+    ExtensionService,
     GlobalLookups,
     HttpEventService,
     KeystoreService,

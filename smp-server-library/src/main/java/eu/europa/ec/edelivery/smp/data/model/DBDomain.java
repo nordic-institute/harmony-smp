@@ -60,6 +60,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOMAIN_CODE;
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
+    private static final long serialVersionUID = 1008583888835630004L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOMAIN_SEQ")
     @GenericGenerator(name = "SMP_DOMAIN_SEQ", strategy = "native")

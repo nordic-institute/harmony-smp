@@ -2,23 +2,36 @@
 
 @mixin set-component-colors($theme) {
 
-  .smp-breadcrumb-item {
-    color: linear-gradient(to right, rgba(0, 0, 0, 0) 150px, smp.get-theme-color($theme, primary, 500-contrast));
+  .smp-breadcrumb-item-selected {
+    background-color: smp.get-theme-color($theme, primary, 600) !important;
+
   }
+
   .smp-breadcrumb-item:hover {
-    color: linear-gradient(to right, rgba(0, 0, 0, 0) 150px, smp.get-theme-color($theme, accent, 500-lighter-contrast));
+    color: smp.get-theme-color($theme, primary, 500-contrast);
   }
   .smp-breadcrumb-item:hover .smp-breadcrumb-arrow {
-    background-color: smp.get-theme-color($theme, primary, lighter);
-    border-color: smp.get-theme-color($theme, primary,  50-lighter);
+    background-color: smp.get-theme-color($theme, primary, 300);
+
   }
   .smp-breadcrumb-item .smp-breadcrumb-arrow {
-    background-color: smp.get-theme-color($theme, primary);
-    border-color: smp.get-theme-color($theme, primary);
+    background-color: smp.get-theme-color($theme, primary, 0.2);
+
   }
-  .smp-breadcrumb-arrow {
-    border-color: smp.get-theme-color($theme, primary, 50);
+  .smp-breadcrumb-item .smp-breadcrumb-arrow {
+    background-color: smp.get-theme-color($theme, primary, 100) ;
+    border-left: 1px solid smp.get-theme-color($theme, primary, 0.5);
+    border-right: 1px solid smp.get-theme-color($theme, primary, 0.5);
   }
+
+  .smp-breadcrumb-arrow.bottom {
+    border-bottom: 1px solid smp.get-theme-color($theme, primary, 0.5);
+  }
+
+  .smp-breadcrumb-arrow.top {
+    border-top: 1px solid smp.get-theme-color($theme, primary, 0.5);
+  }
+
 
 
 }

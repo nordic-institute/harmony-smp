@@ -1,9 +1,7 @@
 package eu.europa.ec.smp.spi;
 
-import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -17,7 +15,6 @@ import java.util.List;
  */
 @Service
 public class OasisSMPExtension implements ExtensionInfo {
-    private static final Logger LOG = LoggerFactory.getLogger(OasisSMPExtension.class);
 
     OasisSMPServiceGroup10 oasisSMPServiceGroup10;
 
@@ -28,7 +25,7 @@ public class OasisSMPExtension implements ExtensionInfo {
 
     @Override
     public String identifier() {
-        return "edelivery-oasis-smp";
+        return "edelivery-oasis-smp-extension";
     }
 
     @Override
@@ -54,5 +51,15 @@ public class OasisSMPExtension implements ExtensionInfo {
     @Override
     public List<PayloadValidatorSpi> payloadValidators() {
         return Collections.emptyList();
+    }
+
+
+    @Override
+    public String toString() {
+        return "OasisSMPExtension{" +
+                "identifier=" + identifier() +
+                "name=" + name() +
+                "version=" + version() +
+                '}';
     }
 }

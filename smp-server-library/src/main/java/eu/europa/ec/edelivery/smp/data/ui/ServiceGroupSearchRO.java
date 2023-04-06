@@ -14,7 +14,7 @@ import java.util.List;
 public class ServiceGroupSearchRO extends BaseRO {
 
 
-    private static final long serialVersionUID = -7523221767041516157L;
+    private static final long serialVersionUID = 9008583888835630016L;
     private Long id;
     private String participantIdentifier;
     private String participantScheme;

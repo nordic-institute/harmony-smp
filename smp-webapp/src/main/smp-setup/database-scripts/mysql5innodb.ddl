@@ -284,7 +284,7 @@
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         DESCRIPTION varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        EXTENSION_TYPE varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         IMPLEMENTATION_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         VERSION varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -298,7 +298,7 @@
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
         DESCRIPTION varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
-        EXTENSION_TYPE varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         IMPLEMENTATION_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         VERSION varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -397,6 +397,7 @@
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         DESCRIPTION varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        HANDLER_IMPL_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -412,6 +413,7 @@
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
         DESCRIPTION varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        HANDLER_IMPL_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -499,6 +501,7 @@
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
         DESCRIPTION varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        HANDLER_IMPL_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -514,6 +517,7 @@
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
         DESCRIPTION varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        HANDLER_IMPL_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         IDENTIFIER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         MIME_TYPE varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -574,6 +578,9 @@ create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_EXTENSION 
        add constraint SMP_EXT_UNIQ_NAME_IDX unique (IMPLEMENTATION_NAME);
+
+    alter table SMP_EXTENSION 
+       add constraint UK_p4vfhgs7fvuo6uebjsuqxrglg unique (IDENTIFIER);
 
     alter table SMP_GROUP 
        add constraint SMP_GRP_UNIQ_DOM_IDX unique (NAME, FK_DOMAIN_ID);

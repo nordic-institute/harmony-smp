@@ -1,7 +1,7 @@
 import {Component,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
 import {UserService} from "../../system-settings/user/user.service";
-import {Credential} from "../../security/credential.model";
+import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/model/entity-status.model";
@@ -13,29 +13,29 @@ import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/
   styleUrls: ['./user-access-tokens.component.scss']
 })
 export class UserAccessTokensComponent {
-  accessTokens: Credential[] = [];
+  accessTokens: CredentialRo[] = [];
 
   constructor(private securityService: SecurityService,
               private userService: UserService,
               public dialog: MatDialog) {
 
 
-    this.userService.onAccessTokenCredentialsUpdateSubject().subscribe((credentials: Credential[]) => {
+    this.userService.onAccessTokenCredentialsUpdateSubject().subscribe((credentials: CredentialRo[]) => {
       this.updateAccessTokenCredentials(credentials);
     });
 
-    this.userService.onAccessTokenCredentialUpdateSubject().subscribe((credential: Credential) => {
+    this.userService.onAccessTokenCredentialUpdateSubject().subscribe((credential: CredentialRo) => {
       this.updateAccessTokenCredential(credential);
     });
 
     this.userService.getUserAccessTokenCredentials();
   }
 
-  public updateAccessTokenCredentials(userAccessTokens: Credential[]) {
+  public updateAccessTokenCredentials(userAccessTokens: CredentialRo[]) {
     this.accessTokens = userAccessTokens;
   }
 
-  public updateAccessTokenCredential(userAccessToken: Credential) {
+  public updateAccessTokenCredential(userAccessToken: CredentialRo) {
     // remove the access token
     if (userAccessToken.status == EntityStatus.REMOVED) {
       this.accessTokens = this.accessTokens.filter(item => item.credentialId !== userAccessToken.credentialId)
@@ -55,11 +55,11 @@ export class UserAccessTokensComponent {
 
   }
 
-  public trackListItem(index: number, credential: Credential) {
+  public trackListItem(index: number, credential: CredentialRo) {
     return credential.credentialId;
   }
 
-  public onDeleteItemClicked(credential: Credential) {
+  public onDeleteItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete Access token",
@@ -81,7 +81,7 @@ export class UserAccessTokensComponent {
     } ).afterClosed();
   }
 
-  public onSaveItemClicked(credential: Credential) {
+  public onSaveItemClicked(credential: CredentialRo) {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
@@ -95,11 +95,11 @@ export class UserAccessTokensComponent {
     })
   }
 
-  private deleteAccessToken(credential: Credential) {
+  private deleteAccessToken(credential: CredentialRo) {
     this.userService.deleteUserAccessTokenCredential(credential);
   }
 
-  private updateAccessToken(credential: Credential) {
+  private updateAccessToken(credential: CredentialRo) {
     this.userService.updateUserAccessTokenCredential(credential);
   }
 

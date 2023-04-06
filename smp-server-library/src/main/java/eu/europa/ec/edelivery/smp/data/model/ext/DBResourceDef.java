@@ -28,21 +28,19 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         indexes = {@Index(name = "SMP_RESDEF_UNIQ_EXTID_CODE_IDX", columnList = "FK_EXTENSION_ID,IDENTIFIER", unique = true)
 })
 @org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE_DEF", comment = "SMP extension resource definitions")
-@NamedQueries({
-        @NamedQuery(name = QUERY_RESOURCE_DEF_ALL, query = "SELECT d FROM DBResourceDef d order by d.id asc"),
-        @NamedQuery(name = QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION, query = "SELECT d FROM DBResourceDef d WHERE d.extension.id = :extension_id AND d.identifier = :identifier"),
-        @NamedQuery(name = QUERY_RESOURCE_DEF_BY_DOMAIN, query = "SELECT d FROM DBResourceDef d JOIN d.domainResourceDefs dr where dr.domain.id = :domain_id order by d.id asc"),
-        @NamedQuery(name = QUERY_RESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBResourceDef d WHERE d.urlSegment = :url_segment"),
-})
 
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "DBResourceDefDeleteValidation.validateDefinitionUsage",
-                resultSetMapping = "DBResourceDefDeleteValidationMapping",
-                query = "select D.ID as id, D.NAME as name, COUNT(RS.ID) as useCount " +
-                        "   from SMP_RESOURCE_DEF D INNER JOIN SMP_RESOURCE RS ON (D.ID =RS.FK_RESOURCE_DEF_ID) " +
-                        "   WHERE D.ID IN (:idList)" +
-                        "      GROUP BY D.ID, D.NAME"),
-})
+@NamedQuery(name = QUERY_RESOURCE_DEF_ALL, query = "SELECT d FROM DBResourceDef d order by d.id asc")
+@NamedQuery(name = QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION, query = "SELECT d FROM DBResourceDef d WHERE d.extension.id = :extension_id AND d.identifier = :identifier")
+@NamedQuery(name = QUERY_RESOURCE_DEF_BY_DOMAIN, query = "SELECT d FROM DBResourceDef d JOIN d.domainResourceDefs dr where dr.domain.id = :domain_id order by d.id asc")
+@NamedQuery(name = QUERY_RESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBResourceDef d WHERE d.urlSegment = :url_segment")
+@NamedQuery(name = QUERY_RESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBResourceDef d WHERE d.identifier = :identifier")
+
+@NamedNativeQuery(name = "DBResourceDefDeleteValidation.validateDefinitionUsage",
+        resultSetMapping = "DBResourceDefDeleteValidationMapping",
+        query = "select D.ID as id, D.NAME as name, COUNT(RS.ID) as useCount " +
+                "   from SMP_RESOURCE_DEF D INNER JOIN SMP_RESOURCE RS ON (D.ID =RS.FK_RESOURCE_DEF_ID) " +
+                "   WHERE D.ID IN (:idList)" +
+                "      GROUP BY D.ID, D.NAME")
 @SqlResultSetMapping(name = "DBResourceDefDeleteValidationMapping", classes = {
         @ConstructorResult(targetClass = DBResourceDefDeleteValidation.class,
                 columns = {@ColumnResult(name = "id", type = Long.class),
@@ -50,6 +48,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
                         @ColumnResult(name = "useCount", type = Integer.class)})
 })
 public class DBResourceDef extends BaseEntity {
+    private static final long serialVersionUID = 1008583888835630001L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_RESOURCE_DEF_SEQ")
@@ -74,6 +73,9 @@ public class DBResourceDef extends BaseEntity {
     @ColumnDescription(comment = "resources are published under url_segment.")
     String urlSegment;
 
+    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_256 )
+    private String handlerImplementationName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FK_EXTENSION_ID")
     private DBExtension extension;
@@ -83,14 +85,14 @@ public class DBResourceDef extends BaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    List<DBSubresourceDef> subresources = new ArrayList<>();
+    private List<DBSubresourceDef> subresources = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "resourceDef",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    List<DBDomainResourceDef> domainResourceDefs = new ArrayList<>();
+    private List<DBDomainResourceDef> domainResourceDefs = new ArrayList<>();
 
 
     @Override
@@ -150,6 +152,13 @@ public class DBResourceDef extends BaseEntity {
         this.mimeType = mimeType;
     }
 
+    public String getHandlerImplementationName() {
+        return handlerImplementationName;
+    }
+
+    public void setHandlerImplementationName(String handlerImplementationName) {
+        this.handlerImplementationName = handlerImplementationName;
+    }
 
     public List<DBSubresourceDef> getSubresources() {
         if (subresources == null) {
@@ -172,6 +181,7 @@ public class DBResourceDef extends BaseEntity {
                 ", identifier='" + identifier + '\'' +
                 ", name='" + name + '\'' +
                 ", urlSegment='" + urlSegment + '\'' +
+                ", handlerImplementationName='" + handlerImplementationName + '\'' +
                 '}';
     }
 
@@ -190,8 +200,7 @@ public class DBResourceDef extends BaseEntity {
                 .append(description, that.description)
                 .append(mimeType, that.mimeType)
                 .append(urlSegment, that.urlSegment)
-                .append(extension, that.extension)
-                .append(subresources, that.subresources)
+                .append(handlerImplementationName, that.handlerImplementationName)
                 .isEquals();
     }
 

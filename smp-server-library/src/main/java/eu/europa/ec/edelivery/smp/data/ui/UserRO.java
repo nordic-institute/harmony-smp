@@ -14,37 +14,37 @@ import java.util.Collection;
  */
 public class UserRO extends BaseRO {
 
-    static final long serialVersionUID = 2821447495333163882L;
+    private static final long serialVersionUID = 9008583888835630023L;
 
-    String userId;
-    String username;
-    boolean active = true;
-    ApplicationRoleType role;
-    String emailAddress;
-    String fullName;
-    String smpTheme;
+    private String userId;
+    private String username;
+    private boolean active = true;
+    private ApplicationRoleType role;
+    private String emailAddress;
+    private String fullName;
+    private String smpTheme;
     // operational UI data
-    boolean casAuthenticated = false;
-    String casUserDataUrl;
+    private boolean casAuthenticated = false;
+    private String casUserDataUrl;
 
 
-    OffsetDateTime passwordExpireOn;
-    Integer sequentialLoginFailureCount;
-    OffsetDateTime lastFailedLoginAttempt;
-    OffsetDateTime suspendedUtil;
-    String accessTokenId;
-    OffsetDateTime accessTokenExpireOn;
-    Integer sequentialTokenLoginFailureCount;
-    OffsetDateTime lastTokenFailedLoginAttempt;
-    OffsetDateTime tokenSuspendedUtil;
+    private OffsetDateTime passwordExpireOn;
+    private Integer sequentialLoginFailureCount;
+    private OffsetDateTime lastFailedLoginAttempt;
+    private OffsetDateTime suspendedUtil;
+    private String accessTokenId;
+    private OffsetDateTime accessTokenExpireOn;
+    private Integer sequentialTokenLoginFailureCount;
+    private OffsetDateTime lastTokenFailedLoginAttempt;
+    private OffsetDateTime tokenSuspendedUtil;
 
-    Collection<SMPAuthority> authorities;
+    private Collection<SMPAuthority> authorities;
 
-    CertificateRO certificate;
-    int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
-    boolean passwordExpired = false;
-    boolean showPasswordExpirationWarning = false;
-    boolean forceChangeExpiredPassword = false;
+    private CertificateRO certificate;
+    private int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
+    private boolean passwordExpired = false;
+    private boolean showPasswordExpirationWarning = false;
+    private boolean forceChangeExpiredPassword = false;
 
 
     /**
