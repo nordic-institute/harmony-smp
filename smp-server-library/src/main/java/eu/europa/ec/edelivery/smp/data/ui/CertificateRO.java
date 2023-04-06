@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
  */
 public class CertificateRO extends BaseRO {
 
-    private static final long serialVersionUID = -4971552086560325302L;
+    private static final long serialVersionUID = -9008583888835630004L;
 
     private String certificateId;
     private String alias;
@@ -23,9 +23,6 @@ public class CertificateRO extends BaseRO {
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;
 
-    public CertificateRO() {
-    }
-
     public String getAlias() {
         return alias;
     }
@@ -34,16 +31,12 @@ public class CertificateRO extends BaseRO {
         this.alias = alias;
     }
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
     }
 
     public String getCertificateId() {
         return certificateId;
-    }
-
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
     }
 
     public String getSubject() {

@@ -22,8 +22,7 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import java.util.Objects;
 
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF;
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_SUBRESOURCE_BY_RESOURCE_SUBRESDEF;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 
 @Entity
@@ -34,24 +33,17 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_SUBRESOURCE_B
                 @Index(name = "SMP_SMD_DOC_SCH_IDX", columnList = "IDENTIFIER_SCHEME", unique = false)
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_SUBRESOURCE", comment = "Service metadata")
-@NamedQueries({
-        @NamedQuery(name = QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF, query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id " +
-                " AND d.subresourceDef.urlSegment=:url_segment" +
-                " AND d.identifierValue = :identifier_value " +
-                " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
-                " OR d.identifierScheme = :identifier_scheme)"
-        ),
-        @NamedQuery(name = QUERY_SUBRESOURCE_BY_RESOURCE_SUBRESDEF , query = "SELECT d FROM DBSubresource d WHERE d.subresourceDef.identifier = :subresource_def_identifier " +
-                " AND d.resource.identifierValue=:resource_identifier " +
-                " AND d.resource.identifierScheme=:resource_scheme order by id asc"
-        ),
-
-
-
-        @NamedQuery(name = "DBSubresource.deleteById", query = "DELETE FROM DBSubresource d WHERE d.id = :id"),
-
-})
-
+@NamedQuery(name = QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF, query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id " +
+        " AND d.subresourceDef.urlSegment=:url_segment" +
+        " AND d.identifierValue = :identifier_value " +
+        " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR d.identifierScheme = :identifier_scheme)"
+)
+@NamedQuery(name = QUERY_SUBRESOURCE_BY_RESOURCE_SUBRESDEF , query = "SELECT d FROM DBSubresource d WHERE d.subresourceDef.identifier = :subresource_def_identifier " +
+        " AND d.resource.identifierValue=:resource_identifier " +
+        " AND d.resource.identifierScheme=:resource_scheme order by id asc"
+)
+@NamedQuery(name = "DBSubresource.deleteById", query = "DELETE FROM DBSubresource d WHERE d.id = :id")
 public class DBSubresource extends BaseEntity {
 
     @Id

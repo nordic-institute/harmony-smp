@@ -8,7 +8,7 @@ import java.io.Serializable;
  */
 public class LoginRO implements Serializable {
 
-    private static final long serialVersionUID = -3841558544088527974L;
+    private static final long serialVersionUID = 9008583888835630010L;
 
     private String username;
 

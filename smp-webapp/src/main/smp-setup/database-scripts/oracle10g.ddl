@@ -452,7 +452,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
         DESCRIPTION varchar2(512 char),
-        EXTENSION_TYPE varchar2(512 char),
+        IDENTIFIER varchar2(128 char),
         IMPLEMENTATION_NAME varchar2(512 char),
         NAME varchar2(128 char),
         VERSION varchar2(128 char),
@@ -472,7 +472,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
         DESCRIPTION varchar2(512 char),
-        EXTENSION_TYPE varchar2(512 char),
+        IDENTIFIER varchar2(128 char),
         IMPLEMENTATION_NAME varchar2(512 char),
         NAME varchar2(128 char),
         VERSION varchar2(128 char),
@@ -589,6 +589,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
         DESCRIPTION varchar2(512 char),
+        HANDLER_IMPL_NAME varchar2(512 char),
         IDENTIFIER varchar2(128 char),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(128 char),
@@ -613,6 +614,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
         DESCRIPTION varchar2(512 char),
+        HANDLER_IMPL_NAME varchar2(512 char),
         IDENTIFIER varchar2(128 char),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(128 char),
@@ -712,6 +714,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
         DESCRIPTION varchar2(128 char),
+        HANDLER_IMPL_NAME varchar2(512 char),
         IDENTIFIER varchar2(128 char),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(128 char),
@@ -736,6 +739,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
         DESCRIPTION varchar2(128 char),
+        HANDLER_IMPL_NAME varchar2(512 char),
         IDENTIFIER varchar2(128 char),
         MIME_TYPE varchar2(128 char),
         NAME varchar2(128 char),
@@ -820,6 +824,9 @@ create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_EXTENSION 
        add constraint SMP_EXT_UNIQ_NAME_IDX unique (IMPLEMENTATION_NAME);
+
+    alter table SMP_EXTENSION 
+       add constraint UK_p4vfhgs7fvuo6uebjsuqxrglg unique (IDENTIFIER);
 
     alter table SMP_GROUP 
        add constraint SMP_GRP_UNIQ_DOM_IDX unique (NAME, FK_DOMAIN_ID);

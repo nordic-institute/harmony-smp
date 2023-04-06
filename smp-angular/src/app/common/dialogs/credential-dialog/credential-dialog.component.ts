@@ -4,7 +4,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {SmpConstants} from "../../../smp.constants";
 import {AccessTokenRo} from "../access-token-generation-dialog/access-token-ro.model";
 import {UserService} from "../../../system-settings/user/user.service";
-import {Credential} from "../../../security/credential.model";
+import {CredentialRo} from "../../../security/credential.model";
 import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
 import {CertificateService} from "../../../system-settings/user/certificate.service";
 
@@ -171,8 +171,8 @@ export class CredentialDialogComponent {
     });
   }
 
-  get initCredential(): Credential {
-    let credential: Credential = {
+  get initCredential(): CredentialRo {
+    let credential: CredentialRo = {
       name: "",
       active: this.credentialForm.controls['active'].value,
       description: this.credentialForm.controls['description'].value,

@@ -1,7 +1,7 @@
 import {Component,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
 import {UserService} from "../../system-settings/user/user.service";
-import {Credential} from "../../security/credential.model";
+import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/model/entity-status.model";
@@ -14,28 +14,28 @@ import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/
   styleUrls: ['./user-certificates.component.scss']
 })
 export class UserCertificatesComponent {
-  certificates: Credential[] = [];
+  certificates: CredentialRo[] = [];
 
   constructor(private securityService: SecurityService,
               private userService: UserService,
               public dialog: MatDialog) {
 
 
-    this.userService.onCertificateCredentiasUpdateSubject().subscribe((credentials: Credential[]) => {
+    this.userService.onCertificateCredentiasUpdateSubject().subscribe((credentials: CredentialRo[]) => {
       this.updateCredentials(credentials);
     });
 
-    this.userService.onCertificateCredentialUpdateSubject().subscribe((credential: Credential) => {
+    this.userService.onCertificateCredentialUpdateSubject().subscribe((credential: CredentialRo) => {
       this.updateCredential(credential);
     });
     this.userService.getUserCertificateCredentials();
   }
 
-  public updateCredentials(certificates: Credential[]) {
+  public updateCredentials(certificates: CredentialRo[]) {
     this.certificates = certificates;
   }
 
-  public updateCredential(certificate: Credential) {
+  public updateCredential(certificate: CredentialRo) {
     // remove the access token
     if (certificate.status == EntityStatus.REMOVED) {
       this.certificates = this.certificates.filter(item => item.credentialId !== certificate.credentialId)
@@ -54,11 +54,11 @@ export class UserCertificatesComponent {
     }
   }
 
-  public trackListItem(index: number, credential: Credential) {
+  public trackListItem(index: number, credential: CredentialRo) {
     return credential.credentialId;
   }
 
-  public onDeleteItemClicked(credential: Credential) {
+  public onDeleteItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete Access token",
@@ -80,8 +80,8 @@ export class UserCertificatesComponent {
     } ).afterClosed();
 
   }
-  public onShowItemClicked(credential: Credential) {
-    this.userService.getUserCertificateCredentialObservable(credential).subscribe((response: Credential) => {
+  public onShowItemClicked(credential: CredentialRo) {
+    this.userService.getUserCertificateCredentialObservable(credential).subscribe((response: CredentialRo) => {
       this.dialog.open(CertificateDialogComponent, {
         data: {row: response.certificate}
       });
@@ -90,7 +90,7 @@ export class UserCertificatesComponent {
   }
 
 
-  public onSaveItemClicked(credential: Credential) {
+  public onSaveItemClicked(credential: CredentialRo) {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
@@ -104,11 +104,11 @@ export class UserCertificatesComponent {
     })
   }
 
-  private delete(credential: Credential) {
+  private delete(credential: CredentialRo) {
     this.userService.deleteUserCertificateCredential(credential);
   }
 
-  private update(credential: Credential) {
+  private update(credential: CredentialRo) {
     this.userService.updateUserCertificateCredential(credential);
   }
 }

@@ -275,13 +275,20 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   select(node: NavigationNode) {
+
     let targetNode =this.findLeaf(node);
     if (targetNode === this.selected) {
       console.log("Already selected skip");
       return
     }
     if (!!targetNode) {
+      if (this.selected) {
+        // unselect current valie
+        this.selected.selected = false;
+      }
+
       this.selected = targetNode
+      this.selected.selected = true;
       this.selectedPath = this.findPathForNode(this.selected, this.rootNode);
       this.selectedPathSubject.next(this.selectedPath);
       let navigationPath: string[] = this.getNavigationPath( this.selectedPath );
@@ -291,6 +298,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       this.selectedPathSubject.next(null);
     }
   }
+
 
   public reset() {
     this.rootNode = PUBLIC_NAVIGATION_TREE;

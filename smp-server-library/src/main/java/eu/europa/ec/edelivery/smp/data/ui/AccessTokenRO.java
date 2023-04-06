@@ -5,7 +5,7 @@ import java.time.OffsetDateTime;
 
 public class AccessTokenRO implements Serializable {
 
-    private static final long serialVersionUID = 2821447495333163882L;
+    private static final long serialVersionUID = 9008583888835630002L;
 
     private String identifier;
     private String value;

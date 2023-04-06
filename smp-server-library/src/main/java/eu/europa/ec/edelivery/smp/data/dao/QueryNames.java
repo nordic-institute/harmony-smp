@@ -15,7 +15,7 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_IMPLEMENTATION_NAME = "DBDomain.getByClassName";
     public static final String QUERY_DOMAIN_CODE = "DBDomain.getDomainByCode";
     public static final String QUERY_EXTENSION_ALL = "DBExtension.getAll";
-    public static final String QUERY_EXTENSION_IMPLEMENTATION_NAME = "DBExtension.getByImplementationName";
+    public static final String QUERY_EXTENSION_BY_IDENTIFIER = "DBExtension.getByIdentifier";
 
     public static final String QUERY_GROUP_ALL = "DBGroup.getAll";
     public static final String QUERY_GROUP_BY_DOMAIN = "DBGroup.getByDomain";
@@ -55,6 +55,7 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_DEF_ALL = "DBResourceDef.getAll";
     public static final String QUERY_RESOURCE_DEF_BY_DOMAIN = "DBResourceDef.getByDomain";
     public static final String QUERY_RESOURCE_DEF_URL_SEGMENT = "DBResourceDef.getResourceDefByURLSegment";
+    public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER = "DBResourceDef.getResourceDefByIdentifier";
     public static final String QUERY_RESOURCE_DEF_BY_IDENTIFIER_EXTENSION = "DBExtResourceDef.getByIdentifierExtension";
 
     public static final String QUERY_DOCUMENT_FOR_RESOURCE = "DBDocument.getForResource";

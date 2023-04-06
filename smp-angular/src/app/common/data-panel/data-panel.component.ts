@@ -11,16 +11,8 @@ import {
 })
 export class DataPanelComponent {
 
-  @Input() title: String;
-  @Input() text: String;
-
+  @Input() title: string;
+  @Input() text: string;
   @Input() labelColumnContent: TemplateRef<any>;
-
-
-
-
-  constructor() {
-
-  }
 
 }

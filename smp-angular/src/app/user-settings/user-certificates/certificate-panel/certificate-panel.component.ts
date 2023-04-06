@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {Credential} from "../../../security/credential.model";
+import {CredentialRo} from "../../../security/credential.model";
 
 
 @Component({
@@ -10,14 +10,14 @@ import {Credential} from "../../../security/credential.model";
 })
 export class CertificatePanelComponent {
 
-  @Output() onDeleteEvent: EventEmitter<Credential> = new EventEmitter();
-  @Output() onSaveEvent: EventEmitter<Credential> = new EventEmitter();
+  @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
+  @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
 
-  @Output() onShowCertificate: EventEmitter<Credential> = new EventEmitter();
+  @Output() onShowCertificate: EventEmitter<CredentialRo> = new EventEmitter();
 
   dateFormat: string = 'yyyy-MM-dd'
 
-  _credential: Credential;
+  _credential: CredentialRo;
 
   credentialForm: FormGroup;
 
@@ -32,7 +32,7 @@ export class CertificatePanelComponent {
     });
   }
 
-  get credential(): Credential {
+  get credential(): CredentialRo {
     this._credential.active = this.credentialForm.controls['active'].value
     this._credential.description = this.credentialForm.controls['description'].value
     this._credential.activeFrom = this.credentialForm.controls['activeFrom'].value
@@ -40,7 +40,7 @@ export class CertificatePanelComponent {
     return this._credential;
   }
 
-  @Input() set credential(value: Credential) {
+  @Input() set credential(value: CredentialRo) {
     this._credential = value;
     if (this._credential) {
       this.credentialForm.controls['active'].setValue(this._credential.active);

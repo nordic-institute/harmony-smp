@@ -1,41 +1,29 @@
-/* --- Select ---*/
-.mat-select{
-  padding:20px 0;
+
+#extension-panel {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  height: 100%;
+  padding: 0 2em;
+}
+#extension-filter {
+  width: 100%;
+  padding-top: 1em;
 }
 
-/* --- Button  ---*/
-.group-btn {
-   margin-top:20px;
- }
 
-#hiddenButtonId {
-  position: fixed;
+#extension-table {
+  width: 100%;
+  padding-top: 1em;
+
 }
 
-::ng-deep .missingKey {
-  text-decoration: line-through !important;
-  font-weight: bold;
-  color:red;
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
 }
 
-::ng-deep .domainWarning {
-  text-decoration: line-through !important;
-  font-weight: bold;
-  color:#c6c639;
-}
-
-::ng-deep .deleted  {
-  text-decoration: line-through !important;
-  font-weight: bold;
-}
-::ng-deep .table-row-new  {
-
-  color: darkgreen !important;
-  font-weight: bold;
-}
-::ng-deep .table-row-updated  {
-  font-weight: bold;
-}
-::ng-deep .table-row  {
-  font-weight: normal;
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
 }

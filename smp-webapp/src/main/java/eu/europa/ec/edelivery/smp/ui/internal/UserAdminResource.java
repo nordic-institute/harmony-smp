@@ -44,7 +44,7 @@ public class UserAdminResource {
     }
 
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_USER})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
@@ -82,27 +82,6 @@ public class UserAdminResource {
         dres.getListIds().addAll(query.stream().map(id -> SessionSecurityUtils.encryptedEntityId(id)).collect(Collectors.toList()));
         return uiUserService.validateDeleteRequest(dres);
     }
-
-    @PostMapping(path = "/{user-id}/generate-access-token-for/{update-user-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public AccessTokenRO generateAccessTokenForUser(
-            @PathVariable("user-id") String userId,
-            @PathVariable("update-user-id") String regenerateForUserId,
-            @RequestBody(required = false) String password) {
-        Long authorizedUserId = decryptEntityId(userId);
-        Long changeUserId = decryptEntityId(regenerateForUserId);
-        LOG.info("Generated access token for user:[{}] with id:[{}] by the system user with id [{}]", userId, regenerateForUserId, authorizedUserId);
-
-        SMPUserDetails currentUser = SessionSecurityUtils.getSessionUserDetails();
-        if (currentUser == null) {
-            throw new SessionAuthenticationException("User session expired!");
-        }
-
-        // no need to validate password if cas authenticated
-        return null;
-        //return uiUserService.generateAccessTokenForUser(authorizedUserId, changeUserId, password,!currentUser.isCasAuthenticated());
-    }
-
 
     @PutMapping(path = "/{user-id}/change-password-for/{update-user-id}", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})

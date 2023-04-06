@@ -48,14 +48,14 @@ public class ExtensionDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByImplementationName() {
-        String testName = "TestClassName";
+    public void getDomainByIdentifier() {
+        String testName = "TestClassNameIdentifier";
         DBExtension testData = TestDBUtils.createDBExtension(testName);
         testInstance.persistFlushDetach(testData);
         // test
-        Optional<DBExtension> res = testInstance.getExtensionByImplementationName(testName);
+        Optional<DBExtension> res = testInstance.getExtensionByIdentifier(testName);
         assertTrue(res.isPresent());
-        assertEquals(testName, res.get().getImplementationName());
+        assertEquals(testName, res.get().getIdentifier());
     }
 
 }

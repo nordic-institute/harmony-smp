@@ -28,6 +28,7 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_INTERNAL_PROPERTY = CONTEXT_PATH_INTERNAL + "property";
     public static final String CONTEXT_PATH_INTERNAL_APPLICATION = CONTEXT_PATH_INTERNAL + "application";
     public static final String CONTEXT_PATH_INTERNAL_USER = CONTEXT_PATH_INTERNAL + "user";
+    public static final String CONTEXT_PATH_INTERNAL_EXTENSION = CONTEXT_PATH_INTERNAL + "extension";
     public static final String CONTEXT_PATH_INTERNAL_KEYSTORE = CONTEXT_PATH_INTERNAL + "keystore";
     public static final String CONTEXT_PATH_INTERNAL_TRUSTSTORE = CONTEXT_PATH_INTERNAL + "truststore";
 
@@ -46,4 +47,6 @@ public class ResourceConstants {
     public static final String PARAM_QUERY_USER ="user";
     public static final String PARAM_QUERY_PROPERTY ="property";
 
+    private ResourceConstants() {
+    }
 }

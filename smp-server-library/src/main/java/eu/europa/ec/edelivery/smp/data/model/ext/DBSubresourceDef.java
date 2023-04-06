@@ -29,7 +29,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_ALL, query = "SELECT d FROM DBSubresourceDef d order by d.id asc")
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBSubresourceDef d WHERE d.identifier = :identifier")
 @NamedQuery(name = QUERY_SUBRESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBSubresourceDef d WHERE d.urlSegment = :url_segment")
+
 public class DBSubresourceDef extends BaseEntity {
+    private static final long serialVersionUID = 1008583888835630002L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_SUBRESOURCE_DEF_SEQ")
@@ -57,6 +59,8 @@ public class DBSubresourceDef extends BaseEntity {
     @ColumnDescription(comment = "Subresources are published under url_segment. It must be unique for resource type")
     private String urlSegment;
 
+    @Column(name = "HANDLER_IMPL_NAME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_256 )
+    private String handlerImplementationName;
 
     @Override
     public Long getId() {
@@ -115,6 +119,14 @@ public class DBSubresourceDef extends BaseEntity {
         this.urlSegment = urlSegment;
     }
 
+    public String getHandlerImplementationName() {
+        return handlerImplementationName;
+    }
+
+    public void setHandlerImplementationName(String handlerImplementationName) {
+        this.handlerImplementationName = handlerImplementationName;
+    }
+
     @Override
     public String toString() {
         return "DBSubresourceDef{" +
@@ -122,6 +134,7 @@ public class DBSubresourceDef extends BaseEntity {
                 ", identifier='" + identifier + '\'' +
                 ", name='" + name + '\'' +
                 ", urlSegment='" + urlSegment + '\'' +
+                ", handlerImplementationName='" + handlerImplementationName + '\'' +
                 '}';
     }
 
@@ -133,7 +146,15 @@ public class DBSubresourceDef extends BaseEntity {
 
         DBSubresourceDef that = (DBSubresourceDef) o;
 
-        return new EqualsBuilder().appendSuper(super.equals(o)).append(id, that.id).append(identifier, that.identifier).append(name, that.name).append(description, that.description).append(mimeType, that.mimeType).append(urlSegment, that.urlSegment).isEquals();
+        return new EqualsBuilder().appendSuper(super.equals(o))
+                .append(id, that.id)
+                .append(identifier, that.identifier)
+                .append(name, that.name)
+                .append(description, that.description)
+                .append(mimeType, that.mimeType)
+                .append(urlSegment, that.urlSegment)
+                .append(handlerImplementationName, that.handlerImplementationName)
+                .isEquals();
     }
 
     @Override

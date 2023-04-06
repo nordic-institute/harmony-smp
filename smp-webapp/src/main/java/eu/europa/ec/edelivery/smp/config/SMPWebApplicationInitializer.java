@@ -1,15 +1,12 @@
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
-import eu.europa.ec.edelivery.smp.config.init.DatabaseConnectionBeanCreator;
-import eu.europa.ec.edelivery.smp.config.init.SMPConfigurationInitializer;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.ExtLibraryClassLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 
-import javax.persistence.EntityManager;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +15,9 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.SMP_MODE_DEVELOPMENT;
-import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 
 /**
- *  WebApplicationInitializer implementation class starts the DomiSMP services and initialize database configuration
+ * WebApplicationInitializer implementation class loads the external libraries and configures the logging
  *
  * @author Joze Rihtarsic
  * @since 4.2
@@ -39,7 +35,7 @@ public class SMPWebApplicationInitializer implements org.springframework.web.Web
 
     @Override
     public void onStartup(ServletContext servletContext) {
-        SMPEnvironmentProperties smpEnvironmentProperties =  SMPEnvironmentProperties.getInstance();
+        SMPEnvironmentProperties smpEnvironmentProperties = SMPEnvironmentProperties.getInstance();
         // print out the  application data
         logBuildProperties(LOG, FILE_APPLICATION_PROPERTIES);
         // get environment properties

@@ -34,7 +34,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_RESOURCE_DEF_
         @NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_RES_DEF, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.id=:domain_id AND d.resourceDef.id=:resource_def_id"),
 })
 public class DBDomainResourceDef extends BaseEntity {
-
+    private static final long serialVersionUID = 1008583888835630003L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "SMP_DOMAIN_RESOURCE_DEF_SEQ")

@@ -1,4 +1,4 @@
-import {Credential} from "../../../security/credential.model";
+import {CredentialRo} from "../../../security/credential.model";
 
 export interface AccessTokenRo {
   identifier: string;
@@ -7,5 +7,5 @@ export interface AccessTokenRo {
   generatedOn?: Date;
   expireOn?: Date;
 
-  credential?:  Credential;
+  credential?:  CredentialRo;
 }

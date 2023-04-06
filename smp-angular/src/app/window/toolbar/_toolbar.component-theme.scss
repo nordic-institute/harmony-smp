@@ -5,13 +5,7 @@
 @mixin set-component-colors($theme) {
 
   #window-toolbar {
-
-//    background-color: smp.get-theme-color($theme, background);
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 150px, smp.get-theme-color($theme));
-  }
-  .window-toolbar-item {
-    text-shadow: 2px 2px smp.get-theme-color($theme, primary, 900);
-    color: smp.get-theme-color($theme, primary, 50);
   }
 }
 

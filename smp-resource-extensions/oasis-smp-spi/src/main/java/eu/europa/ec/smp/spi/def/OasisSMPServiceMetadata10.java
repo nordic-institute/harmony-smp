@@ -52,4 +52,14 @@ public class OasisSMPServiceMetadata10 implements SubresourceDefinitionSpi {
     public ResourceHandlerSpi getResourceHandler() {
         return serviceMetadata10Handler;
     }
+
+    @Override
+    public String toString() {
+        return "OasisSMPServiceMetadata10{" +
+                "identifier=" + identifier() +
+                "urlSegment=" + urlSegment() +
+                "name=" + name() +
+                "mimeType=" + mimeType() +
+                '}';
+    }
 }

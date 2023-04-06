@@ -10,7 +10,7 @@ import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {UserController} from "../../system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../common/global-lookups";
-import {Credential} from "../../security/credential.model";
+import {CredentialRo} from "../../security/credential.model";
 
 
 @Component({
@@ -27,7 +27,7 @@ export class UserProfileComponent {
   userCredentialForm: FormGroup;
   currentUserData: User;
 
-  currentPwdCredential: Credential;
+  currentPwdCredential: CredentialRo;
   userController: UserController;
   @Input() showActionButtons: boolean = true;
 
@@ -94,7 +94,7 @@ export class UserProfileComponent {
     this.userForm.markAsPristine();
   }
 
-  private updatePwdCredential(currentPwdCredential: Credential) {
+  private updatePwdCredential(currentPwdCredential: CredentialRo) {
     this.currentPwdCredential = {
       ...currentPwdCredential
     }

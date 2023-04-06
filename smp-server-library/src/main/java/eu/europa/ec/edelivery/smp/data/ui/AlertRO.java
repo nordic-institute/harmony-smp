@@ -14,8 +14,7 @@ import java.util.Map;
  * @since 4.2
  */
 public class AlertRO extends BaseRO {
-
-    private static final long serialVersionUID = -9018583888835630560L;
+    private static final long serialVersionUID = 9008583888835630003L;
 
     // session id
     private String sid;

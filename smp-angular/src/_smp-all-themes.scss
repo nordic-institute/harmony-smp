@@ -1,11 +1,32 @@
 // class contains links to all DomiSMP scss files for updating the theme (useful when building application with multiple themes )
 
+@use '_smp-theme-helper' as smp;
 @use 'app/window/toolbar/_toolbar.component-theme' as toolbar;
 @use 'app/window/breadcrumb/breadcrumb-item/_breadcrumb-item.component-theme' as breadcrumb-item;
 @use 'app/window/sidenav/nav-tree/_nav-tree.component-theme' as nav-tree;
+@use 'app/common/search-table/_search-table.component-theme' as search-table;
+@use 'app/user-settings/user-access-tokens/access-token-panel/_access-token-panel.component-theme' as access-token-panel;
 
 @mixin all-component-colors($theme) {
   @include toolbar.set-component-colors($theme);
   @include breadcrumb-item.set-component-colors($theme);
   @include nav-tree.set-component-colors($theme);
+  @include search-table.set-component-colors($theme);
+  @include access-token-panel.set-component-colors($theme);
+
+  /* shared classes*/
+  .smp-data-panel:hover {
+    background-color: smp.get-theme-color($theme, primary, 300);
+  }
+
+  .datatable-row-odd {
+    background-color: smp.get-theme-color($theme, primary, 0.2)  !important;
+  }
+
+  .datatable-row-selected {
+    background-color: smp.get-theme-color($theme, primary, 600) !important;
+  }
+
 }
+
+

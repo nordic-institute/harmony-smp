@@ -1,6 +1,8 @@
-﻿<a class='smp-breadcrumb-item' (click)="triggerClickEvent()" [matTooltip]="description">
-  <div class="smp-breadcrumb-arrow top"></div>
-  <div class="smp-breadcrumb-arrow bottom"></div>
+﻿<a
+  class="smp-breadcrumb-item"
+   (click)="triggerClickEvent()" [matTooltip]="description">
+  <div class="smp-breadcrumb-arrow top" [ngClass]="{'smp-breadcrumb-item-selected': value.selected}"></div>
+  <div class="smp-breadcrumb-arrow bottom" [ngClass]="{'smp-breadcrumb-item-selected': value.selected}"></div>
   <div class="smp-breadcrumb-content" >
     <mat-icon *ngIf="icon" style="vertical-align: middle;">{{icon}}</mat-icon>
     <span>{{name}}</span>

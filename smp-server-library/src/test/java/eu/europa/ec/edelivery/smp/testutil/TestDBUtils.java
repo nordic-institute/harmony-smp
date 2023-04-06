@@ -46,13 +46,13 @@ public class TestDBUtils {
         return group;
     }
 
-    public static DBExtension createDBExtension(String implName) {
+    public static DBExtension createDBExtension(String identifier) {
         DBExtension entity = new DBExtension();
-        entity.setImplementationName(implName);
+        entity.setIdentifier(identifier);
+        entity.setImplementationName(identifier+"Name");
         entity.setName(anyString());
         entity.setDescription(anyString());
         entity.setVersion(anyString());
-        entity.setExtensionType(anyString());
         return entity;
     }
 

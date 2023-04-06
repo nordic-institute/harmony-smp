@@ -1,169 +1,118 @@
-import {
-  AfterViewChecked,
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
-import {ColumnPicker} from '../../common/column-picker/column-picker.model';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {MatTableDataSource} from "@angular/material/table";
+import {MatPaginator} from "@angular/material/paginator";
+import {MatSort} from "@angular/material/sort";
+import {ExtensionRo} from "./extension-ro.model";
+import {ResourceDefinitionRo} from "./resource-definition-ro.model";
+import {SubresourceDefinitionRo} from "./subresource-definition-ro.model";
+import {ExtensionService} from "./extension.service";
 
-import {AlertMessageService} from '../../common/alert-message/alert-message.service';
-import {HttpClient} from '@angular/common/http';
-import {SmpConstants} from "../../smp.constants";
-import {GlobalLookups} from "../../common/global-lookups";
-import {SearchTableComponent} from "../../common/search-table/search-table.component";
-import {SecurityService} from "../../security/security.service";
-import {EntityStatus} from "../../common/model/entity-status.model";
+
+/** Constants used to fill up our data base. */
+
+const NAMES: string[] = [
+  'Oasis SMP 1.0 & 2.0',
+  'Peppol SMP',
+  'CPPA',
+  'Properties',
+];
+
+const RESOURCES: string[] = [
+  'Oasis SMP 1.0',
+  'Oasis SMP 2.0',
+  'Peppol SMP',
+  'CPPA',
+];
 
 @Component({
   moduleId: module.id,
   templateUrl: './extension.component.html',
   styleUrls: ['./extension.component.css']
 })
-export class ExtensionComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class ExtensionComponent implements AfterViewInit {
+  displayedColumns: string[] = ['name', 'version'];
+  dataSource: MatTableDataSource<ExtensionRo> =  new MatTableDataSource();
+  selected?: ExtensionRo;
 
-  @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
-  @ViewChild('certificateAliasTemplate') certificateAliasColumn: TemplateRef<any>;
-  @ViewChild('domainCodeColumnTemplate') domainCodeColumnTemplate: TemplateRef<any>;
-  @ViewChild('rowActions') rowActions: TemplateRef<any>;
-  @ViewChild('searchTable') searchTable: SearchTableComponent;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
+  constructor(extensionService: ExtensionService) {
 
-  baseUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE;
-  columnPicker: ColumnPicker = new ColumnPicker();
-  filter: any = {};
+    extensionService.onExtensionsUpdatesEvent().subscribe(updatedExtensions => {
+        this.updateExtensions(updatedExtensions);
+      }
+    );
 
-  constructor(public securityService: SecurityService,
-
-              protected lookups: GlobalLookups,
-              protected http: HttpClient,
-              protected alertService: AlertMessageService,
-              public dialog: MatDialog,
-              private changeDetector: ChangeDetectorRef) {
-
-    // check application settings
-
-
+    extensionService.getExtensions();
   }
 
-  ngOnInit() {
-
-  }
-
-  initColumns() {
-    this.columnPicker.allColumns = [
-      {
-        name: 'Domain code',
-        title: "Unique domain code.",
-        prop: 'domainCode',
-        showInitially: true,
-        cellTemplate: this.domainCodeColumnTemplate,
-        width: 250
-
-      },
-      {
-        name: 'SML Domain',
-        title: "Informative: SML domain name.",
-        prop: 'smlSubdomain',
-        showInitially: true,
-      },
-      {
-        name: 'Signature CertAlias',
-        title: "Certificate for signing REST responses",
-        prop: 'signatureKeyAlias',
-        showInitially: true,
-        cellTemplate: this.certificateAliasColumn,
-        width: 150
-      },
-      {
-        name: 'SML SMP Id',
-        title: "SMP identifier for SML integration",
-        prop: 'smlSmpId',
-        showInitially: true,
-        width: 150
-      },
-      {
-        name: 'SML ClientCert Alias',
-        prop: 'smlClientKeyAlias',
-        showInitially: true,
-        cellTemplate: this.certificateAliasColumn,
-        width: 150
-      },
-      {
-        name: 'Is SML Registered',
-        prop: 'smlRegistered',
-        showInitially: true,
-        width: 120
-      },
-      {
-        name: 'SML ClientCert Auth.',
-        prop: 'smlClientCertAuth',
-        showInitially: true,
-        width: 130
-      },
-    ];
-    this.searchTable.tableColumnInit();
-  }
-
-  ngAfterViewChecked() {
-    this.changeDetector.detectChanges();
+  updateExtensions(extensions: ExtensionRo[]){
+      this.dataSource.data = extensions;
   }
 
   ngAfterViewInit() {
-    this.initColumns();
-    // if system admin refresh certificate list!
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      this.lookups.refreshCertificateLookup();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
   }
 
-  certificateAliasExists(alias: string): boolean {
-    if (alias) {
-      return this.lookups.cachedCertificateAliasList.includes(alias);
-    } else {
-      return false;
-    }
+  public extensionSelected(selected: ExtensionRo) {
+    this.selected = selected;
   }
 
-  aliasCssClass(alias: string, row) {
-    if (!this.certificateAliasExists(alias)) {
-      return 'missingKey';
-    } else if (row.status === EntityStatus.NEW) {
-      return 'table-row-new';
-    } else if (row.status === EntityStatus.UPDATED) {
-      return 'table-row-updated';
-    } else if (row.status === EntityStatus.REMOVED) {
-      return 'deleted';
-    }
-  }
+}
 
-  aliasCssForDomainCodeClass(domain) {
-    /*
-    let domainWarning = this.getDomainConfigurationWarning(domain)
-    if (!!domainWarning) {
-      return 'domainWarning';
-    } else if (domain.status === EntityStatus.NEW) {
-      return 'table-row-new';
-    } else if (domain.status === EntityStatus.UPDATED) {
-      return 'table-row-updated';
-    } else if (domain.status === EntityStatus.REMOVED) {
-      return 'deleted';
-    }
+/** Builds and returns a new User. */
+function createTestExtension(id: number): ExtensionRo {
+  const name =
+    NAMES[Math.round(Math.random() * (NAMES.length - 1))];
 
-     */
-  }
+  return {
+    extensionId: name + "Id",
+    name: name,
+    version: "1.0",
+    description: "description" + name,
+    implementationName: "implementationName " + name,
+    resourceDefinitions: createTestResourceDefinitions(Math.round(Math.random() * (100)))
+  } as ExtensionRo;
+}
 
+function createTestResourceDefinitions(size: number): ResourceDefinitionRo [] {
+  return Array.from({length: size}, () => createTestResourceDefinition());
+}
 
-  details(row: any) {
+function createTestResourceDefinition(): ResourceDefinitionRo {
+  const name =
+    RESOURCES[Math.round(Math.random() * (RESOURCES.length - 1))];
 
-  }
+  return {
+    identifier: name + "Id",
+    name: name,
+    urlSegment: "doc",
+    description: "description" + name,
+    mimeType: "mimeType " + name,
+    subresources: Array.from({length: 4}, () => createTestSubResourceDefinition())
+  } as ResourceDefinitionRo;
+}
 
-  // for dirty guard...
-  isDirty(): boolean {
-    return this.searchTable.isDirty();
-  }
+function createTestSubResourceDefinition(): SubresourceDefinitionRo {
+  const name =
+    RESOURCES[Math.round(Math.random() * (RESOURCES.length - 1))];
 
+  return {
+    identifier: name + "Id",
+    name: name,
+    urlSegment: "subres",
+    description: "description" + name,
+    mimeType: "mimeType " + name
+  } as SubresourceDefinitionRo;
 }

@@ -62,4 +62,14 @@ public class OasisSMPServiceGroup10 implements ResourceDefinitionSpi {
     public ResourceHandlerSpi getResourceHandler() {
         return serviceGroup10Handler;
     }
+
+    @Override
+    public String toString() {
+        return "OasisSMPServiceGroup10{" +
+                "identifier=" + identifier() +
+                "defaultUrlSegment=" + defaultUrlSegment() +
+                "name=" + name() +
+                "mimeType=" + mimeType() +
+                '}';
+    }
 }

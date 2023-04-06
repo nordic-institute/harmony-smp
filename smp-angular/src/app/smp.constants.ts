@@ -48,6 +48,7 @@ export class SmpConstants {
   // internal endpoints
   public static readonly REST_INTERNAL_ALERT_MANAGE = SmpConstants.REST_INTERNAL + 'alert';
   public static readonly REST_INTERNAL_DOMAIN_MANAGE = SmpConstants.REST_INTERNAL + 'domain';
+  public static readonly REST_INTERNAL_EXTENSION_MANAGE = SmpConstants.REST_INTERNAL + 'extension';
   public static readonly REST_INTERNAL_PROPERTY_MANAGE = SmpConstants.REST_INTERNAL + 'property';
   public static readonly REST_INTERNAL_PROPERTY_VALIDATE = SmpConstants.REST_INTERNAL_PROPERTY_MANAGE + '/validate';
   public static readonly REST_INTERNAL_DOMAIN_VALIDATE_DELETE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE + '/validate-delete';

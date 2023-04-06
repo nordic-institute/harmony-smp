@@ -6,13 +6,13 @@ import java.util.List;
 
 public class DeleteEntityValidation implements Serializable {
 
-    private static final long serialVersionUID = -4971552086560325308L;
+    private static final long serialVersionUID = 9008583888835630024L;
 
 
-    boolean validOperation;
-    String stringMessage;
-    List<String> listIds= new ArrayList<>();
-    List<String> listDeleteNotPermitedIds = new ArrayList<>();
+    private boolean validOperation;
+    private String stringMessage;
+    private List<String> listIds= new ArrayList<>();
+    private List<String> listDeleteNotPermitedIds = new ArrayList<>();
 
     public boolean isValidOperation() {
         return validOperation;

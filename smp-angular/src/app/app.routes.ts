@@ -25,7 +25,6 @@ const appRoutes: Routes = [
   {
     path: 'system-settings',
     canActivateChild: [authGuard],
-    canDeactivate: [DirtyGuard],
     children: [
       { path: 'domain', component: DomainComponent  },
       { path: 'user', component: UserComponent  },
