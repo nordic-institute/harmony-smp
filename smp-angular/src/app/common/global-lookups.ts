@@ -1,4 +1,4 @@
-import {Injectable, OnInit} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {SearchTableResult} from "./search-table/search-table-result.model";
 import {SmpConstants} from "../smp.constants";
@@ -10,8 +10,8 @@ import {Subscription} from "rxjs/internal/Subscription";
 import {SmpInfo} from "../app-info/smp-info.model";
 import {SmpConfig} from "../app-config/smp-config.model";
 import {SecurityEventService} from "../security/security-event.service";
-import {Subject} from "rxjs";
 import {DateAdapter} from "@angular/material/core";
+import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -28,26 +28,30 @@ export class GlobalLookups {
   cachedDomainList: Array<any> = [];
   cachedServiceGroupOwnerList: Array<any> = [];
   cachedCertificateList: Array<any> = [];
-  cachedCertificateAliasList: Array<String> = [];
+  cachedCertificateAliasList: Array<string> = [];
   cachedApplicationInfo: SmpInfo;
   cachedApplicationConfig?: SmpConfig;
-  cachedTrustedCertificateList: Array<any> = [];
 
   // lookup refresh subscriptions.
-  private trustedCertificateListRefreshEventEmitter = new Subject<any>();
-
 
   constructor(protected alertService: AlertMessageService,
               protected securityService: SecurityService,
               protected http: HttpClient,
               private securityEventService: SecurityEventService,
-              private dateAdapter: DateAdapter<Date>) {
+              private dateAdapter: DateAdapter<Date>,
+              private ngxMatDateAdapter: NgxMatDateAdapter<Date>
+  ) {
     this.refreshApplicationInfo();
     this.refreshDomainLookupFromPublic();
     this.securityService.refreshLoggedUserFromServer();
 
-    securityEventService.onLoginSuccessEvent().subscribe(value => {
+    securityEventService.onLoginSuccessEvent().subscribe(user => {
         this.refreshLookupsOnLogin();
+        // set locale
+        if (!!user && user.smpLocale) {
+          dateAdapter.setLocale(user.smpLocale);
+          ngxMatDateAdapter.setLocale(user.smpLocale);
+        }
       }
     );
 
@@ -55,8 +59,9 @@ export class GlobalLookups {
         this.clearCachedLookups();
       }
     );
-
-    this.dateAdapter.setLocale('fr');
+    // set default locale
+    dateAdapter.setLocale('fr');
+    ngxMatDateAdapter.setLocale('fr');
 
   }
 
@@ -64,7 +69,6 @@ export class GlobalLookups {
     this.refreshCertificateLookup();
     this.refreshApplicationInfo();
     this.refreshApplicationConfiguration();
-    this.refreshTrustedCertificateLookup();
   }
 
   public refreshDomainLookupFromPublic() {
@@ -158,11 +162,9 @@ export class GlobalLookups {
 
   public clearCachedLookups() {
     this.cachedCertificateList = [];
-    this.cachedTrustedCertificateList = [];
     this.cachedServiceGroupOwnerList = [];
     this.cachedApplicationConfig = null;
     this.cachedDomainList = [];
-    //this.refreshDomainLookupFromPublic();
   }
 
   public refreshCertificateLookup() {
@@ -170,7 +172,7 @@ export class GlobalLookups {
     if (this.securityService.isCurrentUserSystemAdmin()) {
 
       // init users
-      this.certificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_KEYSTORE);
+      this.certificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_KEYSTORE_DEPRECATED);
       this.certificateObserver.subscribe((certs: SearchTableResult) => {
         this.cachedCertificateList = certs.serviceEntities.map(serviceEntity => {
           return {...serviceEntity}
@@ -186,28 +188,4 @@ export class GlobalLookups {
   }
 
 
-  public refreshTrustedCertificateLookup() {
-    // call only for authenticated users.
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-
-      // init users
-      this.trustedCertificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_TRUSTSTORE);
-      this.trustedCertificateObserver.subscribe((certs: SearchTableResult) => {
-        this.cachedTrustedCertificateList = [...certs.serviceEntities];
-        this.notifyTrustedCertificateListRefreshEvent(this.cachedTrustedCertificateList);
-      }, (error: any) => {
-        // check if unauthorized
-        // just console try latter
-        console.log("Error occurred while loading trusted certificates lookup [" + error + "]");
-      });
-    }
-  }
-
-  onTrustedCertificateListRefreshEvent(): Observable<any> {
-    return this.trustedCertificateListRefreshEventEmitter.asObservable();
-  }
-
-  notifyTrustedCertificateListRefreshEvent(newList) {
-    this.trustedCertificateListRefreshEventEmitter.next(newList);
-  }
 }

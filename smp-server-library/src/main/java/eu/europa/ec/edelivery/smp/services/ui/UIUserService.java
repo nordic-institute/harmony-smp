@@ -153,9 +153,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         credentialDao.persistFlushDetach(dbCredential);
 
         CredentialRO result = conversionService.convert(dbCredential, CredentialRO.class);
-        result.setStatus(EntityROStatus.NEW.getStatusNumber());
-
-        token.setCredential(result);
+        if (result != null) {
+            result.setStatus(EntityROStatus.NEW.getStatusNumber());
+            token.setCredential(result);
+        }
         return token;
     }
 
@@ -332,74 +333,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setEmailAddress(user.getEmailAddress());
         dbUser.setFullName(user.getFullName());
         dbUser.setSmpTheme(user.getSmpTheme());
-
-        /*
-        dbUser.setEmailAddress(user.getEmailAddress());
-
-        // update certificate
-        if (user.getCertificate() == null && dbUser.getCertificate() == null) {
-            return;
-        }
-
-        // clear certificate data
-        if (user.getCertificate() == null || StringUtils.isBlank(user.getCertificate().getCertificateId())) {
-            dbUser.setCertificate(null);
-            LOG.info("Clear certificate credentials from the user [{}] with id [{}]", dbUser.getUsername(), dbUser.getId());
-            return;
-        }
-
-        if (dbUser.getCertificate() != null && StringUtils.equals(dbUser.getCertificate().getCertificateId(), user.getCertificate().getCertificateId())) {
-            LOG.debug("Certificate id was not changed for the user [{}] with id [{}]. Skip updating the certificate data!",
-                    dbUser.getCertificate().getCertificateId(), dbUser.getUsername(), dbUser.getId());
-            return;
-        }
-
-        CertificateRO certRo = user.getCertificate();
-        if (dbUser.getCertificate() == null) {
-            DBCertificate certificate = conversionService.convert(certRo, DBCertificate.class);
-            dbUser.setCertificate(certificate);
-        } else {
-            LOG.info("Update certificate credentials for user:");
-            dbUser.getCertificate().setCertificateId(certRo.getCertificateId());
-            dbUser.getCertificate().setCrlUrl(certRo.getCrlUrl());
-            dbUser.getCertificate().setPemEncoding(certRo.getEncodedValue());
-            dbUser.getCertificate().setSubject(certRo.getSubject());
-            dbUser.getCertificate().setIssuer(certRo.getIssuer());
-            dbUser.getCertificate().setSerialNumber(certRo.getSerialNumber());
-            if (certRo.getValidTo() != null) {
-                dbUser.getCertificate().setValidTo(certRo.getValidTo().toInstant()
-                        .atOffset(ZoneOffset.UTC));
-            }
-            if (certRo.getValidFrom() != null) {
-                dbUser.getCertificate().setValidFrom(certRo.getValidFrom().toInstant()
-                        .atOffset(ZoneOffset.UTC));
-            }
-        }
-
-        if (user.getCertificate().getEncodedValue() == null) {
-            LOG.debug("User has certificate data without certificate bytearray. ");
-            return;
-        }
-
-        if (!configurationService.trustCertificateOnUserRegistration()) {
-            LOG.debug("User certificate is not automatically trusted! Certificate is not added to truststore!");
-            return;
-        }
-
-        String certificateAlias;
-        try {
-            X509Certificate x509Certificate = X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certRo.getEncodedValue()));
-
-            certificateAlias = truststoreService.addCertificate(certRo.getAlias(), x509Certificate);
-            LOG.debug("User certificate is added to truststore!");
-        } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
-            LOG.error("Error occurred while adding certificate to truststore.", e);
-            throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "AddUserCertificate", ExceptionUtils.getRootCauseMessage(e));
-        }
-        certRo.setAlias(certificateAlias);
-
-        */
-
+        dbUser.setSmpLocale(user.getSmpLocale());
     }
 
     protected void createOrUpdateUser(UserRO userRO, OffsetDateTime passwordChange) {

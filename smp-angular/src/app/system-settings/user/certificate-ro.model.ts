@@ -1,3 +1,5 @@
+import {EntityStatus} from "../../common/model/entity-status.model";
+
 export interface CertificateRo {
   certificateId: string;
   subject: string;
@@ -8,8 +10,14 @@ export interface CertificateRo {
   fingerprints: string;
   clientCertHeader?:string;
   encodedValue?:string;
-  crlUrl?: String;
+  crlUrl?: string;
   alias?:string;
+  publicKeyType?: string;
+  certificatePolicies?: string[];
+  isContainingKey?:boolean;
   invalid?:boolean;
   invalidReason?:string;
+
+  status?: EntityStatus;
+  actionMessage?: string;
 }

@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
@@ -27,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_TRUSTSTORE;
@@ -156,19 +158,18 @@ public class TruststoreAdminResourceIntegrationTest {
         UserRO userRO = getLoggedUserData(mvc, session);
 
         int countStart = uiTruststoreService.getCertificateROEntriesList().size();
-        MvcResult result = mvc.perform(get(PATH_INTERNAL)
+        MvcResult result = mvc.perform(get(PATH_INTERNAL+ "/" + userRO.getUserId())
                 .session(session)
                 .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
-        //them
-        ObjectMapper mapper = getObjectMapper();;
-        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
+        //then
+        ObjectMapper mapper = getObjectMapper();
+        List<CertificateRO> listCerts = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<CertificateRO>>(){});
 
-
-        assertNotNull(res);
-        assertEquals(countStart, res.getServiceEntities().size());
-        res.getServiceEntities().forEach(sgMap -> {
+        assertNotNull(listCerts);
+        assertEquals(countStart, listCerts.size());
+        listCerts.forEach(sgMap -> {
             CertificateRO cert = mapper.convertValue(sgMap, CertificateRO.class);
             assertNotNull(cert.getAlias());
             assertNotNull(cert.getCertificateId());

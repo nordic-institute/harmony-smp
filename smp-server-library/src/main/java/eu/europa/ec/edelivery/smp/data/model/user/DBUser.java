@@ -87,16 +87,14 @@ import java.util.Objects;
                         "     OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )")
                         })
          */
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
-                resultSetMapping = "DBUserDeleteValidationMapping",
-                query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
-                        "    C.CERTIFICATE_ID as certificateId, COUNT(S.ID) as  ownedCount  FROM " +
-                        " SMP_USER S LEFT JOIN SMP_CERTIFICATE C ON (S.ID=C.ID) " +
-                        " INNER JOIN SMP_RESOURCE_MEMBER SG ON (S.ID = SG.FK_USER_ID) " +
-                        " WHERE S.ID IN (:idList)" +
-                        " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID"),
-})
+@NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
+        resultSetMapping = "DBUserDeleteValidationMapping",
+        query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
+                "    C.CERTIFICATE_ID as certificateId, COUNT(S.ID) as  ownedCount  FROM " +
+                " SMP_USER S LEFT JOIN SMP_CERTIFICATE C ON (S.ID=C.ID) " +
+                " INNER JOIN SMP_RESOURCE_MEMBER SG ON (S.ID = SG.FK_USER_ID) " +
+                " WHERE S.ID IN (:idList)" +
+                " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID")
 @SqlResultSetMapping(name = "DBUserDeleteValidationMapping", classes = {
         @ConstructorResult(targetClass = DBUserDeleteValidation.class,
                 columns = {@ColumnResult(name = "id", type = Long.class),
@@ -134,8 +132,12 @@ public class DBUser extends BaseEntity {
     private String fullName;
 
     @Column(name = "SMP_THEME", length = CommonColumnsLengths.MAX_TEXT_LENGTH_64)
-    @ColumnDescription(comment = "DomiSMP theme for the user")
+    @ColumnDescription(comment = "DomiSMP settings: theme for the user")
     private String smpTheme;
+
+    @Column(name = "SMP_LOCALE", length = CommonColumnsLengths.MAX_TEXT_LENGTH_64)
+    @ColumnDescription(comment = "DomiSMP settings: locale for the user")
+    private String smpLocale;
 
     @Override
     public Long getId() {
@@ -192,6 +194,14 @@ public class DBUser extends BaseEntity {
 
     public void setSmpTheme(String smpTheme) {
         this.smpTheme = smpTheme;
+    }
+
+    public String getSmpLocale() {
+        return smpLocale;
+    }
+
+    public void setSmpLocale(String smpLocale) {
+        this.smpLocale = smpLocale;
     }
 
     @Override

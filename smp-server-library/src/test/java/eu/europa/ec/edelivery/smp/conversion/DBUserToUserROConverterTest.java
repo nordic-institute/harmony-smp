@@ -33,13 +33,9 @@ public class DBUserToUserROConverterTest {
 
     private UserRO target;
 
-    @Mock
-    private ConversionService conversionService;
-    @Mock
-    private ConfigurationService configurationService;
 
     @InjectMocks
-    private DBUserToUserROConverter converter = new DBUserToUserROConverter(configurationService, conversionService);
+    private DBUserToUserROConverter converter = new DBUserToUserROConverter();
 
     @Test
     public void returnsThePasswordAsNotExpiredForCertificateOnlyUsers() {

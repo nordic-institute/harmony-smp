@@ -4,7 +4,9 @@
   flex-flow: column;
   align-items: center;
   height: 100%;
+  min-height: 600px;
   padding: 0 2em;
+
 }
 #extension-filter {
   width: 100%;
@@ -15,15 +17,5 @@
 #extension-table {
   width: 100%;
   padding-top: 1em;
-
 }
 
-.mat-mdc-row .mat-mdc-cell {
-  border-bottom: 1px solid transparent;
-  border-top: 1px solid transparent;
-  cursor: pointer;
-}
-
-.mat-mdc-row:hover .mat-mdc-cell {
-  border-color: currentColor;
-}

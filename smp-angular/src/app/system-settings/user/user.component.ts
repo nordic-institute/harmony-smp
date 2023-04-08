@@ -8,14 +8,13 @@ import {
   ViewChild
 } from '@angular/core';
 import {ColumnPicker} from '../../common/column-picker/column-picker.model';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {AlertMessageService} from '../../common/alert-message/alert-message.service';
 import {UserController} from './user-controller';
 import {HttpClient} from '@angular/common/http';
 import {SearchTableComponent} from "../../common/search-table/search-table.component";
 import {SecurityService} from "../../security/security.service";
 import {GlobalLookups} from "../../common/global-lookups";
-import {TruststoreEditDialogComponent} from "./truststore-edit-dialog/truststore-edit-dialog.component";
 import {EntityStatus} from "../../common/model/entity-status.model";
 import {SmpConstants} from "../../smp.constants";
 
@@ -75,10 +74,6 @@ export class UserComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   ngAfterViewInit() {
     this.initColumns();
-    // if system admin refresh trust certificate list!
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      this.lookups.refreshTrustedCertificateLookup();
-    }
   }
 
   ngAfterViewChecked() {
@@ -125,11 +120,5 @@ export class UserComponent implements OnInit, AfterViewInit, AfterViewChecked {
   // for dirty guard...
   isDirty(): boolean {
     return this.searchTable.isDirty();
-  }
-
-  openEditTruststoreDialog() {
-    const formRef: MatDialogRef<any> = this.dialog.open(TruststoreEditDialogComponent);
-    formRef.afterClosed().subscribe(result => {
-    });
   }
 }

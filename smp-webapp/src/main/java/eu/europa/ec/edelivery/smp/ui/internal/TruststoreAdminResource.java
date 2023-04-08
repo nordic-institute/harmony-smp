@@ -1,17 +1,15 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
-import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
-import org.springframework.security.access.annotation.Secured;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -43,27 +41,22 @@ public class TruststoreAdminResource {
         this.payloadValidatorService = payloadValidatorService;
     }
 
-    @PutMapping(produces = {"application/json"})
-    @RequestMapping(method = RequestMethod.GET)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public ServiceResult<CertificateRO> getCertificateList() {
-        List<CertificateRO> lst = uiTruststoreService.getCertificateROEntriesList();
-        // clear encoded value to reduce http traffic
-        int i =0;
-        for (CertificateRO certificateRO : lst) {
-            certificateRO.setEncodedValue(null);
-            certificateRO.setIndex(i++);
-        }
+    @GetMapping(path = "/{user-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.isSystemAdministrator")
+    public List<CertificateRO> getSystemTruststoreCertificates(@PathVariable("user-id") String userId) {
+        logAdminAccess("getSystemTruststoreCertificates");
 
-        ServiceResult<CertificateRO> sg = new ServiceResult<>();
-        sg.getServiceEntities().addAll(lst);
-        sg.setCount((long) lst.size());
-        return sg;
+        List<CertificateRO> truststoreEntriesList = uiTruststoreService.getCertificateROEntriesList();
+        // clear encoded value to reduce http traffic
+        truststoreEntriesList.stream().forEach(certificateRO -> {
+            certificateRO.setEncodedValue(null);
+            certificateRO.setStatus(EntityROStatus.PERSISTED.getStatusNumber());
+        });
+        return truststoreEntriesList;
     }
 
-
-    @PreAuthorize("@smpAuthorizationService.isSystemAdministrator and @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PostMapping(value = "/{user-id}/upload-certificate", consumes = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.isSystemAdministrator")
     public CertificateRO uploadCertificate(@PathVariable("user-id") String userId,
                                            @RequestBody byte[] fileBytes) {
         LOG.info("Got certificate cert size: {}", fileBytes.length);
@@ -72,40 +65,64 @@ public class TruststoreAdminResource {
         payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(fileBytes), MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
 
         X509Certificate x509Certificate;
-        CertificateRO certificateRO=null;
+        CertificateRO certificateRO;
         try {
             x509Certificate = X509CertificateUtils.getX509Certificate(fileBytes);
         } catch (SMPRuntimeException | CertificateException e) {
-            LOG.error("Error occurred while parsing certificate.", e);
-            return certificateRO;
+            String message = "Error occurred while parsing certificate. Is certificate valid!";
+            LOG.error(message, e);
+            return creatEmptyResponse(null, EntityROStatus.ERROR, message);
         }
         try {
             String alias = uiTruststoreService.addCertificate(null, x509Certificate);
             certificateRO = uiTruststoreService.convertToRo(x509Certificate);
             certificateRO.setAlias(alias);
-        } catch (NoSuchAlgorithmException |  KeyStoreException | IOException |CertificateException e) {
-            LOG.error("Error occurred while parsing certificate.", e);
+            certificateRO.setStatus(EntityROStatus.NEW.getStatusNumber());
             return certificateRO;
+        } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
+            String message = "Error occurred while storing the certificate!";
+            LOG.error(message, e);
+            creatEmptyResponse(null, EntityROStatus.ERROR, message);
         }
-        return certificateRO;
+        return null;
     }
 
 
     @DeleteMapping(value = "/{id}/delete/{alias}", produces = {"application/json"})
     @PreAuthorize("@smpAuthorizationService.systemAdministrator && @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
-    public KeystoreImportResult deleteCertificate(@PathVariable("id") String userId,
-                                               @PathVariable("alias") String alias) {
+    public CertificateRO deleteCertificate(@PathVariable("id") String userId,
+                                           @PathVariable("alias") String alias) {
+        logAdminAccess("deleteCertificate: " + alias);
         LOG.info("Remove alias by user id {}, alias {}.", userId, alias);
-        KeystoreImportResult keystoreImportResult = new KeystoreImportResult();
-
+        CertificateRO response;
         try {
-            uiTruststoreService.deleteCertificate(alias);
+            X509Certificate x509Certificate = uiTruststoreService.deleteCertificate(alias);
+            if (x509Certificate == null) {
+                String msg = "Certificate not removed because alias [" + alias + "] does not exist in truststore!";
+                LOG.error(msg);
+                response = creatEmptyResponse(alias, EntityROStatus.REMOVE, msg);
+            } else {
+                response = uiTruststoreService.convertToRo(x509Certificate);
+                response.setAlias(alias);
+                response.setStatus(EntityROStatus.REMOVE.getStatusNumber());
+            }
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
-            String msg = e.getClass().getName() +" occurred while reading the truststore: " + e.getMessage();
+            String msg = e.getClass().getName() + " occurred while reading the truststore: " + e.getMessage();
             LOG.error(msg, e);
-            keystoreImportResult.setErrorMessage(msg);
+            response = creatEmptyResponse(alias, EntityROStatus.ERROR, msg);
         }
+        return response;
+    }
 
-        return keystoreImportResult;
+    protected void logAdminAccess(String action) {
+        LOG.info(SMPLogger.SECURITY_MARKER, "Admin Truststore action [{}] by user [{}], ", action, SessionSecurityUtils.getSessionUserDetails());
+    }
+
+    public CertificateRO creatEmptyResponse(String alias, EntityROStatus status, String message) {
+        CertificateRO certificateRO = new CertificateRO();
+        certificateRO.setAlias(alias);
+        certificateRO.setActionMessage(message);
+        certificateRO.setStatus(status.getStatusNumber());
+        return certificateRO;
     }
 }

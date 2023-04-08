@@ -1,21 +1,13 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
-import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 
 /**
@@ -24,13 +16,6 @@ import java.util.Optional;
 @Component
 public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
 
-    private ConfigurationService configurationService;
-    private ConversionService conversionService;
-
-    public DBUserToUserROConverter(ConfigurationService configurationService, @Lazy ConversionService conversionService) {
-        this.configurationService = configurationService;
-        this.conversionService = conversionService;
-    }
 
     @Override
     public UserRO convert(DBUser source) {
@@ -45,6 +30,7 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         target.setEmailAddress(source.getEmailAddress());
         target.setFullName(source.getFullName());
         target.setSmpTheme(source.getSmpTheme());
+        target.setSmpLocale(source.getSmpLocale());
 /*
         Optional<DBCredential> optUserPassCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.USERNAME_PASSWORD).findFirst();
         Optional<DBCredential> optTokenCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.ACCESS_TOKEN).findFirst();
@@ -92,22 +78,22 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         return target;
     }
 
-    public OffsetDateTime getSuspensionUntilDate(OffsetDateTime lastAttempt, Integer currentCount, Integer suspendedForSec, Integer suspendedFromCount){
-        if (lastAttempt ==null || currentCount ==null || suspendedForSec ==null || suspendedFromCount ==null){
+    public OffsetDateTime getSuspensionUntilDate(OffsetDateTime lastAttempt, Integer currentCount, Integer suspendedForSec, Integer suspendedFromCount) {
+        if (lastAttempt == null || currentCount == null || suspendedForSec == null || suspendedFromCount == null) {
             return null;
         }
-        if (currentCount < suspendedFromCount){
+        if (currentCount < suspendedFromCount) {
             return null;
         }
         OffsetDateTime suspendedUtil = lastAttempt.plusSeconds(suspendedForSec);
-        if (suspendedUtil.isBefore(OffsetDateTime.now())){
+        if (suspendedUtil.isBefore(OffsetDateTime.now())) {
             return null;
         }
         return suspendedUtil;
     }
 
     private boolean isCredentialExpired(DBCredential source) {
-        return  (source.getExpireOn() == null
+        return (source.getExpireOn() == null
                 || OffsetDateTime.now().isAfter(source.getExpireOn()));
     }
 }

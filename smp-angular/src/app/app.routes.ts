@@ -13,7 +13,9 @@ import {UserProfileComponent} from "./user-settings/user-profile/user-profile.co
 import {authGuard} from "./guards/auth.guard";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
 import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
-import {ExtensionComponent} from "./system-settings/extension/extension.component";
+import {ExtensionComponent} from "./system-settings/admin-extension/extension.component";
+import {AdminTruststoreComponent} from "./system-settings/admin-truststore/admin-truststore.component";
+import {AdminKeystoreComponent} from "./system-settings/admin-keystore/admin-keystore.component";
 
 
 const appRoutes: Routes = [
@@ -29,8 +31,8 @@ const appRoutes: Routes = [
       { path: 'domain', component: DomainComponent  },
       { path: 'user', component: UserComponent  },
       { path: 'properties', component: PropertyComponent  },
-      { path: 'keystore', component: DomainComponent  },
-      { path: 'truststore', component: DomainComponent  },
+      { path: 'keystore', component: AdminKeystoreComponent  },
+      { path: 'truststore', component: AdminTruststoreComponent  },
       { path: 'extension', component: ExtensionComponent  },
       { path: 'alert', component: AlertComponent  },
     ]

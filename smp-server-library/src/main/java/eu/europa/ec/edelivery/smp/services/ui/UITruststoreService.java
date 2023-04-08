@@ -13,10 +13,6 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.text.DistinguishedNamesCodingUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.x509.CertificatePolicies;
-import org.bouncycastle.asn1.x509.PolicyInformation;
-import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
@@ -40,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_TRUSTSTORE_CERT_INVALID;
 import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.SEC_USER_CERT_INVALID;
@@ -56,11 +51,11 @@ public class UITruststoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
-    private static final String CERT_ERROR_MSG_NOT_TRUSTED="Certificate is not trusted!";
-    private static final String CERT_ERROR_MSG_REVOKED= "Certificate is revoked!";
-    private static final String CERT_ERROR_MSG_EXPIRED= "Certificate is expired!";
-    private static final String CERT_ERROR_MSG_NOT_YET_VALID= "Certificate is not yet valid!";
-    private static final String CERT_ERROR_MSG_NOT_VALIDATED= "Certificate not validated!";
+    private static final String CERT_ERROR_MSG_NOT_TRUSTED = "Certificate is not trusted!";
+    private static final String CERT_ERROR_MSG_REVOKED = "Certificate is revoked!";
+    private static final String CERT_ERROR_MSG_EXPIRED = "Certificate is expired!";
+    private static final String CERT_ERROR_MSG_NOT_YET_VALID = "Certificate is not yet valid!";
+    private static final String CERT_ERROR_MSG_NOT_VALIDATED = "Certificate not validated!";
 
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() ->
             new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
@@ -93,7 +88,7 @@ public class UITruststoreService {
     }
 
     private void setupJCEProvider() {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null ) {
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
             Security.addProvider(new BouncyCastleProvider());
         }
     }
@@ -245,7 +240,7 @@ public class UITruststoreService {
 
     public void validateCertificateWithTruststore(X509Certificate x509Certificate) throws CertificateException {
 
-          if (x509Certificate == null) {
+        if (x509Certificate == null) {
             throw new CertificateException("The X509Certificate is null (Is the client cert header enabled?)! Skip trust validation against the truststore!");
         }
         KeyStore truststore = getTrustStore();
@@ -320,7 +315,7 @@ public class UITruststoreService {
         Optional<DBUser> user = userDao.findUserByCertificateId(cert.getCertificateId());
         if (user.isPresent()) {
             String msg = "Certificate: [" + cert.getCertificateId() + "] is already used!";
-            LOG.debug("Certificate with id: [{}] is already used by user with username [{}]",  cert.getCertificateId() , user.get().getUsername());
+            LOG.debug("Certificate with id: [{}] is already used by user with username [{}]", cert.getCertificateId(), user.get().getUsername());
             throw new CertificateException(msg);
         }
 
@@ -443,15 +438,18 @@ public class UITruststoreService {
      *
      * @param alias
      */
-    public void deleteCertificate(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
+    public X509Certificate deleteCertificate(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
-        KeyStore keyStore = loadTruststore(getTruststoreFile());
-        if (keyStore != null) {
-            keyStore.deleteEntry(alias);
-            // store keystore
-            storeTruststore(keyStore);
-            refreshData();
+        KeyStore truststore = loadTruststore(getTruststoreFile());
+        if (truststore == null || !truststore.containsAlias(alias)) {
+            return null;
         }
+        X509Certificate certificate = (X509Certificate) truststore.getCertificate(alias);
+        truststore.deleteEntry(alias);
+        // store keystore
+        storeTruststore(truststore);
+        refreshData();
+        return certificate;
     }
 
     public String addCertificate(String alias, X509Certificate certificate) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
@@ -531,7 +529,7 @@ public class UITruststoreService {
         } catch (KeyStoreException e) {
             LOG.error("Error occurred while reading truststore for validating existance of the alias: " + alias, e);
         }
-        return alias;
+        return StringUtils.lowerCase(alias);
     }
 
 
@@ -574,33 +572,6 @@ public class UITruststoreService {
         return conversionService.convert(d, CertificateRO.class);
     }
 
-    /**
-     * Extracts all Certificate Policy identifiers the "Certificate policy" extension of X.509.
-     * If the certificate policy extension is unavailable, returns an empty list.
-     *
-     * @param cert a X509 certificate
-     * @return the list of CRL urls of certificate policy identifiers
-     */
-    public List<String> getCertificatePolicyIdentifiers(X509Certificate cert) throws CertificateException {
-
-        byte[] certPolicyExt = cert.getExtensionValue(org.bouncycastle.asn1.x509.Extension.certificatePolicies.getId());
-        if (certPolicyExt == null) {
-            return new ArrayList<>();
-        }
-
-        CertificatePolicies policies;
-        try {
-            policies = CertificatePolicies.getInstance(JcaX509ExtensionUtils.parseExtensionValue(certPolicyExt));
-        } catch (IOException e) {
-            throw new CertificateException("Error occurred while reading certificate policy object!", e);
-        }
-
-        return Arrays.stream(policies.getPolicyInformation())
-                .map(PolicyInformation::getPolicyIdentifier)
-                .map(ASN1ObjectIdentifier::getId)
-                .map(StringUtils::trim)
-                .collect(Collectors.toList());
-    }
 
     /**
      * Method validates if the certificate contains one of allowed Certificate policy. At the moment it does not validates
@@ -618,7 +589,7 @@ public class UITruststoreService {
             return;
         }
         // certificate list
-        List<String> certPolicyList = getCertificatePolicyIdentifiers(certificate);
+        List<String> certPolicyList = X509CertificateUtils.getCertificatePolicyIdentifiers(certificate);
         if (certPolicyList.isEmpty()) {
             String excMessage = String.format("Certificate has empty CertificatePolicy extension. Certificate: %s ", certificate);
             throw new CertificateException(excMessage);

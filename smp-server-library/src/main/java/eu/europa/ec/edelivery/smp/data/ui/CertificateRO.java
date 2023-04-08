@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Joze Rihtarsic
@@ -8,10 +10,11 @@ import java.time.OffsetDateTime;
  */
 public class CertificateRO extends BaseRO {
 
-    private static final long serialVersionUID = -9008583888835630004L;
+    private static final long serialVersionUID = 9008583888835630004L;
 
     private String certificateId;
     private String alias;
+    private String publicKeyType;
     private String subject;
     private String issuer;
     private String serialNumber;
@@ -19,6 +22,10 @@ public class CertificateRO extends BaseRO {
     private String encodedValue;
     private String clientCertHeader;
     private boolean isInvalid;
+
+    private boolean isContainingKey;
+
+    private List<String> certificatePolicies = new ArrayList<>();
     private String invalidReason;
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;
@@ -53,6 +60,14 @@ public class CertificateRO extends BaseRO {
 
     public void setIssuer(String issuer) {
         this.issuer = issuer;
+    }
+
+    public String getPublicKeyType() {
+        return publicKeyType;
+    }
+
+    public void setPublicKeyType(String publicKeyType) {
+        this.publicKeyType = publicKeyType;
     }
 
     public String getSerialNumber() {
@@ -103,6 +118,14 @@ public class CertificateRO extends BaseRO {
         this.crlUrl = crlUrl;
     }
 
+    public boolean isContainingKey() {
+        return isContainingKey;
+    }
+
+    public void setContainingKey(boolean containingKey) {
+        isContainingKey = containingKey;
+    }
+
     public boolean isInvalid() {
         return isInvalid;
     }
@@ -117,5 +140,9 @@ public class CertificateRO extends BaseRO {
 
     public void setInvalidReason(String invalidReason) {
         this.invalidReason = invalidReason;
+    }
+
+    public List<String> getCertificatePolicies() {
+        return certificatePolicies;
     }
 }

@@ -1,5 +1,8 @@
-import {DomainRo} from './domain-ro.model';
+import {CertificateRo} from "../user/certificate-ro.model";
 
 export interface KeystoreResult {
-  errorMessage?:String;
+
+  errorMessage?: string;
+
+  addedCertificates?: CertificateRo[];
 }

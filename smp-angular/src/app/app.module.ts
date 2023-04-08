@@ -1,7 +1,12 @@
 import 'hammerjs';
-import {CredentialDialogComponent} from "./common/dialogs/credential-dialog/credential-dialog.component";
-import {AccessTokenGenerationDialogComponent} from "./common/dialogs/access-token-generation-dialog/access-token-generation-dialog.component";
-import {AccessTokenPanelComponent} from "./user-settings/user-access-tokens/access-token-panel/access-token-panel.component";
+import {
+  AccessTokenGenerationDialogComponent
+} from "./common/dialogs/access-token-generation-dialog/access-token-generation-dialog.component";
+import {
+  AccessTokenPanelComponent
+} from "./user-settings/user-access-tokens/access-token-panel/access-token-panel.component";
+import {AdminTruststoreComponent} from "./system-settings/admin-truststore/admin-truststore.component";
+import {AdminTruststoreService} from "./system-settings/admin-truststore/admin-truststore.service";
 import {AlertComponent} from "./alert/alert.component";
 import {AlertMessageComponent} from './common/alert-message/alert-message.component';
 import {AlertMessageService} from './common/alert-message/alert-message.service';
@@ -17,23 +22,33 @@ import {BrowserModule} from '@angular/platform-browser';
 import {CancelDialogComponent} from './common/dialogs/cancel-dialog/cancel-dialog.component';
 import {CapitalizeFirstPipe} from './common/capitalize-first.pipe';
 import {CertificateDialogComponent} from "./common/dialogs/certificate-dialog/certificate-dialog.component";
-import {CertificatePanelComponent} from "./user-settings/user-certificates/certificate-panel/certificate-panel.component";
+import {
+  CertificatePanelComponent
+} from "./common/panels/certificate-panel/certificate-panel.component";
 import {CertificateService} from './system-settings/user/certificate.service';
 import {ClearInvalidDirective} from './custom-date/clear-invalid.directive';
 import {ColumnPickerComponent} from './common/column-picker/column-picker.component';
 import {ConfirmationDialogComponent} from './common/dialogs/confirmation-dialog/confirmation-dialog.component';
+import {CredentialDialogComponent} from "./common/dialogs/credential-dialog/credential-dialog.component";
 import {DataPanelComponent} from "./common/data-panel/data-panel.component";
 import {DatePipe} from './custom-date/date.pipe';
 import {DefaultPasswordDialogComponent} from './security/default-password-dialog/default-password-dialog.component';
 import {DialogComponent} from './common/dialogs/dialog/dialog.component';
 import {DirtyGuard} from './common/dirty.guard';
 import {DomainComponent} from './system-settings/domain/domain.component';
-import {DomainDetailsDialogComponent} from './system-settings/domain/domain-details-dialog/domain-details-dialog.component';
+import {
+  DomainDetailsDialogComponent
+} from './system-settings/domain/domain-details-dialog/domain-details-dialog.component';
 import {DomainSelectorComponent} from './common/domain-selector/domain-selector.component';
 import {DomainService} from './security/domain.service';
 import {DownloadService} from './download/download.service';
-import {ExpiredPasswordDialogComponent} from './common/dialogs/expired-password-dialog/expired-password-dialog.component';
+import {
+  ExpiredPasswordDialogComponent
+} from './common/dialogs/expired-password-dialog/expired-password-dialog.component';
 import {ExtendedHttpClient, extendedHttpClientCreator} from './http/extended-http-client';
+import {ExtensionComponent} from "./system-settings/admin-extension/extension.component";
+import {ExtensionPanelComponent} from "./system-settings/admin-extension/extension-panel/extension-panel.component";
+import {ExtensionService} from "./system-settings/admin-extension/extension.service";
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FooterComponent} from './footer/footer.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -42,8 +57,12 @@ import {HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/commo
 import {HttpEventService} from './http/http-event.service';
 import {InformationDialogComponent} from "./common/dialogs/information-dialog/information-dialog.component";
 import {IsAuthorized} from './security/is-authorized.directive';
-import {KeystoreEditDialogComponent} from "./system-settings/domain/keystore-edit-dialog/keystore-edit-dialog.component";
-import {KeystoreImportDialogComponent} from "./system-settings/domain/keystore-import-dialog/keystore-import-dialog.component";
+import {
+  KeystoreEditDialogComponent
+} from "./system-settings/domain/keystore-edit-dialog/keystore-edit-dialog.component";
+import {
+  KeystoreImportDialogComponent
+} from "./system-settings/admin-keystore/keystore-import-dialog/keystore-import-dialog.component";
 import {KeystoreService} from "./system-settings/domain/keystore.service";
 import {LoginComponent} from './login/login.component';
 import {MatButtonModule} from "@angular/material/button";
@@ -56,7 +75,8 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from "@angular/material/list";
 import {MatMenuModule} from "@angular/material/menu";
-import {MatNativeDateModule} from "@angular/material/core";
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from "@angular/material/core";
+import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatSelectModule} from "@angular/material/select";
 import {MatSidenavModule} from "@angular/material/sidenav";
@@ -71,21 +91,36 @@ import {NavTree} from "./window/sidenav/nav-tree/nav-tree.component";
 import {NavigationService} from "./window/sidenav/navigation-model.service";
 import {NgModule} from '@angular/core';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
-import {ObjectPropertiesDialogComponent} from "./common/dialogs/object-properties-dialog/object-properties-dialog.component";
+import {
+  ObjectPropertiesDialogComponent
+} from "./common/dialogs/object-properties-dialog/object-properties-dialog.component";
 import {PasswordChangeDialogComponent} from "./common/dialogs/password-change-dialog/password-change-dialog.component";
 import {PropertyComponent} from "./system-settings/property/property.component";
-import {PropertyDetailsDialogComponent} from "./system-settings/property/property-details-dialog/property-details-dialog.component";
+import {
+  PropertyDetailsDialogComponent
+} from "./system-settings/property/property-details-dialog/property-details-dialog.component";
+import {
+  ResourceDetailsDialogComponent
+} from "./system-settings/admin-extension/resource-details-dialog/resource-details-dialog.component";
 import {RowLimiterComponent} from './common/row-limiter/row-limiter.component';
 import {SaveDialogComponent} from './common/dialogs/save-dialog/save-dialog.component';
 import {SearchTableComponent} from './common/search-table/search-table.component';
 import {SecurityEventService} from './security/security-event.service';
 import {SecurityService} from './security/security.service';
-import {ServiceGroupDetailsDialogComponent} from './service-group-edit/service-group-details-dialog/service-group-details-dialog.component';
+import {
+  ServiceGroupDetailsDialogComponent
+} from './service-group-edit/service-group-details-dialog/service-group-details-dialog.component';
 import {ServiceGroupEditComponent} from './service-group-edit/service-group-edit.component';
-import {ServiceGroupExtensionWizardDialogComponent} from './service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component';
-import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-group-metadata-dialog/service-group-metadata-dialog.component';
+import {
+  ServiceGroupExtensionWizardDialogComponent
+} from './service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component';
+import {
+  ServiceGroupMetadataDialogComponent
+} from './service-group-edit/service-group-metadata-dialog/service-group-metadata-dialog.component';
 import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
-import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
+import {
+  ServiceMetadataWizardDialogComponent
+} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
 import {SharedModule} from './common/module/shared.module';
 import {SidenavComponent} from './window/sidenav/sidenav.component';
 import {SmlIntegrationService} from "./system-settings/domain/sml-integration.service";
@@ -94,9 +129,10 @@ import {SpacerComponent} from "./common/spacer/spacer.component";
 import {SpinnerComponent} from './common/spinner/spinner.component';
 import {ThemeService} from "./common/theme-service/theme.service";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
-import {TruststoreEditDialogComponent} from "./system-settings/user/truststore-edit-dialog/truststore-edit-dialog.component";
-import {TruststoreService} from "./system-settings/user/truststore.service";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
+import {
+  UserCertificatePanelComponent
+} from "./user-settings/user-certificates/user-certificate-panel/user-certificate-panel.component";
 import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
 import {UserComponent} from './system-settings/user/user.component';
 import {UserDetailsDialogComponent} from './system-settings/user/user-details-dialog/user-details-dialog.component';
@@ -104,20 +140,27 @@ import {UserDetailsService} from './system-settings/user/user-details-dialog/use
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
 import {UserService} from './system-settings/user/user.service';
 import {routing} from './app.routes';
-import {ExtensionComponent} from "./system-settings/extension/extension.component";
-import {MatPaginatorModule} from "@angular/material/paginator";
-import {ExtensionPanelComponent} from "./system-settings/extension/extension-panel/extension-panel.component";
+import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@angular/material-moment-adapter";
 import {
-  ResourceDetailsDialogComponent
-} from "./system-settings/extension/resource-details-dialog/resource-details-dialog.component";
-import {ExtensionService} from "./system-settings/extension/extension.service";
+  NGX_MAT_DATE_FORMATS,
+  NgxMatDateAdapter,
+  NgxMatDatetimePickerModule
+} from "@angular-material-components/datetime-picker";
+import {
+  NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  NGX_MAT_MOMENT_FORMATS, NgxMatMomentAdapter,
+  NgxMatMomentModule
+} from "@angular-material-components/moment-adapter";
+import {AdminKeystoreComponent} from "./system-settings/admin-keystore/admin-keystore.component";
+import {AdminKeystoreService} from "./system-settings/admin-keystore/admin-keystore.service";
 
 
 @NgModule({
   declarations: [
-    CredentialDialogComponent,
     AccessTokenGenerationDialogComponent,
     AccessTokenPanelComponent,
+    AdminTruststoreComponent,
+    AdminKeystoreComponent,
     AlertComponent,
     AlertMessageComponent,
     AppComponent,
@@ -131,6 +174,7 @@ import {ExtensionService} from "./system-settings/extension/extension.service";
     ClearInvalidDirective,
     ColumnPickerComponent,
     ConfirmationDialogComponent,
+    CredentialDialogComponent,
     DataPanelComponent,
     DatePipe,
     DefaultPasswordDialogComponent,
@@ -167,8 +211,8 @@ import {ExtensionService} from "./system-settings/extension/extension.service";
     SpacerComponent,
     SpinnerComponent,
     ToolbarComponent,
-    TruststoreEditDialogComponent,
     UserAccessTokensComponent,
+    UserCertificatePanelComponent,
     UserCertificatesComponent,
     UserComponent,
     UserDetailsDialogComponent,
@@ -194,6 +238,7 @@ import {ExtensionService} from "./system-settings/extension/extension.service";
     MatInputModule,
     MatListModule,
     MatMenuModule,
+    MatMomentDateModule,
     MatNativeDateModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
@@ -206,6 +251,8 @@ import {ExtensionService} from "./system-settings/extension/extension.service";
     MatTooltipModule,
     MatTreeModule,
     NgxDatatableModule,
+    NgxMatDatetimePickerModule,
+    NgxMatMomentModule,
     ReactiveFormsModule,
     SharedModule,
     routing,
@@ -230,14 +277,20 @@ import {ExtensionService} from "./system-settings/extension/extension.service";
     SmlIntegrationService,
     SmpInfoService,
     ThemeService,
-    TruststoreService,
+    AdminTruststoreService,
+    AdminKeystoreService,
     UserDetailsService,
     UserService,
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
       deps: [HttpClient, HttpEventService, SecurityService]
-    }
+    },
+    //use DateAdapter for date formatting and NgxMatDateAdapter for date time picker
+    {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
+    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
+    {provide: NgxMatDateAdapter, useClass: NgxMatMomentAdapter, deps: [MAT_DATE_LOCALE, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS]},
+    {provide: NGX_MAT_DATE_FORMATS, useValue: NGX_MAT_MOMENT_FORMATS},
   ],
   bootstrap: [AppComponent]
 })
