@@ -242,9 +242,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   private selectedPathSubject = new Subject<NavigationNode[]>();
   selected: NavigationNode;
 
+  previousSelected: NavigationNode;
+
   selectedPath: NavigationNode[];
 
-  private  rootNode: NavigationNode = PUBLIC_NAVIGATION_TREE;
+  private rootNode: NavigationNode = PUBLIC_NAVIGATION_TREE;
 
   constructor(protected securityService: SecurityService,
               protected securityEventService: SecurityEventService,
@@ -276,27 +278,31 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   select(node: NavigationNode) {
 
-    let targetNode =this.findLeaf(node);
+    let targetNode = this.findLeaf(node);
     if (targetNode === this.selected) {
       console.log("Already selected skip");
       return
     }
     if (!!targetNode) {
       if (this.selected) {
-        // unselect current valie
+        // unselect current value
         this.selected.selected = false;
       }
-
+      this.previousSelected = this.selected;
       this.selected = targetNode
       this.selected.selected = true;
       this.selectedPath = this.findPathForNode(this.selected, this.rootNode);
       this.selectedPathSubject.next(this.selectedPath);
-      let navigationPath: string[] = this.getNavigationPath( this.selectedPath );
+      let navigationPath: string[] = this.getNavigationPath(this.selectedPath);
       // navigate to selected path
       this.router.navigate(navigationPath);
-    }else {
+    } else {
       this.selectedPathSubject.next(null);
     }
+  }
+
+  selectPreviousNode() {
+    this.select(this.previousSelected)
   }
 
 
@@ -376,7 +382,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   };
 
 
-  getSelectedPathObservable (): Observable<NavigationNode[]> {
+  getSelectedPathObservable(): Observable<NavigationNode[]> {
     return this.selectedPathSubject.asObservable();
   }
 

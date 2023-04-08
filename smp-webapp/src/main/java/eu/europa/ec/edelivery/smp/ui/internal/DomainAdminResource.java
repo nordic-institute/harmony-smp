@@ -12,7 +12,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.DomainService;
 import eu.europa.ec.edelivery.smp.services.ui.UIDomainService;
-import org.springframework.beans.factory.annotation.Autowired;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
@@ -22,11 +22,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.PARAM_QUERY_USER;
 
 /**
  * DomainAdminResource provides admin services for managing the domains configured in SMP. The services defined in path
  * ResourceConstants.CONTEXT_PATH_INTERNAL should not be exposed to internet.
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -58,20 +58,27 @@ public class DomainAdminResource {
         return uiDomainService.getTableList(page, pageSize, orderBy, orderType, null);
     }
 
+    @GetMapping(path = "/{user-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
+    public List<DomainRO> getAllDomainList(@PathVariable("user-enc-id") String userEncId) {
+        logAdminAccess("getAllDomainList");
+        return uiDomainService.getAllDomains();
+    }
+
     /**
-     *  List of domains to be added or updated
+     * List of domains to be added or updated
      *
      * @param updateEntities
      */
     @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public void updateDomainList(@RequestBody DomainRO[] updateEntities) {
-        LOG.info("GOT LIST OF DomainRO to UPDATE: " + updateEntities.length);
         uiDomainService.updateDomainList(Arrays.asList(updateEntities));
     }
 
     /**
      * Validated if domains with provided IDs can be deleted and returns the result in DeleteEntityValidation.
+     *
      * @param listOfDomainIds
      * @return
      */
@@ -121,4 +128,9 @@ public class DomainAdminResource {
         }
         return result;
     }
+
+    protected void logAdminAccess(String action) {
+        LOG.info(SMPLogger.SECURITY_MARKER, "Admin Domain action [{}] by user [{}], ", action, SessionSecurityUtils.getSessionUserDetails());
+    }
+
 }

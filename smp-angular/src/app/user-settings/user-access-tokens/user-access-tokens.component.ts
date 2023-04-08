@@ -1,4 +1,4 @@
-import {Component,} from '@angular/core';
+import {Component, QueryList, ViewChildren,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
 import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
@@ -6,14 +6,19 @@ import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dia
 import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/model/entity-status.model";
 import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/credential-dialog.component";
+import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
+import {AccessTokenPanelComponent} from "./access-token-panel/access-token-panel.component";
 
 
 @Component({
   templateUrl: './user-access-tokens.component.html',
   styleUrls: ['./user-access-tokens.component.scss']
 })
-export class UserAccessTokensComponent {
+export class UserAccessTokensComponent implements BeforeLeaveGuard {
   accessTokens: CredentialRo[] = [];
+
+  @ViewChildren(AccessTokenPanelComponent)
+  userTokenCredentialComponents: QueryList<AccessTokenPanelComponent>;
 
   constructor(private securityService: SecurityService,
               private userService: UserService,
@@ -74,11 +79,11 @@ export class UserAccessTokensComponent {
 
   public createNewAccessToken() {
     this.dialog.open(CredentialDialogComponent, {
-      data:{
+      data: {
         credentialType: CredentialDialogComponent.ACCESS_TOKEN_TYPE,
         formTitle: "Access token generation dialog"
       }
-    } ).afterClosed();
+    }).afterClosed();
   }
 
   public onSaveItemClicked(credential: CredentialRo) {
@@ -104,5 +109,9 @@ export class UserAccessTokensComponent {
   }
 
 
+  isDirty(): boolean {
+    let dirtyComp = !this.userTokenCredentialComponents ? null : this.userTokenCredentialComponents.find(cmp => cmp.isDirty())
+    return !!dirtyComp;
+  }
 }
 

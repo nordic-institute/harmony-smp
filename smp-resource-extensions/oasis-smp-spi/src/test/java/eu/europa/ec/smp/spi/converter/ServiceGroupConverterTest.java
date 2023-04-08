@@ -36,7 +36,7 @@ class ServiceGroupConverterTest {
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupOK.xml");
 
         //when
-        ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(inputDoc);
+        ServiceGroup serviceGroup = ServiceGroup10Converter.unmarshal(inputDoc);
 
         //then
         assertNotNull(serviceGroup);
@@ -49,10 +49,10 @@ class ServiceGroupConverterTest {
         //given
         String expectedExt = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension</ex:dummynode></Extension>";
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupWithExtension.xml");
-        ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(inputDoc);
+        ServiceGroup serviceGroup = ServiceGroup10Converter.unmarshal(inputDoc);
 
         //when
-        byte[] val = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
+        byte[] val = ServiceGroup10Converter.extractExtensionsPayload(serviceGroup);
 
         //then
         assertNotNull(val);
@@ -65,7 +65,7 @@ class ServiceGroupConverterTest {
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupWithDOCTYPE.xml");
 
         //when then
-        ResourceException result = assertThrows(ResourceException.class, () -> ServiceGroupConverter.unmarshal(inputDoc));
+        ResourceException result = assertThrows(ResourceException.class, () -> ServiceGroup10Converter.unmarshal(inputDoc));
 
         assertEquals(ResourceException.ErrorCode.PARSE_ERROR, result.getErrorCode());
         MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("DOCTYPE is disallowed"));

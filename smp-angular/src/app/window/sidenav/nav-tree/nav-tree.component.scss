@@ -14,17 +14,13 @@
 .nav-tree li {
   list-style-type: none;
   margin: 0 !important;
+  padding: 0 !important;
   padding-left: 1.0em !important;
 }
 
 /* Draw the bottom menu line */
-li::before {
-  height: 3em;
-  position:absolute;
-  left: 0;
-  right: 0;
+.nav-tree li {
   border-bottom: #EEE 1px solid;
-  content: ' ';
 }
 .nav-tree li button {
   min-height: 2.5em !important;

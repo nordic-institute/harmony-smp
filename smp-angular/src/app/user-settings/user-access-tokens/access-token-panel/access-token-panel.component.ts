@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
+import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
@@ -8,7 +9,7 @@ import {CredentialRo} from "../../../security/credential.model";
   templateUrl: './access-token-panel.component.html',
   styleUrls: ['./access-token-panel.component.scss']
 })
-export class AccessTokenPanelComponent {
+export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
   @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
@@ -84,6 +85,10 @@ export class AccessTokenPanelComponent {
   get lastFailedLoginAttempt(): string {
     return this._credential && this._credential.lastFailedLoginAttempt ?
       this._credential.lastFailedLoginAttempt.toLocaleDateString() : "---";
+  }
+
+  isDirty(): boolean {
+    return this.credentialForm.dirty;
   }
 
 }

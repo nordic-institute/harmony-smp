@@ -1,0 +1,77 @@
+<div id="admin-domain-panel">
+  <data-panel id="admin-domain-data-panel"
+              title="System Domain administration"
+              text="System Domain administration panel is a tool for creating and removing domains from DomiSMP"
+              [labelColumnContent]="searchDomainPanel">
+
+
+    <mat-tab-group style="height: 100%">
+      <mat-tab label="Domain data">
+        <domain-panel
+          [domain]="selected"
+          [keystoreCertificates]="keystoreCertificates"
+        ></domain-panel>
+      </mat-tab>
+      <mat-tab label="Resources">
+        <domain-resource-type-panel [domain]="selected"></domain-resource-type-panel>
+      </mat-tab>
+      <mat-tab label="SML integration">
+        <domain-sml-integration-panel [domain]="selected"></domain-sml-integration-panel>
+      </mat-tab>
+      <mat-tab label="Members"> Content 3</mat-tab>
+    </mat-tab-group>
+  </data-panel>
+</div>
+
+
+<ng-template #searchDomainPanel>
+  <mat-form-field id="domain-filter">
+    <mat-label>Filter Domain by domain code</mat-label>
+    <input matInput (keyup)="applyDomainFilter($event)" placeholder="Domain code" #inputDomainFilter>
+  </mat-form-field>
+
+  <mat-toolbar>
+    <mat-toolbar-row class="mat-elevation-z5">
+      <button mat-raised-button mat-flat-button color="primary"
+              (click)="onCreateDomainClicked()">Create domain
+      </button>
+
+      <button mat-raised-button
+              [disabled]="!selected"
+              color="primary"
+              (click)="onDeleteSelectedDomainClicked()">
+        <mat-icon>delete</mat-icon>
+        <span>Delete selected</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <table class="mat-elevation-z2" id="admin-domain-table" mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="domainCode">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Domain code</th>
+      <td mat-cell *matCellDef="let row" [matTooltip]="row.domainCode">{{row.domainCode}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+        (click)="domainSelected(row)"
+        [ngClass]="{'datatable-row-selected': row==selected,'datatable-row-odd': odd}"
+    ></tr>
+
+
+    <tr class="mat-row" *matNoDataRow>
+      <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell" colspan="2">No data matching the filter "{{inputDomainFilter.value}}
+        "
+      </td>
+      <ng-template #noDataFound>
+        <td class="mat-cell" colspan="2">No data</td>
+      </ng-template>
+    </tr>
+  </table>
+
+  <mat-paginator class="mat-elevation-z2" id="extension-paginator"
+                 [hidePageSize]="true"
+                 [showFirstLastButtons]="true"
+                 [pageSize]="5" aria-label="Select page"></mat-paginator>
+
+</ng-template>
+-->

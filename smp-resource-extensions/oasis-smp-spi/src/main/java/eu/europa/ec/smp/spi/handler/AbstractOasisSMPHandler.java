@@ -16,7 +16,7 @@ import java.io.InputStream;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public abstract class AbstractOasisSMP10Handler implements ResourceHandlerSpi {
+public abstract class AbstractOasisSMPHandler implements ResourceHandlerSpi {
     public byte[] readFromInputStream(InputStream inputStream) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         byte[] data = new byte[4096];

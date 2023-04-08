@@ -1,9 +1,11 @@
 package eu.europa.ec.smp.spi;
 
 import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
+import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup20;
 import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,11 +18,13 @@ import java.util.List;
 @Service
 public class OasisSMPExtension implements ExtensionInfo {
 
-    OasisSMPServiceGroup10 oasisSMPServiceGroup10;
+    final OasisSMPServiceGroup10 oasisSMPServiceGroup10;
 
+    final OasisSMPServiceGroup20 oasisSMPServiceGroup20;
 
-    public OasisSMPExtension(OasisSMPServiceGroup10 oasisSMPServiceGroup10) {
+    public OasisSMPExtension(OasisSMPServiceGroup10 oasisSMPServiceGroup10, OasisSMPServiceGroup20 oasisSMPServiceGroup20) {
         this.oasisSMPServiceGroup10 = oasisSMPServiceGroup10;
+        this.oasisSMPServiceGroup20 = oasisSMPServiceGroup20;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class OasisSMPExtension implements ExtensionInfo {
 
     @Override
     public List<ResourceDefinitionSpi> resourceTypes() {
-        return Collections.singletonList(oasisSMPServiceGroup10);
+        return Arrays.asList(oasisSMPServiceGroup10, oasisSMPServiceGroup20);
     }
 
     @Override

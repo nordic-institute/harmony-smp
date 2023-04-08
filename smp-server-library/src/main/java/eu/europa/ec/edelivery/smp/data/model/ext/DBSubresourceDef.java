@@ -22,7 +22,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Audited
 @Table(name = "SMP_SUBRESOURCE_DEF",
         indexes = {@Index(name = "SMP_RD_UNIQ_RDID_UCTX_IDX", columnList = "FK_RESOURCE_DEF_ID,URL_SEGMENT", unique = true),
-                @Index(name = "SMP_RESDEF_UNIQ_URL_SEG", columnList = "URL_SEGMENT", unique = true),
                 @Index(name = "SMP_RESDEF_UNIQ_IDENTIFIER", columnList = "IDENTIFIER", unique = true)
 })
 @org.hibernate.annotations.Table(appliesTo = "SMP_SUBRESOURCE_DEF", comment = "SMP extension subresource definitions")

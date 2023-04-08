@@ -1,7 +1,7 @@
 export class SmpConstants {
 
-  public static EXPANDED_MENU_WIDTH:string = "180px"
-  public static COLLAPSED_MENU_WIDTH:string = "50px"
+  public static EXPANDED_MENU_WIDTH: string = "180px"
+  public static COLLAPSED_MENU_WIDTH: string = "50px"
   public static readonly NULL_VALUE: string = "-----------"
   public static readonly DATE_TIME_FORMAT = 'dd/MM/yyyy HH:mm:ss z';
   public static readonly DATE_FORMAT = 'dd/MM/yyyy';
@@ -52,11 +52,15 @@ export class SmpConstants {
   //------------------------------
   // internal endpoints
   public static readonly REST_INTERNAL_ALERT_MANAGE = SmpConstants.REST_INTERNAL + 'alert';
-  public static readonly REST_INTERNAL_DOMAIN_MANAGE = SmpConstants.REST_INTERNAL + 'domain';
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED = SmpConstants.REST_INTERNAL + 'domain';
+
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE = SmpConstants.REST_INTERNAL + 'domain' +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
+
   public static readonly REST_INTERNAL_EXTENSION_MANAGE = SmpConstants.REST_INTERNAL + 'extension';
   public static readonly REST_INTERNAL_PROPERTY_MANAGE = SmpConstants.REST_INTERNAL + 'property';
   public static readonly REST_INTERNAL_PROPERTY_VALIDATE = SmpConstants.REST_INTERNAL_PROPERTY_MANAGE + '/validate';
-  public static readonly REST_INTERNAL_DOMAIN_VALIDATE_DELETE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE + '/validate-delete';
+  public static readonly REST_INTERNAL_DOMAIN_VALIDATE_DELETE = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED + '/validate-delete';
   public static readonly REST_INTERNAL_USER_MANAGE = SmpConstants.REST_INTERNAL + 'user';
   public static readonly REST_INTERNAL_USER_GENERATE_ACCESS_TOKEN = SmpConstants.REST_INTERNAL_USER_MANAGE +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'generate-access-token-for' + '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
@@ -66,14 +70,14 @@ export class SmpConstants {
 
   public static readonly REST_INTERNAL_USER_VALIDATE_DELETE = `${SmpConstants.REST_INTERNAL_USER_MANAGE}/validate-delete`;
   public static readonly REST_INTERNAL_KEYSTORE_DEPRECATED = SmpConstants.REST_INTERNAL + 'keystore';
-  public static readonly REST_INTERNAL_KEYSTORE_MANAGE = SmpConstants.REST_INTERNAL + 'keystore' +'/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
+  public static readonly REST_INTERNAL_KEYSTORE_MANAGE = SmpConstants.REST_INTERNAL + 'keystore' + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
 
   public static readonly REST_INTERNAL_KEYSTORE_UPLOAD = SmpConstants.REST_INTERNAL_KEYSTORE_MANAGE + '/' + 'upload'
     + '/' + SmpConstants.PATH_PARAM_KEYSTORE_TYPE + '/' + SmpConstants.PATH_PARAM_KEYSTORE_PWD;
   public static readonly REST_INTERNAL_KEYSTORE_DELETE_ENTRY = SmpConstants.REST_INTERNAL_KEYSTORE_MANAGE + '/' + 'delete'
-    + '/' + SmpConstants.PATH_PARAM_CERT_ALIAS ;
+    + '/' + SmpConstants.PATH_PARAM_CERT_ALIAS;
 
-  public static readonly REST_INTERNAL_TRUSTSTORE_MANAGE = SmpConstants.REST_INTERNAL + 'truststore' +'/' + SmpConstants.PATH_PARAM_ENC_USER_ID ;
+  public static readonly REST_INTERNAL_TRUSTSTORE_MANAGE = SmpConstants.REST_INTERNAL + 'truststore' + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
   public static readonly REST_INTERNAL_TRUSTSTORE_UPLOAD_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE_MANAGE + '/' + 'upload-certificate';
   public static readonly REST_INTERNAL_TRUSTSTORE_DELETE_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE_MANAGE + '/' + 'delete' + '/' + SmpConstants.PATH_PARAM_CERT_ALIAS;
 

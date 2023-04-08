@@ -37,13 +37,13 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALI
  * @since 3.0.0.
  */
 @Component
-public class ServiceMetadataValidator {
+public class ServiceMetadata10Validator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadataValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadata10Validator.class);
 
     final SmpIdentifierServiceApi smpIdentifierApi;
 
-    public ServiceMetadataValidator(SmpIdentifierServiceApi smpIdentifierApi) {
+    public ServiceMetadata10Validator(SmpIdentifierServiceApi smpIdentifierApi) {
         this.smpIdentifierApi = smpIdentifierApi;
     }
 

@@ -8,11 +8,11 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.converter.ServiceMetadata10Converter;
+import eu.europa.ec.smp.spi.converter.ServiceMetadata20Converter;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
-import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
-import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadata;
+import eu.europa.ec.smp.spi.validation.ServiceMetadata20Validator;
+import gen.eu.europa.ec.ddc.api.smp20.ServiceMetadata;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,19 +29,19 @@ import java.util.Collections;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
 
 @Component
-public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
+public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OasisSMPServiceMetadata10Handler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OasisSMPServiceMetadata20Handler.class);
 
     final SmpXmlSignatureApi signatureApi;
     final SmpDataServiceApi smpDataApi;
     final SmpIdentifierServiceApi smpIdentifierApi;
-    final ServiceMetadata10Validator serviceMetadataValidator;
+    final ServiceMetadata20Validator serviceMetadataValidator;
 
-    public OasisSMPServiceMetadata10Handler(SmpDataServiceApi smpDataApi,
+    public OasisSMPServiceMetadata20Handler(SmpDataServiceApi smpDataApi,
                                             SmpIdentifierServiceApi smpIdentifierApi,
                                             SmpXmlSignatureApi signatureApi,
-                                            ServiceMetadata10Validator serviceMetadataValidator) {
+                                            ServiceMetadata20Validator serviceMetadataValidator) {
         this.signatureApi = signatureApi;
         this.smpDataApi = smpDataApi;
         this.smpIdentifierApi = smpIdentifierApi;
@@ -61,7 +61,7 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         Document docEnvelopedMetadata;
         try {
             byte[] bytearray = readFromInputStream(resourceData.getResourceInputStream());
-            docEnvelopedMetadata = ServiceMetadata10Converter.toSignedServiceMetadataDocument(bytearray);
+            docEnvelopedMetadata = ServiceMetadata20Converter.toSignedServiceMetadataDocument(bytearray);
         } catch (IOException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: ["
                     + resourceIdentifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
@@ -75,7 +75,7 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         }
 
         try {
-            ServiceMetadata10Converter.serialize(docEnvelopedMetadata, responseData.getOutputStream());
+            ServiceMetadata20Converter.serialize(docEnvelopedMetadata, responseData.getOutputStream());
             responseData.setContentType("text/xml");
         } catch (TransformerException e) {
             throw new ResourceException(INTERNAL_ERROR, "Error occurred while writing the message: ["
@@ -116,12 +116,12 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         byte[] bytearray;
         try {
             bytearray = readFromInputStream(resourceData.getResourceInputStream());
-            OasisSmpSchemaValidator.validateOasisSMP10Schema(bytearray);
+            OasisSmpSchemaValidator.validateOasisSMP20ServiceMetadataSchema(bytearray);
         } catch (IOException | XmlInvalidAgainstSchemaException e) {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
 
-        ServiceMetadata serviceMetadata = ServiceMetadata10Converter.unmarshal(bytearray);
+        ServiceMetadata serviceMetadata = ServiceMetadata20Converter.unmarshal(bytearray);
         serviceMetadataValidator.validate(identifier, documentIdentifier, serviceMetadata);
 
     }

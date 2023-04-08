@@ -1,0 +1,35 @@
+<form [formGroup]="domainForm" (ngSubmit)="onSaveClicked()">
+
+  <div id="domain-sml-integration-panel" class="mat-elevation-z2">
+    <h3>SML integration data</h3>
+    <mat-form-field style="width:100%">
+      <mat-label>SML SMP identifier</mat-label>
+      <input matInput placeholder="SML SMP identifier" name="smlSmpId"
+             id="smlSMPId_id" #smlSMPId
+             formControlName="smlSmpId" maxlength="63">
+      <mat-hint align="end">SMP ID used for SML</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field style="width:100%"
+                    matTooltip="Client Certificate used for SML authentication. The SML Client-Cert http Header is also generated from the certificate">
+
+      <mat-label>SML Client Certificate Alias</mat-label>
+      <mat-select
+        placeholder="SML ClientCert Alias"
+        formControlName="smlClientKeyCertificate"
+        name="cert"
+        id="smlClientKeyAlias_id">
+        <mat-option [value]="''">Choose certificate for SML integration</mat-option>
+
+      </mat-select>
+    </mat-form-field>
+
+    <mat-slide-toggle style="width:100%"
+                      mat-no-ink class="mat-primary"
+                      formControlName="smlClientCertAuth"
+                      id="smlClientCertHeaderAuth_id">
+      Use ClientCert http header authentication.
+    </mat-slide-toggle>
+
+  </div>
+</form>

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
@@ -9,6 +9,7 @@ import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dia
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/model/entity-status.model";
 import {KeystoreImportDialogComponent} from "./keystore-import-dialog/keystore-import-dialog.component";
+import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
@@ -16,7 +17,7 @@ import {KeystoreImportDialogComponent} from "./keystore-import-dialog/keystore-i
   templateUrl: './admin-keystore.component.html',
   styleUrls: ['./admin-keystore.component.css']
 })
-export class AdminKeystoreComponent implements AfterViewInit {
+export class AdminKeystoreComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['alias'];
   dataSource: MatTableDataSource<CertificateRo> = new MatTableDataSource();
   keystoreCertificates: CertificateRo[];
@@ -41,11 +42,18 @@ export class AdminKeystoreComponent implements AfterViewInit {
     keystoreService.getKeystoreData();
   }
 
+  ngOnInit(): void {
+    // filter predicate for search the domain
+    this.dataSource.filterPredicate =
+      (data: CertificateRo, filter: string) => {
+        return !filter || -1 != data.alias.toLowerCase().indexOf(filter.trim().toLowerCase())
+      };
+  }
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-
 
   updateKeystoreCertificates(keystoreCertificates: CertificateRo[]) {
     this.keystoreCertificates = keystoreCertificates;
@@ -125,6 +133,10 @@ export class AdminKeystoreComponent implements AfterViewInit {
 
   deleteCertificateFromTruststore(alias: string) {
     this.keystoreService.deleteEntryFromKeystore(alias);
+  }
+
+  isDirty(): boolean {
+    return false;
   }
 
 }
