@@ -13,13 +13,14 @@ import {GlobalLookups} from "../../common/global-lookups";
 import {CredentialRo} from "../../security/credential.model";
 import {DateAdapter} from "@angular/material/core";
 import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
+import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss']
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements  BeforeLeaveGuard{
 
   readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
@@ -173,6 +174,11 @@ export class UserProfileComponent {
     this.dateAdapter.setLocale(target);
     this.ngxMatDateAdapter.setLocale(target);
   }
+
+  isDirty(): boolean {
+    return this.userForm.dirty;
+  }
+
 
 
 }

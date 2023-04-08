@@ -2,7 +2,6 @@ package eu.europa.ec.edelivery.smp.ui.external;
 
 
 import eu.europa.ec.edelivery.smp.data.ui.DomainPublicRO;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -45,4 +44,5 @@ public class DomainResource {
         ServiceResult<DomainPublicRO> result = uiDomainService.getTableList(page, pageSize, orderBy, orderType, null);
         return result;
     }
+
 }

@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
+import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
@@ -8,7 +9,7 @@ import {CredentialRo} from "../../../security/credential.model";
   templateUrl: './user-certificate-panel.component.html',
   styleUrls: ['./user-certificate-panel.component.scss']
 })
-export class UserCertificatePanelComponent {
+export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
   @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
 
@@ -87,6 +88,10 @@ export class UserCertificatePanelComponent {
   get lastFailedLoginAttempt(): string {
     return this._credential && this._credential.lastFailedLoginAttempt ?
       this._credential.lastFailedLoginAttempt.toLocaleDateString() : "---";
+  }
+
+  isDirty(): boolean {
+    return this.credentialForm.dirty;
   }
 
 }

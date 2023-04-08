@@ -14,12 +14,11 @@
 package eu.europa.ec.smp.spi.converter;
 
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
-import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadata;
+import gen.eu.europa.ec.ddc.api.smp20.ServiceMetadata;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -40,23 +39,20 @@ import java.io.*;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALID_RESOURCE;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.PARSE_ERROR;
 
-/**
- * @author gutowpa
- * @since 3.0.0
- */
-public class ServiceMetadataConverter {
+
+public class ServiceMetadata20Converter {
 
     /**
      * Class has only static members. Is not meant to create instances  - also SONAR warning.
      */
-    private ServiceMetadataConverter() {
+    private ServiceMetadata20Converter() {
 
     }
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
-    private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\"" + NS + "\"/>";
+
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadataConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadata20Converter.class);
 
 
     private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial(() -> {
@@ -82,11 +78,7 @@ public class ServiceMetadataConverter {
      */
     public static Document toSignedServiceMetadataDocument(byte[] serviceMetadataXml) throws ResourceException {
         try {
-            Document docServiceMetadata = parse(serviceMetadataXml);
-            Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY.getBytes());
-            Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
-            root.getDocumentElement().appendChild(imported);
-            return root;
+            return parse(serviceMetadataXml);
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             throw new ResourceException(INVALID_RESOURCE, "Invalid Signed serviceMetadataXml with error: " + ExceptionUtils.getRootCauseMessage(ex), ex);
         }
@@ -96,7 +88,7 @@ public class ServiceMetadataConverter {
     public static ServiceMetadata unmarshal(byte[] serviceMetadataXml) throws ResourceException {
         try {
             InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);
-            ServiceMetadata serviceMetadata = (ServiceMetadata)getUnmarshaller()
+            ServiceMetadata serviceMetadata = (ServiceMetadata) getUnmarshaller()
                     .unmarshal(inputStream);
             return serviceMetadata;
         } catch (JAXBException ex) {

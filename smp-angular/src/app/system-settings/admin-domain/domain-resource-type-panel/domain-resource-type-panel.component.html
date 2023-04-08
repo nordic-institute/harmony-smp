@@ -1,0 +1,13 @@
+<form [formGroup]="domainForm" (ngSubmit)="onSaveClicked()">
+
+  <div id="domain-resource-type-panel" class="mat-elevation-z2">
+    <h3>Domain resource type configuration</h3>
+    <mat-selection-list #shoes>
+      <mat-list-option *ngFor="let resDef of domiSMPResourceDefinitions">
+        {{resDef.identifier}}
+      </mat-list-option>
+    </mat-selection-list>
+
+
+  </div>
+</form>

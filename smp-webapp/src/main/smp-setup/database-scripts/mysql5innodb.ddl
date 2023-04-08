@@ -616,9 +616,6 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        add constraint SMP_RD_UNIQ_RDID_UCTX_IDX unique (FK_RESOURCE_DEF_ID, URL_SEGMENT);
 
     alter table SMP_SUBRESOURCE_DEF 
-       add constraint SMP_RESDEF_UNIQ_URL_SEG unique (URL_SEGMENT);
-
-    alter table SMP_SUBRESOURCE_DEF 
        add constraint UK_pmdcnfwm5in2q9ky0b6dlgqvi unique (IDENTIFIER);
 
     alter table SMP_USER 

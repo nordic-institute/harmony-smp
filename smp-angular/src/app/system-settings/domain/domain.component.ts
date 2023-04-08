@@ -39,7 +39,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
   @ViewChild('searchTable') searchTable: SearchTableComponent;
 
 
-  baseUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE;
+  baseUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED;
   columnPicker: ColumnPicker = new ColumnPicker();
   domainController: DomainController;
   filter: any = {};

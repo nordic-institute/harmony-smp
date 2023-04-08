@@ -15,8 +15,7 @@ package eu.europa.ec.smp.spi.converter;
 
 
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
-import gen.eu.europa.ec.ddc.api.smp10.ExtensionType;
-import gen.eu.europa.ec.ddc.api.smp10.ServiceGroup;
+import gen.eu.europa.ec.ddc.api.smp20.ServiceGroup;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -24,33 +23,35 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.*;
-import javax.xml.namespace.QName;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamException;
-import java.io.*;
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALID_RESOURCE;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.PARSE_ERROR;
 
 /**
- *  Purpose of class is to test ServiceGroupService base methods
+ * Purpose of class is to test ServiceGroupService base methods
  *
- * @author migueti
- * @since 3.0.0
+ * @author Joze Rihtarsic
+ * @since 5.0
  */
 // move this tests to extension
 @Ignore
-public class ServiceGroupConverter {
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceGroupConverter.class);
+public class ServiceGroup20Converter {
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceGroup20Converter.class);
 
     /**
      * Class has only static members.
      */
-    private ServiceGroupConverter() {
+    private ServiceGroup20Converter() {
 
     }
 
@@ -113,16 +114,8 @@ public class ServiceGroupConverter {
         return documentBuilderFactory.newDocumentBuilder();
     }
 
-    public static byte[] extractExtensionsPayload(ServiceGroup sg) throws ResourceException {
-        try {
-            return ExtensionConverter.marshalExtensions(sg.getExtensions());
-        } catch (JAXBException | XMLStreamException | IOException e) {
-            throw new ResourceException(INVALID_RESOURCE, "Invalid extension with error: " + ExceptionUtils.getRootCauseMessage(e), e);
-        }
-    }
-
     public static void marshalToOutputStream(ServiceGroup serviceGroup, OutputStream outputStream) throws JAXBException {
-       marshalToOutputStream(serviceGroup, false, outputStream);
+        marshalToOutputStream(serviceGroup, false, outputStream);
     }
 
     private static void marshalToOutputStream(ServiceGroup serviceGroup, boolean prettyPrint, OutputStream outputStream) throws JAXBException {

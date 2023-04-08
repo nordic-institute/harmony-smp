@@ -7,13 +7,13 @@ import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.converter.ServiceGroup10Converter;
+import eu.europa.ec.smp.spi.converter.ServiceGroup20Converter;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceMetadata10;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
-import gen.eu.europa.ec.ddc.api.smp10.ParticipantIdentifierType;
-import gen.eu.europa.ec.ddc.api.smp10.ServiceGroup;
-import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadataReferenceCollectionType;
-import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadataReferenceType;
+import gen.eu.europa.ec.ddc.api.smp20.ServiceGroup;
+import gen.eu.europa.ec.ddc.api.smp20.aggregate.ServiceReference;
+import gen.eu.europa.ec.ddc.api.smp20.basic.ID;
+import gen.eu.europa.ec.ddc.api.smp20.basic.ParticipantID;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
@@ -34,14 +34,14 @@ import java.util.stream.Stream;
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
 
 @Component
-public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
+public class OasisSMPServiceGroup20Handler extends AbstractOasisSMPHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OasisSMPServiceGroup10Handler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OasisSMPServiceGroup20Handler.class);
 
     final SmpDataServiceApi smpDataApi;
     final SmpIdentifierServiceApi smpIdentifierApi;
 
-    public OasisSMPServiceGroup10Handler(SmpDataServiceApi smpDataApi, SmpIdentifierServiceApi smpIdentifierApi) {
+    public OasisSMPServiceGroup20Handler(SmpDataServiceApi smpDataApi, SmpIdentifierServiceApi smpIdentifierApi) {
         this.smpDataApi = smpDataApi;
         this.smpIdentifierApi = smpIdentifierApi;
     }
@@ -54,14 +54,13 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
             LOG.warn("Empty document input stream for service-group [{}]!", identifier);
             return;
         }
-        ServiceGroup serviceGroup = ServiceGroup10Converter.unmarshal(resourceData.getResourceInputStream());
+        ServiceGroup serviceGroup = ServiceGroup20Converter.unmarshal(resourceData.getResourceInputStream());
         // get references
-        serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
-        List<ServiceMetadataReferenceType> referenceTypes = buildReferences(identifier);
-        serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences().addAll(referenceTypes);
+        serviceGroup.getServiceReferences().clear();
+        serviceGroup.getServiceReferences().addAll(buildReferences(identifier));
 
         try {
-            ServiceGroup10Converter.marshalToOutputStream(serviceGroup, responseData.getOutputStream());
+            ServiceGroup20Converter.marshalToOutputStream(serviceGroup, responseData.getOutputStream());
         } catch (JAXBException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
 
@@ -69,17 +68,18 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
     }
 
 
-    private List<ServiceMetadataReferenceType> buildReferences(ResourceIdentifier resourceIdentifier) throws ResourceException {
+    private List<ServiceReference> buildReferences(ResourceIdentifier resourceIdentifier) {
         LOG.debug("Build build References identifier [{}].", resourceIdentifier);
         // get subresource identifiers for document type
         List<ResourceIdentifier> subResourceIdentifier = smpDataApi.getSubResourceIdentifiers(resourceIdentifier, OasisSMPServiceMetadata10.RESOURCE_IDENTIFIER);
-
-        List<ServiceMetadataReferenceType> referenceIds = new ArrayList<>();
+        List<ServiceReference> referenceIds = new ArrayList<>();
         for (ResourceIdentifier subresId : subResourceIdentifier) {
-            URI url = buildSMPURLForParticipantAndDocumentIdentifier(resourceIdentifier, subresId);
-            ServiceMetadataReferenceType referenceType = new ServiceMetadataReferenceType();
-            referenceType.setHref(url.getPath());
-            referenceIds.add(referenceType);
+            ServiceReference reference = new ServiceReference();
+            ID id = new ID();
+            id.setSchemeID(subresId.getScheme());
+            id.setValue(subresId.getValue());
+            reference.setID(id);
+            referenceIds.add(reference);
         }
         return referenceIds;
     }
@@ -112,17 +112,16 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         ServiceGroup serviceGroup = validateAndParse(resourceData);
 
         // ServiceMetadataReferenceCollection must be empty because they are automatically generated
-        if (serviceGroup.getServiceMetadataReferenceCollection()!=null
-                && !serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences().isEmpty() ) {
-            throw new ResourceException(INVALID_PARAMETERS, "ServiceMetadataReferenceCollection must be empty!");
+        if (!serviceGroup.getServiceReferences().isEmpty()) {
+            throw new ResourceException(INVALID_PARAMETERS, "ServiceReferences must be empty!");
         }
         // set participant to "lowercase" to match it as is saved in the database
         // this is just for back-compatibility issue!
-        serviceGroup.getParticipantIdentifier().setValue(resourceData.getResourceIdentifier().getValue());
-        serviceGroup.getParticipantIdentifier().setScheme(resourceData.getResourceIdentifier().getScheme());
+        serviceGroup.getParticipantID().setValue(resourceData.getResourceIdentifier().getValue());
+        serviceGroup.getParticipantID().setSchemeID(resourceData.getResourceIdentifier().getScheme());
 
         try {
-            ServiceGroup10Converter.marshalToOutputStream(serviceGroup, responseData.getOutputStream());
+            ServiceGroup20Converter.marshalToOutputStream(serviceGroup, responseData.getOutputStream());
         } catch (JAXBException e) {
             throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
         }
@@ -149,23 +148,21 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         byte[] bytearray;
         try {
             bytearray = readFromInputStream(resourceData.getResourceInputStream());
-            OasisSmpSchemaValidator.validateOasisSMP10Schema(bytearray);
+            OasisSmpSchemaValidator.validateOasisSMP20ServiceGroupSchema(bytearray);
         } catch (IOException | XmlInvalidAgainstSchemaException e) {
             String ids = identifier != null ?
                     Stream.of(identifier).map(identifier1 -> identifier1.toString()).collect(Collectors.joining(",")) : "";
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceGroup extension: [" + ids + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         // if service group
-        ServiceGroup serviceGroup = ServiceGroup10Converter.unmarshal(bytearray);
-        final ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();
-        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getScheme());
+        ServiceGroup serviceGroup = ServiceGroup20Converter.unmarshal(bytearray);
+        final ParticipantID participantId = serviceGroup.getParticipantID();
+        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getSchemeID());
 
         if (!xmlResourceIdentifier.equals(identifier)) {
             // Business identifier must equal path
-            throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + identifier + "] and XML body: [ scheme: '" + participantId.getScheme() + "', value: '" + participantId.getValue() + "']");
+            throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + identifier + "] and XML body: [ scheme: '" + participantId.getSchemeID() + "', value: '" + participantId.getValue() + "']");
         }
-
-
         return serviceGroup;
     }
 }

@@ -1,4 +1,4 @@
-import {Component,} from '@angular/core';
+import {Component, QueryList, ViewChildren,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
 import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
@@ -7,14 +7,20 @@ import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/model/entity-status.model";
 import {CertificateDialogComponent} from "../../common/dialogs/certificate-dialog/certificate-dialog.component";
 import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/credential-dialog.component";
+import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
+import {UserCertificatePanelComponent} from "./user-certificate-panel/user-certificate-panel.component";
 
 
 @Component({
   templateUrl: './user-certificates.component.html',
   styleUrls: ['./user-certificates.component.scss']
 })
-export class UserCertificatesComponent {
+export class UserCertificatesComponent implements BeforeLeaveGuard {
   certificates: CredentialRo[] = [];
+
+
+  @ViewChildren(UserCertificatePanelComponent)
+  userCertificateCredentialComponents: QueryList<UserCertificatePanelComponent>;
 
   constructor(private securityService: SecurityService,
               private userService: UserService,
@@ -110,6 +116,11 @@ export class UserCertificatesComponent {
 
   private update(credential: CredentialRo) {
     this.userService.updateUserCertificateCredential(credential);
+  }
+
+  isDirty(): boolean {
+    let dirtyComp = !this.userCertificateCredentialComponents?null: this.userCertificateCredentialComponents.find(cmp => cmp.isDirty())
+    return !!dirtyComp;
   }
 }
 

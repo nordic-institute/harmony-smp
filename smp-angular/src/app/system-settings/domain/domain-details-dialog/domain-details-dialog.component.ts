@@ -46,6 +46,7 @@ export class DomainDetailsDialogComponent {
     }
   }
 
+
   constructor(
     public dialog: MatDialog,
     public lookups: GlobalLookups,
@@ -87,7 +88,6 @@ export class DomainDetailsDialogComponent {
 
       'smlRegistered': new UntypedFormControl({value: ''}, null),
       'smlClientCertAuth': new UntypedFormControl({value: ''}, null),
-
     });
 
     this.domainForm.controls['domainCode'].setValue(this.current.domainCode);

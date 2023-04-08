@@ -1,9 +1,10 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {ExtensionRo} from "./extension-ro.model";
 import {ExtensionService} from "./extension.service";
+import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
@@ -11,7 +12,7 @@ import {ExtensionService} from "./extension.service";
   templateUrl: './extension.component.html',
   styleUrls: ['./extension.component.css']
 })
-export class ExtensionComponent implements AfterViewInit {
+export class ExtensionComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['name', 'version'];
   dataSource: MatTableDataSource<ExtensionRo> = new MatTableDataSource();
   selected?: ExtensionRo;
@@ -27,6 +28,14 @@ export class ExtensionComponent implements AfterViewInit {
     );
 
     extensionService.getExtensions();
+  }
+
+  ngOnInit(): void {
+    // filter predicate for search the domain
+    this.dataSource.filterPredicate =
+      (data: ExtensionRo, filter: string) => {
+        return !filter || -1 != data.name.toLowerCase().indexOf(filter.trim().toLowerCase())
+      };
   }
 
   updateExtensions(extensions: ExtensionRo[]) {
@@ -49,5 +58,9 @@ export class ExtensionComponent implements AfterViewInit {
 
   public extensionSelected(selected: ExtensionRo) {
     this.selected = selected;
+  }
+
+  isDirty(): boolean {
+    return false;
   }
 }

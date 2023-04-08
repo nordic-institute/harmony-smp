@@ -8,10 +8,8 @@ import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.logging.SMPLogger;
-import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +25,15 @@ import java.util.stream.Collectors;
 @Service
 public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
+    private DomainDao domainDao;
+    private ConversionService conversionService;
+    private SmlConnector smlConnector;
 
-    @Autowired
-    DomainDao domainDao;
-
-    @Autowired
-    SmlConnector smlConnector;
+    public UIDomainService(ConversionService conversionService, DomainDao domainDao, SmlConnector smlConnector) {
+        this.conversionService = conversionService;
+        this.domainDao = domainDao;
+        this.smlConnector = smlConnector;
+    }
 
     @Override
     protected BaseDao<DBDomain> getDatabaseDao() {
@@ -56,6 +57,13 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
                                                 String sortOrder, Object filter) {
 
         return super.getTableList(page, pageSize, sortField, sortOrder, filter);
+    }
+
+    public List<DomainRO> getAllDomains() {
+        List<DBDomain> domains = domainDao.getAllDomains();
+
+        return domains.stream().map(domain -> conversionService.convert(domain, DomainRO.class))
+                .collect(Collectors.toList());
     }
 
 
@@ -82,14 +90,14 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     }
 
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev) {
-        List<Long> idList = dev.getListIds().stream().map(encId-> Long.parseLong(encId)).collect(Collectors.toList());
+        List<Long> idList = dev.getListIds().stream().map(encId -> Long.parseLong(encId)).collect(Collectors.toList());
         List<DBDomainDeleteValidation> lstMessages = domainDao.validateDomainsForDelete(idList);
         dev.setValidOperation(lstMessages.isEmpty());
         if (!dev.isValidOperation()) {
             StringWriter sw = new StringWriter();
             sw.write("Could not delete domains used by Service groups! ");
             lstMessages.forEach(msg -> {
-                dev.getListDeleteNotPermitedIds().add(msg.getId()+"");
+                dev.getListDeleteNotPermitedIds().add(msg.getId() + "");
                 sw.write("Domain: ");
                 sw.write(msg.getDomainCode());
                 sw.write(" (");

@@ -5,4 +5,6 @@ export interface SearchTableEntity {
   index?: number;
   status: EntityStatus;
   deleted?: boolean;
+
+  actionMessage?: string;
 }
