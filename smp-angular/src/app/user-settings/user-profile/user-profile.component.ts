@@ -11,6 +11,8 @@ import {UserController} from "../../system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CredentialRo} from "../../security/credential.model";
+import {DateAdapter} from "@angular/material/core";
+import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
 
 
 @Component({
@@ -27,6 +29,8 @@ export class UserProfileComponent {
   userCredentialForm: FormGroup;
   currentUserData: User;
 
+  currentDate: Date = new Date();
+
   currentPwdCredential: CredentialRo;
   userController: UserController;
   @Input() showActionButtons: boolean = true;
@@ -39,7 +43,9 @@ export class UserProfileComponent {
     private userService: UserService,
     private dialog: MatDialog,
     private http: HttpClient,
-    private lookups: GlobalLookups) {
+    private lookups: GlobalLookups,
+    private dateAdapter: DateAdapter<Date>,
+    private ngxMatDateAdapter: NgxMatDateAdapter<Date>) {
 
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
@@ -51,7 +57,8 @@ export class UserProfileComponent {
       'emailAddress': new FormControl({value: '', disabled: false}, [Validators.pattern(this.emailPattern),
         Validators.maxLength(255)]),
       'fullName': new FormControl({value: '', disabled: false}),
-      'smpTheme': new FormControl({value: 'default', disabled: false}),
+      'smpTheme': new FormControl({value: 'default_theme', disabled: false}),
+      'smpLocale': new FormControl({value: 'fr', disabled: false}),
 
     });
 
@@ -86,7 +93,8 @@ export class UserProfileComponent {
     this.userForm.controls['role'].setValue(this.currentUserData.role);
     this.userForm.controls['emailAddress'].setValue(this.currentUserData.emailAddress);
     this.userForm.controls['fullName'].setValue(this.currentUserData.fullName);
-    this.userForm.controls['smpTheme'].setValue(this.currentUserData.smpTheme);
+    this.userForm.controls['smpTheme'].setValue(!this.currentUserData.smpTheme ? 'default_theme' : this.currentUserData.smpTheme);
+    this.userForm.controls['smpLocale'].setValue(!this.currentUserData.smpLocale ? 'fr' : this.currentUserData.smpLocale);
 
     // set current user theme as persisted for the application
     this.themeService.persistTheme(this.currentUserData.smpTheme);
@@ -113,6 +121,8 @@ export class UserProfileComponent {
     userData.emailAddress = this.userForm.get('emailAddress').value;
     userData.fullName = this.userForm.get('fullName').value;
     userData.smpTheme = this.userForm.get('smpTheme').value;
+    userData.smpLocale = this.userForm.get('smpLocale').value;
+
     this.userService.updateUser(userData);
   }
 
@@ -157,4 +167,12 @@ export class UserProfileComponent {
   get themeItems() {
     return this.themeService.themes;
   }
+
+  onLocaleSelect(target: string) {
+    console.log("set locale" + target)
+    this.dateAdapter.setLocale(target);
+    this.ngxMatDateAdapter.setLocale(target);
+  }
+
+
 }

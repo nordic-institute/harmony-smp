@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.KeystoreUtils;
-import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -11,11 +10,9 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import java.io.*;
@@ -24,6 +21,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.list;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -40,23 +38,17 @@ public class UIKeystoreService {
     @Autowired
     private ConversionService conversionService;
 
-   @Autowired
+    @Autowired
     private ConfigurationService configurationService;
 
-    private Map<String, Key> keystoreKeys;
-    private Map<String, X509Certificate> keystoreCertificates;
+    private Map<String, Key> keystoreKeys = new HashMap<>();
+    private Map<String, X509Certificate> keystoreCertificates = new HashMap<>();
     private List<CertificateRO> certificateROList = new ArrayList<>();
 
     private KeyManager[] keyManagers;
 
     private long lastUpdateKeystoreFileTime = 0;
     private File lastUpdateKeystoreFile = null;
-
-    @PostConstruct
-    public void init() {
-        keystoreKeys = new HashMap();
-        keystoreCertificates = new HashMap();
-    }
 
     /**
      * Method  validates the configuration properties and refresh the
@@ -75,7 +67,7 @@ public class UIKeystoreService {
 
         KeyStore keyStore = loadKeystore(keystoreFile, keystoreSecToken);
         if (keyStore == null) {
-            LOG.error("Keystore: '" + keystoreFile.getAbsolutePath() + "' is not loaded! Check the keystore and the configuration!");
+            LOG.error("Keystore: [{}] is not loaded! Check the keystore and the configuration!",keystoreFile.getAbsolutePath());
             return;
         }
         // init key managers for TLS
@@ -85,7 +77,8 @@ public class UIKeystoreService {
             kmf.init(keyStore, keystoreSecToken.toCharArray());
             keyManagersTemp = kmf.getKeyManagers();
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException exception) {
-            LOG.error("Error occurred while initialize  keyManagers : " + keystoreFile.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            LOG.error("Error occurred while initialize  keyManagers : "
+                    + keystoreFile.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
         }
 
@@ -159,8 +152,7 @@ public class UIKeystoreService {
         Key key = keyStore.getKey(alias, keySecurityToken.toCharArray());
         Certificate certificate = keyStore.getCertificate(alias);
         if (key == null || certificate == null || !(certificate instanceof X509Certificate)) {
-            LOG.warn("Wrong entry type found in keystore, only certificates with keypair are accepted, entry alias: "
-                    + alias + ". Entry is ignored");
+            LOG.warn("Wrong entry type found in keystore, only certificates with keypair are accepted, entry alias: [{}]. Entry is ignored", alias);
             return;
         }
         // add to cache
@@ -179,6 +171,7 @@ public class UIKeystoreService {
             keystoreCertificates.forEach((alias, cert) -> {
                 CertificateRO certificateRO = convertToRo(cert);
                 certificateRO.setAlias(alias);
+                certificateRO.setContainingKey(keystoreKeys.containsKey(alias));
                 certificateROList.add(certificateRO);
             });
         }
@@ -241,17 +234,19 @@ public class UIKeystoreService {
      * @param newKeystore
      * @param password
      */
-    public void importKeys(KeyStore newKeystore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
+    public List<CertificateRO> importKeys(KeyStore newKeystore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
         if (keyStore != null) {
-            KeystoreUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
+            List<String> listAliases = KeystoreUtils.mergeKeystore(keyStore, keystoreSecToken, newKeystore, password);
             // store keystore
             storeKeystore(keyStore);
-            // refresh
-            refreshData();
+            // refresh and return added list of certificates
+            List<CertificateRO> keystoreEntries = getKeystoreEntriesList();
+            return keystoreEntries.stream().filter(cert -> listAliases.contains(cert.getAlias())).collect(Collectors.toList());
         }
+        return Collections.emptyList();
     }
 
     /**
@@ -259,15 +254,19 @@ public class UIKeystoreService {
      *
      * @param alias
      */
-    public void deleteKey(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
+    public X509Certificate deleteKey(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
-        if (keyStore != null) {
-            keyStore.deleteEntry(alias);
-            // store keystore
-            storeKeystore(keyStore);
-            refreshData();
+
+        if (keyStore == null || !keyStore.containsAlias(alias)){
+            return null;
         }
+        X509Certificate certificate = (X509Certificate)keyStore.getCertificate(alias);
+        keyStore.deleteEntry(alias);
+        // store keystore
+        storeKeystore(keyStore);
+        refreshData();
+        return certificate;
     }
 
     /**

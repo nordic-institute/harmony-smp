@@ -10,7 +10,6 @@ import {HttpClient} from "@angular/common/http";
 import {SidenavComponent} from "./window/sidenav/sidenav.component";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {ThemeService} from "./common/theme-service/theme.service";
-import {AlertRo} from "./alert/alert-ro.model";
 import {AlertMessageComponent} from "./common/alert-message/alert-message.component";
 
 @Component({

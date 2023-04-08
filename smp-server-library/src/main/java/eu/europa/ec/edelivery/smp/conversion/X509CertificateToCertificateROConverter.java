@@ -15,11 +15,13 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.util.Base64;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -29,7 +31,7 @@ import java.util.TimeZone;
 @Component
 public class X509CertificateToCertificateROConverter implements Converter<X509Certificate, CertificateRO> {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CertificateROToDBCertificateConverter.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(X509CertificateToCertificateROConverter.class);
     private static final String S_CLIENT_CERT_DATEFORMAT = "MMM dd HH:mm:ss yyyy";
     // the GMT date format for the Client-Cert header generation!
     private static final ThreadLocal<DateFormat> dateFormatGMT = ThreadLocal.withInitial(() -> {
@@ -48,13 +50,27 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         String issuer = data.getIssuerOriginalDN();
         String serial = data.getCertSerial();
         String certId = data.getName();
+        List<String> certPolicyIdentifiers = null;
+
+        try {
+            certPolicyIdentifiers = X509CertificateUtils.getCertificatePolicyIdentifiers(cert);
+        } catch (CertificateException cex) {
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
+                    "Error occurred while retrieving certPolicyIdentifiers " + subject, cex.getMessage(), cex);
+        }
+
 
         String url = X509CertificateUtils.getCrlDistributionUrl(cert);
+
         CertificateRO cro = new CertificateRO();
         cro.setCertificateId(certId);
         cro.setSubject(subject);
         cro.setIssuer(issuer);
+        cro.setPublicKeyType(cert.getPublicKey().getAlgorithm());
         cro.setCrlUrl(url);
+        if (certPolicyIdentifiers!=null && !certPolicyIdentifiers.isEmpty()) {
+            cro.getCertificatePolicies().addAll(certPolicyIdentifiers);
+        }
         // set serial as HEX
         cro.setSerialNumber(serial);
         if (cert.getNotBefore() != null) {

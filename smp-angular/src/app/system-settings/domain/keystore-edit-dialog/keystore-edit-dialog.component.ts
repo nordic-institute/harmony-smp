@@ -1,4 +1,4 @@
-import {AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, Inject} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {UntypedFormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
@@ -7,7 +7,9 @@ import {HttpClient} from "@angular/common/http";
 import {SecurityService} from "../../../security/security.service";
 import {CertificateDialogComponent} from "../../../common/dialogs/certificate-dialog/certificate-dialog.component";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {KeystoreImportDialogComponent} from "../keystore-import-dialog/keystore-import-dialog.component";
+import {
+  KeystoreImportDialogComponent
+} from "../../admin-keystore/keystore-import-dialog/keystore-import-dialog.component";
 import {InformationDialogComponent} from "../../../common/dialogs/information-dialog/information-dialog.component";
 import {KeystoreService} from "../keystore.service";
 import {KeystoreResult} from "../keystore-result.model";
@@ -17,7 +19,7 @@ import {KeystoreResult} from "../keystore-result.model";
   templateUrl: './keystore-edit-dialog.component.html',
   styleUrls: ['keystore-edit-dialog.component.css']
 })
-export class KeystoreEditDialogComponent implements AfterViewChecked{
+export class KeystoreEditDialogComponent implements AfterViewChecked {
   formTitle: string;
 
   displayedColumns = ['alias', 'certificateId'];

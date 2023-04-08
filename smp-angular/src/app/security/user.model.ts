@@ -7,6 +7,7 @@ export interface User {
   fullName?: string;
   emailAddress?: string;
   smpTheme?: string;
+  smpLocale?: string;
 
 
 

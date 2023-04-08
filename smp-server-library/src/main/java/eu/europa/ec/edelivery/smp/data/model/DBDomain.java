@@ -15,6 +15,8 @@ package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
@@ -32,24 +34,20 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOMAIN_CODE;
 @Audited
 @Table(name = "SMP_DOMAIN",
         indexes = {@Index(name = "SMP_DOM_UNIQ_CODE_IDX", columnList = "DOMAIN_CODE", unique = true)
-})
-@NamedQueries({
-        @NamedQuery(name = QUERY_DOMAIN_ALL, query = "SELECT d FROM DBDomain d order by d.id asc"),
-        @NamedQuery(name = QUERY_DOMAIN_CODE, query = "SELECT d FROM DBDomain d WHERE d.domainCode = :domain_code"),
-})
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "DBDomainDeleteValidation.validateDomainUsage",
-                resultSetMapping = "DBDomainDeleteValidationMapping",
-                query = "select D.ID as id, D.DOMAIN_CODE as domainCode, D.SML_SUBDOMAIN as smlSubdomain, COUNT(SGD.ID) as useCount " +
-                        "   from SMP_DOMAIN D  INNER JOIN SMP_DOMAIN_RESOURCE_DEF SGD ON (D.ID =SGD.FK_DOMAIN_ID) " +
-                        "   WHERE D.ID IN (:domainIds)" +
-                        "      GROUP BY D.ID, D.DOMAIN_CODE, D.SML_SUBDOMAIN"),
-        @NamedNativeQuery(name = "DBDomain.updateNullSignAlias",
-                query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias WHERE SIGNATURE_KEY_ALIAS IS null"),
-        @NamedNativeQuery(name = "DBDomain.updateNullSMLAlias",
-                query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias " +
-                        "WHERE SML_CLIENT_KEY_ALIAS IS null"),
-})
+        })
+@NamedQuery(name = QUERY_DOMAIN_ALL, query = "SELECT d FROM DBDomain d order by d.id asc")
+@NamedQuery(name = QUERY_DOMAIN_CODE, query = "SELECT d FROM DBDomain d WHERE d.domainCode = :domain_code")
+@NamedNativeQuery(name = "DBDomainDeleteValidation.validateDomainUsage",
+        resultSetMapping = "DBDomainDeleteValidationMapping",
+        query = "select D.ID as id, D.DOMAIN_CODE as domainCode, D.SML_SUBDOMAIN as smlSubdomain, COUNT(SGD.ID) as useCount " +
+                "   from SMP_DOMAIN D  INNER JOIN SMP_DOMAIN_RESOURCE_DEF SGD ON (D.ID =SGD.FK_DOMAIN_ID) " +
+                "   WHERE D.ID IN (:domainIds)" +
+                "      GROUP BY D.ID, D.DOMAIN_CODE, D.SML_SUBDOMAIN")
+@NamedNativeQuery(name = "DBDomain.updateNullSignAlias",
+        query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias WHERE SIGNATURE_KEY_ALIAS IS null")
+@NamedNativeQuery(name = "DBDomain.updateNullSMLAlias",
+        query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias " +
+                "WHERE SML_CLIENT_KEY_ALIAS IS null")
 @SqlResultSetMapping(name = "DBDomainDeleteValidationMapping", classes = {
         @ConstructorResult(targetClass = DBDomainDeleteValidation.class,
                 columns = {@ColumnResult(name = "id", type = Long.class),
@@ -117,7 +115,7 @@ public class DBDomain extends BaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    List<DBGroup> domainGroups;
+    private List<DBGroup> domainGroups;
 
     @OneToMany(
             mappedBy = "domain",
@@ -125,7 +123,7 @@ public class DBDomain extends BaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    List<DBDomainResourceDef> domainResourceDefs;
+    private List<DBDomainResourceDef> domainResourceDefs;
 
     @Override
     public Long getId() {
@@ -249,5 +247,33 @@ public class DBDomain extends BaseEntity {
                 "id=" + id +
                 ", domainCode='" + domainCode + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DBDomain dbDomain = (DBDomain) o;
+
+        return new EqualsBuilder().appendSuper(super.equals(o))
+                .append(smlRegistered, dbDomain.smlRegistered)
+                .append(smlClientCertAuth, dbDomain.smlClientCertAuth)
+                .append(id, dbDomain.id).append(domainCode, dbDomain.domainCode)
+                .append(smlSubdomain, dbDomain.smlSubdomain)
+                .append(smlSmpId, dbDomain.smlSmpId)
+                .append(smlClientCertHeader, dbDomain.smlClientCertHeader)
+                .append(smlClientKeyAlias, dbDomain.smlClientKeyAlias)
+                .append(signatureKeyAlias, dbDomain.signatureKeyAlias)
+                .append(signatureAlgorithm, dbDomain.signatureAlgorithm)
+                .append(signatureDigestMethod, dbDomain.signatureDigestMethod)
+                .append(defaultResourceTypeIdentifier, dbDomain.defaultResourceTypeIdentifier)
+                .append(visibility, dbDomain.visibility).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).appendSuper(super.hashCode()).append(id).append(domainCode).toHashCode();
     }
 }

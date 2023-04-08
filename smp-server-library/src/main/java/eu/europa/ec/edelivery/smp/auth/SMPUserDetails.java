@@ -6,6 +6,7 @@ import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,10 +19,11 @@ import java.util.List;
  * @since 4.2
  */
 public class SMPUserDetails implements UserDetails {
-    final DBUser user;
-    final SecurityUtils.Secret sessionSecret;
-    boolean casAuthenticated = false;
-    List<SMPAuthority> smpAuthorities = new ArrayList<>();
+    private final DBUser user;
+    @Transient
+    private final SecurityUtils.Secret sessionSecret;
+    private boolean casAuthenticated = false;
+    private List<SMPAuthority> smpAuthorities = new ArrayList<>();
 
     public SMPUserDetails(DBUser user, SecurityUtils.Secret sessionSecret, List<SMPAuthority> smpAuthorities) {
         this.user = user;
@@ -85,7 +87,8 @@ public class SMPUserDetails implements UserDetails {
     @Override
     public String toString() {
         return "SMPUserDetails{" +
-                "user=" + getUsername() +
+                "username=" + getUsername() +
+                "user=" + getUser()+
                 '}';
     }
 }

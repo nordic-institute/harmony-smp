@@ -7,9 +7,14 @@ export class SmpConstants {
   public static readonly DATE_FORMAT = 'dd/MM/yyyy';
 
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
+  public static readonly PATH_PARAM_CERT_ALIAS = '{cert-alias}';
   public static readonly PATH_PARAM_ENC_CREDENTIAL_ID = '{credential-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
   public static readonly PATH_PARAM_SRV_GROUP_ID = '{service-group-id}';
+
+  public static readonly PATH_PARAM_KEYSTORE_PWD = '{keystore-pwd}';
+
+  public static readonly PATH_PARAM_KEYSTORE_TYPE = '{keystore-type}';
 
   //------------------------------
   // public endpoints
@@ -60,9 +65,17 @@ export class SmpConstants {
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'change-password-for' + '/' + SmpConstants.PATH_PARAM_ENC_MANAGED_USER_ID;
 
   public static readonly REST_INTERNAL_USER_VALIDATE_DELETE = `${SmpConstants.REST_INTERNAL_USER_MANAGE}/validate-delete`;
-  public static readonly REST_INTERNAL_KEYSTORE = SmpConstants.REST_INTERNAL + 'keystore';
-  public static readonly REST_INTERNAL_TRUSTSTORE = SmpConstants.REST_INTERNAL + 'truststore';
-  public static readonly REST_INTERNAL_TRUSTSTORE_UPLOAD_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'upload-certificate';
+  public static readonly REST_INTERNAL_KEYSTORE_DEPRECATED = SmpConstants.REST_INTERNAL + 'keystore';
+  public static readonly REST_INTERNAL_KEYSTORE_MANAGE = SmpConstants.REST_INTERNAL + 'keystore' +'/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
+
+  public static readonly REST_INTERNAL_KEYSTORE_UPLOAD = SmpConstants.REST_INTERNAL_KEYSTORE_MANAGE + '/' + 'upload'
+    + '/' + SmpConstants.PATH_PARAM_KEYSTORE_TYPE + '/' + SmpConstants.PATH_PARAM_KEYSTORE_PWD;
+  public static readonly REST_INTERNAL_KEYSTORE_DELETE_ENTRY = SmpConstants.REST_INTERNAL_KEYSTORE_MANAGE + '/' + 'delete'
+    + '/' + SmpConstants.PATH_PARAM_CERT_ALIAS ;
+
+  public static readonly REST_INTERNAL_TRUSTSTORE_MANAGE = SmpConstants.REST_INTERNAL + 'truststore' +'/' + SmpConstants.PATH_PARAM_ENC_USER_ID ;
+  public static readonly REST_INTERNAL_TRUSTSTORE_UPLOAD_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE_MANAGE + '/' + 'upload-certificate';
+  public static readonly REST_INTERNAL_TRUSTSTORE_DELETE_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE_MANAGE + '/' + 'delete' + '/' + SmpConstants.PATH_PARAM_CERT_ALIAS;
 
 
   public static readonly REST_PUBLIC_USER_NAVIGATION_TREE = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'navigation-tree';

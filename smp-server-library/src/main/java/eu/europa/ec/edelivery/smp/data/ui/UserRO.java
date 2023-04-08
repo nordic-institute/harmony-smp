@@ -23,6 +23,7 @@ public class UserRO extends BaseRO {
     private String emailAddress;
     private String fullName;
     private String smpTheme;
+    private String smpLocale;
     // operational UI data
     private boolean casAuthenticated = false;
     private String casUserDataUrl;
@@ -107,6 +108,15 @@ public class UserRO extends BaseRO {
 
     public void setSmpTheme(String smpTheme) {
         this.smpTheme = smpTheme;
+    }
+
+
+    public String getSmpLocale() {
+        return smpLocale;
+    }
+
+    public void setSmpLocale(String smpLocale) {
+        this.smpLocale = smpLocale;
     }
 
     public String getAccessTokenId() {

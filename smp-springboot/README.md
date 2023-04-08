@@ -64,12 +64,12 @@ mysql -h localhost -u root --password=root $DATABASE < "$PROJECT_HOME/smp-soapui
 ### Prepare the DomiSMP database configuration.
 
 To set the  DomiSMP database configuration, the following properties must be set.
- - hibernate.dialect: the database hibernate dialect name
+ - smp.jdbc.hibernate.dialect: the database hibernate dialect name
  - jdbc.driver: the jdbc driver (The MySQL driver is embedded by default. To add other drivers should be added to the 
  pom.xml and rebuild the spring-boot application. )
- - jdbc.url: the Url of the database
- - jdbc.user: the database username
- - jdbc.password: the database password. 
+ - smp.jdbc.url: the Url of the database
+ - smp.jdbc.user: the database username
+ - smp.jdbc.password: the database password. 
  
 To set/change other spring-boot parameters (as example the server port: server.port) please read the spring-boot documentation.
 The configuration properties must be set in the file "application.properties" and placed in the working directory of the DomiSMP 
@@ -84,11 +84,11 @@ Example of the springboot configuration: application.properties:
 server.port=8084
 
 # Database configuration
-hibernate.dialect=org.hibernate.dialect.MySQLDialect
-jdbc.driver=com.mysql.cj.jdbc.Driver
-jdbc.url=jdbc:mysql://localhost:3306/smldbdtest?allowPublicKeyRetrieval=true
-jdbc.user=smltest
-jdbc.password=smltest
+smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+smp.jdbc.driver=com.mysql.cj.jdbc.Driver
+smp.jdbc.url=jdbc:mysql://localhost:3306/smldbdtest?allowPublicKeyRetrieval=true
+smp.jdbc.user=smltest
+smp.jdbc.password=smltest
 ```
 
 ### Start the application.

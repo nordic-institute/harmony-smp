@@ -4,12 +4,11 @@ import {CredentialRo} from "../../../security/credential.model";
 
 
 @Component({
-  selector: 'certificate-panel',
-  templateUrl: './certificate-panel.component.html',
-  styleUrls: ['./certificate-panel.component.scss']
+  selector: 'user-certificate-panel',
+  templateUrl: './user-certificate-panel.component.html',
+  styleUrls: ['./user-certificate-panel.component.scss']
 })
-export class CertificatePanelComponent {
-
+export class UserCertificatePanelComponent {
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
   @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
 

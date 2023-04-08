@@ -8,6 +8,8 @@ public class BaseRO  implements Serializable {
 
     private int status = EntityROStatus.PERSISTED.getStatusNumber();
     private int index;
+    // action message
+    private String actionMessage;
 
     public int getStatus() {
         return status;
@@ -23,5 +25,13 @@ public class BaseRO  implements Serializable {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getActionMessage() {
+        return actionMessage;
+    }
+
+    public void setActionMessage(String actionMessage) {
+        this.actionMessage = actionMessage;
     }
 }

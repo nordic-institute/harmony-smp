@@ -756,6 +756,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         APPLICATION_ROLE varchar2(256 char),
         EMAIL varchar2(128 char),
         FULL_NAME varchar2(128 char),
+        SMP_LOCALE varchar2(64 char),
         SMP_THEME varchar2(64 char),
         USERNAME varchar2(256 char) not null,
         primary key (ID)
@@ -779,8 +780,11 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_USER.FULL_NAME is
         'User full name (name and lastname)';
 
+    comment on column SMP_USER.SMP_LOCALE is
+        'DomiSMP settings: locale for the user';
+
     comment on column SMP_USER.SMP_THEME is
-        'DomiSMP theme for the user';
+        'DomiSMP settings: theme for the user';
 
     comment on column SMP_USER.USERNAME is
         'Unique username identifier. The Username must not be null';
@@ -795,6 +799,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         APPLICATION_ROLE varchar2(256 char),
         EMAIL varchar2(128 char),
         FULL_NAME varchar2(128 char),
+        SMP_LOCALE varchar2(64 char),
         SMP_THEME varchar2(64 char),
         USERNAME varchar2(256 char),
         primary key (ID, REV)

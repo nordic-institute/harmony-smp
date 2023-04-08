@@ -13,7 +13,7 @@ public class ExtensionRO extends BaseRO {
 
     private static final long serialVersionUID = 9008583888835630009L;
 
-    String extensionId;
+    private String extensionId;
     private String version;
     private String name;
     private String description;

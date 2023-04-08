@@ -10,7 +10,8 @@ public enum EntityROStatus {
     PERSISTED(0),
     UPDATED(1),
     NEW(2),
-    REMOVE(3);
+    REMOVE(3),
+    ERROR(4);
 
     int statusNumber;
 
