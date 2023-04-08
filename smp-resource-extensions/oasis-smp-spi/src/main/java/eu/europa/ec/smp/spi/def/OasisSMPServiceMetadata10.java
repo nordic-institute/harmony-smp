@@ -45,7 +45,7 @@ public class OasisSMPServiceMetadata10 implements SubresourceDefinitionSpi {
 
     @Override
     public String mimeType() {
-        return "application/xml";
+        return "text/xml";
     }
 
     @Override

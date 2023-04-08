@@ -50,7 +50,7 @@ public class OasisSMPServiceGroup10 implements ResourceDefinitionSpi {
 
     @Override
     public String mimeType() {
-        return "application/xml";
+        return "text/xml";
     }
 
     @Override
