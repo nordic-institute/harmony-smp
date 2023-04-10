@@ -41,7 +41,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SML_SUBDOMA
 public abstract class AbstractBaseDao {
 
     @Autowired
-    TestUtilsDao testUtilsDao;
+    protected TestUtilsDao testUtilsDao;
     public static final String BUILD_FOLDER = "target";
     public static final Path SECURITY_PATH= Paths.get(BUILD_FOLDER, "smp");
     public static final String DATABASE_URL = "jdbc:h2:file:./target/DomiSmpTestDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE;";

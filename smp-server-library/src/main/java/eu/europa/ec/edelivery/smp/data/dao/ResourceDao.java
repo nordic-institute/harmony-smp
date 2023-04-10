@@ -135,6 +135,13 @@ public class ResourceDao extends BaseDao<DBResource> {
         }
     }
 
+    public Long getResourceCountForDomainIdAndResourceDefId(Long domainId, Long resourceDefId) {
+            TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT, Long.class);
+            query.setParameter(PARAM_DOMAIN_ID, domainId);
+            query.setParameter(PARAM_RESOURCE_DEF_ID, resourceDefId);
+            return query.getSingleResult();
+    }
+
     /**
      * Method removes the resource from DB. Related entities (cascade): sub-resources, Document, Document version,
      * group memberships,

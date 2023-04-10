@@ -93,5 +93,12 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         }
     }
 
+    public DBDomainResourceDef create(DBDomain domain, DBResourceDef resourceDef) {
+        DBDomainResourceDef domainResourceDef = new DBDomainResourceDef();
+        domainResourceDef.setDomain(domain);
+        domainResourceDef.setResourceDef(resourceDef);
+        return merge(domainResourceDef);
+    }
+
 
 }

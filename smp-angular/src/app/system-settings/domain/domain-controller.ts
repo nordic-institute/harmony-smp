@@ -1,10 +1,9 @@
 import {SearchTableController} from '../../common/search-table/search-table-controller';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {DomainDetailsDialogComponent} from './domain-details-dialog/domain-details-dialog.component';
-import {DomainRo} from './domain-ro.model';
+import {DomainRo} from '../admin-domain/domain-ro.model';
 import {EntityStatus} from '../../common/model/entity-status.model';
 import {GlobalLookups} from "../../common/global-lookups";
-import {of} from "rxjs/internal/observable/of";
 import {SearchTableValidationResult} from "../../common/search-table/search-table-validation-result.model";
 import {SearchTableEntity} from "../../common/search-table/search-table-entity.model";
 import {SmpConstants} from "../../smp.constants";

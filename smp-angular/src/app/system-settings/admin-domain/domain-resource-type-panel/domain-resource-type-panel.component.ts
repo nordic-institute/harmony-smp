@@ -1,9 +1,8 @@
-import {Component, Input,} from '@angular/core';
-import {DomainRo} from "../../domain/domain-ro.model";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {ExtensionService} from "../../admin-extension/extension.service";
-import {ExtensionRo} from "../../admin-extension/extension-ro.model";
+import {Component, EventEmitter, Input, Output,} from '@angular/core';
+import {DomainRo} from "../domain-ro.model";
+import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
+import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
@@ -11,44 +10,58 @@ import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro
   templateUrl: './domain-resource-type-panel.component.html',
   styleUrls: ['./domain-resource-type-panel.component.scss']
 })
-export class DomainResourceTypePanelComponent {
-
+export class DomainResourceTypePanelComponent implements BeforeLeaveGuard {
+  @Output() onSaveResourceTypesEvent: EventEmitter<DomainRo> = new EventEmitter();
   _domain: DomainRo = null;
-
-  domiSMPResourceDefinitions: ResourceDefinitionRo[] = [];
+  createMode: boolean = false;
+  @Input() domiSMPResourceDefinitions: ResourceDefinitionRo[] = [];
   domainForm: FormGroup;
 
-
   get domain(): DomainRo {
-    return this._domain;
+    let newDomain = {...this._domain};
+    newDomain.resourceDefinitions = this.domainForm.get('resourceDefinitions').value;
+    return newDomain;
   }
 
   @Input() set domain(value: DomainRo) {
     this._domain = value;
 
+    if (!!value) {
+      this.domainForm.controls['resourceDefinitions'].setValue(this._domain.resourceDefinitions);
+      this.domainForm.enable();
+    } else {
+      this.domainForm.controls['resourceDefinitions'].setValue([]);
+      this.domainForm.disable();
+    }
+    this.domainForm.markAsPristine();
   }
 
   constructor(
-    private formBuilder: FormBuilder,
-    extensionService: ExtensionService
-  ) {
-    extensionService.onExtensionsUpdatesEvent().subscribe(updatedExtensions => {
-        this.updateExtensions(updatedExtensions);
-      }
-    );
+    private formBuilder: FormBuilder) {
 
-    extensionService.getExtensions();
-  }
-
-  updateExtensions(extensions: ExtensionRo[]) {
-
-    let allResourceDefinition: ResourceDefinitionRo[] = [];
-    extensions.forEach(ext => allResourceDefinition.push(...ext.resourceDefinitions))
-
-    this.domiSMPResourceDefinitions = allResourceDefinition;
+    this.domainForm = formBuilder.group({
+      'resourceDefinitions': new FormControl({value: '', readonly: this.createMode})
+    });
   }
 
   onSaveClicked() {
+    this.onSaveResourceTypesEvent.emit(this.domain);
+  }
 
+
+
+  get submitButtonEnabled(): boolean {
+    return this.domainForm.valid && this.domainForm.dirty;
+  }
+
+  get resetButtonEnabled(): boolean {
+    return this.domainForm.dirty;
+  }
+  public onResetButtonClicked(){
+    this.domainForm.reset(this._domain);
+  }
+
+  isDirty(): boolean {
+    return this.domainForm.dirty;
   }
 }

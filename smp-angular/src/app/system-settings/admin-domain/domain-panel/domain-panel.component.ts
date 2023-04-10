@@ -1,10 +1,13 @@
-import {Component, Input,} from '@angular/core';
-import {DomainRo} from "../../domain/domain-ro.model";
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
+import {DomainRo} from "../domain-ro.model";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AdminDomainService} from "../admin-domain.service";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {CertificateRo} from "../../user/certificate-ro.model";
+import {VisibilityEnum} from "../../../common/enums/visibility.enum";
+import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
+import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
@@ -12,18 +15,19 @@ import {CertificateRo} from "../../user/certificate-ro.model";
   templateUrl: './domain-panel.component.html',
   styleUrls: ['./domain-panel.component.scss']
 })
-export class DomainPanelComponent {
+export class DomainPanelComponent implements BeforeLeaveGuard {
+  @Output() onSaveBasicDataEvent: EventEmitter<DomainRo> = new EventEmitter();
 
-  // Request from test team can not automate test if this is less than 10 seconds :(. Initialy it was 2s
-  readonly warningTimeout : number = 10000;
+  @Output() onDiscardNew: EventEmitter<any> = new EventEmitter();
+  readonly warningTimeout: number = 50000;
   readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
-  readonly dnsDomainPattern = '^([a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?){0,63}$';
-  readonly subDomainPattern = this.dnsDomainPattern;
-  readonly smpIdDomainPattern = this.dnsDomainPattern;
+  readonly domainVisibilityOptions = Object.keys(VisibilityEnum)
+    .filter(el => el !== "Private").map(el => {
+      return {key: el, value: VisibilityEnum[el]}
+    });
 
   fieldWarningTimeoutMap = {
     domainCodeTimeout: null,
-    smlSubdomainTimeout: null,
   };
 
   _domain: DomainRo = null;
@@ -31,8 +35,12 @@ export class DomainPanelComponent {
   editMode: boolean;
   createMode: boolean;
 
-  @Input() keystoreCertificates:CertificateRo[];
-  @Input() currentDomains:DomainRo[];
+  @Input() keystoreCertificates: CertificateRo[];
+  @Input() currentDomains: DomainRo[];
+  @Input() domiSMPResourceDefinitions: ResourceDefinitionRo[];
+
+
+  @ViewChild('domainCode', {static: false}) domainCodeField: ElementRef;
 
   notInList(list: string[], exception: string) {
     if (!list || !exception) {
@@ -52,7 +60,7 @@ export class DomainPanelComponent {
    * Show warning if domain code exceed the maxlength.
    * @param value
    */
-  onFieldKeyPressed(controlName: string, showTheWarningReference:string) {
+  onFieldKeyPressed(controlName: string, showTheWarningReference: string) {
     let value = this.domainForm.get(controlName).value
 
     if (!!value && value.length >= 63 && !this.fieldWarningTimeoutMap[showTheWarningReference]) {
@@ -63,23 +71,27 @@ export class DomainPanelComponent {
   }
 
 
-
   constructor(private domainService: AdminDomainService,
               private alertService: AlertMessageService,
               private dialog: MatDialog,
               private formBuilder: FormBuilder) {
 
     this.domainForm = formBuilder.group({
-      'domainCode': new FormControl({value: '', readonly: this.createMode},  [Validators.pattern(this.domainCodePattern),
+      'domainCode': new FormControl({value: '', readonly: true}, [Validators.pattern(this.domainCodePattern),
         this.notInList(this.currentDomains?.map(a => a.domainCode), this._domain?.domainCode)]),
-      'smlSubdomain': new FormControl({value: '', readonly: this.editMode}, [Validators.pattern(this.subDomainPattern),
-        this.notInList(this.currentDomains?.map(a => a.smlSubdomain), this._domain?.smlSubdomain)]),
-      'signatureKeyAlias': new FormControl({value: '', readonly: this.editMode}),
+      'signatureKeyAlias': new FormControl({value: '', readonly: true}),
+      'visibility': new FormControl({value: '', readonly: true}),
+      'defaultResourceTypeIdentifier': new FormControl({value: '', disabled: this.isNewDomain()}),
     });
   }
 
   get domain(): DomainRo {
-    return this._domain;
+    let newDomain = {...this._domain};
+    newDomain.domainCode = this.domainForm.get('domainCode').value;
+    newDomain.signatureKeyAlias = this.domainForm.get('signatureKeyAlias').value;
+    newDomain.visibility = this.domainForm.get('visibility').value;
+    newDomain.defaultResourceTypeIdentifier = this.domainForm.get('defaultResourceTypeIdentifier').value;
+    return newDomain;
   }
 
   @Input() set domain(value: DomainRo) {
@@ -87,28 +99,56 @@ export class DomainPanelComponent {
 
     if (!!value) {
       this.domainForm.controls['domainCode'].setValue(this._domain.domainCode);
-      this.domainForm.controls['smlSubdomain'].setValue(this._domain.smlSubdomain);
-      this.domainForm.controls['smlSmpId'].setValue(this._domain.smlSmpId);
-      this.domainForm.controls['smlClientKeyAlias'].setValue(this._domain.smlClientKeyAlias);
-      this.domainForm.controls['smlClientCertHeader'].setValue(this._domain.smlClientCertHeader);
       this.domainForm.controls['signatureKeyAlias'].setValue(this._domain.signatureKeyAlias);
-      this.domainForm.controls['smlRegistered'].setValue(this._domain.smlRegistered);
-      this.domainForm.controls['smlClientCertAuth'].setValue(this._domain.smlClientCertAuth);
+      this.domainForm.controls['visibility'].setValue(this._domain.visibility);
+      this.domainForm.controls['defaultResourceTypeIdentifier'].setValue(this._domain.defaultResourceTypeIdentifier);
+      this.domainForm.enable();
     } else {
       this.domainForm.controls['domainCode'].setValue("");
-      this.domainForm.controls['smlSubdomain'].setValue("");
-      this.domainForm.controls['smlSmpId'].setValue("");
-      this.domainForm.controls['smlClientKeyAlias'].setValue("");
-      this.domainForm.controls['smlClientCertHeader'].setValue("");
       this.domainForm.controls['signatureKeyAlias'].setValue("");
-      this.domainForm.controls['smlRegistered'].setValue("");
-      this.domainForm.controls['smlClientCertAuth'].setValue("");
+      this.domainForm.controls['visibility'].setValue(VisibilityEnum.Public);
+      this.domainForm.controls['defaultResourceTypeIdentifier'].setValue("");
+      this.domainForm.disable();
     }
-
     this.domainForm.markAsPristine();
   }
 
-  onSaveClicked(){
-
+  isNewDomain(): boolean {
+    return this._domain != null && !this._domain.domainId
   }
+
+  isDirty(): boolean {
+    return this.isNewDomain() || this.domainForm?.dirty;
+  }
+
+  get domainResourceTypes(){
+    if (!this._domain || !this._domain.resourceDefinitions){
+      return [];
+    }
+    return this.domiSMPResourceDefinitions.filter(resType => this._domain.resourceDefinitions.includes(resType.identifier))
+  }
+  get submitButtonEnabled(): boolean {
+    return this.domainForm.valid && this.domainForm.dirty;
+  }
+
+  get resetButtonEnabled(): boolean {
+    return this.domainForm.dirty || this.isNewDomain();
+  }
+
+  public onSaveButtonClicked() {
+    this.onSaveBasicDataEvent.emit(this.domain);
+  }
+
+  public onResetButtonClicked() {
+    if (this.isNewDomain()) {
+      this.onDiscardNew.emit();
+    } else {
+      this.domainForm.reset(this._domain);
+    }
+  }
+
+  public setFocus() {
+    setTimeout(() => this.domainCodeField.nativeElement.focus());
+  }
+
 }

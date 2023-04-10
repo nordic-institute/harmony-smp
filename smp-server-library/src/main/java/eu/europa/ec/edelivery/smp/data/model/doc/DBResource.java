@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
@@ -40,19 +40,24 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_RESOURCE_BY_I
                 @Index(name = "SMP_RS_SCH_IDX", columnList = "IDENTIFIER_SCHEME")
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme")
-@NamedQueries({
-        @NamedQuery(name = QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
-                " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
-                " AND d.identifierValue = :identifier_value " +
-                " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
-                " OR d.identifierScheme = :identifier_scheme)"
-        ),
-        @NamedQuery(name = "DBResource.getServiceGroupByID", query = "SELECT d FROM DBResource d WHERE d.id = :id"),
-        @NamedQuery(name = "DBResource.getServiceGroupByIdentifier", query = "SELECT d FROM DBResource d WHERE d.identifierValue = :participantIdentifier " +
-                " AND (:participantScheme IS NULL AND d.identifierScheme IS NULL " +
-                " OR d.identifierScheme = :participantScheme)"),
-        @NamedQuery(name = "DBResource.deleteById", query = "DELETE FROM DBResource d WHERE d.id = :id"),
-})
+@NamedQuery(name = QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
+    " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
+    " AND d.identifierValue = :identifier_value " +
+    " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
+    " OR d.identifierScheme = :identifier_scheme)")
+
+@NamedQuery(name = QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT, query = "SELECT count(d.id) FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
+        " and d.domainResourceDef.resourceDef.id = :resource_def_id ")
+
+@NamedQuery(name = QUERY_RESOURCES_BY_DOMAIN_ID_COUNT, query = "SELECT count(d.id) FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id ")
+
+
+@NamedQuery(name = "DBResource.getServiceGroupByID", query = "SELECT d FROM DBResource d WHERE d.id = :id")
+@NamedQuery(name = "DBResource.getServiceGroupByIdentifier", query = "SELECT d FROM DBResource d WHERE d.identifierValue = :participantIdentifier " +
+        " AND (:participantScheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR d.identifierScheme = :participantScheme)")
+@NamedQuery(name = "DBResource.deleteById", query = "DELETE FROM DBResource d WHERE d.id = :id")
+
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBResource.deleteAllOwnerships", query = "DELETE FROM SMP_RESOURCE_MEMBER WHERE FK_SG_ID=:serviceGroupId")
 })

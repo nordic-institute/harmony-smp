@@ -5,24 +5,36 @@
               [labelColumnContent]="searchDomainPanel">
 
 
-    <mat-tab-group style="height: 100%">
+    <mat-tab-group #domainTabs style="height: 100%" >
       <mat-tab label="Domain data">
-        <domain-panel
-          [domain]="selected"
-          [keystoreCertificates]="keystoreCertificates"
+        <domain-panel #domainPanelComponent
+                      [domain]="selected"
+                      [keystoreCertificates]="keystoreCertificates"
+                      [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
+                      (onSaveBasicDataEvent)="onSaveEvent($event)"
+                      (onDiscardNew)="onDiscardNew()"
         ></domain-panel>
       </mat-tab>
-      <mat-tab label="Resources">
-        <domain-resource-type-panel [domain]="selected"></domain-resource-type-panel>
+      <mat-tab label="Resource Types">
+        <domain-resource-type-panel  #domainResourceTypePanelComponent
+          [domain]="selected"
+          [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
+          (onSaveResourceTypesEvent)="onSaveResourceTypesEvent($event)"
+        ></domain-resource-type-panel>
       </mat-tab>
       <mat-tab label="SML integration">
-        <domain-sml-integration-panel [domain]="selected"></domain-sml-integration-panel>
+        <domain-sml-integration-panel #domainSmlIntegrationPanelComponent
+          [keystoreCertificates]="keystoreCertificates"
+          [domain]="selected"
+          (onSaveSmlIntegrationDataEvent)="onSaveSmlIntegrationDataEvent($event)"
+        ></domain-sml-integration-panel>
       </mat-tab>
-      <mat-tab label="Members"> Content 3</mat-tab>
+      <mat-tab label="Members">
+        Content 3
+      </mat-tab>
     </mat-tab-group>
   </data-panel>
 </div>
-
 
 <ng-template #searchDomainPanel>
   <mat-form-field id="domain-filter">
@@ -32,12 +44,15 @@
 
   <mat-toolbar>
     <mat-toolbar-row class="mat-elevation-z5">
-      <button mat-raised-button mat-flat-button color="primary"
-              (click)="onCreateDomainClicked()">Create domain
+      <button mat-raised-button
+              mat-flat-button color="primary"
+              onDiscardNew
+              (click)="onCreateDomainClicked()"
+              >Create domain
       </button>
 
       <button mat-raised-button
-              [disabled]="!selected"
+              [disabled]="canNotDelete"
               color="primary"
               (click)="onDeleteSelectedDomainClicked()">
         <mat-icon>delete</mat-icon>
@@ -59,8 +74,8 @@
 
 
     <tr class="mat-row" *matNoDataRow>
-      <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell" colspan="2">No data matching the filter "{{inputDomainFilter.value}}
-        "
+      <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell" colspan="2">No data matching the filter
+        "{{inputDomainFilter.value}}"
       </td>
       <ng-template #noDataFound>
         <td class="mat-cell" colspan="2">No data</td>
@@ -74,4 +89,3 @@
                  [pageSize]="5" aria-label="Select page"></mat-paginator>
 
 </ng-template>
--->

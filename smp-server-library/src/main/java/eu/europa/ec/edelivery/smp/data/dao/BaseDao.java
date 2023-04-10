@@ -85,7 +85,6 @@ public abstract class BaseDao<E extends BaseEntity> {
         memEManager.detach(entity);
     }
 
-
     public void persist(E entity) {
         memEManager.persist(entity);
 

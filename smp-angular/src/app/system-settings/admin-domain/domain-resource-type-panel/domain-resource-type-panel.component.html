@@ -1,13 +1,28 @@
-<form [formGroup]="domainForm" (ngSubmit)="onSaveClicked()">
+<form [formGroup]="domainForm" >
 
   <div id="domain-resource-type-panel" class="mat-elevation-z2">
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+                [disabled]="!resetButtonEnabled">
+          <mat-icon>refresh</mat-icon>
+          <span>Reset</span>
+        </button>
+        <button id="saveButton" mat-raised-button (click)="onSaveClicked()" color="primary"
+                [disabled]="!submitButtonEnabled">
+          <mat-icon>save</mat-icon>
+          <span>Save</span>
+        </button>
+
+      </mat-toolbar-row>
+    </mat-toolbar>
     <h3>Domain resource type configuration</h3>
-    <mat-selection-list #shoes>
-      <mat-list-option *ngFor="let resDef of domiSMPResourceDefinitions">
-        {{resDef.identifier}}
+    <mat-selection-list formControlName="resourceDefinitions">
+      <mat-list-option *ngFor="let resDef of domiSMPResourceDefinitions"
+                       [matTooltip]="resDef.description"
+                       [value]="resDef.identifier">
+        {{resDef.identifier}} ({{resDef.urlSegment}})
       </mat-list-option>
     </mat-selection-list>
-
-
   </div>
 </form>

@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
  */
 public class CredentialRO extends BaseRO {
 
-    static final long serialVersionUID = 9008583888835630000L;
+    private static final long serialVersionUID = 9008583888835630000L;
 
     String credentialId;
     String name;
