@@ -5,7 +5,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -28,8 +28,11 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     @Autowired
     DomainDao testInstance;
 
-    @Autowired
-    ResourceDao serviceGroupDao;
+
+    @Before
+    public void prepareDatabase() {
+        testUtilsDao.clearData();
+    }
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
@@ -155,32 +158,23 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testValidateUsersForDeleteOKScenario() {
+    public void testValidateDeleteOKScenario() {
         // set
         DBDomain d = TestDBUtils.createDBDomain();
         testInstance.persistFlushDetach(d);
 
         // execute
-        List<DBDomainDeleteValidation> lst = testInstance.validateDomainsForDelete(Collections.singletonList(d.getId()));
-        assertTrue(lst.isEmpty());
+        Long cnt = testInstance.getResourceCountForDomain(d.getId());
+        assertEquals(0, cnt.intValue());
     }
 
     @Test
-    @Ignore
-    public void testValidateUsersForDeleteUserIsOwner() {
+    public void testValidateDeleteHasResources() {
         // set
-        DBDomain d = TestDBUtils.createDBDomain();
-        testInstance.persistFlushDetach(d);
+        testUtilsDao.createSubresources();
+        DBDomain d = testUtilsDao.getD1();
+        Long cnt  = testInstance.getResourceCountForDomain(d.getId());
 
-        DBResource sg = TestDBUtils.createDBResource();
-       // sg.addDomain(d);
-
-        serviceGroupDao.persistFlushDetach(sg);
-
-        // execute
-        List<DBDomainDeleteValidation> lst = testInstance.validateDomainsForDelete(Collections.singletonList(d.getId()));
-        assertEquals(1, lst.size());
-        assertEquals(d.getDomainCode(), lst.get(0).getDomainCode());
-        assertEquals(1, lst.get(0).getCount().intValue());
+        assertEquals(1, cnt.intValue());
     }
 }

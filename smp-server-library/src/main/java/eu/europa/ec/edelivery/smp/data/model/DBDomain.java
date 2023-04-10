@@ -24,8 +24,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOMAIN_ALL;
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOMAIN_CODE;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 /**
  * Created by gutowpa on 16/01/2018.
@@ -37,24 +36,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOMAIN_CODE;
         })
 @NamedQuery(name = QUERY_DOMAIN_ALL, query = "SELECT d FROM DBDomain d order by d.id asc")
 @NamedQuery(name = QUERY_DOMAIN_CODE, query = "SELECT d FROM DBDomain d WHERE d.domainCode = :domain_code")
-@NamedNativeQuery(name = "DBDomainDeleteValidation.validateDomainUsage",
-        resultSetMapping = "DBDomainDeleteValidationMapping",
-        query = "select D.ID as id, D.DOMAIN_CODE as domainCode, D.SML_SUBDOMAIN as smlSubdomain, COUNT(SGD.ID) as useCount " +
-                "   from SMP_DOMAIN D  INNER JOIN SMP_DOMAIN_RESOURCE_DEF SGD ON (D.ID =SGD.FK_DOMAIN_ID) " +
-                "   WHERE D.ID IN (:domainIds)" +
-                "      GROUP BY D.ID, D.DOMAIN_CODE, D.SML_SUBDOMAIN")
 @NamedNativeQuery(name = "DBDomain.updateNullSignAlias",
         query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias WHERE SIGNATURE_KEY_ALIAS IS null")
 @NamedNativeQuery(name = "DBDomain.updateNullSMLAlias",
         query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias " +
                 "WHERE SML_CLIENT_KEY_ALIAS IS null")
-@SqlResultSetMapping(name = "DBDomainDeleteValidationMapping", classes = {
-        @ConstructorResult(targetClass = DBDomainDeleteValidation.class,
-                columns = {@ColumnResult(name = "id", type = Long.class),
-                        @ColumnResult(name = "domainCode", type = String.class),
-                        @ColumnResult(name = "smlSubdomain", type = String.class),
-                        @ColumnResult(name = "useCount", type = Integer.class)})
-})
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
@@ -115,7 +101,7 @@ public class DBDomain extends BaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<DBGroup> domainGroups;
+    private List<DBGroup> domainGroups = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "domain",
@@ -123,7 +109,7 @@ public class DBDomain extends BaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<DBDomainResourceDef> domainResourceDefs;
+    private List<DBDomainResourceDef> domainResourceDefs= new ArrayList<>();
 
     @Override
     public Long getId() {

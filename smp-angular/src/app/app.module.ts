@@ -99,7 +99,6 @@ import {ServiceGroupExtensionWizardDialogComponent} from './service-group-edit/s
 import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-group-metadata-dialog/service-group-metadata-dialog.component';
 import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
 import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
-import {SharedModule} from './common/module/shared.module';
 import {SidenavComponent} from './window/sidenav/sidenav.component';
 import {SmlIntegrationService} from "./system-settings/domain/sml-integration.service";
 import {SmpInfoService} from './app-info/smp-info.service';
@@ -232,7 +231,6 @@ import {
     NgxMatDatetimePickerModule,
     NgxMatMomentModule,
     ReactiveFormsModule,
-    SharedModule,
     routing,
   ],
   providers: [

@@ -20,7 +20,7 @@
   }
 
   .datatable-row-odd {
-    background-color: smp.get-theme-color($theme, primary, 0.2)  !important;
+    background-color: smp.get-theme-color($theme, primary,50, 0.2)  !important;
   }
 
   .datatable-row-selected {

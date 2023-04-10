@@ -1,14 +1,31 @@
 <div id="domain-panel" class="mat-elevation-z2" >
-  <form [formGroup]="domainForm" (ngSubmit)="onSaveClicked()">
+  <form [formGroup]="domainForm" >
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+                [disabled]="!resetButtonEnabled">
+          <mat-icon>refresh</mat-icon>
+          <span>Reset</span>
+        </button>
+        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+                [disabled]="!submitButtonEnabled">
+          <mat-icon>save</mat-icon>
+          <span>Save</span>
+        </button>
+
+      </mat-toolbar-row>
+    </mat-toolbar>
     <h3>Domain details</h3>
+    <div class="panel" *ngIf="_domain!=null &&  !_domain.domainId"><p style="font-weight: bold">Enter data and click 'Save' to create new domain</div>
     <mat-form-field style="width:100%">
       <mat-label>Domain Code</mat-label>
       <input matInput placeholder="Domain Code"
              id="domainCode_id" #domainCode
-             matTooltip="The SMP's domain code. The code must be unique and is used in HTTP header 'Domain' or URL path sequence when retrieving /creating the resource using the webservice API"
+             matTooltip="The SMP's domain code. The code must be unique and is used in HTTP header 'Domain' or URL path sequence when retrieving/creating the resource using the webservice API"
              formControlName="domainCode" maxlength="63"
              (keydown)="onFieldKeyPressed('domainCode', 'domainCodeTimeout')"
-             required>
+             required
+             auto-focus-directive>
       <mat-hint align="end">For WS API integration: the Domain property</mat-hint>
       <div
         *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')"
@@ -27,43 +44,9 @@
       </div>
     </mat-form-field>
     <mat-form-field style="width:100%">
-      <input matInput placeholder="SML domain"
-             matTooltip="The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: has informative value only, SML DNS zone used for publishing is based on SML configuration."
-             name="smlSubdomain"
-             (keydown)="onFieldKeyPressed('domainCode', 'smlSubdomainTimeout')"
-             id="smldomain_id"
-             formControlName="smlSubdomain" maxlength="63">
-      <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for
-        mydomain.sml.dns.zone).
-      </mat-hint>
-      <div
-        *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
-              &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
-        style="color:red; font-size: 70%">
-        SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
-        should not start with a digit nor a hyphen and should not end with a hyphen.
-      </div>
-      <div
-        *ngIf="!!fieldWarningTimeoutMap.smlSubdomainTimeout"
-        style="color:darkorange; font-size: 70%">
-        SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
-        should not start with a digit nor a hyphen and should not end with a hyphen.
-      </div>
-      <div
-        *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')"
-        style="color:red; font-size: 70%">
-        The SML subdomain is already defined!
-      </div>
-      <div
-        *ngIf="(!editMode &&  domainForm.controls['smlSubdomain'].hasError('blankDomainError'))"
-        style="color:red; font-size: 70%">
-        Domain with empty sml subdomain already exists!
-      </div>
-    </mat-form-field>
-    <mat-form-field style="width:100%">
+      <mat-label>Response signature Certificate (Signature CertAlias)</mat-label>
       <mat-select placeholder="Response signature Certificate (Signature CertAlias)"
                   formControlName="signatureKeyAlias"
-                  name="cert"
                   matTooltip="Certificate is used for signing REST responses for the domain."
                   id="signatureKeyAlias_id">
         <mat-option [value]="''">Choose certificate for signing soap response</mat-option>
@@ -74,5 +57,40 @@
       <mat-hint align="end">Empty value will cause that Resource responses will not be signed by SMP!
       </mat-hint>
     </mat-form-field>
+
+    <mat-form-field style="width:100%">
+      <mat-label>Visibility of the domain</mat-label>
+      <mat-select placeholder="Visibility of the domain"
+                  formControlName="visibility"
+                  name="visibility"
+                  matTooltip="Visibility of the domain."
+                  id="domainVisibility_id">
+        <mat-option [value]="''" diabled>Choose visibility of the domain</mat-option>
+        <mat-option *ngFor="let visibility of domainVisibilityOptions"
+                    [value]="visibility.value">
+          {{visibility.key}}
+        </mat-option>
+      </mat-select>
+      <mat-hint align="end">Domain visibility. In case of Internal user must be authenticated
+        to get read the domain resources
+      </mat-hint>
+    </mat-form-field>
+
+  <mat-form-field style="width:100%">
+    <mat-label>Default resource type for the domain</mat-label>
+    <mat-select placeholder="Default resource type for the domain"
+                formControlName="defaultResourceTypeIdentifier"
+                matTooltip="Default resource type for the domain."
+                id="domainDefaultResourceType_id">
+      <mat-option [value]="''">Choose Default resource type for the domain</mat-option>
+      <mat-option *ngFor="let resDef of domainResourceTypes"
+                  [value]="resDef.identifier">
+        {{resDef.name}} ({{resDef.identifier}})
+      </mat-option>
+    </mat-select>
+    <mat-hint align="end">Domain visibility. In case of Internal user must be authenticated
+      to get read the domain resources
+    </mat-hint>
+  </mat-form-field>
   </form>
 </div>

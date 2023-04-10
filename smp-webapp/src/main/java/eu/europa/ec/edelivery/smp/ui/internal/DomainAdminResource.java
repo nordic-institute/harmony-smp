@@ -2,23 +2,18 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.SMLIntegrationResult;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.ui.*;
+import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.DomainService;
 import eu.europa.ec.edelivery.smp.services.ui.UIDomainService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
@@ -46,18 +41,6 @@ public class DomainAdminResource {
 
     }
 
-    @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
-    public ServiceResult<DomainRO> geDomainList(
-            @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
-            @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
-            @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
-            @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = PARAM_QUERY_USER, required = false) String user) {
-
-        LOG.info("Search for page: {}, page size: {}, user: {}", page, pageSize, user);
-        return uiDomainService.getTableList(page, pageSize, orderBy, orderType, null);
-    }
-
     @GetMapping(path = "/{user-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
     public List<DomainRO> getAllDomainList(@PathVariable("user-enc-id") String userEncId) {
@@ -65,32 +48,72 @@ public class DomainAdminResource {
         return uiDomainService.getAllDomains();
     }
 
-    /**
-     * List of domains to be added or updated
-     *
-     * @param updateEntities
-     */
-    @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public void updateDomainList(@RequestBody DomainRO[] updateEntities) {
-        uiDomainService.updateDomainList(Arrays.asList(updateEntities));
+    @DeleteMapping(path = "/{user-enc-id}/{domain-enc-id}/delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
+    public DomainRO deleteDomain(@PathVariable("user-enc-id") String userEncId,
+                                 @PathVariable("domain-enc-id") String domainEncId) {
+        logAdminAccess("deleteDomain:" + domainEncId);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        LOG.info("Delete domain with id [{}]", domainId);
+
+        return uiDomainService.deleteDomain(domainId);
+    }
+    @PutMapping(path = "/{user-enc-id}/create", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
+    public DomainRO createBasicDomainData(@PathVariable("user-enc-id") String userEncId,
+                                          @RequestBody DomainRO domainData) {
+        logAdminAccess("createBasicDomainData" );
+
+        uiDomainService.createDomainData(domainData);
+
+        DomainRO domainRO = uiDomainService.getDomainDataByDomainCode(domainData.getDomainCode());
+        domainRO.setStatus(EntityROStatus.NEW.getStatusNumber());
+        return domainRO;
+    }
+    @PostMapping(path = "/{user-enc-id}/{domain-enc-id}/update", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
+    public DomainRO updateBasicDomainData(@PathVariable("user-enc-id") String userEncId,
+                                     @PathVariable("domain-enc-id") String domainEncId,
+                                     @RequestBody DomainRO domainData) {
+        logAdminAccess("updateBasicDomainData:" + domainEncId);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        LOG.info("Update basic domain with id [{}]", domainId);
+        uiDomainService.updateBasicDomainData(domainId, domainData);
+
+        DomainRO domainRO = uiDomainService.getDomainData(domainId);
+        domainRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+        return domainRO;
     }
 
-    /**
-     * Validated if domains with provided IDs can be deleted and returns the result in DeleteEntityValidation.
-     *
-     * @param listOfDomainIds
-     * @return
-     */
-
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    @PutMapping(value = "validate-delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public DeleteEntityValidation validateDeleteDomain(@RequestBody List<String> listOfDomainIds) {
-
-        DeleteEntityValidation dres = new DeleteEntityValidation();
-        dres.getListIds().addAll(listOfDomainIds);
-        return uiDomainService.validateDeleteRequest(dres);
+    @PostMapping(path = "/{user-enc-id}/{domain-enc-id}/update-resource-types", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
+    public DomainRO updateResourceDefDomainList(@PathVariable("user-enc-id") String userEncId,
+                                          @PathVariable("domain-enc-id") String domainEncId,
+                                          @RequestBody List<String> resourceDefs) {
+        logAdminAccess("updateResourceDefDomainList:" + domainEncId);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        LOG.info("Update basic domain with id [{}]", domainId);
+        uiDomainService.updateResourceDefDomainList(domainId, resourceDefs);
+        DomainRO domainRO = uiDomainService.getDomainData(domainId);
+        domainRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+        return domainRO;
     }
+
+    @PostMapping(path = "/{user-enc-id}/{domain-enc-id}/update-sml-integration-data", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
+    public DomainRO updateSmlIntegrationData(@PathVariable("user-enc-id") String userEncId,
+                                                @PathVariable("domain-enc-id") String domainEncId,
+                                                @RequestBody DomainRO domainData) {
+        logAdminAccess("updateSmlIntegrationData:" + domainEncId);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        LOG.info("Update domain integration data for id [{}]", domainId);
+        uiDomainService.updateDomainSmlIntegrationData(domainId, domainData);
+        DomainRO domainRO = uiDomainService.getDomainData(domainId);
+        domainRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+        return domainRO;
+    }
+
+
 
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(value = "/{user-id}/sml-register/{domain-code}")

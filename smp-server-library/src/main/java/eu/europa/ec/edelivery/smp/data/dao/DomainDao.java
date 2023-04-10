@@ -14,13 +14,14 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainDeleteValidation;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,6 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMA
  */
 @Repository
 public class DomainDao extends BaseDao<DBDomain> {
-
 
 
     /**
@@ -103,6 +103,13 @@ public class DomainDao extends BaseDao<DBDomain> {
         }
     }
 
+    public Long getResourceCountForDomain(Long domainId) {
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCES_BY_DOMAIN_ID_COUNT, Long.class);
+
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
+        return query.getSingleResult();
+    }
+
     /**
      * Check if domain for domain code exists. If not SMPRuntimeException with DOMAIN_NOT_EXISTS is thrown.
      * If code is null or blank - then null is returned.
@@ -137,19 +144,6 @@ public class DomainDao extends BaseDao<DBDomain> {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Validation report for domain which are used by  service groups from list of domain ids..
-     *
-     * @param domainIds
-     * @return
-     */
-    public List<DBDomainDeleteValidation> validateDomainsForDelete(List<Long> domainIds) {
-        TypedQuery<DBDomainDeleteValidation> query = memEManager.createNamedQuery("DBDomainDeleteValidation.validateDomainUsage",
-                DBDomainDeleteValidation.class);
-        query.setParameter("domainIds", domainIds);
-        return query.getResultList();
     }
 
 }

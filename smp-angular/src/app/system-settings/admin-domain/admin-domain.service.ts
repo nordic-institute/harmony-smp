@@ -4,7 +4,7 @@ import {Observable, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {SecurityService} from "../../security/security.service";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {DomainRo} from "../domain/domain-ro.model";
+import {DomainRo} from "./domain-ro.model";
 import {User} from "../../security/user.model";
 import {SmpConstants} from "../../smp.constants";
 
@@ -26,6 +26,70 @@ export class AdminDomainService {
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId))
       .subscribe((result: DomainRo[]) => {
         this.notifyDomainsUpdated(result);
+      }, (error: any) => {
+        this.alertService.error(error.error?.errorDescription)
+      });
+  }
+
+  public deleteDomains(domain: DomainRo) {
+    const currentUser: User = this.securityService.getCurrentUser();
+    this.http.delete<DomainRo>(SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DELETE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId))
+      .subscribe((result: DomainRo) => {
+        this.notifyDomainEntryUpdated(result);
+      }, (error: any) => {
+        this.alertService.error(error.error?.errorDescription)
+      });
+  }
+
+  public updateDomain(domain: DomainRo) {
+    const currentUser: User = this.securityService.getCurrentUser();
+    this.http.post<DomainRo>(SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_UPDATE
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId)
+      , domain)
+      .subscribe((result: DomainRo) => {
+        this.notifyDomainEntryUpdated(result);
+      }, (error: any) => {
+        this.alertService.error(error.error?.errorDescription)
+      });
+  }
+
+
+  public createDomain(domain: DomainRo) {
+    const currentUser: User = this.securityService.getCurrentUser();
+    this.http.put<DomainRo>(SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_CREATE
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      , domain)
+      .subscribe((result: DomainRo) => {
+        this.notifyDomainEntryUpdated(result);
+      }, (error: any) => {
+        this.alertService.error(error.error?.errorDescription)
+      });
+  }
+
+  public updateDomainSMLIntegrationData(domain: DomainRo) {
+    const currentUser: User = this.securityService.getCurrentUser();
+    this.http.post<DomainRo>(SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_UPDATE_SML_INTEGRATION
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId)
+      , domain)
+      .subscribe((result: DomainRo) => {
+        this.notifyDomainEntryUpdated(result);
+      }, (error: any) => {
+        this.alertService.error(error.error?.errorDescription)
+      });
+  }
+
+  public updateDomainResourceTypes(domain: DomainRo) {
+    const currentUser: User = this.securityService.getCurrentUser();
+    this.http.post<DomainRo>(SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_UPDATE_RESOURCE_TYPES
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain.domainId)
+      , domain.resourceDefinitions)
+      .subscribe((result: DomainRo) => {
+        this.notifyDomainEntryUpdated(result);
       }, (error: any) => {
         this.alertService.error(error.error?.errorDescription)
       });

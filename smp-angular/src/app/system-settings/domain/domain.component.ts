@@ -17,7 +17,7 @@ import {SmpConstants} from "../../smp.constants";
 import {GlobalLookups} from "../../common/global-lookups";
 import {SearchTableComponent} from "../../common/search-table/search-table.component";
 import {SecurityService} from "../../security/security.service";
-import {DomainRo} from "./domain-ro.model";
+import {DomainRo} from "../admin-domain/domain-ro.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {EntityStatus} from "../../common/model/entity-status.model";
 import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-dialog.component";

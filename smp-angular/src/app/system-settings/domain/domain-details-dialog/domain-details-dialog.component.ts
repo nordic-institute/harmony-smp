@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {DomainRo} from "../domain-ro.model";
+import {DomainRo} from "../../admin-domain/domain-ro.model";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {EntityStatus} from "../../../common/model/entity-status.model";
 import {GlobalLookups} from "../../../common/global-lookups";

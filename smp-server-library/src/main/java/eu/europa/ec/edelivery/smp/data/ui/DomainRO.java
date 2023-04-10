@@ -1,6 +1,11 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Joze Rihtarsic
  * @since 4.1
@@ -8,25 +13,28 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 public class DomainRO extends BaseRO {
 
-
     private static final long serialVersionUID = 9008583888835630008L;
 
-    Long id;
-    String domainCode;
-    String smlSubdomain;
-    String smlSmpId;
-    String smlClientCertHeader;
-    String smlClientKeyAlias;
-    String signatureKeyAlias;
-    boolean smlClientCertAuth;
-    boolean smlRegistered;
+    private String domainId;
+    private String domainCode;
+    private String smlSubdomain;
+    private String smlSmpId;
+    private String smlClientCertHeader;
+    private String smlClientKeyAlias;
+    private String signatureKeyAlias;
+    private boolean smlClientCertAuth;
+    private boolean smlRegistered;
+    private VisibilityType visibility;
+    private String defaultResourceTypeIdentifier;
+    private List<GroupRO> groups = new ArrayList<>();
+    private List<String> resourceDefinitions = new ArrayList<>();
 
-    public Long getId() {
-        return id;
+    public String getDomainId() {
+        return domainId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDomainId(String domainId) {
+        this.domainId = domainId;
     }
 
     public String getDomainCode() {
@@ -91,5 +99,29 @@ public class DomainRO extends BaseRO {
 
     public void setSmlRegistered(boolean smlRegistered) {
         this.smlRegistered = smlRegistered;
+    }
+
+    public VisibilityType getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(VisibilityType visibility) {
+        this.visibility = visibility;
+    }
+
+    public String getDefaultResourceTypeIdentifier() {
+        return defaultResourceTypeIdentifier;
+    }
+
+    public void setDefaultResourceTypeIdentifier(String defaultResourceTypeIdentifier) {
+        this.defaultResourceTypeIdentifier = defaultResourceTypeIdentifier;
+    }
+
+    public List<GroupRO> getGroups() {
+        return groups;
+    }
+
+    public List<String> getResourceDefinitions() {
+        return resourceDefinitions;
     }
 }

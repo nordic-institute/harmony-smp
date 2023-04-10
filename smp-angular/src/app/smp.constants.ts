@@ -6,7 +6,15 @@ export class SmpConstants {
   public static readonly DATE_TIME_FORMAT = 'dd/MM/yyyy HH:mm:ss z';
   public static readonly DATE_FORMAT = 'dd/MM/yyyy';
 
+
+  public static readonly PATH_ACTION_DELETE = 'delete';
+  public static readonly PATH_ACTION_UPDATE = 'update';
+  public static readonly PATH_ACTION_CREATE = 'create';
+  public static readonly PATH_ACTION_UPDATE_RESOURCE_TYPES = 'update-resource-types';
+
+  public static readonly PATH_ACTION_UPDATE_SML_INTEGRATION = 'update-sml-integration-data';
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
+  public static readonly PATH_PARAM_ENC_DOMAIN_ID = '{domainr-id}';
   public static readonly PATH_PARAM_CERT_ALIAS = '{cert-alias}';
   public static readonly PATH_PARAM_ENC_CREDENTIAL_ID = '{credential-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
@@ -57,6 +65,23 @@ export class SmpConstants {
   public static readonly REST_INTERNAL_DOMAIN_MANAGE = SmpConstants.REST_INTERNAL + 'domain' +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
 
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_DELETE = SmpConstants.REST_INTERNAL + 'domain' +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID +  '/' +SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
+
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE = SmpConstants.REST_INTERNAL + 'domain' +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID +  '/' +SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE;
+
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_CREATE = SmpConstants.REST_INTERNAL + 'domain' +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID +  '/' + SmpConstants.PATH_ACTION_CREATE;
+
+
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_SML_INTEGRATION = SmpConstants.REST_INTERNAL + 'domain' +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID +  '/' +SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE_SML_INTEGRATION;
+
+
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_RESOURCE_TYPES = SmpConstants.REST_INTERNAL + 'domain' +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID +  '/' +SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE_RESOURCE_TYPES;
+
   public static readonly REST_INTERNAL_EXTENSION_MANAGE = SmpConstants.REST_INTERNAL + 'extension';
   public static readonly REST_INTERNAL_PROPERTY_MANAGE = SmpConstants.REST_INTERNAL + 'property';
   public static readonly REST_INTERNAL_PROPERTY_VALIDATE = SmpConstants.REST_INTERNAL_PROPERTY_MANAGE + '/validate';
@@ -74,12 +99,12 @@ export class SmpConstants {
 
   public static readonly REST_INTERNAL_KEYSTORE_UPLOAD = SmpConstants.REST_INTERNAL_KEYSTORE_MANAGE + '/' + 'upload'
     + '/' + SmpConstants.PATH_PARAM_KEYSTORE_TYPE + '/' + SmpConstants.PATH_PARAM_KEYSTORE_PWD;
-  public static readonly REST_INTERNAL_KEYSTORE_DELETE_ENTRY = SmpConstants.REST_INTERNAL_KEYSTORE_MANAGE + '/' + 'delete'
+  public static readonly REST_INTERNAL_KEYSTORE_DELETE_ENTRY = SmpConstants.REST_INTERNAL_KEYSTORE_MANAGE + '/' + SmpConstants.PATH_ACTION_DELETE
     + '/' + SmpConstants.PATH_PARAM_CERT_ALIAS;
 
   public static readonly REST_INTERNAL_TRUSTSTORE_MANAGE = SmpConstants.REST_INTERNAL + 'truststore' + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
   public static readonly REST_INTERNAL_TRUSTSTORE_UPLOAD_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE_MANAGE + '/' + 'upload-certificate';
-  public static readonly REST_INTERNAL_TRUSTSTORE_DELETE_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE_MANAGE + '/' + 'delete' + '/' + SmpConstants.PATH_PARAM_CERT_ALIAS;
+  public static readonly REST_INTERNAL_TRUSTSTORE_DELETE_CERT = SmpConstants.REST_INTERNAL_TRUSTSTORE_MANAGE + '/' + SmpConstants.PATH_ACTION_DELETE + '/' + SmpConstants.PATH_PARAM_CERT_ALIAS;
 
 
   public static readonly REST_PUBLIC_USER_NAVIGATION_TREE = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + 'navigation-tree';

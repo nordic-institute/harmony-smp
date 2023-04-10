@@ -10,16 +10,11 @@ export const authGuard = () => {
   const alertService = inject(AlertMessageService);
   const router = inject(Router);
 
-  console.log("guard - check for authentication: " + router.url)
-
   // test if logged in
   securityService.isAuthenticated(true).subscribe((isAuthenticated: boolean) => {
-    console.log("Refresh application configuration is authenticated " + isAuthenticated )
     if (isAuthenticated) {
-      console.log("guard - it is authenticated")
       return true;
     } else {
-      console.log("guard - it is not authenticated")
       alertService.error('You have been logged out because of inactivity or missing access permissions.', true);
       // Redirect to the login page
       navigationService.reset();

@@ -10,7 +10,7 @@ import {ServiceGroupEditRo} from "../service-group-edit-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {ServiceGroupExtensionWizardDialogComponent} from "../service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
 import {ServiceGroupValidationRo} from "./service-group-validation-edit-ro.model";
-import {DomainRo} from "../../system-settings/domain/domain-ro.model";
+import {DomainRo} from "../../system-settings/admin-domain/domain-ro.model";
 import {ServiceGroupDomainEditRo} from "../service-group-domain-edit-ro.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {SecurityService} from "../../security/security.service";
