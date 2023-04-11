@@ -14,14 +14,14 @@ example:
 
     docker run --name smp --rm -it -p 8180:8080 -p 3316:3306  edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
 
-## SMP (param: -p 8080:8080 )
-url: http://localhost:8080/smp
+## SMP (param: -p 8180:8080 )
+url: http://localhost:8180/smp
 
 Default (demo) users are:
  - System admin: system/123456 
  - User:  user/123456
 
-NOTE: The users (with credentilas) are just for the demonstration purposes. Please change users and its passwords at first login!
+NOTE: The users are configured just for the demonstration purposes. Please change users and its passwords at first login!
 
 ## MYSQL (param: -p 3306:3306)
 Database client connection (for testing and debugging )
