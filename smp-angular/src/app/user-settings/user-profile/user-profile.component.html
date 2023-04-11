@@ -1,5 +1,5 @@
 <div id="user-profile-panel">
-  <form [formGroup]="userForm" (ngSubmit)="onSaveButtonClicked()">
+  <form [formGroup]="userForm" >
     <data-panel title="Account"
                 text="Account data">
       <mat-form-field class="user-profile-pane-field">
@@ -102,7 +102,7 @@
       </div>
     </data-panel>
   </form>
-  <form [formGroup]="userCredentialForm" (ngSubmit)="onSaveButtonClicked()">
+  <form [formGroup]="userCredentialForm">
     <data-panel *ngIf="true" title="Username/password credentials"
                 text="Reset username password for the UI login">
       <div style="display: flex;flex-flow: row wrap;">

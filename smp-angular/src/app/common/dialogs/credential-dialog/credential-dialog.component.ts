@@ -152,10 +152,8 @@ export class CredentialDialogComponent {
 
   storeCertificateCredentials() {
     this.clearAlert();
-
     this.userService.storeUserCertificateCredential(this.initCredential);
     this.closeDialog();
-
   }
 
 

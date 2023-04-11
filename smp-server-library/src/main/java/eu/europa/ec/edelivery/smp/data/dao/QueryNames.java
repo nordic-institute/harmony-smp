@@ -25,7 +25,11 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS_COUNT = "DBDomainMember.getByUserAndDomainsCount";
     public static final String QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS = "DBDomainMember.getByUserAndDomains";
 
+    public static final String QUERY_DOMAIN_MEMBERS_COUNT = "DBDomainMember.getByDomainCount";
 
+    public static final String QUERY_DOMAIN_MEMBERS_FILTER_COUNT = "DBDomainMember.getByDomainFilterCount";
+    public static final String QUERY_DOMAIN_MEMBERS = "DBDomainMember.getByDomain";
+    public static final String QUERY_DOMAIN_MEMBERS_FILTER = "DBDomainMember.getByDomainFilter";
 
     public static final String QUERY_DOMAIN_RESOURCE_DEF_ALL = "DBDomainResourceDef.getAll";
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ALL = "DBDomainResourceDef.getAllForDomain";
@@ -79,12 +83,19 @@ public class QueryNames {
     public static final String QUERY_USER_BY_CREDENTIAL_NAME_TYPE_TARGET = "DBUser.getUserByCredentialNameTypeTarget";
     public static final String QUERY_USER_BY_CI_CREDENTIAL_NAME_TYPE_TARGET = "DBUser.getUserByCaseInsensitiveCredentialNameTypeTarget";
 
+    public static final String QUERY_USER_COUNT = "DBUser.getUsersCount";
+    public static final String QUERY_USER_FILTER_COUNT = "DBUser.getUsersByFilterCount";
+    public static final String QUERY_USERS = "DBUser.getUsers";
+    public static final String QUERY_QUERY_USERS_FILTER = "DBUser.getUsersByFilter";
 
 
     public static final String PARAM_NAME = "name";
     public static final String PARAM_CODE = "code";
     public static final String PARAM_IDENTIFIER = "identifier";
     public static final String PARAM_ID = "id";
+
+    public static final String PARAM_USER_FILTER = "user_filter";
+
 
 
     public static final String PARAM_URL_SEGMENT = "url_segment";

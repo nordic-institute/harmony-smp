@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.auth;
 
+import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
@@ -33,9 +34,10 @@ public class SMPAuthorizationServiceTest {
     ConversionService conversionService = Mockito.mock(ConversionService.class);
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     UserDao userDao = Mockito.mock(UserDao.class);
+    DomainMemberDao domainMemberDao = Mockito.mock(DomainMemberDao.class);
 
     SMPAuthorizationService testInstance = new SMPAuthorizationService(serviceGroupService, conversionService,
-            configurationService, userDao);
+            configurationService, userDao, domainMemberDao);
 
 
     @Before

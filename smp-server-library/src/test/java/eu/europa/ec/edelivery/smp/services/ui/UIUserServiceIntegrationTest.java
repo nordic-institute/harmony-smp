@@ -22,11 +22,8 @@ import org.springframework.test.context.ContextConfiguration;
 public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest {
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
-
     @Autowired
     protected UIUserService testInstance;
-
-
     @Autowired
     protected ResourceDao serviceGroupDao;
 /*

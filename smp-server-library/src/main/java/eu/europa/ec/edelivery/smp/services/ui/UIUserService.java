@@ -204,7 +204,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return result;
     }
 
-
     /**
      * Method updates the user password
      *
@@ -269,6 +268,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         return dbCredential.getUser();
     }
+
 
     /**
      * Method creates Username/passwords credentials for the user with given userId.
@@ -492,6 +492,26 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         return credentialResultRO;
     }
+
+    @Transactional
+    public ServiceResult<SearchUserRO> searchUsers(int page, int pageSize, String filter) {
+        Long count = userDao.getFilteredUserListCount(filter);
+        ServiceResult<SearchUserRO> result = new ServiceResult<>();
+        result.setPage(page);
+        result.setPageSize(pageSize);
+        ;
+        if (count < 1) {
+            result.setCount(0L);
+            return result;
+        }
+        result.setCount(count);
+        List<DBUser> users = userDao.getFilteredUserList(page, pageSize, filter);
+        List<SearchUserRO> userList = users.stream().map(usr -> conversionService.convert(usr, SearchUserRO.class)).collect(Collectors.toList());
+
+        result.getServiceEntities().addAll(userList);
+        return result;
+    }
+
 
     @Transactional(readOnly = true)
     public DBUser findUserByUsername(String userName) {

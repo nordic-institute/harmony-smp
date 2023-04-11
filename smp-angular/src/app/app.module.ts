@@ -126,6 +126,14 @@ import {
   NGX_MAT_MOMENT_FORMATS, NgxMatMomentAdapter,
   NgxMatMomentModule
 } from "@angular-material-components/moment-adapter";
+import {
+  DomainMemberPanelComponent
+} from "./system-settings/admin-domain/domain-member-panel/domain-member-panel.component";
+import {
+  MemberDialogComponent
+} from "./system-settings/admin-domain/domain-member-panel/member-dialog/member-dialog.component";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {MembershipService} from "./system-settings/admin-domain/domain-member-panel/membership.service";
 
 
 @NgModule({
@@ -157,6 +165,7 @@ import {
     DomainPanelComponent,
     DomainSmlIntegrationPanelComponent,
     DomainDetailsDialogComponent,
+    DomainMemberPanelComponent,
     DomainResourceTypePanelComponent,
     DomainSelectorComponent,
     ExpiredPasswordDialogComponent,
@@ -168,6 +177,7 @@ import {
     KeystoreEditDialogComponent,
     KeystoreImportDialogComponent,
     LoginComponent,
+    MemberDialogComponent,
     NavTree,
     NavTreeMenu,
     ObjectPropertiesDialogComponent,
@@ -232,6 +242,7 @@ import {
     NgxMatMomentModule,
     ReactiveFormsModule,
     routing,
+    MatAutocompleteModule,
   ],
   providers: [
     AdminDomainService,
@@ -244,6 +255,7 @@ import {
     CertificateService,
     DatePipe,
     DomainService,
+    MembershipService,
     DownloadService,
     ExtensionService,
     GlobalLookups,

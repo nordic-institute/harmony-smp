@@ -30,7 +30,9 @@
         ></domain-sml-integration-panel>
       </mat-tab>
       <mat-tab label="Members">
-        Content 3
+        <domain-member-panel #domainMemberPanelComponent
+                             [domain]="selected"
+        ></domain-member-panel>
       </mat-tab>
     </mat-tab-group>
   </data-panel>
@@ -46,7 +48,6 @@
     <mat-toolbar-row class="mat-elevation-z5">
       <button mat-raised-button
               mat-flat-button color="primary"
-              onDiscardNew
               (click)="onCreateDomainClicked()"
               >Create domain
       </button>
