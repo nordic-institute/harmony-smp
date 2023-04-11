@@ -23,8 +23,8 @@ In order to build DomiSMP spring-boot build the bdmls project from the root of t
 
     mvn clean install 
     
- The build first build the smp-webapp.war which is embedded in to the spring-boot 
- executable jar.
+ The build first build the *smp.war* (The war is here: smp-webapp/target/smp.war) and then embeds in to the spring-boot 
+ executable jar: *smp-springboot-[VERSION]-exec.jar* (The example file path: smp-springboot/target/smp-springboot-5.0-SNAPSHOT-exec.jar)
  
 ## Start the application
 
@@ -36,7 +36,27 @@ with database configuration for the DomiSMP spring-boot application. And the fin
 ### Prepare the DomiSMP database
 For details on how to prepare the database, read the Admin Guide available at: 
 [DomiSMP Release Page](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/SMP).
-Please find bellow the bash example bash script for creating the DomiSMP database on MysSQL.
+Please find bellow the *Linux OS* command line example script for creating the DomiSMP database on MysSQL.
+
+To run the script check the following steps
+ - check if you have the correct command line emulator (example uses the /bin/sh)
+ - locally installed MySQL database.
+ - clone (and checkout the right branch: eg. for development checkout development branch) of the DomiSMP. The repo contains the database DDL scripts.
+
+Before executing the example script set the following variables:
+ - PROJECT_HOME: The DomiSMP code / project home: exp.: /code/smp
+ - DATABASE: the smp database schema 
+ - DB_ADMIN: the mysql database root username
+ - DB_ADMIN_PASSWORD: the mysql database root password
+ - DB_USERNAME: the DomiSMP mysql database username
+ - DB_PASSWORD: the DomiSMP mysql database username
+
+*Explanation if the script:*
+The script connect to mysql database using CLI tool 'mysql' and  deletes database/schema and user defined in variable [DATABASE] and [DB_USERNAME]. The the DomiSMP schema is generated from script 
+[PROJECT_HOME]/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl
+and insert the init data from
+[PROJECT_HOME]/smp-soapui-tests/src/test/resources/init-data/init-test-mysql-soapui.sql
+
 
 ```
 #!/bin/sh
@@ -44,21 +64,21 @@ Please find bellow the bash example bash script for creating the DomiSMP databas
 PROJECT_HOME=[The DomiSMP project home: exp.: /code/smp]
 SQLFOLDER=$PROJECT_HOME/smp-webapp/src/main/sml-setup/database-scripts/
 
-DATABASE=smldbdtest
+DATABASE=smpdb
 DB_ADMIN=root
 DB_ADMIN_PASSWORD=root
-DB_USERNAME=smltest;
-DB_PASSWORD=smltest;
+DB_USERNAME=smp;
+DB_PASSWORD=smp;
 
-# recreate database
-echo "clean the database"
-mysql -h localhost -u $DB_ADMIN_PASSWORD --password=$DB_ADMIN_PASSWORD -e "drop schema if exists $DATABASE;DROP USER IF EXISTS $DB_USERNAME;  create schema $DATABASE;alter database $DATABASE charset=utf8; create user $DB_USERNAME identified by '$DB_PASSWORD';grant all on $DATABASE.* to $DB_USERNAME;"
+# recreate database 
+echo "clean the database $DATABASE if exists "
+mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD -e "drop schema if exists $DATABASE;DROP USER IF EXISTS $DB_USERNAME;  create schema $DATABASE;alter database $DATABASE charset=utf8; create user $DB_USERNAME identified by '$DB_PASSWORD';grant all on $DATABASE.* to $DB_USERNAME;"
 
 # create new database
 echo "create database"
-mysql -h localhost -u root --password=root $DATABASE < "$SQLFOLDER/mysql5innodb.ddl"
+mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD $DATABASE < "$SQLFOLDER/mysql5innodb.ddl"
 echo "init database for soapui tests"
-mysql -h localhost -u root --password=root $DATABASE < "$PROJECT_HOME/smp-soapui-tests/src/test/resources/init-data/init-test-mysql-soapui.sql"
+mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD $DATABASE < "$PROJECT_HOME/smp-soapui-tests/src/test/resources/init-data/init-test-mysql-soapui.sql"
 ```
 
 ### Prepare the DomiSMP database configuration.
@@ -78,6 +98,7 @@ the DomiSMP startup properties, please read the DomiSMP Admin guide.
 
 
 Example of the springboot configuration: application.properties:
+NOTE: Please update the properties to meet you local mysql installation configuration
 
 ```
 # the tomcat server port
@@ -86,7 +107,7 @@ server.port=8084
 # Database configuration
 smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 smp.jdbc.driver=com.mysql.cj.jdbc.Driver
-smp.jdbc.url=jdbc:mysql://localhost:3306/smldbdtest?allowPublicKeyRetrieval=true
+smp.jdbc.url=jdbc:mysql://localhost:3306/smpdb?allowPublicKeyRetrieval=true
 smp.jdbc.user=smltest
 smp.jdbc.password=smltest
 ```
