@@ -37,6 +37,7 @@ public class ResourceConstants {
     // parameters
     public static final String PARAM_PAGINATION_PAGE="page";
     public static final String PARAM_PAGINATION_PAGE_SIZE="pageSize";
+    public static final String PARAM_PAGINATION_FILTER="filter";
     public static final String PARAM_PAGINATION_ORDER_BY="orderBy";
     public static final String PARAM_PAGINATION_ORDER_TYPE="orderType";
 

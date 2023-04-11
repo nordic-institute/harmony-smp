@@ -4,6 +4,8 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
@@ -22,13 +24,19 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Table(name = "SMP_DOMAIN_MEMBER",
         indexes = {@Index(name = "SMP_DOM_MEM_IDX", columnList = "FK_DOMAIN_ID, FK_USER_ID", unique = true)
 })
-@NamedQueries({
-        @NamedQuery(name = QUERY_DOMAIN_MEMBER_ALL, query = "SELECT u FROM DBDomainMember u"),
-        @NamedQuery(name = QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
-                "WHERE c.user.id = :user_id and c.domain.id in (:domain_ids)"),
-        @NamedQuery(name = QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS, query = "SELECT c FROM DBDomainMember c " +
-                "WHERE c.user.id = :user_id and c.domain.id in (:domain_ids)")
-})
+@NamedQuery(name = QUERY_DOMAIN_MEMBER_ALL, query = "SELECT u FROM DBDomainMember u")
+@NamedQuery(name = QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
+        "WHERE c.user.id = :user_id and c.domain.id in (:domain_ids)")
+@NamedQuery(name = QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS, query = "SELECT c FROM DBDomainMember c " +
+        "WHERE c.user.id = :user_id and c.domain.id in (:domain_ids)")
+@NamedQuery(name = QUERY_DOMAIN_MEMBERS_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
+        " WHERE c.domain.id = :domain_id")
+@NamedQuery(name = QUERY_DOMAIN_MEMBERS, query = "SELECT c FROM DBDomainMember c " +
+        " WHERE c.domain.id = :domain_id order by c.user.username")
+@NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
+        " WHERE c.domain.id = :domain_id AND (lower(c.user.fullName) like lower(:user_filter) OR  lower(c.user.username) like lower(:user_filter))")
+@NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER, query = "SELECT c FROM DBDomainMember c " +
+        " WHERE c.domain.id = :domain_id  AND (lower(c.user.fullName) like lower(:user_filter) OR  lower(c.user.username) like lower(:user_filter))  order by c.user.username")
 public class DBDomainMember extends BaseEntity {
 
     @Id
@@ -92,5 +100,21 @@ public class DBDomainMember extends BaseEntity {
 
     public void setRole(MembershipRoleType role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DBDomainMember that = (DBDomainMember) o;
+
+        return new EqualsBuilder().appendSuper(super.equals(o)).append(id, that.id).append(domain, that.domain).append(user, that.user).append(role, that.role).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).appendSuper(super.hashCode()).append(id).append(role).toHashCode();
     }
 }

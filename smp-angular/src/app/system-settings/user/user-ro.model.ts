@@ -4,6 +4,7 @@ import {CertificateRo} from './certificate-ro.model';
 export interface UserRo extends SearchTableEntity {
   userId?: string
   username: string;
+  fullName?: string;
   emailAddress: string;
   accessTokenId?: string;
   passwordExpireOn?:	Date;

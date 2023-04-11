@@ -1,7 +1,9 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
@@ -21,9 +23,11 @@ import org.springframework.stereotype.Service;
 
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.*;
+import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN;
+import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_TOKEN_USER;
 
 /**
  * @author Sebastian-Ion TINCU
@@ -34,6 +38,7 @@ public class SMPAuthorizationService {
     private static final String ERR_INVALID_OR_NULL = "Invalid or null authentication for the session!";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthorizationService.class);
 
+    DomainMemberDao domainMemberDao;
     private final ServiceGroupService serviceGroupService;
     private final ConversionService conversionService;
     private final ConfigurationService configurationService;
@@ -42,11 +47,13 @@ public class SMPAuthorizationService {
     public SMPAuthorizationService(ServiceGroupService serviceGroupService,
                                    ConversionService conversionService,
                                    ConfigurationService configurationService,
-                                   UserDao userDao) {
+                                   UserDao userDao,
+                                   DomainMemberDao domainMemberDao) {
         this.serviceGroupService = serviceGroupService;
         this.conversionService = conversionService;
         this.configurationService = configurationService;
         this.userDao = userDao;
+        this.domainMemberDao = domainMemberDao;
     }
 
     public boolean isSystemAdministrator() {
@@ -54,6 +61,18 @@ public class SMPAuthorizationService {
         boolean hasSystemRole = hasSessionUserRole(S_AUTHORITY_TOKEN_SYSTEM_ADMIN, userDetails);
         LOG.debug("Logged user [{}] is system administrator role [{}]", userDetails.getUsername(), hasSystemRole);
         return hasSystemRole;
+    }
+
+    public boolean isDomainAdministrator(String domainEncId) {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        Long domainId;
+        try {
+            domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        } catch (SMPRuntimeException | NumberFormatException ex) {
+            LOG.error("Error occurred while decrypting domain-id:[" + domainEncId + "]", ex);
+            throw new BadCredentialsException("Login failed; Invalid userID or password");
+        }
+        return domainMemberDao.isUserDomainMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(domainId), MembershipRoleType.ADMIN);
     }
 
     public boolean isSMPAdministrator() {
@@ -79,7 +98,7 @@ public class SMPAuthorizationService {
     public boolean isAuthorizedForManagingTheServiceMetadataGroup(Long serviceMetadataId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         if (hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails)) {
-            LOG.debug("SMP admin is authorized to manage service metadata: [{}]" + serviceMetadataId);
+            LOG.debug("SMP admin is authorized to manage service metadata: [{}]" , serviceMetadataId);
             return true;
 
         }
@@ -154,7 +173,7 @@ public class SMPAuthorizationService {
         // set cas authentication data
         if (configurationService.getUIAuthenticationTypes().contains(SMPUserAuthenticationTypes.SSO.name())) {
             URL casUrlData = configurationService.getCasUserDataURL();
-            userRO.setCasUserDataUrl(casUrlData!=null?casUrlData.toString():null);
+            userRO.setCasUserDataUrl(casUrlData != null ? casUrlData.toString() : null);
         }
 
         return sanitize(userRO);

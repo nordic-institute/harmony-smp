@@ -25,6 +25,8 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import java.util.Objects;
 
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+
 @Entity
 @Audited
 @Table(name = "SMP_USER")
@@ -38,6 +40,16 @@ import java.util.Objects;
         " WHERE upper(c.name) = upper(:credential_name) " +
         " AND c.credentialType = :credential_type " +
         " AND c.credentialTarget = :credential_target")
+
+
+@NamedQuery(name = QUERY_USER_COUNT, query = "SELECT count(c) FROM DBUser c")
+@NamedQuery(name = QUERY_USERS, query = "SELECT c FROM DBUser c  order by c.username")
+@NamedQuery(name = QUERY_USER_FILTER_COUNT, query = "SELECT count(c) FROM DBUser c " +
+        " WHERE (lower(c.username) like lower(:user_filter) OR  lower(c.fullName) like lower(:user_filter))")
+@NamedQuery(name = QUERY_QUERY_USERS_FILTER, query = "SELECT c FROM DBUser c " +
+        " WHERE (lower(c.username) like lower(:user_filter) OR  lower(c.fullName) like lower(:user_filter))  order by c.username")
+
+
 //@NamedQueries({
 
 // @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),

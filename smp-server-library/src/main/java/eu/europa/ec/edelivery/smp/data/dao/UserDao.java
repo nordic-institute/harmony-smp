@@ -316,4 +316,31 @@ public class UserDao extends BaseDao<DBUser> {
         }
         */
     }
+
+    public List<DBUser> getFilteredUserList(int iPage, int iPageSize, String filter) {
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(hasFilter ?
+                QUERY_QUERY_USERS_FILTER : QUERY_USERS, DBUser.class);
+
+        if (iPageSize > -1 && iPage > -1) {
+            query.setFirstResult(iPage * iPageSize);
+        }
+        if (iPageSize > 0) {
+            query.setMaxResults(iPageSize);
+        }
+
+        if (hasFilter) {
+            query.setParameter(PARAM_USER_FILTER, "%" + StringUtils.trim(filter) + "%");
+        }
+        return query.getResultList();
+    }
+
+    public Long getFilteredUserListCount(String filter) {
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_USER_FILTER_COUNT : QUERY_USER_COUNT, Long.class);
+        if (hasFilter) {
+            query.setParameter(PARAM_USER_FILTER, "%" + StringUtils.trim(filter) + "%");
+        }
+        return query.getSingleResult();
+    }
 }

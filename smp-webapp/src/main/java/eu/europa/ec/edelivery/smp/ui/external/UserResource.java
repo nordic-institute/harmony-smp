@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.PARAM_PAGINATION_FILTER;
 import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntityId;
 
 /**
@@ -72,6 +73,17 @@ public class UserResource {
             authenticationService.logout(request, response);
         }
         return result != null;
+    }
+
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
+    @GetMapping(path = "/{user-id}/search", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public List<SearchUserRO> lookupUsers(@PathVariable("user-id") String userId,
+                              @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter ) {
+        Long entityId = decryptEntityId(userId);
+        LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
+
+        //  return first 10 results
+        return  uiUserService.searchUsers(0, 10, filter).getServiceEntities();
     }
 
     /**

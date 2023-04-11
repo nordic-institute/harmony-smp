@@ -16,10 +16,8 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.logging.SMPLogger;
-import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
@@ -37,15 +35,16 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 public class DomainMemberDao extends BaseDao<DBDomainMember> {
 
 
-    public boolean isUserDomainMember(DBUser user, DBDomain domain){
+    public boolean isUserDomainMember(DBUser user, DBDomain domain) {
         return isUserDomainsMember(user.getId(), Collections.singletonList(domain.getId()));
     }
-    public boolean  isUserDomainsMember(DBUser user, List<DBDomain> domainList){
+
+    public boolean isUserDomainsMember(DBUser user, List<DBDomain> domainList) {
         List<Long> domainIds = domainList.stream().map(dbDomain -> dbDomain.getId()).collect(Collectors.toList());
         return isUserDomainsMember(user.getId(), domainIds);
     }
 
-    public boolean  isUserDomainsMember(Long userId, List<Long> domainIdList){
+    public boolean isUserDomainsMember(Long userId, List<Long> domainIdList) {
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS_COUNT,
                 Long.class);
         query.setParameter(PARAM_USER_ID, userId);
@@ -58,7 +57,45 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
 
         query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_DOMAIN_IDS, domainsIds);
-        return query.getResultList().stream().anyMatch(member ->member.getRole() == roleType );
+        return query.getResultList().stream().anyMatch(member -> member.getRole() == roleType);
+    }
+
+    public List<DBDomainMember> getDomainMembers(Long domainId, int iPage, int iPageSize, String filter) {
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        TypedQuery<DBDomainMember> query = memEManager.createNamedQuery(hasFilter ?
+                QUERY_DOMAIN_MEMBERS_FILTER : QUERY_DOMAIN_MEMBERS, DBDomainMember.class);
+
+        if (iPageSize> -1 && iPage >-1 ) {
+            query.setFirstResult(iPage * iPageSize);
+        }
+        if (iPageSize> 0) {
+            query.setMaxResults(iPageSize);
+        }
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
+        if (hasFilter) {
+            query.setParameter(PARAM_USER_FILTER, "%"+StringUtils.trim(filter)+"%");
+        }
+        return query.getResultList();
+    }
+
+    public Long getDomainMemberCount(Long domainId, String filter) {
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_DOMAIN_MEMBERS_FILTER_COUNT : QUERY_DOMAIN_MEMBERS_COUNT, Long.class);
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
+        if (hasFilter) {
+            query.setParameter(PARAM_USER_FILTER, "%"+StringUtils.trim(filter)+"%");
+        }
+        return query.getSingleResult();
+    }
+
+
+    public DBDomainMember addMemberToDomain(DBDomain domain, DBUser user , MembershipRoleType role){
+        DBDomainMember domainMember = new DBDomainMember();
+        domainMember.setRole(role);
+        domainMember.setUser(user);
+        domainMember.setDomain(domain);
+        domainMember = merge(domainMember);
+        return domainMember;
     }
 
 }

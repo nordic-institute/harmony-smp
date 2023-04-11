@@ -8,6 +8,7 @@ import {CertificateRo} from "../../user/certificate-ro.model";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
+import {UserRo} from "../../user/user-ro.model";
 
 
 @Component({
