@@ -1,19 +1,25 @@
 import {SearchTableEntity} from '../../common/search-table/search-table-entity.model';
 import {CertificateRo} from './certificate-ro.model';
+import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 
 export interface UserRo extends SearchTableEntity {
   userId?: string
   username: string;
   fullName?: string;
-  emailAddress: string;
+  emailAddress?: string;
+  smpTheme?: string;
+  smpLocale?: string;
+  role: ApplicationRoleEnum;
+  active: boolean;
+
+
+
   accessTokenId?: string;
   passwordExpireOn?:	Date;
   accessTokenExpireOn?:	Date;
-  role: string;
-  active: boolean;
+
   suspended?: boolean;
   certificate?: CertificateRo;
-  statusPassword: number;
   casUserDataUrl?: string;
   sequentialLoginFailureCount?:number;
   lastFailedLoginAttempt?:Date;

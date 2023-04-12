@@ -75,6 +75,20 @@ public class SMPAuthorizationService {
         return domainMemberDao.isUserDomainMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(domainId), MembershipRoleType.ADMIN);
     }
 
+    public boolean isAnyDomainAdministrator() {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        return domainMemberDao.isUserAnyDomainAdministrator(userDetails.getUser().getId());
+    }
+
+    public boolean isAnyGroupAdministrator() {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        return domainMemberDao.isUserGroupAdministrator(userDetails.getUser().getId());
+    }
+    public boolean isAnyResourceAdministrator() {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        return domainMemberDao.isUserResourceAdministrator(userDetails.getUser().getId());
+    }
+
     public boolean isSMPAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         boolean hasRole = hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails);

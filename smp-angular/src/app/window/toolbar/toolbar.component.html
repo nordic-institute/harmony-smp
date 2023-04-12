@@ -10,7 +10,7 @@
         </div-->
       </div>
     <span class="window-toolbar-spacer"></span>
-    <a class="window-toolbar-item" *ngIf="!currentUser" [routerLink]="['/login']" (click)="clearWarning()"> Login </a>
+    <a id="login_id" class="window-toolbar-item" *ngIf="!currentUser" [routerLink]="['/login']" (click)="clearWarning()"> Login </a>
     <span class="window-toolbar-item" *ngIf="currentUser">{{currentUserRoleDescription}}: {{currentUser}}  </span>
     <button class="window-toolbar-item" [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id"
              matTooltip="Menu"  >
@@ -19,24 +19,24 @@
 
     <mat-menu x-position="before" #settingsMenu="matMenu">
       <div *ngIf="currentUser">
-        <button mat-menu-item id="currentuser_id" (click)="editCurrentUser()">
+        <button id="currentuser_id" mat-menu-item  (click)="editCurrentUser()">
           <mat-icon>person</mat-icon>
           <span>{{currentUser}}</span>
         </button>
-        <button *ngIf="isUserAuthPasswdEnabled" mat-menu-item id="changePassword_id"
+        <button id="changePassword_id"  *ngIf="isUserAuthPasswdEnabled" mat-menu-item
                 (click)="changeCurrentUserPassword()">
           <span>Change password</span>
         </button>
-        <button *ngIf="isUserAuthSSOEnabled" mat-menu-item id="showSSODetails_id"
+        <button  id="showSSODetails_id" *ngIf="isUserAuthSSOEnabled" mat-menu-item
                 (click)="openCurrentCasUserData()">
           <span>Open CAS user data</span>
         </button>
-        <button *ngIf="isWebServiceUserTokenAuthPasswdEnabled" mat-menu-item id="getAccessToken_id"
+        <button id="getAccessToken_id" *ngIf="isWebServiceUserTokenAuthPasswdEnabled" mat-menu-item
                 (click)="regenerateCurrentUserAccessToken()">
           <span>Generated access token</span>
         </button>
         <hr/>
-        <button mat-menu-item (click)="logout($event)" id="logout_id">
+        <button id="logout_id" mat-menu-item (click)="logout($event)">
           <mat-icon>power_settings_new</mat-icon>
           <span>Logout</span>
         </button>

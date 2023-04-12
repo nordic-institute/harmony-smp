@@ -18,11 +18,14 @@ import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
@@ -151,6 +154,37 @@ public class DBUser extends BaseEntity {
     @ColumnDescription(comment = "DomiSMP settings: locale for the user")
     private String smpLocale;
 
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBCredential> userCredentials = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBDomainMember> domainMembers = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBGroupMember> groupMembers = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBResourceMember> resourceMembers = new ArrayList<>();
     @Override
     public Long getId() {
         return id;
@@ -214,6 +248,22 @@ public class DBUser extends BaseEntity {
 
     public void setSmpLocale(String smpLocale) {
         this.smpLocale = smpLocale;
+    }
+
+    public List<DBCredential> getUserCredentials() {
+        return userCredentials;
+    }
+
+    public List<DBDomainMember> getDomainMembers() {
+        return domainMembers;
+    }
+
+    public List<DBGroupMember> getGroupMembers() {
+        return groupMembers;
+    }
+
+    public List<DBResourceMember> getResourceMembers() {
+        return resourceMembers;
     }
 
     @Override

@@ -18,14 +18,10 @@
           <mat-icon>delete</mat-icon>
           <span>Delete selected member</span>
         </button>
-
-
-
-
       </mat-toolbar-row>
     </mat-toolbar>
     <h3>Domain members</h3>
-    <div class="domain-member-container mat-elevation-z8">
+    <div class="domain-member-container mat-elevation-z2">
       <div class="domain-member-loading-shade"
            *ngIf="isLoadingResults">
         <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
@@ -63,10 +59,7 @@
             <td mat-cell *matCellDef="let row">{{row.memberOf}}</td>
           </ng-container>
 
-
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-
-
           <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
               (click)="memberSelected(row)"
               [ngClass]="{'datatable-row-selected': row==selectedMember,'datatable-row-odd': odd}"

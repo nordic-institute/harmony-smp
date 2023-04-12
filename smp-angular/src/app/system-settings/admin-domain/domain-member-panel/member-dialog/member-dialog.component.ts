@@ -1,13 +1,13 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {MembershipRoleEnum} from "../membership-role.enum";
+import {MembershipRoleEnum} from "../../../../common/enums/membership-role.enum";
 import {Observable} from "rxjs";
 import {SearchUserRo} from "./search-user-ro.model";
 import {MembershipService} from "../membership.service";
 import {MemberRo} from "../member-ro.model";
 import {DomainRo} from "../../domain-ro.model";
-import {MemberTypeEnum} from "./member-type.enum";
+import {MemberTypeEnum} from "../../../../common/enums/member-type.enum";
 import {AlertMessageService} from "../../../../common/alert-message/alert-message.service";
 
 

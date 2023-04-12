@@ -17,7 +17,7 @@ import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confir
 import {SearchTableValidationResult} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
 import {Router} from "@angular/router";
-import {AuthenticatedGuard} from "../../guards/authenticated.guard";
+import {authenticationGuard} from "../../guards/authentication.guard";
 import ObjectUtils from "../utils/object-utils";
 
 @Component({
@@ -77,7 +77,7 @@ export class SearchTableComponent implements OnInit {
               protected alertService: AlertMessageService,
               private downloadService: DownloadService,
               public dialog: MatDialog,
-              private router: Router, private authenticatedGuard: AuthenticatedGuard) {
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -243,11 +243,7 @@ export class SearchTableComponent implements OnInit {
 
 
   onNewButtonClicked() {
-    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
-      if (authorized) {
         this.fireCreateNewEntityEvent();
-      }
-    })
   }
 
   fireCreateNewEntityEvent() {
@@ -267,11 +263,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteButtonClicked() {
-    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
-      if (authorized) {
         this.fireDeleteEntityEvent();
-      }
-    })
   }
 
   fireDeleteEntityEvent() {
@@ -279,20 +271,11 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteRowActionClicked(row: SearchTableEntity) {
-    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
-      if (authorized) {
         this.deleteSearchTableEntities([row]);
-      }
-    })
-
   }
 
   onEditButtonClicked() {
-    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
-      if (authorized) {
         this.fireEditEntityEvent();
-      }
-    })
   }
 
   fireEditEntityEvent() {

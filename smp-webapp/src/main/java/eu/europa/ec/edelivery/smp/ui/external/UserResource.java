@@ -120,7 +120,11 @@ public class UserResource {
         DBUser user = uiUserService.findUser(entityId);
         NavigationTreeNodeRO home = new NavigationTreeNodeRO("home", "Home", "home", "");
         home.addChild(createPublicNavigationTreeNode());
-       // home.addChild(createEditNavigationTreeNode());
+        // create administration nodes for domains, groups and resources
+        NavigationTreeNodeRO adminNodes = createEditNavigationTreeNode();
+        if (!adminNodes.getChildren().isEmpty()) {
+            home.addChild(adminNodes);
+        }
         if (user.getApplicationRole() == ApplicationRoleType.SYSTEM_ADMIN) {
             home.addChild(createSystemAdminNavigationTreeNode());
         }
@@ -252,7 +256,7 @@ public class UserResource {
     protected NavigationTreeNodeRO createPublicNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("search-tools", "Search", "search", "public");
         node.addChild(new NavigationTreeNodeRO("search-resources", "Resources", "find_in_page", "search-resource","Search registered resources"));
-  //      node.addChild(new NavigationTreeNodeRO("search-lookup", "DNS lookup", "dns", "dns-lookup" , "DNS lookup tools"));
+        node.addChild(new NavigationTreeNodeRO("search-lookup", "DNS lookup", "dns", "dns-lookup" , "DNS lookup tools"));
         return node;
     }
 
@@ -267,29 +271,31 @@ public class UserResource {
 
     protected NavigationTreeNodeRO createSystemAdminNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("system-settings", "System settings", "admin_panel_settings", "system-settings");
+        node.addChild(new NavigationTreeNodeRO("system-admin-user", "Users", "people", "user"));
         node.addChild(new NavigationTreeNodeRO("system-admin-domain", "Domains", "domain", "domain"));
         node.addChild(new NavigationTreeNodeRO("system-admin-keystore", "Keystore", "key", "keystore"));
         node.addChild(new NavigationTreeNodeRO("system-admin-truststore", "Truststore", "article", "truststore"));
         node.addChild(new NavigationTreeNodeRO("system-admin-extension", "Extensions", "extension", "extension"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-user", "Users", "people", "user"));
         node.addChild(new NavigationTreeNodeRO("system-admin-properties", "Properties", "properties", "properties"));
        // node.addChild(new NavigationTreeNodeRO("system-admin-authentication", "Authentication", "shield", "authentication"));
-
-
         node.addChild(new NavigationTreeNodeRO("system-admin-alert", "Alerts", "notifications", "alert"));
         return node;
     }
 
     protected NavigationTreeNodeRO createEditNavigationTreeNode() {
-        NavigationTreeNodeRO node = new NavigationTreeNodeRO("admin-entities", "Administration", "settings", "admin-entities");
+        NavigationTreeNodeRO node = new NavigationTreeNodeRO("administration", "Administration", "settings", "administration");
         // is domain admin
-
-        node.addChild(new NavigationTreeNodeRO("admin-domain", "Edit domains", "account_circle", "admin-domain"));
-        // is group admin
-        node.addChild(new NavigationTreeNodeRO("admin-group", "Edit groups", "key", "admin-group"));
-        // is resource admin
-        node.addChild(new NavigationTreeNodeRO("admin-resource", "Edit resources", "article", "admin-resource"));
-        //      node.addChild(new NavigationTreeNodeRO("user-data-membership", "Membership", "person", "user-membership"));
+        if (authorizationService.isAnyDomainAdministrator()) {
+            node.addChild(new NavigationTreeNodeRO("admin-domain", "Edit domains", "account_circle", "admin-domain"));
+        }
+        if (authorizationService.isAnyGroupAdministrator()) {
+            // is group admin
+            node.addChild(new NavigationTreeNodeRO("admin-group", "Edit groups", "key", "admin-group"));
+        }
+        if (authorizationService.isAnyResourceAdministrator()) {
+            // is resource admin
+            node.addChild(new NavigationTreeNodeRO("admin-resource", "Edit resources", "article", "admin-resource"));
+        }
         return node;
     }
 }

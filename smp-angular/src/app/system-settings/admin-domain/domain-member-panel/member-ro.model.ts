@@ -1,7 +1,7 @@
 
-import {MembershipRoleEnum} from "./membership-role.enum";
+import {MembershipRoleEnum} from "../../../common/enums/membership-role.enum";
 import {SearchTableEntity} from "../../../common/search-table/search-table-entity.model";
-import {MemberTypeEnum} from "./member-dialog/member-type.enum";
+import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 
 export interface MemberRo extends SearchTableEntity {
 

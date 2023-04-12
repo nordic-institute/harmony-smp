@@ -11,7 +11,6 @@ import {AlertComponent} from "./alert/alert.component";
 import {AlertMessageComponent} from './common/alert-message/alert-message.component';
 import {AlertMessageService} from './common/alert-message/alert-message.service';
 import {AppComponent} from './app.component';
-import {AuthenticatedGuard} from './guards/authenticated.guard';
 import {AuthorizedAdminGuard} from './guards/authorized-admin.guard';
 import {AuthorizedGuard} from './guards/authorized.guard';
 import {AutoFocusDirective} from "./common/directive/autofocus/auto-focus.directive";
@@ -134,6 +133,11 @@ import {
 } from "./system-settings/admin-domain/domain-member-panel/member-dialog/member-dialog.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MembershipService} from "./system-settings/admin-domain/domain-member-panel/membership.service";
+import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
+import {AdminUserService} from "./system-settings/admin-users/admin-user.service";
+import {
+  UserProfilePanelComponent
+} from "./system-settings/admin-users/user-settings-panel/user-profile-panel.component";
 
 
 @NgModule({
@@ -143,6 +147,7 @@ import {MembershipService} from "./system-settings/admin-domain/domain-member-pa
     AdminDomainComponent,
     AdminTruststoreComponent,
     AdminKeystoreComponent,
+    AdminUserComponent,
     AlertComponent,
     AlertMessageComponent,
     AppComponent,
@@ -204,6 +209,7 @@ import {MembershipService} from "./system-settings/admin-domain/domain-member-pa
     UserComponent,
     UserDetailsDialogComponent,
     UserProfileComponent,
+    UserProfilePanelComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -248,8 +254,8 @@ import {MembershipService} from "./system-settings/admin-domain/domain-member-pa
     AdminDomainService,
     AdminKeystoreService,
     AdminTruststoreService,
+    AdminUserService,
     AlertMessageService,
-    AuthenticatedGuard,
     AuthorizedAdminGuard,
     AuthorizedGuard,
     CertificateService,

@@ -1,0 +1,19 @@
+
+#admin-user-panel {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  height: 100%;
+  min-height: 600px;
+  padding: 0 2em;
+}
+#user-filter {
+  width: 100%;
+  padding-top: 1em;
+}
+
+
+#admin-user-table {
+  width: 100%;
+  padding-top: 1em;
+}

@@ -14,6 +14,8 @@ export class SecurityService {
 
   readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
 
+
+
   constructor(
     private http: HttpClient,
     private alertService: AlertMessageService,

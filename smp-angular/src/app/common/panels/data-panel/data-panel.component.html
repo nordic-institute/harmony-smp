@@ -1,5 +1,5 @@
-<div class="panel smp-container-limited">
-  <div class="smp-column-label">
+<div class="panel"  [ngClass]="{ 'smp-container-limited': showTitle}">
+  <div *ngIf="showTitle" class="smp-column-label">
     <p>{{title}}</p>
     <div innerHTML={{text}}></div>
     <ng-container *ngTemplateOutlet="labelColumnContent"></ng-container>

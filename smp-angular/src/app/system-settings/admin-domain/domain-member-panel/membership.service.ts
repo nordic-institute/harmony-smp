@@ -9,7 +9,7 @@ import {AlertMessageService} from "../../../common/alert-message/alert-message.s
 import {MemberRo} from "./member-ro.model";
 import {TableResult} from "./table-result.model";
 import {SearchUserRo} from "./member-dialog/search-user-ro.model";
-import {MembershipRoleEnum} from "./membership-role.enum";
+import {MembershipRoleEnum} from "../../../common/enums/membership-role.enum";
 
 
 @Injectable()
