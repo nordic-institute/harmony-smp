@@ -123,7 +123,7 @@ public class UserResource {
         // create administration nodes for domains, groups and resources
         NavigationTreeNodeRO adminNodes = createEditNavigationTreeNode();
         if (!adminNodes.getChildren().isEmpty()) {
-            home.addChild(adminNodes);
+            //home.addChild(adminNodes);
         }
         if (user.getApplicationRole() == ApplicationRoleType.SYSTEM_ADMIN) {
             home.addChild(createSystemAdminNavigationTreeNode());
