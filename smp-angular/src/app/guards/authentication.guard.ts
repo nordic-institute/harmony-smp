@@ -4,7 +4,7 @@ import {SecurityService} from "../security/security.service";
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
 import {NavigationService} from "../window/sidenav/navigation-model.service";
 
-export const authGuard = () => {
+export const authenticationGuard = () => {
   const navigationService = inject(NavigationService);
   const securityService = inject(SecurityService);
   const alertService = inject(AlertMessageService);

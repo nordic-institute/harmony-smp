@@ -57,7 +57,7 @@ The script connect to mysql database using CLI tool 'mysql' and  deletes databas
 and insert the init data from
 [PROJECT_HOME]/smp-soapui-tests/src/test/resources/init-data/init-test-mysql-soapui.sql
 
-
+Linux OS:
 ```
 #!/bin/sh
  
@@ -78,6 +78,30 @@ echo "create database"
 mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD $DATABASE < "$PROJECT_HOME/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl"
 echo "init database for soapui tests"
 mysql -h localhost -u $DB_ADMIN --password=$DB_ADMIN_PASSWORD $DATABASE < "$PROJECT_HOME/smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql"
+```
+
+Windows OS:
+```
+@echo off
+
+
+set PROJECT_HOME=C:\cef\code\smp
+set DATABASE=smpdb
+set DB_ADMIN=root
+set DB_ADMIN_PASSWORD=
+set DB_USERNAME=smp
+set DB_PASSWORD=smp
+
+REM recreate database
+echo "clean the database %DATABASE% if exists "
+mysql -h localhost -u %DB_ADMIN% --password=%DB_ADMIN_PASSWORD% -e "drop schema if exists %DATABASE%;DROP USER IF EXISTS %DB_USERNAME%;create schema %DATABASE%;alter database %DATABASE% charset=utf8;create user %DB_USERNAME% identified by '%DB_PASSWORD%';grant all on %DATABASE%.* to %DB_USERNAME%;"
+
+
+REM create new database
+echo "create database"
+mysql -h localhost -u %DB_ADMIN% --password=%DB_ADMIN_PASSWORD% %DATABASE% < "%PROJECT_HOME%\smp-webapp\src\main\smp-setup\database-scripts\mysql5innodb.ddl"
+echo "init database for soapui tests"
+mysql -h localhost -u %DB_ADMIN% --password=%DB_ADMIN_PASSWORD% %DATABASE% < "%PROJECT_HOME%\smp-soapui-tests\groovy\mysql-4.1_integration_test_data.sql"
 ```
 
 ### Prepare the DomiSMP database configuration.

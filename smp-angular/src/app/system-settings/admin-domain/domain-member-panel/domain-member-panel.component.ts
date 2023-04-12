@@ -11,8 +11,8 @@ import {finalize} from "rxjs/operators";
 import {TableResult} from "./table-result.model";
 import {MemberDialogComponent} from "./member-dialog/member-dialog.component";
 import {MembershipService} from "./membership.service";
-import {MembershipRoleEnum} from "./membership-role.enum";
-import {MemberTypeEnum} from "./member-dialog/member-type.enum";
+import {MembershipRoleEnum} from "../../../common/enums/membership-role.enum";
+import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 
 
 @Component({
@@ -28,15 +28,9 @@ export class DomainMemberPanelComponent implements BeforeLeaveGuard {
   domainForm: FormGroup;
 
   displayedColumns: string[] = ['username', 'fullName', 'roleType', 'memberOf'];
-
   data: MemberRo[] = [];
-
   selectedMember: MemberRo;
-
   filter: any = {};
-
-  filterName: string;
-
   resultsLength = 0;
   isLoadingResults = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;

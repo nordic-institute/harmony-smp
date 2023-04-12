@@ -11,6 +11,7 @@ import {HttpClient} from "@angular/common/http";
 import {CertificateRo} from "./certificate-ro.model";
 import {PasswordChangeDialogComponent} from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {AccessTokenGenerationDialogComponent} from "../../common/dialogs/access-token-generation-dialog/access-token-generation-dialog.component";
+import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 
 
 export class UserController implements SearchTableController {
@@ -70,10 +71,10 @@ export class UserController implements SearchTableController {
       index: null,
       username: '',
       emailAddress: '',
-      role: '',
+      role: ApplicationRoleEnum.USER,
       active: true,
       status: EntityStatus.NEW,
-      statusPassword: EntityStatus.NEW
+
     }
   }
 

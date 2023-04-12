@@ -12,6 +12,7 @@ import {
 export class DataPanelComponent {
 
   @Input() title: string;
+  @Input() showTitle: boolean=true;
   @Input() text: string;
   @Input() labelColumnContent: TemplateRef<any>;
 

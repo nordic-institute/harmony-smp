@@ -336,6 +336,53 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setSmpLocale(user.getSmpLocale());
     }
 
+    @Transactional
+    public void adminUpdateUserData(Long userId, UserRO user) {
+        DBUser dbUser = userDao.find(userId);
+        if (dbUser == null) {
+            LOG.error("Can not update user because user for id [{}] does not exist!", userId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+        }
+        LOG.debug("Update user [{}]: email [{}], fullname [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
+        // update user data by admin
+        dbUser.setActive(user.isActive());
+        dbUser.setApplicationRole(user.getRole());
+        dbUser.setEmailAddress(user.getEmailAddress());
+        dbUser.setFullName(user.getFullName());
+        dbUser.setSmpTheme(user.getSmpTheme());
+        dbUser.setSmpLocale(user.getSmpLocale());
+    }
+
+    @Transactional
+    public UserRO adminCreateUserData(UserRO user) {
+
+        Optional<DBUser> testUser = userDao.findUserByUsername(user.getUsername());
+        if (testUser.isPresent()) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CreateUser", "User with username ["+user.getUsername()+"] already exists!");
+        }
+        DBUser dbUser = new DBUser();
+        // update user data by admin
+        dbUser.setUsername(user.getUsername());
+        dbUser.setApplicationRole(user.getRole());
+        dbUser.setEmailAddress(user.getEmailAddress());
+        dbUser.setFullName(user.getFullName());
+        dbUser.setSmpTheme(user.getSmpTheme());
+        dbUser.setSmpLocale(user.getSmpLocale());
+        userDao.persistFlushDetach(dbUser);
+        return conversionService.convert(dbUser, UserRO.class);
+    }
+
+    @Transactional
+    public UserRO adminDeleteUserData(Long userId) {
+        DBUser dbUser = userDao.find(userId);
+        if (dbUser == null) {
+            LOG.error("Can not delete user because user for id [{}] does not exist!", userId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+        }
+        userDao.remove(dbUser);
+        return conversionService.convert(dbUser, UserRO.class);
+    }
+
     protected void createOrUpdateUser(UserRO userRO, OffsetDateTime passwordChange) {
         /*
         if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
@@ -499,7 +546,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         ServiceResult<SearchUserRO> result = new ServiceResult<>();
         result.setPage(page);
         result.setPageSize(pageSize);
-        ;
         if (count < 1) {
             result.setCount(0L);
             return result;

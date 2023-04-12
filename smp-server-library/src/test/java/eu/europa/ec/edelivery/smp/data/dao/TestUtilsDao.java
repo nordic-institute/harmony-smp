@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
@@ -9,6 +10,7 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
+import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -65,6 +67,9 @@ public class TestUtilsDao {
     DBSubresource subresourceD1G1RD1_S1;
     DBSubresource subresourceD2G1RD1_S1;
 
+    DBDomainMember domainMemberU1D1Admin;
+    DBDomainMember domainMemberU1D2Viewer;
+
     DBExtension extension;
 
     /**
@@ -93,7 +98,8 @@ public class TestUtilsDao {
         subresourceD2G1RD1_S1 = null;
         documentD1G1RD1_S1 = null;
         documentD2G1RD1_S1 = null;
-
+        domainMemberU1D1Admin = null;
+        domainMemberU1D2Viewer = null;
         extension = null;
     }
 
@@ -186,6 +192,37 @@ public class TestUtilsDao {
         assertNotNull(user1.getId());
         assertNotNull(user2.getId());
         assertNotNull(user3.getId());
+    }
+
+    /**
+     * Create domain members for
+     * user1 on domain 1  as Admin
+     * user1 on domain 2  as Viewer
+     */
+    @Transactional
+    public void creatDomainMemberships() {
+        if (domainMemberU1D1Admin != null) {
+            LOG.trace("DomainMemberships are already initialized!");
+            return;
+        }
+        createDomains();
+        createUsers();
+        domainMemberU1D1Admin = createDomainMembership(MembershipRoleType.ADMIN, user1, d1);
+        domainMemberU1D2Viewer = createDomainMembership(MembershipRoleType.VIEWER, user1, d2);
+
+        persistFlushDetach(domainMemberU1D1Admin);
+        persistFlushDetach(domainMemberU1D2Viewer);
+
+        assertNotNull(domainMemberU1D1Admin.getId());
+        assertNotNull(domainMemberU1D2Viewer.getId());
+    }
+
+    public DBDomainMember createDomainMembership(MembershipRoleType roleType, DBUser user, DBDomain domain){
+        DBDomainMember domainMember = new DBDomainMember();
+        domainMember.setRole(roleType);
+        domainMember.setUser(user);
+        domainMember.setDomain(domain);
+        return domainMember;
     }
 
     /**
@@ -469,5 +506,13 @@ public class TestUtilsDao {
 
     public DBExtension getExtension() {
         return extension;
+    }
+
+    public DBDomainMember getDomainMemberU1D1Admin() {
+        return domainMemberU1D1Admin;
+    }
+
+    public DBDomainMember getDomainMemberU1D2Viewer() {
+        return domainMemberU1D2Viewer;
     }
 }

@@ -24,6 +24,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -112,23 +113,23 @@ public class DomainDao extends BaseDao<DBDomain> {
         return query.getSingleResult();
     }
 
-    public Long getDomainsByUserIdAndRolesCount(Long userId, List<MembershipRoleType> roleTypes) {
-        if (roleTypes.isEmpty()) {
-            return 0L;
-        }
+
+
+    public Long getDomainsByUserIdAndRolesCount(Long userId, MembershipRoleType ... roleTypes) {
+
+        List<MembershipRoleType> list  = Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_ROLES_COUNT, Long.class);
         query.setParameter(PARAM_USER_ID, userId);
-        query.setParameter(PARAM_MEMBERSHIP_ROLES, roleTypes);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, list);
         return query.getSingleResult();
     }
 
-    public List<DBDomain> getDomainsByUserIdAndRoles(Long userId, List<MembershipRoleType> roleTypes) {
-        if (roleTypes.isEmpty()) {
-            return Collections.emptyList();
-        }
+    public List<DBDomain> getDomainsByUserIdAndRoles(Long userId, MembershipRoleType ... roleTypes) {
+        List<MembershipRoleType> list  = Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
+
         TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_ROLES, DBDomain.class);
         query.setParameter(PARAM_USER_ID, userId);
-        query.setParameter(PARAM_MEMBERSHIP_ROLES, roleTypes);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, list);
         return query.getResultList();
     }
 

@@ -34,6 +34,11 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Repository
 public class DomainMemberDao extends BaseDao<DBDomainMember> {
 
+    private final DomainDao domainDao;
+
+    public DomainMemberDao(DomainDao domainDao) {
+        this.domainDao = domainDao;
+    }
 
     public boolean isUserDomainMember(DBUser user, DBDomain domain) {
         return isUserDomainsMember(user.getId(), Collections.singletonList(domain.getId()));
@@ -60,14 +65,14 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
         return query.getResultList().stream().anyMatch(member -> member.getRole() == roleType);
     }
 
-    public boolean isUserDomainAdministrator(Long userId){
-        return false;
+    public boolean isUserAnyDomainAdministrator(Long userId){
+        return domainDao.getDomainsByUserIdAndRolesCount(userId, MembershipRoleType.ADMIN)>0;
     }
     public boolean isUserGroupAdministrator(Long userId){
         return false;
     }
 
-    public boolean isUserMemberAdministrator(Long userId){
+    public boolean isUserResourceAdministrator(Long userId){
         return false;
     }
 
