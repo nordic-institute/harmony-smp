@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -23,6 +24,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,6 +110,26 @@ public class DomainDao extends BaseDao<DBDomain> {
 
         query.setParameter(PARAM_DOMAIN_ID, domainId);
         return query.getSingleResult();
+    }
+
+    public Long getDomainsByUserIdAndRolesCount(Long userId, List<MembershipRoleType> roleTypes) {
+        if (roleTypes.isEmpty()) {
+            return 0L;
+        }
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, roleTypes);
+        return query.getSingleResult();
+    }
+
+    public List<DBDomain> getDomainsByUserIdAndRoles(Long userId, List<MembershipRoleType> roleTypes) {
+        if (roleTypes.isEmpty()) {
+            return Collections.emptyList();
+        }
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_ROLES, DBDomain.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, roleTypes);
+        return query.getResultList();
     }
 
     /**

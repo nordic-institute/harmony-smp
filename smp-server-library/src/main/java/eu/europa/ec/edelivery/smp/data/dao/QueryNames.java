@@ -13,6 +13,9 @@ public class QueryNames {
 
     public static final String QUERY_DOMAIN_ALL = "DBDomain.getAll";
     public static final String QUERY_DOMAIN_CODE = "DBDomain.getDomainByCode";
+
+    public static final String QUERY_DOMAIN_BY_USER_ROLES_COUNT = "DBDomain.getByUserAndRolesCount";
+    public static final String QUERY_DOMAIN_BY_USER_ROLES = "DBDomain.getByUserAmdRoles";
     public static final String QUERY_EXTENSION_ALL = "DBExtension.getAll";
     public static final String QUERY_EXTENSION_BY_IDENTIFIER = "DBExtension.getByIdentifier";
 
@@ -36,7 +39,6 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_CODE_SEGMENT_URL = "DBDomainResourceDef.getByDomainCodeResDefURL";
 
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_RES_DEF = "DBDomainResourceDef.getByDomainResDef";
-
 
     public static final String QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN = "DBResource.getResByIdentifierAndResourceDefAndDomain";
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_COUNT = "DBResource.getResByDomainIdCount";
@@ -123,6 +125,8 @@ public class QueryNames {
 
     public static final String PARAM_GROUP_IDS = "group_ids";
     public static final String PARAM_MEMBERSHIP_ROLE = "membership_role";
+
+    public static final String PARAM_MEMBERSHIP_ROLES = "membership_roles";
     public static final String PARAM_USER_USERNAME = "username";
 
     public static final String IDENTIFIER_VALUE = "identifier_value";
