@@ -120,6 +120,7 @@ public class UserResource {
         DBUser user = uiUserService.findUser(entityId);
         NavigationTreeNodeRO home = new NavigationTreeNodeRO("home", "Home", "home", "");
         home.addChild(createPublicNavigationTreeNode());
+       // home.addChild(createEditNavigationTreeNode());
         if (user.getApplicationRole() == ApplicationRoleType.SYSTEM_ADMIN) {
             home.addChild(createSystemAdminNavigationTreeNode());
         }
@@ -276,6 +277,19 @@ public class UserResource {
 
 
         node.addChild(new NavigationTreeNodeRO("system-admin-alert", "Alerts", "notifications", "alert"));
+        return node;
+    }
+
+    protected NavigationTreeNodeRO createEditNavigationTreeNode() {
+        NavigationTreeNodeRO node = new NavigationTreeNodeRO("admin-entities", "Administration", "settings", "admin-entities");
+        // is domain admin
+
+        node.addChild(new NavigationTreeNodeRO("admin-domain", "Edit domains", "account_circle", "admin-domain"));
+        // is group admin
+        node.addChild(new NavigationTreeNodeRO("admin-group", "Edit groups", "key", "admin-group"));
+        // is resource admin
+        node.addChild(new NavigationTreeNodeRO("admin-resource", "Edit resources", "article", "admin-resource"));
+        //      node.addChild(new NavigationTreeNodeRO("user-data-membership", "Membership", "person", "user-membership"));
         return node;
     }
 }

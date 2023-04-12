@@ -41,6 +41,13 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedNativeQuery(name = "DBDomain.updateNullSMLAlias",
         query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias " +
                 "WHERE SML_CLIENT_KEY_ALIAS IS null")
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_ROLES_COUNT, query = "SELECT count(c) FROM DBDomain c JOIN DBDomainMember dm " +
+        "WHERE c.id = dm.domain.id and dm.role in (:membership_roles) and dm.user.id= :user_id")
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_ROLES, query = "SELECT c FROM DBDomain c JOIN DBDomainMember dm " +
+        "WHERE c.id = dm.domain.id and dm.role in (:membership_roles) and dm.user.id= :user_id")
+
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
@@ -109,7 +116,7 @@ public class DBDomain extends BaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<DBDomainResourceDef> domainResourceDefs= new ArrayList<>();
+    private List<DBDomainResourceDef> domainResourceDefs = new ArrayList<>();
 
     @Override
     public Long getId() {

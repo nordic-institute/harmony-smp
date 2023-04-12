@@ -40,7 +40,9 @@ import javax.sql.DataSource;
 public class SMPDatabaseConfig {
     static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPDatabaseConfig.class);
     final DatabaseConnectionBeanCreator databaseConnectionBeanCreator;
+
     public SMPDatabaseConfig() {
+
         databaseConnectionBeanCreator = new DatabaseConnectionBeanCreator(SMPEnvironmentProperties.getInstance());
     }
 

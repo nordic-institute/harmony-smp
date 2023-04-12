@@ -44,8 +44,12 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPEnvironmentProperties.class);
     private static final String CLASSPATH_PROPERTIES = "/smp.config.properties";
 
+    private static final String INIT_SPRINGBOOT_PROPERTIES = "application.properties";
+
     Properties extInitFileProperties = null;
     Properties extEnvFileProperties = null;
+
+    Properties extSpringBootFileProperties = null;
 
     Properties classPathEnvFileProperties = null;
 
@@ -88,11 +92,17 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
 
         // get init file property
         String extInitPropFilePath = getEnvPropertyValue(INIT_CONFIGURATION_FILE);
-
         extInitFileProperties = readProperties(extInitPropFilePath, false);
         if (extInitFileProperties != null) {
             LOG.debug("------ Print classPathEnvFileProperties ------");
             extInitFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
+        }
+
+        // get init file property
+        extSpringBootFileProperties = readProperties(INIT_SPRINGBOOT_PROPERTIES, false);
+        if (extSpringBootFileProperties != null) {
+            LOG.debug("------ Print extSpringBootFileProperties ------");
+            extSpringBootFileProperties.entrySet().stream().forEach(e -> LOG.info(e.getKey() + ":" + e.getValue()));
         }
 
         String extAppFilePath = getEnvPropertyValue(CONFIGURATION_FILE);
@@ -117,6 +127,7 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
 
         Path initFilePath = Paths.get(path);
         if (Files.exists(initFilePath)) {
+            LOG.info("Read properties from file:[{}] ", initFilePath);
             try (FileInputStream fos = new FileInputStream(initFilePath.toFile())) {
                 return readProperties(fos);
             } catch (IOException e) {
@@ -198,6 +209,13 @@ public class SMPEnvironmentProperties implements DatabaseConnectionProperties {
             LOG.debug("Got external configuration property: [{}] with value: [{}].", propertyName, propVal);
             return propVal;
         }
+
+        if (extSpringBootFileProperties != null && extSpringBootFileProperties.containsKey(propertyName)) {
+            String propVal = extSpringBootFileProperties.getProperty(propertyName);
+            LOG.debug("Got springboot configuration property: [{}] with value: [{}].", propertyName, propVal);
+            return propVal;
+        }
+
         if (classPathEnvFileProperties != null && classPathEnvFileProperties.containsKey(propertyName)) {
             String propVal = classPathEnvFileProperties.getProperty(propertyName);
             LOG.debug("Got classpath configuration property: [{}] with value: [{}].", propertyName, propVal);

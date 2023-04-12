@@ -60,6 +60,17 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
         return query.getResultList().stream().anyMatch(member -> member.getRole() == roleType);
     }
 
+    public boolean isUserDomainAdministrator(Long userId){
+        return false;
+    }
+    public boolean isUserGroupAdministrator(Long userId){
+        return false;
+    }
+
+    public boolean isUserMemberAdministrator(Long userId){
+        return false;
+    }
+
     public List<DBDomainMember> getDomainMembers(Long domainId, int iPage, int iPageSize, String filter) {
         boolean hasFilter = StringUtils.isNotBlank(filter);
         TypedQuery<DBDomainMember> query = memEManager.createNamedQuery(hasFilter ?
