@@ -5,7 +5,7 @@ import {Authority} from "../../security/authority.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {UserDetailsDialogMode} from "../../system-settings/user/user-details-dialog/user-details-dialog.component";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {UserService} from "../../system-settings/user/user.service";
 import {UserController} from "../../system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";

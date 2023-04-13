@@ -4,7 +4,7 @@ import {EditDomainService} from "./edit-domain.service";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {DomainRo} from "../../system-settings/admin-domain/domain-ro.model";
+import {DomainRo} from "../../common/model/domain-ro.model";
 import {CancelDialogComponent} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";

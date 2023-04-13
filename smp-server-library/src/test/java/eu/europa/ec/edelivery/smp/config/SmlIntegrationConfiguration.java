@@ -5,7 +5,6 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Component
 public class SmlIntegrationConfiguration {
 
-    protected final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
+    //protected final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
+
     protected DBDomain defaultDomain;
 
 
@@ -105,9 +105,7 @@ public class SmlIntegrationConfiguration {
         return clientMock;
     }
 
-    public ParticipantIdentifierType getParticipantId() {
-        return PARTICIPANT_ID;
-    }
+
 
     public DBDomain getDefaultDomain() {
         return defaultDomain;

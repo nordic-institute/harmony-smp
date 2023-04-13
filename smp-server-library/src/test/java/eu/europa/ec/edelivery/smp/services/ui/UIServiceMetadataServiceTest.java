@@ -6,12 +6,12 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import eu.europa.ec.edelivery.smp.testutil.XmlTestUtils;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +43,7 @@ public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest
     public void prepareDatabase() {
         prepareDatabaseForSingleDomainEnv();
     }
+
 /*
     @Test
     public void getServiceMetadataXMLById() {

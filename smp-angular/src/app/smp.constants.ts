@@ -19,6 +19,7 @@ export class SmpConstants {
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
   public static readonly PATH_PARAM_ENC_DOMAIN_ID = '{domain-id}';
   public static readonly PATH_PARAM_ENC_MEMBER_ID = '{member-id}';
+  public static readonly PATH_PARAM_ENC_GROUP_ID = '{group-id}';
   public static readonly PATH_PARAM_CERT_ALIAS = '{cert-alias}';
   public static readonly PATH_PARAM_ENC_CREDENTIAL_ID = '{credential-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
@@ -27,21 +28,39 @@ export class SmpConstants {
   public static readonly PATH_PARAM_KEYSTORE_PWD = '{keystore-pwd}';
   public static readonly PATH_PARAM_KEYSTORE_TYPE = '{keystore-type}';
 
+  public static readonly PATH_RESOURCE_TYPE_DOMAIN = 'domain';
+  public static readonly PATH_RESOURCE_TYPE_MEMBER = 'member';
+  public static readonly PATH_RESOURCE_TYPE_GROUP = 'group';
+
   //------------------------------
   // public endpoints
   public static readonly REST_PUBLIC = 'public/rest/';
   public static readonly REST_INTERNAL = 'internal/rest/';
   public static readonly REST_PUBLIC_SEARCH_SERVICE_GROUP = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
-  public static readonly REST_PUBLIC_DOMAIN = SmpConstants.REST_PUBLIC + 'domain';
+  public static readonly REST_PUBLIC_DOMAIN = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
 
   public static readonly REST_PUBLIC_DOMAIN_EDIT = SmpConstants.REST_PUBLIC_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
-  public static readonly REST_PUBLIC_DOMAIN_MEMBERS = SmpConstants.REST_PUBLIC_DOMAIN_EDIT+
+  public static readonly REST_PUBLIC_DOMAIN_MEMBERS = SmpConstants.REST_PUBLIC_DOMAIN_EDIT +
     '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + "members";
   public static readonly REST_PUBLIC_DOMAIN_MEMBERS_ADD = SmpConstants.REST_PUBLIC_DOMAIN_EDIT
     + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + "member";
   public static readonly REST_PUBLIC_DOMAIN_MEMBERS_DELETE = SmpConstants.REST_PUBLIC_DOMAIN_EDIT
     + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + "member"
     + '/' + SmpConstants.PATH_PARAM_ENC_MEMBER_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
+
+
+  public static readonly REST_PUBLIC_GROUP_EDIT = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_GROUP + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
+  public static readonly REST_PUBLIC_GROUP_DOMAIN = SmpConstants.REST_PUBLIC_GROUP_EDIT + '/' +
+    SmpConstants.PATH_RESOURCE_TYPE_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID;
+
+  public static readonly REST_PUBLIC_GROUP_DOMAIN_CREATE = SmpConstants.REST_PUBLIC_GROUP_EDIT + '/' +
+    SmpConstants.PATH_RESOURCE_TYPE_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_CREATE;
+
+  public static readonly REST_PUBLIC_GROUP_DOMAIN_DELETE = SmpConstants.REST_PUBLIC_GROUP_EDIT + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID + '/' +
+    SmpConstants.PATH_RESOURCE_TYPE_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
+
+  public static readonly REST_PUBLIC_GROUP_DOMAIN_UPDATE = SmpConstants.REST_PUBLIC_GROUP_EDIT + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID + '/' +
+    SmpConstants.PATH_RESOURCE_TYPE_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE;
 
 
   public static readonly REST_PUBLIC_APPLICATION_INFO = SmpConstants.REST_PUBLIC + 'application/info';
@@ -77,26 +96,26 @@ export class SmpConstants {
   //------------------------------
   // internal endpoints
   public static readonly REST_INTERNAL_ALERT_MANAGE = SmpConstants.REST_INTERNAL + 'alert';
-  public static readonly REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED = SmpConstants.REST_INTERNAL + 'domain';
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
 
-  public static readonly REST_INTERNAL_DOMAIN_MANAGE = SmpConstants.REST_INTERNAL + 'domain' +
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
 
-  public static readonly REST_INTERNAL_DOMAIN_MANAGE_DELETE = SmpConstants.REST_INTERNAL + 'domain' +
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_DELETE = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
 
-  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE = SmpConstants.REST_INTERNAL + 'domain' +
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE;
 
-  public static readonly REST_INTERNAL_DOMAIN_MANAGE_CREATE = SmpConstants.REST_INTERNAL + 'domain' +
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_CREATE = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_ACTION_CREATE;
 
 
-  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_SML_INTEGRATION = SmpConstants.REST_INTERNAL + 'domain' +
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_SML_INTEGRATION = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE_SML_INTEGRATION;
 
 
-  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_RESOURCE_TYPES = SmpConstants.REST_INTERNAL + 'domain' +
+  public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_RESOURCE_TYPES = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE_RESOURCE_TYPES;
 
   public static readonly REST_INTERNAL_EXTENSION_MANAGE = SmpConstants.REST_INTERNAL + 'extension';

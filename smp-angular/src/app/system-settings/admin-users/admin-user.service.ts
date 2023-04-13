@@ -2,11 +2,10 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {SecurityService} from "../../security/security.service";
-import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {SearchTableResult} from "../../common/search-table/search-table-result.model";
 import {User} from "../../security/user.model";
-import {TableResult} from "../admin-domain/domain-member-panel/table-result.model";
-import {MemberRo} from "../admin-domain/domain-member-panel/member-ro.model";
+import {TableResult} from "../../common/model/table-result.model";
+import {MemberRo} from "../../common/model/member-ro.model";
 import {SmpConstants} from "../../smp.constants";
 import {UserRo} from "../user/user-ro.model";
 

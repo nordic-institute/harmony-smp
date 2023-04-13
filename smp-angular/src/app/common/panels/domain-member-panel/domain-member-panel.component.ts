@@ -1,18 +1,18 @@
 import {Component, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
-import {DomainRo} from "../domain-ro.model";
+import {DomainRo} from "../../model/domain-ro.model";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {AdminDomainService} from "../admin-domain.service";
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
+import {AdminDomainService} from "../../../system-settings/admin-domain/admin-domain.service";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
-import {MemberRo} from "./member-ro.model";
+import {MemberRo} from "../../model/member-ro.model";
 import {finalize} from "rxjs/operators";
-import {TableResult} from "./table-result.model";
+import {TableResult} from "../../model/table-result.model";
 import {MemberDialogComponent} from "./member-dialog/member-dialog.component";
 import {MembershipService} from "./membership.service";
-import {MembershipRoleEnum} from "../../../common/enums/membership-role.enum";
-import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
+import {MembershipRoleEnum} from "../../enums/membership-role.enum";
+import {MemberTypeEnum} from "../../enums/member-type.enum";
 
 
 @Component({
@@ -21,10 +21,8 @@ import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
   styleUrls: ['./domain-member-panel.component.scss']
 })
 export class DomainMemberPanelComponent implements BeforeLeaveGuard {
-  @Output() onSaveSmlIntegrationDataEvent: EventEmitter<DomainRo> = new EventEmitter();
+
   private _domain: DomainRo;
-
-
   domainForm: FormGroup;
 
   displayedColumns: string[] = ['username', 'fullName', 'roleType', 'memberOf'];
@@ -163,6 +161,7 @@ export class DomainMemberPanelComponent implements BeforeLeaveGuard {
   get domainNotSelected() {
     return !this._domain
   }
+
 }
 
 

@@ -31,49 +31,6 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         target.setFullName(source.getFullName());
         target.setSmpTheme(source.getSmpTheme());
         target.setSmpLocale(source.getSmpLocale());
-/*
-        Optional<DBCredential> optUserPassCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.USERNAME_PASSWORD).findFirst();
-        Optional<DBCredential> optTokenCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.ACCESS_TOKEN).findFirst();
-        Optional<DBCredential> optCertCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.CERTIFICATE).findFirst();
-
-        if (optUserPassCred.isPresent()){
-            DBCredential credential = optUserPassCred.get();
-            target.setPassword(credential.getValue());
-            target.setPasswordExpireOn(credential.getExpireOn());
-            target.setPasswordExpired(isCredentialExpired(credential));
-            target.setSequentialLoginFailureCount(credential.getSequentialLoginFailureCount());
-            target.setLastFailedLoginAttempt(credential.getLastFailedLoginAttempt());
-            target.setSuspendedUtil(getSuspensionUntilDate(credential.getLastFailedLoginAttempt(),credential.getSequentialLoginFailureCount(),
-                    configurationService.getLoginSuspensionTimeInSeconds(), configurationService.getLoginMaxAttempts()));
-        }
-
-        if (optTokenCred.isPresent()){
-            DBCredential credential = optUserPassCred.get();
-
-            target.setAccessTokenId(credential.getName());
-            target.setAccessTokenExpireOn(credential.getExpireOn());
-
-            target.setSequentialTokenLoginFailureCount(credential.getSequentialLoginFailureCount());
-            target.setLastTokenFailedLoginAttempt(credential.getLastFailedLoginAttempt());
-            target.setTokenSuspendedUtil(getSuspensionUntilDate(credential.getLastFailedLoginAttempt(),
-                    credential.getSequentialLoginFailureCount(),
-                    configurationService.getAccessTokenLoginSuspensionTimeInSeconds(),
-                    configurationService.getAccessTokenLoginMaxAttempts()));
-        }
-
-        if (optCertCred.isPresent()) {
-            DBCredential credential = optCertCred.get();
-            DBCertificate certificate = credential.getCertificate();
-            CertificateRO certificateRO = conversionService.convert(certificate, CertificateRO.class);
-            target.setCertificate(certificateRO);
-            if (StringUtils.equalsIgnoreCase(certificate.getCertificateId(), source.getUsername())) {
-                // clear username if is the same as certificate id.
-                // username as cert id is set to database to force unique users
-                // and to fix issue with mysql - where null value is also unique...
-                target.setUsername(null);
-            }
-        }
-*/
 
         return target;
     }

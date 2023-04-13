@@ -1,5 +1,5 @@
-import {SearchTableEntity} from '../../common/search-table/search-table-entity.model';
-import {VisibilityEnum} from "../../common/enums/visibility.enum";
+import {SearchTableEntity} from '../search-table/search-table-entity.model';
+import {VisibilityEnum} from "../enums/visibility.enum";
 
 export interface DomainRo extends SearchTableEntity {
   domainId?: string;

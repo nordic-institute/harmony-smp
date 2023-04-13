@@ -276,14 +276,14 @@ public class UserResource {
         node.addChild(new NavigationTreeNodeRO("system-admin-keystore", "Keystore", "key", "keystore"));
         node.addChild(new NavigationTreeNodeRO("system-admin-truststore", "Truststore", "article", "truststore"));
         node.addChild(new NavigationTreeNodeRO("system-admin-extension", "Extensions", "extension", "extension"));
-        node.addChild(new NavigationTreeNodeRO("system-admin-properties", "Properties", "properties", "properties"));
+        node.addChild(new NavigationTreeNodeRO("system-admin-properties", "Properties", "settings", "properties"));
        // node.addChild(new NavigationTreeNodeRO("system-admin-authentication", "Authentication", "shield", "authentication"));
         node.addChild(new NavigationTreeNodeRO("system-admin-alert", "Alerts", "notifications", "alert"));
         return node;
     }
 
     protected NavigationTreeNodeRO createEditNavigationTreeNode() {
-        NavigationTreeNodeRO node = new NavigationTreeNodeRO("edit", "Administration", "settings", "edit");
+        NavigationTreeNodeRO node = new NavigationTreeNodeRO("edit", "Administration", "tune", "edit");
         // is domain admin
         if (authorizationService.isAnyDomainAdministrator()) {
             node.addChild(new NavigationTreeNodeRO("edit-domain", "Edit domains", "account_circle", "edit-domain"));

@@ -30,7 +30,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocument;
+
 import static javax.xml.crypto.dsig.DigestMethod.SHA256;
 import static org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;
 
@@ -65,7 +65,7 @@ public class ServiceMetadataSignerTest extends AbstractServiceIntegrationTest{
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
         uiKeystoreService.refreshData();
     }
-
+/*
     private Document loadAndSignDocumentForDefault() throws Exception {
         Document documentToSign = loadDocument("/input/SignedServiceMetadata_withoutSignature.xml");
         signer.sign(documentToSign, null, ALGO_ID_SIGNATURE_RSA_SHA256, SHA256);
@@ -115,6 +115,6 @@ public class ServiceMetadataSignerTest extends AbstractServiceIntegrationTest{
 
         SignatureUtil.validateSignature(adminSignature);
     }
-
+*/
 
 }

@@ -2,7 +2,7 @@ import {SearchTableController} from '../../common/search-table/search-table-cont
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {UserDetailsDialogComponent, UserDetailsDialogMode} from './user-details-dialog/user-details-dialog.component';
 import {UserRo} from './user-ro.model';
-import {EntityStatus} from '../../common/model/entity-status.model';
+import {EntityStatus} from '../../common/enums/entity-status.enum';
 import {GlobalLookups} from "../../common/global-lookups";
 import {SearchTableEntity} from "../../common/search-table/search-table-entity.model";
 import {SearchTableValidationResult} from "../../common/search-table/search-table-validation-result.model";

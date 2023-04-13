@@ -11,7 +11,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
+
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
@@ -39,17 +39,15 @@ public class SMPAuthorizationService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthorizationService.class);
 
     DomainMemberDao domainMemberDao;
-    private final ServiceGroupService serviceGroupService;
+
     private final ConversionService conversionService;
     private final ConfigurationService configurationService;
     private final UserDao userDao;
 
-    public SMPAuthorizationService(ServiceGroupService serviceGroupService,
-                                   ConversionService conversionService,
+    public SMPAuthorizationService(ConversionService conversionService,
                                    ConfigurationService configurationService,
                                    UserDao userDao,
                                    DomainMemberDao domainMemberDao) {
-        this.serviceGroupService = serviceGroupService;
         this.conversionService = conversionService;
         this.configurationService = configurationService;
         this.userDao = userDao;
@@ -117,7 +115,9 @@ public class SMPAuthorizationService {
 
         }
         Long userId = userDetails.getUser().getId();
-        return serviceGroupService.isServiceGroupOwnerForMetadataID(userId, serviceMetadataId);
+        //return serviceGroupService.isServiceGroupOwnerForMetadataID(userId, serviceMetadataId);
+        return false;
+
     }
 
 

@@ -7,7 +7,7 @@ import {UserDetailsService} from "../../../system-settings/user/user-details-dia
 import {AccessTokenRo} from "./access-token-ro.model";
 import {SecurityService} from "../../../security/security.service";
 import {SmpConstants} from "../../../smp.constants";
-import {EntityStatus} from "../../model/entity-status.model";
+import {EntityStatus} from "../../enums/entity-status.enum";
 
 @Component({
   selector: 'smp-access-token-generation-dialog',

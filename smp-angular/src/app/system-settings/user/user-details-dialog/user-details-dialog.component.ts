@@ -12,7 +12,7 @@ import {
 } from '@angular/forms';
 import {Role} from '../../../security/role.model';
 import {UserRo} from '../user-ro.model';
-import {EntityStatus} from '../../../common/model/entity-status.model';
+import {EntityStatus} from '../../../common/enums/entity-status.enum';
 import {AlertMessageService} from '../../../common/alert-message/alert-message.service';
 import {CertificateService} from '../certificate.service';
 import {CertificateRo} from "../certificate-ro.model";

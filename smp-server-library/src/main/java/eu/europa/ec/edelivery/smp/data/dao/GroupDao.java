@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
 /**
@@ -55,8 +56,12 @@ public class GroupDao extends BaseDao<DBGroup> {
      * @return
      */
     public List<DBGroup> getAllGroupsForDomain(DBDomain domain) {
+        return getAllGroupsForDomain(domain.getId());
+    }
+
+    public List<DBGroup> getAllGroupsForDomain(Long domainId) {
         TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_DOMAIN, DBGroup.class);
-        query.setParameter(PARAM_DOMAIN_ID, domain.getId());
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
         return query.getResultList();
     }
 
@@ -70,17 +75,31 @@ public class GroupDao extends BaseDao<DBGroup> {
      * @throws IllegalStateException if no group is not configured
      */
     public Optional<DBGroup> getGroupByNameAndDomain(String name, DBDomain domain) {
+        return getGroupByNameAndDomain(name, domain.getId());
+    }
+
+    /**
+     * Returns the group or Optional.empty() if there is no group for name and domain.
+     *
+     * @param name is the group name
+     * @param domainId where the group is registered
+     *
+     * @return the only single record for name  from smp_group table or empty value
+     * @throws IllegalStateException if no group is not configured
+     */
+    public Optional<DBGroup> getGroupByNameAndDomain(String name, Long domainId) {
         try {
             TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_NAME_DOMAIN, DBGroup.class);
             query.setParameter(PARAM_NAME, name);
-            query.setParameter(PARAM_DOMAIN_ID, domain.getId());
+            query.setParameter(PARAM_DOMAIN_ID, domainId);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(name, domain.getDomainCode()));
+            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY.getMessage(name,domainId));
         }
     }
+
 
     /**
      * Returns the group or Optional.empty() if there is no group for name and domain code
@@ -110,8 +129,8 @@ public class GroupDao extends BaseDao<DBGroup> {
      * False if entity did not exist, so nothing was changed
      */
     @Transactional
-    public boolean removeByNameAndDomain(String domainCode, DBDomain domain) {
-        Optional<DBGroup> optd = getGroupByNameAndDomain(domainCode, domain);
+    public boolean removeByNameAndDomain(String name, DBDomain domain) {
+        Optional<DBGroup> optd = getGroupByNameAndDomain(name, domain);
         if (optd.isPresent()) {
             memEManager.remove(optd.get());
             return true;

@@ -1,9 +1,9 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {DomainRo} from "../../admin-domain/domain-ro.model";
+import {DomainRo} from "../../../common/model/domain-ro.model";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
-import {EntityStatus} from "../../../common/model/entity-status.model";
+import {EntityStatus} from "../../../common/enums/entity-status.enum";
 import {GlobalLookups} from "../../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {BreakpointObserver} from "@angular/cdk/layout";

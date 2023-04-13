@@ -6,7 +6,8 @@ import {SecurityService} from "../../security/security.service";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {User} from "../../security/user.model";
 import {SmpConstants} from "../../smp.constants";
-import {DomainRo} from "../../system-settings/admin-domain/domain-ro.model";
+import {DomainRo} from "../../common/model/domain-ro.model";
+import {GroupRo} from "../../common/model/group-ro.model";
 
 @Injectable()
 export class EditDomainService {
@@ -28,6 +29,24 @@ export class EditDomainService {
       }, (error: any) => {
         this.alertService.error(error.error?.errorDescription)
       });
+  }
+
+
+  public getDomainGroupsObservable(domainId: string): Observable<GroupRo[]>
+  {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.get<GroupRo[]>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId));
+  }
+
+  public deleteDomainGroupObservable(domainId: string, groupId:string ): Observable<GroupRo>
+  {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.delete<GroupRo>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN_DELETE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
+      .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, groupId));
   }
 
 

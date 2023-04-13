@@ -1,4 +1,4 @@
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 
 export interface SubresourceDefinitionRo {
 

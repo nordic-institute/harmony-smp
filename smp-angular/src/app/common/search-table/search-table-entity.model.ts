@@ -1,4 +1,4 @@
-import {EntityStatus} from '../model/entity-status.model';
+import {EntityStatus} from '../enums/entity-status.enum';
 
 export interface SearchTableEntity {
   id?: number;

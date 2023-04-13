@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 import {PropertyRo} from "../property-ro.model";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
-import {EntityStatus} from "../../../common/model/entity-status.model";
+import {EntityStatus} from "../../../common/enums/entity-status.enum";
 import {ServiceGroupValidationRo} from "../../../service-group-edit/service-group-details-dialog/service-group-validation-edit-ro.model";
 import {SmpConstants} from "../../../smp.constants";
 import {ServiceGroupValidationErrorCodeModel} from "../../../service-group-edit/service-group-details-dialog/service-group-validation-error-code.model";

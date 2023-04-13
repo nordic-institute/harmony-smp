@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+
+
 
 public class TestConstants {
 
@@ -60,7 +61,8 @@ public class TestConstants {
     public static final String SERVICE_METADATA_XML_PATH = "/examples/services/ServiceMetadataPoland.xml";
     public static final String SIGNED_SERVICE_METADATA_XML_PATH = "/examples/services/SignedServiceMetadataPoland.xml";
 
-    public static final ParticipantIdentifierType SERVICE_GROUP_ID = new ParticipantIdentifierType("urn:eu:ncpb", "participant-scheme-qns");
+    //public static final ParticipantIdentifierType SERVICE_GROUP_ID = new ParticipantIdentifierType("urn:eu:ncpb", "participant-scheme-qns");
+
 
     public static final String ADMIN_USERNAME = "test_admin";
     public static final String CERT_USER = "CN=common name,O=org,C=BE:0000000000000066";

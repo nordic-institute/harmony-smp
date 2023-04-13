@@ -46,7 +46,7 @@ import {ExtensionComponent} from "./system-settings/admin-extension/extension.co
 import {ExtensionPanelComponent} from "./system-settings/admin-extension/extension-panel/extension-panel.component";
 import {ExtensionService} from "./system-settings/admin-extension/extension.service";
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {FooterComponent} from './footer/footer.component';
+import {FooterComponent} from './window/footer/footer.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {GlobalLookups} from './common/global-lookups';
 import {HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
@@ -101,8 +101,8 @@ import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service
 import {SidenavComponent} from './window/sidenav/sidenav.component';
 import {SmlIntegrationService} from "./system-settings/domain/sml-integration.service";
 import {SmpInfoService} from './app-info/smp-info.service';
-import {SpacerComponent} from "./common/spacer/spacer.component";
-import {SpinnerComponent} from './common/spinner/spinner.component';
+import {SpacerComponent} from "./common/components/spacer/spacer.component";
+import {SpinnerComponent} from './common/components/spinner/spinner.component';
 import {ThemeService} from "./common/theme-service/theme.service";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
@@ -127,12 +127,12 @@ import {
 } from "@angular-material-components/moment-adapter";
 import {
   DomainMemberPanelComponent
-} from "./system-settings/admin-domain/domain-member-panel/domain-member-panel.component";
+} from "./common/panels/domain-member-panel/domain-member-panel.component";
 import {
   MemberDialogComponent
-} from "./system-settings/admin-domain/domain-member-panel/member-dialog/member-dialog.component";
+} from "./common/panels/domain-member-panel/member-dialog/member-dialog.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {MembershipService} from "./system-settings/admin-domain/domain-member-panel/membership.service";
+import {MembershipService} from "./common/panels/domain-member-panel/membership.service";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {AdminUserService} from "./system-settings/admin-users/admin-user.service";
 import {
@@ -141,6 +141,7 @@ import {
 import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 import {EditDomainService} from "./edit/edit-domain/edit-domain.service";
 import {SmpFieldErrorComponent} from "./common/components/smp-field-error/smp-field-error.component";
+import {DomainGroupComponent} from "./edit/edit-domain/domain-group-panel/domain-group.component";
 
 
 @NgModule({
@@ -173,6 +174,7 @@ import {SmpFieldErrorComponent} from "./common/components/smp-field-error/smp-fi
     DomainPanelComponent,
     DomainSmlIntegrationPanelComponent,
     DomainDetailsDialogComponent,
+    DomainGroupComponent,
     DomainMemberPanelComponent,
     DomainResourceTypePanelComponent,
     DomainSelectorComponent,

@@ -59,7 +59,7 @@ public class ServiceGroup10Converter {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
             return jaxbContext.createUnmarshaller();
         } catch (JAXBException ex) {
-            LOG.error("Error occurred while initializing JAXBContext for ServiceMetadata. Cause message:", ex);
+            LOG.error("Error occurred while initializing JAXBContext for ServiceGroup10Converter. Cause message:", ex);
         }
         return null;
     });
@@ -67,6 +67,22 @@ public class ServiceGroup10Converter {
 
     private static Unmarshaller getUnmarshaller() {
         return jaxbUnmarshaller.get();
+    }
+
+    private static final ThreadLocal<Marshaller> jaxbMarshaller = ThreadLocal.withInitial(() -> {
+        try {
+
+            JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
+            return jaxbContext.createMarshaller();
+        } catch (JAXBException ex) {
+            LOG.error("Error occurred while initializing JAXBContext for ServiceGroup10Converter. Cause message:", ex);
+        }
+        return null;
+    });
+
+
+    private static Marshaller getMarshaller() {
+        return jaxbMarshaller.get();
     }
 
 
@@ -126,8 +142,7 @@ public class ServiceGroup10Converter {
         if (serviceGroup == null) {
             return;
         }
-        JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
-        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        Marshaller jaxbMarshaller = getMarshaller();
         // Pretty Print XML
         if (prettyPrint) {
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, prettyPrint);

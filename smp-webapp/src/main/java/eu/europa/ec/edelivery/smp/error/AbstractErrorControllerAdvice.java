@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.error;
 
-import ec.services.smp._1.ErrorResponse;
+
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
 import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
@@ -41,8 +41,12 @@ abstract class AbstractErrorControllerAdvice {
         else {
             response = buildAndLog(INTERNAL_SERVER_ERROR, TECHNICAL, "Unexpected technical error occurred.", runtimeException);
         }
+
+
         String errorCodeId = response.getBody() instanceof  ErrorResponseRO?
-                ((ErrorResponseRO) response.getBody()).getErrorUniqueId():((ErrorResponse) response.getBody()).getErrorUniqueId();
+                ((ErrorResponseRO) response.getBody()).getErrorUniqueId(): null;
+
+
         LOG.error("Unhandled exception occurred, unique ID: [{}]", errorCodeId, runtimeException);
         return response;
     }

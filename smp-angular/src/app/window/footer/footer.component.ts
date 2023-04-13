@@ -1,6 +1,6 @@
 ﻿import {Component, OnInit} from '@angular/core';
-import {SmpInfoService} from '../app-info/smp-info.service';
-import {SmpInfo} from '../app-info/smp-info.model';
+import {SmpInfoService} from '../../app-info/smp-info.service';
+import {SmpInfo} from '../../app-info/smp-info.model';
 
 @Component({
   moduleId: module.id,
@@ -23,6 +23,4 @@ export class FooterComponent implements OnInit {
       }
     );
   }
-
-
 }

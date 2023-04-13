@@ -5,7 +5,7 @@ import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.ui.*;
@@ -19,23 +19,17 @@ import eu.europa.ec.edelivery.smp.security.ResourceGuard;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
-import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
-import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
-import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 
 @Service
 public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGroupRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceGroupService.class);
-
 
 
     protected final DomainDao domainDao;
@@ -551,8 +545,8 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
      * @return
      */
     private byte[] validateServiceMetadata(ServiceMetadataRO serviceMetadataRO) {
-        byte[] buff;
-
+        byte[] buff = null;
+/*
         try {
             buff = serviceMetadataRO.getXmlContent().getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -563,6 +557,7 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
         } catch (XmlInvalidAgainstSchemaException e) {
             throw new SMPRuntimeException(INVALID_SMD_XML, ExceptionUtils.getRootCauseMessage(e));
         }
+        */
 /*
         ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
         if (smd.getServiceInformation() != null) {
@@ -696,39 +691,39 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
      */
     public ServiceGroupValidationRO validateServiceGroup(ServiceGroupValidationRO serviceGroup) {
 /**
-        if (serviceGroup == null) {
-            throw new SMPRuntimeException(INVALID_REQUEST, "Validate extension", "Missing Extension parameter");
-        } // if new check if service group already exist
+ if (serviceGroup == null) {
+ throw new SMPRuntimeException(INVALID_REQUEST, "Validate extension", "Missing Extension parameter");
+ } // if new check if service group already exist
 
-        if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()) {
-            Identifier normalizedParticipant = identifierService
-                    .normalizeParticipant(
-                            serviceGroup.getParticipantScheme(),
-                            serviceGroup.getParticipantIdentifier());
-            Optional<DBResource> sg = serviceGroupDao.findServiceGroup(normalizedParticipant.getValue(),
-                    normalizedParticipant.getScheme());
-            if (sg.isPresent()) {
-                serviceGroup.setErrorMessage("Service group: " + serviceGroup.getParticipantScheme() + ":" + serviceGroup.getParticipantIdentifier() +
-                        " already exists!");
-                serviceGroup.setErrorCode(ERROR_CODE_SERVICE_GROUP_EXISTS);
-                return serviceGroup;
-            }
-        }
+ if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()) {
+ Identifier normalizedParticipant = identifierService
+ .normalizeParticipant(
+ serviceGroup.getParticipantScheme(),
+ serviceGroup.getParticipantIdentifier());
+ Optional<DBResource> sg = serviceGroupDao.findServiceGroup(normalizedParticipant.getValue(),
+ normalizedParticipant.getScheme());
+ if (sg.isPresent()) {
+ serviceGroup.setErrorMessage("Service group: " + serviceGroup.getParticipantScheme() + ":" + serviceGroup.getParticipantIdentifier() +
+ " already exists!");
+ serviceGroup.setErrorCode(ERROR_CODE_SERVICE_GROUP_EXISTS);
+ return serviceGroup;
+ }
+ }
 
-        if (StringUtils.isBlank(serviceGroup.getExtension())) {
-            // empty extension is also a valid extension
-            serviceGroup.setErrorMessage(null);
-        } else {
-            try {
-                byte[] buff = serviceGroup.getExtension().getBytes("UTF-8");
-                ExtensionConverter.validateExtensionBySchema(buff); // validate by schema
-                serviceGroup.setErrorMessage(null);
-                serviceGroup.setErrorCode(ERROR_CODE_OK);
-            } catch (XmlInvalidAgainstSchemaException | UnsupportedEncodingException e) {
-                serviceGroup.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
-                serviceGroup.setErrorCode(ERROR_CODE_INVALID_EXTENSION);
-            }
-        }
+ if (StringUtils.isBlank(serviceGroup.getExtension())) {
+ // empty extension is also a valid extension
+ serviceGroup.setErrorMessage(null);
+ } else {
+ try {
+ byte[] buff = serviceGroup.getExtension().getBytes("UTF-8");
+ ExtensionConverter.validateExtensionBySchema(buff); // validate by schema
+ serviceGroup.setErrorMessage(null);
+ serviceGroup.setErrorCode(ERROR_CODE_OK);
+ } catch (XmlInvalidAgainstSchemaException | UnsupportedEncodingException e) {
+ serviceGroup.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
+ serviceGroup.setErrorCode(ERROR_CODE_INVALID_EXTENSION);
+ }
+ }
  */
         return serviceGroup;
     }
