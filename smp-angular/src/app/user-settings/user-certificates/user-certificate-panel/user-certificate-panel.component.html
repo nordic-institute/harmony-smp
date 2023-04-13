@@ -47,8 +47,8 @@
       </mat-date-range-input>
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-date-range-picker #picker></mat-date-range-picker>
-      <mat-error *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">Invalid active from date</mat-error>
-      <mat-error *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">Invalid expire on date</mat-error>
+      <smp-field-error  *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">Invalid active from date</smp-field-error >
+      <smp-field-error  *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">Invalid expire on date</smp-field-error >
     </mat-form-field>
   </div>
 </div>

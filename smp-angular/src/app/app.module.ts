@@ -140,6 +140,7 @@ import {
 } from "./common/panels/user-settings-panel/user-profile-panel.component";
 import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 import {EditDomainService} from "./edit/edit-domain/edit-domain.service";
+import {SmpFieldErrorComponent} from "./common/components/smp-field-error/smp-field-error.component";
 
 
 @NgModule({
@@ -203,6 +204,7 @@ import {EditDomainService} from "./edit/edit-domain/edit-domain.service";
     ServiceGroupSearchComponent,
     ServiceMetadataWizardDialogComponent,
     SidenavComponent,
+    SmpFieldErrorComponent,
     SpacerComponent,
     SpinnerComponent,
     ToolbarComponent,

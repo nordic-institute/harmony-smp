@@ -35,7 +35,7 @@ import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_T
  */
 @Service("smpAuthorizationService")
 public class SMPAuthorizationService {
-    private static final String ERR_INVALID_OR_NULL = "Invalid or null authentication for the session!";
+    private static final String ERR_INVALID_OR_NULL = "Invalid or Expired session! Please login again.";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthorizationService.class);
 
     DomainMemberDao domainMemberDao;

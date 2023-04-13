@@ -39,6 +39,11 @@
     text-align: center;
   }
 
+  .smp-field-error{
+    color: smp.get-theme-color($theme, warn, 500) !important;
+    font-size: 70%;
+  }
+
 }
 
 

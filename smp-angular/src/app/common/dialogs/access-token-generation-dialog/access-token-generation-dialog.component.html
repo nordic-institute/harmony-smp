@@ -25,7 +25,7 @@
                  formControlName="current-password" required id="cp_id">
           <mat-icon matSuffix
                     (click)="hideCurrPwdFiled = !hideCurrPwdFiled">{{hideCurrPwdFiled ? 'visibility_off' : 'visibility'}}</mat-icon>
-          <mat-error *ngIf="passwordError('current-password', 'required')">Password is required</mat-error>
+          <smp-field-error  *ngIf="passwordError('current-password', 'required')">Password is required</smp-field-error >
         </mat-form-field>
 
         <mat-card-actions>
