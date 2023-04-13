@@ -58,6 +58,7 @@ public class DomainAdminResource {
 
         return uiDomainService.deleteDomain(domainId);
     }
+
     @PutMapping(path = "/{user-enc-id}/create", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
     public DomainRO createBasicDomainData(@PathVariable("user-enc-id") String userEncId,

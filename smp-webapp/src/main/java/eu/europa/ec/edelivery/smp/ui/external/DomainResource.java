@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.ui.external;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.DomainPublicRO;
+import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -12,6 +13,8 @@ import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -48,9 +51,18 @@ public class DomainResource {
         return result;
     }
 
+    @GetMapping(path = "/{user-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
+    public List<DomainRO> getAllDomainList(@PathVariable("user-enc-id") String userEncId) {
+        logAdminAccess("getAllDomainListForUser");
+        Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
+
+        return uiDomainService.getAllDomainsForDomainAdminUser(userId);
+    }
+
 
     @GetMapping(path = "/{user-enc-id}/{domain-enc-id}/members", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public ServiceResult<MemberRO> getDomainMemberList(
             @PathVariable("user-enc-id") String userEncId,
             @PathVariable("domain-enc-id") String domainEncId,
@@ -93,5 +105,9 @@ public class DomainResource {
 
         // is user domain admin or system admin
         return uiDomainService.deleteMemberFromDomain(domainId, memberId);
+    }
+
+    protected void logAdminAccess(String action) {
+        LOG.info(SMPLogger.SECURITY_MARKER, "Admin Domain action [{}] by user [{}], ", action, SessionSecurityUtils.getSessionUserDetails());
     }
 }

@@ -123,7 +123,7 @@ public class UserResource {
         // create administration nodes for domains, groups and resources
         NavigationTreeNodeRO adminNodes = createEditNavigationTreeNode();
         if (!adminNodes.getChildren().isEmpty()) {
-            //home.addChild(adminNodes);
+            home.addChild(adminNodes);
         }
         if (user.getApplicationRole() == ApplicationRoleType.SYSTEM_ADMIN) {
             home.addChild(createSystemAdminNavigationTreeNode());
@@ -283,18 +283,18 @@ public class UserResource {
     }
 
     protected NavigationTreeNodeRO createEditNavigationTreeNode() {
-        NavigationTreeNodeRO node = new NavigationTreeNodeRO("administration", "Administration", "settings", "administration");
+        NavigationTreeNodeRO node = new NavigationTreeNodeRO("edit", "Administration", "settings", "edit");
         // is domain admin
         if (authorizationService.isAnyDomainAdministrator()) {
-            node.addChild(new NavigationTreeNodeRO("admin-domain", "Edit domains", "account_circle", "admin-domain"));
+            node.addChild(new NavigationTreeNodeRO("edit-domain", "Edit domains", "account_circle", "edit-domain"));
         }
         if (authorizationService.isAnyGroupAdministrator()) {
             // is group admin
-            node.addChild(new NavigationTreeNodeRO("admin-group", "Edit groups", "key", "admin-group"));
+            node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "key", "edit-group"));
         }
         if (authorizationService.isAnyResourceAdministrator()) {
             // is resource admin
-            node.addChild(new NavigationTreeNodeRO("admin-resource", "Edit resources", "article", "admin-resource"));
+            node.addChild(new NavigationTreeNodeRO("edit-resource", "Edit resources", "article", "edit-resource"));
         }
         return node;
     }

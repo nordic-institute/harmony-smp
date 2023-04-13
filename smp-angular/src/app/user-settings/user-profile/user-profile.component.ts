@@ -6,7 +6,7 @@ import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {UserRo} from "../../system-settings/user/user-ro.model";
 import {
   UserProfilePanelComponent
-} from "../../system-settings/admin-users/user-settings-panel/user-profile-panel.component";
+} from "../../common/panels/user-settings-panel/user-profile-panel.component";
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
 import {
   PasswordChangeDialogComponent
