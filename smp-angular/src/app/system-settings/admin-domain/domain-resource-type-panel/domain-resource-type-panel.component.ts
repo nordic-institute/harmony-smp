@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output,} from '@angular/core';
-import {DomainRo} from "../domain-ro.model";
+import {DomainRo} from "../../../common/model/domain-ro.model";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";

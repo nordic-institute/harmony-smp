@@ -13,7 +13,7 @@ import {AlertMessageService} from '../common/alert-message/alert-message.service
 import {ServiceGroupEditController} from './service-group-edit-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
-import {EntityStatus} from "../common/model/entity-status.model";
+import {EntityStatus} from "../common/enums/entity-status.enum";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {GlobalLookups} from "../common/global-lookups";
 import {SecurityService} from "../security/security.service";

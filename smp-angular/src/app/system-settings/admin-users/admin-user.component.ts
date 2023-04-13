@@ -5,9 +5,9 @@ import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dia
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {CancelDialogComponent} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
-import {SearchUserRo} from "../admin-domain/domain-member-panel/member-dialog/search-user-ro.model";
+import {SearchUserRo} from "../../common/panels/domain-member-panel/member-dialog/search-user-ro.model";
 import {AdminUserService} from "./admin-user.service";
-import {TableResult} from "../admin-domain/domain-member-panel/table-result.model";
+import {TableResult} from "../../common/model/table-result.model";
 import {finalize} from "rxjs/operators";
 import {UserRo} from "../user/user-ro.model";
 import {SecurityService} from "../../security/security.service";

@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+
 
 import java.util.Arrays;
 import java.util.Collection;

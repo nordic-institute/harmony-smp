@@ -61,6 +61,7 @@
                             </projectFile>
                             <testSuite>PASSING_AUTO_BAMBOO</testSuite>
                             <!--If you want to execute single test case -->
+                            <!-- testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase -->
                             <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
                             <!-- testCase>SMP022-Create ServiceMetadata-Basic Flow</testCase -->
                             <projectProperties>
@@ -116,13 +117,7 @@
                                 </goals>
                                 <configuration>
                                     <artifactItems>
-                                        <artifactItem>
-                                            <groupId>${project.groupId}</groupId>
-                                            <artifactId>smp-api</artifactId>
-                                            <version>${project.version}</version>
-                                            <type>jar</type>
-                                        </artifactItem>
-                                        <artifactItem>
+                                           <artifactItem>
                                             <groupId>${project.groupId}</groupId>
                                             <artifactId>smp-server-library</artifactId>
                                             <version>${project.version}</version>

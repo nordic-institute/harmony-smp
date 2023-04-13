@@ -8,7 +8,7 @@ import {RowLimiter} from '../row-limiter/row-limiter.model';
 import {SearchTableController} from './search-table-controller';
 import {finalize} from 'rxjs/operators';
 import {SearchTableEntity} from './search-table-entity.model';
-import {EntityStatus} from '../model/entity-status.model';
+import {EntityStatus} from '../enums/entity-status.enum';
 import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
 import {SaveDialogComponent} from '../dialogs/save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';

@@ -13,6 +13,7 @@ public class ResourceConstants {
     // public
     public static final String CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT = CONTEXT_PATH_PUBLIC + "search";
     public static final String CONTEXT_PATH_PUBLIC_DOMAIN = CONTEXT_PATH_PUBLIC + "domain";
+    public static final String CONTEXT_PATH_PUBLIC_GROUP = CONTEXT_PATH_PUBLIC + "group";
     public static final String CONTEXT_PATH_PUBLIC_APPLICATION = CONTEXT_PATH_PUBLIC + "application";
     public static final String CONTEXT_PATH_PUBLIC_USER = CONTEXT_PATH_PUBLIC + "user";
     public static final String CONTEXT_PATH_PUBLIC_TRUSTSTORE = CONTEXT_PATH_PUBLIC + "truststore";

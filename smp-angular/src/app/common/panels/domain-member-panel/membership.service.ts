@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {SearchTableResult} from "../../../common/search-table/search-table-result.model";
+import {SearchTableResult} from "../../search-table/search-table-result.model";
 import {User} from "../../../security/user.model";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {SmpConstants} from "../../../smp.constants";
 import {SecurityService} from "../../../security/security.service";
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
-import {MemberRo} from "./member-ro.model";
-import {TableResult} from "./table-result.model";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
+import {MemberRo} from "../../model/member-ro.model";
+import {TableResult} from "../../model/table-result.model";
 import {SearchUserRo} from "./member-dialog/search-user-ro.model";
-import {MembershipRoleEnum} from "../../../common/enums/membership-role.enum";
+import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 
 
 @Injectable()

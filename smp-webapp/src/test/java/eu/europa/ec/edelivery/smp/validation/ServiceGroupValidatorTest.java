@@ -16,7 +16,7 @@ package eu.europa.ec.edelivery.smp.validation;
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
+
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
@@ -26,8 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 
 import java.util.Arrays;
 import java.util.Collection;

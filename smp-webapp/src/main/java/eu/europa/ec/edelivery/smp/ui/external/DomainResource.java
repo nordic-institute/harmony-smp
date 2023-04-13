@@ -52,7 +52,7 @@ public class DomainResource {
     }
 
     @GetMapping(path = "/{user-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.anyDomainAdministrator")
     public List<DomainRO> getAllDomainList(@PathVariable("user-enc-id") String userEncId) {
         logAdminAccess("getAllDomainListForUser");
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);

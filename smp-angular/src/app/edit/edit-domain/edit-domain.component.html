@@ -6,11 +6,15 @@
 
 
     <mat-tab-group #domainTabs style="height: 100%" >
-
       <mat-tab label="Members">
         <domain-member-panel #domainMemberPanelComponent
                              [domain]="selected"
         ></domain-member-panel>
+      </mat-tab>
+      <mat-tab label="Group">
+        <domain-group-panel #domainGroupPanelComponent
+                             [domain]="selected"
+        ></domain-group-panel>
       </mat-tab>
     </mat-tab-group>
   </data-panel>

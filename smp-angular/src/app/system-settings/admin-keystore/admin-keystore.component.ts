@@ -7,7 +7,7 @@ import {AdminKeystoreService} from "./admin-keystore.service";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {KeystoreImportDialogComponent} from "./keystore-import-dialog/keystore-import-dialog.component";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 

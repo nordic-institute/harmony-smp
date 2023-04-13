@@ -4,7 +4,7 @@ import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/credential-dialog.component";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {AccessTokenPanelComponent} from "./access-token-panel/access-token-panel.component";

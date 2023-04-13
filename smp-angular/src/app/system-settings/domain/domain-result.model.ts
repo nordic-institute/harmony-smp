@@ -1,4 +1,4 @@
-import {DomainRo} from '../admin-domain/domain-ro.model';
+import {DomainRo} from '../../common/model/domain-ro.model';
 
 export interface DomainResult {
   serviceEntities: Array<DomainRo>;

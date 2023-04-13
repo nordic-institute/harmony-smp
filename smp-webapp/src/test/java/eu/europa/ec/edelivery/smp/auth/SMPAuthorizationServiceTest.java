@@ -6,7 +6,6 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,13 +29,12 @@ public class SMPAuthorizationServiceTest {
     UserRO user = null;
     SecurityContext mockSecurityContextSystemAdmin = null;
     SecurityContext mockSecurityContextSMPAdmin = null;
-    ServiceGroupService serviceGroupService = Mockito.mock(ServiceGroupService.class);
     ConversionService conversionService = Mockito.mock(ConversionService.class);
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     UserDao userDao = Mockito.mock(UserDao.class);
     DomainMemberDao domainMemberDao = Mockito.mock(DomainMemberDao.class);
 
-    SMPAuthorizationService testInstance = new SMPAuthorizationService(serviceGroupService, conversionService,
+    SMPAuthorizationService testInstance = new SMPAuthorizationService(conversionService,
             configurationService, userDao, domainMemberDao);
 
 

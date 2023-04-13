@@ -1,5 +1,5 @@
 import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
-import {DomainRo} from "../domain-ro.model";
+import {DomainRo} from "../../../common/model/domain-ro.model";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AdminDomainService} from "../admin-domain.service";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
@@ -8,8 +8,6 @@ import {CertificateRo} from "../../user/certificate-ro.model";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
-import {UserRo} from "../../user/user-ro.model";
-
 
 @Component({
   selector: 'domain-panel',
@@ -122,12 +120,13 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     return this.isNewDomain() || this.domainForm?.dirty;
   }
 
-  get domainResourceTypes(){
-    if (!this._domain || !this._domain.resourceDefinitions){
+  get domainResourceTypes() {
+    if (!this._domain || !this._domain.resourceDefinitions) {
       return [];
     }
     return this.domiSMPResourceDefinitions.filter(resType => this._domain.resourceDefinitions.includes(resType.identifier))
   }
+
   get submitButtonEnabled(): boolean {
     return this.domainForm.valid && this.domainForm.dirty;
   }
