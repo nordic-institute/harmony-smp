@@ -2,18 +2,18 @@ import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@a
 import {SmpConstants} from "../../../smp.constants";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {CredentialRo} from "../../../security/credential.model";
-import {UserController} from "../../user/user-controller";
+import {UserController} from "../../../system-settings/user/user-controller";
 import {SecurityService} from "../../../security/security.service";
-import {ThemeService} from "../../../common/theme-service/theme.service";
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
-import {UserService} from "../../user/user.service";
+import {ThemeService} from "../../theme-service/theme.service";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
+import {UserService} from "../../../system-settings/user/user.service";
 import {MatDialog} from "@angular/material/dialog";
 import {HttpClient} from "@angular/common/http";
-import {GlobalLookups} from "../../../common/global-lookups";
+import {GlobalLookups} from "../../global-lookups";
 import {DateAdapter} from "@angular/material/core";
 import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
-import {UserRo} from "../../user/user-ro.model";
-import {ApplicationRoleEnum} from "../../../common/enums/application-role.enum";
+import {UserRo} from "../../../system-settings/user/user-ro.model";
+import {ApplicationRoleEnum} from "../../enums/application-role.enum";
 
 
 @Component({

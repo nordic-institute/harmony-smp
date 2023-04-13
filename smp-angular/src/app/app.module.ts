@@ -137,7 +137,9 @@ import {AdminUserComponent} from "./system-settings/admin-users/admin-user.compo
 import {AdminUserService} from "./system-settings/admin-users/admin-user.service";
 import {
   UserProfilePanelComponent
-} from "./system-settings/admin-users/user-settings-panel/user-profile-panel.component";
+} from "./common/panels/user-settings-panel/user-profile-panel.component";
+import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
+import {EditDomainService} from "./edit/edit-domain/edit-domain.service";
 
 
 @NgModule({
@@ -173,6 +175,7 @@ import {
     DomainMemberPanelComponent,
     DomainResourceTypePanelComponent,
     DomainSelectorComponent,
+    EditDomainComponent,
     ExpiredPasswordDialogComponent,
     ExtensionComponent,
     ExtensionPanelComponent,
@@ -263,6 +266,7 @@ import {
     DomainService,
     MembershipService,
     DownloadService,
+    EditDomainService,
     ExtensionService,
     GlobalLookups,
     HttpEventService,

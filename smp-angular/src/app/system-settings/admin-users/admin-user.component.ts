@@ -206,8 +206,10 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        //this.currentUserData.passwordExpireOn = result.passwordExpireOn;
-        //this.currentUserData = {...this.currentUserData}
+        this.selected = null;
+        this.managedUserData = null;
+        this.loadTableData();
+        this.alertService.success("User password changed!");
       }
     });
   }

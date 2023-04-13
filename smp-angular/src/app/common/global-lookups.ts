@@ -72,12 +72,12 @@ export class GlobalLookups {
   }
 
   public refreshDomainLookupFromPublic() {
-    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN_MANAGE;
+    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN;
     this.refreshDomainLookup(domainUrl);
   }
 
   public refreshDomainLookupForLoggedUser() {
-    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN_MANAGE;
+    let domainUrl = SmpConstants.REST_PUBLIC_DOMAIN;
     // for authenticated admin use internal url which returns more data!
     if (this.securityService.isCurrentUserSystemAdmin()) {
       domainUrl = SmpConstants.REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED;

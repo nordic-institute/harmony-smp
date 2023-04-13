@@ -14,6 +14,7 @@ import {AdminKeystoreComponent} from "./system-settings/admin-keystore/admin-key
 import {AdminDomainComponent} from "./system-settings/admin-domain/admin-domain.component";
 import {dirtyDeactivateGuard} from "./guards/dirty.guard";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
+import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 
 
 const appRoutes: Routes = [
@@ -22,12 +23,12 @@ const appRoutes: Routes = [
   {path: 'search', redirectTo: ''},
   {path: 'login', component: LoginComponent},
   {
-    path: 'administration',
+    path: 'edit',
     canActivateChild: [authenticationGuard],
     children: [
-      {path: 'admin-domain', component: AdminDomainComponent, canDeactivate: [dirtyDeactivateGuard]},
-      {path: 'admin-group', component: UserComponent, canDeactivate: [dirtyDeactivateGuard]},
-      {path: 'admin-resource', component: PropertyComponent, canDeactivate: [dirtyDeactivateGuard]}
+      {path: 'edit-domain', component: EditDomainComponent, canDeactivate: [dirtyDeactivateGuard]},
+      {path: 'edit-group', component: UserComponent, canDeactivate: [dirtyDeactivateGuard]},
+      {path: 'edit-resource', component: PropertyComponent, canDeactivate: [dirtyDeactivateGuard]}
     ]
   },
   {

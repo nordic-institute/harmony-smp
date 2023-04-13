@@ -4,10 +4,12 @@ import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.DomainPublicRO;
+import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -68,6 +70,12 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
         return super.getTableList(page, pageSize, sortField, sortOrder, filter);
     }
 
+    @Transactional
+    public List<DomainRO> getAllDomainsForDomainAdminUser(Long userId) {
+        List<DBDomain> domains = domainDao.getDomainsByUserIdAndRoles(userId, MembershipRoleType.ADMIN);
+        return domains.stream().map(domain -> conversionService.convert(domain, DomainRO.class))
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public ServiceResult<MemberRO> getDomainMembers(Long domainId, int page, int pageSize,
