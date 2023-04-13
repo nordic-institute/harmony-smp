@@ -47,4 +47,21 @@ Then start the docker as:
 
     docker run --name smp --rm -it -p 8080:8080  -v - db-scripts:/tmp/custom-data/ edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT 
 
+# Start with the docker compose file
 
+Create a docker compose file: docker-compose.yml
+with the following content: 
+```
+version: "3.0"
+services:
+  tomcat-mysql-sml:
+    image: edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
+    ports:
+      - "3316:3306"
+      - "8180:8080"
+      
+```
+
+and start the container service
+
+      docker compose up 
