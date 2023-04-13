@@ -93,7 +93,7 @@ public class SMPAuthorizationServiceTest {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
 
-        testInstance.isCurrentlyLoggedIn("Invalid or null authentication for the session!");
+        testInstance.isCurrentlyLoggedIn("Invalid or Expired session! Please login again.");
     }
 
     @Test
