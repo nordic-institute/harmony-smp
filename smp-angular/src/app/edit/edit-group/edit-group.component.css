@@ -1,0 +1,28 @@
+
+#admin-group-panel {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  height: 100%;
+  min-height: 600px;
+  padding: 0 2em;
+}
+#group-filter {
+  width: 100%;
+  padding-top: 1em;
+}
+
+
+#admin-group-table {
+  width: 100%;
+  padding-top: 1em;
+}
+
+#custom-file-upload {
+  display: none;
+}
+
+.custom-file-upload {
+  display: block;
+  cursor: pointer;
+}

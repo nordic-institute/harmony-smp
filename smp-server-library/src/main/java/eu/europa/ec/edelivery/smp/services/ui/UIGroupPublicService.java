@@ -3,6 +3,8 @@ package eu.europa.ec.edelivery.smp.services.ui;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
+import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
@@ -11,6 +13,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,13 +34,15 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIGroupPublicService.class);
     private final GroupDao groupDao;
+    private final GroupMemberDao groupMemberDao;
     private final DomainDao domainDao;
     private final ConversionService conversionService;
 
-    public UIGroupPublicService(GroupDao groupDao, DomainDao domainDao, ConversionService conversionService) {
+    public UIGroupPublicService(GroupDao groupDao, DomainDao domainDao, GroupMemberDao groupMemberDao, ConversionService conversionService) {
         this.groupDao = groupDao;
         this.domainDao = domainDao;
         this.conversionService = conversionService;
+        this.groupMemberDao = groupMemberDao;
     }
 
     @Override
@@ -70,6 +75,14 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     }
 
     @Transactional
+    public List<GroupRO> getAllGroupsForUser(Long userId, MembershipRoleType role) {
+        List<DBGroup> domainGroups = groupDao.getGroupsByUserIdAndRoles(userId, role);
+
+        return domainGroups.stream().map(domain -> conversionService.convert(domain, GroupRO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public GroupRO createGroupForDomain(Long domainId, GroupRO groupRO) {
         LOG.info("create group [{}] to domain [{}]", groupRO, domainId);
 
@@ -85,7 +98,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         group.setVisibility(groupRO.getVisibility());
         group.setDomain(domain);
         // to get ID for conversion
-        domainDao.persistFlushDetach(domain);
+        groupDao.persistFlushDetach(group);
 
         return conversionService.convert(group, GroupRO.class);
     }
@@ -99,27 +112,37 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Can not find group to delete");
         }
 
-        if (Objects.equals(group.getDomain().getId(), domainId)) {
+        if (!Objects.equals(group.getDomain().getId(), domainId)) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group does not belong to domain");
         }
+        Long userCount = groupMemberDao.getGroupMemberCount(groupId, null);
+        if (userCount > 0) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group has members [" + userCount + "] and can not be deleted");
+        }
+
         groupDao.remove(group);
         return conversionService.convert(group, GroupRO.class);
     }
-/*
+
     @Transactional
-    public MemberRO deleteMemberFromDomain(Long domainId, Long memberId) {
-        LOG.info("Delete member [{}] from domain [{}]", memberId, domainId);
-        DBDomainMember domainMember = domainMemberDao.find(memberId);
-        if (domainMember == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not exists!");
-        }
-        if (!Objects.equals(domainMember.getDomain().getId(),domainId  )){
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not belong to domain!");
+    public GroupRO saveGroupForDomain(Long domainId, Long groupId, GroupRO groupRO) {
+        LOG.info("save group [{}] to domain [{}]", groupRO, domainId);
+
+        if (StringUtils.isBlank(groupRO.getGroupName())) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UpdateGroup", "Group name must not be blank!");
         }
 
-        domainMemberDao.remove(domainMember);
-        return conversionService.convert(domainMember, MemberRO.class);
+        DBGroup group = groupDao.find(groupId);
+        if (group == null) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UpdateGroup", "Group with does not exists!");
+        }
+
+        group.setGroupName(groupRO.getGroupName());
+        group.setGroupDescription(groupRO.getGroupDescription());
+        group.setVisibility(groupRO.getVisibility());
+        // to get ID for conversion
+        groupDao.persistFlushDetach(group);
+
+        return conversionService.convert(group, GroupRO.class);
     }
-
- */
 }

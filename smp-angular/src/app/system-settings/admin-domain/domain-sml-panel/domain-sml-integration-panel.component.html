@@ -1,32 +1,7 @@
 <form [formGroup]="domainForm" >
 
   <div id="domain-sml-integration-panel" class="mat-elevation-z2">
-    <mat-toolbar>
-      <mat-toolbar-row>
-        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
-                [disabled]="!resetButtonEnabled">
-          <mat-icon>refresh</mat-icon>
-          <span>Reset</span>
-        </button>
-        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
-                [disabled]="!submitButtonEnabled">
-          <mat-icon>save</mat-icon>
-          <span>Save</span>
-        </button>
-        <tool-button-spacer></tool-button-spacer>
 
-        <button  id="registerButton" mat-raised-button (click)="smlRegisterSelectedDomain()"
-                 [disabled]="!enableSMLRegister()" color="primary">
-          <mat-icon>link</mat-icon>
-          <span>Register</span>
-        </button>
-        <button  id="unregisterButton" mat-raised-button (click)="smlUnregisterSelectedDomain()"
-                 [disabled]="!enableSMLUnregister()" color="primary">
-          <mat-icon>link_off</mat-icon>
-          <span>Unregister</span>
-        </button>
-      </mat-toolbar-row>
-    </mat-toolbar>
     <h3>SML integration data</h3>
     <div class="panel" *ngIf="isDomainRegistered"><p style="font-weight: bold">Domain is registered to SML!</p>The Registered domain can not be deleted or changed the SMP SML identifier</div>
     <mat-form-field style="width:100%">
@@ -114,5 +89,30 @@
       Use ClientCert http header authentication.
     </mat-slide-toggle>
   </div>
+  <mat-toolbar>
+    <mat-toolbar-row>
+      <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+              [disabled]="!resetButtonEnabled">
+        <mat-icon>refresh</mat-icon>
+        <span>Reset</span>
+      </button>
+      <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+              [disabled]="!submitButtonEnabled">
+        <mat-icon>save</mat-icon>
+        <span>Save</span>
+      </button>
+      <tool-button-spacer></tool-button-spacer>
 
+      <button  id="registerButton" mat-raised-button (click)="smlRegisterSelectedDomain()"
+               [disabled]="!enableSMLRegister()" color="primary">
+        <mat-icon>link</mat-icon>
+        <span>Register</span>
+      </button>
+      <button  id="unregisterButton" mat-raised-button (click)="smlUnregisterSelectedDomain()"
+               [disabled]="!enableSMLUnregister()" color="primary">
+        <mat-icon>link_off</mat-icon>
+        <span>Unregister</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
 </form>

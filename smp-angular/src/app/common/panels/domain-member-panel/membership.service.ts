@@ -8,8 +8,7 @@ import {SecurityService} from "../../../security/security.service";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {MemberRo} from "../../model/member-ro.model";
 import {TableResult} from "../../model/table-result.model";
-import {SearchUserRo} from "./member-dialog/search-user-ro.model";
-import {MembershipRoleEnum} from "../../enums/membership-role.enum";
+import {SearchUserRo} from "../../model/search-user-ro.model";
 
 
 @Injectable()
@@ -56,10 +55,10 @@ export class MembershipService {
 
     return this.http.put<MemberRo>(SmpConstants.REST_PUBLIC_DOMAIN_MEMBERS_ADD
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
-      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId),member);
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId), member);
   }
 
-  deleteMemberFromDomain( domainId: string, member: MemberRo): Observable<MemberRo> {
+  deleteMemberFromDomain(domainId: string, member: MemberRo): Observable<MemberRo> {
     const currentUser: User = this.securityService.getCurrentUser();
 
     return this.http.delete<MemberRo>(SmpConstants.REST_PUBLIC_DOMAIN_MEMBERS_DELETE

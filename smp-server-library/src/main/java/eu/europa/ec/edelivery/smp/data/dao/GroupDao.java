@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +66,7 @@ public class GroupDao extends BaseDao<DBGroup> {
         query.setParameter(PARAM_DOMAIN_ID, domainId);
         return query.getResultList();
     }
+
 
     /**
      * Returns the group or Optional.empty() if there is no group for name and domain.
@@ -121,6 +124,24 @@ public class GroupDao extends BaseDao<DBGroup> {
         } catch (NonUniqueResultException e) {
             throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(name,domainCode));
         }
+    }
+
+    public Long getGroupsByUserIdAndRolesCount(Long userId, MembershipRoleType... roleTypes) {
+
+        List<MembershipRoleType> list  = Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_GROUP_BY_USER_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, list);
+        return query.getSingleResult();
+    }
+
+    public List<DBGroup> getGroupsByUserIdAndRoles(Long userId, MembershipRoleType... roleTypes) {
+
+        List<MembershipRoleType> list  = Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
+        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_USER_ROLES, DBGroup.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, list);
+        return query.getResultList();
     }
     /**
      * Removes Entity by given domain code

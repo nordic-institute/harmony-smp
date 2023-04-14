@@ -20,6 +20,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
@@ -35,8 +36,15 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Repository
 public class GroupMemberDao extends BaseDao<DBGroupMember> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(GroupMemberDao.class);
+
+    private final GroupDao groupDao;
+
+    public GroupMemberDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
+    }
+
     public boolean isUserGroupMember(DBUser user, List<DBGroup> groups) {
-        List<Long> groupIds = groups.stream().map(grop -> grop.getId()).collect(Collectors.toList());
+        List<Long> groupIds = groups.stream().map(DBGroup::getId).collect(Collectors.toList());
         return isGroupResourceMember(user.getId(), groupIds);
     }
 
@@ -64,7 +72,7 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
 
         query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_GROUP_IDS, groupIds);
-        return query.getResultList().stream().anyMatch(member ->member.getRole() == roleType );
+        return query.getResultList().stream().anyMatch(member -> member.getRole() == roleType);
     }
 
     public boolean isUserAnyDomainGroupResourceMemberWithRole(DBUser user, DBDomain domain, MembershipRoleType roleType) {
@@ -75,5 +83,47 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
         query.setParameter(PARAM_DOMAIN_ID, domain.getId());
         query.setParameter(PARAM_MEMBERSHIP_ROLE, roleType);
         return query.getSingleResult() > 0;
+    }
+
+    public boolean isUserGroupAdministrator(Long userId) {
+        return groupDao.getGroupsByUserIdAndRolesCount(userId, MembershipRoleType.ADMIN) > 0;
+    }
+
+    public List<DBGroupMember> getGroupMembers(Long groupId, int iPage, int iPageSize, String filter) {
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        TypedQuery<DBGroupMember> query = memEManager.createNamedQuery(hasFilter ?
+                QUERY_GROUP_MEMBERS_FILTER : QUERY_GROUP_MEMBERS, DBGroupMember.class);
+
+        if (iPageSize > -1 && iPage > -1) {
+            query.setFirstResult(iPage * iPageSize);
+        }
+        if (iPageSize > 0) {
+            query.setMaxResults(iPageSize);
+        }
+        query.setParameter(PARAM_GROUP_ID, groupId);
+        if (hasFilter) {
+            query.setParameter(PARAM_USER_FILTER, "%" + StringUtils.trim(filter) + "%");
+        }
+        return query.getResultList();
+    }
+
+    public Long getGroupMemberCount(Long groupId, String filter) {
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_GROUP_MEMBERS_FILTER_COUNT : QUERY_GROUP_MEMBERS_COUNT, Long.class);
+        query.setParameter(PARAM_GROUP_ID, groupId);
+        if (hasFilter) {
+            query.setParameter(PARAM_USER_FILTER, "%" + StringUtils.trim(filter) + "%");
+        }
+        return query.getSingleResult();
+    }
+
+
+    public DBGroupMember addMemberToDomain(DBGroup group, DBUser user, MembershipRoleType role) {
+        DBGroupMember groupMember = new DBGroupMember();
+        groupMember.setRole(role);
+        groupMember.setUser(user);
+        groupMember.setGroup(group);
+        groupMember = merge(groupMember);
+        return groupMember;
     }
 }

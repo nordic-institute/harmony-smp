@@ -1,20 +1,5 @@
 <div id="domain-panel" class="mat-elevation-z2" >
   <form [formGroup]="domainForm" >
-    <mat-toolbar>
-      <mat-toolbar-row>
-        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
-                [disabled]="!resetButtonEnabled">
-          <mat-icon>refresh</mat-icon>
-          <span>Reset</span>
-        </button>
-        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
-                [disabled]="!submitButtonEnabled">
-          <mat-icon>save</mat-icon>
-          <span>Save</span>
-        </button>
-
-      </mat-toolbar-row>
-    </mat-toolbar>
     <h3>Domain details</h3>
     <div class="panel" *ngIf="_domain!=null &&  !_domain.domainId"><p style="font-weight: bold">Enter data and click 'Save' to create new domain</div>
     <mat-form-field style="width:100%">
@@ -92,5 +77,20 @@
       to get read the domain resources
     </mat-hint>
   </mat-form-field>
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+                [disabled]="!resetButtonEnabled">
+          <mat-icon>refresh</mat-icon>
+          <span>Reset</span>
+        </button>
+        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+                [disabled]="!submitButtonEnabled">
+          <mat-icon>save</mat-icon>
+          <span>Save</span>
+        </button>
+
+      </mat-toolbar-row>
+    </mat-toolbar>
   </form>
 </div>

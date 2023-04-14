@@ -43,6 +43,8 @@ public class ResourceConstants {
     public static final String PARAM_PAGINATION_ORDER_TYPE="orderType";
 
 
+    public static final String PARAM_ROLE="role";
+
     public static final String PARAM_QUERY_PARTC_ID="participantIdentifier";
     public static final String PARAM_QUERY_PARTC_SCHEME="participantScheme";
     public static final String PARAM_QUERY_DOMAIN_CODE ="domainCode";

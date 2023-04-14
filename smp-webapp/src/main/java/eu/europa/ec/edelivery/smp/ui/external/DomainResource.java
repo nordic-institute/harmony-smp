@@ -47,14 +47,19 @@ public class DomainResource {
             @RequestParam(value = PARAM_QUERY_USER, required = false) String user) {
 
         LOG.info("Search for page: {}, page size: {}, user: {}", page, pageSize, user);
-        ServiceResult<DomainPublicRO> result = uiDomainService.getTableList(page, pageSize, orderBy, orderType, null);
-        return result;
+        return uiDomainService.getTableList(page, pageSize, orderBy, orderType, null);
     }
 
+
+    /**
+     * Method returns all domains where user is administrator
+     * @param userEncId encrypted user identifier
+     * @return Domain list where user has role domain administrator
+     */
     @GetMapping(path = "/{user-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.anyDomainAdministrator")
-    public List<DomainRO> getAllDomainList(@PathVariable("user-enc-id") String userEncId) {
-        logAdminAccess("getAllDomainListForUser");
+    public List<DomainRO> getAllDomainsForDomainAdminUser(@PathVariable("user-enc-id") String userEncId) {
+        logAdminAccess("getAllDomainsForDomainAdminUser");
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
 
         return uiDomainService.getAllDomainsForDomainAdminUser(userId);

@@ -1,4 +1,4 @@
-import {Component, Input,} from '@angular/core';
+import {Component, Input, ViewChild,} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -8,6 +8,9 @@ import {finalize} from "rxjs/operators";
 import {MatTableDataSource} from "@angular/material/table";
 import {GroupRo} from "../../../common/model/group-ro.model";
 import {EditDomainService} from "../edit-domain.service";
+import {GroupDialogComponent} from "./group-dialog/group-dialog.component";
+import {VisibilityEnum} from "../../../common/enums/visibility.enum";
+import {MatPaginator} from "@angular/material/paginator";
 
 @Component({
   selector: 'domain-group-panel',
@@ -27,6 +30,8 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
   dataSource: MatTableDataSource<GroupRo> = new MatTableDataSource();
 
   selectedGroup: GroupRo;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private editDomainService: EditDomainService,
               private alertService: AlertMessageService,
@@ -57,6 +62,13 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
     }
   }
 
+  public refresh() {
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+    this.loadTableData();
+  }
+
   loadTableData() {
     if (!this._domain) {
       this.dataSource.data = null;
@@ -83,9 +95,31 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
   }
 
   onAddButtonClicked() {
+    this.dialog.open(GroupDialogComponent, {
+      data: {
+        domain: this._domain,
+        group: this.createGroup(),
+        formTitle: "Invite new member to domain"
+      }
+    }).afterClosed().subscribe(value => {
+      this.refresh();
+    });
   };
 
   onEditSelectedButtonClicked() {
+    this.showEditDialogForGroup(this.selectedGroup);
+  };
+
+  showEditDialogForGroup(group:GroupRo) {
+    this.dialog.open(GroupDialogComponent, {
+      data: {
+        domain: this._domain,
+        group: group,
+        formTitle: "Invite new member to domain"
+      }
+    }).afterClosed().subscribe(value => {
+      this.refresh();
+    });
   };
 
   onDeleteSelectedButtonClicked() {
@@ -102,9 +136,16 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
         }
       }, (error) => {
         this.alertService.error(error.error?.errorDescription)
-    }
+      }
     )
   };
+
+  public createGroup(): GroupRo {
+    return {
+      visibility: VisibilityEnum.Public
+    } as GroupRo
+  }
+
 
   onGroupSelected(group: GroupRo) {
     this.selectedGroup = group;

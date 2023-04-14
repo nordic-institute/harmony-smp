@@ -4,6 +4,8 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
@@ -21,18 +23,28 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Audited
 @Table(name = "SMP_GROUP_MEMBER",
         indexes = {@Index(name = "SMP_GRP_MEM_IDX", columnList = "FK_GROUP_ID, FK_USER_ID", unique = true)
-})
-@NamedQueries({
-        @NamedQuery(name = QUERY_GROUP_MEMBER_ALL, query = "SELECT u FROM DBGroupMember u"),
-        @NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_GROUPS_COUNT, query = "SELECT count(c) FROM DBGroupMember c " +
-                " WHERE c.user.id = :user_id AND c.group.id IN (:group_ids)"),
-        @NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_COUNT, query = "SELECT count(c) FROM DBGroupMember c JOIN c.group.domain d " +
-                " WHERE c.user.id = :user_id AND d.id = :domain_id"),
-        @NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_GROUPS, query = "SELECT c FROM DBGroupMember c " +
-                " WHERE c.user.id = :user_id AND c.group.id IN (:group_ids)"),
-        @NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT, query = "SELECT count(c) FROM DBGroupMember c " +
-                " WHERE c.user.id = :user_id AND c.group.domain.id = :domain_id AND c.role= :membership_role ")
-})
+        })
+
+@NamedQuery(name = QUERY_GROUP_MEMBER_ALL, query = "SELECT u FROM DBGroupMember u")
+@NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_GROUPS_COUNT, query = "SELECT count(c) FROM DBGroupMember c " +
+        " WHERE c.user.id = :user_id AND c.group.id IN (:group_ids)")
+@NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_COUNT, query = "SELECT count(c) FROM DBGroupMember c JOIN c.group.domain d " +
+        " WHERE c.user.id = :user_id AND d.id = :domain_id")
+@NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_GROUPS, query = "SELECT c FROM DBGroupMember c " +
+        " WHERE c.user.id = :user_id AND c.group.id IN (:group_ids)")
+@NamedQuery(name = QUERY_GROUP_MEMBERS_COUNT, query = "SELECT count(c) FROM DBGroupMember c " +
+        " WHERE c.group.id = :group_id")
+@NamedQuery(name = QUERY_GROUP_MEMBERS, query = "SELECT c FROM DBGroupMember c " +
+        " WHERE c.group.id = :group_id order by c.user.username")
+@NamedQuery(name = QUERY_GROUP_MEMBERS_FILTER_COUNT, query = "SELECT count(c) FROM DBGroupMember c " +
+        " WHERE c.group.id = :group_id AND (lower(c.user.fullName) like lower(:user_filter) OR lower(c.user.username) like lower(:user_filter))")
+@NamedQuery(name = QUERY_GROUP_MEMBERS_FILTER, query = "SELECT c FROM DBGroupMember c " +
+        " WHERE c.group.id = :group_id  AND (lower(c.user.fullName) like lower(:user_filter) OR lower(c.user.username) like lower(:user_filter))  order by c.user.username")
+
+
+@NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT, query = "SELECT count(c) FROM DBGroupMember c " +
+        " WHERE c.user.id = :user_id AND c.group.domain.id = :domain_id AND c.role= :membership_role ")
+
 public class DBGroupMember extends BaseEntity {
 
     @Id
@@ -96,5 +108,21 @@ public class DBGroupMember extends BaseEntity {
 
     public void setRole(MembershipRoleType role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DBGroupMember that = (DBGroupMember) o;
+
+        return new EqualsBuilder().appendSuper(super.equals(o)).append(id, that.id).append(role, that.role).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).appendSuper(super.hashCode()).append(id).append(role).toHashCode();
     }
 }

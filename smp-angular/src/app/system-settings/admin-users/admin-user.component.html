@@ -19,23 +19,6 @@
     <input matInput (keyup)="applyUserFilter($event)" placeholder="User name or full name" #inputUserFilter>
   </mat-form-field>
 
-  <mat-toolbar>
-    <mat-toolbar-row class="mat-elevation-z5">
-      <button mat-raised-button
-              mat-flat-button color="primary"
-              (click)="onCreateUserClicked()"
-              >Create User
-      </button>
-
-      <button mat-raised-button
-              [disabled]="canNotDelete"
-              color="primary"
-              (click)="onDeleteSelectedUserClicked()">
-        <mat-icon>delete</mat-icon>
-        <span>Delete selected</span>
-      </button>
-    </mat-toolbar-row>
-  </mat-toolbar>
   <table class="mat-elevation-z2" id="admin-domain-table" mat-table [dataSource]="userData" >
     <ng-container matColumnDef="username">
       <th mat-header-cell *matHeaderCellDef >Username</th>
@@ -71,5 +54,23 @@
                  [pageSizeOptions]="[5, 10, 25]"
                  [showFirstLastButtons]="true"
                  aria-label="Select page"></mat-paginator>
+
+  <mat-toolbar>
+    <mat-toolbar-row class="mat-elevation-z5">
+      <button mat-raised-button
+              mat-flat-button color="primary"
+              (click)="onCreateUserClicked()"
+      >Create User
+      </button>
+
+      <button mat-raised-button
+              [disabled]="canNotDelete"
+              color="primary"
+              (click)="onDeleteSelectedUserClicked()">
+        <mat-icon>delete</mat-icon>
+        <span>Delete selected</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
 
 </ng-template>

@@ -36,6 +36,7 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
 
     private final DomainDao domainDao;
 
+
     public DomainMemberDao(DomainDao domainDao) {
         this.domainDao = domainDao;
     }
@@ -45,7 +46,7 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
     }
 
     public boolean isUserDomainsMember(DBUser user, List<DBDomain> domainList) {
-        List<Long> domainIds = domainList.stream().map(dbDomain -> dbDomain.getId()).collect(Collectors.toList());
+        List<Long> domainIds = domainList.stream().map(DBDomain::getId).collect(Collectors.toList());
         return isUserDomainsMember(user.getId(), domainIds);
     }
 
@@ -67,9 +68,6 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
 
     public boolean isUserAnyDomainAdministrator(Long userId){
         return domainDao.getDomainsByUserIdAndRolesCount(userId, MembershipRoleType.ADMIN)>0;
-    }
-    public boolean isUserGroupAdministrator(Long userId){
-        return false;
     }
 
     public boolean isUserResourceAdministrator(Long userId){

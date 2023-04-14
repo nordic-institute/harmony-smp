@@ -1,14 +1,14 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {MembershipRoleEnum} from "../../../enums/membership-role.enum";
+import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {Observable} from "rxjs";
-import {SearchUserRo} from "./search-user-ro.model";
-import {MembershipService} from "../membership.service";
-import {MemberRo} from "../../../model/member-ro.model";
-import {DomainRo} from "../../../model/domain-ro.model";
-import {MemberTypeEnum} from "../../../enums/member-type.enum";
-import {AlertMessageService} from "../../../alert-message/alert-message.service";
+import {SearchUserRo} from "../../model/search-user-ro.model";
+import {MembershipService} from "../../panels/domain-member-panel/membership.service";
+import {MemberRo} from "../../model/member-ro.model";
+import {DomainRo} from "../../model/domain-ro.model";
+import {MemberTypeEnum} from "../../enums/member-type.enum";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
 
 
 @Component({
@@ -92,7 +92,7 @@ export class MemberDialogComponent implements OnInit {
       this.memberForm.controls['member-memberOf'].setValue("");
       this.memberForm.controls['member-roleType'].setValue("");
     }
-
+    this.memberForm.markAsPristine();
   }
 
   ngOnInit() {

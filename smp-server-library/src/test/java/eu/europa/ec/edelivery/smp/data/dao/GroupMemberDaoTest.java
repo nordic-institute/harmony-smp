@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.conversion.DBGroupToGroupROConverter;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
@@ -10,11 +11,13 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 /**
@@ -111,5 +114,50 @@ public class GroupMemberDaoTest extends AbstractBaseDao  {
         assertTrue(result);
         result = testInstance.isUserAnyDomainGroupResourceMemberWithRole(user, testUtilsDao.getD1(), MembershipRoleType.ADMIN);
         assertFalse(result);
+    }
+
+    @Test
+    public void testGetGroupMembersOne() {
+        DBGroup group = testUtilsDao.getGroupD1G1();
+        DBUser user = testUtilsDao.getUser1();
+        addMemberToGroup(user, group, MembershipRoleType.ADMIN);
+        // then
+        Long resultCount = testInstance.getGroupMemberCount(group.getId(), null);
+        List<DBGroupMember> result = testInstance.getGroupMembers(group.getId(), 0, 10, null);
+        assertEquals(1, resultCount.intValue());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testGetDomainMembersOneFilter() {
+        DBGroup group = testUtilsDao.getGroupD1G1();
+        DBUser user = testUtilsDao.getUser1();
+        addMemberToGroup(user, group, MembershipRoleType.ADMIN);
+        // then filter no match
+        assertFilter("NotExistsAtAll", 0, group);
+        assertFilter(user.getUsername(), 1, group);
+        assertFilter(user.getFullName(), 1, group);
+
+        assertFilter(StringUtils.upperCase(user.getUsername()), 1, group);
+        assertFilter(StringUtils.upperCase(user.getFullName()), 1, group);
+        assertFilter(StringUtils.lowerCase(user.getUsername()), 1, group);
+        assertFilter(StringUtils.lowerCase(user.getFullName()), 1, group);
+        assertFilter("", 1, group);
+        assertFilter(null, 1, group);
+    }
+
+    private void assertFilter(String filter, int expectedCount, DBGroup group) {
+        Long resultCount = testInstance.getGroupMemberCount(group.getId(), filter);
+        List<DBGroupMember> result = testInstance.getGroupMembers(group.getId(), 0, 10, filter);
+        assertEquals(expectedCount, resultCount.intValue());
+        assertEquals(expectedCount, result.size());
+    }
+
+    private void addMemberToGroup(DBUser user, DBGroup group, MembershipRoleType role) {
+        DBGroupMember groupMember = new DBGroupMember();
+        groupMember.setGroup(group);
+        groupMember.setUser(user);
+        groupMember.setRole(role);
+        testInstance.persistFlushDetach(groupMember);
     }
 }

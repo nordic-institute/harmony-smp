@@ -23,6 +23,12 @@ public class QueryNames {
     public static final String QUERY_GROUP_BY_DOMAIN = "DBGroup.getByDomain";
     public static final String QUERY_GROUP_BY_NAME_DOMAIN = "DBGroup.getByNameDomain";
     public static final String QUERY_GROUP_BY_NAME_DOMAIN_CODE = "DBGroup.getByNameDomainCode";
+    public static final String QUERY_GROUP_BY_USER_ROLES = "DBGroup.getByUserAndRoles";
+    public static final String QUERY_GROUP_BY_USER_ROLES_COUNT = "DBGroup.getByUserAndRolesCount";
+    public static final String QUERY_GROUP_MEMBERS_COUNT = "DBGroup.getByGroupCount";
+    public static final String QUERY_GROUP_MEMBERS_FILTER_COUNT = "DBGroup.getByGroupFilterCount";
+    public static final String QUERY_GROUP_MEMBERS = "DBGroup.getByGroup";
+    public static final String QUERY_GROUP_MEMBERS_FILTER = "DBGroup.getByGroupFilter";
 
     public static final String QUERY_DOMAIN_MEMBER_ALL = "DBDomainMember.getAll";
     public static final String QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS_COUNT = "DBDomainMember.getByUserAndDomainsCount";
@@ -123,6 +129,7 @@ public class QueryNames {
 
     public static final String PARAM_DOCUMENT_ID = "document_id";
 
+    public static final String PARAM_GROUP_ID = "group_id";
     public static final String PARAM_GROUP_IDS = "group_ids";
     public static final String PARAM_MEMBERSHIP_ROLE = "membership_role";
 

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
+import {Component, Input, ViewChild,} from '@angular/core';
 import {DomainRo} from "../../model/domain-ro.model";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {AdminDomainService} from "../../../system-settings/admin-domain/admin-domain.service";
@@ -9,7 +9,7 @@ import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {MemberRo} from "../../model/member-ro.model";
 import {finalize} from "rxjs/operators";
 import {TableResult} from "../../model/table-result.model";
-import {MemberDialogComponent} from "./member-dialog/member-dialog.component";
+import {MemberDialogComponent} from "../../dialogs/member-dialog/member-dialog.component";
 import {MembershipService} from "./membership.service";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
@@ -136,22 +136,27 @@ export class DomainMemberPanelComponent implements BeforeLeaveGuard {
     } as MemberRo
   }
 
-
   public onEditSelectedButtonClicked() {
+    this.showEditDailogForMember(this.selectedMember);
+  }
+
+  public showEditDailogForMember(member: MemberRo) {
     this.dialog.open(MemberDialogComponent, {
       data: {
         domain: this._domain,
-        member: this.selectedMember,
+        member: member,
         formTitle: "Edit member role for domain"
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
     });
   }
+
   public onDeleteSelectedButtonClicked() {
     this.membershipService.deleteMemberFromDomain(this._domain.domainId, this.selectedMember).subscribe(value => {
       this.refresh();
-    });;
+    });
+    ;
   }
 
   isDirty(): boolean {

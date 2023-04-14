@@ -130,7 +130,7 @@ import {
 } from "./common/panels/domain-member-panel/domain-member-panel.component";
 import {
   MemberDialogComponent
-} from "./common/panels/domain-member-panel/member-dialog/member-dialog.component";
+} from "./common/dialogs/member-dialog/member-dialog.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MembershipService} from "./common/panels/domain-member-panel/membership.service";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
@@ -142,6 +142,9 @@ import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 import {EditDomainService} from "./edit/edit-domain/edit-domain.service";
 import {SmpFieldErrorComponent} from "./common/components/smp-field-error/smp-field-error.component";
 import {DomainGroupComponent} from "./edit/edit-domain/domain-group-panel/domain-group.component";
+import {GroupDialogComponent} from "./edit/edit-domain/domain-group-panel/group-dialog/group-dialog.component";
+import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
+import {EditGroupService} from "./edit/edit-group/edit-group.service";
 
 
 @NgModule({
@@ -179,9 +182,11 @@ import {DomainGroupComponent} from "./edit/edit-domain/domain-group-panel/domain
     DomainResourceTypePanelComponent,
     DomainSelectorComponent,
     EditDomainComponent,
+    EditGroupComponent,
     ExpiredPasswordDialogComponent,
     ExtensionComponent,
     ExtensionPanelComponent,
+    GroupDialogComponent,
     FooterComponent,
     InformationDialogComponent,
     IsAuthorized,
@@ -271,6 +276,7 @@ import {DomainGroupComponent} from "./edit/edit-domain/domain-group-panel/domain
     MembershipService,
     DownloadService,
     EditDomainService,
+    EditGroupService,
     ExtensionService,
     GlobalLookups,
     HttpEventService,

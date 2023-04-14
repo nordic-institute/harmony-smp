@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
+import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -38,20 +39,24 @@ public class SMPAuthorizationService {
     private static final String ERR_INVALID_OR_NULL = "Invalid or Expired session! Please login again.";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthorizationService.class);
 
-    DomainMemberDao domainMemberDao;
+    private final UserDao userDao;
+    private final DomainMemberDao domainMemberDao;
+    private final GroupMemberDao groupMemberDao;
 
     private final ConversionService conversionService;
     private final ConfigurationService configurationService;
-    private final UserDao userDao;
 
-    public SMPAuthorizationService(ConversionService conversionService,
-                                   ConfigurationService configurationService,
-                                   UserDao userDao,
-                                   DomainMemberDao domainMemberDao) {
-        this.conversionService = conversionService;
-        this.configurationService = configurationService;
+
+    public SMPAuthorizationService(UserDao userDao,
+                                   DomainMemberDao domainMemberDao,
+                                   GroupMemberDao groupMemberDao,
+                                   ConversionService conversionService,
+                                   ConfigurationService configurationService) {
         this.userDao = userDao;
         this.domainMemberDao = domainMemberDao;
+        this.groupMemberDao = groupMemberDao;
+        this.conversionService = conversionService;
+        this.configurationService = configurationService;
     }
 
     public boolean isSystemAdministrator() {
@@ -80,7 +85,8 @@ public class SMPAuthorizationService {
 
     public boolean isAnyGroupAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        return domainMemberDao.isUserGroupAdministrator(userDetails.getUser().getId());
+        return groupMemberDao.isUserGroupAdministrator(userDetails.getUser().getId())
+                || domainMemberDao.isUserAnyDomainAdministrator(userDetails.getUser().getId()) ;
     }
     public boolean isAnyResourceAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
