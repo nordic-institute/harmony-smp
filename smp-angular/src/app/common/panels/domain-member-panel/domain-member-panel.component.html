@@ -62,6 +62,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
               (click)="memberSelected(row)"
+              (dblclick)="showEditDailogForMember(row)"
               [ngClass]="{'datatable-row-selected': row==selectedMember,'datatable-row-odd': odd}"
           ></tr>
 

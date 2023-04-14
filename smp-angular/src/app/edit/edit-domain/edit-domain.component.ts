@@ -39,7 +39,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
         );
 
         domainService.getDomains();
-
   }
 
 

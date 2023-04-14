@@ -25,9 +25,7 @@ export class AlertMessageComponent implements OnInit {
   }
 
   setSticky(sticky: boolean):void {
-    console.log("set sticky " + sticky)
     this.showSticky = sticky;
-
   }
 
   get messageText(){

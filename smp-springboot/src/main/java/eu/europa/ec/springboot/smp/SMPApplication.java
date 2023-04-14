@@ -69,6 +69,7 @@ public class SMPApplication implements ApplicationRunner {
     public static void main(String... args) {
         // validate parameters
         LOG.info("Start the SMP with parameters: [{}].", String.join(",", args));
+        System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
         // start spring boot application
         APPLICATION_CONTEXT = SpringApplication.run(SMPApplication.class, args);
     }

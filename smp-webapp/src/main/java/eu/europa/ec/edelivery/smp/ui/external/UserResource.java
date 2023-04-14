@@ -135,7 +135,7 @@ public class UserResource {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @GetMapping(path = "/{user-id}/username-credential-status")
     public CredentialRO getUsernameCredentialStatus(@PathVariable("user-id") String userId) {
-        LOG.debug("get User credential status: [{}]", userId);
+        LOG.debug("Get user credential status for user: [{}]", userId);
         Long entityId = decryptEntityId(userId);
         // Update the user and mark the password as changed at this very instant of time
         List<CredentialRO> credentialROList = uiUserService.getUserCredentials(entityId,
@@ -147,7 +147,7 @@ public class UserResource {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @GetMapping(path = "/{user-id}/access-token-credentials")
     public List<CredentialRO> getAccessTokenCredentials(@PathVariable("user-id") String encUserId) {
-        LOG.debug("get User credential status: [{}]", encUserId);
+        LOG.debug("Get access token credential status for user:: [{}]", encUserId);
         Long userId = decryptEntityId(encUserId);
         // Update the user and mark the password as changed at this very instant of time
         return uiUserService.getUserCredentials(userId,
@@ -256,7 +256,7 @@ public class UserResource {
     protected NavigationTreeNodeRO createPublicNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("search-tools", "Search", "search", "public");
         node.addChild(new NavigationTreeNodeRO("search-resources", "Resources", "find_in_page", "search-resource","Search registered resources"));
-        node.addChild(new NavigationTreeNodeRO("search-lookup", "DNS lookup", "dns", "dns-lookup" , "DNS lookup tools"));
+        //node.addChild(new NavigationTreeNodeRO("search-lookup", "DNS lookup", "dns", "dns-lookup" , "DNS lookup tools"));
         return node;
     }
 
@@ -290,7 +290,7 @@ public class UserResource {
         }
         if (authorizationService.isAnyGroupAdministrator()) {
             // is group admin
-            node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "key", "edit-group"));
+            node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "people", "edit-group"));
         }
         if (authorizationService.isAnyResourceAdministrator()) {
             // is resource admin

@@ -1,7 +1,6 @@
 import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './login/login.component';
 import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
-import {UserComponent} from './system-settings/user/user.component';
 import {AlertComponent} from "./alert/alert.component";
 import {PropertyComponent} from "./system-settings/property/property.component";
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
@@ -15,6 +14,7 @@ import {AdminDomainComponent} from "./system-settings/admin-domain/admin-domain.
 import {dirtyDeactivateGuard} from "./guards/dirty.guard";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
+import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
 
 
 const appRoutes: Routes = [
@@ -27,7 +27,7 @@ const appRoutes: Routes = [
     canActivateChild: [authenticationGuard],
     children: [
       {path: 'edit-domain', component: EditDomainComponent, canDeactivate: [dirtyDeactivateGuard]},
-      {path: 'edit-group', component: UserComponent, canDeactivate: [dirtyDeactivateGuard]},
+      {path: 'edit-group', component: EditGroupComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'edit-resource', component: PropertyComponent, canDeactivate: [dirtyDeactivateGuard]}
     ]
   },

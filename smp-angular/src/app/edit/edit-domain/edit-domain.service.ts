@@ -31,7 +31,6 @@ export class EditDomainService {
       });
   }
 
-
   public getDomainGroupsObservable(domainId: string): Observable<GroupRo[]>
   {
     const currentUser: User = this.securityService.getCurrentUser();
@@ -40,8 +39,7 @@ export class EditDomainService {
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId));
   }
 
-  public deleteDomainGroupObservable(domainId: string, groupId:string ): Observable<GroupRo>
-  {
+  public deleteDomainGroupObservable(domainId: string, groupId:string ): Observable<GroupRo> {
     const currentUser: User = this.securityService.getCurrentUser();
     return this.http.delete<GroupRo>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN_DELETE
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
@@ -49,7 +47,24 @@ export class EditDomainService {
       .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, groupId));
   }
 
+  public createDomainGroupObservable(domainId: string, group:GroupRo ): Observable<GroupRo>
+  {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.put<GroupRo>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN_CREATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
+      , group);
+  }
 
+  public saveDomainGroupObservable(domainId: string, group:GroupRo ): Observable<GroupRo>
+  {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<GroupRo>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN_UPDATE
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
+        .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, group.groupId)
+      , group);
+  }
   notifyDomainsUpdated(res: DomainRo[]) {
     this.domainUpdateSubject.next(res);
   }
