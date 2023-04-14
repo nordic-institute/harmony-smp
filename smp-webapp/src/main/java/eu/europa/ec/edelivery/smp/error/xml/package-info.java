@@ -6,4 +6,4 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "ec:services:SMP:1.0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package ec.services.smp._1;
+package eu.europa.ec.edelivery.smp.error.xml;

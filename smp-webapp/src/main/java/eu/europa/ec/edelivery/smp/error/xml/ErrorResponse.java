@@ -6,14 +6,14 @@
 //
 
 
-package ec.services.smp._1;
+package eu.europa.ec.edelivery.smp.error.xml;
 
 
 import javax.xml.bind.annotation.*;
 
 
 /**
- * <p>Java class for ErrorResponseType complex type.
+ * XML exception for REST API responses
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
