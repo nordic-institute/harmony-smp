@@ -32,12 +32,15 @@ Password: smp
 ## Volume (-v /opt/docker-data/smp:/data)
 Mysql database files and tomcat configuration (and logs) can be externalized for experimenting with different SMP settings.
 
-    docker run --name smp --rm -it -p 8080:8080  -v /opt/docker-data/smp:/data edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
+    docker run --name smp --rm -it -p 8180:8080  -v /opt/docker-data/smp:/data edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
 
 # Start docker with pre-init data  
 1. copy init sql script to folder (create folder)
   
     ./db-scripts
+
+NOTE: Make sure the script name is *mysql5innodb-data.sql*
+
 
 example:
         
@@ -45,7 +48,7 @@ example:
 
 Then start the docker as:
 
-    docker run --name smp --rm -it -p 8080:8080  -v - db-scripts:/tmp/custom-data/ edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT 
+    docker run --name smp --rm -it -p 8180:8080  -v ./db-scripts:/tmp/custom-data/ edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT 
 
 # Start with the docker compose file
 
@@ -59,7 +62,8 @@ services:
     ports:
       - "3316:3306"
       - "8180:8080"
-      
+#    volumes:
+#      - ./db-scripts:/tmp/custom-data/      
 ```
 
 and start the container service
