@@ -20,7 +20,7 @@
   }
 
   .datatable-row-odd {
-    background-color: smp.get-theme-color($theme, primary,50, 0.2)  !important;
+    background-color: smp.get-theme-color($theme, primary, 50, 0.2) !important;
   }
 
   .datatable-row-selected {
@@ -39,7 +39,7 @@
     text-align: center;
   }
 
-  .smp-field-error{
+  .smp-field-error {
     color: smp.get-theme-color($theme, warn, 500) !important;
     font-size: 70%;
   }
