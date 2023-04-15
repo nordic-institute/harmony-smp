@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {SecurityService} from "../../security/security.service";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {User} from "../../security/user.model";
@@ -19,10 +19,14 @@ export class EditGroupService {
     private alertService: AlertMessageService) {
   }
 
-  public getUserAdminGroups() {
+  public getDomainGroupsForGroupAdmin(domainId:string) {
+    let params: HttpParams = new HttpParams()
+      .set(SmpConstants.PATH_QUERY_FILTER_TYPE, 'group-admin');
+
     const currentUser: User = this.securityService.getCurrentUser();
-    this.http.get<GroupRo[]>(SmpConstants.REST_PUBLIC_GROUP_EDIT
-      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId))
+    this.http.get<GroupRo[]>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId),{params})
       .subscribe((result: GroupRo[]) => {
         this.notifyGroupUpdated(result);
       }, (error: any) => {

@@ -6,10 +6,13 @@ import eu.europa.ec.edelivery.smp.data.ui.DomainPublicRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIDomainPublicService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -52,17 +55,27 @@ public class DomainResource {
 
 
     /**
-     * Method returns all domains where user is administrator
+     * Method returns all domains where user is domain administrator
      * @param userEncId encrypted user identifier
      * @return Domain list where user has role domain administrator
      */
     @GetMapping(path = "/{user-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.anyDomainAdministrator")
-    public List<DomainRO> getAllDomainsForDomainAdminUser(@PathVariable("user-enc-id") String userEncId) {
-        logAdminAccess("getAllDomainsForDomainAdminUser");
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isAnyGroupAdministrator")
+    public List<DomainRO> getDomainsForUserType(
+            @PathVariable("user-enc-id") String userEncId,
+            @RequestParam(value = PARAM_NAME_TYPE, defaultValue = "domain-admin", required = false) String forRole) {
+        logAdminAccess("getDomainsForUserType ["+forRole+"]");
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
 
-        return uiDomainService.getAllDomainsForDomainAdminUser(userId);
+        if (StringUtils.equals(forRole, "group-admin")) {
+            return uiDomainService.getAllDomainsForGroupAdminUser(userId);
+        }
+
+        if (StringUtils.isBlank(forRole) || StringUtils.equals(forRole, "domain-admin")) {
+            return uiDomainService.getAllDomainsForDomainAdminUser(userId);
+        }
+
+        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "GetDomains", "Unknown parameter type ["+forRole+"]!");
     }
 
 

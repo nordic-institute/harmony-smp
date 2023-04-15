@@ -8,11 +8,11 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
@@ -78,6 +78,12 @@ public class SMPAuthorizationService {
         return domainMemberDao.isUserDomainMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(domainId), MembershipRoleType.ADMIN);
     }
 
+    public boolean isGroupAdministrator(String groupEncId) {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        Long groupId  = getIdFromEncryptedString(groupEncId, false);
+        return groupMemberDao.isUserGroupMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(groupId), MembershipRoleType.ADMIN);
+    }
+
     public boolean isAnyDomainAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         return domainMemberDao.isUserAnyDomainAdministrator(userDetails.getUser().getId());
@@ -86,8 +92,15 @@ public class SMPAuthorizationService {
     public boolean isAnyGroupAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         return groupMemberDao.isUserGroupAdministrator(userDetails.getUser().getId())
-                || domainMemberDao.isUserAnyDomainAdministrator(userDetails.getUser().getId()) ;
+                || domainMemberDao.isUserAnyDomainAdministrator(userDetails.getUser().getId());
     }
+
+    public boolean isAnyDomainGroupAdministrator(String domainEndId) {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        Long domainId = getIdFromEncryptedString(domainEndId, false);
+        return groupMemberDao.isUserAnyDomainGroupResourceMemberWithRole(userDetails.getUser().getId(), domainId, MembershipRoleType.ADMIN);
+    }
+
     public boolean isAnyResourceAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         return domainMemberDao.isUserResourceAdministrator(userDetails.getUser().getId());
@@ -102,13 +115,7 @@ public class SMPAuthorizationService {
 
     public boolean isCurrentlyLoggedIn(String userId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        Long entityId;
-        try {
-            entityId = SessionSecurityUtils.decryptEntityId(userId);
-        } catch (SMPRuntimeException | NumberFormatException ex) {
-            LOG.error("Error occurred while decrypting user-id:[" + userId + "]", ex);
-            throw new BadCredentialsException("Login failed; Invalid userID or password");
-        }
+        Long entityId = getIdFromEncryptedString(userId, true);
         return entityId.equals(userDetails.getUser().getId());
 
     }
@@ -116,7 +123,7 @@ public class SMPAuthorizationService {
     public boolean isAuthorizedForManagingTheServiceMetadataGroup(Long serviceMetadataId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         if (hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails)) {
-            LOG.debug("SMP admin is authorized to manage service metadata: [{}]" , serviceMetadataId);
+            LOG.debug("SMP admin is authorized to manage service metadata: [{}]", serviceMetadataId);
             return true;
 
         }
@@ -197,5 +204,17 @@ public class SMPAuthorizationService {
         }
 
         return sanitize(userRO);
+    }
+
+    protected Long getIdFromEncryptedString(String entityId, boolean userEntity) {
+        try {
+            return SessionSecurityUtils.decryptEntityId(entityId);
+        } catch (SMPRuntimeException | NumberFormatException ex) {
+            LOG.error("Error occurred while decrypting entity-id:[" + entityId + "]", ex);
+            if (userEntity) {
+                throw new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USER_IDENTIFIER.getMessage());
+            }
+            throw new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_IDENTIFIER.getMessage());
+        }
     }
 }

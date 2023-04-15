@@ -42,6 +42,8 @@ public class ResourceConstants {
     public static final String PARAM_PAGINATION_ORDER_BY="orderBy";
     public static final String PARAM_PAGINATION_ORDER_TYPE="orderType";
 
+    public static final String PARAM_NAME_TYPE="type";
+
 
     public static final String PARAM_ROLE="role";
 

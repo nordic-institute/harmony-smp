@@ -76,11 +76,15 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
     }
 
     public boolean isUserAnyDomainGroupResourceMemberWithRole(DBUser user, DBDomain domain, MembershipRoleType roleType) {
-        LOG.debug("User [{}], Domain [{}], Role [{}]", user, domain, roleType);
+        return isUserAnyDomainGroupResourceMemberWithRole(user.getId(), domain.getId(), roleType);
+    }
+
+    public boolean isUserAnyDomainGroupResourceMemberWithRole(Long userId, Long domainId, MembershipRoleType roleType) {
+        LOG.debug("User [{}], Domain [{}], Role [{}]", userId, domainId, roleType);
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT,
                 Long.class);
-        query.setParameter(PARAM_USER_ID, user.getId());
-        query.setParameter(PARAM_DOMAIN_ID, domain.getId());
+        query.setParameter(PARAM_USER_ID,userId);
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
         query.setParameter(PARAM_MEMBERSHIP_ROLE, roleType);
         return query.getSingleResult() > 0;
     }

@@ -34,7 +34,7 @@
                   formControlName="signatureKeyAlias"
                   matTooltip="Certificate is used for signing REST responses for the domain."
                   id="signatureKeyAlias_id">
-        <mat-option [value]="''">Choose certificate for signing soap response</mat-option>
+        <mat-option [value]="''" disabled></mat-option>
         <mat-option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
           {{cert.alias}} ({{cert.certificateId}})
         </mat-option>
@@ -61,13 +61,13 @@
       </mat-hint>
     </mat-form-field>
 
-  <mat-form-field style="width:100%">
+  <mat-form-field *ngIf="domainResourceTypes?.length" style="width:100%">
     <mat-label>Default resource type for the domain</mat-label>
     <mat-select placeholder="Default resource type for the domain"
                 formControlName="defaultResourceTypeIdentifier"
                 matTooltip="Default resource type for the domain."
                 id="domainDefaultResourceType_id">
-      <mat-option [value]="''">Choose Default resource type for the domain</mat-option>
+      <mat-option [value]="''" disabled></mat-option>
       <mat-option *ngFor="let resDef of domainResourceTypes"
                   [value]="resDef.identifier">
         {{resDef.name}} ({{resDef.identifier}})
@@ -77,8 +77,8 @@
       to get read the domain resources
     </mat-hint>
   </mat-form-field>
-    <mat-toolbar>
-      <mat-toolbar-row>
+    <mat-toolbar class ="mat-elevation-z2">
+      <mat-toolbar-row  class="smp-toolbar-row">
         <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
                 [disabled]="!resetButtonEnabled">
           <mat-icon>refresh</mat-icon>
@@ -89,7 +89,6 @@
           <mat-icon>save</mat-icon>
           <span>Save</span>
         </button>
-
       </mat-toolbar-row>
     </mat-toolbar>
   </form>

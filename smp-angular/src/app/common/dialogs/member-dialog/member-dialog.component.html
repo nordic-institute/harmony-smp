@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 <mat-dialog-content style="width:700px">
   <form [formGroup]="memberForm">
-    <b *ngIf="newMode">You're inviting members to the SMP project.</b>
+    <b *ngIf="newMode">You're inviting members to {{inviteTarget}}.</b>
     <mat-form-field  style="width: 100%">
       <mat-label>Choose User to invite</mat-label>
       <input id="member-user" type="text" matInput formControlName="member-user"

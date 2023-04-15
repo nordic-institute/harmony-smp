@@ -1,11 +1,13 @@
 import {Component, ViewChild} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {MatTableDataSource} from "@angular/material/table";
-import {GroupRo} from "../../common/model/group-ro.model";
 import {MatPaginator} from "@angular/material/paginator";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
+import {EditDomainService} from "../edit-domain/edit-domain.service";
+import {DomainRo} from "../../common/model/domain-ro.model";
 import {EditGroupService} from "./edit-group.service";
+import {GroupRo} from "../../common/model/group-ro.model";
+import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 
 
 @Component({
@@ -14,29 +16,50 @@ import {EditGroupService} from "./edit-group.service";
   styleUrls: ['./edit-group.component.css']
 })
 export class EditGroupComponent implements BeforeLeaveGuard {
-  displayedColumns: string[] = ['groupName'];
-  dataSource: MatTableDataSource<GroupRo> = new MatTableDataSource();
-  selected?: GroupRo;
+  groupMembershipType:MemberTypeEnum = MemberTypeEnum.GROUP;
+  domainList: DomainRo[] = [];
+  groupList: GroupRo[] = [];
+
+  selectedDomain: DomainRo;
+  selectedGroup: GroupRo;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private editGroupService: EditGroupService,
+  constructor(private domainService: EditDomainService,
+              private groupService: EditGroupService,
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
-    /*
-        editGroupService.onGroupUpdatedEvent().subscribe((groupList: GroupRo[]) => {
-            this.updateGroupList(groupList);
-          }
-        );
 
-        editGroupService.getUserAdminGroups();
+    domainService.onDomainUpdatedEvent().subscribe(list => {
+        this.updateDomainList(list);
+      }
+    );
 
-     */
+    groupService.onGroupUpdatedEvent().subscribe(list => {
+        this.updateGroupList(list);
+      }
+    );
+    domainService.getDomainsForGroupAdminUser();
   }
 
+  updateDomainList(list: DomainRo[]) {
+    this.domainList = list
+  }
 
-  updateGroupList(groupList: GroupRo[]) {
-    this.dataSource.data = groupList;
+  updateGroupList(list: GroupRo[]) {
+    this.groupList = list
+  }
+
+  public onDomainSelected(event) {
+    this.selectedDomain = event.value;
+    if (!!this.selectedDomain) {
+      this.groupService.getDomainGroupsForGroupAdmin(this.selectedDomain.domainId);
+    }
+
+  }
+
+  public onGroupSelected(event) {
+    this.selectedGroup = event.value;
   }
 
 
@@ -44,21 +67,4 @@ export class EditGroupComponent implements BeforeLeaveGuard {
     return false;
   }
 
-  applyGroupFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
-  onGroupSelected(group: GroupRo) {
-    this.selected = group;
-  }
-
-
-  get groupSelected(): boolean {
-    return !!this.selected;
-  }
 }

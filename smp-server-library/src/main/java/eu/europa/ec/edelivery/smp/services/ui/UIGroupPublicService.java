@@ -1,13 +1,13 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
-import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
+import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
+import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -18,6 +18,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,13 +37,15 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     private final GroupDao groupDao;
     private final GroupMemberDao groupMemberDao;
     private final DomainDao domainDao;
+    private final UserDao userDao;
     private final ConversionService conversionService;
 
-    public UIGroupPublicService(GroupDao groupDao, DomainDao domainDao, GroupMemberDao groupMemberDao, ConversionService conversionService) {
+    public UIGroupPublicService(GroupDao groupDao, DomainDao domainDao, GroupMemberDao groupMemberDao, UserDao userDao, ConversionService conversionService) {
         this.groupDao = groupDao;
         this.domainDao = domainDao;
         this.conversionService = conversionService;
         this.groupMemberDao = groupMemberDao;
+        this.userDao = userDao;
     }
 
     @Override
@@ -70,6 +73,22 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     @Transactional
     public List<GroupRO> getAllGroupsForDomain(Long domainId) {
         List<DBGroup> domainGroups = groupDao.getAllGroupsForDomain(domainId);
+        return domainGroups.stream().map(domain -> conversionService.convert(domain, GroupRO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<GroupRO> getAllGroupsForDomainAndUser(Long userId, MembershipRoleType role) {
+        List<DBGroup> domainGroups = groupDao.getGroupsByUserIdAndRoles(userId, role);
+
+        return domainGroups.stream().map(domain -> conversionService.convert(domain, GroupRO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<GroupRO> getAllGroupsForDomainAndUserAndRole(Long domainId, Long userId, MembershipRoleType role) {
+        List<DBGroup> domainGroups = groupDao.getGroupsByDomainUserIdAndRoles(domainId, userId, role);
+
         return domainGroups.stream().map(domain -> conversionService.convert(domain, GroupRO.class))
                 .collect(Collectors.toList());
     }
@@ -144,5 +163,59 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         groupDao.persistFlushDetach(group);
 
         return conversionService.convert(group, GroupRO.class);
+    }
+
+    @Transactional
+    public ServiceResult<MemberRO> getGroupMembers(Long groupId, int page, int pageSize,
+                                                   String filter) {
+        Long count = groupMemberDao.getGroupMemberCount(groupId, filter);
+        ServiceResult<MemberRO> result = new ServiceResult<>();
+        result.setPage(page);
+        result.setPageSize(pageSize);
+        if (count < 1) {
+            result.setCount(0L);
+            return result;
+        }
+        result.setCount(count);
+        List<DBGroupMember> memberROS = groupMemberDao.getGroupMembers(groupId, page, pageSize, filter);
+        List<MemberRO> memberList = memberROS.stream().map(member -> conversionService.convert(member, MemberRO.class)).collect(Collectors.toList());
+
+        result.getServiceEntities().addAll(memberList);
+        return result;
+    }
+
+    @Transactional
+    public MemberRO addMemberToGroup(Long groupId, MemberRO memberRO, Long memberId) {
+        LOG.info("Add member [{}] to group [{}]", memberRO.getUsername(), groupId);
+        DBUser user = userDao.findUserByUsername(memberRO.getUsername())
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add/edit membership", "User [" + memberRO.getUsername() + "] does not exists!"));
+
+        DBGroupMember member;
+        if (memberId != null) {
+            member = groupMemberDao.find(memberId);
+            member.setRole(memberRO.getRoleType());
+        } else {
+            DBGroup group = groupDao.find(groupId);
+            if (groupMemberDao.isUserGroupMember(user, Collections.singletonList(group))) {
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add membership", "User [" + memberRO.getUsername() + "] is already a member!");
+            }
+            member = groupMemberDao.addMemberToDomain(group, user, memberRO.getRoleType());
+        }
+        return conversionService.convert(member, MemberRO.class);
+    }
+
+    @Transactional
+    public MemberRO deleteMemberFromGroup(Long groupId, Long memberId) {
+        LOG.info("Delete member [{}] from group [{}]", memberId, groupId);
+        DBGroupMember groupMember = groupMemberDao.find(memberId);
+        if (groupMember == null) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not exists!");
+        }
+        if (!Objects.equals(groupMember.getGroup().getId(), groupId)) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not belong to group!");
+        }
+
+        groupMemberDao.remove(groupMember);
+        return conversionService.convert(groupMember, MemberRO.class);
     }
 }

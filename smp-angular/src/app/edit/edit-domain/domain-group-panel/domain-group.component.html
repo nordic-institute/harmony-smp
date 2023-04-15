@@ -1,21 +1,24 @@
   <div id="domain-group-panel" class="mat-elevation-z2">
-    <mat-toolbar>
-      <mat-toolbar-row>
+    <mat-toolbar class ="mat-elevation-z2">
+      <mat-toolbar-row  class="smp-toolbar-row">
         <button id="createButton" mat-raised-button (click)="onAddButtonClicked()" color="primary"
+                matTooltip="Create new group"
                 [disabled]="domainNotSelected"
         >
           <mat-icon>add</mat-icon>
-          <span>Create group</span>
+          <span>Create</span>
         </button>
         <button id="editButton" mat-raised-button (click)="onEditSelectedButtonClicked()" color="primary"
+                matTooltip="Edit selected group"
                 [disabled]="!groupSelected">
           <mat-icon>edit</mat-icon>
-          <span>Edit selected member</span>
+          <span>Edit</span>
         </button>
         <button id="deleteButton" mat-raised-button (click)="onDeleteSelectedButtonClicked()" color="primary"
+                matTooltip="Delete selected group"
                 [disabled]="!groupSelected">
           <mat-icon>delete</mat-icon>
-          <span>Delete selected group</span>
+          <span>Delete</span>
         </button>
       </mat-toolbar-row>
     </mat-toolbar>

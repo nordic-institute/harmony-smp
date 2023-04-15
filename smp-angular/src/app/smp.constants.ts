@@ -31,6 +31,9 @@ export class SmpConstants {
   public static readonly PATH_RESOURCE_TYPE_DOMAIN = 'domain';
   public static readonly PATH_RESOURCE_TYPE_MEMBER = 'member';
   public static readonly PATH_RESOURCE_TYPE_GROUP = 'group';
+  public static readonly PATH_QUERY_FILTER_TYPE = 'type'
+
+
 
   //------------------------------
   // public endpoints
@@ -40,6 +43,7 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_DOMAIN = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
 
   public static readonly REST_PUBLIC_DOMAIN_EDIT = SmpConstants.REST_PUBLIC_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
+
   public static readonly REST_PUBLIC_DOMAIN_MEMBERS = SmpConstants.REST_PUBLIC_DOMAIN_EDIT +
     '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + "members";
   public static readonly REST_PUBLIC_DOMAIN_MEMBERS_ADD = SmpConstants.REST_PUBLIC_DOMAIN_EDIT
@@ -61,6 +65,15 @@ export class SmpConstants {
 
   public static readonly REST_PUBLIC_GROUP_DOMAIN_UPDATE = SmpConstants.REST_PUBLIC_GROUP_EDIT + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID + '/' +
     SmpConstants.PATH_RESOURCE_TYPE_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE;
+
+
+  public static readonly REST_PUBLIC_GROUP_MEMBERS = SmpConstants.REST_PUBLIC_GROUP_EDIT +
+    '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID + '/' + "members";
+  public static readonly REST_PUBLIC_GROUP_MEMBERS_ADD = SmpConstants.REST_PUBLIC_GROUP_EDIT
+    + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID + '/' + "member";
+  public static readonly REST_PUBLIC_GROUP_MEMBERS_DELETE = SmpConstants.REST_PUBLIC_GROUP_EDIT
+    + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID + '/' + "member"
+    + '/' + SmpConstants.PATH_PARAM_ENC_MEMBER_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
 
 
   public static readonly REST_PUBLIC_APPLICATION_INFO = SmpConstants.REST_PUBLIC + 'application/info';

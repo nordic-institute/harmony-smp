@@ -6,7 +6,8 @@
 
 
     <mat-tab-group #domainTabs style="height: 100%" >
-      <mat-tab label="Domain data">
+      <mat-tab >
+        <ng-template mat-tab-label><smp-label icon="domain" label="Domain data"></smp-label></ng-template>
         <domain-panel #domainPanelComponent
                       [domain]="selected"
                       [keystoreCertificates]="keystoreCertificates"
@@ -15,14 +16,16 @@
                       (onDiscardNew)="onDiscardNew()"
         ></domain-panel>
       </mat-tab>
-      <mat-tab label="Resource Types">
+      <mat-tab>
+        <ng-template mat-tab-label><smp-label icon="extension" label="Resource Types"></smp-label></ng-template>
         <domain-resource-type-panel  #domainResourceTypePanelComponent
           [domain]="selected"
           [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
           (onSaveResourceTypesEvent)="onSaveResourceTypesEvent($event)"
         ></domain-resource-type-panel>
       </mat-tab>
-      <mat-tab label="SML integration">
+      <mat-tab>
+        <ng-template mat-tab-label><smp-label icon="dns" label="SML integration"></smp-label></ng-template>
         <domain-sml-integration-panel #domainSmlIntegrationPanelComponent
           [keystoreCertificates]="keystoreCertificates"
           [domain]="selected"
@@ -30,7 +33,9 @@
         ></domain-sml-integration-panel>
       </mat-tab>
       <mat-tab label="Members">
+        <ng-template mat-tab-label><smp-label icon="groups" label="Members"></smp-label></ng-template>
         <domain-member-panel #domainMemberPanelComponent
+                             [membershipType]="membershipType"
                              [domain]="selected"
         ></domain-member-panel>
       </mat-tab>
@@ -44,8 +49,8 @@
     <input matInput (keyup)="applyDomainFilter($event)" placeholder="Domain code" #inputDomainFilter>
   </mat-form-field>
 
-  <mat-toolbar>
-    <mat-toolbar-row class="mat-elevation-z5">
+  <mat-toolbar class ="mat-elevation-z2">
+    <mat-toolbar-row  class="smp-toolbar-row">
       <button mat-raised-button
               mat-flat-button color="primary"
               (click)="onCreateDomainClicked()"

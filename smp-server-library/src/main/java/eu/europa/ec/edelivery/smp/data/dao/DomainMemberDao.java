@@ -67,7 +67,7 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
     }
 
     public boolean isUserAnyDomainAdministrator(Long userId){
-        return domainDao.getDomainsByUserIdAndRolesCount(userId, MembershipRoleType.ADMIN)>0;
+        return domainDao.getDomainsByUserIdAndDomainRolesCount(userId, MembershipRoleType.ADMIN)>0;
     }
 
     public boolean isUserResourceAdministrator(Long userId){

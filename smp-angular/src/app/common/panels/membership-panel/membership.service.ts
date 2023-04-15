@@ -41,6 +41,25 @@ export class MembershipService {
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainID), {params});
   }
 
+  getGroupMembersObservable(groupID: string, filter: any, page: number, pageSize: number): Observable<SearchTableResult> {
+    const currentUser: User = this.securityService.getCurrentUser();
+
+    let params: HttpParams = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+
+    for (let filterProperty in filter) {
+      if (filter.hasOwnProperty(filterProperty)) {
+        // must encode else problem with + sign
+        params = params.set(filterProperty, encodeURIComponent(filter[filterProperty]));
+      }
+    }
+
+    return this.http.get<TableResult<MemberRo>>(SmpConstants.REST_PUBLIC_GROUP_MEMBERS
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, groupID), {params});
+  }
+
   getUserLookupObservable(filter: string): Observable<SearchUserRo[]> {
     const currentUser: User = this.securityService.getCurrentUser();
     let params: HttpParams = new HttpParams()
@@ -57,6 +76,13 @@ export class MembershipService {
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId), member);
   }
+  addEditMemberToGroup(groupId: string, member: MemberRo): Observable<MemberRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+
+    return this.http.put<MemberRo>(SmpConstants.REST_PUBLIC_GROUP_MEMBERS_ADD
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, groupId), member);
+  }
 
   deleteMemberFromDomain(domainId: string, member: MemberRo): Observable<MemberRo> {
     const currentUser: User = this.securityService.getCurrentUser();
@@ -64,6 +90,15 @@ export class MembershipService {
     return this.http.delete<MemberRo>(SmpConstants.REST_PUBLIC_DOMAIN_MEMBERS_DELETE
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
+      .replace(SmpConstants.PATH_PARAM_ENC_MEMBER_ID, member.memberId));
+  }
+
+  deleteMemberFromGroup(groupId: string, member: MemberRo): Observable<MemberRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+
+    return this.http.delete<MemberRo>(SmpConstants.REST_PUBLIC_GROUP_MEMBERS_DELETE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, groupId)
       .replace(SmpConstants.PATH_PARAM_ENC_MEMBER_ID, member.memberId));
   }
 

@@ -14,6 +14,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
@@ -43,8 +44,8 @@ import static java.util.Locale.US;
 @Service
 public class CredentialService {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialService.class);
-    protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException("Login failed; Invalid userID or password");
-    private static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
+    protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
+    protected static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_CREDENTIAL_SUSPENDED.getMessage());
     final UserDao mUserDao;
     final CredentialDao mCredentialDao;
     final ConversionService conversionService;

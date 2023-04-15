@@ -63,6 +63,7 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
      * @param filter
      * @return
      */
+    @Override
     public ServiceResult<DomainPublicRO> getTableList(int page, int pageSize,
                                                       String sortField,
                                                       String sortOrder, Object filter) {
@@ -72,7 +73,14 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
 
     @Transactional
     public List<DomainRO> getAllDomainsForDomainAdminUser(Long userId) {
-        List<DBDomain> domains = domainDao.getDomainsByUserIdAndRoles(userId, MembershipRoleType.ADMIN);
+        List<DBDomain> domains = domainDao.getDomainsByUserIdAndDomainRoles(userId, MembershipRoleType.ADMIN);
+        return domains.stream().map(domain -> conversionService.convert(domain, DomainRO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<DomainRO> getAllDomainsForGroupAdminUser(Long userId) {
+        List<DBDomain> domains = domainDao.getDomainsByUserIdAndGroupRoles(userId, MembershipRoleType.ADMIN);
         return domains.stream().map(domain -> conversionService.convert(domain, DomainRO.class))
                 .collect(Collectors.toList());
     }
