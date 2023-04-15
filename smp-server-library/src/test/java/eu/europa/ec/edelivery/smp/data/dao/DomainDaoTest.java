@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -29,48 +27,88 @@ public class DomainDaoTest extends AbstractBaseDao {
         // setup initial data!
         testUtilsDao.clearData();
         testUtilsDao.creatDomainMemberships();
+        testUtilsDao.createGroupMemberships();
 
     }
     @Test
     public void getDomainsByUserIdAndRolesCount() {
         // one for domain 1
-        Long cnt = testInstance.getDomainsByUserIdAndRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
+        Long cnt = testInstance.getDomainsByUserIdAndDomainRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, cnt.intValue());
 
         // one for domain 2
-        cnt = testInstance.getDomainsByUserIdAndRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
+        cnt = testInstance.getDomainsByUserIdAndDomainRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
         assertEquals(1, cnt.intValue());
 
         // all
-        cnt = testInstance.getDomainsByUserIdAndRolesCount(testUtilsDao.getUser1().getId());
+        cnt = testInstance.getDomainsByUserIdAndDomainRolesCount(testUtilsDao.getUser1().getId());
         assertEquals(2, cnt.intValue());
 
         // all
-        cnt = testInstance.getDomainsByUserIdAndRolesCount(testUtilsDao.getUser1().getId(),  MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
+        cnt = testInstance.getDomainsByUserIdAndDomainRolesCount(testUtilsDao.getUser1().getId(),  MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
         assertEquals(2, cnt.intValue());
     }
 
     @Test
     public void getDomainsByUserIdAndRoles() {
         // one for domain 1
-        List<DBDomain> result = testInstance.getDomainsByUserIdAndRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
+        List<DBDomain> result = testInstance.getDomainsByUserIdAndDomainRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, result.size());
         assertEquals(testUtilsDao.getD1(), result.get(0));
 
         // one for domain 2
-        result = testInstance.getDomainsByUserIdAndRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
+        result = testInstance.getDomainsByUserIdAndDomainRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
         assertEquals(1, result.size());
         assertEquals(testUtilsDao.getD2(), result.get(0));
 
-        result = testInstance.getDomainsByUserIdAndRoles(testUtilsDao.getUser2().getId(), MembershipRoleType.VIEWER);
+        result = testInstance.getDomainsByUserIdAndDomainRoles(testUtilsDao.getUser2().getId(), MembershipRoleType.VIEWER);
         assertEquals(0, result.size());
 
-        result = testInstance.getDomainsByUserIdAndRoles(testUtilsDao.getUser1().getId());
+        result = testInstance.getDomainsByUserIdAndDomainRoles(testUtilsDao.getUser1().getId());
         assertEquals(2, result.size());
 
-        result = testInstance.getDomainsByUserIdAndRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
+        result = testInstance.getDomainsByUserIdAndDomainRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void getDomainsByUserIdAndGroupRolesCount() {
+        // one for domain 1
+        Long cnt = testInstance.getDomainsByUserIdAndGroupRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
+        assertEquals(1, cnt.intValue());
+
+        // one for domain 2
+        cnt = testInstance.getDomainsByUserIdAndGroupRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
+        assertEquals(1, cnt.intValue());
+
+        // all
+        cnt = testInstance.getDomainsByUserIdAndGroupRolesCount(testUtilsDao.getUser1().getId());
+        assertEquals(2, cnt.intValue());
+
+        // all
+        cnt = testInstance.getDomainsByUserIdAndGroupRolesCount(testUtilsDao.getUser1().getId(),  MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
+        assertEquals(2, cnt.intValue());
+    }
+
+    @Test
+    public void getDomainsByUserIdAndGroupRoles() {
+        // one for domain 1
+        List<DBDomain> result = testInstance.getDomainsByUserIdAndGroupRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
+        assertEquals(1, result.size());
+        assertEquals(testUtilsDao.getD1(), result.get(0));
+
+        // one for domain 2
+        result = testInstance.getDomainsByUserIdAndGroupRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
+        assertEquals(1, result.size());
+        assertEquals(testUtilsDao.getD2(), result.get(0));
+
+        result = testInstance.getDomainsByUserIdAndGroupRoles(testUtilsDao.getUser2().getId(), MembershipRoleType.VIEWER);
+        assertEquals(0, result.size());
+
+        result = testInstance.getDomainsByUserIdAndGroupRoles(testUtilsDao.getUser1().getId());
         assertEquals(2, result.size());
 
-
+        result = testInstance.getDomainsByUserIdAndGroupRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
+        assertEquals(2, result.size());
     }
 }

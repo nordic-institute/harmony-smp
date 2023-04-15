@@ -4,11 +4,12 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {MembershipRoleEnum} from "../../enums/membership-role.enum";
 import {Observable} from "rxjs";
 import {SearchUserRo} from "../../model/search-user-ro.model";
-import {MembershipService} from "../../panels/domain-member-panel/membership.service";
+import {MembershipService} from "../../panels/membership-panel/membership.service";
 import {MemberRo} from "../../model/member-ro.model";
 import {DomainRo} from "../../model/domain-ro.model";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
+import {GroupRo} from "../../model/group-ro.model";
 
 
 @Component({
@@ -27,6 +28,8 @@ export class MemberDialogComponent implements OnInit {
 
   _currentMember: MemberRo;
   _currentDomain: DomainRo;
+  _currentGroup: GroupRo;
+  membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
 
   filteredOptions: Observable<SearchUserRo[]>;
 
@@ -44,6 +47,8 @@ export class MemberDialogComponent implements OnInit {
     dialogRef.disableClose = true;//disable default close operation
     this.formTitle = data.formTitle;
     this._currentDomain = data.domain;
+    this._currentGroup = data.group;
+    this.membershipType= data.membershipType;
 
     this.memberForm = formBuilder.group({
       'member-user': new FormControl({value: null}),
@@ -67,6 +72,7 @@ export class MemberDialogComponent implements OnInit {
   }
 
   get newMode(): boolean {
+
     return !this._currentMember?.memberId;
   }
 
@@ -99,6 +105,18 @@ export class MemberDialogComponent implements OnInit {
     this.filteredOptions = this.membershipService.getUserLookupObservable("");
   }
 
+  get inviteTarget():string{
+    switch (this.membershipType) {
+      case MemberTypeEnum.DOMAIN:
+        return " domain ["+this._currentDomain?.domainCode+"]"
+      case MemberTypeEnum.GROUP:
+        return " group ["+this._currentGroup?.groupName+"]"
+      case MemberTypeEnum.RESOURCE:
+        return " resource"
+    }
+    return " target not selected!"
+  }
+
   applyUserFilter(event: Event) {
     let filterValue = (event.target as HTMLInputElement).value;
     if (this.currentFilter == filterValue) {
@@ -125,14 +143,25 @@ export class MemberDialogComponent implements OnInit {
 
   public onSaveButtonClicked() {
     let member = this.member;
-    if (member.memberOf == MemberTypeEnum.DOMAIN) {
-      this.membershipService.addEditMemberToDomain(this._currentDomain.domainId, this.member).subscribe((member: MemberRo) => {
+
+      this.getAddMembershipService().subscribe((member: MemberRo) => {
         if (!!member) {
           this.closeDialog();
         }
       }, (error)=> {
         this.alertService.error(error.error?.errorDescription)
       });
+    }
+
+
+  protected getAddMembershipService(): Observable<MemberRo> {
+    switch (this.membershipType) {
+      case MemberTypeEnum.DOMAIN:
+        return this.membershipService.addEditMemberToDomain(this._currentDomain.domainId, this.member)
+      case MemberTypeEnum.GROUP:
+        return  this.membershipService.addEditMemberToGroup(this._currentGroup.groupId, this.member)
+      case MemberTypeEnum.RESOURCE:
+        return null;
     }
   }
 }

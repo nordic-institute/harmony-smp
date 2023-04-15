@@ -9,6 +9,12 @@ package eu.europa.ec.edelivery.smp.exceptions;
  */
 public enum ErrorCode {
 
+    UNAUTHORIZED_INVALID_USERNAME_PASSWORD(400, "SMP:001",ErrorBusinessCode.UNAUTHORIZED, "Login failed; Invalid userID or password!"),
+    UNAUTHORIZED_CREDENTIAL_SUSPENDED(400, "SMP:002",ErrorBusinessCode.UNAUTHORIZED, "The user credential is suspended. Please try again later or contact your administrator."),
+    UNAUTHORIZED(400, "SMP:003",ErrorBusinessCode.UNAUTHORIZED, "User not authorized!"),
+    UNAUTHORIZED_INVALID_USER_IDENTIFIER(400, "SMP:004",ErrorBusinessCode.UNAUTHORIZED, "Invalid user identifier! User not authorized."),
+    UNAUTHORIZED_INVALID_IDENTIFIER(400, "SMP:005",ErrorBusinessCode.UNAUTHORIZED, "Invalid entity identifier!  User not authorized to access the entity data"),
+
     INVALID_ENCODING (500, "SMP:100",ErrorBusinessCode.TECHNICAL, "Unsupported or invalid encoding for %s!"),
     SML_INVALID_IDENTIFIER (400,"SMP:101",ErrorBusinessCode.FORMAT_ERROR,"Malformed identifier, scheme and id should be delimited by double colon: %s "),
 

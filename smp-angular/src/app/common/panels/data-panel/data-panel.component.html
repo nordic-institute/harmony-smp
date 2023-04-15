@@ -1,7 +1,7 @@
 <div class="panel"  [ngClass]="{ 'smp-container-limited': showTitle}">
   <div *ngIf="showTitle" class="smp-column-label">
     <p>{{title}}</p>
-    <div innerHTML={{text}}></div>
+    <div style="padding-bottom: 0.5em; margin-bottom: 1em;border-bottom: gray solid 1px" innerHTML={{text}}></div>
     <ng-container *ngTemplateOutlet="labelColumnContent"></ng-container>
   </div>
   <div class="smp-column-data">

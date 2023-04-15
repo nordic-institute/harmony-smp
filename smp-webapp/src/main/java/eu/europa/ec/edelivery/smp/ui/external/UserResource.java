@@ -290,7 +290,7 @@ public class UserResource {
         }
         if (authorizationService.isAnyGroupAdministrator()) {
             // is group admin
-            node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "people", "edit-group"));
+            node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "group", "edit-group"));
         }
         if (authorizationService.isAnyResourceAdministrator()) {
             // is resource admin

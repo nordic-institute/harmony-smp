@@ -99,7 +99,7 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
       data: {
         domain: this._domain,
         group: this.createGroup(),
-        formTitle: "Invite new member to domain"
+        formTitle: "Group details dialog"
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -115,7 +115,7 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
       data: {
         domain: this._domain,
         group: group,
-        formTitle: "Invite new member to domain"
+        formTitle: "Group details dialog"
       }
     }).afterClosed().subscribe(value => {
       this.refresh();

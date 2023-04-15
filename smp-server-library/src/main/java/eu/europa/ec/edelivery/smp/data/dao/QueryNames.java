@@ -15,7 +15,10 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_CODE = "DBDomain.getDomainByCode";
 
     public static final String QUERY_DOMAIN_BY_USER_ROLES_COUNT = "DBDomain.getByUserAndRolesCount";
-    public static final String QUERY_DOMAIN_BY_USER_ROLES = "DBDomain.getByUserAmdRoles";
+    public static final String QUERY_DOMAIN_BY_USER_ROLES = "DBDomain.getByUserAndRoles";
+
+    public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT = "DBDomain.getByUserAndGroupRolesCount";
+    public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES = "DBDomain.getByUserAndGroupRoles";
     public static final String QUERY_EXTENSION_ALL = "DBExtension.getAll";
     public static final String QUERY_EXTENSION_BY_IDENTIFIER = "DBExtension.getByIdentifier";
 
@@ -23,7 +26,9 @@ public class QueryNames {
     public static final String QUERY_GROUP_BY_DOMAIN = "DBGroup.getByDomain";
     public static final String QUERY_GROUP_BY_NAME_DOMAIN = "DBGroup.getByNameDomain";
     public static final String QUERY_GROUP_BY_NAME_DOMAIN_CODE = "DBGroup.getByNameDomainCode";
+
     public static final String QUERY_GROUP_BY_USER_ROLES = "DBGroup.getByUserAndRoles";
+    public static final String QUERY_GROUP_BY_DOMAIN_USER_ROLES = "DBGroup.getByDomainAndUserAndRoles";
     public static final String QUERY_GROUP_BY_USER_ROLES_COUNT = "DBGroup.getByUserAndRolesCount";
     public static final String QUERY_GROUP_MEMBERS_COUNT = "DBGroup.getByGroupCount";
     public static final String QUERY_GROUP_MEMBERS_FILTER_COUNT = "DBGroup.getByGroupFilterCount";

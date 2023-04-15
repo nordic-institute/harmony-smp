@@ -47,6 +47,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @NamedQuery(name = QUERY_GROUP_BY_USER_ROLES, query = "SELECT c FROM DBGroup c JOIN DBGroupMember dm ON c.id = dm.group.id " +
         " WHERE dm.role in (:membership_roles) and dm.user.id= :user_id")
+@NamedQuery(name = QUERY_GROUP_BY_DOMAIN_USER_ROLES, query = "SELECT c FROM DBGroup c JOIN DBGroupMember dm ON c.id = dm.group.id " +
+        " WHERE c.domain.id = :domain_id AND dm.role in (:membership_roles) and dm.user.id= :user_id")
 public class DBGroup extends BaseEntity {
 
     @Id

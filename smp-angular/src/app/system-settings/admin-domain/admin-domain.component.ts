@@ -19,6 +19,7 @@ import {CancelDialogComponent} from "../../common/dialogs/cancel-dialog/cancel-d
 import {DomainPanelComponent} from "./domain-panel/domain-panel.component";
 import {DomainResourceTypePanelComponent} from "./domain-resource-type-panel/domain-resource-type-panel.component";
 import {DomainSmlIntegrationPanelComponent} from "./domain-sml-panel/domain-sml-integration-panel.component";
+import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 
 
 @Component({
@@ -27,6 +28,7 @@ import {DomainSmlIntegrationPanelComponent} from "./domain-sml-panel/domain-sml-
   styleUrls: ['./admin-domain.component.css']
 })
 export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
+  membershipType:MemberTypeEnum = MemberTypeEnum.DOMAIN;
   displayedColumns: string[] = ['domainCode'];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected?: DomainRo;

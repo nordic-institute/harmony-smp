@@ -9,6 +9,7 @@ import {CancelDialogComponent} from "../../common/dialogs/cancel-dialog/cancel-d
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {MatTabGroup} from "@angular/material/tabs";
+import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 
 
 @Component({
@@ -17,6 +18,8 @@ import {MatTabGroup} from "@angular/material/tabs";
   styleUrls: ['./edit-domain.component.css']
 })
 export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
+
+  membershipType:MemberTypeEnum = MemberTypeEnum.DOMAIN;
   displayedColumns: string[] = ['domainCode'];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected?: DomainRo;
@@ -38,7 +41,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
           }
         );
 
-        domainService.getDomains();
+        domainService.getDomainsForDomainAdminUser();
   }
 
 

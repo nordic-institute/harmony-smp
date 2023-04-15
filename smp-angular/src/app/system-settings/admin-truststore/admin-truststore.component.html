@@ -15,8 +15,8 @@
     <input matInput (keyup)="applyFilter($event)" placeholder="Alias name" #input>
   </mat-form-field>
 
-  <mat-toolbar>
-    <mat-toolbar-row class="mat-elevation-z5">
+  <mat-toolbar class ="mat-elevation-z2">
+    <mat-toolbar-row  class="smp-toolbar-row">
       <div class="custom-file-upload">
         <input #fileInput type="file" id="custom-file-upload" accept=".cer,.crt,.pem,.der"
                (change)="uploadCertificate($event)">

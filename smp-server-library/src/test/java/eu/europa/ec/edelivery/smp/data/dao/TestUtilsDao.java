@@ -11,6 +11,7 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
+import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -69,6 +70,8 @@ public class TestUtilsDao {
 
     DBDomainMember domainMemberU1D1Admin;
     DBDomainMember domainMemberU1D2Viewer;
+    DBGroupMember groupMemberU1D1G1Admin;
+    DBGroupMember groupMemberU1D2G1Viewer;
 
     DBExtension extension;
 
@@ -100,6 +103,8 @@ public class TestUtilsDao {
         documentD2G1RD1_S1 = null;
         domainMemberU1D1Admin = null;
         domainMemberU1D2Viewer = null;
+        groupMemberU1D1G1Admin = null;
+        groupMemberU1D2G1Viewer = null;
         extension = null;
     }
 
@@ -217,12 +222,38 @@ public class TestUtilsDao {
         assertNotNull(domainMemberU1D2Viewer.getId());
     }
 
+    @Transactional
+    public void createGroupMemberships() {
+        if (groupMemberU1D1G1Admin != null) {
+            LOG.trace("GroupMemberships are already initialized!");
+            return;
+        }
+        createGroups();
+        createUsers();
+        groupMemberU1D1G1Admin = createGroupMembership(MembershipRoleType.ADMIN, user1, groupD1G1);
+        groupMemberU1D2G1Viewer = createGroupMembership(MembershipRoleType.VIEWER, user1, groupD2G1);
+
+        persistFlushDetach(groupMemberU1D1G1Admin);
+        persistFlushDetach(groupMemberU1D2G1Viewer);
+
+        assertNotNull(groupMemberU1D1G1Admin.getId());
+        assertNotNull(groupMemberU1D2G1Viewer.getId());
+    }
+
     public DBDomainMember createDomainMembership(MembershipRoleType roleType, DBUser user, DBDomain domain){
         DBDomainMember domainMember = new DBDomainMember();
         domainMember.setRole(roleType);
         domainMember.setUser(user);
         domainMember.setDomain(domain);
         return domainMember;
+    }
+
+    public DBGroupMember createGroupMembership(MembershipRoleType roleType, DBUser user, DBGroup group){
+        DBGroupMember member = new DBGroupMember();
+        member.setRole(roleType);
+        member.setUser(user);
+        member.setGroup(group);
+        return member;
     }
 
     /**

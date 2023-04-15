@@ -126,13 +126,13 @@ import {
   NgxMatMomentModule
 } from "@angular-material-components/moment-adapter";
 import {
-  DomainMemberPanelComponent
-} from "./common/panels/domain-member-panel/domain-member-panel.component";
+  MembershipPanelComponent
+} from "./common/panels/membership-panel/membership-panel.component";
 import {
   MemberDialogComponent
 } from "./common/dialogs/member-dialog/member-dialog.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {MembershipService} from "./common/panels/domain-member-panel/membership.service";
+import {MembershipService} from "./common/panels/membership-panel/membership.service";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {AdminUserService} from "./system-settings/admin-users/admin-user.service";
 import {
@@ -145,6 +145,7 @@ import {DomainGroupComponent} from "./edit/edit-domain/domain-group-panel/domain
 import {GroupDialogComponent} from "./edit/edit-domain/domain-group-panel/group-dialog/group-dialog.component";
 import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
 import {EditGroupService} from "./edit/edit-group/edit-group.service";
+import {SmpLabelComponent} from "./common/components/smp-label/smp-label.component";
 
 
 @NgModule({
@@ -178,7 +179,7 @@ import {EditGroupService} from "./edit/edit-group/edit-group.service";
     DomainSmlIntegrationPanelComponent,
     DomainDetailsDialogComponent,
     DomainGroupComponent,
-    DomainMemberPanelComponent,
+    MembershipPanelComponent,
     DomainResourceTypePanelComponent,
     DomainSelectorComponent,
     EditDomainComponent,
@@ -211,6 +212,7 @@ import {EditGroupService} from "./edit/edit-group/edit-group.service";
     ServiceGroupSearchComponent,
     ServiceMetadataWizardDialogComponent,
     SidenavComponent,
+    SmpLabelComponent,
     SmpFieldErrorComponent,
     SpacerComponent,
     SpinnerComponent,
