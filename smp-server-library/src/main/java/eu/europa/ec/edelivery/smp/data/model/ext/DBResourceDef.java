@@ -34,7 +34,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_RESOURCE_DEF_BY_DOMAIN, query = "SELECT d FROM DBResourceDef d JOIN d.domainResourceDefs dr where dr.domain.id = :domain_id order by d.id asc")
 @NamedQuery(name = QUERY_RESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBResourceDef d WHERE d.urlSegment = :url_segment")
 @NamedQuery(name = QUERY_RESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBResourceDef d WHERE d.identifier = :identifier")
-
 @NamedNativeQuery(name = "DBResourceDefDeleteValidation.validateDefinitionUsage",
         resultSetMapping = "DBResourceDefDeleteValidationMapping",
         query = "select D.ID as id, D.NAME as name, COUNT(RS.ID) as useCount " +

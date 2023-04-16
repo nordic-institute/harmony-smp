@@ -328,9 +328,8 @@ public class UserDao extends BaseDao<DBUser> {
         if (iPageSize > 0) {
             query.setMaxResults(iPageSize);
         }
-
         if (hasFilter) {
-            query.setParameter(PARAM_USER_FILTER, "%" + StringUtils.trim(filter) + "%");
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
         }
         return query.getResultList();
     }
@@ -339,7 +338,7 @@ public class UserDao extends BaseDao<DBUser> {
         boolean hasFilter = StringUtils.isNotBlank(filter);
         TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_USER_FILTER_COUNT : QUERY_USER_COUNT, Long.class);
         if (hasFilter) {
-            query.setParameter(PARAM_USER_FILTER, "%" + StringUtils.trim(filter) + "%");
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
         }
         return query.getSingleResult();
     }

@@ -22,12 +22,12 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * @author Joze Rihtarsic
@@ -77,6 +77,7 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
             throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef with url context:" + resourceDeftUrlSegment));
         }
     }
+
     /**
      * Returns the ResourceDef by url path segment.
      * Returns the ResourceDef or Optional.empty() if there is no ResourceDef.
@@ -100,17 +101,18 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
      * Returns the DBResourceDef by the resource definition code.
      *
      * @param extension with the resource definitions
-     * @param code is unique code for extension of the resourceDef
+     * @param code      is unique code for extension of the resourceDef
      * @return the record for ResourceDef code empty Optional
      */
     public Optional<DBResourceDef> getResourceDefByIdentifierAndExtension(String code, DBExtension extension) {
         return getResourceDefByIdentifierAndExtension(code, extension.getId());
     }
+
     /**
      * Returns the DBResourceDef by the resource definition code.
      *
      * @param extensionId with the resource definitions
-     * @param code is unique code for extension of the resourceDef
+     * @param code        is unique code for extension of the resourceDef
      * @return the record for ResourceDef code empty Optional
      */
     public Optional<DBResourceDef> getResourceDefByIdentifierAndExtension(String code, Long extensionId) {
@@ -124,34 +126,5 @@ public class ResourceDefDao extends BaseDao<DBResourceDef> {
         } catch (NonUniqueResultException e) {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, "More than one resource type is registered for the name!");
         }
-    }
-
-    /**
-     * Returns registered DBExtResourceDef for given extension id and resourceDef code.
-     *
-     * @param extension
-     * @param identifier is unique name of the resourceDef for extension
-     * @return the record for ResourceDef code empty Optional
-     */
-    public Optional<DBResourceDef> getRegisteredResourceDefByDomainIdAndIdentifier(String identifier, DBExtension extension) {
-        return getResourceDefByIdentifierAndExtension(identifier, extension.getId());
-    }
-
-
-    /**
-     * Removes Entity by given domain code
-     *
-     * @param identifier is unique id of the resource
-     * @return true if entity existed before and was removed in this call.
-     * False if entity did not exist, so nothing was changed
-     */
-    @Transactional
-    public boolean removeRegisteredResourceDefByDomainIdAndIdentifier(String identifier, DBExtension extension) {
-        Optional<DBResourceDef> optd = getRegisteredResourceDefByDomainIdAndIdentifier(identifier, extension);
-        if (optd.isPresent()) {
-            memEManager.remove(optd.get());
-            return true;
-        }
-        return false;
     }
 }

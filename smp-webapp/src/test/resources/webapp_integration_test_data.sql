@@ -127,18 +127,12 @@ insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT,
 (2, 2, 1, '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
 (3, 3, 1, FILE_READ('classpath:/input/ServiceMetadata.xml') , NOW(),  NOW());
 
-insert into SMP_RESOURCE ( ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(100000, 1, 1, 'ehealth-actorid-qns', 'urn:australia:ncpb', 0, 'PUBLIC', NOW(),  NOW()),
-(200000, 2, 1, 'ehealth-actorid-qns', 'urn:brazil:ncpb', 0, 'PUBLIC', NOW(),  NOW());
+insert into SMP_RESOURCE ( ID, FK_GROUP_ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
+(100000, 1, 1, 1, 'ehealth-actorid-qns', 'urn:australia:ncpb', 0, 'PUBLIC', NOW(),  NOW()),
+(200000, 1, 2, 1, 'ehealth-actorid-qns', 'urn:brazil:ncpb', 0, 'PUBLIC', NOW(),  NOW());
 
 insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, IDENTIFIER_SCHEME, IDENTIFIER_VALUE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 100000, 1, 3, 'busdox-docid-qn', 'doc_7', NOW(),  NOW());
-
---insert into SMP_SG_EXTENSION(ID, EXTENSION,CREATED_ON, LAST_UPDATED_ON) values (100000, '<Extension xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ExtensionID>id1</ExtensionID><ExtensionName>name1</ExtensionName><ExtensionAgencyName>agencyName1</ExtensionAgencyName><ExtensionAgencyURI>agencyUri1</ExtensionAgencyURI><ExtensionVersionID>versionId1</ExtensionVersionID><ExtensionReasonCode>reasonCode1</ExtensionReasonCode><ExtensionReason>reason1</ExtensionReason></Extension>',  NOW(),  NOW());
-
-insert into  SMP_GROUP_RESOURCE (FK_GROUP_ID, FK_RESOURCE_ID) values
-(1,100000),
-(1,200000);
 
 insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 1, 'ADMIN', NOW(),  NOW());

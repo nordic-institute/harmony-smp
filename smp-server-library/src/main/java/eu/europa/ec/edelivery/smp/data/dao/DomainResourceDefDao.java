@@ -50,6 +50,26 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
         return query.getResultList();
     }
 
+    /**
+     * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
+     *
+     * @param domainId             domain id
+     * @param resourceIdentifier resource definition identifier
+     * @return the only single record for DBDomainResourceDef
+     * @throws IllegalStateException if more than one ResourceDef is returned
+     */
+    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainIdAndResourceDefIdentifier(Long domainId, String resourceIdentifier) {
+        try {
+            TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery(QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER, DBDomainResourceDef.class);
+            query.setParameter(PARAM_DOMAIN_ID, domainId);
+            query.setParameter(PARAM_RESOURCE_DEF_IDENTIFIER, resourceIdentifier);
+            return Optional.of(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new IllegalStateException(INTERNAL_ERROR.getMessage("More than one result for ResourceDef identifier [" + resourceIdentifier + "] and domain code [" + domainId + "]"));
+        }
+    }
 
     /**
      * Returns the DBDomainResourceDef configuration for domain or Optional.empty() if there is no DBDomainResourceDef configured for domain.
@@ -59,7 +79,7 @@ public class DomainResourceDefDao extends BaseDao<DBDomainResourceDef> {
      * @return the only single record for DBDomainResourceDef
      * @throws IllegalStateException if more than one ResourceDef is returned
      */
-    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainAndResourceDef(String domainCode, String resourceDeftUrlSegment) {
+    public Optional<DBDomainResourceDef> getResourceDefConfigurationForDomainCodeAndResourceDefCtx(String domainCode, String resourceDeftUrlSegment) {
         try {
             TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery(QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_CODE_SEGMENT_URL, DBDomainResourceDef.class);
             query.setParameter(PARAM_DOMAIN_CODE, domainCode);

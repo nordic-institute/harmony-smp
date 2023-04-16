@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.auth;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -42,6 +43,7 @@ public class SMPAuthorizationService {
     private final UserDao userDao;
     private final DomainMemberDao domainMemberDao;
     private final GroupMemberDao groupMemberDao;
+    private final ResourceMemberDao resourceMemberDao;
 
     private final ConversionService conversionService;
     private final ConfigurationService configurationService;
@@ -50,11 +52,13 @@ public class SMPAuthorizationService {
     public SMPAuthorizationService(UserDao userDao,
                                    DomainMemberDao domainMemberDao,
                                    GroupMemberDao groupMemberDao,
+                                   ResourceMemberDao resourceMemberDao,
                                    ConversionService conversionService,
                                    ConfigurationService configurationService) {
         this.userDao = userDao;
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
+        this.resourceMemberDao = resourceMemberDao;
         this.conversionService = conversionService;
         this.configurationService = configurationService;
     }
@@ -95,10 +99,26 @@ public class SMPAuthorizationService {
                 || domainMemberDao.isUserAnyDomainAdministrator(userDetails.getUser().getId());
     }
 
-    public boolean isAnyDomainGroupAdministrator(String domainEndId) {
+    /**
+     * Returns true if logged user is administrator for any of the domain group
+     * @param domainEncId
+     * @return true if logged user is group administrator in domain
+     */
+    public boolean isAnyDomainGroupAdministrator(String domainEncId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        Long domainId = getIdFromEncryptedString(domainEndId, false);
+        Long domainId = getIdFromEncryptedString(domainEncId, false);
         return groupMemberDao.isUserAnyDomainGroupResourceMemberWithRole(userDetails.getUser().getId(), domainId, MembershipRoleType.ADMIN);
+    }
+
+    /**
+     * Returns true if logged user is administrator for any of the resources on group
+     * @param groupEncId
+     * @return true if logged user is resource administrator in the group
+     */
+    public boolean isAnyGroupResourceAdministrator(String groupEncId) {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        Long groupId = getIdFromEncryptedString(groupEncId, false);
+        return resourceMemberDao.isUserAnyGroupResourceMemberWithRole(userDetails.getUser().getId(), groupId, MembershipRoleType.ADMIN);
     }
 
     public boolean isAnyResourceAdministrator() {

@@ -18,14 +18,14 @@ import java.io.ByteArrayInputStream;
  */
 @RestController
 @RequestMapping(value = ResourceConstants.CONTEXT_PATH_PUBLIC_TRUSTSTORE)
-public class TruststoreResource {
+public class TruststoreController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(TruststoreResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(TruststoreController.class);
 
     private final UITruststoreService uiTruststoreService;
     private final PayloadValidatorService payloadValidatorService;
 
-    public TruststoreResource(UITruststoreService uiTruststoreService, PayloadValidatorService payloadValidatorService) {
+    public TruststoreController(UITruststoreService uiTruststoreService, PayloadValidatorService payloadValidatorService) {
         this.uiTruststoreService = uiTruststoreService;
         this.payloadValidatorService = payloadValidatorService;
     }

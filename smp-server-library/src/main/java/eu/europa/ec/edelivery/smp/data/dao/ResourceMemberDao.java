@@ -94,5 +94,15 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
         }
     }
 
+    public boolean isUserAnyGroupResourceMemberWithRole(Long userId, Long groupId, MembershipRoleType roleType) {
+        LOG.debug("User [{}], group [{}], Role [{}]", userId, groupId, roleType);
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT,
+                Long.class);
+        query.setParameter(PARAM_USER_ID,userId);
+        query.setParameter(PARAM_GROUP_ID, groupId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, roleType);
+        return query.getSingleResult() > 0;
+    }
+
 
 }

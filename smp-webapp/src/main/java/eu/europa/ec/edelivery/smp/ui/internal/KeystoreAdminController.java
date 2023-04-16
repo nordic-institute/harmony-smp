@@ -32,14 +32,14 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VA
  */
 @RestController
 @RequestMapping(value = CONTEXT_PATH_INTERNAL_KEYSTORE)
-public class KeystoreAdminResource {
+public class KeystoreAdminController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(KeystoreAdminResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(KeystoreAdminController.class);
 
     private final UIKeystoreService uiKeystoreService;
     private final PayloadValidatorService payloadValidatorService;
 
-    public KeystoreAdminResource(UIKeystoreService uiKeystoreService, PayloadValidatorService payloadValidatorService) {
+    public KeystoreAdminController(UIKeystoreService uiKeystoreService, PayloadValidatorService payloadValidatorService) {
         this.uiKeystoreService = uiKeystoreService;
         this.payloadValidatorService = payloadValidatorService;
     }

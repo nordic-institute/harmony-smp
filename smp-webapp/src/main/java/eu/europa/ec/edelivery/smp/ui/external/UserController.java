@@ -32,14 +32,14 @@ import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntit
  */
 @RestController
 @RequestMapping(path = CONTEXT_PATH_PUBLIC_USER)
-public class UserResource {
+public class UserController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserController.class);
     protected UIUserService uiUserService;
     protected SMPAuthorizationService authorizationService;
     protected SMPAuthenticationService authenticationService;
 
-    public UserResource(UIUserService uiUserService, SMPAuthorizationService authorizationService, SMPAuthenticationService authenticationService) {
+    public UserController(UIUserService uiUserService, SMPAuthorizationService authorizationService, SMPAuthenticationService authenticationService) {
         this.uiUserService = uiUserService;
         this.authorizationService = authorizationService;
         this.authenticationService = authenticationService;

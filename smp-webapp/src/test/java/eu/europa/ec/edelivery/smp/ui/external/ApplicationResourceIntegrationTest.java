@@ -55,7 +55,7 @@ public class ApplicationResourceIntegrationTest {
     private WebApplicationContext webAppContext;
 
     @Autowired
-    private ApplicationResource applicationResource;
+    private ApplicationController applicationResource;
 
     private MockMvc mvc;
 

@@ -16,8 +16,11 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
@@ -35,12 +38,13 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 
 /**
- * @since 5.0
  * @author Joze Rihtarsic
+ * @since 5.0
  */
 @Repository
 public class ResourceDao extends BaseDao<DBResource> {
 
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceDao.class);
 
 
     /**
@@ -48,7 +52,7 @@ public class ResourceDao extends BaseDao<DBResource> {
      * If more than one result exist, it returns IllegalStateException caused by database data inconsistency. Only one combination of
      * participant identifier must be registered in database for the domain and the resource type.
      *
-     * @param identifierValue resource identifier value
+     * @param identifierValue  resource identifier value
      * @param identifierSchema resource identifier schema
      * @return DBResource from the database
      */
@@ -67,6 +71,43 @@ public class ResourceDao extends BaseDao<DBResource> {
             throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(identifierValue, identifierSchema));
         }
     }
+
+
+    public Long getResourcesForFilterCount(DBResourceFilter resourceFilter) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_FILTER_COUNT, Long.class);
+        query.setParameter(PARAM_GROUP_ID, resourceFilter.getGroupId());
+        query.setParameter(PARAM_DOMAIN_ID, resourceFilter.getDomainId());
+        query.setParameter(PARAM_RESOURCE_DEF_ID, resourceFilter.getResourceDefId());
+        query.setParameter(PARAM_USER_ID, resourceFilter.getUserId());
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, resourceFilter.getMembershipRoleTypes());
+        query.setParameter(PARAM_RESOURCE_FILTER, resourceFilter.getIdentifierFilter());
+
+        LOG.info("RESOURCE+FILTER: [{}]", resourceFilter.getIdentifierFilter());
+
+        return query.getSingleResult();
+    }
+
+    public List<DBResource> getResourcesForFilter(int iPage, int iPageSize, DBResourceFilter resourceFilter) {
+
+        TypedQuery<DBResource> query = memEManager.createNamedQuery(QUERY_RESOURCE_FILTER, DBResource.class);
+
+        if (iPageSize > -1 && iPage > -1) {
+            query.setFirstResult(iPage * iPageSize);
+        }
+        if (iPageSize > 0) {
+            query.setMaxResults(iPageSize);
+        }
+
+        query.setParameter(PARAM_GROUP_ID, resourceFilter.getGroupId());
+        query.setParameter(PARAM_DOMAIN_ID, resourceFilter.getDomainId());
+        query.setParameter(PARAM_RESOURCE_DEF_ID, resourceFilter.getResourceDefId());
+        query.setParameter(PARAM_USER_ID, resourceFilter.getUserId());
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, resourceFilter.getMembershipRoleTypes());
+        query.setParameter(PARAM_RESOURCE_FILTER, resourceFilter.getIdentifierFilter());
+        return query.getResultList();
+    }
+
 
     /**
      * Method returns ServiceGroup by participant identifier. If there is no service group it returns empty Option.
@@ -92,6 +133,7 @@ public class ResourceDao extends BaseDao<DBResource> {
             throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(participantId, schema));
         }
     }
+
 
     /**
      * Method returns ServiceGroupDomain for participant identifie and domain code. If there is no service group
@@ -136,10 +178,10 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
     public Long getResourceCountForDomainIdAndResourceDefId(Long domainId, Long resourceDefId) {
-            TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT, Long.class);
-            query.setParameter(PARAM_DOMAIN_ID, domainId);
-            query.setParameter(PARAM_RESOURCE_DEF_ID, resourceDefId);
-            return query.getSingleResult();
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT, Long.class);
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
+        query.setParameter(PARAM_RESOURCE_DEF_ID, resourceDefId);
+        return query.getSingleResult();
     }
 
     /**

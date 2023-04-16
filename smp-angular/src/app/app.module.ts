@@ -146,6 +146,10 @@ import {GroupDialogComponent} from "./edit/edit-domain/domain-group-panel/group-
 import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
 import {EditGroupService} from "./edit/edit-group/edit-group.service";
 import {SmpLabelComponent} from "./common/components/smp-label/smp-label.component";
+import {GroupResourcePanelComponent} from "./edit/edit-group/group-resource-panel/group-resource-panel.component";
+import {
+  ResourceDialogComponent
+} from "./edit/edit-group/group-resource-panel/resource-dialog/resource-dialog.component";
 
 
 @NgModule({
@@ -187,6 +191,7 @@ import {SmpLabelComponent} from "./common/components/smp-label/smp-label.compone
     ExpiredPasswordDialogComponent,
     ExtensionComponent,
     ExtensionPanelComponent,
+    GroupResourcePanelComponent,
     GroupDialogComponent,
     FooterComponent,
     InformationDialogComponent,
@@ -200,6 +205,7 @@ import {SmpLabelComponent} from "./common/components/smp-label/smp-label.compone
     ObjectPropertiesDialogComponent,
     PasswordChangeDialogComponent,
     PropertyComponent,
+    ResourceDialogComponent,
     PropertyDetailsDialogComponent,
     ResourceDetailsDialogComponent,
     RowLimiterComponent,

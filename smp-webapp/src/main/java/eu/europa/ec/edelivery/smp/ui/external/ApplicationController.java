@@ -25,7 +25,7 @@ import java.util.TimeZone;
  */
 @RestController
 @RequestMapping(path = ResourceConstants.CONTEXT_PATH_PUBLIC_APPLICATION)
-public class ApplicationResource {
+public class ApplicationController {
 
     @Autowired
     private Environment env;

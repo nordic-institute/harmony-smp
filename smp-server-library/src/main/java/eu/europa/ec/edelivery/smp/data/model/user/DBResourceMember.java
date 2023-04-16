@@ -22,18 +22,18 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Table(name = "SMP_RESOURCE_MEMBER",
                 indexes = {@Index(name = "SMP_RES_MEM_IDX", columnList = "FK_RESOURCE_ID, FK_USER_ID", unique = true)
 })
-@NamedQueries({
-        @NamedQuery(name = QUERY_RESOURCE_MEMBER_ALL, query = "SELECT u FROM DBResourceMember u"),
-        @NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
-                " WHERE c.user.id = :user_id AND c.resource.id = :resource_id"),
-        @NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_COUNT, query = "SELECT count(c) FROM DBResourceMember c JOIN c.resource.domainResourceDef.domain d" +
-                " WHERE c.user.id = :user_id AND d.id = :domain_id"),
-        @NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_ROLE_COUNT, query = "SELECT count(c) FROM DBResourceMember c JOIN c.resource.domainResourceDef.domain d" +
-                " WHERE c.user.id = :user_id AND d.id = :domain_id AND c.role=:membership_role"),
-        @NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE, query = "SELECT c FROM DBResourceMember c " +
-                " WHERE c.user.id = :user_id AND c.resource.id = :resource_id")
+@NamedQuery(name = QUERY_RESOURCE_MEMBER_ALL, query = "SELECT u FROM DBResourceMember u")
+@NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
+        " WHERE c.user.id = :user_id AND c.resource.id = :resource_id")
+@NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_COUNT, query = "SELECT count(c) FROM DBResourceMember c JOIN c.resource.domainResourceDef.domain d" +
+        " WHERE c.user.id = :user_id AND d.id = :domain_id")
+@NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_ROLE_COUNT, query = "SELECT count(c) FROM DBResourceMember c JOIN c.resource.domainResourceDef.domain d" +
+        " WHERE c.user.id = :user_id AND d.id = :domain_id AND c.role=:membership_role")
+@NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE, query = "SELECT c FROM DBResourceMember c " +
+        " WHERE c.user.id = :user_id AND c.resource.id = :resource_id")
+@NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
+        " WHERE c.user.id = :user_id AND c.resource.group.id = :group_id AND c.role= :membership_role ")
 
-})
 public class DBResourceMember extends BaseEntity {
 
     @Id

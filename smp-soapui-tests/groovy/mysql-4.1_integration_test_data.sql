@@ -51,40 +51,41 @@ insert into SMP_SUBRESOURCE_DEF (ID,FK_RESOURCE_DEF_ID,URL_SEGMENT, IDENTIFIER, 
 insert into SMP_DOMAIN_RESOURCE_DEF (ID, FK_RESOURCE_DEF_ID, FK_DOMAIN_ID,CREATED_ON, LAST_UPDATED_ON ) values
 (1, 1, 1, NOW(),  NOW());
 
+insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
+(1, 1, 'Test group', 'PUBLIC', NOW(),  NOW());
+
 
 insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'text/xml', 'service-group', NOW(),  NOW());
+(1, 1, 'text/xml', 'service-group', NOW(),  NOW()),
+(2, 1, 'text/xml', 'service-metadta', NOW(),  NOW()),
+(3, 0, 'text/xml', 'service-metadta', NOW(),  NOW())
+;
 
 insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
-(1,1,  1, '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW());
-
-insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_UPDATED_ON) values
-(2, 1, 'text/xml', 'service-metadta', NOW(),  NOW());
-
-insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
+(1,1,  1, '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>' , NOW(),  NOW()),
 (2,2,  1, '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><Redirect href="http://localhost:8080/url"><CertificateUID/></Redirect></ServiceMetadata>' , NOW(),  NOW());
 
-insert into SMP_RESOURCE ( ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 1, 'iso6523-actorid-upis', '0088:777002abzz777', 0, 'PUBLIC', NOW(),  NOW()),
-(2, 1, 1, 'iso6523-actorid-upis', '0088:01', 0, 'PUBLIC', NOW(),  NOW()),
-(3, 1, 1, 'iso6523-actorid-upis', '0088:02', 0, 'PUBLIC', NOW(),  NOW()),
-(4, 1, 1, 'iso6523-actorid-upis', '0088:03', 0, 'PUBLIC', NOW(),  NOW()),
-(5, 1, 1, 'iso6523-actorid-upis', '0088:04', 0, 'PUBLIC', NOW(),  NOW()),
-(6, 1, 1, 'iso6523-actorid-upis', '0088:05', 0, 'PUBLIC', NOW(),  NOW()),
-(7, 1, 1, 'iso6523-actorid-upis', '0088:06', 0, 'PUBLIC', NOW(),  NOW()),
-(8, 1, 1, 'iso6523-actorid-upis', '0088:07', 0, 'PUBLIC', NOW(),  NOW()),
-(9, 1, 1, 'iso6523-actorid-upis', '0088:08', 0, 'PUBLIC', NOW(),  NOW()),
-(10, 1, 1, 'iso6523-actorid-upis', '0088:09', 0, 'PUBLIC', NOW(),  NOW()),
-(11, 1, 1, 'iso6523-actorid-upis', '0088:10', 0, 'PUBLIC', NOW(),  NOW()),
-(12, 1, 1, 'iso6523-actorid-upis', '0088:11', 0, 'PUBLIC', NOW(),  NOW()),
-(13, 1, 1, 'iso6523-actorid-upis', '0088:12', 0, 'PUBLIC', NOW(),  NOW()),
-(14, 1, 1, 'iso6523-actorid-upis', '0088:13', 0, 'PUBLIC', NOW(),  NOW()),
-(15, 1, 1, 'iso6523-actorid-upis', '0088:14', 0, 'PUBLIC', NOW(),  NOW()),
-(16, 1, 1, 'iso6523-actorid-upis', '0088:15', 0, 'PUBLIC', NOW(),  NOW()),
-(17, 1, 1, 'iso6523-actorid-upis', '0088:16', 0, 'PUBLIC', NOW(),  NOW()),
-(18, 1, 1, 'iso6523-actorid-upis', '0088:17', 0, 'PUBLIC', NOW(),  NOW()),
-(19, 1, 1, 'iso6523-actorid-upis', '0088:18', 0, 'PUBLIC', NOW(),  NOW()),
-(20, 1, 1, 'iso6523-actorid-upis', '0088:19', 0, 'PUBLIC', NOW(),  NOW())
+insert into SMP_RESOURCE ( ID, FK_GROUP_ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
+(1, 1, 1, 1, 'iso6523-actorid-upis', '0088:777002abzz777', 0, 'PUBLIC', NOW(),  NOW()),
+(2, 1, 3, 1, 'iso6523-actorid-upis', '0088:01', 0, 'PUBLIC', NOW(),  NOW()),
+(3, 1, 1, 1, 'iso6523-actorid-upis', '0088:02', 0, 'PUBLIC', NOW(),  NOW()),
+(4, 1, 1, 1, 'iso6523-actorid-upis', '0088:03', 0, 'PUBLIC', NOW(),  NOW()),
+(5, 1, 1, 1, 'iso6523-actorid-upis', '0088:04', 0, 'PUBLIC', NOW(),  NOW()),
+(6, 1, 1, 1, 'iso6523-actorid-upis', '0088:05', 0, 'PUBLIC', NOW(),  NOW()),
+(7, 1, 1, 1, 'iso6523-actorid-upis', '0088:06', 0, 'PUBLIC', NOW(),  NOW()),
+(8, 1, 1, 1, 'iso6523-actorid-upis', '0088:07', 0, 'PUBLIC', NOW(),  NOW()),
+(9, 1, 1, 1, 'iso6523-actorid-upis', '0088:08', 0, 'PUBLIC', NOW(),  NOW()),
+(10, 1, 1, 1, 'iso6523-actorid-upis', '0088:09', 0, 'PUBLIC', NOW(),  NOW()),
+(11, 1, 1, 1, 'iso6523-actorid-upis', '0088:10', 0, 'PUBLIC', NOW(),  NOW()),
+(12, 1, 1, 1, 'iso6523-actorid-upis', '0088:11', 0, 'PUBLIC', NOW(),  NOW()),
+(13, 1, 1, 1, 'iso6523-actorid-upis', '0088:12', 0, 'PUBLIC', NOW(),  NOW()),
+(14, 1, 1, 1, 'iso6523-actorid-upis', '0088:13', 0, 'PUBLIC', NOW(),  NOW()),
+(15, 1, 1, 1, 'iso6523-actorid-upis', '0088:14', 0, 'PUBLIC', NOW(),  NOW()),
+(16, 1, 1, 1, 'iso6523-actorid-upis', '0088:15', 0, 'PUBLIC', NOW(),  NOW()),
+(17, 1, 1, 1, 'iso6523-actorid-upis', '0088:16', 0, 'PUBLIC', NOW(),  NOW()),
+(18, 1, 1, 1, 'iso6523-actorid-upis', '0088:17', 0, 'PUBLIC', NOW(),  NOW()),
+(19, 1, 1, 1, 'iso6523-actorid-upis', '0088:18', 0, 'PUBLIC', NOW(),  NOW()),
+(20, 1, 1, 1, 'iso6523-actorid-upis', '0088:19', 0, 'PUBLIC', NOW(),  NOW())
 ;
 
 insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME, CREATED_ON, LAST_UPDATED_ON) values
@@ -92,13 +93,6 @@ insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, I
 
 insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME, CREATED_ON, LAST_UPDATED_ON) values
 (2, 1, 1, 2, 'service-value2', 'service-schema2', NOW(),  NOW());
-
-
-insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'Test group', 'PUBLIC', NOW(),  NOW());
-
-insert into  SMP_GROUP_RESOURCE (FK_GROUP_ID, FK_RESOURCE_ID) values
-(1, 1);
 
 insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 2, 'ADMIN', NOW(),  NOW());

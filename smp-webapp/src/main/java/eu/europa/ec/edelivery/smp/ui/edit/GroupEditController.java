@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.ui.external;
+package eu.europa.ec.edelivery.smp.ui.edit;
 
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
@@ -22,41 +22,44 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
 /**
  * Purpose of the DomainResource is to provide search method to retrieve configured domains in SMP.
+ * base path for the resource includes two variables user who is editing and domain for the group
+ * /ui/edit/rest/[user-id]/domain/[domain-id]/group
  *
  * @author Joze Rihtarsic
  * @since 4.1
  */
 @RestController
-@RequestMapping(value = CONTEXT_PATH_PUBLIC_GROUP)
-public class GroupResource {
+@RequestMapping(value = CONTEXT_PATH_EDIT_GROUP)
+public class GroupEditController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(GroupResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(GroupEditController.class);
 
     private final UIGroupPublicService uiGroupPublicService;
 
-    public GroupResource(UIGroupPublicService uiGroupPublicService) {
+    public GroupEditController(UIGroupPublicService uiGroupPublicService) {
         this.uiGroupPublicService = uiGroupPublicService;
     }
 
 
     /**
      * Return all Groups for the domain. If parameter forRole is
-     * group-admin it returns all groups for the domain where user it group admin;
-     * group-viewer it returns all groups for the domain where user it group viewer;
-     * user it returns all groups for the domain for user
+     * group-admin it returns all groups for the domain where user is group admin;
+     * group-viewer it returns all groups for the domain where user is group viewer;
+     * all-roles it returns all groups for the domain for user
      *
      * @param userEncId
      * @param domainEncId
      * @param forRole
      * @return
      */
-    @GetMapping(path = "/{user-enc-id}/domain/{domain-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and (@smpAuthorizationService.isDomainAdministrator(#domainEncId) or @smpAuthorizationService.isAnyDomainGroupAdministrator(#domainEncId))")
-    public List<GroupRO> getGroupsForDomain(@PathVariable("user-enc-id") String userEncId,
-                                               @PathVariable("domain-enc-id") String domainEncId,
-                                               @RequestParam(value = PARAM_NAME_TYPE, defaultValue = "", required = false) String forRole) {
-        logAdminAccess("getGroupsForDomain and type: " +forRole );
+    public List<GroupRO> getGroupsForDomain(
+            @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+            @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+            @RequestParam(value = PARAM_NAME_TYPE, defaultValue = "", required = false) String forRole) {
+        logAdminAccess("getGroupsForDomain and type: " + forRole);
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         if (StringUtils.isBlank(forRole)) {
@@ -71,24 +74,25 @@ public class GroupResource {
         if (StringUtils.equalsIgnoreCase("all-roles", forRole)) {
             return uiGroupPublicService.getAllGroupsForDomainAndUserAndRole(domainId, userId, null);
         }
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "getGroupsForDomain", "Unknown parameter type ["+forRole+"]!");
+        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "getGroupsForDomain", "Unknown parameter type [" + forRole + "]!");
     }
 
-    @PutMapping(path = "/{user-enc-id}/domain/{domain-enc-id}/create", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PutMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_CREATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
-    public GroupRO putGroupForDomain(@PathVariable("user-enc-id") String userEncId,
-                                     @PathVariable("domain-enc-id") String domainEncId,
-                                     @RequestBody GroupRO group) {
+    public GroupRO putGroupForDomain(
+            @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+            @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+            @RequestBody GroupRO group) {
         logAdminAccess("putGroupForDomain");
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         return uiGroupPublicService.createGroupForDomain(domainId, group);
     }
 
-    @PostMapping(path = "/{user-enc-id}/{group-enc-id}/domain/{domain-enc-id}/update", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_UPDATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
-    public GroupRO submitGroupForDomain(@PathVariable("user-enc-id") String userEncId,
-                                        @PathVariable("domain-enc-id") String domainEncId,
-                                        @PathVariable("group-enc-id") String groupEncId,
+    public GroupRO submitGroupForDomain(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                        @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                        @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
                                         @RequestBody GroupRO group) {
         logAdminAccess("updateGroupForDomain");
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
@@ -96,41 +100,41 @@ public class GroupResource {
         return uiGroupPublicService.saveGroupForDomain(domainId, groupId, group);
     }
 
-    @DeleteMapping(path = "/{user-enc-id}/{group-enc-id}/domain/{domain-enc-id}/delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
-    public GroupRO deleteGroupFromDomain(@PathVariable("user-enc-id") String userEncId,
-                                         @PathVariable("domain-enc-id") String domainEncId,
-                                         @PathVariable("group-enc-id") String groupEncId) {
+    public GroupRO deleteGroupFromDomain(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                         @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                         @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId) {
         logAdminAccess("deleteGroupFromDomain");
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
         return uiGroupPublicService.deleteGroupFromDomain(domainId, groupId);
     }
 
-    @GetMapping(path = "/{user-enc-id}/{group-enc-id}/members", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @GetMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and  @smpAuthorizationService.isGroupAdministrator(#groupEncId)")
-    public ServiceResult<MemberRO> getGroupMemberList(
-            @PathVariable("user-enc-id") String userEncId,
-            @PathVariable("group-enc-id") String groupEncId,
-            @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
-            @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
-            @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
+    public ServiceResult<MemberRO> getGroupMemberList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                      @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                                      @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
+                                                      @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
+                                                      @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
+                                                      @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
 
-        LOG.info("Search for group members with filter  [{}], paging: [{}/{}], user: {}",filter,  page, pageSize, userEncId);
+        LOG.info("Search for group members with filter  [{}], paging: [{}/{}], user: {}", filter, page, pageSize, userEncId);
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
-        return uiGroupPublicService.getGroupMembers(groupId, page, pageSize,  filter);
+        return uiGroupPublicService.getGroupMembers(groupId, page, pageSize, filter);
     }
 
-    @PutMapping(path = "/{user-enc-id}/{group-enc-id}/member", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PutMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isGroupAdministrator(#groupEncId)")
-    public MemberRO  putGroupMember(
-            @PathVariable("user-enc-id") String userEncId,
-            @PathVariable("group-enc-id") String groupEncId,
-            @RequestBody MemberRO memberRO) {
+    public MemberRO putGroupMember(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                   @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                   @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
+                                   @RequestBody MemberRO memberRO) {
 
         LOG.info("add member to group");
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
-        Long memberId = memberRO.getMemberId() == null?null: SessionSecurityUtils.decryptEntityId(memberRO.getMemberId());
+        Long memberId = memberRO.getMemberId() == null ? null : SessionSecurityUtils.decryptEntityId(memberRO.getMemberId());
         if (memberRO.getRoleType() == null) {
             memberRO.setRoleType(MembershipRoleType.VIEWER);
         }
@@ -138,16 +142,17 @@ public class GroupResource {
         return uiGroupPublicService.addMemberToGroup(groupId, memberRO, memberId);
     }
 
-    @DeleteMapping(value = "/{user-enc-id}/{group-enc-id}/member/{member-enc-id}/delete")
+    @DeleteMapping(value = SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER_DELETE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isGroupAdministrator(#groupEncId)")
-    public MemberRO  deleteDomainMember(
-            @PathVariable("user-enc-id") String userEncId,
-            @PathVariable("group-enc-id") String groupEncId,
-            @PathVariable("member-enc-id") String memberEncId
+    public MemberRO deleteDomainMember(
+            @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+            @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+            @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
+            @PathVariable(PATH_PARAM_ENC_MEMBER_ID) String memberEncId
     ) {
         LOG.info("Delete member from group");
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
-        Long memberId= SessionSecurityUtils.decryptEntityId(memberEncId);
+        Long memberId = SessionSecurityUtils.decryptEntityId(memberEncId);
 
         // is user domain admin or system admin
         return uiGroupPublicService.deleteMemberFromGroup(groupId, memberId);

@@ -12,6 +12,7 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
+import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -73,6 +74,10 @@ public class TestUtilsDao {
     DBGroupMember groupMemberU1D1G1Admin;
     DBGroupMember groupMemberU1D2G1Viewer;
 
+    DBResourceMember resourceMemberU1R1_D2G1RD1_Admin;
+    DBResourceMember resourceMemberU1R2_D2G1RD1_Viewer;
+
+
     DBExtension extension;
 
     /**
@@ -105,6 +110,9 @@ public class TestUtilsDao {
         domainMemberU1D2Viewer = null;
         groupMemberU1D1G1Admin = null;
         groupMemberU1D2G1Viewer = null;
+        resourceMemberU1R1_D2G1RD1_Admin = null;
+        resourceMemberU1R2_D2G1RD1_Viewer = null;
+
         extension = null;
     }
 
@@ -240,6 +248,24 @@ public class TestUtilsDao {
         assertNotNull(groupMemberU1D2G1Viewer.getId());
     }
 
+    @Transactional
+    public void createResourceMemberships() {
+        if (resourceMemberU1R1_D2G1RD1_Admin != null) {
+            LOG.trace("GroupMemberships are already initialized!");
+            return;
+        }
+        createUsers();
+        createResources();
+        resourceMemberU1R1_D2G1RD1_Admin = createResourceMembership(MembershipRoleType.ADMIN, user1, resourceD1G1RD1);
+        resourceMemberU1R2_D2G1RD1_Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceD2G1RD1);
+
+        persistFlushDetach(resourceMemberU1R1_D2G1RD1_Admin);
+        persistFlushDetach(resourceMemberU1R2_D2G1RD1_Viewer);
+
+        assertNotNull(resourceMemberU1R1_D2G1RD1_Admin.getId());
+        assertNotNull(resourceMemberU1R2_D2G1RD1_Viewer.getId());
+    }
+
     public DBDomainMember createDomainMembership(MembershipRoleType roleType, DBUser user, DBDomain domain){
         DBDomainMember domainMember = new DBDomainMember();
         domainMember.setRole(roleType);
@@ -253,6 +279,14 @@ public class TestUtilsDao {
         member.setRole(roleType);
         member.setUser(user);
         member.setGroup(group);
+        return member;
+    }
+
+    public DBResourceMember createResourceMembership(MembershipRoleType roleType, DBUser user, DBResource resource){
+        DBResourceMember member = new DBResourceMember();
+        member.setRole(roleType);
+        member.setUser(user);
+        member.setResource(resource);
         return member;
     }
 
@@ -275,12 +309,12 @@ public class TestUtilsDao {
         documentD1G1RD1 = createDocument(2);
         documentD2G1RD1 = createDocument(2);
         resourceD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
-        resourceD1G1RD1.addGroup(groupD1G1);
+        resourceD1G1RD1.setGroup(groupD1G1);
         resourceD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
         resourceD1G1RD1.setDocument(documentD1G1RD1);
 
         resourceD2G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_2, null);
-        resourceD2G1RD1.addGroup(groupD2G1);
+        resourceD2G1RD1.setGroup(groupD2G1);
         resourceD2G1RD1.setDomainResourceDef(domainResourceDefD2R1);
         resourceD2G1RD1.setDocument(documentD2G1RD1);
 

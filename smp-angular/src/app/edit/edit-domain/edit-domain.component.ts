@@ -22,7 +22,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   membershipType:MemberTypeEnum = MemberTypeEnum.DOMAIN;
   displayedColumns: string[] = ['domainCode'];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
-  selected?: DomainRo;
+  selected: DomainRo;
   domainList: DomainRo[] = [];
 
   currenTabIndex: number = 0;
@@ -36,12 +36,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
 
-        domainService.onDomainUpdatedEvent().subscribe(updatedTruststore => {
-            this.updateDomainList(updatedTruststore);
-          }
-        );
-
-        domainService.getDomainsForDomainAdminUser();
   }
 
 
@@ -60,6 +54,17 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
     // MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
     // _handleClick handler
     this.registerTabClick();
+    this.refreshDomains();
+  }
+
+
+  refreshDomains() {
+    this.domainService.getDomainsForDomainAdminUserObservable()
+      .subscribe((result: DomainRo[]) => {
+        this.updateDomainList(result)
+      }, (error: any) => {
+        this.alertService.error(error.error?.errorDescription)
+      });
   }
 
   registerTabClick(): void {
@@ -77,7 +82,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
         canChangeTab.then((canChange: boolean) => {
           if (canChange) {
             // reset
-            this.resetCurrentTabData()
             this.handleTabClick.apply(this.domainTabs, [tab, header, newTabIndex]);
             this.currenTabIndex = newTabIndex;
 
@@ -104,20 +108,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
     }
   }
 
-  resetUnsavedDataValidation() {
-    // current tab not changed - OK to change it
-    if (!this.isCurrentTabDirty()) {
-      return true;
-    }
-
-    let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
-    canChangeTab.then((canChange: boolean) => {
-      if (canChange) {
-        // reset
-        this.resetCurrentTabData()
-      }
-    });
-  }
 
 
   public domainSelected(domainSelected: DomainRo) {
@@ -129,7 +119,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
       canChangeTab.then((canChange: boolean) => {
         if (canChange) {
           // reset
-          this.resetCurrentTabData();
           this.selected = domainSelected;
         }
       });
@@ -144,13 +133,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   }
   isDirty(): boolean {
     return  this.isCurrentTabDirty();
-  }
-
-
-
-  resetCurrentTabData(): void {
-
-
   }
 
   get canNotDelete(): boolean {

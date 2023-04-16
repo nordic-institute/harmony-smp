@@ -1,19 +1,13 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
-import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_RESOURCE_DEF_URL_SEGMENT;
 
 /**
  * Resource domain mapping table ensures data integrity - so that resource can be added only once to the domain.
@@ -26,13 +20,12 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_RESOURCE_DEF_
 @Audited
 @Table(name = "SMP_DOMAIN_RESOURCE_DEF",
         indexes = {@Index(name = "SMP_DOREDEF_UNIQ_DOM_RD_IDX", columnList = "FK_RESOURCE_DEF_ID, FK_DOMAIN_ID", unique = true)
-})
-@NamedQueries({
-        @NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_ALL, query = "SELECT d FROM DBDomainResourceDef d order by d.domain.id, d.id asc"),
-        @NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ALL, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.id = :domain_id "),
-        @NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_CODE_SEGMENT_URL, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.domainCode=:domain_code AND d.resourceDef.urlSegment=:url_segment"),
-        @NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_RES_DEF, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.id=:domain_id AND d.resourceDef.id=:resource_def_id"),
-})
+        })
+@NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_ALL, query = "SELECT d FROM DBDomainResourceDef d order by d.domain.id, d.id asc")
+@NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ALL, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.id = :domain_id ")
+@NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_CODE_SEGMENT_URL, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.domainCode=:domain_code AND d.resourceDef.urlSegment=:url_segment")
+@NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_RES_DEF, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.id=:domain_id AND d.resourceDef.id=:resource_def_id")
+@NamedQuery(name = QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER, query = "SELECT d FROM DBDomainResourceDef d WHERE d.domain.id=:domain_id AND d.resourceDef.identifier=:resource_def_identifier")
 public class DBDomainResourceDef extends BaseEntity {
     private static final long serialVersionUID = 1008583888835630003L;
 

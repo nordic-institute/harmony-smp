@@ -11,6 +11,8 @@ import {EditDomainService} from "../edit-domain.service";
 import {GroupDialogComponent} from "./group-dialog/group-dialog.component";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {MatPaginator} from "@angular/material/paginator";
+import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 
 @Component({
   selector: 'domain-group-panel',
@@ -21,6 +23,8 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
 
 
   private _domain: DomainRo;
+  private _domainResourceDefinitions: ResourceDefinitionRo[];
+  title: string = "Domain groups"
 
   filter: any = {};
   resultsLength = 0;
@@ -54,12 +58,22 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
 
   @Input() set domain(value: DomainRo) {
     this._domain = value;
-
     if (!!value) {
+      this.title  = "Domain groups for ["+value.domainCode+"]"
       this.loadTableData();
     } else {
+      this.title  = "Domain groups"
       this.isLoadingResults = false;
     }
+  }
+
+  get domainResourceDefinitions(): ResourceDefinitionRo[] {
+    // no changes for the domain data
+    return this._domainResourceDefinitions;
+  }
+
+  @Input() set domainResourceDefinitions(value:  ResourceDefinitionRo[]) {
+    this._domainResourceDefinitions = value;
   }
 
   public refresh() {
@@ -110,7 +124,7 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
     this.showEditDialogForGroup(this.selectedGroup);
   };
 
-  showEditDialogForGroup(group:GroupRo) {
+  showEditDialogForGroup(group: GroupRo) {
     this.dialog.open(GroupDialogComponent, {
       data: {
         domain: this._domain,
@@ -124,13 +138,29 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
 
   onDeleteSelectedButtonClicked() {
     if (!this._domain || !this._domain.domainId) {
+      this.alertService.error("Can not delete group because of invalid domain data. Is group selected?");
       return;
     }
     if (!this.selectedGroup || !this.selectedGroup.groupId) {
+      this.alertService.error("Can not delete group because of invalid domain data. Is group selected?");
       return;
     }
 
-    this.editDomainService.deleteDomainGroupObservable(this._domain.domainId, this.selectedGroup.groupId).subscribe((result: GroupRo) => {
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: "Delete Group " + this.selectedGroup.groupName + " from DomiSMP",
+        description: "Action will permanently delete group! Do you wish to continue?"
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteGroup(this._domain, this.selectedGroup);
+      }
+    });
+  }
+
+
+  deleteGroup(domain: DomainRo, group: GroupRo) {
+    this.editDomainService.deleteDomainGroupObservable(domain.domainId, group.groupId).subscribe((result: GroupRo) => {
         if (result) {
           this.alertService.success("Domain group [" + result.groupName + "] deleted");
         }

@@ -28,15 +28,15 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = ResourceConstants.CONTEXT_PATH_INTERNAL_TRUSTSTORE)
-public class TruststoreAdminResource {
+public class TruststoreAdminController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(TruststoreAdminResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(TruststoreAdminController.class);
 
 
     private final UITruststoreService uiTruststoreService;
     private final PayloadValidatorService payloadValidatorService;
 
-    public TruststoreAdminResource(UITruststoreService uiTruststoreService, PayloadValidatorService payloadValidatorService) {
+    public TruststoreAdminController(UITruststoreService uiTruststoreService, PayloadValidatorService payloadValidatorService) {
         this.uiTruststoreService = uiTruststoreService;
         this.payloadValidatorService = payloadValidatorService;
     }
