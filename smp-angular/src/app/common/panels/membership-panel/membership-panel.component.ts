@@ -15,6 +15,7 @@ import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {GroupRo} from "../../model/group-ro.model";
 import {Observable} from "rxjs";
 import {SearchTableResult} from "../../search-table/search-table-result.model";
+import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
 
 
 @Component({
@@ -47,17 +48,16 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   ngAfterViewInit() {
-    if (!!this._domain) {
-      this.loadDomainMembers();
-    }
+    this.loadMembershipData();
   }
 
   get title() {
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-        return "Domain direct members"
+
+        return "Direct Domain members" + (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")
       case MemberTypeEnum.GROUP:
-        return "Group direct members"
+        return "Direct Group members" + (!!this._group ? ": [" + this._group.groupName + "]" : "")
       case MemberTypeEnum.RESOURCE:
         return "Resource direct members"
     }
@@ -71,7 +71,9 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
     this._domain = value;
 
     if (!!value) {
-      this.loadDomainMembers();
+      if (this.membershipType == MemberTypeEnum.DOMAIN) {
+        this.loadMembershipData();
+      }
     } else {
       this.isLoadingResults = false;
     }
@@ -85,7 +87,9 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
     this._group = value;
 
     if (!!value) {
-      this.loadGroupMembers();
+      if (this.membershipType == MemberTypeEnum.GROUP) {
+        this.loadMembershipData();
+      }
     } else {
       this.isLoadingResults = false;
     }
@@ -97,45 +101,13 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   public loadMembershipData() {
-    switch (this.membershipType) {
-      case MemberTypeEnum.DOMAIN:
-        this.loadDomainMembers();
-        break;
-      case MemberTypeEnum.GROUP:
-        this.loadGroupMembers();
-        break;
-      case MemberTypeEnum.RESOURCE:
-        break;
-    }
-  }
 
-  loadDomainMembers() {
-    if (!this._domain) {
+    let membershipService: Observable<SearchTableResult> = this.getMembershipListService();
+    if (!membershipService) {
       return;
     }
-
     this.isLoadingResults = true;
-    this.membershipService.getDomainMembersObservable(this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize)
-      .pipe(
-        finalize(() => {
-          this.isLoadingResults = false;
-        }))
-      .subscribe((result: TableResult<MemberRo>) => {
-          this.data = [...result.serviceEntities];
-          this.resultsLength = result.count;
-          this.isLoadingResults = false;
-        }
-      );
-  }
-
-
-  loadGroupMembers() {
-    if (!this._group) {
-      return;
-    }
-
-    this.isLoadingResults = true;
-    this.membershipService.getGroupMembersObservable(this._group.groupId, this.filter, this.paginator.pageIndex, this.paginator.pageSize)
+    membershipService
       .pipe(
         finalize(() => {
           this.isLoadingResults = false;
@@ -163,18 +135,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   public onAddMemberButtonClicked() {
-    // add member
-    this.dialog.open(MemberDialogComponent, {
-      data: {
-        membershipType: this.membershipType,
-        domain: this._domain,
-        group: this._group,
-        member: this.createMember(),
-        formTitle: "Invite new member"
-      }
-    }).afterClosed().subscribe(value => {
-      this.refresh();
-    });
+    this.showEditDialogForMember(this.createMember())
   }
 
   public refresh() {
@@ -201,8 +162,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
         membershipType: this.membershipType,
         domain: this._domain,
         group: this._group,
-        member: this.selectedMember,
-        formTitle: "Edit member role for" + this.title
+        member: member,
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -211,12 +171,23 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
 
   public onDeleteSelectedButtonClicked() {
 
-    this.getDeleteMembershipService().subscribe(value => {
-      this.refresh();
-    }, (error) => {
-      this.alertService.error(error.error?.errorDescription);
+
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: "Remove member",
+        description: "Action will remove member  [" + this.selectedMember.username + "]! " +
+          "Do you wish to continue?"
       }
-    );
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.getDeleteMembershipService().subscribe(value => {
+            this.refresh();
+          }, (error) => {
+            this.alertService.error(error.error?.errorDescription);
+          }
+        );
+      }
+    });
   }
 
   isDirty(): boolean {
@@ -239,7 +210,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       case MemberTypeEnum.DOMAIN:
         return this.membershipService.getDomainMembersObservable(this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
       case MemberTypeEnum.GROUP:
-        return this.membershipService.getGroupMembersObservable(this._group.groupId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
+        return this.membershipService.getGroupMembersObservable(this._group.groupId, this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
       case MemberTypeEnum.RESOURCE:
         return null;
     }
@@ -250,7 +221,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       case MemberTypeEnum.DOMAIN:
         return this.membershipService.deleteMemberFromDomain(this._domain.domainId, this.selectedMember);
       case MemberTypeEnum.GROUP:
-        return this.membershipService.deleteMemberFromGroup(this._group.groupId, this.selectedMember);
+        return this.membershipService.deleteMemberFromGroup(this._group.groupId, this._domain.domainId, this.selectedMember);
       case MemberTypeEnum.RESOURCE:
         return null;
     }

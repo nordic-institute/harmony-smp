@@ -6,12 +6,12 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.DomainPublicRO;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.data.ui.*;
+import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -137,5 +137,19 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
 
         domainMemberDao.remove(domainMember);
         return conversionService.convert(domainMember, MemberRO.class);
+    }
+
+    @Transactional
+    public List<ResourceDefinitionRO> getResourceDefDomainList(Long domainId) {
+        DBDomain domain = domainDao.find(domainId);
+        if (domain == null) {
+            LOG.warn("Can not get domain for ID [{}], because it does not exists!", domainId);
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+        }
+
+        //filter and validate resources to be removed
+        List<DBDomainResourceDef> domainResourceDefs = domain.getDomainResourceDefs();
+        return domainResourceDefs.stream().map(domRef -> domRef.getResourceDef()).map(resourceDef ->
+                conversionService.convert(resourceDef, ResourceDefinitionRO.class)).collect(Collectors.toList());
     }
 }

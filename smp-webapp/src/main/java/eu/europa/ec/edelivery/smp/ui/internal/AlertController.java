@@ -20,13 +20,13 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
  */
 @RestController
 @RequestMapping(value = CONTEXT_PATH_INTERNAL_ALERT)
-public class AlertResource {
+public class AlertController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AlertResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AlertController.class);
 
     final UIAlertService uiAlertService;
 
-    public AlertResource(UIAlertService uiAlertService) {
+    public AlertController(UIAlertService uiAlertService) {
         this.uiAlertService = uiAlertService;
     }
 

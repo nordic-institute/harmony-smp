@@ -18,7 +18,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 /**
  * Service implements logic if user can activate action on the resource
@@ -42,8 +42,9 @@ public class ResourceGuard {
 
     /**
      * Method validates if the user is authorized for action on the resource
-     * @param user user trying to execute the action
-     * @param action resource action
+     *
+     * @param user     user trying to execute the action
+     * @param action   resource action
      * @param resource target resource
      * @return
      */
@@ -98,8 +99,9 @@ public class ResourceGuard {
         }
         // if resource is internal the domain, group members and resource member can see it
         if (resource.getVisibility() == VisibilityType.INTERNAL) {
-            boolean isAuthorized =  domainMemberDao.isUserDomainMember(user.getUser(), resource.getDomainResourceDef().getDomain())
-                    || groupMemberDao.isUserGroupMember(user.getUser(), resource.getGroups());
+
+            boolean isAuthorized = domainMemberDao.isUserDomainMember(user.getUser(), resource.getDomainResourceDef().getDomain())
+                    || groupMemberDao.isUserGroupMember(user.getUser(), Collections.singletonList(resource.getGroup()));
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized: [{}] to read internal resource [{}]", user, isAuthorized, resource);
             return isAuthorized;
         }
@@ -115,9 +117,9 @@ public class ResourceGuard {
     }
 
     public boolean canCreateOrUpdate(SMPUserDetails user, DBResource resource, DBDomain domain) {
-            return resource.getId() == null?
-                    canCreate(user, resource, domain):
-                    canUpdate(user, resource);
+        return resource.getId() == null ?
+                canCreate(user, resource, domain) :
+                canUpdate(user, resource);
     }
 
     public boolean canUpdate(SMPUserDetails user, DBResource resource) {

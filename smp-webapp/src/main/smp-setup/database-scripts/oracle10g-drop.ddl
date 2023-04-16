@@ -55,10 +55,6 @@
 
     drop table SMP_GROUP_MEMBER_AUD cascade constraints;
 
-    drop table SMP_GROUP_RESOURCE cascade constraints;
-
-    drop table SMP_GROUP_RESOURCE_AUD cascade constraints;
-
     drop table SMP_RESOURCE cascade constraints;
 
     drop table SMP_RESOURCE_AUD cascade constraints;

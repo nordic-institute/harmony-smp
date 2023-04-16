@@ -1,9 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
-import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
@@ -11,7 +9,6 @@ import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -30,7 +27,7 @@ public class AuthenticationResourceTest {
     CsrfTokenRepository csrfTokenRepository = Mockito.mock(CsrfTokenRepository.class);
     UIUserService uiUserService = Mockito.mock(UIUserService.class);
 
-    AuthenticationResource testInstance = new AuthenticationResource(authenticationService,
+    AuthenticationController testInstance = new AuthenticationController(authenticationService,
             authorizationService,
             configurationService,
             smpCookieWriter,

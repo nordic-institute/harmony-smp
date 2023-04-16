@@ -99,18 +99,6 @@
        drop 
        foreign key FK5pmorcyhwkaysh0a8xm99x6a8;
 
-    alter table SMP_GROUP_RESOURCE 
-       drop 
-       foreign key FK4i7qwh2ydleesw4pkf6c17t9t;
-
-    alter table SMP_GROUP_RESOURCE 
-       drop 
-       foreign key FKt3a5ucm55flr00fj8a7gwchs9;
-
-    alter table SMP_GROUP_RESOURCE_AUD 
-       drop 
-       foreign key FKqd2545hkap74058m56lk12lbg;
-
     alter table SMP_RESOURCE 
        drop 
        foreign key FKkc5a6okrvq7dv87itfp7i1vmv;
@@ -118,6 +106,10 @@
     alter table SMP_RESOURCE 
        drop 
        foreign key FK24mw8fiua39nh8rnobhgmujri;
+
+    alter table SMP_RESOURCE 
+       drop 
+       foreign key FKft55kasui36i77inf0wh8utv5;
 
     alter table SMP_RESOURCE_AUD 
        drop 
@@ -230,10 +222,6 @@
     drop table if exists SMP_GROUP_MEMBER;
 
     drop table if exists SMP_GROUP_MEMBER_AUD;
-
-    drop table if exists SMP_GROUP_RESOURCE;
-
-    drop table if exists SMP_GROUP_RESOURCE_AUD;
 
     drop table if exists SMP_RESOURCE;
 

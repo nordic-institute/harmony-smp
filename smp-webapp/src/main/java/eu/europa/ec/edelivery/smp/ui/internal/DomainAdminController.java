@@ -28,14 +28,14 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
 @RestController
 @RequestMapping(value = CONTEXT_PATH_INTERNAL_DOMAIN)
-public class DomainAdminResource {
+public class DomainAdminController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainAdminResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainAdminController.class);
 
     final UIDomainService uiDomainService;
     final DomainService domainService;
 
-    public DomainAdminResource(UIDomainService uiDomainService, DomainService domainService) {
+    public DomainAdminController(UIDomainService uiDomainService, DomainService domainService) {
         this.uiDomainService = uiDomainService;
         this.domainService = domainService;
 

@@ -41,15 +41,46 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme")
 @NamedQuery(name = QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
-    " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
-    " AND d.identifierValue = :identifier_value " +
-    " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
-    " OR d.identifierScheme = :identifier_scheme)")
+        " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
+        " AND d.identifierValue = :identifier_value " +
+        " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR d.identifierScheme = :identifier_scheme)")
 
 @NamedQuery(name = QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT, query = "SELECT count(d.id) FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
         " and d.domainResourceDef.resourceDef.id = :resource_def_id ")
-
 @NamedQuery(name = QUERY_RESOURCES_BY_DOMAIN_ID_COUNT, query = "SELECT count(d.id) FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id ")
+
+/*
+@NamedQuery(name = QUERY_RESOURCE_FILTER_COUNT, query = "SELECT count(r.id) FROM DBResource r WHERE " +
+        " (:group_id IS NULL OR r.group.id = :group_id) " +
+        "AND (:domain_id IS NULL OR r.domainResourceDef.domain.id = :domain_id) " +
+        "AND (:resource_def_id IS NULL OR r.domainResourceDef.resourceDef.id = :resource_def_id) ")
+*/
+@NamedQuery(name = QUERY_RESOURCE_FILTER_COUNT, query = "SELECT count(r.id) FROM DBResource r " +
+        " JOIN DBDomainResourceDef dr ON dr.id = r.domainResourceDef.id  " +
+        " WHERE (:group_id IS NULL OR r.group.id = :group_id) " +
+        " AND (:user_id IS NULL OR r.id in (select rm.resource.id from DBResourceMember rm where rm.user.id = :user_id AND rm.role in (:membership_roles) )) " +
+        " AND (:domain_id IS NULL OR dr.domain.id = :domain_id) " +
+        " AND (:resource_def_id IS NULL OR dr.resourceDef.id = :resource_def_id) " +
+        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter))) "
+)
+@NamedQuery(name = QUERY_RESOURCE_FILTER, query = "SELECT r FROM  DBResource r " +
+        " JOIN DBDomainResourceDef dr ON dr.id = r.domainResourceDef.id  " +
+        " WHERE (:group_id IS NULL OR r.group.id = :group_id) " +
+        " AND (:user_id IS NULL OR r.id in (select rm.resource.id from DBResourceMember rm where rm.user.id = :user_id AND rm.role in (:membership_roles) )) " +
+        " AND (:domain_id IS NULL OR dr.domain.id = :domain_id) " +
+        " AND (:resource_def_id IS NULL OR dr.resourceDef.id = :resource_def_id) " +
+        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter)) )" +
+        "order by r.id asc")
+
+
+//JOIN DBResourceMember  rm ON r.id = rm.resource.id
+// user.id = :user_id AND rm.role in (:membership_roles)
+/*
+        " (:group_id IS NULL OR r.group.id = :group_id) " +
+        "AND (:domain_id IS NULL OR r.domainResourceDef.domain.id = :domain_id) " +
+        "AND (:resource_def_id IS NULL OR r.domainResourceDef.resourceDef.id = :resource_def_id) ")
+*/
 
 
 @NamedQuery(name = "DBResource.getServiceGroupByID", query = "SELECT d FROM DBResource d WHERE d.id = :id")
@@ -58,9 +89,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " OR d.identifierScheme = :participantScheme)")
 @NamedQuery(name = "DBResource.deleteById", query = "DELETE FROM DBResource d WHERE d.id = :id")
 
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "DBResource.deleteAllOwnerships", query = "DELETE FROM SMP_RESOURCE_MEMBER WHERE FK_SG_ID=:serviceGroupId")
-})
+@NamedNativeQuery(name = "DBResource.deleteAllOwnerships", query = "DELETE FROM SMP_RESOURCE_MEMBER WHERE FK_SG_ID=:serviceGroupId")
+
 public class DBResource extends BaseEntity {
 
     @Id
@@ -84,12 +114,9 @@ public class DBResource extends BaseEntity {
     private VisibilityType visibility = VisibilityType.PUBLIC;
 
     // The domain group list which handles the resource
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "SMP_GROUP_RESOURCE",
-            joinColumns = @JoinColumn(name = "FK_RESOURCE_ID"),
-            inverseJoinColumns = @JoinColumn(name = "FK_GROUP_ID")
-    )
-    private List<DBGroup> groups = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FK_GROUP_ID", nullable = false)
+    private DBGroup group;
 
     // The domain to which the resource belongs
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -155,14 +182,13 @@ public class DBResource extends BaseEntity {
         return this.resourceMembers;
     }
 
-    public List<DBGroup> getGroups() {
-        return this.groups;
+    public DBGroup getGroup() {
+        return group;
     }
 
-    public void addGroup(DBGroup group) {
-        this.groups.add(group);
+    public void setGroup(DBGroup group) {
+        this.group = group;
     }
-
 
     public List<DBSubresource> getSubresources() {
         return subresources;

@@ -63,9 +63,9 @@ public abstract class AbstractResourceDaoTest extends AbstractBaseDao {
     public DBResource createAndSaveNewResource(String domainCode, String group, String participantId, String participantSchema, String resourceDefSeg, DBUser usr) {
         Optional<DBGroup> optGroup = groupDao.getGroupByNameAndDomainCode(group, domainCode);
         Optional<DBDomainResourceDef> optDomainResourceDef = domainResourceDefDao
-                .getResourceDefConfigurationForDomainAndResourceDef(domainCode, resourceDefSeg);
+                .getResourceDefConfigurationForDomainCodeAndResourceDefCtx(domainCode, resourceDefSeg);
         DBResource sg = TestDBUtils.createDBResource(participantId, participantSchema);
-        sg.addGroup(optGroup.get());
+        sg.setGroup(optGroup.get());
         sg.setDomainResourceDef(optDomainResourceDef.get());
 
         if (usr != null) {

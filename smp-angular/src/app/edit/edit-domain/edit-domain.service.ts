@@ -8,11 +8,11 @@ import {User} from "../../security/user.model";
 import {SmpConstants} from "../../smp.constants";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {GroupRo} from "../../common/model/group-ro.model";
+import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
 
 @Injectable()
 export class EditDomainService {
-  private domainUpdateSubject = new Subject<DomainRo[]>();
-  private domainEntryUpdateSubject = new Subject<DomainRo>();
+
 
   constructor(
     private http: HttpClient,
@@ -23,41 +23,36 @@ export class EditDomainService {
   /**
    * Method fetches all domains where logged user is admin
    */
-  public getDomainsForDomainAdminUser() {
-    return this.getDomainsForType("domain-admin")
+  public getDomainsForDomainAdminUserObservable():Observable<DomainRo[]> {
+    return this.getDomainsForUserRoleTypeObservable("domain-admin")
   }
 
   /**
    * Method fetches all domains where logged user is admin
    */
-  public getDomainsForGroupAdminUser() {
-    return this.getDomainsForType("group-admin")
+  public getDomainsForGroupAdminUserObservable():Observable<DomainRo[]>  {
+    return this.getDomainsForUserRoleTypeObservable("group-admin")
   }
 
-  public getDomainsForType(type: string) {
+  public getDomainsForUserRoleTypeObservable(type: string) :Observable<DomainRo[]> {
     let params: HttpParams = new HttpParams()
       .set(SmpConstants.PATH_QUERY_FILTER_TYPE, type);
 
     const currentUser: User = this.securityService.getCurrentUser();
-    this.http.get<DomainRo[]>(SmpConstants.REST_PUBLIC_DOMAIN_EDIT
-      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId), {params})
-      .subscribe((result: DomainRo[]) => {
-        this.notifyDomainsUpdated(result);
-      }, (error: any) => {
-        this.alertService.error(error.error?.errorDescription)
-      });
+    return this.http.get<DomainRo[]>(SmpConstants.REST_EDIT_DOMAIN
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId), {params});
   }
 
   public getDomainGroupsObservable(domainId: string): Observable<GroupRo[]> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.get<GroupRo[]>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN
+    return this.http.get<GroupRo[]>(SmpConstants.REST_EDIT_DOMAIN_GROUP
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId));
   }
 
   public deleteDomainGroupObservable(domainId: string, groupId: string): Observable<GroupRo> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.delete<GroupRo>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN_DELETE
+    return this.http.delete<GroupRo>(SmpConstants.REST_EDIT_DOMAIN_GROUP_DELETE
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
       .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, groupId));
@@ -65,7 +60,7 @@ export class EditDomainService {
 
   public createDomainGroupObservable(domainId: string, group: GroupRo): Observable<GroupRo> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.put<GroupRo>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN_CREATE
+    return this.http.put<GroupRo>(SmpConstants.REST_EDIT_DOMAIN_GROUP_CREATE
         .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
         .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
       , group);
@@ -73,27 +68,21 @@ export class EditDomainService {
 
   public saveDomainGroupObservable(domainId: string, group: GroupRo): Observable<GroupRo> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<GroupRo>(SmpConstants.REST_PUBLIC_GROUP_DOMAIN_UPDATE
+    return this.http.post<GroupRo>(SmpConstants.REST_EDIT_DOMAIN_GROUP_UPDATE
         .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
         .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domainId)
         .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, group.groupId)
       , group);
   }
 
-  notifyDomainsUpdated(res: DomainRo[]) {
-    this.domainUpdateSubject.next(res);
+
+  public getDomainResourceDefinitionsObservable(domain: DomainRo): Observable<ResourceDefinitionRo[]> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.get<ResourceDefinitionRo[]>(SmpConstants.REST_EDIT_DOMAIN_RESOURCE_DEFS
+        .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+        .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
+    );
   }
 
-  notifyDomainEntryUpdated(res: DomainRo) {
-    this.domainEntryUpdateSubject.next(res);
-  }
-
-  onDomainUpdatedEvent(): Observable<DomainRo[]> {
-    return this.domainUpdateSubject.asObservable();
-  }
-
-  onDomainEntryUpdatedEvent(): Observable<DomainRo> {
-    return this.domainEntryUpdateSubject.asObservable();
-  }
 
 }

@@ -22,15 +22,15 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTER
  */
 @RestController
 @RequestMapping(value = CONTEXT_PATH_INTERNAL_EXTENSION)
-public class ExtensionAdminResource {
+public class ExtensionAdminController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ExtensionAdminResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ExtensionAdminController.class);
 
     protected UIExtensionService uiExtensionService;
 
     protected SMPAuthorizationService authorizationService;
 
-    public ExtensionAdminResource(UIExtensionService uiExtensionService, SMPAuthorizationService authorizationService) {
+    public ExtensionAdminController(UIExtensionService uiExtensionService, SMPAuthorizationService authorizationService) {
         this.uiExtensionService = uiExtensionService;
         this.authorizationService = authorizationService;
     }

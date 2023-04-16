@@ -6,6 +6,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceDefinitionRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
@@ -153,6 +154,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
                         domainResourceDefDao.create(domain, resourceDef)
                 );
     }
+
 
     @Transactional
     public DomainRO getDomainData(Long domainId){

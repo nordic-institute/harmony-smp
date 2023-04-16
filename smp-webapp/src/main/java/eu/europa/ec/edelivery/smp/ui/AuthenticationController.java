@@ -30,9 +30,9 @@ import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NA
  */
 @RestController
 @RequestMapping(value = ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY)
-public class AuthenticationResource {
+public class AuthenticationController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(AuthenticationController.class);
     public static final String RELATIVE_BASE_ENTRY = "../../../#/";
 
     protected SMPAuthenticationService authenticationService;
@@ -46,7 +46,7 @@ public class AuthenticationResource {
     SMPCookieWriter smpCookieWriter;
 
     @Autowired
-    public AuthenticationResource(SMPAuthenticationService authenticationService
+    public AuthenticationController(SMPAuthenticationService authenticationService
             , SMPAuthorizationService authorizationService
             , ConfigurationService configurationService
             , SMPCookieWriter smpCookieWriter

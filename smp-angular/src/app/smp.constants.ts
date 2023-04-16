@@ -10,7 +10,7 @@ export class SmpConstants {
   public static readonly PATH_ACTION_DELETE = 'delete';
   public static readonly PATH_ACTION_UPDATE = 'update';
   public static readonly PATH_ACTION_CREATE = 'create';
-  public static readonly PATH_ACTION_ADD = 'add';
+  public static readonly PATH_ACTION_PUT = 'put';
   public static readonly PATH_ACTION_RETRIEVE = 'retrieve';
   public static readonly PATH_ACTION_SEARCH = 'search';
   public static readonly PATH_ACTION_UPDATE_RESOURCE_TYPES = 'update-resource-types';
@@ -20,6 +20,7 @@ export class SmpConstants {
   public static readonly PATH_PARAM_ENC_DOMAIN_ID = '{domain-id}';
   public static readonly PATH_PARAM_ENC_MEMBER_ID = '{member-id}';
   public static readonly PATH_PARAM_ENC_GROUP_ID = '{group-id}';
+  public static readonly PATH_PARAM_ENC_RESOURCE_ID = '{resource-id}';
   public static readonly PATH_PARAM_CERT_ALIAS = '{cert-alias}';
   public static readonly PATH_PARAM_ENC_CREDENTIAL_ID = '{credential-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
@@ -31,28 +32,56 @@ export class SmpConstants {
   public static readonly PATH_RESOURCE_TYPE_DOMAIN = 'domain';
   public static readonly PATH_RESOURCE_TYPE_MEMBER = 'member';
   public static readonly PATH_RESOURCE_TYPE_GROUP = 'group';
-  public static readonly PATH_QUERY_FILTER_TYPE = 'type'
 
+  public static readonly PATH_RESOURCE_TYPE_RESOURCE_DEF = 'res-def';
+
+  public static readonly PATH_RESOURCE_TYPE_RESOURCE = 'resource';
+  public static readonly PATH_QUERY_FILTER_TYPE = 'type'
 
 
   //------------------------------
   // public endpoints
   public static readonly REST_PUBLIC = 'public/rest/';
   public static readonly REST_INTERNAL = 'internal/rest/';
+
+  public static readonly REST_EDIT = 'edit/rest/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/';
+  /* Public services */
   public static readonly REST_PUBLIC_SEARCH_SERVICE_GROUP = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
+
   public static readonly REST_PUBLIC_DOMAIN = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
+  /* Public edit services */
+  public static readonly REST_EDIT_DOMAIN = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
+  public static readonly REST_EDIT_DOMAIN_MANAGE = SmpConstants.REST_EDIT_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID;
+  public static readonly REST_EDIT_DOMAIN_MEMBER = SmpConstants.REST_EDIT_DOMAIN_MANAGE + '/' + SmpConstants.PATH_RESOURCE_TYPE_MEMBER;
+  public static readonly REST_EDIT_DOMAIN_MEMBER_PUT = SmpConstants.REST_EDIT_DOMAIN_MEMBER + '/' + SmpConstants.PATH_ACTION_PUT;
+  public static readonly REST_EDIT_DOMAIN_MEMBER_DELETE = SmpConstants.REST_EDIT_DOMAIN_MEMBER + '/' + SmpConstants.PATH_PARAM_ENC_MEMBER_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
+  // group endpoints
+  public static readonly REST_EDIT_DOMAIN_GROUP = SmpConstants.REST_EDIT_DOMAIN_MANAGE + '/' + SmpConstants.PATH_RESOURCE_TYPE_GROUP;
 
-  public static readonly REST_PUBLIC_DOMAIN_EDIT = SmpConstants.REST_PUBLIC_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
+  public static readonly REST_EDIT_DOMAIN_GROUP_CREATE = SmpConstants.REST_EDIT_DOMAIN_GROUP + '/' + SmpConstants.PATH_ACTION_CREATE;
+  public static readonly REST_EDIT_DOMAIN_GROUP_DELETE = SmpConstants.REST_EDIT_DOMAIN_GROUP
+    + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
+  public static readonly REST_EDIT_DOMAIN_GROUP_UPDATE = SmpConstants.REST_EDIT_DOMAIN_GROUP
+    + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID + '/' + SmpConstants.PATH_ACTION_UPDATE;
+  public static readonly REST_EDIT_GROUP_MEMBER = SmpConstants.REST_EDIT_DOMAIN_GROUP  + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID
+    + '/' + SmpConstants.PATH_RESOURCE_TYPE_MEMBER ;
+  public static readonly REST_EDIT_GROUP_MEMBER_PUT = SmpConstants.REST_EDIT_GROUP_MEMBER  + '/' + SmpConstants.PATH_ACTION_PUT;
+  public static readonly REST_EDIT_GROUP_MEMBER_DELETE = SmpConstants.REST_EDIT_GROUP_MEMBER + '/' + SmpConstants.PATH_PARAM_ENC_MEMBER_ID
+    + '/' + SmpConstants.PATH_ACTION_DELETE;
+  public static readonly REST_EDIT_DOMAIN_RESOURCE_DEFS = SmpConstants.REST_EDIT_DOMAIN_MANAGE + '/' + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE_DEF;
 
-  public static readonly REST_PUBLIC_DOMAIN_MEMBERS = SmpConstants.REST_PUBLIC_DOMAIN_EDIT +
-    '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + "members";
-  public static readonly REST_PUBLIC_DOMAIN_MEMBERS_ADD = SmpConstants.REST_PUBLIC_DOMAIN_EDIT
-    + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + "member";
-  public static readonly REST_PUBLIC_DOMAIN_MEMBERS_DELETE = SmpConstants.REST_PUBLIC_DOMAIN_EDIT
-    + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + "member"
-    + '/' + SmpConstants.PATH_PARAM_ENC_MEMBER_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
+  public static readonly REST_EDIT_RESOURCE = SmpConstants.REST_EDIT_DOMAIN_GROUP  + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID
+    + '/' + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE ;
+  public static readonly REST_EDIT_RESOURCE_CREATE = SmpConstants.REST_EDIT_RESOURCE  + '/' + SmpConstants.PATH_ACTION_CREATE
+  public static readonly REST_EDIT_RESOURCE_UPDATE = SmpConstants.REST_EDIT_RESOURCE  + '/' + SmpConstants.PATH_PARAM_ENC_RESOURCE_ID
+    + '/' + SmpConstants.PATH_ACTION_UPDATE;
+  public static readonly REST_EDIT_RESOURCE_DELETE = SmpConstants.REST_EDIT_RESOURCE  + '/' + SmpConstants.PATH_PARAM_ENC_RESOURCE_ID
+    + '/' + SmpConstants.PATH_ACTION_DELETE;
 
 
+
+
+  // legacy
   public static readonly REST_PUBLIC_GROUP_EDIT = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_GROUP + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
   public static readonly REST_PUBLIC_GROUP_DOMAIN = SmpConstants.REST_PUBLIC_GROUP_EDIT + '/' +
     SmpConstants.PATH_RESOURCE_TYPE_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID;
@@ -94,6 +123,15 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_SECURITY = SmpConstants.REST_PUBLIC + 'security/';
   public static readonly REST_PUBLIC_SECURITY_AUTHENTICATION = SmpConstants.REST_PUBLIC_SECURITY + 'authentication';
   public static readonly REST_PUBLIC_SECURITY_USER = SmpConstants.REST_PUBLIC_SECURITY + 'user';
+
+
+  public static readonly REST_PUBLIC_RESOURCE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE;
+  public static readonly REST_PUBLIC_RESOURCE_EDIT = SmpConstants.REST_PUBLIC_RESOURCE + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID
+    + '/' + SmpConstants.PATH_RESOURCE_TYPE_GROUP + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID;
+
+
+  public static readonly REST_PUBLIC_RESOURCE_EDIT_DELETE = SmpConstants.REST_PUBLIC_RESOURCE_EDIT +
+    '/' + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE + '/' + SmpConstants.PATH_PARAM_ENC_RESOURCE_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
 
   public static readonly REST_PUBLIC_SERVICE_GROUP = SmpConstants.REST_PUBLIC + 'service-group';
   public static readonly REST_PUBLIC_SERVICE_GROUP_ENTITY = SmpConstants.REST_PUBLIC_SERVICE_GROUP + '/' + SmpConstants.PATH_PARAM_SRV_GROUP_ID;

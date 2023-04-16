@@ -351,19 +351,6 @@
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_GROUP_RESOURCE (
-       FK_RESOURCE_ID bigint not null,
-        FK_GROUP_ID bigint not null
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    create table SMP_GROUP_RESOURCE_AUD (
-       REV bigint not null,
-        FK_RESOURCE_ID bigint not null,
-        FK_GROUP_ID bigint not null,
-        REVTYPE tinyint,
-        primary key (REV, FK_RESOURCE_ID, FK_GROUP_ID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
     create table SMP_RESOURCE (
        ID bigint not null auto_increment comment 'Unique ServiceGroup id',
         CREATED_ON datetime not null,
@@ -374,6 +361,7 @@
         VISIBILITY varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint not null,
         FK_DOREDEF_ID bigint not null,
+        FK_GROUP_ID bigint not null,
         primary key (ID)
     ) comment='SMP resource Identifier and scheme' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -389,6 +377,7 @@
         VISIBILITY varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint,
         FK_DOREDEF_ID bigint,
+        FK_GROUP_ID bigint,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -741,21 +730,6 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        foreign key (REV) 
        references SMP_REV_INFO (id);
 
-    alter table SMP_GROUP_RESOURCE 
-       add constraint FK4i7qwh2ydleesw4pkf6c17t9t 
-       foreign key (FK_GROUP_ID) 
-       references SMP_GROUP (ID);
-
-    alter table SMP_GROUP_RESOURCE 
-       add constraint FKt3a5ucm55flr00fj8a7gwchs9 
-       foreign key (FK_RESOURCE_ID) 
-       references SMP_RESOURCE (ID);
-
-    alter table SMP_GROUP_RESOURCE_AUD 
-       add constraint FKqd2545hkap74058m56lk12lbg 
-       foreign key (REV) 
-       references SMP_REV_INFO (id);
-
     alter table SMP_RESOURCE 
        add constraint FKkc5a6okrvq7dv87itfp7i1vmv 
        foreign key (FK_DOCUMENT_ID) 
@@ -765,6 +739,11 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        add constraint FK24mw8fiua39nh8rnobhgmujri 
        foreign key (FK_DOREDEF_ID) 
        references SMP_DOMAIN_RESOURCE_DEF (ID);
+
+    alter table SMP_RESOURCE 
+       add constraint FKft55kasui36i77inf0wh8utv5 
+       foreign key (FK_GROUP_ID) 
+       references SMP_GROUP (ID);
 
     alter table SMP_RESOURCE_AUD 
        add constraint FKlbbfltxw6qmph5w3i8c9qf6kb 

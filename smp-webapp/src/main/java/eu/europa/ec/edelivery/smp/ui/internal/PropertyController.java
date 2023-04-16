@@ -23,14 +23,14 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
  */
 @RestController
 @RequestMapping(value = CONTEXT_PATH_INTERNAL_PROPERTY)
-public class PropertyResource {
+public class PropertyController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(PropertyController.class);
 
     final UIPropertyService uiPropertyService;
     final ConfigurationService configurationService;
 
-    public PropertyResource(UIPropertyService uiPropertyService, ConfigurationService configurationService) {
+    public PropertyController(UIPropertyService uiPropertyService, ConfigurationService configurationService) {
         this.uiPropertyService = uiPropertyService;
         this.configurationService = configurationService;
     }

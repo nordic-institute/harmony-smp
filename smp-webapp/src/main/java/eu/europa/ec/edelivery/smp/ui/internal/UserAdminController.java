@@ -31,14 +31,14 @@ import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntit
  */
 @RestController
 @RequestMapping(value = CONTEXT_PATH_INTERNAL_USER)
-public class UserAdminResource {
+public class UserAdminController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserAdminResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserAdminController.class);
     protected UIUserService uiUserService;
     protected UITruststoreService uiTruststoreService;
     protected SMPAuthorizationService authorizationService;
 
-    public UserAdminResource(UIUserService uiUserService, UITruststoreService uiTruststoreService, SMPAuthorizationService authorizationService) {
+    public UserAdminController(UIUserService uiUserService, UITruststoreService uiTruststoreService, SMPAuthorizationService authorizationService) {
         this.uiUserService = uiUserService;
         this.uiTruststoreService = uiTruststoreService;
         this.authorizationService = authorizationService;
@@ -145,7 +145,7 @@ public class UserAdminResource {
             dres.setStringMessage("Could not delete logged user!");
             return dres;
         }
-        dres.getListIds().addAll(query.stream().map(id -> SessionSecurityUtils.encryptedEntityId(id)).collect(Collectors.toList()));
+        dres.getListIds().addAll(query.stream().map(SessionSecurityUtils::encryptedEntityId).collect(Collectors.toList()));
         return uiUserService.validateDeleteRequest(dres);
     }
 

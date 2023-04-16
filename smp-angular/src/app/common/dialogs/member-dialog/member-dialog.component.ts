@@ -18,7 +18,6 @@ import {GroupRo} from "../../model/group-ro.model";
 })
 export class MemberDialogComponent implements OnInit {
 
-  formTitle = "Member dialog";
   memberForm: FormGroup;
 
   message: string;
@@ -45,7 +44,6 @@ export class MemberDialogComponent implements OnInit {
               private formBuilder: FormBuilder
   ) {
     dialogRef.disableClose = true;//disable default close operation
-    this.formTitle = data.formTitle;
     this._currentDomain = data.domain;
     this._currentGroup = data.group;
     this.membershipType= data.membershipType;
@@ -60,6 +58,9 @@ export class MemberDialogComponent implements OnInit {
       ...data.member
     };
     this.currentFilter = "";
+  }
+  get formTitle(){
+    return (!this._currentMember.memberId? "Invite":"Edit") + " " + this.membershipType + " member"
   }
 
   get member(): MemberRo {
@@ -142,8 +143,6 @@ export class MemberDialogComponent implements OnInit {
   }
 
   public onSaveButtonClicked() {
-    let member = this.member;
-
       this.getAddMembershipService().subscribe((member: MemberRo) => {
         if (!!member) {
           this.closeDialog();
@@ -159,7 +158,7 @@ export class MemberDialogComponent implements OnInit {
       case MemberTypeEnum.DOMAIN:
         return this.membershipService.addEditMemberToDomain(this._currentDomain.domainId, this.member)
       case MemberTypeEnum.GROUP:
-        return  this.membershipService.addEditMemberToGroup(this._currentGroup.groupId, this.member)
+        return  this.membershipService.addEditMemberToGroup(this._currentGroup.groupId,this._currentDomain.domainId, this.member)
       case MemberTypeEnum.RESOURCE:
         return null;
     }

@@ -87,7 +87,7 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
         }
         query.setParameter(PARAM_DOMAIN_ID, domainId);
         if (hasFilter) {
-            query.setParameter(PARAM_USER_FILTER, "%"+StringUtils.trim(filter)+"%");
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
         }
         return query.getResultList();
     }
@@ -97,7 +97,7 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
         TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_DOMAIN_MEMBERS_FILTER_COUNT : QUERY_DOMAIN_MEMBERS_COUNT, Long.class);
         query.setParameter(PARAM_DOMAIN_ID, domainId);
         if (hasFilter) {
-            query.setParameter(PARAM_USER_FILTER, "%"+StringUtils.trim(filter)+"%");
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
         }
         return query.getSingleResult();
     }
