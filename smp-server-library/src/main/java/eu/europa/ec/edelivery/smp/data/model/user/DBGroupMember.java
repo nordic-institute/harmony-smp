@@ -40,8 +40,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " WHERE c.group.id = :group_id AND (lower(c.user.fullName) like lower(:user_filter) OR lower(c.user.username) like lower(:user_filter))")
 @NamedQuery(name = QUERY_GROUP_MEMBERS_FILTER, query = "SELECT c FROM DBGroupMember c " +
         " WHERE c.group.id = :group_id  AND (lower(c.user.fullName) like lower(:user_filter) OR lower(c.user.username) like lower(:user_filter))  order by c.user.username")
-
-
 @NamedQuery(name = QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT, query = "SELECT count(c) FROM DBGroupMember c " +
         " WHERE c.user.id = :user_id AND c.group.domain.id = :domain_id AND c.role= :membership_role ")
 

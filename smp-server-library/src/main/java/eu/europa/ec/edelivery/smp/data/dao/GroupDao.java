@@ -135,20 +135,30 @@ public class GroupDao extends BaseDao<DBGroup> {
     }
 
     public List<DBGroup> getGroupsByUserIdAndRoles(Long userId, MembershipRoleType... roleTypes) {
-        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_USER_ROLES, DBGroup.class);
+        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_USER_GROUP_ROLES, DBGroup.class);
         query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
         return query.getResultList();
     }
 
-    public List<DBGroup> getGroupsByDomainUserIdAndRoles(Long domainId, Long userId, MembershipRoleType... roleTypes) {
+    public List<DBGroup> getGroupsByDomainUserIdAndGroupRoles(Long domainId, Long userId, MembershipRoleType... roleTypes) {
 
-        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_DOMAIN_USER_ROLES, DBGroup.class);
+        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_DOMAIN_USER_GROUP_ROLES, DBGroup.class);
         query.setParameter(PARAM_DOMAIN_ID, domainId);
         query.setParameter(PARAM_USER_ID, userId);
         query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
         return query.getResultList();
     }
+
+    public List<DBGroup> getGroupsByDomainUserIdAndResourceRoles(Long domainId, Long userId, MembershipRoleType... roleTypes) {
+
+        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_DOMAIN_USER_RESOURCE_ROLES, DBGroup.class);
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
     /**
      * Removes Entity by given domain code
      *

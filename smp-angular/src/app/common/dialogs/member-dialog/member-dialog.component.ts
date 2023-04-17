@@ -10,6 +10,7 @@ import {DomainRo} from "../../model/domain-ro.model";
 import {MemberTypeEnum} from "../../enums/member-type.enum";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {GroupRo} from "../../model/group-ro.model";
+import {ResourceRo} from "../../model/resource-ro.model";
 
 
 @Component({
@@ -28,6 +29,7 @@ export class MemberDialogComponent implements OnInit {
   _currentMember: MemberRo;
   _currentDomain: DomainRo;
   _currentGroup: GroupRo;
+  _currentResource: ResourceRo;
   membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
 
   filteredOptions: Observable<SearchUserRo[]>;
@@ -46,6 +48,7 @@ export class MemberDialogComponent implements OnInit {
     dialogRef.disableClose = true;//disable default close operation
     this._currentDomain = data.domain;
     this._currentGroup = data.group;
+    this._currentResource = data.resource;
     this.membershipType= data.membershipType;
 
     this.memberForm = formBuilder.group({
@@ -113,7 +116,7 @@ export class MemberDialogComponent implements OnInit {
       case MemberTypeEnum.GROUP:
         return " group ["+this._currentGroup?.groupName+"]"
       case MemberTypeEnum.RESOURCE:
-        return " resource"
+        return " resource ["+this._currentResource?.resourceTypeIdentifier+"]"
     }
     return " target not selected!"
   }
@@ -160,7 +163,7 @@ export class MemberDialogComponent implements OnInit {
       case MemberTypeEnum.GROUP:
         return  this.membershipService.addEditMemberToGroup(this._currentGroup.groupId,this._currentDomain.domainId, this.member)
       case MemberTypeEnum.RESOURCE:
-        return null;
+        return  this.membershipService.addEditMemberToResource(this._currentResource, this._currentGroup,this._currentDomain, this.member)
     }
   }
 }

@@ -150,6 +150,8 @@ import {GroupResourcePanelComponent} from "./edit/edit-group/group-resource-pane
 import {
   ResourceDialogComponent
 } from "./edit/edit-group/group-resource-panel/resource-dialog/resource-dialog.component";
+import {EditResourceComponent} from "./edit/edit-resources/edit-resource.component";
+import {EditResourceService} from "./edit/edit-resources/edit-resource.service";
 
 
 @NgModule({
@@ -188,6 +190,7 @@ import {
     DomainSelectorComponent,
     EditDomainComponent,
     EditGroupComponent,
+    EditResourceComponent,
     ExpiredPasswordDialogComponent,
     ExtensionComponent,
     ExtensionPanelComponent,
@@ -285,6 +288,7 @@ import {
     DownloadService,
     EditDomainService,
     EditGroupService,
+    EditResourceService,
     ExtensionService,
     GlobalLookups,
     HttpEventService,

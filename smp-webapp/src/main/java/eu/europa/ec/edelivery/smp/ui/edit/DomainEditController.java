@@ -57,7 +57,9 @@ public class DomainEditController {
         if (StringUtils.equals(forRole, "group-admin")) {
             return uiDomainService.getAllDomainsForGroupAdminUser(userId);
         }
-
+        if (StringUtils.equals(forRole, "resource-admin")) {
+            return uiDomainService.getAllDomainsForResourceAdminUser(userId);
+        }
         if (StringUtils.isBlank(forRole) || StringUtils.equals(forRole, "domain-admin")) {
             return uiDomainService.getAllDomainsForDomainAdminUser(userId);
         }

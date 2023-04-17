@@ -58,6 +58,19 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " JOIN DBGroupMember gm ON g.id = gm.group.id " +
         " WHERE gm.role in (:membership_roles) and gm.user.id= :user_id")
 
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_RESOURCE_ROLES_COUNT, query = "SELECT count(d) FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " JOIN DBResourceMember rm ON r.id = rm.resource.id " +
+        " WHERE rm.role in (:membership_roles) and rm.user.id= :user_id")
+
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_RESOURCE_ROLES, query = "SELECT d FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " JOIN DBResourceMember rm ON r.id = rm.resource.id " +
+        " WHERE rm.role in (:membership_roles) and rm.user.id= :user_id")
+
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 

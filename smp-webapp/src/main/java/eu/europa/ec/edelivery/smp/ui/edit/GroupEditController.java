@@ -66,13 +66,18 @@ public class GroupEditController {
             return uiGroupPublicService.getAllGroupsForDomain(domainId);
         }
         if (StringUtils.equalsIgnoreCase("group-admin", forRole)) {
-            return uiGroupPublicService.getAllGroupsForDomainAndUserAndRole(domainId, userId, MembershipRoleType.ADMIN);
+            return uiGroupPublicService.getAllGroupsForDomainAndUserAndGroupRole(domainId, userId, MembershipRoleType.ADMIN);
         }
+
+        if (StringUtils.equalsIgnoreCase("resource-admin", forRole)) {
+            return uiGroupPublicService.getAllGroupsForDomainAndUserAndResourceRole(domainId, userId, MembershipRoleType.ADMIN);
+        }
+
         if (StringUtils.equalsIgnoreCase("group-viewer", forRole)) {
-            return uiGroupPublicService.getAllGroupsForDomainAndUserAndRole(domainId, userId, MembershipRoleType.VIEWER);
+            return uiGroupPublicService.getAllGroupsForDomainAndUserAndGroupRole(domainId, userId, MembershipRoleType.VIEWER);
         }
         if (StringUtils.equalsIgnoreCase("all-roles", forRole)) {
-            return uiGroupPublicService.getAllGroupsForDomainAndUserAndRole(domainId, userId, null);
+            return uiGroupPublicService.getAllGroupsForDomainAndUserAndGroupRole(domainId, userId, null);
         }
         throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "getGroupsForDomain", "Unknown parameter type [" + forRole + "]!");
     }

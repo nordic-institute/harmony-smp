@@ -15,6 +15,7 @@ import {dirtyDeactivateGuard} from "./guards/dirty.guard";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
+import {EditResourceComponent} from "./edit/edit-resources/edit-resource.component";
 
 
 const appRoutes: Routes = [
@@ -28,7 +29,7 @@ const appRoutes: Routes = [
     children: [
       {path: 'edit-domain', component: EditDomainComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'edit-group', component: EditGroupComponent, canDeactivate: [dirtyDeactivateGuard]},
-      {path: 'edit-resource', component: PropertyComponent, canDeactivate: [dirtyDeactivateGuard]}
+      {path: 'edit-resource', component: EditResourceComponent, canDeactivate: [dirtyDeactivateGuard]}
     ]
   },
   {

@@ -19,6 +19,9 @@ public class QueryNames {
 
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT = "DBDomain.getByUserAndGroupRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_GROUP_ROLES = "DBDomain.getByUserAndGroupRoles";
+
+    public static final String QUERY_DOMAIN_BY_USER_RESOURCE_ROLES_COUNT = "DBDomain.getByUserAndResourceRolesCount";
+    public static final String QUERY_DOMAIN_BY_USER_RESOURCE_ROLES = "DBDomain.getByUserAndResourceRoles";
     public static final String QUERY_EXTENSION_ALL = "DBExtension.getAll";
     public static final String QUERY_EXTENSION_BY_IDENTIFIER = "DBExtension.getByIdentifier";
 
@@ -27,13 +30,15 @@ public class QueryNames {
     public static final String QUERY_GROUP_BY_NAME_DOMAIN = "DBGroup.getByNameDomain";
     public static final String QUERY_GROUP_BY_NAME_DOMAIN_CODE = "DBGroup.getByNameDomainCode";
 
-    public static final String QUERY_GROUP_BY_USER_ROLES = "DBGroup.getByUserAndRoles";
-    public static final String QUERY_GROUP_BY_DOMAIN_USER_ROLES = "DBGroup.getByDomainAndUserAndRoles";
-    public static final String QUERY_GROUP_BY_USER_ROLES_COUNT = "DBGroup.getByUserAndRolesCount";
-    public static final String QUERY_GROUP_MEMBERS_COUNT = "DBGroup.getByGroupCount";
-    public static final String QUERY_GROUP_MEMBERS_FILTER_COUNT = "DBGroup.getByGroupFilterCount";
-    public static final String QUERY_GROUP_MEMBERS = "DBGroup.getByGroup";
-    public static final String QUERY_GROUP_MEMBERS_FILTER = "DBGroup.getByGroupFilter";
+    public static final String QUERY_GROUP_BY_USER_GROUP_ROLES = "DBGroup.getByUserAndRoles";
+    public static final String QUERY_GROUP_BY_DOMAIN_USER_GROUP_ROLES = "DBGroup.getByDomainAndUserAndGroupRoles";
+
+    public static final String QUERY_GROUP_BY_DOMAIN_USER_RESOURCE_ROLES = "DBGroup.getByDomainAndUserAndResourceRoles";
+    public static final String QUERY_GROUP_BY_USER_ROLES_COUNT = "DBGroup.getByUserAndGrouRolesCount";
+    public static final String QUERY_GROUP_MEMBERS_COUNT = "DBGroupMember.getByGroupCount";
+    public static final String QUERY_GROUP_MEMBERS_FILTER_COUNT = "DBGroupMember.getByGroupFilterCount";
+    public static final String QUERY_GROUP_MEMBERS = "DBGroupMember.getByGroup";
+    public static final String QUERY_GROUP_MEMBERS_FILTER = "DBGroupMember.getByGroupFilter";
 
     public static final String QUERY_DOMAIN_MEMBER_ALL = "DBDomainMember.getAll";
     public static final String QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS_COUNT = "DBDomainMember.getByUserAndDomainsCount";
@@ -66,6 +71,11 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_ROLE_COUNT = "DBResourceMember.getByUserAndDomainRoleResourceCount";
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT = "DBResourceMember.getByUserAndGroupsResourcesAndRoleCount";
 
+    public static final String QUERY_RESOURCE_MEMBERS_COUNT = "DBResourceMember.getByResourceCount";
+    public static final String QUERY_RESOURCE_MEMBERS_FILTER_COUNT = "DBResourceMember.getByResourceFilterCount";
+    public static final String QUERY_RESOURCE_MEMBERS = "DBResourceMember.getByResource";
+    public static final String QUERY_RESOURCE_MEMBERS_FILTER = "DBResourceMember.getByResourceFilter";
+
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE= "DBResourceMember.getByUserAndResource";
 
     public static final String QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF = "DBSubresource.getByIdentifierAndResourceAndSubresourceDef";
@@ -93,6 +103,8 @@ public class QueryNames {
     public static final String QUERY_GROUP_MEMBER_BY_USER_GROUPS_COUNT = "DBGroupMember.getByUserAndGroupsCount";
     public static final String QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_COUNT = "DBGroupMember.getByUserAndDomainGroupsCount";
     public static final String QUERY_GROUP_MEMBER_BY_USER_GROUPS = "DBGroupMember.getByUserAndGroups";
+
+    public static final String QUERY_RESOURCE_MEMBER_BY_USER_RESOURCES = "DBResourceMember.getByUserAndResources";
     public static final String QUERY_GROUP_MEMBER_BY_USER_DOMAIN_GROUPS_ROLE_COUNT = "DBGroupMember.getByUserAndDomainGroupsAndRoleCount";
 
     public static final String QUERY_USER_BY_CI_USERNAME = "DBUser.getUserByUsernameInsensitive";
@@ -122,6 +134,7 @@ public class QueryNames {
     public static final String PARAM_CERTIFICATE_IDENTIFIER = "certificate_identifier";
 
     public static final String PARAM_RESOURCE_ID = "resource_id";
+    public static final String PARAM_RESOURCE_IDS = "resource_ids";
     public static final String PARAM_SUBRESOURCE_ID = "subresource_id";
     // resource identifier value
     public static final String PARAM_RESOURCE_IDENTIFIER = "resource_identifier";

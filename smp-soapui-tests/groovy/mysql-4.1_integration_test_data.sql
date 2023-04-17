@@ -95,7 +95,12 @@ insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, I
 (2, 1, 1, 2, 'service-value2', 'service-schema2', NOW(),  NOW());
 
 insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 2, 'ADMIN', NOW(),  NOW());
+(1, 1, 2, 'ADMIN', NOW(),  NOW()),
+(2, 2, 1, 'ADMIN', NOW(),  NOW()),
+(3, 3, 2, 'ADMIN', NOW(),  NOW()),
+(4, 4, 2, 'ADMIN', NOW(),  NOW()),
+(5, 5, 2, 'ADMIN', NOW(),  NOW())
+;
 
 insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 2, 'ADMIN', NOW(),  NOW()),
@@ -105,3 +110,4 @@ insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREA
 insert into SMP_DOMAIN_MEMBER (ID, FK_DOMAIN_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 1, 'ADMIN', NOW(),  NOW()),
 (2, 1, 2, 'VIEWER', NOW(),  NOW());
+

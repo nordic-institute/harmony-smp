@@ -142,6 +142,23 @@ public class DomainDao extends BaseDao<DBDomain> {
         query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
         return query.getResultList();
     }
+
+    public Long getDomainsByUserIdAndResourceRolesCount(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_RESOURCE_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getSingleResult();
+    }
+
+    public List<DBDomain> getDomainsByUserIdAndResourceRoles(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_RESOURCE_ROLES, DBDomain.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
     public List<MembershipRoleType> toList(MembershipRoleType ... roleTypes){
         return Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
     }

@@ -76,13 +76,16 @@ public class ResourceConstants {
             + "{" + PATH_PARAM_ENC_MEMBER_ID + "}" + "/" +  PATH_ACTION_DELETE;
     public static final String CONTEXT_PATH_EDIT_RESOURCE = CONTEXT_PATH_EDIT_GROUP + "/" +  "{" + PATH_PARAM_ENC_GROUP_ID + "}"
             + "/"+ PATH_RESOURCE_TYPE_RESOURCE;
-
     public static final String SUB_CONTEXT_PATH_EDIT_RESOURCE_CREATE =  PATH_ACTION_CREATE;
-
     public static final String SUB_CONTEXT_PATH_EDIT_RESOURCE_DELETE = "{" + PATH_PARAM_ENC_RESOURCE_ID + "}"
             + "/"+ PATH_ACTION_DELETE;
     public static final String SUB_CONTEXT_PATH_EDIT_RESOURCE_UPDATE = "{" + PATH_PARAM_ENC_RESOURCE_ID + "}"
             + "/"+ PATH_ACTION_UPDATE;
+
+    public static final String SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER =  "{" + PATH_PARAM_ENC_RESOURCE_ID + "}" + "/" +  PATH_RESOURCE_TYPE_MEMBER;
+    public static final String SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_PUT =  SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER+ "/" +  PATH_ACTION_PUT;
+    public static final String SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_DELETE = SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER + "/"
+            + "{" + PATH_PARAM_ENC_MEMBER_ID + "}" + "/" +  PATH_ACTION_DELETE;
 
     // public
     public static final String CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT = CONTEXT_PATH_PUBLIC + "search";

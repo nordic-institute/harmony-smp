@@ -24,6 +24,7 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
 
   title: string = "Group resources";
   private _group: GroupRo;
+  @Input() resource: ResourceRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
   displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
@@ -37,8 +38,6 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
   constructor(private editGroupService: EditGroupService,
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
-
-
   }
 
 
