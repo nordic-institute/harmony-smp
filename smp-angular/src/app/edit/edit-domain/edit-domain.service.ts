@@ -34,6 +34,13 @@ export class EditDomainService {
     return this.getDomainsForUserRoleTypeObservable("group-admin")
   }
 
+  /**
+   * Method fetches all domains where logged user is admin
+   */
+  public getDomainsForResourceAdminUserObservable():Observable<DomainRo[]>  {
+    return this.getDomainsForUserRoleTypeObservable("resource-admin")
+  }
+
   public getDomainsForUserRoleTypeObservable(type: string) :Observable<DomainRo[]> {
     let params: HttpParams = new HttpParams()
       .set(SmpConstants.PATH_QUERY_FILTER_TYPE, type);

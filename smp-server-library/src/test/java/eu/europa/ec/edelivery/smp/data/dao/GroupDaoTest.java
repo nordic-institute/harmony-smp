@@ -29,6 +29,7 @@ public class GroupDaoTest extends AbstractBaseDao {
         // setup initial data!
         testUtilsDao.clearData();
         testUtilsDao.createGroupMemberships();
+        testUtilsDao.createResourceMemberships();
         testInstance.clearPersistenceContext();
     }
 
@@ -97,30 +98,30 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getGroupsByDomainUserIdAndRolesExists() {
+    public void getGroupsByDomainUserIdAndGroupRolesExists() {
 
-        List<DBGroup> groups = testInstance.getGroupsByDomainUserIdAndRoles(
+        List<DBGroup> groups = testInstance.getGroupsByDomainUserIdAndGroupRoles(
                 testUtilsDao.getD1().getId(),
                 testUtilsDao.getUser1().getId(),
                 MembershipRoleType.ADMIN);
 
         assertEquals(1, groups.size());
 
-        groups = testInstance.getGroupsByDomainUserIdAndRoles(
+        groups = testInstance.getGroupsByDomainUserIdAndGroupRoles(
                 testUtilsDao.getD1().getId(),
                 testUtilsDao.getUser2().getId(),
                 MembershipRoleType.ADMIN);
 
         assertEquals(0, groups.size());
 
-        groups = testInstance.getGroupsByDomainUserIdAndRoles(
+        groups = testInstance.getGroupsByDomainUserIdAndGroupRoles(
                 testUtilsDao.getD1().getId(),
                 testUtilsDao.getUser1().getId(),
                 MembershipRoleType.VIEWER);
 
         assertEquals(0, groups.size());
 
-        groups = testInstance.getGroupsByDomainUserIdAndRoles(
+        groups = testInstance.getGroupsByDomainUserIdAndGroupRoles(
                 testUtilsDao.getD2().getId(),
                 testUtilsDao.getUser1().getId(),
                 MembershipRoleType.VIEWER);
@@ -128,5 +129,35 @@ public class GroupDaoTest extends AbstractBaseDao {
         assertEquals(1, groups.size());
     }
 
+    @Test
+    public void getGroupsByDomainUserIdAndResourceRoles() {
 
+        List<DBGroup> groups = testInstance.getGroupsByDomainUserIdAndResourceRoles(
+                testUtilsDao.getD1().getId(),
+                testUtilsDao.getUser1().getId(),
+                MembershipRoleType.ADMIN);
+
+        assertEquals(1, groups.size());
+
+        groups = testInstance.getGroupsByDomainUserIdAndResourceRoles(
+                testUtilsDao.getD1().getId(),
+                testUtilsDao.getUser2().getId(),
+                MembershipRoleType.ADMIN);
+
+        assertEquals(0, groups.size());
+
+        groups = testInstance.getGroupsByDomainUserIdAndResourceRoles(
+                testUtilsDao.getD1().getId(),
+                testUtilsDao.getUser1().getId(),
+                MembershipRoleType.VIEWER);
+
+        assertEquals(0, groups.size());
+
+        groups = testInstance.getGroupsByDomainUserIdAndResourceRoles(
+                testUtilsDao.getD2().getId(),
+                testUtilsDao.getUser1().getId(),
+                MembershipRoleType.VIEWER);
+
+        assertEquals(1, groups.size());
+    }
 }

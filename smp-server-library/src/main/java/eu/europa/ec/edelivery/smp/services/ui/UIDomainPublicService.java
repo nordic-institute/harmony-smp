@@ -86,6 +86,13 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
     }
 
     @Transactional
+    public List<DomainRO> getAllDomainsForResourceAdminUser(Long userId) {
+        List<DBDomain> domains = domainDao.getDomainsByUserIdAndResourceRoles(userId, MembershipRoleType.ADMIN);
+        return domains.stream().map(domain -> conversionService.convert(domain, DomainRO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public ServiceResult<MemberRO> getDomainMembers(Long domainId, int page, int pageSize,
                                                    String filter) {
         Long count = domainMemberDao.getDomainMemberCount(domainId, filter);

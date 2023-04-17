@@ -122,7 +122,7 @@ public class GroupMemberDao extends BaseDao<DBGroupMember> {
     }
 
 
-    public DBGroupMember addMemberToDomain(DBGroup group, DBUser user, MembershipRoleType role) {
+    public DBGroupMember addMemberToGroup(DBGroup group, DBUser user, MembershipRoleType role) {
         DBGroupMember groupMember = new DBGroupMember();
         groupMember.setRole(role);
         groupMember.setUser(user);

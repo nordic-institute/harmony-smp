@@ -45,10 +45,15 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_GROUP_BY_USER_ROLES_COUNT, query = "SELECT count(c) FROM DBGroup c JOIN DBGroupMember dm ON c.id = dm.group.id " +
         " WHERE dm.role in (:membership_roles) and dm.user.id= :user_id")
 
-@NamedQuery(name = QUERY_GROUP_BY_USER_ROLES, query = "SELECT c FROM DBGroup c JOIN DBGroupMember dm ON c.id = dm.group.id " +
-        " WHERE dm.role in (:membership_roles) and dm.user.id= :user_id")
-@NamedQuery(name = QUERY_GROUP_BY_DOMAIN_USER_ROLES, query = "SELECT c FROM DBGroup c JOIN DBGroupMember dm ON c.id = dm.group.id " +
+@NamedQuery(name = QUERY_GROUP_BY_USER_GROUP_ROLES, query = "SELECT c FROM DBGroup c JOIN DBGroupMember gm ON c.id = gm.group.id " +
+        " WHERE gm.role in (:membership_roles) and gm.user.id= :user_id")
+@NamedQuery(name = QUERY_GROUP_BY_DOMAIN_USER_GROUP_ROLES, query = "SELECT c FROM DBGroup c JOIN DBGroupMember dm ON c.id = dm.group.id " +
         " WHERE c.domain.id = :domain_id AND dm.role in (:membership_roles) and dm.user.id= :user_id")
+@NamedQuery(name = QUERY_GROUP_BY_DOMAIN_USER_RESOURCE_ROLES, query = "SELECT c FROM DBGroup c " +
+        " JOIN DBResource r ON c.id = r.group.id " +
+        " JOIN DBResourceMember rm on r.id = rm.resource.id" +
+        " WHERE c.domain.id = :domain_id AND rm.role in (:membership_roles) and rm.user.id= :user_id")
+
 public class DBGroup extends BaseEntity {
 
     @Id

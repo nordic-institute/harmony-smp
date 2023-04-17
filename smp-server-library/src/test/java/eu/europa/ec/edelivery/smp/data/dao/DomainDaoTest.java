@@ -28,6 +28,7 @@ public class DomainDaoTest extends AbstractBaseDao {
         testUtilsDao.clearData();
         testUtilsDao.creatDomainMemberships();
         testUtilsDao.createGroupMemberships();
+        testUtilsDao.createResourceMemberships();
 
     }
     @Test
@@ -109,6 +110,46 @@ public class DomainDaoTest extends AbstractBaseDao {
         assertEquals(2, result.size());
 
         result = testInstance.getDomainsByUserIdAndGroupRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void getDomainsByUserIdAndResourceRolesCount() {
+        // one for domain 1
+        Long cnt = testInstance.getDomainsByUserIdAndResourceRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
+        assertEquals(1, cnt.intValue());
+
+        // one for domain 2
+        cnt = testInstance.getDomainsByUserIdAndResourceRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
+        assertEquals(1, cnt.intValue());
+
+        // all
+        cnt = testInstance.getDomainsByUserIdAndResourceRolesCount(testUtilsDao.getUser1().getId());
+        assertEquals(2, cnt.intValue());
+
+        // all
+        cnt = testInstance.getDomainsByUserIdAndResourceRolesCount(testUtilsDao.getUser1().getId(),  MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
+        assertEquals(2, cnt.intValue());
+    }
+    @Test
+    public void getDomainsByUserIdAndResourceRoles() {
+        // one for domain 1
+        List<DBDomain> result = testInstance.getDomainsByUserIdAndResourceRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
+        assertEquals(1, result.size());
+        assertEquals(testUtilsDao.getD1(), result.get(0));
+
+        // one for domain 2
+        result = testInstance.getDomainsByUserIdAndResourceRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
+        assertEquals(1, result.size());
+        assertEquals(testUtilsDao.getD2(), result.get(0));
+
+        result = testInstance.getDomainsByUserIdAndResourceRoles(testUtilsDao.getUser2().getId(), MembershipRoleType.VIEWER);
+        assertEquals(0, result.size());
+
+        result = testInstance.getDomainsByUserIdAndResourceRoles(testUtilsDao.getUser1().getId());
+        assertEquals(2, result.size());
+
+        result = testInstance.getDomainsByUserIdAndResourceRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER,  MembershipRoleType.ADMIN);
         assertEquals(2, result.size());
     }
 }

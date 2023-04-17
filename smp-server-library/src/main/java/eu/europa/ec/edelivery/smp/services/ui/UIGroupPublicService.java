@@ -86,17 +86,16 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     }
 
     @Transactional
-    public List<GroupRO> getAllGroupsForDomainAndUserAndRole(Long domainId, Long userId, MembershipRoleType role) {
-        List<DBGroup> domainGroups = groupDao.getGroupsByDomainUserIdAndRoles(domainId, userId, role);
+    public List<GroupRO> getAllGroupsForDomainAndUserAndGroupRole(Long domainId, Long userId, MembershipRoleType role) {
+        List<DBGroup> domainGroups = groupDao.getGroupsByDomainUserIdAndGroupRoles(domainId, userId, role);
 
         return domainGroups.stream().map(domain -> conversionService.convert(domain, GroupRO.class))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public List<GroupRO> getAllGroupsForUser(Long userId, MembershipRoleType role) {
-        List<DBGroup> domainGroups = groupDao.getGroupsByUserIdAndRoles(userId, role);
-
+    public List<GroupRO> getAllGroupsForDomainAndUserAndResourceRole(Long domainId, Long userId, MembershipRoleType role) {
+        List<DBGroup> domainGroups = groupDao.getGroupsByDomainUserIdAndResourceRoles(domainId, userId, role);
         return domainGroups.stream().map(domain -> conversionService.convert(domain, GroupRO.class))
                 .collect(Collectors.toList());
     }
@@ -199,7 +198,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
             if (groupMemberDao.isUserGroupMember(user, Collections.singletonList(group))) {
                 throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add membership", "User [" + memberRO.getUsername() + "] is already a member!");
             }
-            member = groupMemberDao.addMemberToDomain(group, user, memberRO.getRoleType());
+            member = groupMemberDao.addMemberToGroup(group, user, memberRO.getRoleType());
         }
         return conversionService.convert(member, MemberRO.class);
     }

@@ -16,6 +16,7 @@ import {GroupRo} from "../../model/group-ro.model";
 import {Observable} from "rxjs";
 import {SearchTableResult} from "../../search-table/search-table-result.model";
 import {ConfirmationDialogComponent} from "../../dialogs/confirmation-dialog/confirmation-dialog.component";
+import {ResourceRo} from "../../model/resource-ro.model";
 
 
 @Component({
@@ -29,6 +30,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
 
   private _domain: DomainRo;
   private _group: GroupRo;
+  private _resource: ResourceRo;
 
 
   displayedColumns: string[] = ['username', 'fullName', 'roleType', 'memberOf'];
@@ -94,7 +96,21 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       this.isLoadingResults = false;
     }
   }
+  get resource(): ResourceRo {
+    return this._resource;
+  }
 
+  @Input() set resource(value: ResourceRo) {
+    this._resource = value;
+
+    if (!!value) {
+      if (this.membershipType == MemberTypeEnum.RESOURCE) {
+        this.loadMembershipData();
+      }
+    } else {
+      this.isLoadingResults = false;
+    }
+  }
 
   onPageChanged(page: PageEvent) {
     this.loadMembershipData();
@@ -162,6 +178,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
         membershipType: this.membershipType,
         domain: this._domain,
         group: this._group,
+        resource: this._resource,
         member: member,
       }
     }).afterClosed().subscribe(value => {
@@ -201,7 +218,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       case MemberTypeEnum.GROUP:
         return !this._group;
       case MemberTypeEnum.RESOURCE:
-        return false;
+        return !this._resource;
     }
   }
 
@@ -212,7 +229,8 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       case MemberTypeEnum.GROUP:
         return this.membershipService.getGroupMembersObservable(this._group.groupId, this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
       case MemberTypeEnum.RESOURCE:
-        return null;
+        return this.membershipService.getResourceMembersObservable(this._resource, this._group, this._domain, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
+
     }
   }
 
@@ -223,7 +241,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       case MemberTypeEnum.GROUP:
         return this.membershipService.deleteMemberFromGroup(this._group.groupId, this._domain.domainId, this.selectedMember);
       case MemberTypeEnum.RESOURCE:
-        return null;
+        return this.membershipService.deleteMemberFromResource(this._resource, this._group, this._domain, this.selectedMember);
     }
   }
 }

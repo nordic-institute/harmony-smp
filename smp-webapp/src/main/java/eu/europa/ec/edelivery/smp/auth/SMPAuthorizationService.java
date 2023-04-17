@@ -88,6 +88,12 @@ public class SMPAuthorizationService {
         return groupMemberDao.isUserGroupMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(groupId), MembershipRoleType.ADMIN);
     }
 
+    public boolean isResourceAdministrator(String resourceEncId) {
+        SMPUserDetails userDetails = getAndValidateUserDetails();
+        Long resourceId  = getIdFromEncryptedString(resourceEncId, false);
+        return resourceMemberDao.isUserResourceMemberWithRole(userDetails.getUser().getId(), resourceId, MembershipRoleType.ADMIN);
+    }
+
     public boolean isAnyDomainAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         return domainMemberDao.isUserAnyDomainAdministrator(userDetails.getUser().getId());

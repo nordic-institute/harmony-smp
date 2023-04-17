@@ -34,6 +34,14 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
         " WHERE c.user.id = :user_id AND c.resource.group.id = :group_id AND c.role= :membership_role ")
 
+@NamedQuery(name = QUERY_RESOURCE_MEMBERS_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
+        " WHERE c.resource.id = :resource_id")
+@NamedQuery(name = QUERY_RESOURCE_MEMBERS, query = "SELECT c FROM DBResourceMember c " +
+        " WHERE c.resource.id = :resource_id order by c.user.username")
+@NamedQuery(name = QUERY_RESOURCE_MEMBERS_FILTER_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
+        " WHERE c.resource.id = :resource_id AND (lower(c.user.fullName) like lower(:user_filter) OR lower(c.user.username) like lower(:user_filter))")
+@NamedQuery(name = QUERY_RESOURCE_MEMBERS_FILTER, query = "SELECT c FROM DBResourceMember c " +
+        " WHERE c.resource.id = :resource_id  AND (lower(c.user.fullName) like lower(:user_filter) OR lower(c.user.username) like lower(:user_filter))  order by c.user.username")
 public class DBResourceMember extends BaseEntity {
 
     @Id

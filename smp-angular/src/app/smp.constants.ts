@@ -78,6 +78,11 @@ export class SmpConstants {
   public static readonly REST_EDIT_RESOURCE_DELETE = SmpConstants.REST_EDIT_RESOURCE  + '/' + SmpConstants.PATH_PARAM_ENC_RESOURCE_ID
     + '/' + SmpConstants.PATH_ACTION_DELETE;
 
+  public static readonly REST_EDIT_RESOURCE_MEMBER = SmpConstants.REST_EDIT_RESOURCE  + '/' + SmpConstants.PATH_PARAM_ENC_RESOURCE_ID
+    + '/' + SmpConstants.PATH_RESOURCE_TYPE_MEMBER ;
+  public static readonly REST_EDIT_RESOURCE_MEMBER_PUT = SmpConstants.REST_EDIT_RESOURCE_MEMBER  + '/' + SmpConstants.PATH_ACTION_PUT;
+  public static readonly REST_EDIT_RESOURCE_MEMBER_DELETE = SmpConstants.REST_EDIT_RESOURCE_MEMBER + '/' + SmpConstants.PATH_PARAM_ENC_MEMBER_ID
+    + '/' + SmpConstants.PATH_ACTION_DELETE;
 
 
 

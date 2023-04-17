@@ -11,7 +11,7 @@ import {TableResult} from "../../common/model/table-result.model";
 import {DomainRo} from "../../common/model/domain-ro.model";
 
 @Injectable()
-export class EditGroupService {
+export class EditResourceService {
 
 
   constructor(
@@ -19,42 +19,31 @@ export class EditGroupService {
     private securityService: SecurityService) {
   }
 
-  public getDomainGroupsForGroupAdminObservable(domain: DomainRo): Observable<GroupRo[]> {
-    return this.getDomainGroupsForUserRoleTypeObservable('group-admin', domain);
-  }
-
-  public getDomainGroupsForResourceAdminObservable(domain: DomainRo): Observable<GroupRo[]> {
-    return this.getDomainGroupsForUserRoleTypeObservable('resource-admin', domain);
-  }
-
-  public getDomainGroupsForUserRoleTypeObservable(userType: string, domain: DomainRo): Observable<GroupRo[]> {
-    let params: HttpParams = new HttpParams()
-      .set(SmpConstants.PATH_QUERY_FILTER_TYPE, userType);
-
-    const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.get<GroupRo[]>(SmpConstants.REST_EDIT_DOMAIN_GROUP
-      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
-      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId), {params});
-  }
-
 
   public getGroupResourcesForGroupAdminObservable(group: GroupRo, domain: DomainRo, filter: any, page: number, pageSize: number): Observable<TableResult<ResourceRo>> {
-    return this.getGroupResourcesForUserTypeObservable('group-admin',group, domain, filter, page, pageSize);
+    return this.getGroupResourcesForUserTypeObservable('group-admin', group, domain, filter, page, pageSize);
+  }
 
+  public getGroupResourcesForResourceAdminObservable(group: GroupRo, domain: DomainRo, filter: any, page: number, pageSize: number): Observable<TableResult<ResourceRo>> {
+    return this.getGroupResourcesForUserTypeObservable('resource-admin', group, domain, filter, page, pageSize);
   }
 
   public getGroupResourcesForUserTypeObservable(userType: string, group: GroupRo, domain: DomainRo, filter: any, page: number, pageSize: number): Observable<TableResult<ResourceRo>> {
+
     let params: HttpParams = new HttpParams()
       .set(SmpConstants.PATH_QUERY_FILTER_TYPE, userType)
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
 
-    for (let filterProperty in filter) {
-      if (filter.hasOwnProperty(filterProperty)) {
-        // must encode else problem with + sign
-        params = params.set(filterProperty, encodeURIComponent(filter[filterProperty]));
+    if (!!filter) {
+      for (let filterProperty in filter) {
+        if (filter.hasOwnProperty(filterProperty)) {
+          // must encode else problem with + sign
+          params = params.set(filterProperty, encodeURIComponent(filter[filterProperty]));
+        }
       }
     }
+
 
     const currentUser: User = this.securityService.getCurrentUser();
     return this.http.get<TableResult<ResourceRo>>(SmpConstants.REST_EDIT_RESOURCE
