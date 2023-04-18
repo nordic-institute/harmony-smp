@@ -16,15 +16,6 @@
         <mat-icon>add_circle</mat-icon>
         <span>Generate</span>
       </button>
-      <button id="saveResource_id" mat-raised-button
-              color="primary"
-              matTooltip="Validate resource"
-              [disabled]="saveButtonDisabled"
-              (click)="onSaveButtonClicked()"
-      >
-        <mat-icon>save</mat-icon>
-        <span>Save</span>
-      </button>
     </mat-toolbar-row>
   </mat-toolbar>
   <div [formGroup]="resourceForm" style="width: 100%; display: flex; flex-direction: row; ">
@@ -77,12 +68,25 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <div style="flex: 2;align-self: stretch; flex-direction: column;">
+    <div style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;background-color: #FCFCFCBB; border: ridge 3px #b0bec5">
       <ngx-codemirror #codemirror
                       formControlName="payload"
                       [options]="codemirrorOptions"
                       ngDefaultControl
       ></ngx-codemirror>
     </div>
+    <mat-toolbar class="mat-elevation-z2" style="flex-grow: 0">
+      <mat-toolbar-row>
+        <button id="saveResource_id" mat-raised-button
+                color="primary"
+                matTooltip="Validate resource"
+                [disabled]="saveButtonDisabled"
+                (click)="onSaveButtonClicked()"
+        >
+          <mat-icon>save</mat-icon>
+          <span>Save</span>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
   </div>
 </div>
