@@ -37,7 +37,7 @@ public class AbstractResourceHandler {
         this.resourceStorage = resourceStorage;
     }
 
-    protected ResourceDefinitionSpi getResourceDefinition(DBResourceDef resourceDef) {
+    public ResourceDefinitionSpi getResourceDefinition(DBResourceDef resourceDef) {
         LOG.debug("Get resource definition for the [{}]", resourceDef);
         Optional<ResourceDefinitionSpi> definitionSpi = resourceDefinitionSpiList.stream()
                 .filter(rdspi -> StringUtils.equals(resourceDef.getIdentifier(), rdspi.identifier()))
@@ -52,12 +52,12 @@ public class AbstractResourceHandler {
                         + "]"));
     }
 
-    protected ResourceHandlerSpi getResourceHandler(DBResourceDef resourceDef) {
+    public ResourceHandlerSpi getResourceHandler(DBResourceDef resourceDef) {
         LOG.debug("Get resource handler for the [{}]", resourceDef);
         return getResourceDefinition(resourceDef).getResourceHandler();
     }
 
-    protected SubresourceDefinitionSpi getSubresourceDefinition(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
+    public SubresourceDefinitionSpi getSubresourceDefinition(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
         LOG.debug("Get resource definition for the [{}] for resource [{}]", subresourceDef, resourceDef);
         ResourceDefinitionSpi resourceDefinitionSpi = getResourceDefinition(resourceDef);
         String subResourceId = subresourceDef.getIdentifier();
@@ -74,7 +74,7 @@ public class AbstractResourceHandler {
                                 + "]"));
     }
 
-    protected ResourceHandlerSpi getSubresourceHandler(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
+    public ResourceHandlerSpi getSubresourceHandler(DBSubresourceDef subresourceDef, DBResourceDef resourceDef) {
         LOG.debug("Get resource handler for the [{}]", subresourceDef);
         return getSubresourceDefinition(subresourceDef, resourceDef).getResourceHandler();
     }
@@ -86,7 +86,7 @@ public class AbstractResourceHandler {
      * @param resource an entity
      * @return data handler request data
      */
-    protected RequestData buildRequestDataForResource(DBDomain domain, DBResource resource) {
+    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource) {
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
         return buildRequestDataForResource(domain,
@@ -95,13 +95,13 @@ public class AbstractResourceHandler {
     }
 
 
-    protected RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream) {
+    public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream) {
         return new SpiRequestData(domain.getDomainCode(),
                 SPIUtils.toUrlIdentifier(resource),
                 inputStream);
     }
 
-    protected RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource) {
+    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
         return new SpiRequestData(domain.getDomainCode(),
                 SPIUtils.toUrlIdentifier(resource),
@@ -109,14 +109,14 @@ public class AbstractResourceHandler {
                 new ByteArrayInputStream(content));
     }
 
-    protected RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {
+    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {
         return new SpiRequestData(domain.getDomainCode(),
                 SPIUtils.toUrlIdentifier(resource),
                 SPIUtils.toUrlIdentifier(subresource),
                 inputStream);
     }
 
-    protected void handleReadResource(ResourceHandlerSpi handlerSpi, RequestData requestData, ResponseData responseData, ResourceResponse resourceResponse) {
+    public void handleReadResource(ResourceHandlerSpi handlerSpi, RequestData requestData, ResponseData responseData, ResourceResponse resourceResponse) {
         try {
             handlerSpi.readResource(requestData, responseData);
             if (StringUtils.isNotBlank(responseData.getContentType())) {

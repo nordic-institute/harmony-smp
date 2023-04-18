@@ -547,7 +547,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         VISIBILITY varchar2(128 char),
         FK_DOCUMENT_ID number(19,0) not null,
         FK_DOREDEF_ID number(19,0) not null,
-        FK_GROUP_ID number(19,0) not null,
+        FK_GROUP_ID number(19,0),
         primary key (ID)
     );
 

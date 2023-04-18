@@ -38,19 +38,31 @@ public class DocumentEditController {
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
     public DocumentRo getDocumentForResource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                              @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
-                                             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "-1") int version) {
-        logAdminAccess("deleteResourceFromGroup");
+                                             @RequestParam(value = PARAM_NAME_VERSION, defaultValue = "-1") int version) {
+        logAdminAccess("getDocumentForResource");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         return uiDocumentService.getDocumentForResource(resourceId, version);
     }
 
-    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_VALIDATE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
     public void validateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                        @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                                   @RequestBody DocumentRo document) {
         logAdminAccess("validateDocumentForResource");
+        Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
+        uiDocumentService.validateDocumentForResource(resourceId, document);
+    }
+
+
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_GENERATE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
+            "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
+    public void generateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                 @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
+                                 @RequestBody(required = false) DocumentRo document) {
+        logAdminAccess("generateDocument");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         uiDocumentService.validateDocumentForResource(resourceId, document);
     }
@@ -67,6 +79,8 @@ public class DocumentEditController {
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         return uiDocumentService.saveDocumentForResource(resourceId, document);
     }
+
+
 
     protected void logAdminAccess(String action) {
         LOG.info(SMPLogger.SECURITY_MARKER, "Admin Domain action [{}] by user [{}], ", action, SessionSecurityUtils.getSessionUserDetails());

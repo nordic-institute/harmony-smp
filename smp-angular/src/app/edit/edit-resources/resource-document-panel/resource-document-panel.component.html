@@ -2,9 +2,10 @@
 
   <mat-toolbar class="mat-elevation-z2" style="flex-grow: 0">
     <mat-toolbar-row class="smp-toolbar-row">
-      <button id="validateResource_id" mat-raised-button *ngIf="false"
+      <button id="validateResource_id" mat-raised-button
               color="primary"
               matTooltip="Validate resource"
+              (click)="onDocumentValidateButtonClicked()"
       >
         <mat-icon>data_check</mat-icon>
         <span>Validate</span>
@@ -52,12 +53,13 @@
                formControlName="currentResourceVersion"
                required auto-focus-directive>
       </mat-form-field>
-      <mat-form-field style="width:200px" *ngIf="false">
+      <mat-form-field style="width:200px">
         <mat-label>Document versions</mat-label>
         <mat-select placeholder="All document version"
                     matTooltip="Select version to display."
                     formControlName="payloadVersion"
                     id="document version_id"
+                    (selectionChange)="onSelectionDocumentVersionChanged()"
                     >
           <mat-option *ngFor="let version of getDocumentVersions"
                       [value]="version"
@@ -68,7 +70,9 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <div style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;background-color: #FCFCFCBB; border: ridge 3px #b0bec5">
+    <div style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;background-color: #FCFCFCBB; border: ridge 3px #b0bec5"
+      (click)="onEditPanelClick()"
+    >
       <ngx-codemirror #codemirror
                       formControlName="payload"
                       [options]="codemirrorOptions"

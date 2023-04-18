@@ -1,13 +1,14 @@
 package eu.europa.ec.smp.spi.handler;
 
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP10ServiceGroupReader;
 import eu.europa.ec.dynamicdiscovery.core.validator.OasisSmpSchemaValidator;
+import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.exception.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.spi.api.SmpDataServiceApi;
 import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.converter.ServiceGroup10Converter;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceMetadata10;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import gen.eu.europa.ec.ddc.api.smp10.ParticipantIdentifierType;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBException;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -38,13 +40,38 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(OasisSMPServiceGroup10Handler.class);
 
+    OasisSMP10ServiceGroupReader reader = new OasisSMP10ServiceGroupReader();
+
     final SmpDataServiceApi smpDataApi;
     final SmpIdentifierServiceApi smpIdentifierApi;
+
+    final OasisSMP10ServiceGroupReader serviceGroupReader;
 
     public OasisSMPServiceGroup10Handler(SmpDataServiceApi smpDataApi, SmpIdentifierServiceApi smpIdentifierApi) {
         this.smpDataApi = smpDataApi;
         this.smpIdentifierApi = smpIdentifierApi;
+        serviceGroupReader = new OasisSMP10ServiceGroupReader();
     }
+
+    public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
+        ResourceIdentifier identifier = getResourceIdentifier(resourceData);
+        if (resourceData.getResourceInputStream() == null) {
+            LOG.warn("Empty document input stream for service-group [{}]!", identifier);
+            return;
+        }
+
+        ServiceGroup serviceGroup = new ServiceGroup();
+        serviceGroup.setParticipantIdentifier(new ParticipantIdentifierType());
+        serviceGroup.getParticipantIdentifier().setValue(identifier.getValue());
+        serviceGroup.getParticipantIdentifier().setScheme(identifier.getScheme());
+
+        try {
+            reader.serializeNative(serviceGroup, responseData.getOutputStream(), true);
+        } catch (TechnicalException e) {
+            throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
+        }
+    }
+
 
     @Override
     public void readResource(RequestData resourceData, ResponseData responseData) throws ResourceException {
@@ -54,17 +81,23 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
             LOG.warn("Empty document input stream for service-group [{}]!", identifier);
             return;
         }
-        ServiceGroup serviceGroup = ServiceGroup10Converter.unmarshal(resourceData.getResourceInputStream());
+
+
+        ServiceGroup serviceGroup = null;
+        try {
+            serviceGroup = reader.parseNative(resourceData.getResourceInputStream());
+        } catch (TechnicalException e) {
+            throw new ResourceException(PARSE_ERROR, "Can not pase service group xml for indentifier: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
+        }
         // get references
         serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
         List<ServiceMetadataReferenceType> referenceTypes = buildReferences(identifier);
         serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences().addAll(referenceTypes);
 
         try {
-            ServiceGroup10Converter.marshalToOutputStream(serviceGroup, responseData.getOutputStream());
-        } catch (JAXBException e) {
+            reader.serializeNative(serviceGroup, responseData.getOutputStream(), false);
+        } catch (TechnicalException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
-
         }
     }
 
@@ -122,8 +155,8 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         serviceGroup.getParticipantIdentifier().setScheme(resourceData.getResourceIdentifier().getScheme());
 
         try {
-            ServiceGroup10Converter.marshalToOutputStream(serviceGroup, responseData.getOutputStream());
-        } catch (JAXBException e) {
+            reader.serializeNative(serviceGroup, responseData.getOutputStream(), false);
+        } catch (TechnicalException e) {
             throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
         }
 
@@ -134,10 +167,9 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
      * Method validates service group
      *
      * @param resourceData the resource data
-     * @param responseData the output dta
      */
     @Override
-    public void validateResource(RequestData resourceData, ResponseData responseData) throws ResourceException {
+    public void validateResource(RequestData resourceData) throws ResourceException {
 
         validateAndParse(resourceData);
     }
@@ -156,7 +188,12 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceGroup extension: [" + ids + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         // if service group
-        ServiceGroup serviceGroup = ServiceGroup10Converter.unmarshal(bytearray);
+        ServiceGroup serviceGroup = null;
+        try {
+            serviceGroup = reader.parseNative(new ByteArrayInputStream(bytearray));
+        } catch (TechnicalException e) {
+            throw new ResourceException(INVALID_RESOURCE, "Error occurred while parsing Oasis SMP 1.0 ServiceGroup with error: " + ExceptionUtils.getRootCauseMessage(e), e);
+        }
         final ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();
         ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getScheme());
 

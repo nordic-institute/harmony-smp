@@ -92,18 +92,34 @@ export class EditResourceService {
   }
 
 
-  public getDocumentObservable(resource: ResourceRo): Observable<DocumentRo> {
+  public getDocumentObservable(resource: ResourceRo, version:number = null): Observable<DocumentRo> {
+    let params: HttpParams = null;
+    if (version) {
+      params = new HttpParams()
+        .set('version',version);
+    }
     const currentUser: User = this.securityService.getCurrentUser();
     return this.http.get<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
-
-      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId));
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), {params});
   }
-
   public saveDocumentObservable(resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
     const currentUser: User = this.securityService.getCurrentUser();
     return this.http.put<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), document);
+  }
+
+  public validateDocumentObservable(resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT_VALIDATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), document);
+  }
+  public generateDocumentObservable(resource: ResourceRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT_GENERATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), null);
   }
 }

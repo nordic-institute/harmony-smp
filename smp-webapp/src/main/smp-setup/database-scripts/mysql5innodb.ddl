@@ -361,7 +361,7 @@
         VISIBILITY varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         FK_DOCUMENT_ID bigint not null,
         FK_DOREDEF_ID bigint not null,
-        FK_GROUP_ID bigint not null,
+        FK_GROUP_ID bigint,
         primary key (ID)
     ) comment='SMP resource Identifier and scheme' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

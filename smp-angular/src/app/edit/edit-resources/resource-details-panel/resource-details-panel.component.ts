@@ -59,29 +59,19 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
 
   @Input() set resource(value: ResourceRo) {
     this._resource = value;
-
+    this.resourceForm.disable();
     if (!!value) {
-      this.resourceForm.enable();
       this.resourceForm.controls['identifierValue'].setValue(value.identifierValue);
       this.resourceForm.controls['identifierScheme'].setValue(value.identifierScheme);
       this.resourceForm.controls['resourceTypeIdentifier'].setValue(value.resourceTypeIdentifier);
-      // control disable enable did not work??
-
-      this.resourceForm.controls['identifierValue'].disable();
-      this.resourceForm.controls['identifierScheme'].disable();
-      this.resourceForm.controls['resourceTypeIdentifier'].disable();
-
-
       this.resourceForm.controls['visibility'].setValue(value.visibility);
 
     } else {
-      this.resourceForm.disable();
       this.resourceForm.controls['identifierValue'].setValue("");
       this.resourceForm.controls['identifierScheme'].setValue("");
-      this.resourceForm.controls['visibility'].setValue("");
       this.resourceForm.controls['resourceTypeIdentifier'].setValue("");
+      this.resourceForm.controls['visibility'].setValue("");
     }
-
     this.resourceForm.markAsPristine();
   }
 

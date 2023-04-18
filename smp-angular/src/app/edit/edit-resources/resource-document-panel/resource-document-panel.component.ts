@@ -101,15 +101,9 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     this.resourceForm.controls['identifierScheme'].disable();
     this.resourceForm.controls['resourceTypeIdentifier'].disable();
     this.resourceForm.controls['visibility'].disable();
-    this.editResourceService.getDocumentObservable(this._resource).subscribe((value: DocumentRo) => {
-      if (value) {
-        this.document = value;
-      } else {
-        this.document = null;
-      }
-    })
-
     this.resourceForm.markAsPristine();
+    // load current document for the resource
+    this.loadDocumentForVersion();
   }
 
   @Input() set document(value: DocumentRo) {
@@ -130,6 +124,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       this.documentForm.controls['payloadVersion'].setValue("");
       this.documentForm.controls['payload'].setValue("");
     }
+    this.documentForm.markAsPristine();
   }
 
   get document(): DocumentRo {
@@ -141,11 +136,67 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   onSaveButtonClicked(): void {
     this.editResourceService.saveDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
       if (value) {
+        this.alertService.success("Document is saved with current version ["+value.currentResourceVersion+"].")
         this.document = value;
       } else {
         this.document = null;
       }
+    }, (error: any) => {
+      this.alertService.error(error.error?.errorDescription)
     })
+  }
+
+  onGenerateButtonClicked(): void {
+    this.editResourceService.validateDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
+      if (value) {
+        this.alertService.success("Document is generated.")
+        this.document = value;
+      } else {
+        this.document = null;
+      }
+    }, (error: any) => {
+      this.alertService.error(error.error?.errorDescription)
+    })
+  }
+
+  loadDocumentForVersion(version: number = null): void {
+    this.editResourceService.getDocumentObservable(this._resource, version).subscribe((value: DocumentRo) => {
+      if (value) {
+        this.document = value;
+      } else {
+        this.document = null;
+      }
+    }, (error: any) => {
+      this.alertService.error(error.error?.errorDescription)
+    });
+  }
+
+  validateCurrentDocument(): void {
+    this.editResourceService.validateDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
+      this.alertService.success("Document is Valid.")
+    }, (error: any) => {
+      this.alertService.error(error.error?.errorDescription)
+    });
+  }
+
+  onDocumentValidateButtonClicked():void {
+    this.validateCurrentDocument();
+  }
+  onSelectionDocumentVersionChanged() :void{
+    this.loadDocumentForVersion(this.documentForm.controls['payloadVersion'].value)
+  }
+
+  public onEditPanelClick() {
+    if (this.codemirror.codeMirror.hasFocus()) {
+      return;
+    }
+    let endPosition: number = this._document?.payload?.length;
+    if (endPosition) {
+      // forward focus to "codeMirror"
+      this.codemirror.codeMirror.setCursor(endPosition)
+    }
+    this.codemirror.codeMirror.focus()
+
   }
 
   get getDocumentVersions(): number[] {

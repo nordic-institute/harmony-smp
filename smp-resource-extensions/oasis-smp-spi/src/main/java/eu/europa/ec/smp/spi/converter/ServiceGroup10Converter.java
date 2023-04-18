@@ -40,7 +40,6 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.PARSE_
  * @since 3.0.0
  */
 // move this tests to extension
-@Ignore
 public class ServiceGroup10Converter {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceGroup10Converter.class);
 

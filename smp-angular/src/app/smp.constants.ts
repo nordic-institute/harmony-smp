@@ -10,6 +10,9 @@ export class SmpConstants {
   public static readonly PATH_ACTION_DELETE = 'delete';
   public static readonly PATH_ACTION_UPDATE = 'update';
   public static readonly PATH_ACTION_CREATE = 'create';
+
+  public static readonly PATH_ACTION_GENERATE = 'generate';
+  public static readonly PATH_ACTION_VALIDATE = 'validate';
   public static readonly PATH_ACTION_PUT = 'put';
   public static readonly PATH_ACTION_RETRIEVE = 'retrieve';
   public static readonly PATH_ACTION_SEARCH = 'search';
@@ -47,6 +50,9 @@ export class SmpConstants {
   public static readonly REST_EDIT = 'edit/rest/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/';
 
   public static readonly REST_EDIT_DOCUMENT = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE + '/' +  SmpConstants.PATH_PARAM_ENC_RESOURCE_ID;
+
+  public static readonly REST_EDIT_DOCUMENT_VALIDATE = SmpConstants.REST_EDIT_DOCUMENT + '/' +  SmpConstants.PATH_ACTION_VALIDATE;
+  public static readonly REST_EDIT_DOCUMENT_GENERATE = SmpConstants.REST_EDIT_DOCUMENT + '/' +  SmpConstants.PATH_ACTION_GENERATE;
   /* Public services */
   public static readonly REST_PUBLIC_SEARCH_SERVICE_GROUP = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
 
