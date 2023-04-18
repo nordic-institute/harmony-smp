@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator} from "@angular/material/paginator";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
@@ -8,6 +8,8 @@ import {EditGroupService} from "./edit-group.service";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
+import {GroupResourcePanelComponent} from "./group-resource-panel/group-resource-panel.component";
+import {MembershipPanelComponent} from "../../common/panels/membership-panel/membership-panel.component";
 
 
 @Component({
@@ -16,6 +18,10 @@ import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resour
   styleUrls: ['./edit-group.component.css']
 })
 export class EditGroupComponent implements AfterViewInit, BeforeLeaveGuard {
+
+  @Output() onSelectedGroup: EventEmitter<GroupRo> = new EventEmitter<GroupRo>();
+
+
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.GROUP;
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];

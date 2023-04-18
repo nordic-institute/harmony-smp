@@ -16,7 +16,7 @@
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label><smp-label icon="article" label="Resources"></smp-label></ng-template>
-        <group-resource-panel
+        <group-resource-panel #groupResourcePanel
           [domainResourceDefs]="_selectedDomainResourceDef"
           [domain]="selectedDomain"
           [group]="selectedGroup"
@@ -47,7 +47,7 @@
     <mat-select placeholder="Select group"
                 matTooltip="Select group."
                 id="group_id"
-                [value]="selectedGroup"
+                [(value)]="selectedGroup"
                 required>
       <mat-option *ngFor="let group of groupList"
                   [value]="group">{{group.groupName}}</mat-option>

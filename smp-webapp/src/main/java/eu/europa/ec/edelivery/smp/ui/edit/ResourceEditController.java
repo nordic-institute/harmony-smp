@@ -51,7 +51,7 @@ public class ResourceEditController {
      */
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
-            "and @smpAuthorizationService.isAnyGroupResourceAdministrator(#groupEncId)")
+            "and (@smpAuthorizationService.isGroupAdministrator(#groupEncId) or  @smpAuthorizationService.isAnyGroupResourceAdministrator(#groupEncId))")
     public ServiceResult<ResourceRO> getResourcesForGroup(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                           @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
                                                           @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
