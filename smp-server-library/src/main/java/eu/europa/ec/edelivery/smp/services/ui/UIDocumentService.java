@@ -9,6 +9,8 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.ui.DocumentRo;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiResponseData;
 import eu.europa.ec.smp.spi.api.model.RequestData;
@@ -16,15 +18,18 @@ import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Collections;
 
 @Service
 public class UIDocumentService {
-
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDocumentService.class);
     ResourceDao resourceDao;
     DocumentDao documentDao;
     ResourceHandlerService resourceHandlerService;
@@ -50,31 +55,25 @@ public class UIDocumentService {
 
     @Transactional
     public DocumentRo generateDocumentForResource(Long resourceId, DocumentRo documentRo) {
+        LOG.info("Generate document");
         DBResource resource = resourceDao.find(resourceId);
         DBDomainResourceDef domainResourceDef = resource.getDomainResourceDef();
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getResourceHandler(domainResourceDef.getResourceDef());
-        RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(), resource, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
+        RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
+                resource, null);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ResponseData responseData = new SpiResponseData(bos);
         try {
-            resourceHandler.storeResource(data, responseData);
+            resourceHandler.generateResource(data, responseData, Collections.emptyList());
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
-
-
-        DBDocument document = resource.getDocument();
-        int version = document.getDocumentVersions().stream().mapToInt(dv -> dv.getVersion())
-                .max().orElse(0);
-
-        DBDocumentVersion documentVersion = new DBDocumentVersion();
-        documentVersion.setVersion(version + 1);
-        documentVersion.setDocument(document);
-        documentVersion.setContent(bos.toByteArray());
-        document.getDocumentVersions().add(documentVersion);
-        document.setCurrentVersion(documentVersion.getVersion());
-        return convert(document, documentVersion);
+        String genDoc =  new String(bos.toByteArray());
+        LOG.info("Generate document [{}]", genDoc);
+        DocumentRo result = new DocumentRo();
+        result.setPayload(genDoc);
+        return result;
     }
 
     @Transactional
@@ -142,6 +141,7 @@ public class UIDocumentService {
         //documentRo.setDocumentId(SessionSecurityUtils.encryptedEntityId(document.getId()));
         document.getDocumentVersions().forEach(dv ->
                 documentRo.getAllVersions().add(dv.getVersion()));
+
         documentRo.setMimeType(document.getMimeType());
         documentRo.setName(document.getName());
         documentRo.setCurrentResourceVersion(document.getCurrentVersion());

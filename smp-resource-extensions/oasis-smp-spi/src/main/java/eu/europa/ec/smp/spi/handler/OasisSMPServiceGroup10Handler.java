@@ -20,6 +20,7 @@ import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
 import javax.xml.bind.JAXBException;
 import java.io.BufferedInputStream;
@@ -55,15 +56,12 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
 
     public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
-        if (resourceData.getResourceInputStream() == null) {
-            LOG.warn("Empty document input stream for service-group [{}]!", identifier);
-            return;
-        }
 
         ServiceGroup serviceGroup = new ServiceGroup();
         serviceGroup.setParticipantIdentifier(new ParticipantIdentifierType());
         serviceGroup.getParticipantIdentifier().setValue(identifier.getValue());
         serviceGroup.getParticipantIdentifier().setScheme(identifier.getScheme());
+        serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
 
         try {
             reader.serializeNative(serviceGroup, responseData.getOutputStream(), true);
@@ -155,8 +153,9 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         serviceGroup.getParticipantIdentifier().setScheme(resourceData.getResourceIdentifier().getScheme());
 
         try {
-            reader.serializeNative(serviceGroup, responseData.getOutputStream(), false);
-        } catch (TechnicalException e) {
+            StreamUtils.copy(inputStream, responseData.getOutputStream());
+            //reader.serializeNative(serviceGroup, responseData.getOutputStream(), false);
+        } catch (IOException e) {
             throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
         }
 

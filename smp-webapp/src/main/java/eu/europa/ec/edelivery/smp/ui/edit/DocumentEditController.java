@@ -59,12 +59,12 @@ public class DocumentEditController {
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_GENERATE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             "and @smpAuthorizationService.isResourceAdministrator(#resourceEncId)")
-    public void generateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+    public DocumentRo generateDocument(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                  @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                  @RequestBody(required = false) DocumentRo document) {
         logAdminAccess("generateDocument");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
-        uiDocumentService.validateDocumentForResource(resourceId, document);
+        return uiDocumentService.generateDocumentForResource(resourceId, document);
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET,
