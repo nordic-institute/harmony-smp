@@ -5,9 +5,11 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
+import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -101,7 +103,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     }
 
     @Transactional
-    public GroupRO createGroupForDomain(Long domainId, GroupRO groupRO) {
+    public GroupRO createGroupForDomain(GroupRO groupRO, Long domainId, Long userId) {
         LOG.info("create group [{}] to domain [{}]", groupRO, domainId);
 
         Optional<DBGroup> optGroup = groupDao.getGroupByNameAndDomain(groupRO.getGroupName(), domainId);
@@ -118,6 +120,13 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         // to get ID for conversion
         groupDao.persistFlushDetach(group);
 
+        // create first member as admin user
+        DBUser user = userDao.find(userId);
+        DBGroupMember dbMember = new DBGroupMember();
+        dbMember.setRole(MembershipRoleType.ADMIN);
+        dbMember.setGroup(group);
+        dbMember.setUser(user);
+        groupMemberDao.persist(dbMember);
         return conversionService.convert(group, GroupRO.class);
     }
 

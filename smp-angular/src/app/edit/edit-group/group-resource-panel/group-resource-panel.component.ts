@@ -22,6 +22,8 @@ import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 })
 export class GroupResourcePanelComponent implements BeforeLeaveGuard {
 
+
+
   title: string = "Group resources";
   private _group: GroupRo;
   @Input() resource: ResourceRo;
@@ -47,7 +49,7 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     }
     this._group = value;
     this.title = "Group resources" + (!!this._group?": [" +this._group.groupName+"]":"")
-    if (!!value) {
+    if (!!this._group) {
       this.loadGroupResources();
     } else {
       this.isLoadingResults = false;
@@ -122,7 +124,7 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
         group: this._group,
         domain: this.domain,
         domainResourceDefs: this.domainResourceDefs,
-        formTitle: "Group details dialog"
+        formTitle: "Resource details dialog"
       }
     }).afterClosed().subscribe(value => {
       this.refresh();

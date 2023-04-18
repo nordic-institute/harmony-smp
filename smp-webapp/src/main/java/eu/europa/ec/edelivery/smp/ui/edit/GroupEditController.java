@@ -90,7 +90,8 @@ public class GroupEditController {
             @RequestBody GroupRO group) {
         logAdminAccess("putGroupForDomain");
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
-        return uiGroupPublicService.createGroupForDomain(domainId, group);
+        Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
+        return uiGroupPublicService.createGroupForDomain(group, domainId, userId);
     }
 
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_UPDATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)

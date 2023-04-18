@@ -113,7 +113,7 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   }
 
   refreshResources() {
-    if (!this.selectedGroup) {
+    if (!this._selectedGroup) {
       this.updateResourceList([]);
       return;
     }
@@ -127,8 +127,6 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
       }, (error: any) => {
         this.alertService.error(error.error?.errorDescription)
       });
-
-
   }
 
   refreshDomainsResourceDefinitions() {
