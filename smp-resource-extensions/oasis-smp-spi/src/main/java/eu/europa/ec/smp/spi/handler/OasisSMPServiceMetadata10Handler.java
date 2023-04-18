@@ -10,6 +10,7 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
+import eu.europa.ec.smp.spi.converter.ServiceMetadata10Converter;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
@@ -30,6 +31,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -118,10 +120,9 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         }
 
         try {
-            reader.serializeNative(docEnvelopedMetadata,  responseData.getOutputStream(), false);
-            //ServiceMetadata10Converter.serialize(docEnvelopedMetadata, responseData.getOutputStream());
+            ServiceMetadata10Converter.serialize(docEnvelopedMetadata, responseData.getOutputStream());
             responseData.setContentType("text/xml");
-        } catch (TechnicalException e) {
+        } catch (TransformerException e) {
             throw new ResourceException(INTERNAL_ERROR, "Error occurred while writing the message: ["
                     + resourceIdentifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
