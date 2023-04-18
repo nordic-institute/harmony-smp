@@ -95,7 +95,6 @@ export class EditGroupComponent implements AfterViewInit, BeforeLeaveGuard {
   updateDomainList(list: DomainRo[]) {
     this.domainList = list;
     if (!!this.domainList && this.domainList.length > 0) {
-
       this.selectedDomain = this.domainList[0];
     }
   }

@@ -87,6 +87,9 @@ public class ResourceConstants {
     public static final String SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_DELETE = SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER + "/"
             + "{" + PATH_PARAM_ENC_MEMBER_ID + "}" + "/" +  PATH_ACTION_DELETE;
 
+
+    public static final String CONTEXT_PATH_EDIT_DOCUMENT = CONTEXT_PATH_EDIT + "/" +PATH_RESOURCE_TYPE_RESOURCE;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET =  "{" + PATH_PARAM_ENC_RESOURCE_ID + "}";
     // public
     public static final String CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT = CONTEXT_PATH_PUBLIC + "search";
     public static final String CONTEXT_PATH_PUBLIC_DOMAIN = CONTEXT_PATH_PUBLIC + "domain";

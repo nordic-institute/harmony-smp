@@ -152,6 +152,13 @@ import {
 } from "./edit/edit-group/group-resource-panel/resource-dialog/resource-dialog.component";
 import {EditResourceComponent} from "./edit/edit-resources/edit-resource.component";
 import {EditResourceService} from "./edit/edit-resources/edit-resource.service";
+import {
+  ResourceDetailsPanelComponent
+} from "./edit/edit-resources/resource-details-panel/resource-details-panel.component";
+import {
+  ResourceDocumentPanelComponent
+} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 
 @NgModule({
@@ -211,6 +218,8 @@ import {EditResourceService} from "./edit/edit-resources/edit-resource.service";
     ResourceDialogComponent,
     PropertyDetailsDialogComponent,
     ResourceDetailsDialogComponent,
+    ResourceDetailsPanelComponent,
+    ResourceDocumentPanelComponent,
     RowLimiterComponent,
     SaveDialogComponent,
     SearchTableComponent,
@@ -272,6 +281,7 @@ import {EditResourceService} from "./edit/edit-resources/edit-resource.service";
     ReactiveFormsModule,
     routing,
     MatAutocompleteModule,
+    CodemirrorModule,
   ],
   providers: [
     AdminDomainService,

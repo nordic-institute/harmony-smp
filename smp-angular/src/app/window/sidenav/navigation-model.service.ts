@@ -234,6 +234,7 @@ export interface NavigationNode {
   children?: NavigationNode[];
 
   selected?: boolean;
+  transient?: boolean; // if true then node must be ignored
 }
 
 @Injectable()
@@ -295,7 +296,8 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       this.selectedPathSubject.next(this.selectedPath);
       let navigationPath: string[] = this.getNavigationPath(this.selectedPath);
       // navigate to selected path
-      this.router.navigate(navigationPath);
+
+      this.router.navigate(navigationPath, );
     } else {
       this.selectedPathSubject.next(null);
     }
@@ -319,12 +321,21 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   protected findLeaf(targetNode: NavigationNode): NavigationNode {
-    if (!targetNode || !targetNode.children || targetNode.children.length == 0) {
+    if (this.noTargetChildren(targetNode)) {
       return targetNode;
     }
 
     let newTargetNode = targetNode.children[0]
     return this.findLeaf(newTargetNode);
+  }
+
+  protected noTargetChildren(targetNode: NavigationNode):boolean{
+    if (!targetNode || !targetNode.children || targetNode.children.length == 0) {
+      return true;
+    }
+
+    let nonTransient = targetNode.children.filter(node => !node.transient);
+    return nonTransient.length ==0;
   }
 
   /**

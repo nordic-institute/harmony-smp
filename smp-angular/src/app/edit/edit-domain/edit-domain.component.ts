@@ -97,6 +97,10 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   updateDomainList(domainList: DomainRo[]) {
     this.domainList = domainList
     this.dataSource.data = this.domainList;
+
+    if (!!this.domainList && this.domainList.length > 0) {
+      this.selected = this.domainList[0];
+    }
   }
 
   applyDomainFilter(event: Event) {

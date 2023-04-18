@@ -16,6 +16,9 @@ import {AdminUserComponent} from "./system-settings/admin-users/admin-user.compo
 import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
 import {EditResourceComponent} from "./edit/edit-resources/edit-resource.component";
+import {
+  ResourceDocumentPanelComponent
+} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
 
 
 const appRoutes: Routes = [
@@ -29,7 +32,15 @@ const appRoutes: Routes = [
     children: [
       {path: 'edit-domain', component: EditDomainComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'edit-group', component: EditGroupComponent, canDeactivate: [dirtyDeactivateGuard]},
-      {path: 'edit-resource', component: EditResourceComponent, canDeactivate: [dirtyDeactivateGuard]}
+      {
+        path: 'edit-resource',
+
+        canDeactivate: [dirtyDeactivateGuard],
+        children: [
+          {path: 'resource-document', component: ResourceDocumentPanelComponent, canDeactivate: [dirtyDeactivateGuard]},
+          {path: '', component: EditResourceComponent, canDeactivate: [dirtyDeactivateGuard]},
+        ]
+      }
     ]
   },
   {
