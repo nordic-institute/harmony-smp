@@ -7,15 +7,24 @@
               matTooltip="Validate resource"
               (click)="onDocumentValidateButtonClicked()"
       >
-        <mat-icon>data_check</mat-icon>
+        <mat-icon>check_circle</mat-icon>
         <span>Validate</span>
       </button>
-      <button id="GenerateResource_id" mat-raised-button *ngIf="false"
+      <button id="GenerateResource_id" mat-raised-button
               color="primary"
               matTooltip="Generate resource"
+              (click)="onGenerateButtonClicked()"
       >
         <mat-icon>add_circle</mat-icon>
         <span>Generate</span>
+      </button>
+      <button id="documentWizard_id" mat-raised-button
+              color="primary"
+              matTooltip="Show document wizard dialog"
+              (click)="onShowDocumentWizardDialog()"
+      >
+        <mat-icon>code_block</mat-icon>
+        <span>Document wizard</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>

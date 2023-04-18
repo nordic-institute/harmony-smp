@@ -52,7 +52,6 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
       this.groupList = [];
       this._selectedDomainResourceDef = [];
     }
-
   };
 
   get selectedGroup(): GroupRo {

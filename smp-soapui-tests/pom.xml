@@ -63,7 +63,7 @@
                             <!--If you want to execute single test case -->
                             <!-- testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase -->
                             <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
-                            <!-- testCase>SMP022-Create ServiceMetadata-Basic Flow</testCase -->
+                            <testCase>SMP022-Create ServiceMetadata-Basic Flow</testCase>
                             <projectProperties>
                                 <value>url=${url}</value>
                                 <value>SMPAdminUser=${SMPAdminUser}</value>

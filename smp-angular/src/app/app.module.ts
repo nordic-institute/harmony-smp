@@ -159,10 +159,14 @@ import {
   ResourceDocumentPanelComponent
 } from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import {
+  DocumentWizardDialogComponent
+} from "./edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
 
 
 @NgModule({
   declarations: [
+    DocumentWizardDialogComponent,
     AccessTokenGenerationDialogComponent,
     AccessTokenPanelComponent,
     AdminDomainComponent,

@@ -53,10 +53,7 @@ public class OasisSMPServiceGroup20Handler extends AbstractOasisSMPHandler {
 
     public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
-        if (resourceData.getResourceInputStream() == null) {
-            LOG.warn("Empty document input stream for service-group [{}]!", identifier);
-            return;
-        }
+
 
         ServiceGroup serviceGroup = new ServiceGroup();
         serviceGroup.setParticipantID(new ParticipantID());

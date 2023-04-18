@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Input, ViewChild, ViewEncapsulation,} from '@angular/core';
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {GroupRo} from "../../../common/model/group-ro.model";
 import {ResourceRo} from "../../../common/model/resource-ro.model";
@@ -12,6 +12,10 @@ import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 import {DocumentRo} from "../../../common/model/document-ro.model";
 import {NavigationService} from "../../../window/sidenav/navigation-model.service";
+import {
+  ServiceGroupExtensionWizardDialogComponent
+} from "../../../service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
+import {DocumentWizardDialogComponent} from "../document-wizard-dialog/document-wizard-dialog.component";
 
 @Component({
   moduleId: module.id,
@@ -147,16 +151,35 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   }
 
   onGenerateButtonClicked(): void {
-    this.editResourceService.validateDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
+    this.editResourceService.generateDocumentObservable(this._resource).subscribe((value: DocumentRo) => {
       if (value) {
         this.alertService.success("Document is generated.")
-        this.document = value;
+        this.documentForm.controls['payload'].setValue(value.payload);
+        this.documentForm.controls['payload'].markAsDirty();
       } else {
         this.document = null;
       }
     }, (error: any) => {
       this.alertService.error(error.error?.errorDescription)
     })
+  }
+
+  onShowDocumentWizardDialog() {
+
+    const formRef: MatDialogRef<any> = this.dialog.open(DocumentWizardDialogComponent,{
+      data: {
+        title: "Service group wizard",
+        resource: this._resource,
+
+      }
+    });
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        let val = formRef.componentInstance.getExtensionXML();
+        this.documentForm.controls['payload'].setValue(val);
+        this.documentForm.controls['payload'].markAsDirty();
+      }
+    });
   }
 
   loadDocumentForVersion(version: number = null): void {

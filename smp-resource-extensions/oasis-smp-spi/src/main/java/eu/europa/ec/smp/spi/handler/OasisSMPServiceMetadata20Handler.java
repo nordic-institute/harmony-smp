@@ -62,10 +62,6 @@ public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
 
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
         ResourceIdentifier subresourceIdentifier = getSubresourceIdentifier(resourceData);
-        if (resourceData.getResourceInputStream() == null) {
-            LOG.warn("Empty document input stream for service-group [{}]!", identifier);
-            return;
-        }
 
         ServiceMetadata serviceMetadata = new ServiceMetadata();
         serviceMetadata.setParticipantID(new ParticipantID());
@@ -74,8 +70,6 @@ public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
         serviceMetadata.setServiceID(new ServiceID());
         serviceMetadata.getParticipantID().setValue(subresourceIdentifier.getValue());
         serviceMetadata.getParticipantID().setSchemeID(subresourceIdentifier.getScheme());
-
-
         try {
             reader.serializeNative(serviceMetadata, responseData.getOutputStream(), true);
         } catch (TechnicalException e) {

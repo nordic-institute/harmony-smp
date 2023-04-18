@@ -71,10 +71,6 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
 
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
         ResourceIdentifier subresourceIdentifier = getSubresourceIdentifier(resourceData);
-        if (resourceData.getResourceInputStream() == null) {
-            LOG.warn("Empty document input stream for service-group [{}]!", identifier);
-            return;
-        }
 
         ServiceMetadata serviceMetadata = new ServiceMetadata();
         ServiceInformationType serviceInformationType =   new ServiceInformationType();
