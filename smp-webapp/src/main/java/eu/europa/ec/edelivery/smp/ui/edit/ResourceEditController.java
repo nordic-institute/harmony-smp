@@ -98,9 +98,10 @@ public class ResourceEditController {
                                      @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
                                      @RequestBody ResourceRO resourceRO) {
         logAdminAccess("createResource");
+        Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
-        return uiResourceService.createResourceForGroup(resourceRO, groupId, domainId);
+        return uiResourceService.createResourceForGroup(resourceRO, groupId, domainId, userId);
     }
 
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_RESOURCE_UPDATE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)

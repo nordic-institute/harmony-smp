@@ -1,0 +1,10 @@
+#resource-document-panel {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap:0.5em;
+}
+
+.CodeMirror {
+  height: auto;
+}

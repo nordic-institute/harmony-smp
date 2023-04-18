@@ -7,6 +7,18 @@
     <mat-tab-group #domainTabs style="height: 100%">
       <mat-tab>
         <ng-template mat-tab-label>
+          <smp-label icon="article" label="Resource details"></smp-label>
+        </ng-template>
+        <resource-detail-panel
+          [domainResourceDefs]="_selectedDomainResourceDef"
+          [domain]="selectedDomain"
+          [group]="selectedGroup"
+          [resource]="selectedResource"
+        >
+        </resource-detail-panel>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
           <smp-label icon="groups" label="Members"></smp-label>
         </ng-template>
         <domain-member-panel #groupMemberPanelComponent
@@ -17,9 +29,9 @@
 
         ></domain-member-panel>
       </mat-tab>
-      <mat-tab>
+      <!-- mat-tab>
         <ng-template mat-tab-label>
-          <smp-label icon="group" label="Resources"></smp-label>
+          <smp-label icon="description" label="Resources"></smp-label>
         </ng-template>
         <group-resource-panel
           [domainResourceDefs]="_selectedDomainResourceDef"
@@ -27,7 +39,7 @@
           [group]="selectedGroup"
           [resource]="selectedResource"
         ></group-resource-panel>
-      </mat-tab>
+      </mat-tab -->
     </mat-tab-group>
   </data-panel>
 </div>

@@ -8,7 +8,6 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
-import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
@@ -24,7 +23,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,6 +44,7 @@ public class UIResourceService {
 
 
     private final ResourceDao resourceDao;
+
     private final GroupDao groupDao;
     private final ResourceMemberDao resourceMemberDao;
     private final UserDao userDao;
@@ -54,7 +53,7 @@ public class UIResourceService {
     private final ConversionService conversionService;
     private final SmlConnector smlConnector;
 
-    public UIResourceService(ResourceDao resourceDao, ResourceMemberDao resourceMemberDao, ResourceDefDao resourceDefDao, DomainResourceDefDao domainResourceDefDao,  UserDao userDao, GroupDao groupDao, ConversionService conversionService, SmlConnector smlConnector) {
+    public UIResourceService(ResourceDao resourceDao, ResourceMemberDao resourceMemberDao, ResourceDefDao resourceDefDao, DomainResourceDefDao domainResourceDefDao, UserDao userDao, GroupDao groupDao, ConversionService conversionService, SmlConnector smlConnector) {
         this.resourceDao = resourceDao;
         this.resourceMemberDao = resourceMemberDao;
         this.resourceDefDao = resourceDefDao;
@@ -98,7 +97,7 @@ public class UIResourceService {
 
 
     @Transactional
-    public ServiceResult<ResourceRO> getResourcesForUserAndGroup(Long userId, MembershipRoleType role,  Long groupId, int page, int pageSize, String filterValue) {
+    public ServiceResult<ResourceRO> getResourcesForUserAndGroup(Long userId, MembershipRoleType role, Long groupId, int page, int pageSize, String filterValue) {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
@@ -134,10 +133,10 @@ public class UIResourceService {
     }
 
     @Transactional
-    public ResourceRO deleteResourceFromGroup(Long resourceId, Long groupId,  Long domainId) {
+    public ResourceRO deleteResourceFromGroup(Long resourceId, Long groupId, Long domainId) {
         DBResource resource = resourceDao.find(resourceId);
         if (resource == null) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST,ACTION_RESOURCE_DELETE, "Resource does not exist!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Resource does not exist!");
         }
         if (!Objects.equals(resource.getGroup().getId(), groupId)) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_DELETE, "Resource does not belong to the group!");
@@ -151,7 +150,7 @@ public class UIResourceService {
     }
 
     @Transactional
-    public ResourceRO createResourceForGroup(ResourceRO resourceRO, Long groupId, Long domainId) {
+    public ResourceRO createResourceForGroup(ResourceRO resourceRO, Long groupId, Long domainId, Long userId) {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
@@ -185,11 +184,18 @@ public class UIResourceService {
         DBDocument document = createDocumentForResourceDef(optRedef.get());
         resource.setDocument(document);
         resourceDao.persist(resource);
+        // create first member as admin user
+        DBUser user = userDao.find(userId);
+        DBResourceMember dbResourceMember = new DBResourceMember();
+        dbResourceMember.setRole(MembershipRoleType.ADMIN);
+        dbResourceMember.setResource(resource);
+        dbResourceMember.setUser(user);
+        resourceMemberDao.persist(dbResourceMember);
         return conversionService.convert(resource, ResourceRO.class);
     }
 
     @Transactional
-    public ResourceRO updateResourceForGroup(ResourceRO resourceRO,  Long resourceId, Long groupId, Long domainId) {
+    public ResourceRO updateResourceForGroup(ResourceRO resourceRO, Long resourceId, Long groupId, Long domainId) {
 
         DBGroup group = groupDao.find(groupId);
         if (group == null) {
@@ -211,14 +217,14 @@ public class UIResourceService {
         }
 
         // at the moment only visibility can be updated for the resource
-        DBResource resource =resourceDao.find(resourceId);
+        DBResource resource = resourceDao.find(resourceId);
         resource.setVisibility(resourceRO.getVisibility());
         return conversionService.convert(resource, ResourceRO.class);
     }
 
     @Transactional
     public ServiceResult<MemberRO> getResourceMembers(Long resourceId, int page, int pageSize,
-                                                   String filter) {
+                                                      String filter) {
         Long count = resourceMemberDao.getResourceMemberCount(resourceId, filter);
         ServiceResult<MemberRO> result = new ServiceResult<>();
         result.setPage(page);
@@ -269,7 +275,6 @@ public class UIResourceService {
         resourceMemberDao.remove(resourceMember);
         return conversionService.convert(resourceMember, MemberRO.class);
     }
-
 
     public DBDocument createDocumentForResourceDef(DBResourceDef resourceDef) {
         DBDocument document = new DBDocument();

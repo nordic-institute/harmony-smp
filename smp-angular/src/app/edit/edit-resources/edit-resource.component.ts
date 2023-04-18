@@ -24,10 +24,8 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];
   resourceList: ResourceRo[] = [];
-
   _selectedDomain: DomainRo;
   _selectedGroup: GroupRo;
-
   _selectedResource: ResourceRo;
   _selectedDomainResourceDef: ResourceDefinitionRo[];
 

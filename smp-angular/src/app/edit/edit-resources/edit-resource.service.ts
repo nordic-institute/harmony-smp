@@ -9,14 +9,26 @@ import {GroupRo} from "../../common/model/group-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {TableResult} from "../../common/model/table-result.model";
 import {DomainRo} from "../../common/model/domain-ro.model";
+import {SearchTableEntity} from "../../common/search-table/search-table-entity.model";
+import {DocumentRo} from "../../common/model/document-ro.model";
 
 @Injectable()
 export class EditResourceService {
 
 
+  _selectedResource:ResourceRo;
+
   constructor(
     private http: HttpClient,
     private securityService: SecurityService) {
+  }
+
+  set selectedResource(selected: ResourceRo) {
+    this._selectedResource = selected;
+  }
+
+  get selectedResource() {
+    return this._selectedResource;
   }
 
 
@@ -77,5 +89,21 @@ export class EditResourceService {
       .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
       .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, group?.groupId)
       .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), resource);
+  }
+
+
+  public getDocumentObservable(resource: ResourceRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.get<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId));
+  }
+
+  public saveDocumentObservable(resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.put<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), document);
   }
 }

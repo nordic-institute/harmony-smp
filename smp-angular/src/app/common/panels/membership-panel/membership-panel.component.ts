@@ -225,12 +225,12 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   protected getMembershipListService(): Observable<SearchTableResult> {
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-        return this.membershipService.getDomainMembersObservable(this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
-      case MemberTypeEnum.GROUP:
-        return this.membershipService.getGroupMembersObservable(this._group.groupId, this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
-      case MemberTypeEnum.RESOURCE:
-        return this.membershipService.getResourceMembersObservable(this._resource, this._group, this._domain, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
 
+        return !this._domain?null:this.membershipService.getDomainMembersObservable(this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
+      case MemberTypeEnum.GROUP:
+        return !this._group?null: this.membershipService.getGroupMembersObservable(this._group.groupId, this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
+      case MemberTypeEnum.RESOURCE:
+        return  !this._resource?null: this.membershipService.getResourceMembersObservable(this._resource, this._group, this._domain, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
     }
   }
 

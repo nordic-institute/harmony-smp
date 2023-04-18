@@ -24,7 +24,6 @@ export class ResourceDialogComponent {
   resourceForm: FormGroup;
   message: string;
   messageType: string = "alert-error";
-
   group: GroupRo;
   _resource: ResourceRo
   domain:DomainRo;

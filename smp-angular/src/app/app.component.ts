@@ -11,6 +11,11 @@ import {SidenavComponent} from "./window/sidenav/sidenav.component";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {ThemeService} from "./common/theme-service/theme.service";
 import {AlertMessageComponent} from "./common/alert-message/alert-message.component";
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/mode/markdown/markdown';
+import 'codemirror/mode/xml/xml';
+import 'codemirror/mode/properties/properties';
+
 
 @Component({
   selector: 'app-root',

@@ -45,6 +45,8 @@ export class SmpConstants {
   public static readonly REST_INTERNAL = 'internal/rest/';
 
   public static readonly REST_EDIT = 'edit/rest/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/';
+
+  public static readonly REST_EDIT_DOCUMENT = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE + '/' +  SmpConstants.PATH_PARAM_ENC_RESOURCE_ID;
   /* Public services */
   public static readonly REST_PUBLIC_SEARCH_SERVICE_GROUP = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
 

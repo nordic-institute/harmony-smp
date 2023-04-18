@@ -1,5 +1,5 @@
 
-#admin-resource--panel {
+#admin-resource-panel {
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -7,13 +7,12 @@
   min-height: 600px;
   padding: 0 2em;
 }
-#resource--filter {
+#resource-filter {
   width: 100%;
   padding-top: 1em;
 }
 
-
-#admin-resource--table {
+#admin-resource-table {
   width: 100%;
   padding-top: 1em;
 }
