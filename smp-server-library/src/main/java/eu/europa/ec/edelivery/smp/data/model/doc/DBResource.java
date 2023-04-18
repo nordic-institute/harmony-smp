@@ -115,7 +115,7 @@ public class DBResource extends BaseEntity {
 
     // The domain group list which handles the resource
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FK_GROUP_ID", nullable = false)
+    @JoinColumn(name = "FK_GROUP_ID", nullable = true)
     private DBGroup group;
 
     // The domain to which the resource belongs

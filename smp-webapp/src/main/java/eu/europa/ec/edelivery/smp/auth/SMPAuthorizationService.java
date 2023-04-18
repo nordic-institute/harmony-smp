@@ -101,8 +101,7 @@ public class SMPAuthorizationService {
 
     public boolean isAnyGroupAdministrator() {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        return groupMemberDao.isUserGroupAdministrator(userDetails.getUser().getId())
-                || domainMemberDao.isUserAnyDomainAdministrator(userDetails.getUser().getId());
+        return groupMemberDao.isUserGroupAdministrator(userDetails.getUser().getId());
     }
 
     /**

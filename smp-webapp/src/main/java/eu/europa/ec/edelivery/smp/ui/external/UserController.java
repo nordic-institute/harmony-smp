@@ -288,11 +288,14 @@ public class UserController {
         if (authorizationService.isAnyDomainAdministrator()) {
             node.addChild(new NavigationTreeNodeRO("edit-domain", "Edit domains", "account_circle", "edit-domain"));
         }
-        if (authorizationService.isAnyGroupAdministrator()) {
+        if (authorizationService.isAnyDomainAdministrator()
+                || authorizationService.isAnyGroupAdministrator()) {
             // is group admin
             node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "group", "edit-group"));
         }
-        if (authorizationService.isAnyResourceAdministrator()) {
+        if (authorizationService.isAnyDomainAdministrator()
+                || authorizationService.isAnyGroupAdministrator()
+                || authorizationService.isAnyResourceAdministrator()) {
             // is resource admin
             node.addChild(new NavigationTreeNodeRO("edit-resource", "Edit resources", "article", "edit-resource"));
         }

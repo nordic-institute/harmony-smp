@@ -8,7 +8,7 @@
               (click)="onShowButtonDocumentClicked()"
               >
         <mat-icon>article</mat-icon>
-        <span>Show</span>
+        <span>Edit document</span>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
@@ -25,7 +25,6 @@
                     [value]="resDef.identifier">
           {{resDef.name}} ({{resDef.identifier}})
         </mat-option>
-
       </mat-select>
     </mat-form-field>
     <mat-form-field  style="width: 100%">
@@ -41,8 +40,6 @@
              formControlName="identifierScheme"
       >
     </mat-form-field>
-
-
     <mat-form-field style="width:100%">
       <mat-label>Group visibility</mat-label>
       <mat-select placeholder="Resource visibility"

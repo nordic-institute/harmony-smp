@@ -55,21 +55,6 @@ public class ServiceMetadata20Converter {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadata20Converter.class);
 
 
-    private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial(() -> {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
-            return jaxbContext.createUnmarshaller();
-        } catch (JAXBException ex) {
-            LOG.error("Error occurred while initializing JAXBContext for ServiceMetadata. Root Error:" +
-                    ExceptionUtils.getRootCauseMessage(ex), ex);
-        }
-        return null;
-    });
-
-    private static Unmarshaller getUnmarshaller() {
-        return jaxbUnmarshaller.get();
-    }
-
     /**
      * Method parses serviceMetadata XML and envelopes it to SignedServiceMetadata.
      *
@@ -84,17 +69,6 @@ public class ServiceMetadata20Converter {
         }
     }
 
-
-    public static ServiceMetadata unmarshal(byte[] serviceMetadataXml) throws ResourceException {
-        try {
-            InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);
-            ServiceMetadata serviceMetadata = (ServiceMetadata) getUnmarshaller()
-                    .unmarshal(inputStream);
-            return serviceMetadata;
-        } catch (JAXBException ex) {
-            throw new ResourceException(PARSE_ERROR, "Error occurred while parsing resource: " + ExceptionUtils.getRootCauseMessage(ex), ex);
-        }
-    }
 
     private static Document parse(byte[] serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
         InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);

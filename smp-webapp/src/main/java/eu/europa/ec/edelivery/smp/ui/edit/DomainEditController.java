@@ -47,7 +47,7 @@ public class DomainEditController {
      * @return Domain list where user has role domain administrator
      */
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isAnyGroupAdministrator")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.isAnyGroupAdministrator or @smpAuthorizationService.isAnyDomainAdministrator)")
     public List<DomainRO> getDomainsForUserType(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @RequestParam(value = PARAM_NAME_TYPE, defaultValue = "domain-admin", required = false) String forRole) {

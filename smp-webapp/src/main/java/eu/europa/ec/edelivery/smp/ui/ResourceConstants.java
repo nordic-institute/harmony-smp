@@ -46,6 +46,9 @@ public class ResourceConstants {
     public static final String PATH_ACTION_UPDATE = "update";
     public static final String PATH_ACTION_CREATE = "create";
     public static final String PATH_ACTION_PUT = "put";
+    public static final String PATH_ACTION_VALIDATE = "validate";
+    public static final String PATH_ACTION_GENERATE = "generate";
+
     public static final String PATH_ACTION_RETRIEVE = "retrieve";
     public static final String PATH_ACTION_SEARCH = "search";
     // --------------------------------------
@@ -90,6 +93,10 @@ public class ResourceConstants {
 
     public static final String CONTEXT_PATH_EDIT_DOCUMENT = CONTEXT_PATH_EDIT + "/" +PATH_RESOURCE_TYPE_RESOURCE;
     public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET =  "{" + PATH_PARAM_ENC_RESOURCE_ID + "}";
+
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_VALIDATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET +  "/" + PATH_ACTION_VALIDATE;
+
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GENERATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET +  "/" + PATH_ACTION_GENERATE;
     // public
     public static final String CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT = CONTEXT_PATH_PUBLIC + "search";
     public static final String CONTEXT_PATH_PUBLIC_DOMAIN = CONTEXT_PATH_PUBLIC + "domain";
@@ -123,6 +130,7 @@ public class ResourceConstants {
     public static final String PARAM_PAGINATION_ORDER_TYPE = "orderType";
 
     public static final String PARAM_NAME_TYPE = "type";
+    public static final String PARAM_NAME_VERSION = "version";
 
 
     public static final String PARAM_ROLE = "role";

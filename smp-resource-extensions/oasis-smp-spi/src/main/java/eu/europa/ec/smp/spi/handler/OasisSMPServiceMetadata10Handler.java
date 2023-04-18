@@ -1,6 +1,8 @@
 package eu.europa.ec.smp.spi.handler;
 
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP10ServiceMetadataReader;
 import eu.europa.ec.dynamicdiscovery.core.validator.OasisSmpSchemaValidator;
+import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.exception.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.spi.api.SmpDataServiceApi;
 import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
@@ -8,23 +10,32 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.converter.ServiceMetadata10Converter;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
+import gen.eu.europa.ec.ddc.api.smp10.DocumentIdentifier;
+import gen.eu.europa.ec.ddc.api.smp10.ParticipantIdentifierType;
+import gen.eu.europa.ec.ddc.api.smp10.ServiceInformationType;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadata;
+import gen.eu.europa.ec.ddc.api.smp20.ServiceGroup;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
-import javax.xml.transform.TransformerException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.List;
 
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
 
@@ -33,10 +44,15 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(OasisSMPServiceMetadata10Handler.class);
 
+    private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
+    private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\"" + NS + "\"/>";
+    private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+
     final SmpXmlSignatureApi signatureApi;
     final SmpDataServiceApi smpDataApi;
     final SmpIdentifierServiceApi smpIdentifierApi;
     final ServiceMetadata10Validator serviceMetadataValidator;
+    final OasisSMP10ServiceMetadataReader reader;
 
     public OasisSMPServiceMetadata10Handler(SmpDataServiceApi smpDataApi,
                                             SmpIdentifierServiceApi smpIdentifierApi,
@@ -46,6 +62,33 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         this.smpDataApi = smpDataApi;
         this.smpIdentifierApi = smpIdentifierApi;
         this.serviceMetadataValidator = serviceMetadataValidator;
+        this.reader = new OasisSMP10ServiceMetadataReader();
+    }
+
+    public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
+
+        ResourceIdentifier identifier = getResourceIdentifier(resourceData);
+        ResourceIdentifier subresourceIdentifier = getSubresourceIdentifier(resourceData);
+        if (resourceData.getResourceInputStream() == null) {
+            LOG.warn("Empty document input stream for service-group [{}]!", identifier);
+            return;
+        }
+
+        ServiceMetadata serviceMetadata = new ServiceMetadata();
+        ServiceInformationType serviceInformationType =   new ServiceInformationType();
+        serviceMetadata.setServiceInformation(serviceInformationType);
+        serviceInformationType.setParticipantIdentifier(new ParticipantIdentifierType());
+        serviceInformationType.getParticipantIdentifier().setValue(identifier.getValue());
+        serviceInformationType.getParticipantIdentifier().setScheme(identifier.getScheme());
+        serviceInformationType.setDocumentIdentifier(new DocumentIdentifier());
+        serviceInformationType.getDocumentIdentifier().setValue(subresourceIdentifier.getValue());
+        serviceInformationType.getDocumentIdentifier().setScheme(subresourceIdentifier.getScheme());
+
+        try {
+            reader.serializeNative(serviceInformationType, responseData.getOutputStream(), true);
+        } catch (TechnicalException e) {
+            throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
+        }
     }
 
     @Override
@@ -61,7 +104,7 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         Document docEnvelopedMetadata;
         try {
             byte[] bytearray = readFromInputStream(resourceData.getResourceInputStream());
-            docEnvelopedMetadata = ServiceMetadata10Converter.toSignedServiceMetadataDocument(bytearray);
+            docEnvelopedMetadata = toSignedServiceMetadataDocument(bytearray);
         } catch (IOException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: ["
                     + resourceIdentifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
@@ -75,9 +118,10 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         }
 
         try {
-            ServiceMetadata10Converter.serialize(docEnvelopedMetadata, responseData.getOutputStream());
+            reader.serializeNative(docEnvelopedMetadata,  responseData.getOutputStream(), false);
+            //ServiceMetadata10Converter.serialize(docEnvelopedMetadata, responseData.getOutputStream());
             responseData.setContentType("text/xml");
-        } catch (TransformerException e) {
+        } catch (TechnicalException e) {
             throw new ResourceException(INTERNAL_ERROR, "Error occurred while writing the message: ["
                     + resourceIdentifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
@@ -91,7 +135,7 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
             inputStream = new BufferedInputStream(inputStream);
         }
         inputStream.mark(Integer.MAX_VALUE - 2);
-        validateResource(resourceData, responseData);
+        validateResource(resourceData);
 
         try {
             inputStream.reset();
@@ -110,7 +154,7 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
      * {@inheritDoc}
      */
     @Override
-    public void validateResource(RequestData resourceData, ResponseData responseData) throws ResourceException {
+    public void validateResource(RequestData resourceData) throws ResourceException {
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
         ResourceIdentifier documentIdentifier = getSubresourceIdentifier(resourceData);
         byte[] bytearray;
@@ -121,9 +165,37 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
 
-        ServiceMetadata serviceMetadata = ServiceMetadata10Converter.unmarshal(bytearray);
+        ServiceMetadata serviceMetadata = null;
+        try {
+            serviceMetadata = (ServiceMetadata) reader.parseNative(new ByteArrayInputStream(bytearray));
+        } catch (TechnicalException e) {
+            throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
+        }
         serviceMetadataValidator.validate(identifier, documentIdentifier, serviceMetadata);
+    }
 
+    public static Document toSignedServiceMetadataDocument(byte[] serviceMetadataXml) throws ResourceException {
+        try {
+            Document docServiceMetadata = parse(serviceMetadataXml);
+            Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY.getBytes());
+            Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
+            root.getDocumentElement().appendChild(imported);
+            return root;
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            throw new ResourceException(INVALID_RESOURCE, "Invalid Signed serviceMetadataXml with error: " + ExceptionUtils.getRootCauseMessage(ex), ex);
+        }
+    }
+
+    private static Document parse(byte[] serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
+        InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);
+        return getDocumentBuilder().parse(inputStream);
+    }
+
+    private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
+        return dbf.newDocumentBuilder();
     }
 
 }
