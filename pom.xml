@@ -269,7 +269,7 @@
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
             </dependency>
-            <dependency>
+            <!-- dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
@@ -283,7 +283,7 @@
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-core</artifactId>
                 <version>${jaxb.version}</version>
-            </dependency>
+            </dependency -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>

@@ -1,0 +1,83 @@
+<div id="edit-resource-panel" class="mat-elevation-z2">
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <button id="addMemberButton" mat-raised-button (click)="onCreateResourceButtonClicked()" color="primary"
+              [disabled]="createResourceDisabled"
+              matTooltip="Create"
+      >
+        <mat-icon>people</mat-icon>
+        <span>Create</span>
+      </button>
+      <button id="editButton" mat-raised-button (click)="onEditSelectedButtonClicked()" color="primary"
+              [disabled]="!selected"
+              matTooltip="Edit"
+      >
+        <mat-icon>edit</mat-icon>
+        <span>Edit</span>
+      </button>
+      <button id="deleteButton" mat-raised-button (click)="onDeleteSelectedButtonClicked()" color="primary"
+              matTooltip="Delete selected resource"
+              [disabled]="!selected">
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <h3>{{title}}</h3>
+  <div class="edit-resource-container mat-elevation-z2">
+    <div class="edit-resource-loading-shade"
+         *ngIf="isLoadingResults">
+      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+    </div>
+
+    <div class="edit-resource-table-container">
+
+      <mat-form-field id="edit-resource-filter" style="width: 100%">
+        <mat-label>Resource filter</mat-label>
+        <input matInput (keyup)="applyResourceFilter($event)"
+               placeholder="Resource filter"
+               [disabled]="disabledForm"
+               #inputDomainMemberFilter>
+      </mat-form-field>
+
+      <table class="mat-elevation-z2" mat-table [dataSource]="data">
+
+        <ng-container matColumnDef="identifierScheme">
+          <th mat-header-cell *matHeaderCellDef>Scheme</th>
+          <td mat-cell *matCellDef="let row">{{row.identifierScheme}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="identifierValue">
+          <th mat-header-cell *matHeaderCellDef>Identifier</th>
+          <td mat-cell *matCellDef="let row">{{row.identifierValue}}</td>
+        </ng-container>
+
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+            (click)="onResourceSelected(row)"
+            (dblclick)="showResourceEditDialog(row)"
+            [ngClass]="{'datatable-row-selected': row==selected,'datatable-row-odd': odd}"
+        ></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No resources
+            matching the filter
+            "{{inputDomainMemberFilter.value}}"
+          </td>
+          <ng-template #noDataFound>
+            <td class="mat-cell" colspan="2">No direct members for the domain</td>
+          </ng-template>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
+                   (page)="onPageChanged($event)"
+                   [pageSize]="5"
+                   [pageSizeOptions]="[5, 10, 25]"
+                   [disabled]="disabledForm"
+                   aria-label="Select pages"></mat-paginator>
+  </div>
+</div>

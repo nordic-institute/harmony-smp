@@ -162,10 +162,16 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {
   DocumentWizardDialogComponent
 } from "./edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
+import {SubresourcePanelComponent} from "./edit/edit-resources/subresource-panel/subresource-panel.component";
+import {
+  SubresourceDialogComponent
+} from "./edit/edit-resources/subresource-panel/resource-dialog/subresource-dialog.component";
 
 
 @NgModule({
   declarations: [
+    SubresourceDialogComponent,
+    SubresourcePanelComponent,
     DocumentWizardDialogComponent,
     AccessTokenGenerationDialogComponent,
     AccessTokenPanelComponent,
