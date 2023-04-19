@@ -20,9 +20,7 @@ import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 
-import javax.xml.bind.JAXBException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -138,12 +136,13 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         if (!inputStream.markSupported()) {
             inputStream = new BufferedInputStream(inputStream);
         }
+
         inputStream.mark(Integer.MAX_VALUE - 2);
         ServiceGroup serviceGroup = validateAndParse(resourceData);
 
         // ServiceMetadataReferenceCollection must be empty because they are automatically generated
-        if (serviceGroup.getServiceMetadataReferenceCollection()!=null
-                && !serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences().isEmpty() ) {
+        if (serviceGroup.getServiceMetadataReferenceCollection() != null
+                && !serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences().isEmpty()) {
             throw new ResourceException(INVALID_PARAMETERS, "ServiceMetadataReferenceCollection must be empty!");
         }
         // set participant to "lowercase" to match it as is saved in the database
@@ -156,7 +155,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
             //StreamUtils.copy(inputStream, responseData.getOutputStream());
             // need to save serviceGroup because of the update on the resource identifier values
             reader.serializeNative(serviceGroup, responseData.getOutputStream(), true);
-        } catch ( TechnicalException e) {
+        } catch (TechnicalException e) {
             throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
         }
     }
@@ -188,7 +187,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         ServiceGroup serviceGroup = null;
         try {
             serviceGroup = reader.parseNative(new ByteArrayInputStream(bytearray));
-        } catch ( TechnicalException e) {
+        } catch (TechnicalException e) {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while parsing Oasis SMP 1.0 ServiceGroup with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         final ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();
