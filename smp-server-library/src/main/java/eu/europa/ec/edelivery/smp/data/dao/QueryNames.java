@@ -79,7 +79,11 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_RESOURCE= "DBResourceMember.getByUserAndResource";
 
     public static final String QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_SUBRESDEF = "DBSubresource.getByIdentifierAndResourceAndSubresourceDef";
+
+    public static final String QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_ID = "DBSubresource.getByIdentifierAndResourceId";
     public static final String QUERY_SUBRESOURCE_BY_RESOURCE_SUBRESDEF = "DBSubresource.getAllForResourceAndTypeIdentifier";
+
+    public static final String QUERY_SUBRESOURCE_BY_RESOURCE_ID = "DBSubresource.getAllForResourceId";
     public static final String QUERY_SUBRESOURCE_DEF_ALL = "DBSubresource.getAll";
     public static final String QUERY_SUBRESOURCE_DEF_BY_IDENTIFIER = "DBResourceDef.getAllByIdentifier";
     public static final String QUERY_SUBRESOURCE_DEF_URL_SEGMENT = "DBResourceDef.getAllByUrlSegment";
@@ -139,6 +143,9 @@ public class QueryNames {
     // resource identifier value
     public static final String PARAM_RESOURCE_IDENTIFIER = "resource_identifier";
     public static final String PARAM_RESOURCE_SCHEME = "resource_scheme";
+
+    public static final String PARAM_SUBRESOURCE_IDENTIFIER = "subresource_identifier";
+    public static final String PARAM_SUBRESOURCE_SCHEME = "subresource_scheme";
     // resource identifier schem
     public static final String PARAM_RESOURCE_FILTER = "resource_filter";
     public static final String PARAM_RESOURCE_DEF_ID = "resource_def_id";

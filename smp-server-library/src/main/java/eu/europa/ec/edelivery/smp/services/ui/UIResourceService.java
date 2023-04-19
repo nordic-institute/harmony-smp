@@ -53,6 +53,7 @@ public class UIResourceService {
     private final ConversionService conversionService;
     private final SmlConnector smlConnector;
 
+
     public UIResourceService(ResourceDao resourceDao, ResourceMemberDao resourceMemberDao, ResourceDefDao resourceDefDao, DomainResourceDefDao domainResourceDefDao, UserDao userDao, GroupDao groupDao, ConversionService conversionService, SmlConnector smlConnector) {
         this.resourceDao = resourceDao;
         this.resourceMemberDao = resourceMemberDao;

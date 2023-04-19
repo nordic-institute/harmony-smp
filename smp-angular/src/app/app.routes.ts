@@ -19,6 +19,9 @@ import {EditResourceComponent} from "./edit/edit-resources/edit-resource.compone
 import {
   ResourceDocumentPanelComponent
 } from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
+import {
+  SubresourceDocumentPanelComponent
+} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
 
 
 const appRoutes: Routes = [
@@ -38,6 +41,7 @@ const appRoutes: Routes = [
         canDeactivate: [dirtyDeactivateGuard],
         children: [
           {path: 'resource-document', component: ResourceDocumentPanelComponent, canDeactivate: [dirtyDeactivateGuard]},
+          {path: 'subresource-document', component: SubresourceDocumentPanelComponent, canDeactivate: [dirtyDeactivateGuard]},
           {path: '', component: EditResourceComponent, canDeactivate: [dirtyDeactivateGuard]},
         ]
       }

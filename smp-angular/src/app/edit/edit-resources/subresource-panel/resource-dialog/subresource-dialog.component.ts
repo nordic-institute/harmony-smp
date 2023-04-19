@@ -8,6 +8,8 @@ import {ResourceRo} from "../../../../common/model/resource-ro.model";
 import {DomainRo} from "../../../../common/model/domain-ro.model";
 import {ResourceDefinitionRo} from "../../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditGroupService} from "../../../edit-group/edit-group.service";
+import {SubresourceRo} from "../../../../common/model/subresource-ro.model";
+import {EditResourceService} from "../../edit-resource.service";
 
 
 
@@ -16,24 +18,19 @@ import {EditGroupService} from "../../../edit-group/edit-group.service";
   styleUrls: ['./subresource-dialog.component.css']
 })
 export class SubresourceDialogComponent {
-
-  readonly groupVisibilityOptions = Object.keys(VisibilityEnum)
-    .filter(el => el !== "Private").map(el => {
-      return {key: el, value: VisibilityEnum[el]}
-    });
-  formTitle = "Resource dialog";
+  formTitle = "Subresource dialog";
   resourceForm: FormGroup;
   message: string;
   messageType: string = "alert-error";
-  group: GroupRo;
-  _resource: ResourceRo
+  @Input() resource: ResourceRo
+  _subresource: SubresourceRo
   domain:DomainRo;
-  domainResourceDefs:ResourceDefinitionRo[];
+  subresourceDefs:ResourceDefinitionRo[];
 
   @ViewChild('identifierValue', {static: false}) identifierValue: ElementRef;
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               public dialogRef: MatDialogRef<SubresourceDialogComponent>,
-              private editGroupService: EditGroupService,
+              private editGroupService: EditResourceService,
               private alertService: AlertMessageService,
               private formBuilder: FormBuilder
   ) {
@@ -44,57 +41,49 @@ export class SubresourceDialogComponent {
     this.resourceForm = formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
-      'visibility': new FormControl({value: null}),
-      'resourceTypeIdentifier': new FormControl({value: null}),
+      'subresourceTypeIdentifier': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
     this.resource = data.resource;
-    this.group = data.group;
+    this.subresource = data.subresource;
+    this.subresourceDefs = data.subresourceDefs;
     this.domain = data.domain;
-    this.domainResourceDefs = data.domainResourceDefs;
-
-
   }
 
   get newMode(): boolean {
-    return !this._resource?.resourceId
+    return !this._subresource?.subresourceId
   }
 
-  get resource(): ResourceRo {
-    let resource = {...this._resource};
-    resource.identifierScheme = this.resourceForm.get('identifierScheme').value;
-    resource.identifierValue = this.resourceForm.get('identifierValue').value;
-    resource.resourceTypeIdentifier = this.resourceForm.get('resourceTypeIdentifier').value;
-    resource.visibility = this.resourceForm.get('visibility').value;
-    return resource;
+  get subresource(): SubresourceRo {
+    let entity = {...this._subresource};
+    entity.identifierScheme = this.resourceForm.get('identifierValue').value;
+    entity.identifierValue = this.resourceForm.get('identifierScheme').value;
+    entity.subresourceTypeIdentifier = this.resourceForm.get('subresourceTypeIdentifier').value;
+    return entity;
   }
 
-  @Input() set resource(value: ResourceRo) {
-    this._resource = value;
+  @Input() set subresource(value: SubresourceRo) {
+    this._subresource = value;
 
     if (!!value) {
       this.resourceForm.enable();
       this.resourceForm.controls['identifierValue'].setValue(value.identifierValue);
       this.resourceForm.controls['identifierScheme'].setValue(value.identifierScheme);
-      this.resourceForm.controls['resourceTypeIdentifier'].setValue(value.resourceTypeIdentifier);
+      this.resourceForm.controls['subresourceTypeIdentifier'].setValue(value.subresourceTypeIdentifier);
       // control disable enable did not work??
       if (this.newMode) {
         this.resourceForm.controls['identifierValue'].enable();
         this.resourceForm.controls['identifierScheme'].enable();
-        this.resourceForm.controls['resourceTypeIdentifier'].enable();
+        this.resourceForm.controls['subresourceTypeIdentifier'].enable();
       } else {
         this.resourceForm.controls['identifierValue'].disable();
         this.resourceForm.controls['identifierScheme'].disable();
-        this.resourceForm.controls['resourceTypeIdentifier'].disable();
+        this.resourceForm.controls['subresourceTypeIdentifier'].disable();
       }
-
-      this.resourceForm.controls['visibility'].setValue(value.visibility);
-
     } else {
       this.resourceForm.disable();
       this.resourceForm.controls['identifierValue'].setValue("");
       this.resourceForm.controls['identifierScheme'].setValue("");
-      this.resourceForm.controls['visibility'].setValue("");
       this.resourceForm.controls['resourceTypeIdentifier'].setValue("");
     }
 
@@ -105,7 +94,6 @@ export class SubresourceDialogComponent {
     this.message = null;
     this.messageType = null;
   }
-
 
   closeDialog() {
     this.dialogRef.close()
@@ -120,14 +108,12 @@ export class SubresourceDialogComponent {
     let resource = this.resource;
     if (this.newMode) {
       this.createResource(resource);
-    } else {
-      this.saveResource(resource);
     }
   }
 
   public createResource(resource: ResourceRo) {
 
-        this.editGroupService.createResourceForGroup(this.resource, this.group, this.domain).subscribe((result: ResourceRo) => {
+        this.editGroupService.createSubResourceForResource(this.subresource, this.resource).subscribe((result: SubresourceRo) => {
           if (!!result) {
             this.closeDialog();
           }
@@ -137,15 +123,6 @@ export class SubresourceDialogComponent {
 
   }
 
-  public saveResource(resource: ResourceRo) {
-    this.editGroupService.updateResourceForGroup(this.resource, this.group, this.domain).subscribe((result: ResourceRo) => {
-      if (!!result) {
-        this.closeDialog();
-      }
-    }, (error) => {
-      this.alertService.error(error.error?.errorDescription)
-    });
-  }
 
   public setFocus() {
     setTimeout(() => this.identifierValue.nativeElement.focus());

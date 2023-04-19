@@ -11,25 +11,21 @@ import {TableResult} from "../../common/model/table-result.model";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {SearchTableEntity} from "../../common/search-table/search-table-entity.model";
 import {DocumentRo} from "../../common/model/document-ro.model";
+import {SubresourceRo} from "../../common/model/subresource-ro.model";
 
 @Injectable()
 export class EditResourceService {
 
 
-  _selectedResource:ResourceRo;
+  selectedResource:ResourceRo;
+
+  selectedSubresource:SubresourceRo;
 
   constructor(
     private http: HttpClient,
     private securityService: SecurityService) {
   }
 
-  set selectedResource(selected: ResourceRo) {
-    this._selectedResource = selected;
-  }
-
-  get selectedResource() {
-    return this._selectedResource;
-  }
 
 
   public getGroupResourcesForGroupAdminObservable(group: GroupRo, domain: DomainRo, filter: any, page: number, pageSize: number): Observable<TableResult<ResourceRo>> {
@@ -64,15 +60,6 @@ export class EditResourceService {
       .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, group?.groupId), {params});
   }
 
-  deleteResourceFromGroup(resource: ResourceRo, group: GroupRo, domain: DomainRo): Observable<ResourceRo> {
-    const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.delete<ResourceRo>(SmpConstants.REST_EDIT_RESOURCE_DELETE
-      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
-      .replace(SmpConstants.PATH_PARAM_ENC_GROUP_ID, group?.groupId)
-      .replace(SmpConstants.PATH_PARAM_ENC_DOMAIN_ID, domain?.domainId)
-      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource.resourceId));
-  }
-
   createResourceForGroup(resource: ResourceRo, group: GroupRo, domain: DomainRo): Observable<ResourceRo> {
     const currentUser: User = this.securityService.getCurrentUser();
     return this.http.put<ResourceRo>(SmpConstants.REST_EDIT_RESOURCE_CREATE
@@ -103,6 +90,7 @@ export class EditResourceService {
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), {params});
   }
+
   public saveDocumentObservable(resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
     const currentUser: User = this.securityService.getCurrentUser();
     return this.http.put<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT
@@ -122,4 +110,65 @@ export class EditResourceService {
       .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
       .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId), null);
   }
+
+  getSubResourcesForResource(resource: ResourceRo): Observable<SubresourceRo[]> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.get<SubresourceRo[]>(SmpConstants.REST_EDIT_SUBRESOURCE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId));
+  }
+
+  deleteSubresourceFromResource(subResource: SubresourceRo, resource: ResourceRo): Observable<SubresourceRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.delete<ResourceRo>(SmpConstants.REST_EDIT_SUBRESOURCE_DELETE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId)
+      .replace(SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID, subResource?.subresourceId));
+  }
+
+  createSubResourceForResource(subresource: SubresourceRo, resource: ResourceRo): Observable<SubresourceRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.put<SubresourceRo>(SmpConstants.REST_EDIT_SUBRESOURCE_CREATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId),
+      subresource);
+  }
+
+
+  public getSubresourceDocumentObservable(subresource: SubresourceRo, resource: ResourceRo, version:number = null): Observable<DocumentRo> {
+    let params: HttpParams = null;
+    if (version) {
+      params = new HttpParams()
+        .set('version',version);
+    }
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.get<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId)
+      .replace(SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID, subresource?.subresourceId), {params});
+  }
+
+  public saveSubresourceDocumentObservable(subresource: SubresourceRo, resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.put<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId)
+      .replace(SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID, subresource?.subresourceId), document);
+  }
+
+  public validateSubresourceDocumentObservable(subresource: SubresourceRo, resource: ResourceRo, document:DocumentRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE_VALIDATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId)
+      .replace(SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID, subresource?.subresourceId),document);
+  }
+  public generateSubresourceDocumentObservable(subresource: SubresourceRo, resource: ResourceRo): Observable<DocumentRo> {
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<DocumentRo>(SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE_GENERATE
+      .replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId)
+      .replace(SmpConstants.PATH_PARAM_ENC_RESOURCE_ID, resource?.resourceId)
+      .replace(SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID, subresource?.subresourceId), null);
+  }
+
 }

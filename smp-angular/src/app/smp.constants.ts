@@ -24,6 +24,7 @@ export class SmpConstants {
   public static readonly PATH_PARAM_ENC_MEMBER_ID = '{member-id}';
   public static readonly PATH_PARAM_ENC_GROUP_ID = '{group-id}';
   public static readonly PATH_PARAM_ENC_RESOURCE_ID = '{resource-id}';
+  public static readonly PATH_PARAM_ENC_SUBRESOURCE_ID = '{subresource-id}';
   public static readonly PATH_PARAM_CERT_ALIAS = '{cert-alias}';
   public static readonly PATH_PARAM_ENC_CREDENTIAL_ID = '{credential-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
@@ -39,6 +40,8 @@ export class SmpConstants {
   public static readonly PATH_RESOURCE_TYPE_RESOURCE_DEF = 'res-def';
 
   public static readonly PATH_RESOURCE_TYPE_RESOURCE = 'resource';
+  public static readonly PATH_RESOURCE_TYPE_SUBRESOURCE = 'subresource';
+  public static readonly PATH_RESOURCE_TYPE_DOCUMENT = 'document';
   public static readonly PATH_QUERY_FILTER_TYPE = 'type'
 
 
@@ -49,10 +52,22 @@ export class SmpConstants {
 
   public static readonly REST_EDIT = 'edit/rest/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/';
 
-  public static readonly REST_EDIT_DOCUMENT = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE + '/' +  SmpConstants.PATH_PARAM_ENC_RESOURCE_ID;
+  public static readonly REST_EDIT_RESOURCE_SHORT = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE + '/' +  SmpConstants.PATH_PARAM_ENC_RESOURCE_ID;
 
-  public static readonly REST_EDIT_DOCUMENT_VALIDATE = SmpConstants.REST_EDIT_DOCUMENT + '/' +  SmpConstants.PATH_ACTION_VALIDATE;
+  public static readonly REST_EDIT_DOCUMENT = SmpConstants.REST_EDIT_RESOURCE_SHORT + '/' +  SmpConstants.PATH_RESOURCE_TYPE_DOCUMENT ;
+    public static readonly REST_EDIT_DOCUMENT_VALIDATE = SmpConstants.REST_EDIT_DOCUMENT + '/' +  SmpConstants.PATH_ACTION_VALIDATE;
   public static readonly REST_EDIT_DOCUMENT_GENERATE = SmpConstants.REST_EDIT_DOCUMENT + '/' +  SmpConstants.PATH_ACTION_GENERATE;
+  public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE = SmpConstants.REST_EDIT_RESOURCE_SHORT + '/' +   SmpConstants.PATH_RESOURCE_TYPE_SUBRESOURCE + '/' + SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID
+    + '/' + SmpConstants.PATH_RESOURCE_TYPE_DOCUMENT;
+
+  public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_VALIDATE = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' +   SmpConstants.PATH_ACTION_VALIDATE;
+  public static readonly REST_EDIT_DOCUMENT_SUBRESOURCE_GENERATE = SmpConstants.REST_EDIT_DOCUMENT_SUBRESOURCE + '/' +   SmpConstants.PATH_ACTION_GENERATE;
+
+  public static readonly REST_EDIT_SUBRESOURCE = SmpConstants.REST_EDIT_RESOURCE_SHORT + '/' +SmpConstants.PATH_RESOURCE_TYPE_SUBRESOURCE ;
+  public static readonly REST_EDIT_SUBRESOURCE_DELETE = SmpConstants.REST_EDIT_SUBRESOURCE  + '/' + SmpConstants.PATH_PARAM_ENC_SUBRESOURCE_ID
+    + '/' + SmpConstants.PATH_ACTION_DELETE;
+  public static readonly REST_EDIT_SUBRESOURCE_CREATE = SmpConstants.REST_EDIT_SUBRESOURCE  + '/' + SmpConstants.PATH_ACTION_CREATE;
+
   /* Public services */
   public static readonly REST_PUBLIC_SEARCH_SERVICE_GROUP = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
 

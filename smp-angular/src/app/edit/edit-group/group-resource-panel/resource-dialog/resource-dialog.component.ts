@@ -61,8 +61,8 @@ export class ResourceDialogComponent {
 
   get resource(): ResourceRo {
     let resource = {...this._resource};
-    resource.identifierScheme = this.resourceForm.get('identifierScheme').value;
     resource.identifierValue = this.resourceForm.get('identifierValue').value;
+    resource.identifierScheme = this.resourceForm.get('identifierScheme').value;
     resource.resourceTypeIdentifier = this.resourceForm.get('resourceTypeIdentifier').value;
     resource.visibility = this.resourceForm.get('visibility').value;
     return resource;

@@ -1,11 +1,11 @@
 <div id="edit-resource-panel" class="mat-elevation-z2">
   <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
-      <button id="addMemberButton" mat-raised-button (click)="onCreateResourceButtonClicked()" color="primary"
-              [disabled]="createResourceDisabled"
+      <button id="createButton" mat-raised-button (click)="onCreateResourceButtonClicked()" color="primary"
+              [disabled]="createSubResourceDisabled"
               matTooltip="Create"
       >
-        <mat-icon>people</mat-icon>
+        <mat-icon>add</mat-icon>
         <span>Create</span>
       </button>
       <button id="editButton" mat-raised-button (click)="onEditSelectedButtonClicked()" color="primary"
@@ -34,13 +34,13 @@
 
       <mat-form-field id="edit-resource-filter" style="width: 100%">
         <mat-label>Resource filter</mat-label>
-        <input matInput (keyup)="applyResourceFilter($event)"
+        <input matInput (keyup)="applySubResourceFilter($event)"
                placeholder="Resource filter"
                [disabled]="disabledForm"
                #inputDomainMemberFilter>
       </mat-form-field>
 
-      <table class="mat-elevation-z2" mat-table [dataSource]="data">
+      <table class="mat-elevation-z2" mat-table [dataSource]="dataSource">
 
         <ng-container matColumnDef="identifierScheme">
           <th mat-header-cell *matHeaderCellDef>Scheme</th>
@@ -73,8 +73,8 @@
       </table>
     </div>
 
-    <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
-                   (page)="onPageChanged($event)"
+    <mat-paginator class="mat-elevation-z2"
+
                    [pageSize]="5"
                    [pageSizeOptions]="[5, 10, 25]"
                    [disabled]="disabledForm"

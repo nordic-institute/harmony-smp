@@ -95,7 +95,6 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       selected: true,
       tooltip: "",
       transient: true
-
     }
   }
 

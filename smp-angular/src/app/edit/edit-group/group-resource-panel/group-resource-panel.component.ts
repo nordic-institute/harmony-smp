@@ -95,10 +95,10 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
   }
 
   public onCreateResourceButtonClicked() {
-    this.showResourceEditDialog(this.crateResource());
+    this.showResourceEditDialog(this.createResource());
   }
 
-  crateResource ():ResourceRo {
+  createResource ():ResourceRo {
     return {
       resourceTypeIdentifier: !!this.domainResourceDefs && this.domainResourceDefs.length>0 ? this.domainResourceDefs[0].identifier:"",
       identifierValue: "",
