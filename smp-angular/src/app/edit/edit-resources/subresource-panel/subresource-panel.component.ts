@@ -1,18 +1,20 @@
-import {Component, Input, ViewChild,} from '@angular/core';
+import {Component, Input, OnInit, ViewChild,} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {MatPaginator} from "@angular/material/paginator";
 import {GroupRo} from "../../../common/model/group-ro.model";
 import {ResourceRo} from "../../../common/model/resource-ro.model";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {finalize} from "rxjs/operators";
-import {TableResult} from "../../../common/model/table-result.model";
-import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {SubresourceDialogComponent} from "./resource-dialog/subresource-dialog.component";
 import {DomainRo} from "../../../common/model/domain-ro.model";
 import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
-import {VisibilityEnum} from "../../../common/enums/visibility.enum";
-import {EditGroupService} from "../../edit-group/edit-group.service";
+import {EditResourceService} from "../edit-resource.service";
+import {SubresourceRo} from "../../../common/model/subresource-ro.model";
+import {MatTableDataSource} from "@angular/material/table";
+import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {SubresourceDialogComponent} from "./resource-dialog/subresource-dialog.component";
+import {SubresourceDefinitionRo} from "../../../system-settings/admin-extension/subresource-definition-ro.model";
+import {NavigationNode, NavigationService} from "../../../window/sidenav/navigation-model.service";
 
 
 @Component({
@@ -20,91 +22,116 @@ import {EditGroupService} from "../../edit-group/edit-group.service";
   templateUrl: './subresource-panel.component.html',
   styleUrls: ['./subresource-panel.component.scss']
 })
-export class SubresourcePanelComponent implements BeforeLeaveGuard {
-
+export class SubresourcePanelComponent implements OnInit, BeforeLeaveGuard {
 
 
   title: string = "Subresources";
-  private _group: GroupRo;
-  @Input() resource: ResourceRo;
+  @Input() group: GroupRo;
+  private _resource: ResourceRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
   displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
-  data: ResourceRo[] = [];
-  selected: ResourceRo;
+  dataSource: MatTableDataSource<SubresourceRo> = new MatTableDataSource();
+  selected: SubresourceRo;
   filter: any = {};
   resultsLength = 0;
   isLoadingResults = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private editGroupService: EditGroupService,
+  constructor(private editResourceService: EditResourceService,
+              private navigationService: NavigationService,
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
   }
 
+  ngOnInit(): void {
+    // filter predicate for search the domain
+    /*
+        this.dataSource.filterPredicate =
+          (data: SubresourceRo, filter: string) => {
+            return !filter || -1 != data.subresourceId.toLowerCase().indexOf(filter.trim().toLowerCase());
 
-  @Input() set group(value: GroupRo) {
-    if (this._group == value) {
-      return;
+          };
+
+     */
+  }
+
+  @Input() set resource(resource: ResourceRo) {
+    this._resource = resource;
+    this.loadSubResources();
+  }
+
+  get resource(): ResourceRo {
+    return this._resource;
+
+  }
+
+  getSubresourceDefinitions(): SubresourceDefinitionRo[] {
+    if (!this._resource) {
+      return null;
     }
-    this._group = value;
-    this.title = "Group resources" + (!!this._group?": [" +this._group.groupName+"]":"")
-    if (!!this._group) {
-      this.loadGroupResources();
-    } else {
-      this.isLoadingResults = false;
+    if (!this.domainResourceDefs) {
+      return null;
     }
+
+    let result: SubresourceDefinitionRo[] = this.domainResourceDefs.find(def => def.identifier == this._resource.resourceTypeIdentifier)?.subresourceDefinitions;
+    return result
+
   }
 
-  get group(){
-    return this._group;
-  }
 
-  onPageChanged(page: PageEvent) {
-    this.loadGroupResources();
-  }
-
-  loadGroupResources() {
-    if (!this._group) {
+  loadSubResources() {
+    if (!this._resource) {
       return;
     }
 
     this.isLoadingResults = true;
-    this.editGroupService.getGroupResourcesForGroupAdminObservable(this._group,this.domain, this.filter, this.paginator.pageIndex, this.paginator.pageSize)
+    this.editResourceService.getSubResourcesForResource(this._resource)
       .pipe(
         finalize(() => {
           this.isLoadingResults = false;
         }))
-      .subscribe((result: TableResult<ResourceRo>) => {
-          this.data = [...result.serviceEntities];
-          this.resultsLength = result.count;
-          this.isLoadingResults = false;
+      .subscribe((result: SubresourceRo[]) => {
+          this.dataSource.data = [...result];
+
         }
       );
   }
 
 
-  applyResourceFilter(event: Event) {
+  applySubResourceFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.filter["filter"] = filterValue.trim().toLowerCase();
-    this.refresh();
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
-  get createResourceDisabled(): boolean {
-    return !this._group;
+  get createSubResourceDisabled(): boolean {
+    return !this._resource;
   }
 
   public onCreateResourceButtonClicked() {
-    this.showResourceEditDialog(this.crateResource());
+    let subResDef = this.getSubresourceDefinitions();
+    this.dialog.open(SubresourceDialogComponent, {
+      data: {
+        resource: this._resource,
+        subresourceDefs: subResDef,
+        subresource: this.createSubresource(subResDef),
+
+        formTitle: "Create Subresourcedialog"
+      }
+    }).afterClosed().subscribe(value => {
+      this.refresh();
+    });
   }
 
-  crateResource ():ResourceRo {
-    return {
-      resourceTypeIdentifier: !!this.domainResourceDefs && this.domainResourceDefs.length>0 ? this.domainResourceDefs[0].identifier:"",
-      identifierValue: "",
-      smlRegistered: false,
-      visibility: VisibilityEnum.Public
+  createSubresource(subResDef:SubresourceDefinitionRo[]): SubresourceRo {
 
+    return {
+      subresourceTypeIdentifier: !!subResDef && subResDef.length > 0 ?subResDef[0].identifier : "",
+      identifierValue: "",
     }
   }
 
@@ -112,65 +139,77 @@ export class SubresourcePanelComponent implements BeforeLeaveGuard {
     if (this.paginator) {
       this.paginator.firstPage();
     }
-    this.loadGroupResources();
+    this.loadSubResources();
   }
+
   public onEditSelectedButtonClicked() {
-    this.showResourceEditDialog(this.selected)
+    this.showSubresourceEditPanel(this.selected)
   }
-  public showResourceEditDialog(resource: ResourceRo) {
-    this.dialog.open(SubresourceDialogComponent, {
-      data: {
-        resource: resource,
-        group: this._group,
-        domain: this.domain,
-        domainResourceDefs: this.domainResourceDefs,
-        formTitle: "Resource details dialog"
-      }
-    }).afterClosed().subscribe(value => {
-      this.refresh();
-    });
+
+  public showSubresourceEditPanel(subresource: SubresourceRo) {
+    this.editResourceService.selectedResource = this.resource;
+    this.editResourceService.selectedSubresource = subresource;
+
+    let node:NavigationNode = this.createNew();
+    this.navigationService.selected.children = [node]
+    this.navigationService.select(node);
+
+  }
+
+  public createNew():NavigationNode{
+    return {
+      code: "subresource-document",
+      icon: "description",
+      name: "Edit subresource document",
+      routerLink: "subresource-document",
+      selected: true,
+      tooltip: "",
+      transient: true
+    }
   }
 
   public onDeleteSelectedButtonClicked() {
-    if (!this._group || !this._group.groupId) {
-      this.alertService.error("Can not delete group because of invalid domain data. Is group selected?");
+    if (!this._resource || !this._resource.resourceId) {
+      this.alertService.error("Can not delete subresource because of invalid resource data. Is resource selected?");
       return;
     }
 
-    if (!this.selected || !this.selected.resourceId) {
-      this.alertService.error("Can not delete resource because of invalid resource data. Is resource selected?");
+    if (!this.selected || !this.selected.subresourceId) {
+      this.alertService.error("Can not delete subresource because of invalid subresource data. Is subresource selected?");
       return;
     }
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete Resource with scheme from DomiSMP",
-        description: "Action will permanently delete resource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "]! " +
+        description: "Action will permanently delete subresource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "]! " +
           "Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        this.deleteResource(this.group, this.selected);
+        this.deleteSubResource(this.selected, this._resource);
       }
     });
   }
 
-  deleteResource(group: GroupRo, resource: ResourceRo) {
+  deleteSubResource(subresource: SubresourceRo, resource: ResourceRo) {
+
     this.isLoadingResults = true;
-    this.editGroupService.deleteResourceFromGroup(resource, this._group, this.domain)
+    this.editResourceService.deleteSubresourceFromResource(subresource, resource)
       .pipe(
         finalize(() => {
           this.refresh();
           this.isLoadingResults = false;
         }))
-      .subscribe((result: ResourceRo) => {
-          if(result) {
-            this.alertService.success("Resource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "] deleted.");
+      .subscribe((result: SubresourceRo) => {
+          if (result) {
+            this.alertService.success("Subresource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "] deleted.");
           }
-        }, (error)=> {
+        }, (error) => {
           this.alertService.error(error.error?.errorDescription);
         }
       );
+
   }
 
 
@@ -179,7 +218,7 @@ export class SubresourcePanelComponent implements BeforeLeaveGuard {
   }
 
   get disabledForm(): boolean {
-    return !this._group;
+    return !this._resource;
   }
 
   isDirty(): boolean {

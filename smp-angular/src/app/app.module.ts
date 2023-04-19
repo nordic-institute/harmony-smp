@@ -166,10 +166,18 @@ import {SubresourcePanelComponent} from "./edit/edit-resources/subresource-panel
 import {
   SubresourceDialogComponent
 } from "./edit/edit-resources/subresource-panel/resource-dialog/subresource-dialog.component";
+import {
+  SubresourceDocumentPanelComponent
+} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
+import {
+  SubresourceDocumentWizardComponent
+} from "./edit/edit-resources/subresource-document-wizard-dialog/subresource-document-wizard.component";
 
 
 @NgModule({
   declarations: [
+    SubresourceDocumentWizardComponent,
+    SubresourceDocumentPanelComponent,
     SubresourceDialogComponent,
     SubresourcePanelComponent,
     DocumentWizardDialogComponent,

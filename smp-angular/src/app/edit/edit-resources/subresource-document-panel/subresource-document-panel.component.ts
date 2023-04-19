@@ -12,16 +12,25 @@ import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 import {DocumentRo} from "../../../common/model/document-ro.model";
 import {NavigationService} from "../../../window/sidenav/navigation-model.service";
 import {DocumentWizardDialogComponent} from "../document-wizard-dialog/document-wizard-dialog.component";
+import {SubresourceRo} from "../../../common/model/subresource-ro.model";
+import {
+  SubresourceDocumentWizardComponent
+} from "../subresource-document-wizard-dialog/subresource-document-wizard.component";
+import {
+  ServiceMetadataWizardRo
+} from "../../../service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-edit-ro.model";
 
 @Component({
   moduleId: module.id,
-  templateUrl: './resource-document-panel.component.html',
-  styleUrls: ['./resource-document-panel.component.scss'],
+  templateUrl: './subresource-document-panel.component.html',
+  styleUrls: ['./subresource-document-panel.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeaveGuard {
-  title: string = "Resources";
+export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeLeaveGuard {
+
+  title: string = "Subresources";
   private _resource: ResourceRo;
+  private _subresource: SubresourceRo;
 
   private _document: DocumentRo;
   @Input() private group: GroupRo;
@@ -38,6 +47,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   };
 
   resourceForm: FormGroup;
+  subresourceForm: FormGroup;
   documentForm: FormGroup;
 
   constructor(private editResourceService: EditResourceService,
@@ -51,6 +61,12 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       'visibility': new FormControl({value: null}),
       'resourceTypeIdentifier': new FormControl({value: null}),
     });
+    this.subresourceForm = formBuilder.group({
+      'identifierValue': new FormControl({value: null}),
+      'identifierScheme': new FormControl({value: null}),
+      'subresourceTypeIdentifier': new FormControl({value: null}),
+    });
+
     this.documentForm = formBuilder.group({
       'mimeType': new FormControl({value: null}),
       'name': new FormControl({value: null}),
@@ -58,9 +74,12 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       'payloadVersion': new FormControl({value: null}),
       'payload': new FormControl({value: null}),
     });
-    this.resource = editResourceService.selectedResource
-
     this.documentForm.controls['payload'].setValue("")
+
+    this.resource = editResourceService.selectedResource
+    this.subresource = editResourceService.selectedSubresource
+
+
   }
 
   ngAfterViewInit(): void {
@@ -84,17 +103,35 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       return;
     }
 
-    this.resourceForm.enable();
+    this.resourceForm.disable();
     this.resourceForm.controls['identifierValue'].setValue(value.identifierValue);
     this.resourceForm.controls['identifierScheme'].setValue(value.identifierScheme);
     this.resourceForm.controls['resourceTypeIdentifier'].setValue(value.resourceTypeIdentifier);
     this.resourceForm.controls['visibility'].setValue(value.visibility);
-    // control disable enable did not work??
+    this.resourceForm.markAsPristine();
+  }
 
-    this.resourceForm.controls['identifierValue'].disable();
-    this.resourceForm.controls['identifierScheme'].disable();
-    this.resourceForm.controls['resourceTypeIdentifier'].disable();
-    this.resourceForm.controls['visibility'].disable();
+  get subresource(): SubresourceRo {
+    let subresource = {...this._subresource};
+    subresource.identifierScheme = this.subresourceForm.get('identifierScheme').value;
+    subresource.identifierValue = this.subresourceForm.get('identifierValue').value;
+    subresource.subresourceTypeIdentifier = this.subresourceForm.get('subresourceTypeIdentifier').value;
+    return subresource;
+  }
+
+  @Input() set subresource(value: SubresourceRo) {
+    this._subresource = value;
+
+    if (!this._subresource) {
+      this.navigationService.reset();
+      return;
+    }
+
+
+    this.subresourceForm.disable();
+    this.subresourceForm.controls['identifierValue'].setValue(value.identifierValue);
+    this.subresourceForm.controls['identifierScheme'].setValue(value.identifierScheme);
+    this.subresourceForm.controls['subresourceTypeIdentifier'].setValue(value.subresourceTypeIdentifier);
     this.resourceForm.markAsPristine();
     // load current document for the resource
     this.loadDocumentForVersion();
@@ -128,7 +165,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   }
 
   onSaveButtonClicked(): void {
-    this.editResourceService.saveDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
+    this.editResourceService.saveSubresourceDocumentObservable(this.subresource, this._resource, this.document).subscribe((value: DocumentRo) => {
       if (value) {
         this.alertService.success("Document is saved with current version [" + value.currentResourceVersion + "].")
         this.document = value;
@@ -141,7 +178,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   }
 
   onGenerateButtonClicked(): void {
-    this.editResourceService.generateDocumentObservable(this._resource).subscribe((value: DocumentRo) => {
+    this.editResourceService.generateSubresourceDocumentObservable(this.subresource, this._resource).subscribe((value: DocumentRo) => {
       if (value) {
         this.alertService.success("Document is generated.")
         this.documentForm.controls['payload'].setValue(value.payload);
@@ -156,24 +193,38 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
 
   onShowDocumentWizardDialog() {
 
-    const formRef: MatDialogRef<any> = this.dialog.open(DocumentWizardDialogComponent, {
-      data: {
-        title: "Service group wizard",
-        resource: this._resource,
+    let serviceMetadataWizard: ServiceMetadataWizardRo = {
+      isNewServiceMetadata: false,
+      participantIdentifier: this._resource.identifierValue,
+      participantScheme: this._resource.identifierScheme,
+      documentIdentifier: this._subresource.identifierValue,
+      documentIdentifierScheme:  this._subresource.identifierScheme,
+      processIdentifier: '',
+      processScheme: '',
+      transportProfile: 'bdxr-transport-ebms3-as4-v1p0', // default value for oasis AS4
 
-      }
+      endpointUrl: '',
+      endpointCertificate: '',
+
+      serviceDescription: '',
+      technicalContactUrl: '',
+
+    }
+
+    const formRef: MatDialogRef<any> = this.dialog.open(SubresourceDocumentWizardComponent, {
+      data: serviceMetadataWizard
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        let val = formRef.componentInstance.getExtensionXML();
-        this.documentForm.controls['payload'].setValue(val);
+        let smw: ServiceMetadataWizardRo = formRef.componentInstance.getCurrent();
+        this.documentForm.controls['payload'].setValue(smw.contentXML);
         this.documentForm.controls['payload'].markAsDirty();
       }
     });
   }
 
   loadDocumentForVersion(version: number = null): void {
-    this.editResourceService.getDocumentObservable(this._resource, version).subscribe((value: DocumentRo) => {
+    this.editResourceService.getSubresourceDocumentObservable(this._subresource, this._resource, version).subscribe((value: DocumentRo) => {
       if (value) {
         this.document = value;
       } else {
@@ -185,7 +236,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   }
 
   validateCurrentDocument(): void {
-    this.editResourceService.validateDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
+    this.editResourceService.validateSubresourceDocumentObservable(this.subresource, this._resource, this.document).subscribe((value: DocumentRo) => {
       this.alertService.success("Document is Valid.")
     }, (error: any) => {
       this.alertService.error(error.error?.errorDescription)

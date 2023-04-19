@@ -1,15 +1,15 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 <mat-dialog-content style="width:700px">
   <form [formGroup]="resourceForm">
-    <b *ngIf="newMode">To create a new resource enter unique identifier and scheme and click save.</b>
+    <b *ngIf="newMode">To create a new subresource enter unique identifier and scheme and click save.</b>
     <mat-form-field style="width:100%">
       <mat-label>Selected resource type</mat-label>
-      <mat-select placeholder="Select resource type for the resource"
-                  matTooltip="Select type for the resource."
-                  id="resourceTypeIdentifier"
-                  formControlName="resourceTypeIdentifier"
+      <mat-select placeholder="Select type for the subresource"
+                  matTooltip="Select type for the subresource."
+                  id="subresourceTypeIdentifier"
+                  formControlName="subresourceTypeIdentifier"
                   required>
-        <mat-option *ngFor="let resDef of domainResourceDefs"
+        <mat-option *ngFor="let resDef of subresourceDefs"
                     [value]="resDef.identifier">
           {{resDef.name}} ({{resDef.identifier}})
         </mat-option>
@@ -17,32 +17,17 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field  style="width: 100%">
-      <mat-label>Resource identifier</mat-label>
+      <mat-label>Subresource identifier</mat-label>
       <input id="identifierValue_id" type="text" matInput #identifierValue
              formControlName="identifierValue"
              required auto-focus-directive>
     </mat-form-field>
 
     <mat-form-field  style="width: 100%">
-      <mat-label>Resource scheme</mat-label>
+      <mat-label>Subresource scheme</mat-label>
       <input id="identifierScheme_id" type="text" matInput
              formControlName="identifierScheme"
              >
-    </mat-form-field>
-
-
-    <mat-form-field style="width:100%">
-      <mat-label>Resource visibility</mat-label>
-      <mat-select placeholder="Resource visibility"
-                  formControlName="visibility"
-                  matTooltip="Resource visibility."
-                  id="visibility_id" required>
-        <mat-option *ngFor="let visibility of groupVisibilityOptions"
-                    [value]="visibility.value">
-          {{visibility.key}}
-        </mat-option>
-      </mat-select>
-      <mat-hint>Choose resource visibility</mat-hint>
     </mat-form-field>
   </form>
 </mat-dialog-content>
@@ -51,10 +36,10 @@
     <mat-icon>cancel</mat-icon>
     <span>Close</span>
   </button>
-  <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+  <button id="createButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary" *ngIf="newMode"
           [disabled]="!submitButtonEnabled">
     <mat-icon>save</mat-icon>
-    <span>Save</span>
+    <span>Create</span>
   </button>
 </mat-dialog-actions>
 

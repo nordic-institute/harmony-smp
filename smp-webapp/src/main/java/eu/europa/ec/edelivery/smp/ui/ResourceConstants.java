@@ -24,6 +24,8 @@ public class ResourceConstants {
     public static final String PATH_RESOURCE_TYPE_MEMBER = "member";
     public static final String PATH_RESOURCE_TYPE_GROUP = "group";
     public static final String PATH_RESOURCE_TYPE_RESOURCE = "resource";
+    public static final String PATH_RESOURCE_TYPE_SUBRESOURCE = "subresource";
+    public static final String PATH_RESOURCE_TYPE_DOCUMENT = "document";
 
     public static final String PATH_RESOURCE_TYPE_RESOURCE_DEFINITION = "res-def";
     /**
@@ -34,6 +36,7 @@ public class ResourceConstants {
     public static final String PATH_PARAM_ENC_MEMBER_ID = "member-id";
     public static final String PATH_PARAM_ENC_GROUP_ID = "group-id";
     public static final String PATH_PARAM_ENC_RESOURCE_ID = "resource-id";
+    public static final String PATH_PARAM_ENC_SUBRESOURCE_ID = "subresource-id";
     public static final String PATH_PARAM_CERT_ALIAS = "cert-alias";
     public static final String PATH_PARAM_ENC_CREDENTIAL_ID = "credential-id";
     public static final String PATH_PARAM_ENC_MANAGED_USER_ID = "managed-user-id";
@@ -91,12 +94,20 @@ public class ResourceConstants {
             + "{" + PATH_PARAM_ENC_MEMBER_ID + "}" + "/" +  PATH_ACTION_DELETE;
 
 
-    public static final String CONTEXT_PATH_EDIT_DOCUMENT = CONTEXT_PATH_EDIT + "/" +PATH_RESOURCE_TYPE_RESOURCE;
-    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET =  "{" + PATH_PARAM_ENC_RESOURCE_ID + "}";
+    public static final String CONTEXT_PATH_EDIT_RESOURCE_SHORT = CONTEXT_PATH_EDIT + "/" +PATH_RESOURCE_TYPE_RESOURCE +
+            "/" +  "{" + PATH_PARAM_ENC_RESOURCE_ID + "}";
 
+    public static final String CONTEXT_PATH_EDIT_SUBRESOURCE = CONTEXT_PATH_EDIT_RESOURCE_SHORT + "/" + PATH_RESOURCE_TYPE_SUBRESOURCE;
+    public static final String SUB_CONTEXT_PATH_EDIT_SUBRESOURCE_DELETE =  "{" + PATH_PARAM_ENC_SUBRESOURCE_ID + "}" + "/" +  PATH_ACTION_DELETE;
+
+    public static final String CONTEXT_PATH_EDIT_DOCUMENT = CONTEXT_PATH_EDIT + "/" +PATH_RESOURCE_TYPE_RESOURCE +"/" + "{" + PATH_PARAM_ENC_RESOURCE_ID + "}";
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET =  PATH_RESOURCE_TYPE_DOCUMENT;
     public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_VALIDATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET +  "/" + PATH_ACTION_VALIDATE;
-
     public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GENERATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET +  "/" + PATH_ACTION_GENERATE;
+
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET_SUBRESOURCE = PATH_RESOURCE_TYPE_SUBRESOURCE +  "/" +  "{" + PATH_PARAM_ENC_SUBRESOURCE_ID + "}" +  "/" + PATH_RESOURCE_TYPE_DOCUMENT;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_VALIDATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET_SUBRESOURCE +  "/" + PATH_ACTION_VALIDATE;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_GENERATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET_SUBRESOURCE +  "/" + PATH_ACTION_GENERATE;
     // public
     public static final String CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT = CONTEXT_PATH_PUBLIC + "search";
     public static final String CONTEXT_PATH_PUBLIC_DOMAIN = CONTEXT_PATH_PUBLIC + "domain";

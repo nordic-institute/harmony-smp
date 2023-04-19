@@ -14,10 +14,7 @@ import eu.europa.ec.smp.spi.converter.ServiceMetadata10Converter;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
-import gen.eu.europa.ec.ddc.api.smp10.DocumentIdentifier;
-import gen.eu.europa.ec.ddc.api.smp10.ParticipantIdentifierType;
-import gen.eu.europa.ec.ddc.api.smp10.ServiceInformationType;
-import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadata;
+import gen.eu.europa.ec.ddc.api.smp10.*;
 import gen.eu.europa.ec.ddc.api.smp20.ServiceGroup;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -74,6 +71,21 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
 
         ServiceMetadata serviceMetadata = new ServiceMetadata();
         ServiceInformationType serviceInformationType =   new ServiceInformationType();
+        ProcessListType processListType = new ProcessListType();
+        ProcessType processType = new ProcessType();
+        processType.setProcessIdentifier(new ProcessIdentifier());
+        processType.getProcessIdentifier().setScheme("[test-schema]");
+        processType.getProcessIdentifier().setValue("[test-value]");
+        processType.setServiceEndpointList(new ServiceEndpointList());
+        EndpointType endpointType = new EndpointType();
+        endpointType.setTransportProfile("bdxr-transport-ebms3-as4-v1p0");
+        endpointType.setEndpointURI("https://mypage.eu");
+        endpointType.setCertificate("Certificate data ".getBytes());
+        endpointType.setServiceDescription("Service description for partners ");
+        endpointType.setTechnicalContactUrl("www.best-page.eu");
+        processListType.getProcesses().add(processType);
+        processType.getServiceEndpointList().getEndpoints().add(endpointType);
+        serviceInformationType.setProcessList(processListType);
         serviceMetadata.setServiceInformation(serviceInformationType);
         serviceInformationType.setParticipantIdentifier(new ParticipantIdentifierType());
         serviceInformationType.getParticipantIdentifier().setValue(identifier.getValue());
@@ -83,7 +95,7 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         serviceInformationType.getDocumentIdentifier().setScheme(subresourceIdentifier.getScheme());
 
         try {
-            reader.serializeNative(serviceInformationType, responseData.getOutputStream(), true);
+            reader.serializeNative(serviceMetadata, responseData.getOutputStream(), true);
         } catch (TechnicalException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }

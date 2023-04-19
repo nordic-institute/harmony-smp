@@ -1,11 +1,11 @@
 <div id="edit-resource-panel" class="mat-elevation-z2">
   <mat-toolbar class="mat-elevation-z2">
     <mat-toolbar-row class="smp-toolbar-row">
-      <button id="addMemberButton" mat-raised-button (click)="onCreateResourceButtonClicked()" color="primary"
+      <button id="createButton" mat-raised-button (click)="onCreateResourceButtonClicked()" color="primary"
               [disabled]="createResourceDisabled"
               matTooltip="Create"
       >
-        <mat-icon>people</mat-icon>
+        <mat-icon>add</mat-icon>
         <span>Create</span>
       </button>
       <button id="editButton" mat-raised-button (click)="onEditSelectedButtonClicked()" color="primary"
@@ -13,7 +13,7 @@
               matTooltip="Edit"
       >
         <mat-icon>edit</mat-icon>
-        <span>Edit</span>
+        <span>Edit document</span>
       </button>
       <button id="deleteButton" mat-raised-button (click)="onDeleteSelectedButtonClicked()" color="primary"
               matTooltip="Delete selected resource"

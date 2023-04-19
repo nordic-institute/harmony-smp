@@ -81,6 +81,31 @@ public class SubresourceDao extends BaseDao<DBSubresource> {
         return query.getResultList();
     }
 
+    public Optional<DBSubresource> getSubResourcesForResource(Identifier subresourceId, DBResource resource) {
+
+        try {
+            TypedQuery<DBSubresource> query = memEManager.createNamedQuery(QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_ID, DBSubresource.class);
+            query.setParameter(PARAM_RESOURCE_ID, resource.getId());
+            query.setParameter(PARAM_SUBRESOURCE_IDENTIFIER, subresourceId.getValue());
+            query.setParameter(PARAM_SUBRESOURCE_SCHEME, subresourceId.getScheme());
+            DBSubresource res = query.getSingleResult();
+            return Optional.of(res);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(subresourceId.getValue(), subresourceId.getScheme(), resource.getIdentifierValue(), resource.getIdentifierScheme()));
+        }
+
+    }
+
+
+    public List<DBSubresource> getSubResourcesForResourceId(Long resourceId) {
+
+        TypedQuery<DBSubresource> query = memEManager.createNamedQuery(QUERY_SUBRESOURCE_BY_RESOURCE_ID, DBSubresource.class);
+        query.setParameter(PARAM_RESOURCE_ID, resourceId);
+        return query.getResultList();
+    }
+
     @Transactional
     public void remove(DBSubresource subresource) {
         removeById(subresource.getId());
