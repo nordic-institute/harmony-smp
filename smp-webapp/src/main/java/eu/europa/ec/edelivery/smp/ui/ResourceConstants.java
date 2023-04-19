@@ -36,11 +36,11 @@ public class ResourceConstants {
     public static final String PATH_PARAM_ENC_RESOURCE_ID = "resource-id";
     public static final String PATH_PARAM_CERT_ALIAS = "cert-alias";
     public static final String PATH_PARAM_ENC_CREDENTIAL_ID = "credential-id";
-    public static final String PATH_PARAM_ENC_MANAGED_USER_ID = "{managed-user-id}";
-    public static final String PATH_PARAM_SRV_GROUP_ID = "{service-group-id}";
+    public static final String PATH_PARAM_ENC_MANAGED_USER_ID = "managed-user-id";
+    public static final String PATH_PARAM_SRV_GROUP_ID = "service-group-id";
 
-    public static final String PATH_PARAM_KEYSTORE_PWD = "{keystore-pwd}";
-    public static final String PATH_PARAM_KEYSTORE_TYPE = "{keystore-type}";
+    public static final String PATH_PARAM_KEYSTORE_TOKEN = "keystore-token";
+    public static final String PATH_PARAM_KEYSTORE_TYPE = "keystore-type";
 
     public static final String PATH_ACTION_DELETE = "delete";
     public static final String PATH_ACTION_UPDATE = "update";
