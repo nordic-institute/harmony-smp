@@ -80,12 +80,11 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
             return;
         }
 
-
         ServiceGroup serviceGroup = null;
         try {
             serviceGroup = reader.parseNative(resourceData.getResourceInputStream());
         } catch (TechnicalException e) {
-            throw new ResourceException(PARSE_ERROR, "Can not pase service group xml for indentifier: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
+            throw new ResourceException(PARSE_ERROR, "Can not pase service group xml for identifier: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         // get references
         serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
@@ -153,13 +152,13 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         serviceGroup.getParticipantIdentifier().setScheme(resourceData.getResourceIdentifier().getScheme());
 
         try {
-            StreamUtils.copy(inputStream, responseData.getOutputStream());
-            //reader.serializeNative(serviceGroup, responseData.getOutputStream(), false);
-        } catch (IOException e) {
+            //inputStream.reset();
+            //StreamUtils.copy(inputStream, responseData.getOutputStream());
+            // need to save serviceGroup because of the update on the resource identifier values
+            reader.serializeNative(serviceGroup, responseData.getOutputStream(), true);
+        } catch ( TechnicalException e) {
             throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
         }
-
-
     }
 
     /**
@@ -169,7 +168,6 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
      */
     @Override
     public void validateResource(RequestData resourceData) throws ResourceException {
-
         validateAndParse(resourceData);
     }
 
@@ -190,7 +188,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         ServiceGroup serviceGroup = null;
         try {
             serviceGroup = reader.parseNative(new ByteArrayInputStream(bytearray));
-        } catch (TechnicalException e) {
+        } catch ( TechnicalException e) {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while parsing Oasis SMP 1.0 ServiceGroup with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         final ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();

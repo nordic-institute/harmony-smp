@@ -101,6 +101,10 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, SUBJECT, ISSUER, SERIALNUMBER,V
 insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, SML_CLIENT_CERT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values
 (1, 'testdomain','PUBLIC', 'test-domain', 'CEF-SMP-002','sample_key',1,0, sysdate,  sysdate);
 
+insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
+(1, 1, 'Test group', 'PUBLIC', sysdate,  sysdate);
+
+
 insert into SMP_EXTENSION ( ID, IDENTIFIER,  IMPLEMENTATION_NAME, NAME, VERSION, DESCRIPTION, CREATED_ON, LAST_UPDATED_ON) values
 (1, 'edelivery-oasis-smp-extension',  'OasisSMPExtension','Oasis SMP 1.0 and 2.0','1.0', 'Oasis SMP 1.0 and 2.0 extension',  sysdate, sysdate);
 
@@ -126,8 +130,8 @@ insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_
 insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
 (2,2,  1, utl_raw.cast_to_raw('<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><Redirect href="http://localhost:8080/url"><CertificateUID/></Redirect></ServiceMetadata>') , sysdate,  sysdate);
 
-insert into SMP_RESOURCE ( ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 1, 'iso6523-actorid-upis', '0088:777002abzz777', 0, 'PUBLIC', sysdate,  sysdate);
+insert into SMP_RESOURCE ( ID, FK_DOCUMENT_ID, FK_GROUP_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
+(1, 1, 1, 1, 'iso6523-actorid-upis', '0088:777002abzz777', 0, 'PUBLIC', sysdate,  sysdate);
 
 insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 1, 2, 'service-value', 'service-schema', sysdate,  sysdate);
@@ -136,11 +140,8 @@ insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, I
 (2, 1, 1, 2, 'service-value2', 'service-schema2', sysdate,  sysdate);
 
 
-insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'Test group', 'PUBLIC', sysdate,  sysdate);
 
-insert into  SMP_GROUP_RESOURCE (FK_GROUP_ID, FK_RESOURCE_ID) values
-(1, 1);
+
 
 insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 2, 'ADMIN', sysdate,  sysdate);

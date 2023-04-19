@@ -113,11 +113,11 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         } catch (ResourceException e) {
             switch (e.getErrorCode()) {
                 case INVALID_PARAMETERS:
-                    throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, ExceptionUtils.getRootCauseMessage(e));
+                    throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, e.getMessage());
                 case INVALID_RESOURCE:
                     throw new SMPRuntimeException(ErrorCode.INVALID_EXTENSION_FOR_SG, resource.getIdentifierValue(),
                             resource.getIdentifierScheme(),
-                            ExceptionUtils.getRootCauseMessage(e));
+                            e.getMessage());
                 default:
                     throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the resource!", e);
             }

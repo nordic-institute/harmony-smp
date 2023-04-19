@@ -29,17 +29,17 @@
 
         ></domain-member-panel>
       </mat-tab>
-      <!-- mat-tab>
+      <mat-tab *ngIf="false">
         <ng-template mat-tab-label>
-          <smp-label icon="description" label="Resources"></smp-label>
+          <smp-label icon="description" label="Subresources"></smp-label>
         </ng-template>
-        <group-resource-panel
+        <subresource-panel
           [domainResourceDefs]="_selectedDomainResourceDef"
           [domain]="selectedDomain"
           [group]="selectedGroup"
           [resource]="selectedResource"
-        ></group-resource-panel>
-      </mat-tab -->
+        ></subresource-panel>
+      </mat-tab>
     </mat-tab-group>
   </data-panel>
 </div>
