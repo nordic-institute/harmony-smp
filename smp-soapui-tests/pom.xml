@@ -12,6 +12,7 @@
     <name>smp-soapui-tests</name>
     <description>Interaction tests suit for SMP</description>
 
+
     <properties>
         <!-- Only selected modules are deployed -->
         <maven.deploy.skip>false</maven.deploy.skip>
@@ -20,12 +21,81 @@
         <SMPAdminPassword/>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <!-- the soap ui specific dependencies -->
+        <com.smartbear.soapui.version>5.1.2</com.smartbear.soapui.version>
+        <org.codehaus.groovy.version>2.9.2-01</org.codehaus.groovy.version>
+        <org.codehaus.groovy.eclipse-batch.version>2.5.13-01</org.codehaus.groovy.eclipse-batch.version>
+
         <http-builder.version>0.7.1</http-builder.version>
         <reflection.version>0.9.11</reflection.version>
         <httpcore.version>4.4.3</httpcore.version>
         <apache.http4.client.version>4.5.14</apache.http4.client.version>
     </properties>
 
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>SmartBearPluginRepository</id>
+            <url>https://www.soapui.org/repository/maven2/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>eviwarePluginRepository</id>
+            <url>https://www.eviware.com/repository/maven2/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <repositories>
+        <repository>
+            <id>SmartBearPluginRepository</id>
+            <url>https://www.soapui.org/repository/maven2/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
+    <dependencies>
+        <!-- for development purposes only. The soapui
+has its own groovy library -->
+        <dependency>
+            <groupId>com.smartbear.soapui</groupId>
+            <artifactId>soapui</artifactId>
+            <version>${com.smartbear.soapui.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerId>groovy-eclipse-compiler</compilerId>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-compiler</artifactId>
+                        <version>${org.codehaus.groovy.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-batch</artifactId>
+                        <version>${org.codehaus.groovy.eclipse-batch.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-eclipse-compiler</artifactId>
+                <version>${org.codehaus.groovy.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
     <profiles>
         <!-- soap ui -->
         <profile>
@@ -36,7 +106,7 @@
                     <plugin>
                         <groupId>com.smartbear.soapui</groupId>
                         <artifactId>soapui-pro-maven-plugin</artifactId>
-                        <version>5.1.2</version>
+                        <version>${com.smartbear.soapui.version}</version>
                         <configuration>
                             <outputFolder>${project.build.directory}/soapui-reports/</outputFolder>
                             <junitReport>true</junitReport>
@@ -45,7 +115,7 @@
                             <soapuiProperties>
                                 <property>
                                     <name>soapui.scripting.library</name>
-                                    <value>${basedir}/groovy</value>
+                                    <value>${basedir}/src/main/groovy</value>
                                 </property>
                                 <property>
                                     <name>soapui.logroot</name>
@@ -68,39 +138,39 @@
                                 <value>url=${url}</value>
                                 <value>SMPAdminUser=${SMPAdminUser}</value>
                                 <value>SMPAdminPassword=${SMPAdminPassword}</value>
-                        </projectProperties>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.reflections</groupId>
-                            <artifactId>reflections</artifactId>
-                            <version>${reflection.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.codehaus.groovy.modules.http-builder</groupId>
-                            <artifactId>http-builder</artifactId>
-                            <version>${http-builder.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.apache.httpcomponents</groupId>
-                            <artifactId>httpcore</artifactId>
-                            <version>${httpcore.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.apache.httpcomponents</groupId>
-                            <artifactId>httpclient</artifactId>
-                            <version>${apache.http4.client.version}</version>
-                        </dependency>
-                    </dependencies>
-                    <executions>
-                        <execution>
-                            <phase>integration-test</phase>
-                            <goals>
-                                <goal>test</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+                            </projectProperties>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.reflections</groupId>
+                                <artifactId>reflections</artifactId>
+                                <version>${reflection.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.codehaus.groovy.modules.http-builder</groupId>
+                                <artifactId>http-builder</artifactId>
+                                <version>${http-builder.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.httpcomponents</groupId>
+                                <artifactId>httpcore</artifactId>
+                                <version>${httpcore.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.httpcomponents</groupId>
+                                <artifactId>httpclient</artifactId>
+                                <version>${apache.http4.client.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
 
                     <!-- extract classes so that JACOCO plugin can find the classes
                     to generate a report (use this option to get Code coverage report for SOAPUI project)
@@ -117,7 +187,7 @@
                                 </goals>
                                 <configuration>
                                     <artifactItems>
-                                           <artifactItem>
+                                        <artifactItem>
                                             <groupId>${project.groupId}</groupId>
                                             <artifactId>smp-server-library</artifactId>
                                             <version>${project.version}</version>
@@ -136,7 +206,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
                 </plugins>
             </build>
         </profile>
