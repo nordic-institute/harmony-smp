@@ -106,7 +106,7 @@ public class AbstractResourceHandler {
         return new SpiRequestData(domain.getDomainCode(),
                 SPIUtils.toUrlIdentifier(resource),
                 SPIUtils.toUrlIdentifier(subresource),
-                new ByteArrayInputStream(content));
+                new ByteArrayInputStream(content == null?new byte[]{}:content));
     }
 
     public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {

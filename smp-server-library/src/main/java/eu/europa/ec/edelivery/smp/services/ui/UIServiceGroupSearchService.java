@@ -4,8 +4,11 @@ import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -68,8 +71,8 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBResource, Servi
 
             List<DBResource> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
             List<ServiceGroupSearchRO> lstRo = new ArrayList<>();
-            for (DBResource dbServiceGroup : lst) {
-                ServiceGroupSearchRO serviceGroupRo = convertToRo(dbServiceGroup);
+            for (DBResource resource : lst) {
+                ServiceGroupSearchRO serviceGroupRo = convertToRo(resource);
                 serviceGroupRo.setIndex(iStartIndex++);
                 lstRo.add(serviceGroupRo);
             }
@@ -81,29 +84,27 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBResource, Servi
     /**
      * Convert Database object to Rest object for UI
      *
-     * @param dbServiceGroup - database  entity
+     * @param resource - database  entity
      * @return ServiceGroupRO
      */
-    public ServiceGroupSearchRO convertToRo(DBResource dbServiceGroup) {
+    public ServiceGroupSearchRO convertToRo(DBResource resource) {
         ServiceGroupSearchRO serviceGroupRo = new ServiceGroupSearchRO();
 
-        serviceGroupRo.setId(dbServiceGroup.getId());
-        serviceGroupRo.setParticipantIdentifier(dbServiceGroup.getIdentifierValue());
-        serviceGroupRo.setParticipantScheme(dbServiceGroup.getIdentifierScheme());
-        /*
-        dbServiceGroup.getResourceDomains().forEach(sgd -> {
-            DomainRO dmn = new DomainRO();
-            sgd.getSubresourcesList().forEach(sgmd -> {
+        serviceGroupRo.setId(resource.getId());
+        serviceGroupRo.setParticipantIdentifier(resource.getIdentifierValue());
+        serviceGroupRo.setParticipantScheme(resource.getIdentifierScheme());
+        DBDomain domain = resource.getDomainResourceDef().getDomain();
+
+        resource.getSubresources().forEach(subresource -> {
                 ServiceMetadataRO smdro = new ServiceMetadataRO();
-                smdro.setDocumentIdentifier(sgmd.getDocumentIdentifier());
-                smdro.setDocumentIdentifierScheme(sgmd.getDocumentIdentifierScheme());
-                smdro.setDomainCode(sgd.getDomain().getDomainCode());
-                smdro.setSmlSubdomain(sgd.getDomain().getSmlSubdomain());
+                smdro.setDocumentIdentifier(subresource.getIdentifierValue());
+                smdro.setDocumentIdentifierScheme(subresource.getIdentifierScheme());
+                smdro.setDomainCode(domain.getDomainCode());
+                smdro.setSmlSubdomain(domain.getSmlSubdomain());
                 serviceGroupRo.getServiceMetadata().add(smdro);
-            });
+
         });
 
-         */
         return serviceGroupRo;
     }
 }
