@@ -37,7 +37,21 @@
     </mat-form-field>
     <mat-form-field style="width: 100%">
       <mat-label>Resource identifier</mat-label>
-      <input id="identifierValue_id" type="text" matInput #identifierValue
+      <input id="identifierValue_id" type="text" matInput
+             formControlName="identifierValue"
+             required auto-focus-directive>
+    </mat-form-field>
+  </div>
+  <div [formGroup]="subresourceForm" style="width: 100%; display: flex; flex-direction: row; ">
+    <mat-form-field style="width: 100%">
+      <mat-label>Subresource scheme</mat-label>
+      <input id="subresourceidentifierScheme_id" type="text" matInput
+             formControlName="identifierScheme"
+      >
+    </mat-form-field>
+    <mat-form-field style="width: 100%">
+      <mat-label>Subresource identifier</mat-label>
+      <input id="SubresourcedentifierValue_id" type="text" matInput
              formControlName="identifierValue"
              required auto-focus-directive>
     </mat-form-field>

@@ -74,10 +74,11 @@
     <ng-template #rowExpand let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
       <a
         href="javascript:void(0)"
-        [class.datatable-icon-right]="!expanded"
-        [class.datatable-icon-down]="expanded"
+
         title="Expand/Collapse Row"
-        (click)="toggleExpandRow(row)">
+        (click)="toggleExpandRow(row)"> <mat-icon class="mat-icon-rtl-mirror">
+        {{expanded ? 'expand_more' : 'chevron_right'}}
+      </mat-icon>
       </a>
     </ng-template>
 

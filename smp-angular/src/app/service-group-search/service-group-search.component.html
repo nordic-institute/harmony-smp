@@ -18,16 +18,16 @@
 
 
   <ng-template #searchPanel>
-    <mat-form-field>
+    <mat-form-field class="smp-data-panel-field">
       <input matInput placeholder="Participant Identifier" name="ParticipantIdentifier"
              [(ngModel)]="filter.participantIdentifier"
              #messageId="ngModel" id="participantIdentifier">
     </mat-form-field>
-    <mat-form-field>
+    <mat-form-field  class="smp-data-panel-field">
       <input matInput placeholder="Participant scheme" name="patricipantScheme" [(ngModel)]="filter.participantScheme"
              #messageId="ngModel" id="participantScheme">
     </mat-form-field>
-    <mat-select placeholder="All Domains" [(ngModel)]="filter.domain" name="domain"
+    <mat-select placeholder="All Domains" [(ngModel)]="filter.domain" name="domain" *ngIf="false"
                 id="domain_id">
       <mat-option [value]="''">All Domains</mat-option>
       <mat-option *ngFor="let domain of lookups.cachedDomainList" [value]="domain.domainCode">
