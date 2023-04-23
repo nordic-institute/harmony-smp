@@ -165,6 +165,9 @@ validateAndPrepareArtefacts() {
     exit 1
   else
     # copy artefact to docker build folder
+    cp -r shared-artefacts ./weblogic-12.2-smp/artefacts/
+    cp -r shared-artefacts ./weblogic-14.1-smp/artefacts/
+    cp -r shared-artefacts ./tomcat-mysql-smp-sml/artefacts/
     # for weblogic
     cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-12.2-smp/artefacts/smp.war
     cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-14.1-smp/artefacts/smp.war
@@ -196,9 +199,9 @@ validateAndPrepareArtefacts() {
 # build docker images
 # -----------------------------------------------------------------------------
 buildImages() {
-  buildOracleDatabaseImage
-  buildWebLogicOracleImages12
-  buildWebLogicOracleImages14
+  #buildOracleDatabaseImage
+  #buildWebLogicOracleImages12
+  #buildWebLogicOracleImages14
   buildTomcatMysqlImages
   buildUtils
 }

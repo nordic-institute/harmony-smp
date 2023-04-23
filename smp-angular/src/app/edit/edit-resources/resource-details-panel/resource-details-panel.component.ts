@@ -20,7 +20,7 @@ import {NavigationNode, NavigationService} from "../../../window/sidenav/navigat
 export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
 
   readonly groupVisibilityOptions = Object.keys(VisibilityEnum)
-    .filter(el => el !== "Private").map(el => {
+    .map(el => {
       return {key: el, value: VisibilityEnum[el]}
     });
 

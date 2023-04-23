@@ -1,16 +1,9 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.conversion.DBGroupToGroupROConverter;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.testutil.TestConstants;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,11 +13,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
+
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class GroupMemberDaoTest extends AbstractBaseDao  {
+public class GroupMemberDaoTest extends AbstractBaseDao {
 
     @Autowired
     GroupMemberDao testInstance;
@@ -110,7 +104,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao  {
         member.setRole(MembershipRoleType.VIEWER);
         testUtilsDao.persistFlushDetach(member);
 
-        boolean result = testInstance.isUserAnyDomainGroupResourceMemberWithRole(user, testUtilsDao.getD1(),MembershipRoleType.VIEWER);
+        boolean result = testInstance.isUserAnyDomainGroupResourceMemberWithRole(user, testUtilsDao.getD1(), MembershipRoleType.VIEWER);
         assertTrue(result);
         result = testInstance.isUserAnyDomainGroupResourceMemberWithRole(user, testUtilsDao.getD1(), MembershipRoleType.ADMIN);
         assertFalse(result);

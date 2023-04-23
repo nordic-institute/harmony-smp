@@ -28,7 +28,7 @@ import {MemberTypeEnum} from "../../common/enums/member-type.enum";
   styleUrls: ['./admin-domain.component.css']
 })
 export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
-  membershipType:MemberTypeEnum = MemberTypeEnum.DOMAIN;
+  readonly membershipType:MemberTypeEnum = MemberTypeEnum.DOMAIN;
   displayedColumns: string[] = ['domainCode'];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected?: DomainRo;
@@ -37,7 +37,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
   domiSMPResourceDefinitions: ResourceDefinitionRo[] = [];
 
   currenTabIndex: number = 0;
-  handleTabClick;
+  handleTabClick = null;
 
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -104,6 +104,9 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
   }
 
   registerTabClick(): void {
+    if (!this.domainTabs) {
+      return;
+    }
     // Get the handler reference
     this.handleTabClick = this.domainTabs._handleClick;
 
@@ -189,8 +192,11 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
   }
 
   onCreateDomainClicked() {
-    this.domainTabs.selectedIndex = 0;
     this.selected = this.newDomain();
+    if ( !this.handleTabClick) {
+      this.registerTabClick();
+    }
+    this.domainTabs.selectedIndex = 0;
     this.domainPanelComponent.setFocus();
 
   }
@@ -202,7 +208,6 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
       smlSubdomain: '',
       smlSmpId: '',
       smlParticipantIdentifierRegExp: '',
-      smlClientCertHeader: '',
       smlClientKeyAlias: '',
       signatureKeyAlias: '',
       status: EntityStatus.NEW,
@@ -250,7 +255,12 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
   }
 
   public domainSelected(domainSelected: DomainRo) {
-    if (this.selected === domainSelected) {
+    if (domainSelected && !this.handleTabClick) {
+      this.registerTabClick();
+    }
+
+
+    if (this.selected == domainSelected) {
       return;
     }
     if (this.isCurrentTabDirty()) {
@@ -263,6 +273,8 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
         }
       });
     } else {
+      console.log("domain selected")
+
       this.selected = domainSelected;
     }
   }
@@ -306,7 +318,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
   }
 
   get canNotDelete():boolean{
-    return !this.selected || this.domainSmlIntegrationPanelComponent.isDomainRegistered || this.isNewDomain()
+    return !this.selected || this.domainSmlIntegrationPanelComponent?.isDomainRegistered || this.isNewDomain()
   }
 
   get editMode(): boolean {

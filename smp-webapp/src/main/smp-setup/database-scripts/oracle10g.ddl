@@ -333,7 +333,6 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         SIGNATURE_DIGEST_METHOD varchar2(256 char),
         SIGNATURE_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_CERT_AUTH number(1,0) not null,
-        SML_CLIENT_CERT_HEADER varchar2(4000 char),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_REGISTERED number(1,0) not null,
         SML_SMP_ID varchar2(256 char),
@@ -366,9 +365,6 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_DOMAIN.SML_CLIENT_CERT_AUTH is
         'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)';
 
-    comment on column SMP_DOMAIN.SML_CLIENT_CERT_HEADER is
-        'Client-Cert header used behind RP - ClientCertHeader for SML integration';
-
     comment on column SMP_DOMAIN.SML_CLIENT_KEY_ALIAS is
         'Client key alias used for SML integration';
 
@@ -396,7 +392,6 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         SIGNATURE_DIGEST_METHOD varchar2(256 char),
         SIGNATURE_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_CERT_AUTH number(1,0),
-        SML_CLIENT_CERT_HEADER varchar2(4000 char),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_REGISTERED number(1,0),
         SML_SMP_ID varchar2(256 char),
@@ -640,30 +635,6 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         timestamp number(19,0) not null,
         USERNAME varchar2(255 char),
         primary key (id)
-    );
-
-    create table SMP_SG_EXTENSION (
-       ID number(19,0) not null,
-        CREATED_ON timestamp not null,
-        LAST_UPDATED_ON timestamp not null,
-        EXTENSION blob,
-        primary key (ID)
-    );
-
-    comment on table SMP_SG_EXTENSION is
-        'Service group extension blob';
-
-    comment on column SMP_SG_EXTENSION.EXTENSION is
-        'XML extension(s) for servicegroup ';
-
-    create table SMP_SG_EXTENSION_AUD (
-       ID number(19,0) not null,
-        REV number(19,0) not null,
-        REVTYPE number(3,0),
-        CREATED_ON timestamp,
-        LAST_UPDATED_ON timestamp,
-        EXTENSION blob,
-        primary key (ID, REV)
     );
 
     create table SMP_SUBRESOURCE (
@@ -1021,16 +992,6 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
 
     alter table SMP_RESOURCE_MEMBER_AUD 
        add constraint FKknykp2wcby9fxk234yaaix1pe 
-       foreign key (REV) 
-       references SMP_REV_INFO;
-
-    alter table SMP_SG_EXTENSION 
-       add constraint FKc3joya5el7ke4ch8f76a4ad0s 
-       foreign key (ID) 
-       references SMP_RESOURCE;
-
-    alter table SMP_SG_EXTENSION_AUD 
-       add constraint FKmdo9v2422adwyebvl34qa3ap6 
        foreign key (REV) 
        references SMP_REV_INFO;
 

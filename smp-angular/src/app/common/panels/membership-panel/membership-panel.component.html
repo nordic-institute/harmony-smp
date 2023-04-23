@@ -81,10 +81,11 @@
       </table>
     </div>
 
-    <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
+    <mat-paginator class="mat-elevation-z2" [length]="resultsLength" #memberPaginator
                    (page)="onPageChanged($event)"
-                   [pageSize]="5"
-                   [pageSizeOptions]="[5, 10, 25]"
+                   [hidePageSize]="true"
+                   [pageSize]="pageSize"
+                   [showFirstLastButtons]="true"
                    [disabled]="entityNotSelected"
                    aria-label="Select pages"></mat-paginator>
   </div>

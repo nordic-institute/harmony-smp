@@ -135,14 +135,6 @@
        drop 
        foreign key FKknykp2wcby9fxk234yaaix1pe;
 
-    alter table SMP_SG_EXTENSION 
-       drop 
-       foreign key FKc3joya5el7ke4ch8f76a4ad0s;
-
-    alter table SMP_SG_EXTENSION_AUD 
-       drop 
-       foreign key FKmdo9v2422adwyebvl34qa3ap6;
-
     alter table SMP_SUBRESOURCE 
        drop 
        foreign key FK7y1ydnq350mbs3c8yrq2fhnsk;
@@ -236,10 +228,6 @@
     drop table if exists SMP_RESOURCE_MEMBER_AUD;
 
     drop table if exists SMP_REV_INFO;
-
-    drop table if exists SMP_SG_EXTENSION;
-
-    drop table if exists SMP_SG_EXTENSION_AUD;
 
     drop table if exists SMP_SUBRESOURCE;
 

@@ -3,7 +3,10 @@
               title="System User administration"
               text="System User administration panel is a tool for creating and removing users from DomiSMP"
               [labelColumnContent]="searchUserPanel">
-    <user-profile-panel
+    <ng-template #noDataFound>
+      <div class="empty-data-panel">No user selected.</div>
+    </ng-template>
+    <user-profile-panel  *ngIf="managedUserData;else noDataFound"
       [showDataPanelTitles] =false
       [managedUserData]="managedUserData"
       (onSaveUserEvent)="onSaveUserEvent($event)"
@@ -67,8 +70,8 @@
   <mat-paginator class="mat-elevation-z2" id="extension-paginator"
                  [length]="resultsLength"
                  (page)="onPageChanged($event)"
-                 [pageSize]="5"
-                 [pageSizeOptions]="[5, 10, 25]"
+                 [hidePageSize]="true"
+                 [pageSize]="10"
                  [showFirstLastButtons]="true"
                  aria-label="Select page"></mat-paginator>
 </ng-template>

@@ -19,7 +19,7 @@ public enum VisibilityType {
      */
     INTERNAL,
     /**
-     *  Access to the resource is possible only to the resource members
+     *  Access to the domain, group or  resource is possible only if you are only direct or un-direct   member of the domain, group or resource
      */
     PRIVATE
 }

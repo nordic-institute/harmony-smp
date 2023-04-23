@@ -5,10 +5,10 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 
 /**
  * Service for domain
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -38,11 +39,10 @@ public class DomainService {
     private SMLIntegrationService smlIntegrationService;
 
     @Autowired
-    private ResourceDao serviceGroupDao;
+    private ResourceDao resourceDao;
 
     @Autowired
     private DomainDao domainDao;
-
 
 
     /**
@@ -76,44 +76,33 @@ public class DomainService {
     /**
      * If domain is not yet registered and sml integration is on. Than it tries to register domain and  all participants
      * on that domain. If integration is off it return an configuration exception.
-     *
+     * <p>
      * Method is not in transaction - but sub-methods are. if registering domain or particular serviceGroup succeed
      * then the database flag (SML_REGISTERED) is turned on ( if method fails
      * while execution the SML_REGISTERED reflect the real status in SML). Running the method again updates only
      * serviceGroup which are not yet registered.
      *
-     *
      * @param domain
      */
 
-    public void registerDomainAndParticipants(DBDomain domain){
+    public void registerDomainAndParticipants(DBDomain domain) {
         LOG.info("Start registerDomainAndParticipants for domain:" + domain.getDomainCode());
         smlIntegrationService.registerDomain(domain);
 
-        // get all participant for domain and register them
-        ResourceFilter serviceGroupFilter = new ResourceFilter();
-        serviceGroupFilter.setDomain(domain);
-
-        // register all service groups
-        List<DBResource> serviceGroupList = serviceGroupDao.getServiceGroupList(-1, -1, null, null, serviceGroupFilter);
-        for (DBResource sg: serviceGroupList){
-            smlIntegrationService.registerParticipant(sg.getIdentifierValue(), sg.getIdentifierScheme(), domain.getDomainCode());
+        DBResourceFilter filter = DBResourceFilter.createBuilder().domain(domain).build();
+        List<DBResource> resources = resourceDao.getResourcesForFilter(-1, -1, filter);
+        for (DBResource resource : resources) {
+            smlIntegrationService.registerParticipant(resource, domain);
         }
     }
 
-    public void unregisterDomainAndParticipantsFromSml(DBDomain domain){
+    public void unregisterDomainAndParticipantsFromSml(DBDomain domain) {
 
-        // get all participant for domain and register them
-        ResourceFilter serviceGroupFilter = new ResourceFilter();
-        serviceGroupFilter.setDomain(domain);
-
-        // register all service groups
-        List<DBResource> serviceGroupList = serviceGroupDao.getServiceGroupList(-1, -1, null, null, serviceGroupFilter);
-        LOG.info("Unregister participants (count: {}) for domain: {}: ", serviceGroupList.size(), domain.getDomainCode());
-        for (DBResource sg: serviceGroupList){
-            smlIntegrationService.unregisterParticipant(sg.getIdentifierValue(), sg.getIdentifierScheme(), domain.getDomainCode());
+        DBResourceFilter filter = DBResourceFilter.createBuilder().domain(domain).build();
+        List<DBResource> resources = resourceDao.getResourcesForFilter(-1, -1, filter);
+        for (DBResource resource : resources) {
+            smlIntegrationService.unregisterParticipant(resource, domain);
         }
-
         smlIntegrationService.unRegisterDomain(domain);
     }
 

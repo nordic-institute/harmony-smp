@@ -17,7 +17,6 @@ import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confir
 import {SearchTableValidationResult} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
 import {Router} from "@angular/router";
-import {authenticationGuard} from "../../guards/authentication.guard";
 import ObjectUtils from "../utils/object-utils";
 
 @Component({
@@ -138,6 +137,7 @@ export class SearchTableComponent implements OnInit {
 
   getRowClass(row) {
     return {
+      'datatable-row-selected': (this.selected && this.selected.length >= 0 && this.rows.indexOf(row) === this.rowNumber),
       'table-row-new': (row.status === EntityStatus.NEW),
       'table-row-updated': (row.status === EntityStatus.UPDATED),
       'deleted': (row.status === EntityStatus.REMOVED)
@@ -253,9 +253,7 @@ export class SearchTableComponent implements OnInit {
     formRef.afterClosed().subscribe(result => {
       if (result) {
         this.rows = [...this.rows, {...formRef.componentInstance.getCurrent()}];
-        //this.rows = this.rows.concat(formRef.componentInstance.current);
         this.count++;
-        // this.searchable.refresh();
       } else {
         this.unselectRows();
       }
@@ -291,14 +289,10 @@ export class SearchTableComponent implements OnInit {
     try {
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
         if (result) {
-          // this.unselectRows();
           const modifiedRowEntities = this.rows.filter(el => el.status !== EntityStatus.PERSISTED);
-          // this.isBusy = true;
           this.showSpinner = true;
           this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(res => {
             this.showSpinner = false;
-            // this.isBusy = false;
-            // this.getUsers();
             this.alertService.success('The operation \'update\' completed successfully.', false);
             this.forceRefresh = true;
             this.onRefresh();

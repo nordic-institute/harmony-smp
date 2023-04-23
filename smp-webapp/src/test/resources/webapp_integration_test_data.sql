@@ -94,9 +94,9 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_O
 -- insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (14, 'CN=GRP:TEST_\+\,& \=eau!,O=European Commission,C=BE:0000000000001234', null,null, NOW(),  NOW());
 -- --------------
 -- Configure domains
-insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS,SML_REGISTERED,SML_CLIENT_CERT_AUTH,SML_CLIENT_CERT_HEADER, CREATED_ON, LAST_UPDATED_ON) values
-(1, 'domain','subdomain', 'CEF-SMP-001','single_domain_key',0,1,'SML_CLIENT_CERT_HEADER', NOW(),  NOW()),
-(2, 'domainTwo','newdomain', 'CEF-SMP-002','single_domain_key',0,1,'SML_CLIENT_CERT_HEADER', NOW(),  NOW());
+insert into SMP_DOMAIN (ID, VISIBILITY, DOMAIN_CODE, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS,SML_REGISTERED,SML_CLIENT_CERT_AUTH, CREATED_ON, LAST_UPDATED_ON) values
+(1,'PUBLIC', 'domain','subdomain', 'CEF-SMP-001','single_domain_key',0,1, NOW(),  NOW()),
+(2, 'PUBLIC', 'domainTwo','newdomain', 'CEF-SMP-002','single_domain_key',0,1,NOW(),  NOW());
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'domain group', 'PUBLIC', NOW(),  NOW());

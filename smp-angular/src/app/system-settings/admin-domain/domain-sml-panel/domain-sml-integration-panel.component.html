@@ -72,7 +72,7 @@
       <mat-label>SML Client Certificate Alias</mat-label>
       <mat-select
         placeholder="SML ClientCert Alias"
-        formControlName="smlClientKeyCertificate"
+        formControlName="smlClientKeyAlias"
         id="smlClientKeyAlias_id">
         <mat-option [value]="''">Choose certificate for signing soap response</mat-option>
         <mat-option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">

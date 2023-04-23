@@ -92,9 +92,6 @@ public class DBDomain extends BaseEntity {
     @Column(name = "SML_SMP_ID", length = CommonColumnsLengths.MAX_SML_SMP_ID_LENGTH)
     @ColumnDescription(comment = "SMP ID used for SML integration")
     String smlSmpId;
-    @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
-    @ColumnDescription(comment = "Client-Cert header used behind RP - ClientCertHeader for SML integration")
-    String smlClientCertHeader;
     @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Client key alias used for SML integration")
     String smlClientKeyAlias;
@@ -172,14 +169,6 @@ public class DBDomain extends BaseEntity {
 
     public void setSmlSmpId(String smlSmpId) {
         this.smlSmpId = smlSmpId;
-    }
-
-    public String getSmlClientCertHeader() {
-        return smlClientCertHeader;
-    }
-
-    public void setSmlClientCertHeader(String smlClientCertHeader) {
-        this.smlClientCertHeader = smlClientCertHeader;
     }
 
     public String getSmlClientKeyAlias() {
@@ -279,7 +268,6 @@ public class DBDomain extends BaseEntity {
                 .append(id, dbDomain.id).append(domainCode, dbDomain.domainCode)
                 .append(smlSubdomain, dbDomain.smlSubdomain)
                 .append(smlSmpId, dbDomain.smlSmpId)
-                .append(smlClientCertHeader, dbDomain.smlClientCertHeader)
                 .append(smlClientKeyAlias, dbDomain.smlClientKeyAlias)
                 .append(signatureKeyAlias, dbDomain.signatureKeyAlias)
                 .append(signatureAlgorithm, dbDomain.signatureAlgorithm)

@@ -75,6 +75,9 @@ public class UISubresourceService {
         }
         resource.getSubresources().remove(subresource);
         subresourceDao.remove(subresource);
+
+
+
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 
@@ -105,6 +108,8 @@ public class UISubresourceService {
         subresource.setDocument(document);
         subresourceDao.persist(subresource);
         // create first member as admin user
+
+
 
         return conversionService.convert(subresource, SubresourceRO.class);
     }
