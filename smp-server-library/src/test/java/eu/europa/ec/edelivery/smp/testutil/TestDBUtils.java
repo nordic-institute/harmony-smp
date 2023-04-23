@@ -31,7 +31,6 @@ public class TestDBUtils {
         DBDomain domain = new DBDomain();
         domain.setDomainCode(domainCode);
         domain.setSignatureKeyAlias(anyString());
-        domain.setSmlClientCertHeader(anyString());
         domain.setSmlClientKeyAlias(anyString());
         domain.setSmlSubdomain(anyString());
         domain.setSmlSmpId(anyString());
@@ -159,6 +158,7 @@ public class TestDBUtils {
         DBResource resource = new DBResource();
         resource.setIdentifierValue(id);
         resource.setIdentifierScheme(sch);
+        resource.setVisibility(VisibilityType.PUBLIC);
         if (withExtension) {
             DBDocument document = createDBDocument();
             DBDocumentVersion documentVersion = createDBDocumentVersion();

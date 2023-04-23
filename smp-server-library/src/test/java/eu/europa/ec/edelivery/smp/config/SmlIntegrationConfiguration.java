@@ -50,7 +50,6 @@ public class SmlIntegrationConfiguration {
         defaultDomain.setSmlRegistered(false);
         defaultDomain.setSmlClientCertAuth(false);
         defaultDomain.setSmlClientKeyAlias("clientAlias");
-        defaultDomain.setSmlClientCertHeader("clientCertClientHeader");
         setThrowExceptionAfterParticipantCallCount(-1);
         setThrowException(null);
     }

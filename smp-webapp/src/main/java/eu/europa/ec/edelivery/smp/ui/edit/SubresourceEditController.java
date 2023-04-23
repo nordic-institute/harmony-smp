@@ -1,20 +1,12 @@
 package eu.europa.ec.edelivery.smp.ui.edit;
 
 
-import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
-import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
-import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.SubresourceRO;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ui.UIResourceService;
 import eu.europa.ec.edelivery.smp.services.ui.UISubresourceService;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +16,6 @@ import java.util.List;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
 /**
- *
  * @author Joze Rihtarsic
  * @since 5.0
  */
@@ -50,7 +41,7 @@ public class SubresourceEditController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             " and @smpAuthorizationService.isResourceMember(#resourceEncId) ")
     public List<SubresourceRO> getSubResourcesForResource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
-                                                    @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId) {
+                                                          @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId) {
 
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         logAdminAccess("getSubResourcesForResource: " + resourceId);
@@ -60,10 +51,10 @@ public class SubresourceEditController {
     @DeleteMapping(path = SUB_CONTEXT_PATH_EDIT_SUBRESOURCE_DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             " and @smpAuthorizationService.isResourceMember(#resourceEncId) ")
-    public SubresourceRO deleteResourceFromGroup(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
-                                              @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
-                                              @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId) {
-        logAdminAccess("deleteResourceFromGroup");
+    public SubresourceRO deleteSubresourceFromGroup(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                    @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
+                                                    @PathVariable(PATH_PARAM_ENC_SUBRESOURCE_ID) String subresourceEncId) {
+        logAdminAccess("deleteSubresourceFromGroup");
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         Long subresourceId = SessionSecurityUtils.decryptEntityId(subresourceEncId);
         return uiSubresourceService.deleteSubresourceFromResource(subresourceId, resourceId);
@@ -73,8 +64,8 @@ public class SubresourceEditController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
             " and @smpAuthorizationService.isResourceMember(#resourceEncId) ")
     public SubresourceRO createSubresource(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
-                                     @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
-                                     @RequestBody SubresourceRO subresourceRO) {
+                                           @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
+                                           @RequestBody SubresourceRO subresourceRO) {
         logAdminAccess("createSubresource");
         Long subresourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
         return uiSubresourceService.createResourceForGroup(subresourceRO, subresourceId);

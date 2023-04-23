@@ -18,6 +18,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -82,9 +83,6 @@ public class ResourceDao extends BaseDao<DBResource> {
         query.setParameter(PARAM_USER_ID, resourceFilter.getUserId());
         query.setParameter(PARAM_MEMBERSHIP_ROLES, resourceFilter.getMembershipRoleTypes());
         query.setParameter(PARAM_RESOURCE_FILTER, resourceFilter.getIdentifierFilter());
-
-        LOG.info("RESOURCE+FILTER: [{}]", resourceFilter.getIdentifierFilter());
-
         return query.getSingleResult();
     }
 
@@ -106,6 +104,31 @@ public class ResourceDao extends BaseDao<DBResource> {
         query.setParameter(PARAM_MEMBERSHIP_ROLES, resourceFilter.getMembershipRoleTypes());
         query.setParameter(PARAM_RESOURCE_FILTER, resourceFilter.getIdentifierFilter());
         return query.getResultList();
+    }
+
+    public List<DBResource> getPublicResourcesSearch(int iPage, int iPageSize, DBUser user, String schema, String identifier) {
+        TypedQuery<DBResource> query = memEManager.createNamedQuery("DBResource.getPublicSearch", DBResource.class);
+        if (iPageSize > -1 && iPage > -1) {
+            query.setFirstResult(iPage * iPageSize);
+        }
+        if (iPageSize > 0) {
+            query.setMaxResults(iPageSize);
+        }
+        query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
+        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema)? null: StringUtils.wrapIfMissing(schema,"%"));
+        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier)? null: StringUtils.wrapIfMissing(identifier,"%"));
+
+        return query.getResultList();
+    }
+
+    public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier) {
+        TypedQuery<Long> query = memEManager.createNamedQuery("DBResource.getPublicSearchCount", Long.class);
+
+        query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
+        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema)? null: StringUtils.wrapIfMissing(schema,"%"));
+        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier)? null: StringUtils.wrapIfMissing(identifier,"%"));
+
+        return query.getSingleResult();
     }
 
 

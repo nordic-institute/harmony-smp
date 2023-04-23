@@ -69,10 +69,6 @@
 
     drop table SMP_REV_INFO cascade constraints;
 
-    drop table SMP_SG_EXTENSION cascade constraints;
-
-    drop table SMP_SG_EXTENSION_AUD cascade constraints;
-
     drop table SMP_SUBRESOURCE cascade constraints;
 
     drop table SMP_SUBRESOURCE_AUD cascade constraints;

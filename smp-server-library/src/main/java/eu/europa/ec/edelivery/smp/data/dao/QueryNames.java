@@ -70,7 +70,7 @@ public class QueryNames {
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_COUNT = "DBResourceMember.getByUserAndDomainResourceCount";
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_DOMAIN_RESOURCE_ROLE_COUNT = "DBResourceMember.getByUserAndDomainRoleResourceCount";
     public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT = "DBResourceMember.getByUserAndGroupsResourcesAndRoleCount";
-
+    public static final String QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_COUNT = "DBResourceMember.getByUserAndGroupsResourcesCount";
     public static final String QUERY_RESOURCE_MEMBERS_COUNT = "DBResourceMember.getByResourceCount";
     public static final String QUERY_RESOURCE_MEMBERS_FILTER_COUNT = "DBResourceMember.getByResourceFilterCount";
     public static final String QUERY_RESOURCE_MEMBERS = "DBResourceMember.getByResource";

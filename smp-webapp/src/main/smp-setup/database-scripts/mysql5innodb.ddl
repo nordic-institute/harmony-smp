@@ -207,7 +207,6 @@
         SIGNATURE_DIGEST_METHOD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Set signature hash method. Ex.: http://www.w3.org/2001/04/xmlenc#sha256',
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Signature key alias used for SML integration',
         SML_CLIENT_CERT_AUTH bit not null comment 'Flag for SML authentication type - use ClientCert header or  HTTPS ClientCertificate (key)',
-        SML_CLIENT_CERT_HEADER varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client-Cert header used behind RP - ClientCertHeader for SML integration',
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Client key alias used for SML integration',
         SML_REGISTERED bit not null comment 'Flag for: Is domain registered in SML',
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin comment 'SMP ID used for SML integration',
@@ -228,7 +227,6 @@
         SIGNATURE_DIGEST_METHOD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_CLIENT_CERT_AUTH bit,
-        SML_CLIENT_CERT_HEADER varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_REGISTERED bit,
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -439,24 +437,6 @@
         timestamp bigint not null,
         USERNAME varchar(255)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    create table SMP_SG_EXTENSION (
-       ID bigint not null,
-        CREATED_ON datetime not null,
-        LAST_UPDATED_ON datetime not null,
-        EXTENSION longblob comment 'XML extension(s) for servicegroup ',
-        primary key (ID)
-    ) comment='Service group extension blob' ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-    create table SMP_SG_EXTENSION_AUD (
-       ID bigint not null,
-        REV bigint not null,
-        REVTYPE tinyint,
-        CREATED_ON datetime,
-        LAST_UPDATED_ON datetime,
-        EXTENSION longblob,
-        primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_SUBRESOURCE (
@@ -772,16 +752,6 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
 
     alter table SMP_RESOURCE_MEMBER_AUD 
        add constraint FKknykp2wcby9fxk234yaaix1pe 
-       foreign key (REV) 
-       references SMP_REV_INFO (id);
-
-    alter table SMP_SG_EXTENSION 
-       add constraint FKc3joya5el7ke4ch8f76a4ad0s 
-       foreign key (ID) 
-       references SMP_RESOURCE (ID);
-
-    alter table SMP_SG_EXTENSION_AUD 
-       add constraint FKmdo9v2422adwyebvl34qa3ap6 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 

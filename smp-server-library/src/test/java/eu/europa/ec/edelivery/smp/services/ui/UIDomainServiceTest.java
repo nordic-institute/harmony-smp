@@ -58,7 +58,6 @@ public class UIDomainServiceTest extends AbstractServiceTest {
         domainRO.setSmlSubdomain("New SmlSubdomain");
         domainRO.setSmlSmpId("NewSmlSmpId");
         domainRO.setSmlClientKeyAlias("NewClientKeyAlias");
-        domainRO.setSmlClientCertHeader("NewtCertHeader");
         domainRO.setSmlClientCertAuth(false);
         DBDomain domain = testUtilsDao.getD1();
         testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO);
@@ -67,7 +66,6 @@ public class UIDomainServiceTest extends AbstractServiceTest {
         assertEquals(domainRO.getSmlSubdomain(), result.getSmlSubdomain());
         assertEquals(domainRO.getSmlSmpId(), result.getSmlSmpId());
         assertEquals(domainRO.getSmlClientKeyAlias(), result.getSmlClientKeyAlias());
-        assertEquals(domainRO.getSmlClientCertHeader(), result.getSmlClientCertHeader());
         assertEquals(domainRO.isSmlClientCertAuth(), result.isSmlClientCertAuth());
     }
 

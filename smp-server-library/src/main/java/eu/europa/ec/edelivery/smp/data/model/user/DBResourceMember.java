@@ -34,6 +34,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
         " WHERE c.user.id = :user_id AND c.resource.group.id = :group_id AND c.role= :membership_role ")
 
+@NamedQuery(name = QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
+        " WHERE c.user.id = :user_id AND c.resource.group.id = :group_id")
+
+
 @NamedQuery(name = QUERY_RESOURCE_MEMBERS_COUNT, query = "SELECT count(c) FROM DBResourceMember c " +
         " WHERE c.resource.id = :resource_id")
 @NamedQuery(name = QUERY_RESOURCE_MEMBERS, query = "SELECT c FROM DBResourceMember c " +

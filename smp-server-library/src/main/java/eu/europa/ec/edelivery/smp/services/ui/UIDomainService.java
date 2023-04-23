@@ -38,15 +38,14 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     private ResourceDefDao resourceDefDao;
     private DomainResourceDefDao domainResourceDefDao;
     private ConversionService conversionService;
-    private SmlConnector smlConnector;
 
-    public UIDomainService(ConversionService conversionService, DomainDao domainDao, ResourceDao resourceDao, ResourceDefDao resourceDefDao, DomainResourceDefDao domainResourceDefDao, SmlConnector smlConnector) {
+
+    public UIDomainService(ConversionService conversionService, DomainDao domainDao, ResourceDao resourceDao, ResourceDefDao resourceDefDao, DomainResourceDefDao domainResourceDefDao) {
         this.conversionService = conversionService;
         this.domainDao = domainDao;
         this.resourceDao = resourceDao;
         this.resourceDefDao = resourceDefDao;
         this.domainResourceDefDao = domainResourceDefDao;
-        this.smlConnector = smlConnector;
     }
 
     @Override
@@ -117,7 +116,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         if (domain == null) {
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
         }
-        if (domain.isSmlRegistered() && StringUtils.equals(data.getSmlSmpId(), domain.getSmlSmpId())){
+        if (domain.isSmlRegistered() && !StringUtils.equals(data.getSmlSmpId(), domain.getSmlSmpId())){
             String msg = "SMP-SML identifier must not change for registered domain ["+domain.getDomainCode()+"]!";
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
         }
@@ -125,7 +124,6 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         domain.setSmlSubdomain(data.getSmlSubdomain());
         domain.setSmlSmpId(data.getSmlSmpId());
         domain.setSmlClientKeyAlias(data.getSmlClientKeyAlias());
-        domain.setSmlClientCertHeader(data.getSmlClientCertHeader());
         domain.setSmlClientCertAuth(data.isSmlClientCertAuth());
     }
 

@@ -182,6 +182,7 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
         if (!smlIntegrationService.isSMLIntegrationEnabled()) {
             return;
         }
+        /*
         for (ParticipantSMLRecord record : lstRecords) {
             if (record.getStatus() == SMLStatusEnum.REGISTER) {
                 boolean result = smlIntegrationService.registerParticipantToSML(record.getParticipantIdentifier(),
@@ -195,6 +196,8 @@ public class UIServiceGroupService extends UIServiceBase<DBResource, ServiceGrou
                 updateServiceGroupDomainStatus(result, record);
             }
         }
+
+         */
     }
 
     protected void updateServiceGroupDomainStatus(boolean smlActionStatus, ParticipantSMLRecord record) {

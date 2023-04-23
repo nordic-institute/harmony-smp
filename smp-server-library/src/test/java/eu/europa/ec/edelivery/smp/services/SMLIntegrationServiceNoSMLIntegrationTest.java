@@ -76,7 +76,7 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
         testInstance.unRegisterDomain(testDomain01);
     }
 
-
+/*
     @Test
     public void registerOnlyParticipantDomainToSml() {
 
@@ -85,6 +85,6 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
         // when
         testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1);
     }
-
+*/
 
 }

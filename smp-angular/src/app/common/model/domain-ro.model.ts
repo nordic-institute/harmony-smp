@@ -7,7 +7,6 @@ export interface DomainRo extends SearchTableEntity {
   smlSubdomain?: string;
   smlSmpId?: string;
   smlParticipantIdentifierRegExp?: string;
-  smlClientCertHeader?: string;
   smlClientKeyAlias?: string;
   signatureKeyAlias?: string;
   smlRegistered?: boolean;

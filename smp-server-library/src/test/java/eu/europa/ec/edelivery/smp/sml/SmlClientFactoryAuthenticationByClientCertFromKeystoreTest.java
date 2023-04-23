@@ -95,7 +95,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     @Test
     public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
         //given
-        IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
+        IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("second_domain_alias");
         domain.setSmlClientCertAuth(false);
@@ -121,7 +121,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     public void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
 
         //given
-        IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
+        IManageServiceMetadataWS client = smlClientFactory.createSmp();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("second_domain_alias");
         domain.setSmlClientCertAuth(false);
@@ -144,7 +144,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     @Test
     public void factoryProducesClientWithAnotherCertFromKeystore() {
         //given
-        IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
+        IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("single_domain_key");
         domain.setSmlClientCertAuth(false);
@@ -165,7 +165,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     public void factoryProducesSMPClientWithAnotherCertFromKeystore() {
 
         //given
-        IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
+        IManageServiceMetadataWS client = smlClientFactory.createSmp();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias("single_domain_key");
         domain.setSmlClientCertAuth(false);
@@ -185,7 +185,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     @Test
     public void factoryProducesClientNoDefinedAlias() {
         //given
-        IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
+        IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(false);
@@ -203,7 +203,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     public void factoryProducesSMPClientNoDefinedAlias() {
 
         //given
-        IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
+        IManageServiceMetadataWS client = smlClientFactory.createSmp();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(false);
@@ -225,7 +225,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         keystoreService.refreshData();
 
 
-        IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
+        IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(false);

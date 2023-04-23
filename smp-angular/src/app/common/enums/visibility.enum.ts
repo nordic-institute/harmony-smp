@@ -4,11 +4,7 @@ export enum VisibilityEnum {
    */
   Public= 'PUBLIC',
   /**
-   * Access to the resource is within the domain/group. Users must be authenticated and must be members of the domain/group/resource in order to read it.
-   */
-  Internal= 'INTERNAL',
-  /**
-   *  Access to the resource is possible only to the resource members
+   *  Access to the resource, group or domain
    */
   Private= 'PRIVATE'
 }

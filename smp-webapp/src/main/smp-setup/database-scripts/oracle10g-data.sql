@@ -4,4 +4,5 @@ insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPD
 
 
 -- insert domain
-insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SIGNATURE_KEY_ALIAS,SML_BLUE_COAT_AUTH, SML_REGISTERED,  CREATED_ON, LAST_UPDATED_ON) values (SMP_DOMAIN_SEQ.nextval, 'testDomain','domain','sample_key',1,0, sysdate, sysdate);
+insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SIGNATURE_KEY_ALIAS, SML_CLIENT_KEY_ALIAS, SML_CLIENT_CERT_AUTH, SML_REGISTERED,  CREATED_ON, LAST_UPDATED_ON) values
+(SMP_DOMAIN_SEQ.nextval, 'testDomain','domain','sample_key', 'smp_domain_01',1,0, sysdate, sysdate);

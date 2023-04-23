@@ -168,7 +168,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
       msg = "The domain should have a defined signature CertAlias."
     }
     if (this.lookups.cachedApplicationConfig.smlIntegrationOn) {
-      if (!domain.smlSmpId || !domain.smlClientCertHeader) {
+      if (!domain.smlSmpId || !domain.smlClientKeyAlias) {
         msg = (!msg ? "" : msg + " ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
       }
     }
@@ -194,9 +194,6 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
 
-    if (!domainRo.smlClientCertHeader && domainRo.smlClientCertAuth) {
-      return false;
-    }
     if (!domainRo.smlClientKeyAlias && !domainRo.smlClientCertAuth) {
       return false;
     }
@@ -214,9 +211,6 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
 
-    if (!domainRo.smlClientCertHeader && domainRo.smlClientCertAuth) {
-      return false;
-    }
     if (!domainRo.smlClientKeyAlias && !domainRo.smlClientCertAuth) {
       return false;
     }

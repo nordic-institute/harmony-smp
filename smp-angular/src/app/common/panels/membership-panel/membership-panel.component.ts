@@ -26,6 +26,7 @@ import {ResourceRo} from "../../model/resource-ro.model";
 })
 export class MembershipPanelComponent implements BeforeLeaveGuard {
 
+  pageSize: number = 10;
   @Input() membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
 
   private _domain: DomainRo;
@@ -39,7 +40,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   filter: any = {};
   resultsLength = 0;
   isLoadingResults = false;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('memberPaginator') paginator: MatPaginator;
 
   constructor(private domainService: AdminDomainService,
               private membershipService: MembershipService,
@@ -71,13 +72,10 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
 
   @Input() set domain(value: DomainRo) {
     this._domain = value;
-
     if (!!value) {
-      if (this.membershipType == MemberTypeEnum.DOMAIN) {
+      if (this.membershipType === MemberTypeEnum.DOMAIN) {
         this.loadMembershipData();
       }
-    } else {
-      this.isLoadingResults = false;
     }
   }
 
@@ -89,26 +87,22 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
     this._group = value;
 
     if (!!value) {
-      if (this.membershipType == MemberTypeEnum.GROUP) {
+      if (this.membershipType === MemberTypeEnum.GROUP) {
         this.loadMembershipData();
       }
-    } else {
-      this.isLoadingResults = false;
     }
   }
+
   get resource(): ResourceRo {
     return this._resource;
   }
 
   @Input() set resource(value: ResourceRo) {
     this._resource = value;
-
     if (!!value) {
       if (this.membershipType == MemberTypeEnum.RESOURCE) {
         this.loadMembershipData();
       }
-    } else {
-      this.isLoadingResults = false;
     }
   }
 
@@ -155,7 +149,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   public refresh() {
-    if (this.paginator) {
+    if (!!this.paginator) {
       this.paginator.firstPage();
     }
     this.loadMembershipData();
@@ -223,14 +217,15 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   protected getMembershipListService(): Observable<SearchTableResult> {
+    let page = this.paginator ? this.paginator.pageIndex : 0;
+    let pageSize = this.paginator ? this.paginator.pageSize : this.pageSize;
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-
-        return !this._domain?null:this.membershipService.getDomainMembersObservable(this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
+        return !this._domain ? null : this.membershipService.getDomainMembersObservable(this._domain.domainId, this.filter, page, pageSize);
       case MemberTypeEnum.GROUP:
-        return !this._group?null: this.membershipService.getGroupMembersObservable(this._group.groupId, this._domain.domainId, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
+        return !this._group ? null : this.membershipService.getGroupMembersObservable(this._group.groupId, this._domain.domainId, this.filter, page, pageSize);
       case MemberTypeEnum.RESOURCE:
-        return  !this._resource?null: this.membershipService.getResourceMembersObservable(this._resource, this._group, this._domain, this.filter, this.paginator.pageIndex, this.paginator.pageSize);
+        return !this._resource ? null : this.membershipService.getResourceMembersObservable(this._resource, this._group, this._domain, this.filter, page, pageSize);
     }
   }
 

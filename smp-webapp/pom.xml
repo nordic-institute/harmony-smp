@@ -10,8 +10,6 @@
     <packaging>war</packaging>
     <name>smp-webapp</name>
     <description>SMP REST service WEB APP</description>
-
-
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
         <buildtimestamp>${maven.build.timestamp}</buildtimestamp>

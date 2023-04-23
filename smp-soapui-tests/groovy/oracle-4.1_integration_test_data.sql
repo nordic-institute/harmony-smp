@@ -1,5 +1,3 @@
-DELETE FROM SMP_SG_EXTENSION;
-DELETE FROM SMP_SG_EXTENSION_AUD;
 
 DELETE FROM SMP_ALERT;
 DELETE FROM SMP_ALERT_AUD;
@@ -98,8 +96,8 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, SUBJECT, ISSUER, SERIALNUMBER,V
 (14, 'CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE:f71ee8b11cb3b787','CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE','CN=EHEALTH_z_ẞ_W_,O=European_z_ẞ_W_Commission,C=BE','f71ee8b11cb3b787', sysdate - 365, sysdate + 365, sysdate, sysdate);
 
 
-insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, SML_CLIENT_CERT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values
-(1, 'testdomain','PUBLIC', 'test-domain', 'CEF-SMP-002','sample_key',1,0, sysdate,  sysdate);
+insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS,SML_CLIENT_KEY_ALIAS, SML_CLIENT_CERT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values
+(1, 'testdomain','PUBLIC', 'test-domain', 'CEF-SMP-002','sample_key','sample_key',1,0, sysdate,  sysdate);
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'Test group', 'PUBLIC', sysdate,  sysdate);

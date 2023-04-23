@@ -15,7 +15,7 @@ import {EditDomainService} from "../../edit-domain.service";
 export class GroupDialogComponent {
 
   readonly groupVisibilityOptions = Object.keys(VisibilityEnum)
-    .filter(el => el !== "Private").map(el => {
+    .map(el => {
       return {key: el, value: VisibilityEnum[el]}
     });
   formTitle = "Group dialog";

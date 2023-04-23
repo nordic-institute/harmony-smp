@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
@@ -77,6 +78,8 @@ public class TestUtilsDao {
     DBResourceMember resourceMemberU1R1_D2G1RD1_Admin;
     DBResourceMember resourceMemberU1R2_D2G1RD1_Viewer;
 
+    DBResource resourcePrivateD1G1RD1;
+   // DBResource resourceInternalD1G1RD1;
 
     DBExtension extension;
 
@@ -112,6 +115,9 @@ public class TestUtilsDao {
         groupMemberU1D2G1Viewer = null;
         resourceMemberU1R1_D2G1RD1_Admin = null;
         resourceMemberU1R2_D2G1RD1_Viewer = null;
+
+        resourcePrivateD1G1RD1 = null;
+        //resourceInternalD1G1RD1 = null;
 
         extension = null;
     }
@@ -259,11 +265,47 @@ public class TestUtilsDao {
         resourceMemberU1R1_D2G1RD1_Admin = createResourceMembership(MembershipRoleType.ADMIN, user1, resourceD1G1RD1);
         resourceMemberU1R2_D2G1RD1_Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceD2G1RD1);
 
+
         persistFlushDetach(resourceMemberU1R1_D2G1RD1_Admin);
         persistFlushDetach(resourceMemberU1R2_D2G1RD1_Viewer);
 
         assertNotNull(resourceMemberU1R1_D2G1RD1_Admin.getId());
         assertNotNull(resourceMemberU1R2_D2G1RD1_Viewer.getId());
+    }
+
+    @Transactional
+    public void createResourcePrivateInternalMemberships() {
+        if (resourcePrivateD1G1RD1 != null) {
+            LOG.trace("privateInternalMemberships are already initialized!");
+            return;
+        }
+        createResourceMemberships();
+
+        resourcePrivateD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1+"Private", TEST_SG_SCHEMA_1, true);
+        resourcePrivateD1G1RD1.setVisibility(VisibilityType.PRIVATE);
+        resourcePrivateD1G1RD1.setGroup(groupD1G1);
+        resourcePrivateD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
+        /*
+        resourceInternalD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1+"Internal", TEST_SG_SCHEMA_1, true);
+        resourceInternalD1G1RD1.setVisibility(VisibilityType.PRIVATE);
+        resourceInternalD1G1RD1.setGroup(groupD1G1);
+        resourceInternalD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
+
+         */
+
+        //persistFlushDetach(resourceInternalD1G1RD1);
+        persistFlushDetach(resourcePrivateD1G1RD1);
+
+        //assertNotNull(resourceInternalD1G1RD1.getId());
+        assertNotNull(resourcePrivateD1G1RD1.getId());
+
+
+
+        DBResourceMember  privateRM_U1R1_D1G1Admin = createResourceMembership(MembershipRoleType.ADMIN, user1, resourcePrivateD1G1RD1);
+        //DBResourceMember  internalRM_U1R1_D1G1Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceInternalD1G1RD1);
+
+        persistFlushDetach(privateRM_U1R1_D1G1Admin);
+       // persistFlushDetach(internalRM_U1R1_D1G1Viewer);
     }
 
     public DBDomainMember createDomainMembership(MembershipRoleType roleType, DBUser user, DBDomain domain){

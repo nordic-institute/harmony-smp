@@ -39,7 +39,6 @@ export class DomainController implements SearchTableController {
       smlSubdomain: '',
       smlSmpId: '',
       smlParticipantIdentifierRegExp: '',
-      smlClientCertHeader: '',
       smlClientKeyAlias: '',
       signatureKeyAlias: '',
       status: EntityStatus.NEW,
