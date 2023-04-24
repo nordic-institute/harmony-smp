@@ -4,7 +4,6 @@ import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
@@ -92,16 +91,16 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBResource, Servi
         ServiceGroupSearchRO serviceGroupRo = new ServiceGroupSearchRO();
 
         serviceGroupRo.setId(resource.getId());
+        serviceGroupRo.setDomainCode(resource.getDomainResourceDef().getDomain().getDomainCode());
+        serviceGroupRo.setResourceDefUrlSegment(resource.getDomainResourceDef().getResourceDef().getUrlSegment());
         serviceGroupRo.setParticipantIdentifier(resource.getIdentifierValue());
         serviceGroupRo.setParticipantScheme(resource.getIdentifierScheme());
-        DBDomain domain = resource.getDomainResourceDef().getDomain();
 
         resource.getSubresources().forEach(subresource -> {
             ServiceMetadataRO smdro = new ServiceMetadataRO();
+            smdro.setSubresourceDefUrlSegment(subresource.getSubresourceDef().getUrlSegment());
             smdro.setDocumentIdentifier(subresource.getIdentifierValue());
             smdro.setDocumentIdentifierScheme(subresource.getIdentifierScheme());
-            smdro.setDomainCode(domain.getDomainCode());
-            smdro.setSmlSubdomain(domain.getSmlSubdomain());
             serviceGroupRo.getServiceMetadata().add(smdro);
 
         });

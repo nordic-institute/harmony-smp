@@ -15,8 +15,11 @@ import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata20Validator;
 import gen.eu.europa.ec.ddc.api.smp20.ServiceMetadata;
-import gen.eu.europa.ec.ddc.api.smp20.basic.ParticipantID;
-import gen.eu.europa.ec.ddc.api.smp20.basic.ServiceID;
+import gen.eu.europa.ec.ddc.api.smp20.aggregate.Certificate;
+import gen.eu.europa.ec.ddc.api.smp20.aggregate.Endpoint;
+import gen.eu.europa.ec.ddc.api.smp20.aggregate.Process;
+import gen.eu.europa.ec.ddc.api.smp20.aggregate.ProcessMetadata;
+import gen.eu.europa.ec.ddc.api.smp20.basic.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,12 +68,64 @@ public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
         ResourceIdentifier subresourceIdentifier = getSubresourceIdentifier(resourceData);
 
         ServiceMetadata serviceMetadata = new ServiceMetadata();
+        serviceMetadata.setSMPVersionID(new SMPVersionID());
+        serviceMetadata.getSMPVersionID().setValue("2.0");
         serviceMetadata.setParticipantID(new ParticipantID());
         serviceMetadata.getParticipantID().setValue(identifier.getValue());
         serviceMetadata.getParticipantID().setSchemeID(identifier.getScheme());
         serviceMetadata.setServiceID(new ServiceID());
-        serviceMetadata.getParticipantID().setValue(subresourceIdentifier.getValue());
-        serviceMetadata.getParticipantID().setSchemeID(subresourceIdentifier.getScheme());
+        serviceMetadata.getServiceID().setValue(subresourceIdentifier.getValue());
+        serviceMetadata.getServiceID().setSchemeID(subresourceIdentifier.getScheme());
+        ProcessMetadata processMetadata = new ProcessMetadata();
+        serviceMetadata.getProcessMetadatas().add(processMetadata);
+        Process process = new Process();
+        process.setID(new ID());
+        process.getID().setValue("Service");
+        process.getID().setSchemeID("service-namespace");
+        processMetadata.getProcesses().add(process);
+        Endpoint endpoint = new Endpoint();
+        endpoint.setExpirationDate(new ExpirationDate());
+        endpoint.setActivationDate(new ActivationDate());
+        endpoint.getExpirationDate().setValue(OffsetDateTime.now().plusYears(1));
+        endpoint.getActivationDate().setValue(OffsetDateTime.now().minusDays(1));
+        endpoint.setAddressURI(new AddressURI());
+        endpoint.getAddressURI().setValue("http://test.ap.local/msh");
+        endpoint.setTransportProfileID(new TransportProfileID());
+        endpoint.getTransportProfileID().setValue("bdxr-transport-ebms3-as4-v1p0");
+        Certificate certEnc = new Certificate();
+        certEnc.setExpirationDate(new ExpirationDate());
+        certEnc.setActivationDate(new ActivationDate());
+        certEnc.getExpirationDate().setValue(OffsetDateTime.now().plusYears(1));
+        certEnc.getActivationDate().setValue(OffsetDateTime.now().minusDays(1));
+        certEnc.setSubject(new Subject());
+        certEnc.setIssuer(new Issuer());
+        certEnc.setTypeCode(new TypeCode());
+        certEnc.setContentBinaryObject(new ContentBinaryObject());
+        certEnc.getSubject().setValue("CN=test-ap-enc,OU=edelivery,O=digit,C=EU");
+        certEnc.getIssuer().setValue("CN=test-ap-enc,OU=edelivery,O=digit,C=EU");
+        certEnc.getTypeCode().setValue("encryption");
+        certEnc.getContentBinaryObject().setValue("Put the real certificate data here".getBytes());
+        certEnc.getContentBinaryObject().setMimeCode("application/base64");
+
+        Certificate certSig = new Certificate();
+        certSig.setExpirationDate(new ExpirationDate());
+        certSig.setActivationDate(new ActivationDate());
+        certSig.getExpirationDate().setValue(OffsetDateTime.now().plusYears(1));
+        certSig.getActivationDate().setValue(OffsetDateTime.now().minusDays(1));
+        certSig.setTypeCode(new TypeCode());
+        certSig.setContentBinaryObject(new ContentBinaryObject());
+        certSig.setSubject(new Subject());
+        certSig.setIssuer(new Issuer());
+        certSig.getSubject().setValue("CN=test-ap-signature,OU=edelivery,O=digit,C=EU");
+        certSig.getIssuer().setValue("CN=test-ap-signature,OU=edelivery,O=digit,C=EU");
+        certSig.getTypeCode().setValue("signature");
+        certSig.getContentBinaryObject().setValue("Put the real certificate data here".getBytes());
+        certSig.getContentBinaryObject().setMimeCode("application/base64");
+        endpoint.getCertificates().add(certEnc);
+        endpoint.getCertificates().add(certSig);
+        processMetadata.getEndpoints().add(endpoint);
+
+
         try {
             reader.serializeNative(serviceMetadata, responseData.getOutputStream(), true);
         } catch (TechnicalException e) {

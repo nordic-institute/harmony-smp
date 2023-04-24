@@ -8,7 +8,7 @@ insert into SMP_CREDENTIAL (ID, FK_USER_ID, CREDENTIAL_ACTIVE, CREDENTIAL_NAME, 
 
 
 insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, SML_CLIENT_KEY_ALIAS, SML_CLIENT_CERT_AUTH,SML_REGISTERED, CREATED_ON, LAST_UPDATED_ON) values
-(1, 'testdomain','PUBLIC', 'test-domain', 'DOMI-SMP-001','sample_key','smp_domain_01',1,0, NOW(),  NOW());
+(1, 'testdomain','PUBLIC', 'test-domain', 'DOMI-SMP-001','sample_key','smp_domain_01',1,1, NOW(),  NOW());
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'Test group', 'PUBLIC', NOW(),  NOW());
 
@@ -37,7 +37,7 @@ insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT,
 (2,2,  1, '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><Redirect href="http://localhost:8080/url"><CertificateUID/></Redirect></ServiceMetadata>' , NOW(),  NOW());
 
 insert into SMP_RESOURCE ( ID, FK_GROUP_ID, FK_DOCUMENT_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 1, 1, 'iso6523-actorid-upis', '0088:777002abzz777', 0, 'PUBLIC', NOW(),  NOW());
+(1, 1, 1, 1, 'iso6523-actorid-upis', '0088:777002abzz777', 1, 'PUBLIC', NOW(),  NOW());
 
 insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 1, 2, 'service-value', 'service-schema', NOW(),  NOW());

@@ -115,7 +115,7 @@ has its own groovy library -->
                             <soapuiProperties>
                                 <property>
                                     <name>soapui.scripting.library</name>
-                                    <value>${basedir}/src/main/groovy</value>
+                                    <value>${basedir}/src/main/java</value>
                                 </property>
                                 <property>
                                     <name>soapui.logroot</name>

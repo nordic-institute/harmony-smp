@@ -127,8 +127,6 @@ public class ResourceService {
         } else if (isNotBlank(owner)) {
             LOG.warn("Owner [{}] is given for existing resource [{}]. The owner parameter is ignored!", owner, resolvedData.getResource());
         }
-
-
         resourceHandlerService.createResource(ownerUser, resourceRequest, resourceResponse);
     }
 
