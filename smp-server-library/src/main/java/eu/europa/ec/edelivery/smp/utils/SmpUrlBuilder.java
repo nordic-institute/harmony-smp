@@ -131,7 +131,7 @@ public class SmpUrlBuilder {
     public UriComponentsBuilder getSMPUrlBuilder() {
 
         UriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequestUri();
-        uriBuilder = uriBuilder.replacePath(getUrlContext());
+       // uriBuilder = uriBuilder.replacePath(getUrlContext());
         return uriBuilder;
     }
 

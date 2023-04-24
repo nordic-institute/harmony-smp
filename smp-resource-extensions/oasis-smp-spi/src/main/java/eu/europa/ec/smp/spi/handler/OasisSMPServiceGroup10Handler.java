@@ -6,6 +6,7 @@ import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.exception.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.spi.api.SmpDataServiceApi;
 import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
+import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
@@ -46,7 +47,8 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
 
     final OasisSMP10ServiceGroupReader serviceGroupReader;
 
-    public OasisSMPServiceGroup10Handler(SmpDataServiceApi smpDataApi, SmpIdentifierServiceApi smpIdentifierApi) {
+    public OasisSMPServiceGroup10Handler(SmpDataServiceApi smpDataApi,
+                                         SmpIdentifierServiceApi smpIdentifierApi) {
         this.smpDataApi = smpDataApi;
         this.smpIdentifierApi = smpIdentifierApi;
         serviceGroupReader = new OasisSMP10ServiceGroupReader();
@@ -114,10 +116,15 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
 
     public URI buildSMPURLForParticipantAndDocumentIdentifier(ResourceIdentifier resourceIdentifier, ResourceIdentifier subresourceIdentifier) throws ResourceException {
         LOG.debug("Build SMP url for participant identifier: [{}] and document identifier [{}].", resourceIdentifier, subresourceIdentifier);
+
+
         String pathSegment = smpDataApi.getURIPathSegmentForSubresource(OasisSMPServiceMetadata10.RESOURCE_IDENTIFIER);
         String baseUrl = smpDataApi.getResourceUrl();
         String urlEncodedFormatParticipant = smpIdentifierApi.getURLEncodedResourceIdentifier(resourceIdentifier);
         String urlEncodedFormatDocument = smpIdentifierApi.getURLEncodedSubresourceIdentifier(subresourceIdentifier);
+
+        LOG.debug("Build SMP url from base path [{}], participant identifier: [{}] and document identifier [{}].",
+                baseUrl, urlEncodedFormatParticipant, urlEncodedFormatDocument);
         try {
             return new URIBuilder(baseUrl)
                     .appendPathSegments(urlEncodedFormatParticipant)

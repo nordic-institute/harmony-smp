@@ -35,7 +35,6 @@ insert into bdmsl_subdomain(subdomain_id, subdomain_name,dns_zone, description, 
 (1, 'domain-01.test.edelivery.local','test.edelivery.local','Domain for no trestriction ','^.*$','all','all', NOW(), NOW()),
 (2, 'domain-02.test.edelivery.local', 'test.edelivery.local','Domain for with party id restriction', '^((((0002|0007|0009|0037|0060|0088|0096|0097|0106|0135|0142|9901|9902|9904|9905|9906|9907|9908|9909|9910|9912|9913|9914|9915|9916|9917|9918|9919|9920|9921|9922|9923|9924|9925|9926|9927|9928|9929|9930|9931|9932|9933|9934|9935|9936|9937|9938|9939|9940|9941|9942|9943|9944|9945|9946|9947|9948|9949|9950|9951|9952|9953|9954|9955|9956|9957|0184):).*)|(\\*))$','all','all',  NOW(), NOW());
 
-
 INSERT INTO bdmsl_certificate_domain(truststore_alias, certificate, crl_url,  is_root_ca, fk_subdomain_id, created_on, last_updated_on, is_admin) VALUES
 ('CN=smp_domain_01', 'CN=smp_domain_01,O=digit,C=eu','',0, 1, NOW(), NOW(),1),
 ('CN=smp_domain_02','CN=smp_domain_02,O=digit,C=eu','',0, 2, NOW(), NOW(),1);

@@ -17,6 +17,8 @@ public class ServiceMetadataRO extends BaseRO {
     String documentIdentifierScheme;
     String smlSubdomain;
     String domainCode;
+
+    String subresourceDefUrlSegment;
     private int xmlContentStatus = EntityROStatus.PERSISTED.getStatusNumber();
     String xmlContent;
 
@@ -34,6 +36,14 @@ public class ServiceMetadataRO extends BaseRO {
 
     public void setDocumentIdentifier(String documentIdentifier) {
         this.documentIdentifier = documentIdentifier;
+    }
+
+    public String getSubresourceDefUrlSegment() {
+        return subresourceDefUrlSegment;
+    }
+
+    public void setSubresourceDefUrlSegment(String subresourceDefUrlSegment) {
+        this.subresourceDefUrlSegment = subresourceDefUrlSegment;
     }
 
     public String getDocumentIdentifierScheme() {

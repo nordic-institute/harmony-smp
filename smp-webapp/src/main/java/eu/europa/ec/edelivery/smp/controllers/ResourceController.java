@@ -171,8 +171,6 @@ public class ResourceController {
         }
     }
 
-
-
     protected ResourceResponse fromServletResponse(HttpServletResponse httpRes) {
         ResourceResponse resourceResponse = new ResourceResponse(httpRes);
         // try to open the output stream
