@@ -29,7 +29,7 @@
     (works only on linux for Windows update arguments in exec plugin below)
     mvn clean install -DusePreInstalledNpm -Dnpm.path=/opt/programs/node-v14.17.0-linux-x64/bin
     -->
-    <npm.path>${env.bamboo_CITNET_NODEJS_14_LINUX_PATH}</npm.path>
+    <npm.path>${env.bamboo_CITNET_NODEJS_16_LINUX_PATH}</npm.path>
   </properties>
 
 
