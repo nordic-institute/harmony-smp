@@ -16,6 +16,21 @@ td , th {
 }
 
 
+
+.smp-no-data-panel {
+  padding:2em;
+  margin:4em;
+  height: 100%;
+  display:flex;
+  flex-direction: row;
+  align-self: center;
+}
+
+.smp-no-data-panel > * {
+  align-self: center;
+}
+
+
 .mat-button, .mat-raised-button, .mat-icon-button {
   font-family: 'Open Sans', sans-serif !important;
   font-weight: bolder !important;

@@ -10,7 +10,6 @@ import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resour
 import {EditGroupService} from "../edit-group/edit-group.service";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceService} from "./edit-resource.service";
-import {group} from "@angular/animations";
 import {TableResult} from "../../common/model/table-result.model";
 
 
@@ -66,6 +65,7 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
       this.resourceList = [];
     }
   };
+
   get selectedResource(): ResourceRo {
     return this._selectedResource;
   };
@@ -74,7 +74,7 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
     this._selectedResource = resource;
   };
 
-  onResourceSelected(resource: ResourceRo){
+  onResourceSelected(resource: ResourceRo) {
     this.selectedResource = resource;
   }
 
@@ -117,7 +117,8 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
       return;
     }
 
-    this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,  this.filter, this.paginator.pageIndex, this.paginator.pageSize)
+    this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,
+      this.filter, this.paginator?.pageIndex, this.paginator?.pageSize)
       .subscribe((result: TableResult<ResourceRo>) => {
         console.log("got resources: " + JSON.stringify(result))
         this.updateResourceList(result.serviceEntities)
@@ -165,7 +166,7 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
     this.refreshResources();
   }
 
-  get disabledResourceFilter(): boolean{
+  get disabledResourceFilter(): boolean {
     return !this._selectedGroup;
   }
 

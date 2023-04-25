@@ -27,8 +27,6 @@ public class UserRO extends BaseRO {
     // operational UI data
     private boolean casAuthenticated = false;
     private String casUserDataUrl;
-
-
     private OffsetDateTime passwordExpireOn;
     private Integer sequentialLoginFailureCount;
     private OffsetDateTime lastFailedLoginAttempt;

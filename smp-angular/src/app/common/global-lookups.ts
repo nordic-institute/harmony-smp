@@ -22,9 +22,6 @@ export class GlobalLookups {
 
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
-  certificateObserver: Observable<SearchTableResult>
-  trustedCertificateObserver: Observable<SearchTableResult>
-
   cachedDomainList: Array<any> = [];
   cachedServiceGroupOwnerList: Array<any> = [];
   cachedCertificateList: Array<any> = [];
@@ -66,7 +63,6 @@ export class GlobalLookups {
   }
 
   public refreshLookupsOnLogin() {
-    this.refreshCertificateLookup();
     this.refreshApplicationInfo();
     this.refreshApplicationConfiguration();
   }
@@ -161,31 +157,12 @@ export class GlobalLookups {
   }
 
   public clearCachedLookups() {
-    this.cachedCertificateList = [];
     this.cachedServiceGroupOwnerList = [];
     this.cachedApplicationConfig = null;
     this.cachedDomainList = [];
   }
 
-  public refreshCertificateLookup() {
-    // call only for authenticated users.
-    if (this.securityService.isCurrentUserSystemAdmin()) {
 
-      // init users
-      this.certificateObserver = this.http.get<SearchTableResult>(SmpConstants.REST_INTERNAL_KEYSTORE_DEPRECATED);
-      this.certificateObserver.subscribe((certs: SearchTableResult) => {
-        this.cachedCertificateList = certs.serviceEntities.map(serviceEntity => {
-          return {...serviceEntity}
-        });
-        //update alias list
-        this.cachedCertificateAliasList = this.cachedCertificateList.map(cert => cert.alias);
-      }, (error: any) => {
-        // check if unauthorized
-        // just console try latter
-        console.log("Error occurred while loading user owners lookup [" + error + "]");
-      });
-    }
-  }
 
 
 }

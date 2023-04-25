@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild,} from '@angular/core';
 import {DomainRo} from "../../../common/model/domain-ro.model";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AdminDomainService} from "../admin-domain.service";
@@ -102,6 +102,9 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['visibility'].setValue(this._domain.visibility);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue(this._domain.defaultResourceTypeIdentifier);
       this.domainForm.enable();
+      if (!!value?.domainId) {
+        this.domainForm.controls['domainCode'].disable();
+      }
     } else {
       this.domainForm.controls['domainCode'].setValue("");
       this.domainForm.controls['signatureKeyAlias'].setValue("");

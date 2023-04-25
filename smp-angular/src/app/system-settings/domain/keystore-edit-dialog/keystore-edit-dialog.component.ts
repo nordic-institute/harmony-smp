@@ -83,7 +83,7 @@ export class KeystoreEditDialogComponent implements AfterViewChecked {
             this.alertService.exception("Error occurred while deleting certificate:" + alias, res.errorMessage, false);
           } else {
             this.alertService.success("Certificate " + alias + " deleted!");
-            this.lookups.refreshCertificateLookup();
+
 
           }
         } else {
