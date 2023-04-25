@@ -24,7 +24,7 @@
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
-    <artifactId>smp-spi-example</artifactId>
+    <artifactId>smp-spi-payload-validation-example</artifactId>
     <name>smp-spi-example</name>
     <description>Example of SMP's SPI Payload validation.</description>
     <dependencies>
