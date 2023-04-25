@@ -1,6 +1,6 @@
 {
   "name": "smp-builders",
-  "version": "5.0",
+  "version": "5",
   "license": "EUPL 1.2",
   "angular-cli": {},
   "scripts": {
