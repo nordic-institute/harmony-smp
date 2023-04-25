@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
@@ -78,12 +77,12 @@ public class UserController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @GetMapping(path = "/{user-id}/search", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public List<SearchUserRO> lookupUsers(@PathVariable("user-id") String userId,
-                              @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter ) {
+                                          @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
 
         //  return first 10 results
-        return  uiUserService.searchUsers(0, 10, filter).getServiceEntities();
+        return uiUserService.searchUsers(0, 10, filter).getServiceEntities();
     }
 
     /**
@@ -141,7 +140,7 @@ public class UserController {
         List<CredentialRO> credentialROList = uiUserService.getUserCredentials(entityId,
                 CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
 
-        return credentialROList.isEmpty()?null:credentialROList.get(0);
+        return credentialROList.isEmpty() ? null : credentialROList.get(0);
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
@@ -157,7 +156,7 @@ public class UserController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @DeleteMapping(path = "/{user-id}/access-token-credential/{credential-id}")
     public CredentialRO deleteAccessTokenCredentials(@PathVariable("user-id") String encUserId,
-                                                        @PathVariable("credential-id") String encAccessTokenId) {
+                                                     @PathVariable("credential-id") String encAccessTokenId) {
         LOG.debug("Delete User [{}] access token credential: [{}]", encUserId, encAccessTokenId);
         Long userId = decryptEntityId(encUserId);
         Long accessTokenId = decryptEntityId(encAccessTokenId);
@@ -187,8 +186,8 @@ public class UserController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @PutMapping(path = "/{user-id}/access-token-credential/{credential-id}")
     public AccessTokenRO generateAccessTokenCredential(@PathVariable("user-id") String encUserId,
-                                                     @PathVariable("credential-id") String encAccessTokenId,
-                                                     @RequestBody CredentialRO credentialRO) {
+                                                       @PathVariable("credential-id") String encAccessTokenId,
+                                                       @RequestBody CredentialRO credentialRO) {
         LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encAccessTokenId);
         Long userId = decryptEntityId(encUserId);
         return uiUserService.createAccessTokenForUser(userId, credentialRO);
@@ -200,14 +199,14 @@ public class UserController {
         LOG.debug("get User credential status: [{}]", encUserId);
         Long userId = decryptEntityId(encUserId);
         // Update the user and mark the password as changed at this very instant of time
-        return  uiUserService.getUserCredentials(userId,
+        return uiUserService.getUserCredentials(userId,
                 CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @DeleteMapping(path = "/{user-id}/certificate-credential/{credential-id}")
     public CredentialRO deleteCertificateCredential(@PathVariable("user-id") String encUserId,
-                                                     @PathVariable("credential-id") String encCredentialId) {
+                                                    @PathVariable("credential-id") String encCredentialId) {
         LOG.debug("Delete User [{}] access certificate credential: [{}]", encUserId, encCredentialId);
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
@@ -219,8 +218,8 @@ public class UserController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @PostMapping(path = "/{user-id}/certificate-credential/{credential-id}")
     public CredentialRO updateCertificateCredential(@PathVariable("user-id") String encUserId,
-                                                     @PathVariable("credential-id") String encCredentialId,
-                                                     @RequestBody CredentialRO credentialRO) {
+                                                    @PathVariable("credential-id") String encCredentialId,
+                                                    @RequestBody CredentialRO credentialRO) {
         LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encCredentialId);
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
@@ -235,7 +234,7 @@ public class UserController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @GetMapping(path = "/{user-id}/certificate-credential/{credential-id}")
     public CredentialRO getCertificateCredential(@PathVariable("user-id") String encUserId,
-                                                     @PathVariable("credential-id") String encCredentialId) {
+                                                 @PathVariable("credential-id") String encCredentialId) {
         LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encCredentialId);
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
@@ -245,8 +244,8 @@ public class UserController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @PutMapping(path = "/{user-id}/certificate-credential/{credential-id}")
     public CredentialRO storeCertificateCredential(@PathVariable("user-id") String encUserId,
-                                                       @PathVariable("credential-id") String credentialId,
-                                                       @RequestBody CredentialRO credentialRO) {
+                                                   @PathVariable("credential-id") String credentialId,
+                                                   @RequestBody CredentialRO credentialRO) {
         LOG.debug("Store credential for user [{}] certificate  credential: [{}]", encUserId, credentialId);
         Long userId = decryptEntityId(encUserId);
         return uiUserService.storeCertificateCredentialForUser(userId, credentialRO);
@@ -255,7 +254,7 @@ public class UserController {
 
     protected NavigationTreeNodeRO createPublicNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("search-tools", "Search", "search", "public");
-        node.addChild(new NavigationTreeNodeRO("search-resources", "Resources", "find_in_page", "search-resource","Search registered resources"));
+        node.addChild(new NavigationTreeNodeRO("search-resources", "Resources", "find_in_page", "search-resource", "Search registered resources"));
         //node.addChild(new NavigationTreeNodeRO("search-lookup", "DNS lookup", "dns", "dns-lookup" , "DNS lookup tools"));
         return node;
     }
@@ -265,7 +264,7 @@ public class UserController {
         node.addChild(new NavigationTreeNodeRO("user-data-profile", "Profile", "account_circle", "user-profile"));
         node.addChild(new NavigationTreeNodeRO("user-data-access-token", "Access tokens", "key", "user-access-token"));
         node.addChild(new NavigationTreeNodeRO("user-data-certificates", "Certificates", "article", "user-certificate"));
-  //      node.addChild(new NavigationTreeNodeRO("user-data-membership", "Membership", "person", "user-membership"));
+        //      node.addChild(new NavigationTreeNodeRO("user-data-membership", "Membership", "person", "user-membership"));
         return node;
     }
 
@@ -277,28 +276,16 @@ public class UserController {
         node.addChild(new NavigationTreeNodeRO("system-admin-truststore", "Truststore", "article", "truststore"));
         node.addChild(new NavigationTreeNodeRO("system-admin-extension", "Extensions", "extension", "extension"));
         node.addChild(new NavigationTreeNodeRO("system-admin-properties", "Properties", "settings", "properties"));
-       // node.addChild(new NavigationTreeNodeRO("system-admin-authentication", "Authentication", "shield", "authentication"));
+        // node.addChild(new NavigationTreeNodeRO("system-admin-authentication", "Authentication", "shield", "authentication"));
         node.addChild(new NavigationTreeNodeRO("system-admin-alert", "Alerts", "notifications", "alert"));
         return node;
     }
 
     protected NavigationTreeNodeRO createEditNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("edit", "Administration", "tune", "edit");
-        // is domain admin
-        if (authorizationService.isAnyDomainAdministrator()) {
-            node.addChild(new NavigationTreeNodeRO("edit-domain", "Edit domains", "account_circle", "edit-domain"));
-        }
-        if (authorizationService.isAnyDomainAdministrator()
-                || authorizationService.isAnyGroupAdministrator()) {
-            // is group admin
-            node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "group", "edit-group"));
-        }
-        if (authorizationService.isAnyDomainAdministrator()
-                || authorizationService.isAnyGroupAdministrator()
-                || authorizationService.isAnyResourceAdministrator()) {
-            // is resource admin
-            node.addChild(new NavigationTreeNodeRO("edit-resource", "Edit resources", "article", "edit-resource"));
-        }
+        node.addChild(new NavigationTreeNodeRO("edit-domain", "Edit domains", "account_circle", "edit-domain"));
+        node.addChild(new NavigationTreeNodeRO("edit-group", "Edit groups", "group", "edit-group"));
+        node.addChild(new NavigationTreeNodeRO("edit-resource", "Edit resources", "article", "edit-resource"));
         return node;
     }
 }

@@ -13,6 +13,7 @@
           <smp-label icon="domain" label="Domain data"></smp-label>
         </ng-template>
         <domain-panel #domainPanelComponent
+                      [domainList]="domainList"
                       [domain]="selected"
                       [keystoreCertificates]="keystoreCertificates"
                       [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
@@ -20,7 +21,7 @@
                       (onDiscardNew)="onDiscardNew()"
         ></domain-panel>
       </mat-tab>
-      <mat-tab>
+      <mat-tab *ngIf="selected?.domainId;">
         <ng-template mat-tab-label>
           <smp-label icon="extension" label="Resource Types"></smp-label>
         </ng-template>
@@ -30,7 +31,7 @@
                                     (onSaveResourceTypesEvent)="onSaveResourceTypesEvent($event)"
         ></domain-resource-type-panel>
       </mat-tab>
-      <mat-tab label="Members" >
+      <mat-tab label="Members" *ngIf="selected?.domainId;">
         <ng-template mat-tab-label>
           <smp-label icon="groups" label="Members"></smp-label>
         </ng-template>
@@ -39,7 +40,7 @@
                              [domain]="selected"
         ></domain-member-panel>
       </mat-tab>
-      <mat-tab>
+      <mat-tab *ngIf="selected?.domainId;">
         <ng-template mat-tab-label>
           <smp-label icon="dns" label="SML integration"></smp-label>
         </ng-template>
@@ -102,6 +103,6 @@
   <mat-paginator class="mat-elevation-z2" id="domain-paginator"
                  [hidePageSize]="true"
                  [showFirstLastButtons]="true"
-                 [pageSize]="5" aria-label="Select page"></mat-paginator>
+                 [pageSize]="10" aria-label="Select page"></mat-paginator>
 
 </ng-template>

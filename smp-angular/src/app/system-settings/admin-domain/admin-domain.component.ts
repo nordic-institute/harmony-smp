@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
@@ -20,6 +20,7 @@ import {DomainPanelComponent} from "./domain-panel/domain-panel.component";
 import {DomainResourceTypePanelComponent} from "./domain-resource-type-panel/domain-resource-type-panel.component";
 import {DomainSmlIntegrationPanelComponent} from "./domain-sml-panel/domain-sml-integration-panel.component";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -27,8 +28,8 @@ import {MemberTypeEnum} from "../../common/enums/member-type.enum";
   templateUrl: './admin-domain.component.html',
   styleUrls: ['./admin-domain.component.css']
 })
-export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
-  readonly membershipType:MemberTypeEnum = MemberTypeEnum.DOMAIN;
+export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, BeforeLeaveGuard {
+  readonly membershipType: MemberTypeEnum = MemberTypeEnum.DOMAIN;
   displayedColumns: string[] = ['domainCode'];
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected?: DomainRo;
@@ -38,6 +39,9 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
 
   currenTabIndex: number = 0;
   handleTabClick = null;
+
+  private domainUpdatedEventSub: Subscription = Subscription.EMPTY;
+  private domainEntryUpdatedEventSub: Subscription = Subscription.EMPTY;
 
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -56,15 +60,16 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
 
+    this.domainUpdatedEventSub = domainService.onDomainUpdatedEvent().subscribe(updateDomainList => {
+        this.updateDomainList(updateDomainList);
+      }
+    );
 
-    domainService.onDomainUpdatedEvent().subscribe(updatedTruststore => {
-        this.updateDomainList(updatedTruststore);
+    this.domainEntryUpdatedEventSub = domainService.onDomainEntryUpdatedEvent().subscribe(updateEntry => {
+        this.updateDomain(updateEntry);
       }
     );
-    domainService.onDomainEntryUpdatedEvent().subscribe(updatedCertificate => {
-        this.updateDomain(updatedCertificate);
-      }
-    );
+
     keystoreService.onKeystoreUpdatedEvent().subscribe(keystoreCertificates => {
         this.keystoreCertificates = keystoreCertificates;
       }
@@ -77,6 +82,11 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
     extensionService.getExtensions();
     domainService.getDomains();
     keystoreService.getKeystoreData();
+  }
+
+  ngOnDestroy(): void {
+    this.domainUpdatedEventSub.unsubscribe();
+    this.domainEntryUpdatedEventSub.unsubscribe();
   }
 
   updateExtensions(extensions: ExtensionRo[]) {
@@ -124,7 +134,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
             this.resetCurrentTabData()
             this.handleTabClick.apply(this.domainTabs, [tab, header, newTabIndex]);
             this.currenTabIndex = newTabIndex;
-            if (this.isNewDomain()){
+            if (this.isNewDomain()) {
               this.selected = null;
             }
           }
@@ -142,7 +152,6 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
   }
 
   updateDomain(domain: DomainRo) {
-
     if (domain == null) {
       return;
     }
@@ -156,8 +165,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
       let itemIndex = this.domainList.findIndex(item => item.domainId == domain.domainId);
       this.domainList[itemIndex] = domain;
       this.selected = domain;
-    }
-    else if (domain.status == EntityStatus.REMOVED) {
+    } else if (domain.status == EntityStatus.REMOVED) {
       this.alertService.success("Domain: [" + domain.domainCode + "]  is removed!");
       this.selected = null;
       this.domainList = this.domainList.filter(item => item.domainCode !== domain.domainCode)
@@ -193,12 +201,13 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
 
   onCreateDomainClicked() {
     this.selected = this.newDomain();
-    if ( !this.handleTabClick) {
+    if (!this.handleTabClick) {
       this.registerTabClick();
     }
-    this.domainTabs.selectedIndex = 0;
-    this.domainPanelComponent.setFocus();
-
+    if (!!this.domainTabs) {
+      this.domainTabs.selectedIndex = 0;
+      this.domainPanelComponent.setFocus();
+    }
   }
 
   public newDomain(): DomainRo {
@@ -216,7 +225,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
     }
   }
 
-  onSaveEvent(domain: DomainRo){
+  onSaveEvent(domain: DomainRo) {
     if (this.isNewDomain()) {
       this.domainService.createDomain(domain);
     } else {
@@ -224,15 +233,15 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
     }
   }
 
-  onDiscardNew(){
+  onDiscardNew() {
     this.selected = null;
   }
 
-  onSaveResourceTypesEvent(domain: DomainRo){
+  onSaveResourceTypesEvent(domain: DomainRo) {
     this.domainService.updateDomainResourceTypes(domain);
   }
 
-  onSaveSmlIntegrationDataEvent(domain: DomainRo){
+  onSaveSmlIntegrationDataEvent(domain: DomainRo) {
     this.domainService.updateDomainSMLIntegrationData(domain);
   }
 
@@ -240,7 +249,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
   onDeleteSelectedDomainClicked() {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete domain " + this.selected.domainCode + " from DomiSMP",
+        title: "Delete domain [" + this.selected.domainCode + "] from DomiSMP",
         description: "Action will permanently delete domain! Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
@@ -251,7 +260,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
   }
 
   deleteDomain(domain: DomainRo) {
-      this.domainService.deleteDomains(domain);
+    this.domainService.deleteDomains(domain);
   }
 
   public domainSelected(domainSelected: DomainRo) {
@@ -281,7 +290,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
 
 
   isDirty(): boolean {
-    return  this.isCurrentTabDirty();
+    return this.isCurrentTabDirty();
   }
 
   isCurrentTabDirty(): boolean {
@@ -297,8 +306,8 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
     return false;
   }
 
-  isNewDomain():boolean{
-    return this.selected!=null && !this.selected.domainId
+  isNewDomain(): boolean {
+    return this.selected != null && !this.selected.domainId
   }
 
 
@@ -317,7 +326,7 @@ export class AdminDomainComponent implements OnInit, AfterViewInit, BeforeLeaveG
     }
   }
 
-  get canNotDelete():boolean{
+  get canNotDelete(): boolean {
     return !this.selected || this.domainSmlIntegrationPanelComponent?.isDomainRegistered || this.isNewDomain()
   }
 

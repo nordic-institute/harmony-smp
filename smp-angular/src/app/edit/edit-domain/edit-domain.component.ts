@@ -35,7 +35,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   constructor(private domainService: EditDomainService,
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
-
+    this.refreshDomains();
   }
 
 
@@ -54,7 +54,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
     // MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
     // _handleClick handler
     this.registerTabClick();
-    this.refreshDomains();
   }
 
 
@@ -68,6 +67,10 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   }
 
   registerTabClick(): void {
+    if (!this.domainTabs) {
+      // tabs are not yet initialized
+      return;
+    }
     // Get the handler reference
     this.handleTabClick = this.domainTabs._handleClick;
 

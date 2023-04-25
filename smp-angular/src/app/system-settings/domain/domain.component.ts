@@ -123,10 +123,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
 
   ngAfterViewInit() {
     this.initColumns();
-    // if system admin refresh certificate list!
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      this.lookups.refreshCertificateLookup();
-    }
+
   }
 
   certificateAliasExists(alias: string): boolean {
