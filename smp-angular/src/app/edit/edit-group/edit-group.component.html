@@ -32,7 +32,7 @@
     <mat-select placeholder="Select domain"
                 matTooltip="Select domain."
                 id="domain_id"
-                [value]="selectedDomain"
+                [(value)]="selectedDomain"
                 required>
       <mat-option *ngFor="let domain of domainList"
                   [value]="domain"
