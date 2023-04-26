@@ -193,6 +193,7 @@ validateAndPrepareArtefacts() {
   else
     cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-payload-validation-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-payload-validation-example.jar
   fi
+}
 
 
 # -----------------------------------------------------------------------------
