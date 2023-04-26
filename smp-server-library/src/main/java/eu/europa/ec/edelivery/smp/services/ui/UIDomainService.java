@@ -4,16 +4,17 @@ import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
+import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
+import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.ResourceDefinitionRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -34,18 +35,31 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
 
     private DomainDao domainDao;
+    private DomainMemberDao domainMemberDao;
     private ResourceDao resourceDao;
     private ResourceDefDao resourceDefDao;
     private DomainResourceDefDao domainResourceDefDao;
     private ConversionService conversionService;
+    private GroupDao groupDao;
+    private GroupMemberDao groupMemberDao;
 
 
-    public UIDomainService(ConversionService conversionService, DomainDao domainDao, ResourceDao resourceDao, ResourceDefDao resourceDefDao, DomainResourceDefDao domainResourceDefDao) {
+    public UIDomainService(ConversionService conversionService,
+                           DomainDao domainDao,
+                           DomainMemberDao domainMemberDao,
+                           ResourceDao resourceDao,
+                           ResourceDefDao resourceDefDao,
+                           DomainResourceDefDao domainResourceDefDao,
+                           GroupDao groupDao,
+                           GroupMemberDao groupMemberDao) {
         this.conversionService = conversionService;
         this.domainDao = domainDao;
         this.resourceDao = resourceDao;
         this.resourceDefDao = resourceDefDao;
         this.domainResourceDefDao = domainResourceDefDao;
+        this.domainMemberDao = domainMemberDao;
+        this.groupDao = groupDao;
+        this.groupMemberDao = groupMemberDao;
     }
 
     @Override
@@ -86,13 +100,14 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         domain.setDomainCode(data.getDomainCode());
         domain.setDefaultResourceTypeIdentifier(data.getDefaultResourceTypeIdentifier());
         domain.setSignatureKeyAlias(data.getSignatureKeyAlias());
-        domain.setVisibility(data.getVisibility() == null? VisibilityType.PUBLIC:data.getVisibility());
+        domain.setVisibility(data.getVisibility() == null ? VisibilityType.PUBLIC : data.getVisibility());
         domainDao.persistFlushDetach(domain);
     }
 
 
     /**
      * Update only basic domain data from DomainRO object. Ignore other
+     *
      * @param domainId
      * @param data
      * @return
@@ -116,8 +131,8 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         if (domain == null) {
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
         }
-        if (domain.isSmlRegistered() && !StringUtils.equals(data.getSmlSmpId(), domain.getSmlSmpId())){
-            String msg = "SMP-SML identifier must not change for registered domain ["+domain.getDomainCode()+"]!";
+        if (domain.isSmlRegistered() && !StringUtils.equals(data.getSmlSmpId(), domain.getSmlSmpId())) {
+            String msg = "SMP-SML identifier must not change for registered domain [" + domain.getDomainCode() + "]!";
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
         }
 
@@ -130,6 +145,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     @Transactional
     public void updateResourceDefDomainList(Long domainId, List<String> resourceDefIds) {
         DBDomain domain = domainDao.find(domainId);
+        LOG.info("add resources: [{}]", resourceDefIds);
         if (domain == null) {
             LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
@@ -155,14 +171,14 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
 
     @Transactional
-    public DomainRO getDomainData(Long domainId){
-        DBDomain domain =  domainDao.find(domainId);
+    public DomainRO getDomainData(Long domainId) {
+        DBDomain domain = domainDao.find(domainId);
         return conversionService.convert(domain, DomainRO.class);
     }
 
     @Transactional
-    public DomainRO getDomainDataByDomainCode(String domainCode){
-        DBDomain domain =  domainDao.getDomainByCode(domainCode).orElse(null);
+    public DomainRO getDomainDataByDomainCode(String domainCode) {
+        DBDomain domain = domainDao.getDomainByCode(domainCode).orElse(null);
         return conversionService.convert(domain, DomainRO.class);
     }
 
@@ -196,10 +212,30 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
             throw new BadRequestException(ErrorBusinessCode.INVALID_INPUT_DATA, "Can not delete domain because it has resources [" + count + "]! Delete resources first!");
         }
 
+        // if there are no resources  / just "unpin" the members and the groups
+        List<DBDomainMember> memberList = domainMemberDao.getDomainMembers(domain.getId(), -1, -1, null);
+        for (DBDomainMember member : memberList) {
+            domainMemberDao.remove(member);
+        }
+        // delete all groups
+        List<DBGroup> groupList = domain.getDomainGroups();
+        for (DBGroup group : groupList) {
+            // all groups should be without resources see the check above:  getResourceCountForDomain
+            deleteDomainGroup(group);
+        }
+        // finally remove the domain
         domainDao.remove(domain);
         DomainRO domainRO = conversionService.convert(domain, DomainRO.class);
         domainRO.setStatus(EntityROStatus.REMOVE.getStatusNumber());
         return domainRO;
+    }
+
+    private void deleteDomainGroup(DBGroup group) {
+        List<DBGroupMember> memberList = groupMemberDao.getGroupMembers(group.getId(), -1, -1, null);
+        for (DBGroupMember member : memberList) {
+            groupMemberDao.remove(member);
+        }
+        groupDao.remove(group);
     }
 
 

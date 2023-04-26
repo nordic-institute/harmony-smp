@@ -68,7 +68,7 @@ if [[ -z "${SMP_VERSION}" ]]; then
 
 fi
 
-SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-example/target/"
+SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-payload-validation-example/target/"
 
 DIRNAME=$(dirname "$0")
 cd "$DIRNAME"
@@ -189,11 +189,11 @@ validateAndPrepareArtefacts() {
   if [[ ! -f "${SMP_PLUGIN_EXAMPLE}" ]]; then
     echo "SMP SPI plugin  '${SMP_PLUGIN_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
     ls -ltr ${SMP_ARTEFACTS}
-    cp "${SMP_ARTEFACTS}/smp-spi-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
+    cp "${SMP_ARTEFACTS}/smp-spi-payload-validation-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-payload-validation-example.jar
   else
-    cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
+    cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-payload-validation-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-payload-validation-example.jar
   fi
-}
+
 
 # -----------------------------------------------------------------------------
 # build docker images

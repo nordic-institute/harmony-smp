@@ -5,7 +5,8 @@
     <h3>SML integration data</h3>
     <div class="panel" *ngIf="isDomainRegistered"><p style="font-weight: bold">Domain is registered to SML!</p>The Registered domain can not be deleted or changed the SMP SML identifier</div>
     <mat-form-field style="width:100%">
-      <input matInput placeholder="SML domain"
+      <mat-label>SML domain</mat-label>
+      <input matInput
              matTooltip="The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: has informative value only, SML DNS zone used for publishing is based on SML configuration."
              name="smlSubdomain"
              id="smldomain_id"
@@ -41,7 +42,7 @@
     </mat-form-field>
     <mat-form-field style="width:100%">
       <mat-label>SML SMP identifier</mat-label>
-      <input matInput placeholder="SML SMP identifier" name="smlSmpId"
+      <input matInput name="smlSmpId"
              id="smlSMPId_id" #smlSMPId
              formControlName="smlSmpId"
              (keydown)="onFieldKeyPressed('smlSmpId', 'smlsmpidTimeout')"
@@ -71,7 +72,6 @@
                     matTooltip="Client Certificate used for SML authentication. The SML Client-Cert http Header is also generated from the certificate">
       <mat-label>SML Client Certificate Alias</mat-label>
       <mat-select
-        placeholder="SML ClientCert Alias"
         formControlName="smlClientKeyAlias"
         id="smlClientKeyAlias_id">
         <mat-option [value]="''">Choose certificate for signing soap response</mat-option>

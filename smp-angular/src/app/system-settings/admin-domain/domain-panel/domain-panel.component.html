@@ -4,7 +4,7 @@
     <div class="panel" *ngIf="_domain!=null &&  !_domain.domainId"><p style="font-weight: bold">Enter data and click 'Save' to create new domain</div>
     <mat-form-field style="width:100%">
       <mat-label>Domain Code</mat-label>
-      <input matInput placeholder="Domain Code"
+      <input matInput
              id="domainCode_id" #domainCode
              matTooltip="The SMP's domain code. The code must be unique and is used in HTTP header 'Domain' or URL path sequence when retrieving/creating the resource using the webservice API"
              formControlName="domainCode" maxlength="63"
@@ -30,11 +30,10 @@
     </mat-form-field>
     <mat-form-field style="width:100%">
       <mat-label>Response signature Certificate (Signature CertAlias)</mat-label>
-      <mat-select placeholder="Response signature Certificate (Signature CertAlias)"
-                  formControlName="signatureKeyAlias"
+      <mat-select formControlName="signatureKeyAlias"
                   matTooltip="Certificate is used for signing REST responses for the domain."
                   id="signatureKeyAlias_id">
-        <mat-option [value]="''" disabled></mat-option>
+        <mat-option [value]="''" ></mat-option>
         <mat-option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
           {{cert.alias}} ({{cert.certificateId}})
         </mat-option>
@@ -45,12 +44,10 @@
 
     <mat-form-field style="width:100%">
       <mat-label>Visibility of the domain</mat-label>
-      <mat-select placeholder="Visibility of the domain"
-                  formControlName="visibility"
+      <mat-select  formControlName="visibility"
                   name="visibility"
                   matTooltip="Visibility of the domain."
                   id="domainVisibility_id">
-        <mat-option [value]="''" diabled>Choose visibility of the domain</mat-option>
         <mat-option *ngFor="let visibility of domainVisibilityOptions"
                     [value]="visibility.value">
           {{visibility.key}}
@@ -63,8 +60,7 @@
 
   <mat-form-field *ngIf="domainResourceTypes?.length" style="width:100%">
     <mat-label>Default resource type for the domain</mat-label>
-    <mat-select placeholder="Default resource type for the domain"
-                formControlName="defaultResourceTypeIdentifier"
+    <mat-select formControlName="defaultResourceTypeIdentifier"
                 matTooltip="Default resource type for the domain."
                 id="domainDefaultResourceType_id">
       <mat-option [value]="''" disabled></mat-option>
