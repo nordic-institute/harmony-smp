@@ -161,7 +161,8 @@ export class CredentialDialogComponent {
 
     this.clearAlert();
     this.userService.generateUserAccessTokenCredential(this.initCredential).subscribe((response: AccessTokenRo) => {
-      this.showSuccessMessage("Token with id: [" + response.identifier + "] and value: [" + response.value + "] was generated!")
+      this.showSuccessMessage("Token with ID: \"" + response.identifier + "\" and value: \"" + response.value + "\" was generated!" +
+        "<br \><br \>Copy the access token's value and save it in a safe space. <br \><b>You won't be able to see your token's value once you click Close.</b>")
       this.userService.notifyAccessTokenUpdated(response.credential);
       this.setDisabled(true);
     }, (err) => {

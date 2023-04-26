@@ -3,19 +3,17 @@
     <data-panel title="Account"
                 [showTitle]="showDataPanelTitles"
                 text="Account data">
-      <div class="panel" *ngIf="isNewUser"><p style="font-weight: bold">Enter user and click 'Save' to create new user
-      </div>
+      <div class="panel" *ngIf="isNewUser"><p style="font-weight: bold">Please fill user details and click "Save" to create a new user</div>
       <mat-form-field class="user-profile-pane-field">
         <mat-label>Username</mat-label>
-        <input id="username_id" matInput placeholder="Username" formControlName="username" #username
+        <input id="username_id" matInput formControlName="username" #username
                maxlength="255" required
                auto-focus-directive>
       </mat-form-field>
       <div style="display:flex; flex-direction: row;align-items: center">
         <mat-form-field style="width:100%" class="user-profile-pane-field">
           <mat-label>Application role</mat-label>
-          <mat-select placeholder="Application role for the user"
-                      formControlName="role"
+          <mat-select formControlName="role"
                       matTooltip="application role for the user."
                       id="role_id" required>
             <mat-option *ngFor="let role of applicationRoles"
@@ -23,7 +21,7 @@
               {{role.key}}
             </mat-option>
           </mat-select>
-          <mat-hint> Choose member role</mat-hint>
+          <mat-hint *ngIf="!isUserDataLoggedInUserData"> Choose member role</mat-hint>
         </mat-form-field>
 
         <mat-checkbox
@@ -38,7 +36,7 @@
                 text="User profile data and settings">
       <mat-form-field class="user-profile-pane-field">
         <mat-label>E-Mail Address</mat-label>
-        <input id="emailAddress_id" matInput placeholder="EMail Address" formControlName="emailAddress"
+        <input id="emailAddress_id" matInput formControlName="emailAddress"
                maxlength="127">
         <div
           *ngIf="userForm.controls['emailAddress'].hasError('pattern') && userForm.controls['emailAddress'].touched"
@@ -47,7 +45,7 @@
       </mat-form-field>
       <mat-form-field class="user-profile-pane-field">
         <mat-label>Full name (name and last name)</mat-label>
-        <input id="fullName_id" matInput placeholder="Full name" formControlName="fullName"
+        <input id="fullName_id" matInput formControlName="fullName"
                maxlength="127">
       </mat-form-field>
 
