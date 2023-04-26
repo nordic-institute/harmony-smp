@@ -124,8 +124,7 @@ public class SMLIntegrationService {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
         if (!isSMLIntegrationEnabled()) {
             String msg = "SML integration is not enabled!";
-            LOG.businessError(BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode(), msg);
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, msg);
+            LOG.businessWarn(BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode(), msg);
         }
 
         // unregister only  registered participants
