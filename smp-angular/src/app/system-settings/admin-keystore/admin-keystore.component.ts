@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
@@ -10,6 +10,7 @@ import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {KeystoreImportDialogComponent} from "./keystore-import-dialog/keystore-import-dialog.component";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -17,11 +18,14 @@ import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
   templateUrl: './admin-keystore.component.html',
   styleUrls: ['./admin-keystore.component.css']
 })
-export class AdminKeystoreComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
+export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['alias'];
   dataSource: MatTableDataSource<CertificateRo> = new MatTableDataSource();
   keystoreCertificates: CertificateRo[];
   selected?: CertificateRo;
+
+  private updateKeystoreCertificatesSub: Subscription = Subscription.EMPTY;
+  private updateKeystoreEntriesSub: Subscription = Subscription.EMPTY;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -30,12 +34,12 @@ export class AdminKeystoreComponent implements OnInit, AfterViewInit, BeforeLeav
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
 
-    keystoreService.onKeystoreUpdatedEvent().subscribe(keystoreCertificates => {
+    this.updateKeystoreCertificatesSub = keystoreService.onKeystoreUpdatedEvent().subscribe(keystoreCertificates => {
         this.updateKeystoreCertificates(keystoreCertificates);
       }
     );
 
-    keystoreService.onKeystoreEntryUpdatedEvent().subscribe(updatedCertificate => {
+    this.updateKeystoreEntriesSub = keystoreService.onKeystoreEntryUpdatedEvent().subscribe(updatedCertificate => {
         this.updateKeystoreEntries(updatedCertificate);
       }
     );
@@ -48,6 +52,10 @@ export class AdminKeystoreComponent implements OnInit, AfterViewInit, BeforeLeav
       (data: CertificateRo, filter: string) => {
         return !filter || -1 != data.alias.toLowerCase().indexOf(filter.trim().toLowerCase())
       };
+  }
+  ngOnDestroy(): void {
+    this.updateKeystoreCertificatesSub.unsubscribe();
+    this.updateKeystoreEntriesSub.unsubscribe();
   }
 
   ngAfterViewInit() {
