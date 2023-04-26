@@ -17,7 +17,6 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
   dateFormat: string = 'yyyy-MM-dd'
 
   _credential: CredentialRo;
-
   credentialForm: FormGroup;
 
 

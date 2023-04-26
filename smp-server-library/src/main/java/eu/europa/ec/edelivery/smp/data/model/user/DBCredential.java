@@ -26,7 +26,6 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-
 @Entity
 @Audited
 @Table(name = "SMP_CREDENTIAL",
@@ -39,7 +38,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         @NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
                 "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
         @NamedQuery(name = QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
-                "WHERE c.user.id = :user_id and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
+                "WHERE c.user.id = :user_id and c.credentialType = :credential_type and c.credentialTarget = :credential_target order by c.id"),
 
 
         // case-insensitive search
