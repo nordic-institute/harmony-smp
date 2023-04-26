@@ -57,7 +57,7 @@
 <ng-template #searchDomainPanel>
   <mat-form-field id="domain-filter">
     <mat-label>Filter Domain by domain code</mat-label>
-    <input matInput (keyup)="applyDomainFilter($event)" placeholder="Domain code" #inputDomainFilter>
+    <input matInput (keyup)="applyDomainFilter($event)"  #inputDomainFilter>
   </mat-form-field>
 
   <mat-toolbar class="mat-elevation-z2">
