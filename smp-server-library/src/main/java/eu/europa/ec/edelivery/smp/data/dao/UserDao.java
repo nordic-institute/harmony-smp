@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -200,13 +201,14 @@ public class UserDao extends BaseDao<DBUser> {
             throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, username);
         }
     }
-
+/*
     public List<DBUser> getBeforePasswordExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
         OffsetDateTime expireDate = OffsetDateTime.now();
         OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
         OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
 
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforePasswordExpireAlerts", DBUser.class);
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BEFORE_PASSWORD_EXPIRE, DBUser.class);
+        query.setParameter(PARAM_CREDENTIAL_TYPE, CredentialType.USERNAME_PASSWORD );
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
@@ -220,7 +222,8 @@ public class UserDao extends BaseDao<DBUser> {
         OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
         OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
 
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForPasswordExpiredAlerts", DBUser.class);
+        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_WITH_PASSWORD_EXPIRED, DBUser.class);
+        query.setParameter(PARAM_CREDENTIAL_TYPE, CredentialType.USERNAME_PASSWORD );
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
@@ -281,7 +284,7 @@ public class UserDao extends BaseDao<DBUser> {
         query.setMaxResults(maxAlertsInBatch);
         return query.getResultList();
     }
-
+*/
     /**
      * Validation report for users which owns service group
      *
@@ -293,28 +296,6 @@ public class UserDao extends BaseDao<DBUser> {
                 DBUserDeleteValidation.class);
         query.setParameter("idList", userIds);
         return query.getResultList();
-    }
-
-    @Transactional
-    public void updateAlertSentForUserCredentials(Long userId, CredentialType credentialType, OffsetDateTime dateTime) {
-        DBUser user = find(userId);
-        /*
-        switch (credentialType) {
-            case USERNAME_PASSWORD:
-                user.setPasswordExpireAlertOn(dateTime);
-                break;
-            case ACCESS_TOKEN:
-                user.setAccessTokenExpireAlertOn(dateTime);
-                break;
-            case CERTIFICATE:
-                / *if (user.getCertificate() == null) {
-                    LOG.warn("Can not set certificate alert sent date for user [{}] without certificate!", user.getUsername());
-                } else {
-                    user.getCertificate().setCertificateLastExpireAlertOn(dateTime);
-                }* /
-                break;
-        }
-        */
     }
 
     public List<DBUser> getFilteredUserList(int iPage, int iPageSize, String filter) {

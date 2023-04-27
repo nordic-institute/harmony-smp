@@ -109,7 +109,7 @@ public class CredentialService {
                 userDetails);
         try {
             if (!BCrypt.checkpw(userCredentialToken, credential.getValue())) {
-                LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username);
+                LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username, credential.getName(), credential.getCredentialType(), credential.getCredentialTarget());
                 loginAttemptFailedAndThrowError(credential, true, startTime);
             }
             credential.setSequentialLoginFailureCount(0);
@@ -335,7 +335,8 @@ public class CredentialService {
         mCredentialDao.update(credential);
         String username = credential.getUser().getUsername();
         LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username,
-                credential.getName(), credential.getCredentialType(),
+                credential.getName(),
+                credential.getCredentialType(),
                 credential.getCredentialTarget());
 
         boolean isUserSuspended = credential.getSequentialLoginFailureCount() >= getLoginMaxAttempts(credentialType);
@@ -344,11 +345,11 @@ public class CredentialService {
             // at notYetSuspended alert is sent for all settings AT_LOGON, WHEN_BLOCKED
             if (notYetSuspended ||
                     getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
-                alertService.alertCredentialsSuspended(credential.getUser(), credential.getCredentialType());
+                alertService.alertCredentialsSuspended(credential);
             }
         } else {
             // always invoke the method. The method handles the smp.alert.user.login_failure.enabled
-            alertService.alertCredentialVerificationFailed(credential.getUser(), credential.getCredentialType());
+            alertService.alertCredentialVerificationFailed(credential);
         }
         delayResponse(credentialType, startTime);
         if (isUserSuspended) {

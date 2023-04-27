@@ -43,9 +43,9 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USER
 @Repository
 public class CredentialDao extends BaseDao<DBCredential> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialDao.class);
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_START_DATE = "startAlertDate";
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_START_ALERT_SEND_DATE = "start_alert_send_date";
     private static final String QUERY_PARAM_ALERT_CREDENTIAL_END_DATE = "endAlertDate";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE = "expireDate";
+    private static final String QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE = "expire_test_date";
     private static final String QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE = "lastSendAlertDate";
 
 
@@ -188,86 +188,74 @@ public class CredentialDao extends BaseDao<DBCredential> {
         }
     }
 
+    /**
+     * Get users with credentials which are about to expire, and they were not yet notified in alertInterval period
+     * @param credentialType - the credential type to send alert
+     * @param beforeStartDays - days before password is expired and the alerting starts
+     * @param alertInterval - how many days must past since last alert before we can send next alert
+     * @param maxAlertsInBatch - max number of alerts we can process in on batch
+     * @return
+     */
+    public List<DBCredential> getCredentialsBeforeExpireForAlerts(CredentialType credentialType, int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
 
-    public List<DBUser> getBeforePasswordExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+        OffsetDateTime expireTestDate = OffsetDateTime.now();
+        OffsetDateTime startAlertSendDate = expireTestDate.plusDays(beforeStartDays);
+        OffsetDateTime lastSendAlertDate = expireTestDate.minusDays(alertInterval);
 
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforePasswordExpireAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
+        TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_BEFORE_EXPIRE, DBCredential.class);
+
+        query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType );
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_ALERT_SEND_DATE, startAlertSendDate);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE, expireTestDate);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
         query.setMaxResults(maxAlertsInBatch);
         return query.getResultList();
     }
-
-    public List<DBUser> getPasswordExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
+    /**
+     * Get users with passwords which are about to expire, and they were not yet notified in alertInterval period
+     * @param credentialType - the credential type to send alert
+     * @param alertPeriodDays - days before password is expired and the alerting starts
+     * @param alertInterval - how many days must past since last alert before we can send next alert
+     * @param maxAlertsInBatch - max number of alerts we can process in on batch
+     * @return
+     */
+    public List<DBCredential> getUsersWithExpiredCredentialsForAlerts(CredentialType credentialType, int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
         OffsetDateTime expireDate = OffsetDateTime.now();
-        // the alert period must be less then expire day
+        // the alert period must be less than expire day
         OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
         OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
 
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForPasswordExpiredAlerts", DBUser.class);
+        TypedQuery<DBCredential> query = memEManager.createNamedQuery(QUERY_CREDENTIAL_EXPIRED, DBCredential.class);
+        query.setParameter(PARAM_CREDENTIAL_TYPE, credentialType );
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
+        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_TEST_DATE, expireDate);
         query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
         query.setMaxResults(maxAlertsInBatch);
         return query.getResultList();
     }
 
-    public List<DBUser> getBeforeAccessTokenExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
-
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforeAccessTokenExpireAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
+    public List<DBCredential> getBeforePasswordExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
+        return getCredentialsBeforeExpireForAlerts(CredentialType.USERNAME_PASSWORD, beforeStartDays, alertInterval, maxAlertsInBatch);
     }
 
-    public List<DBUser> getAccessTokenExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        // the alert period must be less then expire day
-        OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
-
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForAccessTokenExpiredAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
+    public List<DBCredential> getPasswordExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
+        return getUsersWithExpiredCredentialsForAlerts(CredentialType.USERNAME_PASSWORD, alertPeriodDays, alertInterval, maxAlertsInBatch);
     }
 
-    public List<DBUser> getBeforeCertificateExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
-
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforeCertificateExpireAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
+    public List<DBCredential> getBeforeAccessTokenExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
+        return getCredentialsBeforeExpireForAlerts(CredentialType.ACCESS_TOKEN, beforeStartDays, alertInterval, maxAlertsInBatch);
     }
 
-    public List<DBUser> getCertificateExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        // the alert period must be less then expire day
-        OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
+    public List<DBCredential> getAccessTokenExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
+        return getUsersWithExpiredCredentialsForAlerts(CredentialType.ACCESS_TOKEN, alertPeriodDays, alertInterval, maxAlertsInBatch);
+    }
 
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForCertificateExpiredAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
+    public List<DBCredential> getBeforeCertificateExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
+        return getCredentialsBeforeExpireForAlerts(CredentialType.CERTIFICATE, beforeStartDays, alertInterval, maxAlertsInBatch);
+    }
+
+    public List<DBCredential> getCertificateExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
+        return getUsersWithExpiredCredentialsForAlerts(CredentialType.CERTIFICATE, alertPeriodDays, alertInterval, maxAlertsInBatch);
     }
 
     /**
@@ -316,25 +304,10 @@ public class CredentialDao extends BaseDao<DBCredential> {
     }
 
     @Transactional
-    public void updateAlertSentForUserCredentials(Long userId, CredentialType credentialType, OffsetDateTime dateTime) {
-        /*
-        DBUser user = find(userId);
-        switch (credentialType) {
-            case USERNAME_PASSWORD:
-                user.setPasswordExpireAlertOn(dateTime);
-                break;
-            case ACCESS_TOKEN:
-                user.setAccessTokenExpireAlertOn(dateTime);
-                break;
-            case CERTIFICATE:
-                /*if (user.getCertificate() == null) {
-                    LOG.warn("Can not set certificate alert sent date for user [{}] without certificate!", user.getUsername());
-                } else {
-                    user.getCertificate().setCertificateLastExpireAlertOn(dateTime);
-                }* /
-                break;
-        }
-        */
+    public void updateAlertSentForUserCredentials(DBCredential credential,  OffsetDateTime dateTime) {
+        // attach to jpa session of not already
+        DBCredential managedCredential = find(credential.getId());
+        managedCredential.setExpireAlertOn(dateTime);
     }
 
 

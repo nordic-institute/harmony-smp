@@ -191,9 +191,30 @@ public class TestDBUtils {
         return createDBCredential("name", "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
     }
 
-    public static DBCredential createDBCredentialForUser(DBUser user) {
-        return createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
+        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+        credential.setExpireOn(to);
+        credential.setActiveFrom(from);
+        credential.setExpireAlertOn(lastAlertSent);
+        return credential;
     }
+
+    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
+        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
+        credential.setExpireOn(to);
+        credential.setActiveFrom(from);
+        credential.setExpireAlertOn(lastAlertSent);
+        return credential;
+    }
+
+    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
+        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        credential.setExpireOn(to);
+        credential.setActiveFrom(from);
+        credential.setExpireAlertOn(lastAlertSent);
+        return credential;
+    }
+
 
     public static DBCredential createDBCredential(DBUser dbUser, String name, String value, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         DBCredential dbCredential = new DBCredential();
