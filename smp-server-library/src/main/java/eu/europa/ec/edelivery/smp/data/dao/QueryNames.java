@@ -120,6 +120,12 @@ public class QueryNames {
     public static final String QUERY_USER_FILTER_COUNT = "DBUser.getUsersByFilterCount";
     public static final String QUERY_USERS = "DBUser.getUsers";
     public static final String QUERY_QUERY_USERS_FILTER = "DBUser.getUsersByFilter";
+    // ALERTS
+    public static final String QUERY_USER_BEFORE_PASSWORD_EXPIRE = "DBUser.getUsersForBeforePasswordExpireAlerts";
+    public static final String QUERY_USER_WITH_PASSWORD_EXPIRED =  "DBUser.getUsersForPasswordExpiredAlerts";
+
+    public static final String QUERY_CREDENTIAL_BEFORE_EXPIRE = "DBCredential.getCredentialBeforeExpireAlerts";
+    public static final String QUERY_CREDENTIAL_EXPIRED =  "DBCredential.getCredentiaExpiredAlerts";
 
 
     public static final String PARAM_NAME = "name";

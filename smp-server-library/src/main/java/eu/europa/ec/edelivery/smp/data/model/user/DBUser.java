@@ -58,50 +58,52 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 // @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
 //@NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.accessTokenIdentifier = :patId"),
 //@NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE upper(u.certificate.certificateId) = upper(:certificateId)"),
-        /*@NamedQuery(name = "DBUser.getUsersForBeforePasswordExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
-                        " AND u.passwordExpireOn <= :startAlertDate " +
-                        " AND u.passwordExpireOn > :expireDate" +
-                        " AND (u.passwordExpireAlertOn IS NULL OR u.passwordExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForPasswordExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
-                        " AND u.passwordExpireOn > :endAlertDate " +
-                        " AND u.passwordExpireOn <= :expireDate" +
-                        " AND (u.passwordExpireAlertOn IS NULL " +
-                        "   OR u.passwordExpireAlertOn <= u.passwordExpireOn " +
-                        "   OR u.passwordExpireAlertOn < :lastSendAlertDate )"),
-
-        @NamedQuery(name = "DBUser.getUsersForBeforeAccessTokenExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
-                        " AND u.accessTokenExpireOn <= :startAlertDate " +
-                        " AND u.accessTokenExpireOn > :expireDate" +
-                        " AND (u.accessTokenExpireAlertOn IS NULL OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForAccessTokenExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
-                        " AND u.accessTokenExpireOn > :endAlertDate " +
-                        " AND u.accessTokenExpireOn <= :expireDate" +
-                        " AND (u.accessTokenExpireAlertOn IS NULL " +
-                        "   OR u.accessTokenExpireAlertOn <= u.accessTokenExpireOn " +
-                        "   OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
+@NamedQuery(name = QUERY_USER_BEFORE_PASSWORD_EXPIRE,
+                query = "SELECT distinct u FROM DBUser u JOIN DBCredential  c ON u.id = c.user.id  WHERE  c.credentialType=:credential_type  " +
+                        " AND c.expireOn IS NOT NULL" +
+                        " AND c.expireOn <= :start_alert_send_date " +
+                        " AND c.expireOn > :expire_test_date" +
+                        " AND (c.expireAlertOn IS NULL OR c.expireAlertOn < :lastSendAlertDate )")
+@NamedQuery(name = QUERY_USER_WITH_PASSWORD_EXPIRED,
+        query = "SELECT distinct u FROM DBUser u JOIN DBCredential  c ON u.id = c.user.id  WHERE  c.credentialType=:credential_type" +
+                " AND  c.expireOn IS NOT NULL" +
+                " AND c.expireOn > :endAlertDate " +
+                " AND c.expireOn <= :expire_test_date" +
+                " AND (c.expireAlertOn IS NULL " +
+                "   OR c.expireAlertOn <= c.expireOn " +
+                "   OR c.expireAlertOn < :lastSendAlertDate )")
 /*
-        @NamedQuery(name = "DBUser.getUsersForBeforeCertificateExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
-                        " AND u.certificate.validTo IS NOT NULL " +
-                        " AND u.certificate.validTo <= :startAlertDate " +
-                        " AND u.certificate.validTo > :expireDate" +
-                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
-                        "       OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForCertificateExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
-                        " AND u.certificate.validTo IS NOT NULL " +
-                        " AND u.certificate.validTo > :endAlertDate " +
-                        " AND u.certificate.validTo <= :expireDate" +
-                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
-                        "     OR u.certificate.certificateLastExpireAlertOn <= u.certificate.validTo " +
+@NamedQuery(name = "DBUser.getUsersForBeforeAccessTokenExpireAlerts",
+        query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
+                " AND u.accessTokenExpireOn <= :startAlertDate " +
+                " AND u.accessTokenExpireOn > :expire_test_date" +
+                " AND (u.accessTokenExpireAlertOn IS NULL OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
+@NamedQuery(name = "DBUser.getUsersForAccessTokenExpiredAlerts",
+        query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
+                " AND u.accessTokenExpireOn > :endAlertDate " +
+                " AND u.accessTokenExpireOn <= :expire_test_date" +
+                " AND (u.accessTokenExpireAlertOn IS NULL " +
+                "   OR u.accessTokenExpireAlertOn <= u.accessTokenExpireOn " +
+                "   OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
+/*
+@NamedQuery(name = "DBUser.getUsersForBeforeCertificateExpireAlerts",
+        query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
+                " AND u.certificate.validTo IS NOT NULL " +
+                " AND u.certificate.validTo <= :startAlertDate " +
+                " AND u.certificate.validTo > :expire_test_date" +
+                " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
+                "       OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )"),
+@NamedQuery(name = "DBUser.getUsersForCertificateExpiredAlerts",
+        query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
+                " AND u.certificate.validTo IS NOT NULL " +
+                " AND u.certificate.validTo > :endAlertDate " +
+                " AND u.certificate.validTo <= :expire_test_date" +
+                " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
+                "     OR u.certificate.certificateLastExpireAlertOn <= u.certificate.validTo " +
 
-                        "     OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )")
-                        })
-         */
+                "     OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )")
+                })
+ */
 @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
         resultSetMapping = "DBUserDeleteValidationMapping",
         query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
