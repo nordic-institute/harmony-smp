@@ -67,9 +67,11 @@ public class MailService {
             helper.setText(html, true);
             helper.setSubject(model.getSubject());
             helper.setFrom(from);
+            LOG.info("Send mail to : [{}:{}]",javaMailSender.getHost(),javaMailSender.getPort());
+
             javaMailSender.send(message);
         } catch (IOException | MessagingException | TemplateException | MailException e) {
-            LOG.error("Exception while sending mail from[{}] to[{}]", from, to, e);
+            LOG.error("Exception while sending mail from [{}] to [{}]", from, to, e);
             throw new SMPRuntimeException(ErrorCode.MAIL_SUBMISSION_ERROR, e, ExceptionUtils.getRootCauseMessage(e));
         }
     }
