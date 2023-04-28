@@ -233,7 +233,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
                 SMPConfigurationInitializer configurationInitializer = new SMPConfigurationInitializer(memEManager, environmentProperties);
                 newProperties = configurationInitializer.getDatabaseProperties();
                 newProperties.setLastUpdate(OffsetDateTime.now());
-            }            // first update deprecated values
+            }
 
             Map<String, Object> resultProperties;
             try {
@@ -282,6 +282,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
 
     protected void setInitializedTime(OffsetDateTime dateTime) {
         initiateDate = dateTime;
+        // update property listeners for the first time
+        updatePropertyListeners();
     }
 
 

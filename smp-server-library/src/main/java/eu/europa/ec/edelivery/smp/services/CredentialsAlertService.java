@@ -319,8 +319,8 @@ public class CredentialsAlertService {
             mailService.sendMail(props, mailFrom, alert.getMailTo());
             updateAlertStatus(alert, AlertStatusEnum.SUCCESS, null);
         } catch (Throwable exc) {
-            LOG.error("Can not send mail (empty mail) for alert [{}]! Error [{}]",
-                    alert, ExceptionUtils.getRootCauseMessage(exc));
+            LOG.error("Can not send mail [{}] for alert [{}]! Error [{}]",
+                    mailTo,  alert, ExceptionUtils.getRootCauseMessage(exc));
             updateAlertStatus(alert, AlertStatusEnum.FAILED, ExceptionUtils.getRootCauseMessage(exc));
         }
 

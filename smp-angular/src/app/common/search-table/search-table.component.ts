@@ -29,8 +29,6 @@ export class SearchTableComponent implements OnInit {
   @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
   @ViewChild('rowIndex', {static: true}) rowIndex: TemplateRef<any>;
-
-
   @Input() additionalToolButtons: TemplateRef<any>;
   @Input() additionalRowActionButtons: TemplateRef<any>;
   @Input() searchPanel: TemplateRef<any>;
@@ -71,6 +69,18 @@ export class SearchTableComponent implements OnInit {
   forceRefresh: boolean = false;
   showSpinner: boolean = false;
   currentResult: SearchTableResult = null;
+ // override datatable messages to remove selectedMessage message
+ datatableMessages: any =  {
+  // Message to show when array is presented
+  // but contains no values
+  emptyMessage: 'No data to display',
+
+  // Footer total message
+  totalMessage: 'total',
+
+  // Footer selected message
+  selectedMessage: null
+};
 
   constructor(protected http: ExtendedHttpClient,
               protected alertService: AlertMessageService,

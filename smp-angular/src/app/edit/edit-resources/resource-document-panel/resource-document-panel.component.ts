@@ -109,8 +109,13 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
       this.documentForm.controls['payload'].setValue(value.payload);
-      this.documentForm.controls['payloadVersion'].enable();
       this.documentForm.controls['payload'].enable();
+      // the method documentVersionsExists already uses the current value to check if versions exists
+      if (!this.documentVersionsExists) {
+        this.documentForm.controls['payloadVersion'].disable();
+      } else {
+        this.documentForm.controls['payloadVersion'].enable();
+      }
     } else {
       this.documentForm.controls['name'].setValue("");
       this.documentForm.controls['payload'].setValue("");
@@ -215,6 +220,14 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
 
   get getDocumentVersions(): number[] {
     return !this._document?.allVersions ? [] : this._document?.allVersions;
+  }
+
+  get emptyDocument(): boolean{
+    return !this.documentForm.controls['payload'].value
+  }
+
+  get documentVersionsExists(): boolean{
+    return this.getDocumentVersions.length > 0
   }
 
 

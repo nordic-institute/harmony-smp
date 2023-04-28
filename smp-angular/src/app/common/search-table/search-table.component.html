@@ -32,6 +32,7 @@
     </div>
     <ngx-datatable #searchTable fxFlex id="searchTable"
                    class="expandable"
+                   [messages]="datatableMessages"
                    [rowClass]="getRowClass"
                    [rows]="rows"
                    [columns]="columnPicker.selectedColumns"
@@ -51,7 +52,7 @@
                    (page)="onPage($event)"
                    (sort)="onSort($event)"
                    [selected]="selected"
-                   [selectionType]="'multi'"
+                   [selectionType]="'single'"
                    (activate)="onActivate($event)"
                    (select)="onSelect($event)"
     >

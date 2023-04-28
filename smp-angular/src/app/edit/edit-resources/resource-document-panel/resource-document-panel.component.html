@@ -5,6 +5,7 @@
       <button id="validateResource_id" mat-raised-button
               color="primary"
               matTooltip="Validate resource"
+              [disabled]="emptyDocument"
               (click)="onDocumentValidateButtonClicked()"
       >
         <mat-icon>check_circle</mat-icon>

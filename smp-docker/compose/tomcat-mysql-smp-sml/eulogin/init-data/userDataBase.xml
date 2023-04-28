@@ -29,7 +29,7 @@
 		<passwordChangeDn>uid=smp,ou=people,dc=commission,dc=europa,dc=eu</passwordChangeDn>
 		<strongPasswordHash>123456</strongPasswordHash>
 		<passwordLastChangedTime></passwordLastChangedTime>
-		<uid>smp</uid>
+		<uid>user-02</uid>
 		<cudGroups>DIGIT_SMP_ADMIN</cudGroups>
 	</user>
 
