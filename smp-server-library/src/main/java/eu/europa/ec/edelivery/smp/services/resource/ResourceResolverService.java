@@ -134,7 +134,7 @@ public class ResourceResolverService {
             // test if subresourceDef exists
             DBSubresourceDef subresourceDef = getSubresource(resourceDef, subResourceDefUrl);
 
-            Identifier subResourceId = identifierService.normalizeParticipantIdentifier(pathParameters.get(++iParameterIndex));
+            Identifier subResourceId = identifierService.normalizeDocumentIdentifier(pathParameters.get(++iParameterIndex));
             DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId);
             LOG.debug("Got subresource [{}]", subresource);
             if (subresource == null) {
