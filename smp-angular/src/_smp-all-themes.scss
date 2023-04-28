@@ -23,6 +23,11 @@
     background-color: smp.get-theme-color($theme, primary, 50, 0.2) !important;
   }
 
+  .datatable-row-error {
+    font-weight: bold;
+    color: smp.get-theme-color($theme, warn, 500) !important;
+  }
+
   .datatable-row-selected {
     background-color: smp.get-theme-color($theme, primary, 600) !important;
   }
@@ -42,6 +47,11 @@
   .smp-field-error {
     color: smp.get-theme-color($theme, warn, 500) !important;
     font-size: 70%;
+  }
+
+  .error-data-panel {
+    color: smp.get-theme-color($theme, warn, 500-contrast) !important;
+    background-color: smp.get-theme-color($theme, warn, 500) !important;
   }
 
 }

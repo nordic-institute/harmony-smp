@@ -124,16 +124,6 @@ public class UserAdminController {
         return uiUserService.adminCreateUserData(user);
     }
 
-
-
-    @PutMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public void updateUserList(@RequestBody UserRO[] updateEntities) {
-        LOG.info("Update user list, count: {}", updateEntities.length);
-        // Pass the users and mark the passwords of the ones being updated as expired by passing the passwordChange as null
-        uiUserService.updateUserList(Arrays.asList(updateEntities), null);
-    }
-
     @PostMapping(value = "validate-delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public DeleteEntityValidation validateDeleteUsers(@RequestBody List<String> queryEncIds) {

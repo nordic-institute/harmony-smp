@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 @use '_smp-all-themes' as smp;
 @use 'sass:map';
-// DomiSMP default pallete
+// DomiSMP default palette
 @use './_colors_smp_light' as smp-colors;
 
 /* You can add global styles to this file, and also import other style files */
@@ -23,32 +23,6 @@ $smp-theme: mat.define-light-theme((
   typography: mat.define-typography-config(),
   density: 0,
 ));
-/*
-$smp-theme: mat.define-light-theme((
-  color: (
-    primary: mat.define-palette(smp-colors.$smp-primary-palette),
-    accent: mat.define-palette(smp-colors.$smp-accent-palette),
-    warn: mat.define-palette(smp-colors.$smp-warn-palette),
-  ),
-  typography: mat.define-typography-config(
-    $font-family:  null,
-    $headline-1:  mat.define-typography-level(32px, 48px, 700),
-    $headline-2: null,
-    $headline-3: null,
-    $headline-4: null,
-    $headline-5: null,
-    $headline-6: null,
-    $subtitle-1: null,
-    $subtitle-2: null,
-    $body-1:  mat.define-typography-level(12px, 14px, 500),
-    $body-2:  mat.define-typography-level(11px, 14px, 500),
-    $caption:  mat.define-typography-level(10px, 12px, 500),
-    $button: null,
-    $overline: null,
-  ),
-  density: 0,
-));
-*/
 
 // -----------------------------------------
 // blue theme
