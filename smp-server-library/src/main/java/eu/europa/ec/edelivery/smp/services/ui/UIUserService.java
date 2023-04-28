@@ -266,6 +266,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbCredential.setExpireOn(adminUpdate ? null :
                 currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
 
+        // if the credentials are not managed by the session , e.g. new  - the parsist it
+        if (dbCredential.getId()==null) {
+            credentialDao.persist(dbCredential);
+        }
         return dbCredential.getUser();
     }
 
