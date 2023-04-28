@@ -115,29 +115,15 @@ import {UserProfileComponent} from "./user-settings/user-profile/user-profile.co
 import {UserService} from './system-settings/user/user.service';
 import {routing} from './app.routes';
 import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@angular/material-moment-adapter";
-import {
-  NGX_MAT_DATE_FORMATS,
-  NgxMatDateAdapter,
-  NgxMatDatetimePickerModule
-} from "@angular-material-components/datetime-picker";
-import {
-  NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS,
-  NGX_MAT_MOMENT_FORMATS, NgxMatMomentAdapter,
-  NgxMatMomentModule
-} from "@angular-material-components/moment-adapter";
-import {
-  MembershipPanelComponent
-} from "./common/panels/membership-panel/membership-panel.component";
-import {
-  MemberDialogComponent
-} from "./common/dialogs/member-dialog/member-dialog.component";
+import {NGX_MAT_DATE_FORMATS,NgxMatDateAdapter,NgxMatDatetimePickerModule} from "@angular-material-components/datetime-picker";
+import {NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS,NGX_MAT_MOMENT_FORMATS, NgxMatMomentAdapter,NgxMatMomentModule} from "@angular-material-components/moment-adapter";
+import {MembershipPanelComponent} from "./common/panels/membership-panel/membership-panel.component";
+import {MemberDialogComponent} from "./common/dialogs/member-dialog/member-dialog.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MembershipService} from "./common/panels/membership-panel/membership.service";
 import {AdminUserComponent} from "./system-settings/admin-users/admin-user.component";
 import {AdminUserService} from "./system-settings/admin-users/admin-user.service";
-import {
-  UserProfilePanelComponent
-} from "./common/panels/user-settings-panel/user-profile-panel.component";
+import {UserProfilePanelComponent} from "./common/panels/user-settings-panel/user-profile-panel.component";
 import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 import {EditDomainService} from "./edit/edit-domain/edit-domain.service";
 import {SmpFieldErrorComponent} from "./common/components/smp-field-error/smp-field-error.component";
@@ -147,45 +133,27 @@ import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
 import {EditGroupService} from "./edit/edit-group/edit-group.service";
 import {SmpLabelComponent} from "./common/components/smp-label/smp-label.component";
 import {GroupResourcePanelComponent} from "./edit/edit-group/group-resource-panel/group-resource-panel.component";
-import {
-  ResourceDialogComponent
-} from "./edit/edit-group/group-resource-panel/resource-dialog/resource-dialog.component";
+import {ResourceDialogComponent} from "./edit/edit-group/group-resource-panel/resource-dialog/resource-dialog.component";
 import {EditResourceComponent} from "./edit/edit-resources/edit-resource.component";
 import {EditResourceService} from "./edit/edit-resources/edit-resource.service";
-import {
-  ResourceDetailsPanelComponent
-} from "./edit/edit-resources/resource-details-panel/resource-details-panel.component";
-import {
-  ResourceDocumentPanelComponent
-} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
+import {ResourceDetailsPanelComponent} from "./edit/edit-resources/resource-details-panel/resource-details-panel.component";
+import {ResourceDocumentPanelComponent} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import {
-  DocumentWizardDialogComponent
-} from "./edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
+import {DocumentWizardDialogComponent} from "./edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
 import {SubresourcePanelComponent} from "./edit/edit-resources/subresource-panel/subresource-panel.component";
-import {
-  SubresourceDialogComponent
-} from "./edit/edit-resources/subresource-panel/resource-dialog/subresource-dialog.component";
-import {
-  SubresourceDocumentPanelComponent
-} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
-import {
-  SubresourceDocumentWizardComponent
-} from "./edit/edit-resources/subresource-document-wizard-dialog/subresource-document-wizard.component";
+import {SubresourceDialogComponent} from "./edit/edit-resources/subresource-panel/resource-dialog/subresource-dialog.component";
+import {SubresourceDocumentPanelComponent} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
+import {SubresourceDocumentWizardComponent} from "./edit/edit-resources/subresource-document-wizard-dialog/subresource-document-wizard.component";
+import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/smp-warning-panel.component";
 
 
 @NgModule({
   declarations: [
-    SubresourceDocumentWizardComponent,
-    SubresourceDocumentPanelComponent,
-    SubresourceDialogComponent,
-    SubresourcePanelComponent,
-    DocumentWizardDialogComponent,
     AccessTokenGenerationDialogComponent,
     AccessTokenPanelComponent,
     AdminDomainComponent,
-    AdminTruststoreComponent,
     AdminKeystoreComponent,
+    AdminTruststoreComponent,
     AdminUserComponent,
     AlertComponent,
     AlertMessageComponent,
@@ -205,38 +173,39 @@ import {
     DatePipe,
     DefaultPasswordDialogComponent,
     DialogComponent,
+    DocumentWizardDialogComponent,
     DomainComponent,
-    DomainPanelComponent,
-    DomainSmlIntegrationPanelComponent,
     DomainDetailsDialogComponent,
     DomainGroupComponent,
-    MembershipPanelComponent,
+    DomainPanelComponent,
     DomainResourceTypePanelComponent,
     DomainSelectorComponent,
+    DomainSmlIntegrationPanelComponent,
     EditDomainComponent,
     EditGroupComponent,
     EditResourceComponent,
     ExpiredPasswordDialogComponent,
     ExtensionComponent,
     ExtensionPanelComponent,
-    GroupResourcePanelComponent,
-    GroupDialogComponent,
     FooterComponent,
+    GroupDialogComponent,
+    GroupResourcePanelComponent,
     InformationDialogComponent,
     IsAuthorized,
     KeystoreEditDialogComponent,
     KeystoreImportDialogComponent,
     LoginComponent,
     MemberDialogComponent,
+    MembershipPanelComponent,
     NavTree,
     NavTreeMenu,
     ObjectPropertiesDialogComponent,
     PasswordChangeDialogComponent,
     PropertyComponent,
-    ResourceDialogComponent,
     PropertyDetailsDialogComponent,
     ResourceDetailsDialogComponent,
     ResourceDetailsPanelComponent,
+    ResourceDialogComponent,
     ResourceDocumentPanelComponent,
     RowLimiterComponent,
     SaveDialogComponent,
@@ -248,10 +217,15 @@ import {
     ServiceGroupSearchComponent,
     ServiceMetadataWizardDialogComponent,
     SidenavComponent,
-    SmpLabelComponent,
     SmpFieldErrorComponent,
+    SmpLabelComponent,
+    SmpWarningPanelComponent,
     SpacerComponent,
     SpinnerComponent,
+    SubresourceDialogComponent,
+    SubresourceDocumentPanelComponent,
+    SubresourceDocumentWizardComponent,
+    SubresourcePanelComponent,
     ToolbarComponent,
     UserAccessTokensComponent,
     UserCertificatePanelComponent,

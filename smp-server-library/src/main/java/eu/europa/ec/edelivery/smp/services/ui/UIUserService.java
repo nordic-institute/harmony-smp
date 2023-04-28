@@ -103,7 +103,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             } else {
                 // validate just the database data
                 try {
-                    truststoreService.checkFullCertificateValidity(user.getCertificate());
+                    truststoreService.checkFullCertificateValidityLegacy(user.getCertificate());
                 } catch (CertificateException e) {
                     LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
                     user.getCertificate().setInvalid(true);
@@ -312,13 +312,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return updateUserPassword(authorizedUserId, userToUpdateId, authorizationPassword, newPassword, true);
     }
 
-    @Transactional
-    public void updateUserList(List<UserRO> lst, OffsetDateTime passwordChange) {
-        for (UserRO userRO : lst) {
-            createOrUpdateUser(userRO, passwordChange);
-        }
-    }
-
     /**
      * Method updates user profile data to database
      *
@@ -385,62 +378,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         userDao.remove(dbUser);
         return conversionService.convert(dbUser, UserRO.class);
-    }
-
-    protected void createOrUpdateUser(UserRO userRO, OffsetDateTime passwordChange) {
-        /*
-        if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
-            DBUser dbUser = convertFromRo(userRO);
-            if (!StringUtils.isBlank(userRO.getPassword())) {
-                dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
-            }
-            userDao.persistFlushDetach(dbUser);
-            return;
-        }
-        Optional<DBUser> optionalDBUser = userDao.findUserByUsername(userRO.getUsername());
-        if (!optionalDBUser.isPresent()) {
-            return;
-        }
-        DBUser dbUser = optionalDBUser.get();
-
-
-        if (userRO.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
-
-            dbUser.setEmailAddress(userRO.getEmailAddress());
-            dbUser.setRole(userRO.getRole());
-            dbUser.setActive(userRO.isActive());
-            dbUser.setUsername(userRO.getUsername());
-            if (StringUtils.isBlank(userRO.getUsername())) {
-                // if username is empty than clear the password
-                dbUser.setPassword("");
-            } else if (!StringUtils.isBlank(userRO.getPassword())) {
-                // check for new password
-                dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
-                dbUser.setPasswordChanged(passwordChange);
-            }
-            // update certificate data
-            if (userRO.getCertificate() == null || StringUtils.isBlank(userRO.getCertificate().getCertificateId())) {
-                dbUser.setCertificate(null);
-            } else {
-                CertificateRO certificateRO = userRO.getCertificate();
-                DBCertificate dbCertificate = dbUser.getCertificate() != null ? dbUser.getCertificate() : new DBCertificate();
-                dbUser.setCertificate(dbCertificate);
-                if (certificateRO.getValidFrom() != null) {
-                    dbCertificate.setValidFrom(OffsetDateTime.ofInstant(certificateRO.getValidFrom().toInstant(), ZoneId.systemDefault()));
-                }
-                if (certificateRO.getValidTo() != null) {
-                    dbCertificate.setValidTo(OffsetDateTime.ofInstant(certificateRO.getValidTo().toInstant(), ZoneId.systemDefault()));
-                }
-                dbCertificate.setCertificateId(certificateRO.getCertificateId());
-                dbCertificate.setSerialNumber(certificateRO.getSerialNumber());
-                dbCertificate.setSubject(certificateRO.getSubject());
-                dbCertificate.setIssuer(certificateRO.getIssuer());
-            }
-            userDao.update(dbUser);
-        } else if (userRO.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
-            userDao.removeById(dbUser.getId());
-        }*/
-
     }
 
     /**

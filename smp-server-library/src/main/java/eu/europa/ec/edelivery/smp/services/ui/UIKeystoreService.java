@@ -7,6 +7,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.ICRLVerifierService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,18 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * @since 4.1
  */
 @Service
-public class UIKeystoreService {
+public class UIKeystoreService extends BasicKeystoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIKeystoreService.class);
 
-    @Autowired
     private ConversionService conversionService;
-
-    @Autowired
     private ConfigurationService configurationService;
+
+    public UIKeystoreService(ConversionService conversionService, ConfigurationService configurationService) {
+        super(null);
+        this.conversionService = conversionService;
+        this.configurationService = configurationService;
+    }
 
     private Map<String, Key> keystoreKeys = new HashMap<>();
     private Map<String, X509Certificate> keystoreCertificates = new HashMap<>();
@@ -170,6 +174,7 @@ public class UIKeystoreService {
         if (certificateROList.isEmpty() && !keystoreCertificates.isEmpty()) {
             keystoreCertificates.forEach((alias, cert) -> {
                 CertificateRO certificateRO = convertToRo(cert);
+                basicCertificateValidation(cert, certificateRO);
                 certificateRO.setAlias(alias);
                 certificateRO.setContainingKey(keystoreKeys.containsKey(alias));
                 certificateROList.add(certificateRO);
