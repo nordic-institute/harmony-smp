@@ -102,7 +102,6 @@ public class DBUser extends BaseEntity {
     @ColumnDescription(comment = "DomiSMP settings: locale for the user")
     private String smpLocale;
 
-
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,
