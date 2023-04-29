@@ -16,7 +16,6 @@ import {AccessTokenPanelComponent} from "./access-token-panel/access-token-panel
 })
 export class UserAccessTokensComponent implements BeforeLeaveGuard {
   accessTokens: CredentialRo[] = [];
-
   @ViewChildren(AccessTokenPanelComponent)
   userTokenCredentialComponents: QueryList<AccessTokenPanelComponent>;
 

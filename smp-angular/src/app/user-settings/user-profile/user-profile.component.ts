@@ -1,4 +1,4 @@
-import {Component, ViewChild,} from '@angular/core';
+import {Component, Output, ViewChild,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
 import {UserService} from "../../system-settings/user/user.service";
@@ -19,7 +19,6 @@ import {UserDetailsDialogMode} from "../../system-settings/user/user-details-dia
   styleUrls: ['./user-profile.component.scss']
 })
 export class UserProfileComponent implements BeforeLeaveGuard {
-
 
   @ViewChild('userProfilePanel') userProfilePanel: UserProfilePanelComponent;
   currentUserData: UserRo;

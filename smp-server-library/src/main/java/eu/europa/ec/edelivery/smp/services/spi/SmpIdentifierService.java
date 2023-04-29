@@ -99,4 +99,5 @@ public class SmpIdentifierService implements SmpIdentifierServiceApi {
         return identifier == null ? null :
                 new ResourceIdentifier(identifier.getValue(), identifier.getScheme());
     }
+
 }

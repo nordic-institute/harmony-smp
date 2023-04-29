@@ -53,8 +53,6 @@
           (click)="domainSelected(row)"
           [ngClass]="{'datatable-row-selected': row==selected,'datatable-row-odd': odd}"
       ></tr>
-
-
       <tr class="mat-row" *matNoDataRow>
         <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell" colspan="2">No data matching the filter
           "{{inputDomainFilter.value}}"

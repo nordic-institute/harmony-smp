@@ -36,7 +36,7 @@ public class TruststoreController {
         LOG.info("Got certificate data size: {}", data.length);
         // validate uploaded content
         payloadValidatorService.validateUploadedContent(new ByteArrayInputStream(data), MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
-        return uiTruststoreService.getCertificateData(data, true);
+        return uiTruststoreService.getCertificateData(data, true, true);
     }
 
 }

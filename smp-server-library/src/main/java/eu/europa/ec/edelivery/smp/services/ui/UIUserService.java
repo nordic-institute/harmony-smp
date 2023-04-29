@@ -406,8 +406,26 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         List<DBCredential> credentialROs = credentialDao
                 .findUserCredentialForByUserIdTypeAndTarget(userId, credentialType, credentialTargetType);
 
-        return credentialROs.stream().map(credential -> conversionService.convert(credential, CredentialRO.class))
+        List<CredentialRO> credentialROList = credentialROs.stream().map(this::convertAndValidateCertificateCredential)
                 .collect(Collectors.toList());
+        return credentialROList;
+    }
+
+    public CredentialRO convertAndValidateCertificateCredential(DBCredential credential){
+        CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
+        if (credential.getCertificate() != null) {
+            DBCertificate dbCert = credential.getCertificate();
+
+            CertificateRO certificateRO;
+            if (StringUtils.isNotBlank(dbCert.getPemEncoding())) {
+                certificateRO = truststoreService.getCertificateData(dbCert.getPemEncoding(), true, false);
+
+            } else {
+                 certificateRO = conversionService.convert(credential.getCertificate(), CertificateRO.class);
+            }
+            credentialRO.setCertificate(certificateRO);
+        }
+        return credentialRO;
     }
 
     @Transactional

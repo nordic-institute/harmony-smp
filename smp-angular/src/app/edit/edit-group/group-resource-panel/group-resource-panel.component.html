@@ -75,8 +75,9 @@
 
     <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
                    (page)="onPageChanged($event)"
-                   [pageSize]="5"
-                   [pageSizeOptions]="[5, 10, 25]"
+                   [hidePageSize]="true"
+                   [showFirstLastButtons]="true"
+                   [pageSize]="10"
                    [disabled]="disabledForm"
                    aria-label="Select pages"></mat-paginator>
   </div>

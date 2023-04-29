@@ -45,22 +45,6 @@ public class UserController {
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
-    @PostMapping(path = "/{user-id}/generate-access-token", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public AccessTokenRO generateAccessToken(@PathVariable("user-id") String userId, @RequestBody(required = false) String password) {
-        Long entityId = decryptEntityId(userId);
-        SMPUserDetails currentUser = SessionSecurityUtils.getSessionUserDetails();
-        LOG.info("Generated access token for user:[{}] with id:[{}] ", userId, entityId);
-        if (currentUser == null) {
-            throw new SessionAuthenticationException("User session expired!");
-        }
-
-        // no need to validate password if CAS authenticated
-        //return uiUserService.generateAccessTokenForUser(entityId, entityId, password, !currentUser.isCasAuthenticated());
-        return null;
-
-    }
-
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(path = "/{user-id}/change-password", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public boolean changePassword(@PathVariable("user-id") String userId, @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
         Long entityId = decryptEntityId(userId);

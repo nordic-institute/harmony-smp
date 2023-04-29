@@ -36,7 +36,7 @@
 
     <mat-form-field appearance="fill" style="flex-grow: 1">
       <mat-label>Enter a valid date range</mat-label>
-      <mat-date-range-input [rangePicker]="picker" >
+      <mat-date-range-input [rangePicker]="picker" [min]="minSelectableDate" >
         <input matStartDate formControlName="activeFrom" placeholder="Start date">
         <input matEndDate formControlName="expireOn" placeholder="End date">
       </mat-date-range-input>

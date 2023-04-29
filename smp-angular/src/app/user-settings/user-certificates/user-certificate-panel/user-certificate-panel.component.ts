@@ -21,7 +21,6 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
 
   credentialForm: FormGroup;
 
-
   constructor(private formBuilder: FormBuilder) {
     this.credentialForm = formBuilder.group({
       // common values
@@ -47,6 +46,8 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
       this.credentialForm.controls['description'].setValue(this._credential.description);
       this.credentialForm.controls['activeFrom'].setValue(this._credential.activeFrom);
       this.credentialForm.controls['expireOn'].setValue(this._credential.expireOn);
+      this.credentialForm.controls['activeFrom'].disable()
+      this.credentialForm.controls['expireOn'].disable()
     } else {
       this.credentialForm.controls['active'].setValue(null);
       this.credentialForm.controls['description'].setValue(null);

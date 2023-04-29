@@ -11,6 +11,7 @@ import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guar
 })
 export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 
+  @Output() minSelectableDate: Date = new Date();
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
   @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
 

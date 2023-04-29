@@ -16,6 +16,9 @@ td , th {
 }
 
 
+.smp-data-panel-field {
+  width: 100% !important;
+}
 
 .smp-no-data-panel {
   padding:2em;

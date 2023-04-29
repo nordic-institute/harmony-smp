@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -16,9 +17,11 @@ import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
+import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -51,12 +54,14 @@ public class UIResourceService {
     private final UserDao userDao;
     private final ResourceDefDao resourceDefDao;
     private final DomainResourceDefDao domainResourceDefDao;
+    private final IdentifierService identifierService;
     private final ConversionService conversionService;
     private final SMLIntegrationService smlIntegrationService;
 
 
     public UIResourceService(ResourceDao resourceDao, ResourceMemberDao resourceMemberDao, ResourceDefDao resourceDefDao,
                              DomainResourceDefDao domainResourceDefDao, UserDao userDao, GroupDao groupDao,
+                             IdentifierService identifierService,
                              ConversionService conversionService,
                              SMLIntegrationService smlIntegrationService) {
         this.resourceDao = resourceDao;
@@ -65,6 +70,7 @@ public class UIResourceService {
         this.domainResourceDefDao = domainResourceDefDao;
         this.groupDao = groupDao;
         this.userDao = userDao;
+        this.identifierService = identifierService;
         this.conversionService = conversionService;
         this.smlIntegrationService = smlIntegrationService;
     }
@@ -185,9 +191,12 @@ public class UIResourceService {
         if (existResource.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
         }
+        Identifier resourceIdentifier = identifierService.normalizeParticipant(resourceRO.getIdentifierScheme(),
+                resourceRO.getIdentifierValue() );
+
         DBResource resource = new DBResource();
-        resource.setIdentifierScheme(resourceRO.getIdentifierScheme());
-        resource.setIdentifierValue(resourceRO.getIdentifierValue());
+        resource.setIdentifierScheme(resourceIdentifier.getScheme());
+        resource.setIdentifierValue(resourceIdentifier.getValue());
         resource.setVisibility(resourceRO.getVisibility());
         resource.setGroup(group);
         resource.setDomainResourceDef(optDoredef.get());

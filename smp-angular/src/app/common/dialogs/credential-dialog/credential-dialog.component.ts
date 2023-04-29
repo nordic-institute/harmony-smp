@@ -60,8 +60,7 @@ export class CredentialDialogComponent {
       'encodedValue': new FormControl({value: null, readonly: true})
     });
 
-
-    this.credentialForm.controls['active'].setValue('');
+    this.credentialForm.controls['active'].setValue(true);
     this.credentialForm.controls['description'].setValue('');
     this.credentialForm.controls['activeFrom'].setValue('');
     this.credentialForm.controls['expireOn'].setValue('');
@@ -102,6 +101,11 @@ export class CredentialDialogComponent {
       this.credentialForm.controls['description'].enable();
       this.credentialForm.controls['activeFrom'].enable();
       this.credentialForm.controls['expireOn'].enable();
+      if (this.isCertificateType) {
+        this.credentialForm.controls['activeFrom'].disable();
+        this.credentialForm.controls['expireOn'].disable();
+      }
+
     }
     this.isReadOnly = disabled
 
@@ -114,6 +118,7 @@ export class CredentialDialogComponent {
       this.storeCertificateCredentials();
     }
   }
+
 
   uploadCertificate(event) {
     this.newCertFile = null;
@@ -136,11 +141,15 @@ export class CredentialDialogComponent {
           } else {
             this.clearAlert()
           }
+
+          this.credentialForm.controls['activeFrom'].setValue(res.validFrom);
+          this.credentialForm.controls['expireOn'].setValue(res.validTo);
+
           this.isCertificateInvalid = res.invalid;
           this.newCertFile = file;
         } else {
           this.clearCertificateData()
-          this.showErrorMessage("Error occurred while reading certificate.  Check if uploaded file has valid certificate type")
+          this.showErrorMessage("Error occurred while reading certificate. Check if uploaded file has valid certificate type")
         }
       },
       err => {

@@ -52,7 +52,6 @@ public class UITruststoreService extends BasicKeystoreService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
 
-
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() ->
             new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
     );
@@ -171,7 +170,12 @@ public class UITruststoreService extends BasicKeystoreService {
     }
 
     public CertificateRO getCertificateData(byte[] buff) {
-        return getCertificateData(buff, false);
+        return getCertificateData(buff, false, false);
+    }
+
+
+    public CertificateRO getCertificateData(String base64Cert, boolean validate, boolean validateDuplicate) {
+        return getCertificateData(Base64.getMimeDecoder().decode(base64Cert), validate, validateDuplicate);
     }
 
     /**
@@ -181,7 +185,7 @@ public class UITruststoreService extends BasicKeystoreService {
      * @param validate
      * @return
      */
-    public CertificateRO getCertificateData(byte[] buff, boolean validate) {
+    public CertificateRO getCertificateData(byte[] buff, boolean validate, boolean validateDuplicate) {
         X509Certificate cert;
         CertificateRO cro;
         try {
@@ -197,19 +201,22 @@ public class UITruststoreService extends BasicKeystoreService {
 
         cro = convertToRo(cert);
         if (validate) {
-            validateCertificate(cert, cro);
+            validateCertificate(cert, cro, validateDuplicate);
         }
         return cro;
     }
-
     public void validateCertificate(X509Certificate cert, CertificateRO cro) {
+        validateCertificate(cert, cro, true);
+    }
+    public void validateCertificate(X509Certificate cert, CertificateRO cro, boolean validateDuplicate) {
         // first expect the worst
         cro.setInvalid(true);
         cro.setInvalidReason(CERT_ERROR_MSG_NOT_VALIDATED);
         try {
             checkFullCertificateValidity(cert);
-            validateCertificateNotUsed(cro);
-
+            if (validateDuplicate) {
+                validateCertificateNotUsed(cro);
+            }
             cro.setInvalid(false);
             cro.setInvalidReason(null);
         } catch (CertificateExpiredException ex) {
@@ -340,7 +347,6 @@ public class UITruststoreService extends BasicKeystoreService {
             if (!isSubjectOnTrustedList(cert.getIssuer()) && !isSubjectOnTrustedList(cert.getSubject())) {
                 throw new CertificateNotTrustedException(CERT_ERROR_MSG_NOT_TRUSTED);
             }
-
         }
 
         // Check crl list
