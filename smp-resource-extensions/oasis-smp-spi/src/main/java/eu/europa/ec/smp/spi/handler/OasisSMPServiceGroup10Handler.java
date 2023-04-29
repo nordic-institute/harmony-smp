@@ -6,7 +6,6 @@ import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.exception.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.spi.api.SmpDataServiceApi;
 import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
-import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
@@ -187,7 +186,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
             OasisSmpSchemaValidator.validateOasisSMP10Schema(bytearray);
         } catch (IOException | XmlInvalidAgainstSchemaException e) {
             String ids = identifier != null ?
-                    Stream.of(identifier).map(identifier1 -> identifier1.toString()).collect(Collectors.joining(",")) : "";
+                    Stream.of(identifier).map(Object::toString).collect(Collectors.joining(",")) : "";
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceGroup extension: [" + ids + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         // if service group
@@ -202,7 +201,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
 
         if (!xmlResourceIdentifier.equals(identifier)) {
             // Business identifier must equal path
-            throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + identifier + "] and XML body: [ scheme: '" + participantId.getScheme() + "', value: '" + participantId.getValue() + "']");
+            throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + identifier + "] and XML body: ['" + xmlResourceIdentifier + "']");
         }
 
 

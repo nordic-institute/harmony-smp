@@ -65,7 +65,7 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
         resizable: "false",
       },
       {
-        name: 'Participant scheme',
+        name: 'Resource scheme',
         prop: 'participantScheme',
         showInitially: true,
         width: 300,
@@ -73,13 +73,13 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
         resizable: "false"
       },
       {
-        name: 'Participant identifier',
+        name: 'Resource identifier',
         prop: 'participantIdentifier',
         showInitially: true,
       },
       {
         cellTemplate: this.rowSMPUrlLinkAction,
-        name: 'OASIS ServiceGroup URL',
+        name: 'Resource URL',
         showInitially: true,
         width: 250,
         maxWidth: 250,

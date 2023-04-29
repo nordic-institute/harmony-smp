@@ -44,7 +44,6 @@ export class AppComponent {
     private themeService: ThemeService,
   ) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
-
     themeService.updateThemeFromLocalStorage();
   }
 

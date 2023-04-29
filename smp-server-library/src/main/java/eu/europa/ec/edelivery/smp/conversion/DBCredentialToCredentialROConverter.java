@@ -1,25 +1,25 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.CredentialRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 
 
 /**
  * @author Sebastian-Ion TINCU
  */
 @Component
-public class DBCredentialToCredentialROConverter implements Converter<DBCredential, CredentialRO>{
+public class DBCredentialToCredentialROConverter implements Converter<DBCredential, CredentialRO> {
 
     private final ConfigurationService configurationService;
+
     public DBCredentialToCredentialROConverter(ConfigurationService configurationService) {
         this.configurationService = configurationService;
     }
@@ -46,15 +46,12 @@ public class DBCredentialToCredentialROConverter implements Converter<DBCredenti
     public OffsetDateTime getSuspensionUtilDate(DBCredential credential) {
         Integer suspensionTime = null;
         Integer maxAllowedAttempts = null;
-        switch (credential.getCredentialType()) {
-            case USERNAME_PASSWORD:
-                suspensionTime = configurationService.getLoginSuspensionTimeInSeconds();
-                maxAllowedAttempts = configurationService.getLoginMaxAttempts();
-                break;
-            case ACCESS_TOKEN:
-                suspensionTime = configurationService.getAccessTokenLoginSuspensionTimeInSeconds();
-                maxAllowedAttempts = configurationService.getAccessTokenLoginMaxAttempts();
-                break;
+        if (Objects.requireNonNull(credential.getCredentialType()) == CredentialType.USERNAME_PASSWORD) {
+            suspensionTime = configurationService.getLoginSuspensionTimeInSeconds();
+            maxAllowedAttempts = configurationService.getLoginMaxAttempts();
+        } else if (credential.getCredentialType() == CredentialType.ACCESS_TOKEN) {
+            suspensionTime = configurationService.getAccessTokenLoginSuspensionTimeInSeconds();
+            maxAllowedAttempts = configurationService.getAccessTokenLoginMaxAttempts();
         }
 
         return getSuspensionUntilDate(credential.getLastFailedLoginAttempt(),

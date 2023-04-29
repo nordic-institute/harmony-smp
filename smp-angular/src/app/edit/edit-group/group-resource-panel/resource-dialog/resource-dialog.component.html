@@ -20,14 +20,37 @@
       <mat-label>Resource identifier</mat-label>
       <input id="identifierValue_id" type="text" matInput #identifierValue
              formControlName="identifierValue"
-             required auto-focus-directive>
+             required auto-focus-directive
+             maxlength="255" required>
+      <div
+        *ngIf="(newMode && resourceForm.controls['identifierValue'].touched ) &&  resourceForm.controls['identifierValue'].hasError('required')"
+        style="color:red; font-size: 70%">
+        Participant identifier must not be empty and must be up to 255 characters long.
+      </div>
+      <div
+        *ngIf="(newMode &&  resourceForm.controls['identifierValue'].hasError('dbExist'))"
+        style="color:red; font-size: 70%">
+        Participant identifier for given scheme is already defined in database!
+      </div>
     </mat-form-field>
 
     <mat-form-field  style="width: 100%">
       <mat-label>Resource scheme</mat-label>
       <input id="identifierScheme_id" type="text" matInput
              formControlName="identifierScheme"
+             maxlength="255"
              >
+      <div
+        *ngIf="(newMode && resourceForm.controls['identifierScheme'].touched ) &&  resourceForm.controls['identifierScheme'].hasError('required')"
+        style="color:red; font-size: 70%">
+        Participant scheme must not be empty.
+      </div>
+      <div
+        *ngIf="(newMode && resourceForm.controls['identifierScheme'].touched ) &&
+               resourceForm.controls['identifierScheme'].hasError('pattern')"
+        style="color:red; font-size: 70%">
+        {{participantSchemeMessage}}
+      </div>
     </mat-form-field>
 
 

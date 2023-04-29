@@ -17,8 +17,6 @@ import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 export class UserController implements SearchTableController {
 
   nullCert:CertificateRo;
-
-
   compareUserProperties = ["username","password","emailAddress","active","role","certificate"];
   compareCertProperties = ["certificateId","subject","issuer","serialNumber","crlUrl","validFrom","validTo"];
 

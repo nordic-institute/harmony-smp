@@ -1,6 +1,6 @@
 import {Component, ElementRef, Inject, Input, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AlertMessageService} from "../../../../common/alert-message/alert-message.service";
 import {VisibilityEnum} from "../../../../common/enums/visibility.enum";
 import {GroupRo} from "../../../../common/model/group-ro.model";
@@ -8,6 +8,8 @@ import {ResourceRo} from "../../../../common/model/resource-ro.model";
 import {DomainRo} from "../../../../common/model/domain-ro.model";
 import {ResourceDefinitionRo} from "../../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditGroupService} from "../../edit-group.service";
+import {GlobalLookups} from "../../../../common/global-lookups";
+import {EntityStatus} from "../../../../common/enums/entity-status.enum";
 
 
 @Component({
@@ -20,6 +22,7 @@ export class ResourceDialogComponent {
    .map(el => {
       return {key: el, value: VisibilityEnum[el]}
     });
+
   formTitle = "Resource dialog";
   resourceForm: FormGroup;
   message: string;
@@ -29,24 +32,39 @@ export class ResourceDialogComponent {
   domain:DomainRo;
   domainResourceDefs:ResourceDefinitionRo[];
 
+  participantSchemePattern = '^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$';
+  participantSchemeMessage:string;
+
   @ViewChild('identifierValue', {static: false}) identifierValue: ElementRef;
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
+              public lookups: GlobalLookups,
               public dialogRef: MatDialogRef<ResourceDialogComponent>,
               private editGroupService: EditGroupService,
               private alertService: AlertMessageService,
               private formBuilder: FormBuilder
   ) {
+
+    if (this.lookups.cachedApplicationConfig) {
+      this.participantSchemePattern = this.lookups.cachedApplicationConfig.participantSchemaRegExp != null ?
+        this.lookups.cachedApplicationConfig.participantSchemaRegExp : ".*"
+
+      this.participantSchemeMessage = this.lookups.cachedApplicationConfig.participantSchemaRegExpMessage;
+    }
+
     dialogRef.disableClose = true;//disable default close operation
     this.formTitle = data.formTitle;
 
 
     this.resourceForm = formBuilder.group({
-      'identifierValue': new FormControl({value: null}),
-      'identifierScheme': new FormControl({value: null}),
+      'identifierValue': new FormControl({value: null}, ),
+      'identifierScheme': new FormControl({value: null},[Validators.pattern(this.participantSchemePattern)]),
       'visibility': new FormControl({value: null}),
       'resourceTypeIdentifier': new FormControl({value: null}),
       '': new FormControl({value: null})
     });
+    if (!!lookups.cachedApplicationConfig.partyIDSchemeMandatory) {
+      this.resourceForm.controls['identifierScheme'].addValidators(Validators.required);
+    }
     this.resource = data.resource;
     this.group = data.group;
     this.domain = data.domain;
