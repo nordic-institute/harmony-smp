@@ -5,11 +5,9 @@ import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
-import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -173,9 +171,22 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         return conversionService.convert(group, GroupRO.class);
     }
 
+    public DBGroup validateDomainAndGroup(Long groupId, Long domainId, String action) {
+        DBGroup group = groupDao.find(groupId);
+        if (group == null) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, action, "Group does not exists!");
+        }
+        if (!Objects.equals(domainId, group.getDomain().getId())) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, action, "Group does not belong to given domain!");
+        }
+        return group;
+    }
+
     @Transactional
-    public ServiceResult<MemberRO> getGroupMembers(Long groupId, int page, int pageSize,
+    public ServiceResult<MemberRO> getGroupMembers(Long groupId, Long domainId, int page, int pageSize,
                                                    String filter) {
+        validateDomainAndGroup(groupId, domainId,"GetGroupMembers");
+
         Long count = groupMemberDao.getGroupMemberCount(groupId, filter);
         ServiceResult<MemberRO> result = new ServiceResult<>();
         result.setPage(page);
@@ -193,8 +204,10 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     }
 
     @Transactional
-    public MemberRO addMemberToGroup(Long groupId, MemberRO memberRO, Long memberId) {
+    public MemberRO addMemberToGroup(Long groupId, Long domainId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to group [{}]", memberRO.getUsername(), groupId);
+        validateDomainAndGroup(groupId, domainId,"AddMemberToGroup");
+
         DBUser user = userDao.findUserByUsername(memberRO.getUsername())
                 .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add/edit membership", "User [" + memberRO.getUsername() + "] does not exists!"));
 
@@ -213,8 +226,11 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     }
 
     @Transactional
-    public MemberRO deleteMemberFromGroup(Long groupId, Long memberId) {
+    public MemberRO deleteMemberFromGroup(Long groupId, Long domainId, Long memberId) {
         LOG.info("Delete member [{}] from group [{}]", memberId, groupId);
+
+        validateDomainAndGroup(groupId, domainId,"DeleteMemberFromGroup");
+
         DBGroupMember groupMember = groupMemberDao.find(memberId);
         if (groupMember == null) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not exists!");

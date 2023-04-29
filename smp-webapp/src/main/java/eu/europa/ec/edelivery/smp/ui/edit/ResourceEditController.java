@@ -51,7 +51,7 @@ public class ResourceEditController {
      */
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
-            "and (@smpAuthorizationService.isGroupAdministrator(#groupEncId) or  @smpAuthorizationService.isAnyGroupResourceAdministrator(#groupEncId))")
+            "and (@smpAuthorizationService.isGroupAdministrator(#groupEncId) or @smpAuthorizationService.isAnyGroupResourceAdministrator(#groupEncId))")
     public ServiceResult<ResourceRO> getResourcesForGroup(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                           @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
                                                           @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
@@ -133,7 +133,7 @@ public class ResourceEditController {
         LOG.info("Search for group members with filter  [{}], paging: [{}/{}], user: {}", filter, page, pageSize, userEncId);
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
-        return uiResourceService.getResourceMembers(resourceId, page, pageSize, filter);
+        return uiResourceService.getResourceMembers(resourceId, groupId, page, pageSize, filter);
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -152,7 +152,7 @@ public class ResourceEditController {
             memberRO.setRoleType(MembershipRoleType.VIEWER);
         }
         // is user domain admin or system admin
-        return uiResourceService.addMemberToResource(resourceId, memberRO, memberId);
+        return uiResourceService.addMemberToResource(resourceId, groupId, memberRO, memberId);
     }
 
     @DeleteMapping(value = SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_DELETE)
@@ -170,7 +170,7 @@ public class ResourceEditController {
         Long resourceId = SessionSecurityUtils.decryptEntityId(resourceEncId);
 
         // is user domain admin or system admin
-        return uiResourceService.deleteMemberFromResource(resourceId, memberId);
+        return uiResourceService.deleteMemberFromResource(resourceId, groupId, memberId);
     }
 
     protected void logAdminAccess(String action) {

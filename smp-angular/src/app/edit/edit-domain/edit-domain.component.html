@@ -8,9 +8,9 @@
     <mat-tab-group #domainTabs
                    *ngIf="!!domainList && domainList.length>0;else noUserAdminGroupsDataFound"
                    style="height: 100%">
-      <mat-tab label="Members">
+      <mat-tab>
         <ng-template mat-tab-label>
-          <smp-label icon="groups" label="Members"></smp-label>
+          <smp-label icon="groups" label="Domain Members"></smp-label>
         </ng-template>
         <domain-member-panel #domainMemberPanelComponent
                              [domain]="selected"

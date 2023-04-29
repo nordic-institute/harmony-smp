@@ -13,6 +13,10 @@ import {ResourceDialogComponent} from "./resource-dialog/resource-dialog.compone
 import {DomainRo} from "../../../common/model/domain-ro.model";
 import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
+import {
+  ManageMembersDialogComponent
+} from "../../../common/dialogs/manage-members-dialog/manage-members-dialog.component";
+import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 
 
 @Component({
@@ -26,7 +30,6 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
 
   title: string = "Group resources";
   private _group: GroupRo;
-  @Input() resource: ResourceRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
   displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
@@ -114,6 +117,20 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
     }
     this.loadGroupResources();
   }
+
+  onEditSelectedGroupMembersButtonClicked() {
+    this.dialog.open(ManageMembersDialogComponent, {
+      data: {
+        membershipType: MemberTypeEnum.RESOURCE,
+        domain: this.domain,
+        group: this._group,
+        resource: this.selected,
+        formTitle: "Resource members management dialog"
+      }
+    }).afterClosed().subscribe(value => {
+      this.refresh();
+    });
+  };
   public onEditSelectedButtonClicked() {
     this.showResourceEditDialog(this.selected)
   }

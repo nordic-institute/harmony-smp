@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="width:700px">
+ <domain-member-panel
+  [membershipType]="membershipType"
+ [domain]="_currentDomain"
+ [group]="_currentGroup"
+ [resource]="_currentResource">
+
+ </domain-member-panel>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    <mat-icon>cancel</mat-icon>
+    <span>Close</span>
+  </button>
+
+</mat-dialog-actions>
+

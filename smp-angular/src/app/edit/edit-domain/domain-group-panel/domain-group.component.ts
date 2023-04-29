@@ -13,6 +13,10 @@ import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {MatPaginator} from "@angular/material/paginator";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
+import {
+  ManageMembersDialogComponent
+} from "../../../common/dialogs/manage-members-dialog/manage-members-dialog.component";
+import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 
 @Component({
   selector: 'domain-group-panel',
@@ -119,7 +123,18 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
       this.refresh();
     });
   };
-
+  onEditSelectedGroupMembersButtonClicked() {
+    this.dialog.open(ManageMembersDialogComponent, {
+      data: {
+        membershipType: MemberTypeEnum.GROUP,
+        domain: this._domain,
+        group: this.selectedGroup,
+        formTitle: "Resource members management dialog"
+      }
+    }).afterClosed().subscribe(value => {
+      this.refresh();
+    });
+  };
   onEditSelectedButtonClicked() {
     this.showEditDialogForGroup(this.selectedGroup);
   };
@@ -134,6 +149,10 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
     }).afterClosed().subscribe(value => {
       this.refresh();
     });
+  };
+
+  onEditGroupMembersButtonClicked() {
+    this.showEditDialogForGroup(this.selectedGroup);
   };
 
   onDeleteSelectedButtonClicked() {
