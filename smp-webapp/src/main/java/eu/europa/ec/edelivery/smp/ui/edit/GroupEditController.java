@@ -118,7 +118,8 @@ public class GroupEditController {
     }
 
     @GetMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and  @smpAuthorizationService.isGroupAdministrator(#groupEncId)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
+            "and (@smpAuthorizationService.isGroupAdministrator(#groupEncId) or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public ServiceResult<MemberRO> getGroupMemberList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                       @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
                                                       @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
@@ -128,11 +129,13 @@ public class GroupEditController {
 
         LOG.info("Search for group members with filter  [{}], paging: [{}/{}], user: {}", filter, page, pageSize, userEncId);
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
-        return uiGroupPublicService.getGroupMembers(groupId, page, pageSize, filter);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        return uiGroupPublicService.getGroupMembers(groupId, domainId, page, pageSize, filter);
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isGroupAdministrator(#groupEncId)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
+            "and (@smpAuthorizationService.isGroupAdministrator(#groupEncId) or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public MemberRO putGroupMember(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                    @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
                                    @PathVariable(PATH_PARAM_ENC_GROUP_ID) String groupEncId,
@@ -140,16 +143,18 @@ public class GroupEditController {
 
         LOG.info("add member to group");
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         Long memberId = memberRO.getMemberId() == null ? null : SessionSecurityUtils.decryptEntityId(memberRO.getMemberId());
         if (memberRO.getRoleType() == null) {
             memberRO.setRoleType(MembershipRoleType.VIEWER);
         }
         // is user domain admin or system admin
-        return uiGroupPublicService.addMemberToGroup(groupId, memberRO, memberId);
+        return uiGroupPublicService.addMemberToGroup(groupId, domainId, memberRO, memberId);
     }
 
     @DeleteMapping(value = SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER_DELETE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isGroupAdministrator(#groupEncId)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
+            "(@smpAuthorizationService.isGroupAdministrator(#groupEncId) or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
     public MemberRO deleteDomainMember(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
@@ -159,9 +164,10 @@ public class GroupEditController {
         LOG.info("Delete member from group");
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
         Long memberId = SessionSecurityUtils.decryptEntityId(memberEncId);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
 
         // is user domain admin or system admin
-        return uiGroupPublicService.deleteMemberFromGroup(groupId, memberId);
+        return uiGroupPublicService.deleteMemberFromGroup(groupId, domainId, memberId);
     }
 
     protected void logAdminAccess(String action) {

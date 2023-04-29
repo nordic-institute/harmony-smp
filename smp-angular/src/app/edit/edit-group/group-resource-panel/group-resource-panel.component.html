@@ -13,7 +13,13 @@
               matTooltip="Edit"
       >
         <mat-icon>edit</mat-icon>
-        <span>Edit document</span>
+        <span>Edit data</span>
+      </button>
+      <button id="groupMembersButton" mat-raised-button (click)="onEditSelectedGroupMembersButtonClicked()" color="primary"
+              matTooltip="Group members"
+              [disabled]="!selected">
+        <mat-icon>group</mat-icon>
+        <span>Resource members</span>
       </button>
       <button id="deleteButton" mat-raised-button (click)="onDeleteSelectedButtonClicked()" color="primary"
               matTooltip="Delete selected resource"

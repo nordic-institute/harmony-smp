@@ -249,8 +249,10 @@ public class UIResourceService {
     }
 
     @Transactional
-    public ServiceResult<MemberRO> getResourceMembers(Long resourceId, int page, int pageSize,
+    public ServiceResult<MemberRO> getResourceMembers(Long resourceId, Long groupId, int page, int pageSize,
                                                       String filter) {
+
+        validateGroupAndResource(resourceId, groupId, "GetResourceMembers");
         Long count = resourceMemberDao.getResourceMemberCount(resourceId, filter);
         ServiceResult<MemberRO> result = new ServiceResult<>();
         result.setPage(page);
@@ -268,8 +270,10 @@ public class UIResourceService {
     }
 
     @Transactional
-    public MemberRO addMemberToResource(Long resourceId, MemberRO memberRO, Long memberId) {
+    public MemberRO addMemberToResource(Long resourceId, Long groupId,  MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to resource [{}]", memberRO.getUsername(), resourceId);
+        validateGroupAndResource(resourceId, groupId, "AddMemberToResource");
+
         DBUser user = userDao.findUserByUsername(memberRO.getUsername())
                 .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add/edit membership", "User [" + memberRO.getUsername() + "] does not exists!"));
 
@@ -288,8 +292,9 @@ public class UIResourceService {
     }
 
     @Transactional
-    public MemberRO deleteMemberFromResource(Long resourceId, Long memberId) {
+    public MemberRO deleteMemberFromResource(Long resourceId,  Long groupId,  Long memberId) {
         LOG.info("Delete member [{}] from resource [{}]", memberId, resourceId);
+        validateGroupAndResource(resourceId, groupId, "DeleteMemberFromResource");
         DBResourceMember resourceMember = resourceMemberDao.find(memberId);
         if (resourceMember == null) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not exists!");
@@ -300,6 +305,16 @@ public class UIResourceService {
 
         resourceMemberDao.remove(resourceMember);
         return conversionService.convert(resourceMember, MemberRO.class);
+    }
+    public DBResource validateGroupAndResource(Long resourceId, Long groupId, String action) {
+        DBResource resource = resourceDao.find(resourceId);
+        if (resource == null) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, action, "Resource does not exists!");
+        }
+        if (!Objects.equals(groupId, resource.getGroup().getId())) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, action, "Group does not belong to given domain!");
+        }
+        return resource;
     }
 
     public DBDocument createDocumentForResourceDef(DBResourceDef resourceDef) {

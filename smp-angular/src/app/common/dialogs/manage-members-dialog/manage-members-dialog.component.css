@@ -1,0 +1,13 @@
+.empty-field-label {
+  color: gray;
+}
+
+
+#custom-file-upload {
+  display: none;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  cursor: pointer;
+}

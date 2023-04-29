@@ -145,6 +145,7 @@ import {SubresourceDialogComponent} from "./edit/edit-resources/subresource-pane
 import {SubresourceDocumentPanelComponent} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
 import {SubresourceDocumentWizardComponent} from "./edit/edit-resources/subresource-document-wizard-dialog/subresource-document-wizard.component";
 import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/smp-warning-panel.component";
+import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dialog/manage-members-dialog.component";
 
 
 @NgModule({
@@ -195,6 +196,7 @@ import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/sm
     KeystoreEditDialogComponent,
     KeystoreImportDialogComponent,
     LoginComponent,
+    ManageMembersDialogComponent,
     MemberDialogComponent,
     MembershipPanelComponent,
     NavTree,

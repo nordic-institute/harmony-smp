@@ -8,8 +8,6 @@ import {EditGroupService} from "./edit-group.service";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
-import {GroupResourcePanelComponent} from "./group-resource-panel/group-resource-panel.component";
-import {MembershipPanelComponent} from "../../common/panels/membership-panel/membership-panel.component";
 
 
 @Component({
