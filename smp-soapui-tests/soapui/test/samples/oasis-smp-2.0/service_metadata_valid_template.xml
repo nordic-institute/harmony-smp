@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceMetadata xmlns:smb="http://docs.oasis-open.org/bdxr/ns/SMP/2/BasicComponents"  xmlns:sma="http://docs.oasis-open.org/bdxr/ns/SMP/2/AggregateComponents" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2/ServiceMetadata">
+    <smb:SMPVersionID>2.0</smb:SMPVersionID>
+    <smb:ParticipantID schemeID="${=request.getProperty('ResourceIdentifierScheme').getValue()}">${=request.getProperty('ResourceIdentifierValue').getValue()}</smb:ParticipantID>
+    <smb:ServiceID schemeID="${=request.getProperty('SubresourceIdentifierScheme').getValue()}">${=request.getProperty('SubresourceIdentifierValue').getValue()}</smb:ServiceID>
+    <sma:ProcessMetadata>
+        <sma:Process>
+            <smb:ID schemeID="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii05:ver2.0</smb:ID>
+        </sma:Process>
+        <sma:Endpoint>
+            <smb:TransportProfileID>bdxr-transport-ebms3-as4-v1p0</smb:TransportProfileID>
+            <smb:Description>contact@example.com</smb:Description>
+            <smb:Contact>Access point for testing</smb:Contact>
+            <smb:AddressURI>https://ap.example.com/as4</smb:AddressURI>
+            <smb:ActivationDate>2018-04-12</smb:ActivationDate>
+            <smb:ExpirationDate>2099-04-12</smb:ExpirationDate>
+            <sma:Certificate>
+                <smb:Subject>CN=EXAMPLE AP,C=NO</smb:Subject>
+                <smb:Issuer>CN=EXAMPLE AP,C=NO</smb:Issuer>
+                <smb:ActivationDate>2018-04-12</smb:ActivationDate>
+                <smb:ExpirationDate>2020-04-12</smb:ExpirationDate>
+                <smb:ContentBinaryObject mimeCode="application/base64">
+MIICwDCCAaigAwIBAgIEWs7kiDANBgkqhkiG9w0BAQsFADAiMQswCQYDVQQGEwJO
+TzETMBEGA1UEAwwKRVhBTVBMRSBBUDAeFw0xODA0MTIwNDQ2MDBaFw0yMDA0MTIw
+NDQ2MDBaMCIxCzAJBgNVBAYTAk5PMRMwEQYDVQQDDApFWEFNUExFIEFQMIIBIjAN
+BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtuG5qwA2sNvC9dj4purG8hkSVB9p
+CWVHyO9buRrSCC+r2UxSF7Lnmr8Hjii0uIdJeFyYv0Vj9d4CjpYyEeYU2QG96wi+
+w2KdE28HMZFNMwy0iV9vIkbq0esJCcAXQ4C3rPQ4e9F1Tw4oKnS6rEWCw8i8lsKE
+iS/dzIFUa/BVtgjqHvs3siON4k1Y7BU93rZViz8ZM6LB4eA7rYU4le6a8rGKbHa6
+BMSIoKgBuKr8XY9lKb2OVg65+LWTESpPkKiKRikzZhAw+mEVYmljvFwBLSp0IEKW
+3qogVYGA0jz+kWWGOChk58SKsnqhbANoIucz+axxoJOLl0A5328qM7aRTwIDAQAB
+MA0GCSqGSIb3DQEBCwUAA4IBAQBW7VCYhUmRR7xW+QOhUxI//ISjupDdcQ/Jl7hH
+CrUghjL7FmNnJKNqBAwrxcAfdwXwRltWzNT9E1btekfyw4+QL34w20kZ7SNLioZU
+lxVviaoLsf0f70TMPOBGGv/uyV26l5VMBK40FXvcFwDQ5VNiJOYrsxpF//Hh/t76
+QMij6glyLUmYA1aS9Am0zAB5ld+U7HtJAEL6SXinPrPDR1ofcRgx3FzY5pq0PCn9
+EA005L6X4eGkI3HqwpcDzYwDC29pPSfnNP50khfFJMCnT6kKhCkPJYQhcZexGJ2U
+Ad5OU7Gui/WnmjM80x9qHBv2RIIQggpMy838WjPbw11gMOo+
+                </smb:ContentBinaryObject>
+            </sma:Certificate>
+        </sma:Endpoint>
+    </sma:ProcessMetadata>
+</ServiceMetadata>
