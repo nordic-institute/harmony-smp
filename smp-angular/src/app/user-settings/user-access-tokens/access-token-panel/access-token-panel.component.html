@@ -46,24 +46,33 @@
       <smp-field-error  *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">Invalid expire on date</smp-field-error >
     </mat-form-field>
   </div>
-  <div style="display: flex;flex-flow: row wrap;">
+  <div style="display: flex;flex-flow: row;">
     <mat-form-field style="flex-grow: 1">
       <mat-label>Seq. failed attempts</mat-label>
       <input matInput
              [value]="sequentialLoginFailureCount"
              id="sequentialTokenLoginFailureCount_id" maxlength="255" disabled readonly>
     </mat-form-field>
-    <mat-form-field style="flex-grow: 2">
+    <mat-form-field style="flex-grow:2 "  floatLabel="always">
       <mat-label>Last failed attempt</mat-label>
-      <input matInput
+      <input id="LastFailedAttempt_id" matInput [ngxMatDatetimePicker]="LastFailedAttemptPicker"
              [value]="lastFailedLoginAttempt"
-             maxlength="255" disabled>
+             placeholder="---"
+             readonly>
+      <mat-datepicker-toggle matSuffix [for]="LastFailedAttemptPicker" style="visibility: hidden"></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #LastFailedAttemptPicker [showSpinners]="true" [showSeconds]="false"
+                               [hideTime]="false"></ngx-mat-datetime-picker>
     </mat-form-field>
-    <mat-form-field style="flex-grow: 2">
+    <mat-form-field style="flex-grow: 2"  floatLabel="always">
       <mat-label>Suspended until</mat-label>
-      <input matInput
+      <input id="SuspendedUtil_id" matInput [ngxMatDatetimePicker]="suspendedUtilPicker"
              [value]="suspendedUtil"
-             maxlength="255" disabled>
+             placeholder="---"
+             readonly>
+      <mat-datepicker-toggle matSuffix [for]="suspendedUtilPicker" style="visibility: hidden"></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #suspendedUtilPicker [showSpinners]="true" [showSeconds]="false"
+                               [hideTime]="false"></ngx-mat-datetime-picker>
+
     </mat-form-field>
   </div>
 </div>

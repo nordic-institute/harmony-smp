@@ -12,18 +12,20 @@ export interface UserRo extends SearchTableEntity {
   role: ApplicationRoleEnum;
   active: boolean;
 
-
-
-  accessTokenId?: string;
   passwordExpireOn?:	Date;
-  accessTokenExpireOn?:	Date;
+  passwordUpdatedOn?:	Date;
 
   suspended?: boolean;
-  certificate?: CertificateRo;
   casUserDataUrl?: string;
   sequentialLoginFailureCount?:number;
   lastFailedLoginAttempt?:Date;
   suspendedUtil?:Date;
+
+
+ // deprecated
+  accessTokenId?: string;
+  accessTokenExpireOn?:	Date;
+  certificate?: CertificateRo;
   sequentialTokenLoginFailureCount?:number;
   lastTokenFailedLoginAttempt?:Date;
   tokenSuspendedUtil?:Date;

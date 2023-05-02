@@ -1,13 +1,18 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 
 /**
@@ -16,6 +21,13 @@ import java.time.OffsetDateTime;
 @Component
 public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
 
+    private final CredentialDao credentialDao;
+    private final ConfigurationService configurationService;
+
+    public DBUserToUserROConverter(CredentialDao credentialDao, ConfigurationService configurationService) {
+        this.credentialDao = credentialDao;
+        this.configurationService = configurationService;
+    }
 
     @Override
     public UserRO convert(DBUser source) {
@@ -32,6 +44,18 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         target.setSmpTheme(source.getSmpTheme());
         target.setSmpLocale(source.getSmpLocale());
 
+        List<DBCredential> credentials = credentialDao.findUserCredentialForByUserIdTypeAndTarget(source.getId(), CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+        if (!credentials.isEmpty()) {
+            // expected only one username/password
+            DBCredential credential = credentials.get(0);
+            target.setPasswordUpdatedOn(credential.getChangedOn());
+            target.setPasswordExpireOn(credential.getExpireOn());
+            target.setPasswordExpired(isCredentialExpired(credential));
+            target.setSequentialLoginFailureCount(credential.getSequentialLoginFailureCount());
+            target.setLastFailedLoginAttempt(credential.getLastFailedLoginAttempt());
+            target.setSuspendedUtil(getSuspensionUntilDate(credential.getLastFailedLoginAttempt(), credential.getSequentialLoginFailureCount(),
+                    configurationService.getLoginSuspensionTimeInSeconds(), configurationService.getLoginMaxAttempts()));
+        }
         return target;
     }
 
