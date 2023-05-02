@@ -108,41 +108,18 @@ insert into SMP_EXTENSION ( ID, IDENTIFIER,  IMPLEMENTATION_NAME, NAME, VERSION,
 
 insert into SMP_RESOURCE_DEF ( ID, FK_EXTENSION_ID, URL_SEGMENT, IDENTIFIER, DESCRIPTION, MIME_TYPE, NAME, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'smp-1', 'edelivery-oasis-smp-1.0-servicegroup', 'Service group', 'text/xml','Oasis SMP ServiceGroup', sysdate,  sysdate);
+insert into SMP_RESOURCE_DEF ( ID, FK_EXTENSION_ID, URL_SEGMENT, IDENTIFIER, DESCRIPTION, MIME_TYPE, NAME, CREATED_ON, LAST_UPDATED_ON) values
+(2, 1, 'oasis-bdxr-smp-2', 'edelivery-oasis-smp-2.0-servicegroup', 'Oasis SMP 2.0 ServiceGroup', 'text/xml','Oasis SMP 2.0 ServiceGroup', sysdate, sysdate);
 
 insert into SMP_SUBRESOURCE_DEF (ID,FK_RESOURCE_DEF_ID,URL_SEGMENT, IDENTIFIER, DESCRIPTION, MIME_TYPE, NAME, CREATED_ON, LAST_UPDATED_ON) values
 (1,1, 'services', 'edelivery-oasis-smp-1.0-servicemetadata', 'ServiceMetadata', 'text/xml','Oasis SMP ServiceMetadata', sysdate,  sysdate);
+insert into SMP_SUBRESOURCE_DEF (ID,FK_RESOURCE_DEF_ID,URL_SEGMENT, IDENTIFIER, DESCRIPTION, MIME_TYPE, NAME, CREATED_ON, LAST_UPDATED_ON) values
+(2,2, 'services', 'edelivery-oasis-smp-2.0-servicemetadata', 'Oasis SMP 2.0 ServiceMetadata', 'text/xml','Oasis SMP 2.0 ServiceMetadata',sysdate,  sysdate);
 
 insert into SMP_DOMAIN_RESOURCE_DEF (ID, FK_RESOURCE_DEF_ID, FK_DOMAIN_ID,CREATED_ON, LAST_UPDATED_ON ) values
 (1, 1, 1, sysdate,  sysdate);
-
-
-insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'text/xml', 'service-group', sysdate,  sysdate);
-
-insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
-(1,1,  1, utl_raw.cast_to_raw('<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ParticipantIdentifier scheme="iso6523-actorid-upis">0088:777002abzz777</ParticipantIdentifier><ServiceMetadataReferenceCollection/></ServiceGroup>') , sysdate,  sysdate);
-
-insert into SMP_DOCUMENT (ID, CURRENT_VERSION, MIME_TYPE, NAME,CREATED_ON, LAST_UPDATED_ON) values
-(2, 1, 'text/xml', 'service-metadta', sysdate,  sysdate);
-
-insert into SMP_DOCUMENT_VERSION (ID, FK_DOCUMENT_ID, VERSION, DOCUMENT_CONTENT, CREATED_ON, LAST_UPDATED_ON) values
-(2,2,  1, utl_raw.cast_to_raw('<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><Redirect href="http://localhost:8080/url"><CertificateUID/></Redirect></ServiceMetadata>') , sysdate,  sysdate);
-
-insert into SMP_RESOURCE ( ID, FK_DOCUMENT_ID, FK_GROUP_ID, FK_DOREDEF_ID,  IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 1, 1, 'iso6523-actorid-upis', '0088:777002abzz777', 0, 'PUBLIC', sysdate,  sysdate);
-
-insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 1, 2, 'service-value', 'service-schema', sysdate,  sysdate);
-
-insert into SMP_SUBRESOURCE (ID, FK_RESOURCE_ID,FK_SUREDEF_ID, FK_DOCUMENT_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME, CREATED_ON, LAST_UPDATED_ON) values
-(2, 1, 1, 2, 'service-value2', 'service-schema2', sysdate,  sysdate);
-
-
-
-
-
-insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 2, 'ADMIN', sysdate,  sysdate);
+insert into SMP_DOMAIN_RESOURCE_DEF (ID, FK_RESOURCE_DEF_ID, FK_DOMAIN_ID,CREATED_ON, LAST_UPDATED_ON ) values
+(2, 2, 1, NOW(),  NOW());
 
 insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 2, 'ADMIN', sysdate,  sysdate);
