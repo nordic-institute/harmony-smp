@@ -181,6 +181,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CertificateCredentials", "Certificate is not given for certificate credential!");
         }
 
+
         DBCredential dbCredential = conversionService.convert(credential, DBCredential.class);
         dbCredential.setCredentialType(CredentialType.CERTIFICATE);
         dbCredential.setCredentialTarget(CredentialTargetType.REST_API);
@@ -197,8 +198,9 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbCredential.setCertificate(dbCertificate);
         credentialDao.persistFlushDetach(dbCredential);
 
+
         CredentialRO result = conversionService.convert(dbCredential, CredentialRO.class);
-        CertificateRO resultCertificate = conversionService.convert(dbCredential.getCertificate(), CertificateRO.class);
+        CertificateRO resultCertificate = truststoreService.getCertificateData(dbCertificate.getPemEncoding(), true, false);
         result.setCertificate(resultCertificate);
         result.setStatus(EntityROStatus.NEW.getStatusNumber());
         return result;
@@ -453,6 +455,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         credentialDao.remove(credential);
         CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
         credentialRO.setStatus(EntityROStatus.REMOVE.getStatusNumber());
+
         return credentialRO;
     }
 

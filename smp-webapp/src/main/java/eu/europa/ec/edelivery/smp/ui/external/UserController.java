@@ -146,8 +146,11 @@ public class UserController {
         Long accessTokenId = decryptEntityId(encAccessTokenId);
 
         // delete user credential
-        return uiUserService.deleteUserCredentials(userId,
+        CredentialRO result =  uiUserService.deleteUserCredentials(userId,
                 accessTokenId, CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
+        // set the same encrypted id so that UI can locate and update it
+        result.setCredentialId(encAccessTokenId);
+        return result;
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
@@ -160,11 +163,14 @@ public class UserController {
         Long accessTokenId = decryptEntityId(encAccessTokenId);
 
         // delete user credential
-        return uiUserService.updateUserCredentials(userId,
+        CredentialRO result =  uiUserService.updateUserCredentials(userId,
                 accessTokenId,
                 CredentialType.ACCESS_TOKEN,
                 CredentialTargetType.REST_API,
                 credentialRO);
+        // set the same encrypted credential id so that UI can remove it from the list
+        result.setCredentialId(encAccessTokenId);
+        return result;
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
@@ -195,8 +201,11 @@ public class UserController {
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
         // delete user credential
-        return uiUserService.deleteUserCredentials(userId,
+        CredentialRO result =  uiUserService.deleteUserCredentials(userId,
                 credentialId, CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        // set the same encrypted credential id so that UI can remove it from the list
+        result.setCredentialId(encCredentialId);
+        return result;
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
@@ -208,11 +217,14 @@ public class UserController {
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
         // delete user credential
-        return uiUserService.updateUserCredentials(userId,
+        CredentialRO result =  uiUserService.updateUserCredentials(userId,
                 credentialId,
                 CredentialType.CERTIFICATE,
                 CredentialTargetType.REST_API,
                 credentialRO);
+        // set the same encrypted credential id so that UI can update it
+        result.setCredentialId(encCredentialId);
+        return result;
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
