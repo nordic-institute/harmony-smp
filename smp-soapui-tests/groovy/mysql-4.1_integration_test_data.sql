@@ -43,13 +43,16 @@ insert into SMP_EXTENSION ( ID, IDENTIFIER,  IMPLEMENTATION_NAME, NAME, VERSION,
 (1, 'edelivery-oasis-smp-extension',  'OasisSMPExtension','Oasis SMP 1.0 and 2.0','1.0', 'Oasis SMP 1.0 and 2.0 extension',  NOW(),  NOW());
 
 insert into SMP_RESOURCE_DEF ( ID, FK_EXTENSION_ID, URL_SEGMENT, IDENTIFIER, DESCRIPTION, MIME_TYPE, NAME, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'smp-1', 'edelivery-oasis-smp-1.0-servicegroup', 'Service group', 'text/xml','Oasis SMP ServiceGroup', NOW(),  NOW());
+(1, 1, 'smp-1', 'edelivery-oasis-smp-1.0-servicegroup', 'Oasis SMP 1.0 ServiceGroup', 'text/xml','Oasis SMP 1.0 ServiceGroup', NOW(),  NOW()),
+(2, 1, 'oasis-bdxr-smp-2', 'edelivery-oasis-smp-2.0-servicegroup', 'Oasis SMP 2.0 ServiceGroup', 'text/xml','Oasis SMP 2.0 ServiceGroup', NOW(),  NOW());
 
 insert into SMP_SUBRESOURCE_DEF (ID,FK_RESOURCE_DEF_ID,URL_SEGMENT, IDENTIFIER, DESCRIPTION, MIME_TYPE, NAME, CREATED_ON, LAST_UPDATED_ON) values
-(1,1, 'services', 'edelivery-oasis-smp-1.0-servicemetadata', 'ServiceMetadata', 'text/xml','Oasis SMP ServiceMetadata', NOW(),  NOW());
+(1,1, 'services', 'edelivery-oasis-smp-1.0-servicemetadata', 'Oasis SMP 1.0 ServiceMetadata', 'text/xml','Oasis SMP 1.0 ServiceMetadata', NOW(),  NOW()),
+(2,2, 'services', 'edelivery-oasis-smp-2.0-servicemetadata', 'Oasis SMP 2.0 ServiceMetadata', 'text/xml','Oasis SMP 2.0 ServiceMetadata', NOW(),  NOW());
 
 insert into SMP_DOMAIN_RESOURCE_DEF (ID, FK_RESOURCE_DEF_ID, FK_DOMAIN_ID,CREATED_ON, LAST_UPDATED_ON ) values
-(1, 1, 1, NOW(),  NOW());
+(1, 1, 1, NOW(),  NOW()),
+(2, 2, 1, NOW(),  NOW());
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
 (1, 1, 'Test group', 'PUBLIC', NOW(),  NOW());
