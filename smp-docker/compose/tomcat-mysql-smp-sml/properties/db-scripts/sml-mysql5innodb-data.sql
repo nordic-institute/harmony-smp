@@ -43,7 +43,7 @@ INSERT INTO bdmsl_certificate (id, certificate_id, valid_from ,valid_until,creat
 (1, 'CN=smp_domain_01,O=digit,C=eu:0000000000000000000000006443d8a8',DATE_ADD(NOW(), INTERVAL -3 DAY),DATE_ADD(NOW(), INTERVAL 365 DAY), NOW(), NOW());
 
 INSERT INTO bdmsl_smp (smp_id, fk_certificate_id, fk_subdomain_id, endpoint_logical_address, endpoint_physical_address, created_on, last_updated_on ) VALUES
-('DOMI-SMP-001 ', 1,1, 'http://localhost:8080/smp/','0.0.0.0',NOW(), NOW());
+('DOMI-SMP-001', 1,1, 'http://localhost:8080/smp/','0.0.0.0',NOW(), NOW());
 
 
 

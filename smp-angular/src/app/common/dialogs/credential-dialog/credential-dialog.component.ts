@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, Output} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {SmpConstants} from "../../../smp.constants";
@@ -207,6 +207,9 @@ export class CredentialDialogComponent {
       } as CertificateRo
     }
     return null;
+  }
+  get minSelectableDate(): Date {
+    return this.credentialType == CredentialDialogComponent.ACCESS_TOKEN_TYPE? new Date():null;
   }
 
   showSuccessMessage(value:string) {

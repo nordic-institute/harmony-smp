@@ -13,6 +13,4 @@ $ORIGIN test.edelivery.local.
 $TTL 60	; 1 minute
 ns			A	127.0.0.1
 DOMI-SMP-001.publisher.domain-01	60	IN	CNAME	localhost.
-B-b12b56f8cc8aa86c50e853568602d46c.iso6523-actorid-upis.domain-01	60	IN	CNAME	DOMI-SMP-001.publisher.domain-01.test.edelivery.local.
-XLUSTCNMQBBUURV46W66WAOZFI7AATDWKLJEETXSUDRXJX4QAHDA.iso6523-actorid-upis.domain-01	60	IN	NAPTR	100 10 "U" "Meta:SMP" "!.*!http://localhost:8080/smp/!" .
 
