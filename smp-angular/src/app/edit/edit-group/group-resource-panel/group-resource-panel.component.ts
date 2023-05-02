@@ -26,8 +26,6 @@ import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
 })
 export class GroupResourcePanelComponent implements BeforeLeaveGuard {
 
-
-
   title: string = "Group resources";
   private _group: GroupRo;
   @Input() domain: DomainRo;

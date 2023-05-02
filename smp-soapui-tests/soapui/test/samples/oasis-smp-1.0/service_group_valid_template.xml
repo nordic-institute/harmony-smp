@@ -1,0 +1,4 @@
+<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ParticipantIdentifier scheme="${=request.getProperty('ResourceIdentifierScheme').getValue()}">${=request.getProperty('ResourceIdentifierValue').getValue()}</ParticipantIdentifier>
+    <ServiceMetadataReferenceCollection/>
+</ServiceGroup>
