@@ -148,20 +148,6 @@ public class SMPAuthorizationService {
         SMPUserDetails userDetails = getAndValidateUserDetails();
         Long entityId = getIdFromEncryptedString(userId, true);
         return entityId.equals(userDetails.getUser().getId());
-
-    }
-
-    public boolean isAuthorizedForManagingTheServiceMetadataGroup(Long serviceMetadataId) {
-        SMPUserDetails userDetails = getAndValidateUserDetails();
-        if (hasSessionUserRole(S_AUTHORITY_TOKEN_USER, userDetails)) {
-            LOG.debug("SMP admin is authorized to manage service metadata: [{}]", serviceMetadataId);
-            return true;
-
-        }
-        Long userId = userDetails.getUser().getId();
-        //return serviceGroupService.isServiceGroupOwnerForMetadataID(userId, serviceMetadataId);
-        return false;
-
     }
 
 

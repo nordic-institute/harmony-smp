@@ -108,24 +108,6 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void isAuthorizedForManagingTheServiceMetadataGroupSMPAdmin() throws Exception {
-        // given
-        SecurityContextHolder.setContext(mockSecurityContextSMPAdmin);
-        // when then smp admin is always authorized to manage SMP
-        boolean bVal = testInstance.isAuthorizedForManagingTheServiceMetadataGroup(10L);
-        assertTrue(bVal);
-    }
-
-    @Test
-    public void isAuthorizedForManagingTheServiceMetadataGroupSYSAdmin() throws Exception {
-        // given
-        SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
-        // when then system admin is not  authorized to manage SMP
-        boolean bVal = testInstance.isAuthorizedForManagingTheServiceMetadataGroup(10L);
-        assertFalse(bVal);
-    }
-
-    @Test
     public void testGetUpdatedUserData() {
         UserRO user = new UserRO();
         user.setPasswordExpireOn(OffsetDateTime.now().minusDays(1));

@@ -43,8 +43,6 @@ export class UserProfilePanelComponent {
   _managedUserData: UserRo;
 
   currentDate: Date = new Date();
-
-  currentPwdCredential: CredentialRo;
   userController: UserController;
 
   @Input() showDataPanelTitles: boolean = true
@@ -105,6 +103,8 @@ export class UserProfilePanelComponent {
   @Input() set managedUserData(value: UserRo) {
     this._managedUserData = value;
 
+    this.updatePwdCredential(value);
+
     if (!!this._managedUserData) {
       this.userForm.controls['username'].setValue(this._managedUserData.username);
       this.userForm.controls['active'].setValue(this._managedUserData.active);
@@ -140,15 +140,22 @@ export class UserProfilePanelComponent {
 
 
 
-  private updatePwdCredential(currentPwdCredential: CredentialRo) {
-    this.currentPwdCredential = {
-      ...currentPwdCredential
+  private updatePwdCredential(value: UserRo) {
+    // form is always disabled
+    this.userCredentialForm.disable()
+    if (!value) {
+      this.userCredentialForm.controls['passwordUpdatedOn'].setValue(null);
+      this.userCredentialForm.controls['passwordExpireOn'].setValue(null);
+      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(null);
+      this.userCredentialForm.controls['lastFailedLoginAttempt'].setValue(null);
+      this.userCredentialForm.controls['suspendedUtil'].setValue(null);
+    } else {
+      this.userCredentialForm.controls['passwordUpdatedOn'].setValue(value.passwordUpdatedOn);
+      this.userCredentialForm.controls['passwordExpireOn'].setValue(value.passwordExpireOn);
+      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(value.sequentialLoginFailureCount);
+      this.userCredentialForm.controls['lastFailedLoginAttempt'].setValue(value.lastFailedLoginAttempt);
+      this.userCredentialForm.controls['suspendedUtil'].setValue(value.suspendedUtil);
     }
-    this.userCredentialForm.controls['passwordUpdatedOn'].setValue(this.currentPwdCredential.updatedOn);
-    this.userCredentialForm.controls['passwordExpireOn'].setValue(this.currentPwdCredential.expireOn);
-    this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(this.currentPwdCredential.sequentialLoginFailureCount);
-    this.userCredentialForm.controls['lastFailedLoginAttempt'].setValue(this.currentPwdCredential.lastFailedLoginAttempt);
-    this.userCredentialForm.controls['suspendedUtil'].setValue(this.currentPwdCredential.suspendedUtil);
     // mark form as pristine
     this.userCredentialForm.markAsPristine();
   }

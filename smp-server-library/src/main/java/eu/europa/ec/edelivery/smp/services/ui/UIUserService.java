@@ -94,6 +94,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     protected void updateUserStatus(UserRO user) {
+        /*
         // never return password even if is hashed...
         if (user.getCertificate() != null && !StringUtils.isBlank(user.getCertificate().getCertificateId())) {
             // validate certificate
@@ -111,18 +112,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 }
             }
         }
-    }
 
-    public X509Certificate getX509CertificateFromCertificateRO(CertificateRO certificateRO) {
-        if (certificateRO == null || certificateRO.getEncodedValue() == null) {
-            return null;
-        }
-        try {
-            return X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certificateRO.getEncodedValue()));
-        } catch (CertificateException e) {
-            LOG.error("Error occurred while parsing the certificate encoded value for certificate id:[" + certificateRO.getCertificateId() + "].", e);
-            return null;
-        }
+         */
     }
 
     public AccessTokenRO createAccessTokenForUser(Long userId, CredentialRO credInit) {
@@ -397,7 +388,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Transactional(readOnly = true)
     public UserRO getUserById(Long userId) {
         DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
-        return convertToRo(user);
+        UserRO result =  convertToRo(user);
+
+        return result;
+
     }
 
     public List<CredentialRO> getUserCredentials(Long userId,

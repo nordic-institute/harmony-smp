@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
@@ -12,6 +13,7 @@ import org.junit.platform.commons.util.StringUtils;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.ConversionService;
 
@@ -32,10 +34,12 @@ public class DBUserToUserROConverterTest {
     private DBUser source;
 
     private UserRO target;
+    CredentialDao credentialDao = Mockito.mock(CredentialDao.class);
+    ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
 
     @InjectMocks
-    private DBUserToUserROConverter converter = new DBUserToUserROConverter();
+    private DBUserToUserROConverter converter = new DBUserToUserROConverter(credentialDao, configurationService);
 
     @Test
     public void returnsThePasswordAsNotExpiredForCertificateOnlyUsers() {
