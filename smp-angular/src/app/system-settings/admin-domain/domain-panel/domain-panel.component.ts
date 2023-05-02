@@ -18,7 +18,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   @Output() onSaveBasicDataEvent: EventEmitter<DomainRo> = new EventEmitter();
 
   @Output() onDiscardNew: EventEmitter<any> = new EventEmitter();
-  readonly warningTimeout: number = 50000;
+  readonly warningTimeout: number = 3000;
   readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
   readonly domainVisibilityOptions = Object.keys(VisibilityEnum)
     .map(el => {
@@ -60,7 +60,14 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
    * @param value
    */
   onFieldKeyPressed(controlName: string, showTheWarningReference: string) {
+
+    if (this.domainForm.controls['domainCode'].hasError('pattern')) {
+      // already visible error - skip the length validation
+      return;
+    }
+
     let value = this.domainForm.get(controlName).value
+
 
     if (!!value && value.length >= 63 && !this.fieldWarningTimeoutMap[showTheWarningReference]) {
       this.fieldWarningTimeoutMap[showTheWarningReference] = setTimeout(() => {
