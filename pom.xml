@@ -86,10 +86,10 @@
         <servlet-api.version>3.0.1</servlet-api.version>
         <slf4j.version>1.7.36</slf4j.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring-boot.version>2.7.10</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.73</spring-boot.tomcat.version>
-        <spring.security.version>5.8.2</spring.security.version>
-        <spring.version>5.3.26</spring.version>
+        <spring-boot.version>2.7.11</spring-boot.version>
+        <spring-boot.tomcat.version>9.0.74</spring-boot.tomcat.version>
+        <spring.security.version>5.8.3</spring.security.version>
+        <spring.version>5.3.27</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
         <!-- plugins -->
@@ -814,7 +814,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.1.2</version>
+                        <version>8.2.1</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>
