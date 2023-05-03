@@ -1,4 +1,9 @@
 .alert-message {
+  position: fixed;
+  max-width: 70%;
+  top: 3em;
+  left: 50%;
+  transform: translate(-50%, 0);
   padding: 20px;
   color: white;
   opacity: 1;
