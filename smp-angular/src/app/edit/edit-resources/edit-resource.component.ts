@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
@@ -18,7 +18,7 @@ import {TableResult} from "../../common/model/table-result.model";
   templateUrl: './edit-resource.component.html',
   styleUrls: ['./edit-resource.component.css']
 })
-export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
+export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];
@@ -48,6 +48,7 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
       this.refreshGroups();
       this.refreshDomainsResourceDefinitions();
     } else {
+      this.isLoadingResults = false;
       this.groupList = [];
       this._selectedDomainResourceDef = [];
     }
@@ -62,6 +63,7 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
     if (!!this._selectedGroup) {
       this.refreshResources();
     } else {
+      this.isLoadingResults = false;
       this.resourceList = [];
     }
   };
@@ -85,38 +87,44 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
 
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.refreshDomains();
   }
 
   refreshDomains() {
+    this.isLoadingResults = true;
     this.domainService.getDomainsForResourceAdminUserObservable()
       .subscribe((result: DomainRo[]) => {
         this.updateDomainList(result)
       }, (error: any) => {
         this.alertService.error(error.error?.errorDescription)
+        this.isLoadingResults = false;
       });
   }
 
   refreshGroups() {
     if (!this.selectedDomain) {
       this.updateGroupList([]);
+      this.isLoadingResults = false;
       return;
     }
+    this.isLoadingResults = true;
     this.groupService.getDomainGroupsForResourceAdminObservable(this.selectedDomain)
       .subscribe((result: GroupRo[]) => {
         this.updateGroupList(result)
       }, (error: any) => {
+        this.isLoadingResults = false;
         this.alertService.error(error.error?.errorDescription)
       });
   }
 
   refreshResources() {
     if (!this._selectedGroup) {
+      this.isLoadingResults = false;
       this.updateResourceList([]);
       return;
     }
-
+    this.isLoadingResults = true;
     this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,
       this.filter, this.paginator?.pageIndex, this.paginator?.pageSize)
       .subscribe((result: TableResult<ResourceRo>) => {
@@ -124,7 +132,9 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
         this.updateResourceList(result.serviceEntities)
         this.data = [...result.serviceEntities];
         this.resultsLength = result.count;
+        this.isLoadingResults = false;
       }, (error: any) => {
+        this.isLoadingResults = false;
         this.alertService.error(error.error?.errorDescription)
       });
   }
@@ -141,8 +151,9 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
   updateDomainList(list: DomainRo[]) {
     this.domainList = list;
     if (!!this.domainList && this.domainList.length > 0) {
-
       this.selectedDomain = this.domainList[0];
+    } else {
+      this.isLoadingResults = false;
     }
   }
 
@@ -150,6 +161,8 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
     this.groupList = list
     if (!!this.groupList && this.groupList.length > 0) {
       this.selectedGroup = this.groupList[0];
+    } else {
+      this.isLoadingResults = false;
     }
   }
 

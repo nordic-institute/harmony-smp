@@ -24,9 +24,10 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
   dataSource: MatTableDataSource<DomainRo> = new MatTableDataSource();
   selected: DomainRo;
   domainList: DomainRo[] = [];
-
   currenTabIndex: number = 0;
   handleTabClick: any;
+
+  loading: boolean = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -58,10 +59,13 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
 
 
   refreshDomains() {
+    this.loading = true;
     this.domainService.getDomainsForDomainAdminUserObservable()
       .subscribe((result: DomainRo[]) => {
         this.updateDomainList(result)
+        this.loading = false;
       }, (error: any) => {
+        this.loading = false;
         this.alertService.error(error.error?.errorDescription)
       });
   }

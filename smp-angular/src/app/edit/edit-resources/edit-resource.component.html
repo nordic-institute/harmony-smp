@@ -45,8 +45,10 @@
     </mat-tab-group>
   </data-panel>
   <ng-template #noUserAdminGroupsDataFound>
-    <smp-warning-panel class="smp-no-data-panel"
+    <smp-warning-panel *ngIf="!isLoadingResults"
+                      class="smp-no-data-panel"
                        icon="warning"
+                       type="warning"
                        label="User is not administrator of any of the resources"></smp-warning-panel>
   </ng-template>
 </div>

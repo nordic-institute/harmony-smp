@@ -50,8 +50,21 @@
   }
 
   .error-data-panel {
-    color: smp.get-theme-color($theme, warn, 500-contrast) !important;
+    color: smp.get-theme-color($theme, warn, 500 -contrast) !important;
     background-color: smp.get-theme-color($theme, warn, 500) !important;
+  }
+
+  .alert-error {
+    background-color: #f44336;
+  }
+  .alert-success {
+    background-color: #4CAF50;
+  }
+  .alert-info {
+    background-color: #2196F3;
+  }
+  .alert-warning {
+    background-color: #ff9800;
   }
 
 }
