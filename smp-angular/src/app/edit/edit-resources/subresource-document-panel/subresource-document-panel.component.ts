@@ -11,7 +11,6 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 import {DocumentRo} from "../../../common/model/document-ro.model";
 import {NavigationService} from "../../../window/sidenav/navigation-model.service";
-import {DocumentWizardDialogComponent} from "../document-wizard-dialog/document-wizard-dialog.component";
 import {SubresourceRo} from "../../../common/model/subresource-ro.model";
 import {
   SubresourceDocumentWizardComponent
@@ -19,6 +18,7 @@ import {
 import {
   ServiceMetadataWizardRo
 } from "../../../service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-edit-ro.model";
+import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 
 @Component({
   moduleId: module.id,
@@ -145,9 +145,15 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
-      this.documentForm.controls['payload'].setValue(value.payload);
-      this.documentForm.controls['payloadVersion'].enable();
+      this.documentForm.controls['payload'].setValue(!value.payload?"":value.payload);
       this.documentForm.controls['payload'].enable();
+
+      if (!this.documentVersionsExists) {
+        this.documentForm.controls['payloadVersion'].disable();
+      } else {
+        this.documentForm.controls['payloadVersion'].enable();
+      }
+
     } else {
       this.documentForm.controls['name'].setValue("");
       this.documentForm.controls['payload'].setValue("");
@@ -268,13 +274,47 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
     return !this._document?.allVersions ? [] : this._document?.allVersions;
   }
 
+  get documentVersionsExists(): boolean{
+    return this.getDocumentVersions.length > 0
+  }
+  get emptyDocument(): boolean{
+    return !this.documentForm.controls['payload']?.value
+  }
 
   get saveButtonDisabled(): boolean {
-    return !this.documentForm.dirty;
+    return !this.documentForm.dirty || !this.documentForm.controls['payload']?.value;
   }
 
   isDirty(): boolean {
     return this.documentForm.dirty
+  }
+
+  onDocumentResetButtonClicked(): void {
+
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: "Cancel changes",
+        description: "Do you want to cancel all changes on the document?"
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.resetChanges()
+      }
+    });
+  }
+  resetChanges(){
+    let currentVersion = this._document?.payloadVersion;
+    if (!currentVersion) {
+      this.documentForm.controls['payload'].setValue("");
+      this.documentForm.markAsPristine();
+    } else {
+      this.loadDocumentForVersion(currentVersion);
+    }
+  }
+
+  get showWizardDialog(): boolean {
+    // in version DomiSMP 5.0 CR show only the wizard for edelivery-oasis-smp-1.0-servicemetadata
+    return this._subresource?.subresourceTypeIdentifier === 'edelivery-oasis-smp-1.0-servicemetadata';
   }
 }
 

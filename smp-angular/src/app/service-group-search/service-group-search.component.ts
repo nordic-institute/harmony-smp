@@ -57,7 +57,7 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
   initColumns(): void {
     this.columnPicker.allColumns = [
       {
-        name: 'Metadata size',
+        name: 'Subres. size',
         prop: 'serviceMetadata.length',
         showInitially: true,
         width: 120,

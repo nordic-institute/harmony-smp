@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {MatPaginator} from "@angular/material/paginator";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {EditDomainService} from "../edit-domain/edit-domain.service";
 import {DomainRo} from "../../common/model/domain-ro.model";
@@ -172,6 +172,14 @@ export class EditResourceComponent implements AfterViewInit, BeforeLeaveGuard {
 
   isDirty(): boolean {
     return false;
+  }
+
+  onPageChanged(page: PageEvent) {
+    this.refreshResources();
+  }
+
+  get disabledResourcePagination(): boolean {
+    return !this._selectedGroup;
   }
 
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild,} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild,} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator} from "@angular/material/paginator";
@@ -22,7 +22,7 @@ import {NavigationNode, NavigationService} from "../../../window/sidenav/navigat
   templateUrl: './subresource-panel.component.html',
   styleUrls: ['./subresource-panel.component.scss']
 })
-export class SubresourcePanelComponent implements OnInit, BeforeLeaveGuard {
+export class SubresourcePanelComponent implements AfterViewInit, OnInit, BeforeLeaveGuard {
 
 
   title: string = "Subresources";
@@ -45,15 +45,11 @@ export class SubresourcePanelComponent implements OnInit, BeforeLeaveGuard {
   }
 
   ngOnInit(): void {
-    // filter predicate for search the domain
-    /*
-        this.dataSource.filterPredicate =
-          (data: SubresourceRo, filter: string) => {
-            return !filter || -1 != data.subresourceId.toLowerCase().indexOf(filter.trim().toLowerCase());
+  }
 
-          };
+  ngAfterViewInit() {
 
-     */
+    this.dataSource.paginator = this.paginator;
   }
 
   @Input() set resource(resource: ResourceRo) {
@@ -147,6 +143,10 @@ export class SubresourcePanelComponent implements OnInit, BeforeLeaveGuard {
   }
 
   public showSubresourceEditPanel(subresource: SubresourceRo) {
+    if (!this.navigationService.selected) {
+      this.navigationService.select(null);
+      return;
+    }
     this.editResourceService.selectedResource = this.resource;
     this.editResourceService.selectedSubresource = subresource;
 

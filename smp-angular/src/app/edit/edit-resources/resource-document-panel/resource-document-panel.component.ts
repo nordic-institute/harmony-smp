@@ -12,6 +12,7 @@ import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 import {DocumentRo} from "../../../common/model/document-ro.model";
 import {NavigationService} from "../../../window/sidenav/navigation-model.service";
 import {DocumentWizardDialogComponent} from "../document-wizard-dialog/document-wizard-dialog.component";
+import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 
 @Component({
   moduleId: module.id,
@@ -108,7 +109,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
-      this.documentForm.controls['payload'].setValue(value.payload);
+      this.documentForm.controls['payload'].setValue(!value.payload?"":value.payload);
       this.documentForm.controls['payload'].enable();
       // the method documentVersionsExists already uses the current value to check if versions exists
       if (!this.documentVersionsExists) {
@@ -131,6 +132,32 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     doc.payload = this.documentForm.controls['payload'].value;
     return doc;
   }
+
+  onDocumentResetButtonClicked(): void {
+
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: "Cancel changes",
+        description: "Do you want to cancel all changes on the document?"
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.resetChanges()
+      }
+    });
+  }
+
+  resetChanges(){
+
+    let currentVersion = this._document?.payloadVersion;
+    if (!currentVersion) {
+      this.documentForm.controls['payload'].setValue("");
+      this.documentForm.markAsPristine();
+    } else {
+      this.loadDocumentForVersion(currentVersion);
+    }
+  }
+
 
   onSaveButtonClicked(): void {
     this.editResourceService.saveDocumentObservable(this._resource, this.document).subscribe((value: DocumentRo) => {
@@ -223,7 +250,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   }
 
   get emptyDocument(): boolean{
-    return !this.documentForm.controls['payload'].value
+    return !this.documentForm.controls['payload']?.value
   }
 
   get documentVersionsExists(): boolean{
@@ -232,11 +259,16 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
 
 
   get saveButtonDisabled(): boolean {
-    return !this.documentForm.dirty;
+    return !this.documentForm.dirty || !this.documentForm.controls['payload']?.value;
   }
 
   isDirty(): boolean {
     return this.documentForm.dirty
+  }
+
+  get showWizardDialog(): boolean {
+    // in version DomiSMP 5.0 CR show only the wizard for edelivery-oasis-smp-1.0-servicegroup
+    return this._resource?.resourceTypeIdentifier === 'edelivery-oasis-smp-1.0-servicegroup';
   }
 }
 

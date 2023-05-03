@@ -4,6 +4,7 @@
     <mat-toolbar-row class="smp-toolbar-row">
       <button id="validateResource_id" mat-raised-button
               color="primary"
+              [disabled]="emptyDocument"
               matTooltip="Validate resource"
               (click)="onDocumentValidateButtonClicked()"
       >
@@ -21,6 +22,7 @@
       <button id="documentWizard_id" mat-raised-button
               color="primary"
               matTooltip="Show document wizard dialog"
+              *ngIf="showWizardDialog"
               (click)="onShowDocumentWizardDialog()"
       >
         <mat-icon>code_block</mat-icon>
@@ -103,7 +105,13 @@
       ></ngx-codemirror>
     </div>
     <mat-toolbar class="mat-elevation-z2" style="flex-grow: 0">
-      <mat-toolbar-row>
+      <mat-toolbar-row class="smp-toolbar-row">
+        <button d="cancel_id" mat-raised-button color="primary"
+                [disabled]="saveButtonDisabled"
+                (click)="onDocumentResetButtonClicked()">
+          <mat-icon>cancel</mat-icon>
+          <span>Cancel</span>
+        </button>
         <button id="saveResource_id" mat-raised-button
                 color="primary"
                 matTooltip="Validate resource"
