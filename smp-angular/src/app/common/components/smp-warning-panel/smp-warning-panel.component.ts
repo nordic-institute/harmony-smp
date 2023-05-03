@@ -10,4 +10,5 @@ import { Component, Input } from '@angular/core';
 export class SmpWarningPanelComponent {
   @Input() label:string;
   @Input() icon:string;
+
 }

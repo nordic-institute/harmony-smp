@@ -34,10 +34,9 @@
       </mat-tab>
     </mat-tab-group>
     <ng-template #noUserAdminGroupsDataFound>
-      <div class="panel smp-no-data-panel">
-        <mat-icon >warning</mat-icon>
-        <span>User is not administrator of any of the groups </span>
-      </div>
+      <smp-warning-panel class="smp-no-data-panel"
+      icon="warning"
+      label="User is not administrator of any of the groups "></smp-warning-panel>
     </ng-template>
   </data-panel>
 

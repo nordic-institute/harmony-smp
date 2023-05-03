@@ -31,7 +31,6 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 public class DomainAdminController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainAdminController.class);
-
     final UIDomainService uiDomainService;
     final DomainService domainService;
 
@@ -55,8 +54,9 @@ public class DomainAdminController {
         logAdminAccess("deleteDomain:" + domainEncId);
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         LOG.info("Delete domain with id [{}]", domainId);
-
-        return uiDomainService.deleteDomain(domainId);
+        DomainRO domainRO = uiDomainService.deleteDomain(domainId);
+        domainRO.setDomainId(domainEncId);
+        return domainRO;
     }
 
     @PutMapping(path = "/{user-enc-id}/create", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -83,6 +83,7 @@ public class DomainAdminController {
 
         DomainRO domainRO = uiDomainService.getDomainData(domainId);
         domainRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+        domainRO.setDomainId(domainEncId);
         return domainRO;
     }
 
@@ -97,6 +98,7 @@ public class DomainAdminController {
         uiDomainService.updateResourceDefDomainList(domainId, resourceDefs);
         DomainRO domainRO = uiDomainService.getDomainData(domainId);
         domainRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+        domainRO.setDomainId(domainEncId);
         return domainRO;
     }
 
@@ -111,6 +113,7 @@ public class DomainAdminController {
         uiDomainService.updateDomainSmlIntegrationData(domainId, domainData);
         DomainRO domainRO = uiDomainService.getDomainData(domainId);
         domainRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+        domainRO.setDomainId(domainEncId);
         return domainRO;
     }
 
