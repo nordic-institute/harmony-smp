@@ -77,9 +77,10 @@
         href="javascript:void(0)"
 
         title="Expand/Collapse Row"
-        (click)="toggleExpandRow(row)"> <mat-icon class="mat-icon-rtl-mirror">
-        {{expanded ? 'expand_more' : 'chevron_right'}}
-      </mat-icon>
+        (click)="toggleExpandRow(row)">
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{expanded ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
       </a>
     </ng-template>
 
@@ -99,40 +100,43 @@
       </div>
     </ng-template>
 
-    <div fxFlex="50px" *ngIf=showActionButtons>
-      <ng-container>
 
-        <button id="cancelButton" mat-raised-button (click)="onCancelButtonClicked()" color="primary"
-                [disabled]="!submitButtonsEnabled">
-          <mat-icon>cancel</mat-icon>
-          <span>Cancel</span>
-        </button>
-        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked(false)" color="primary"
-                [disabled]="!submitButtonsEnabled">
-          <mat-icon>save</mat-icon>
-          <span>Save</span>
-        </button>
+    <mat-toolbar fxFlex="50px" *ngIf=showActionButtons class="mat-elevation-z2" style="flex-grow: 0">
+      <mat-toolbar-row class="smp-toolbar-row">
+        <ng-container>
 
-        <tool-button-spacer *ngIf="allowNewItems || allowEditItems || allowDeleteItems"></tool-button-spacer>
+          <button id="cancelButton" mat-raised-button (click)="onCancelButtonClicked()" color="primary"
+                  [disabled]="!submitButtonsEnabled">
+            <mat-icon>cancel</mat-icon>
+            <span>Cancel</span>
+          </button>
+          <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked(false)" color="primary"
+                  [disabled]="!submitButtonsEnabled">
+            <mat-icon>save</mat-icon>
+            <span>Save</span>
+          </button>
 
-        <!-- new button enabled -->
-        <button *ngIf="allowNewItems" id="newButton" mat-raised-button (click)="onNewButtonClicked()"
-                [disabled]="loading || !allowNewItems" color="primary">
-          <mat-icon>add</mat-icon>
-          <span>New</span>
-        </button>
-        <button *ngIf="allowEditItems" id="editButton" mat-raised-button (click)="onEditButtonClicked()"
-                [disabled]="!editButtonEnabled || loading" color="primary">
-          <mat-icon>edit</mat-icon>
-          <span>Edit</span>
-        </button>
-        <button *ngIf="allowDeleteItems" id="deleteButton" mat-raised-button (click)="onDeleteButtonClicked()"
-                [disabled]="!deleteButtonEnabled || loading || !allowDeleteItems" color="primary">
-          <mat-icon>delete</mat-icon>
-          <span>Delete</span>
-        </button>
-      </ng-container>
-      <ng-container *ngTemplateOutlet="additionalToolButtons"></ng-container>
-    </div>
+          <tool-button-spacer *ngIf="allowNewItems || allowEditItems || allowDeleteItems"></tool-button-spacer>
+
+          <!-- new button enabled -->
+          <button *ngIf="allowNewItems" id="newButton" mat-raised-button (click)="onNewButtonClicked()"
+                  [disabled]="loading || !allowNewItems" color="primary">
+            <mat-icon>add</mat-icon>
+            <span>New</span>
+          </button>
+          <button *ngIf="allowEditItems" id="editButton" mat-raised-button (click)="onEditButtonClicked()"
+                  [disabled]="!editButtonEnabled || loading" color="primary">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button *ngIf="allowDeleteItems" id="deleteButton" mat-raised-button (click)="onDeleteButtonClicked()"
+                  [disabled]="!deleteButtonEnabled || loading || !allowDeleteItems" color="primary">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </ng-container>
+        <ng-container *ngTemplateOutlet="additionalToolButtons"></ng-container>
+      </mat-toolbar-row>
+    </mat-toolbar>
   </form>
 </div>

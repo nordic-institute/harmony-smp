@@ -88,12 +88,14 @@ public class AbstractResourceHandler {
      */
     public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource) {
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
+        if (content==null || content.length == 0) {
+            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
         ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
         return buildRequestDataForResource(domain,
                 resource,
                 inputStream);
     }
-
 
     public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource, InputStream inputStream) {
         return new SpiRequestData(domain.getDomainCode(),

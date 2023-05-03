@@ -133,9 +133,9 @@
 
       <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
                      (page)="onPageChanged($event)"
-                     [pageSize]="5"
-                     [pageSizeOptions]="[5, 10, 25]"
-                     [disabled]="disabledForm"
+                     [hidePageSize]="true"
+                     [showFirstLastButtons]="true"
+                     [pageSize]="10"
                      aria-label="Select pages"></mat-paginator>
     </div>
   </div>

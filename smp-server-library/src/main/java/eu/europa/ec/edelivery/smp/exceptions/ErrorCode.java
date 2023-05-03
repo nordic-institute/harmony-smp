@@ -69,7 +69,7 @@ public enum ErrorCode {
 
     MAIL_SUBMISSION_ERROR (500,"SMP:550",ErrorBusinessCode.TECHNICAL, "Mail submission error: %s!"),
 
-    RESOURCE_DOCUMENT_MISSING(500,"SMP:180",ErrorBusinessCode.TECHNICAL, "Missing document for the resource: [id: '%s', sch.: '%s']!"),
+    RESOURCE_DOCUMENT_MISSING(500,"SMP:180",ErrorBusinessCode.TECHNICAL, "Empty document for the resource: [id: '%s', sch.: '%s']!"),
     RESOURCE_DOCUMENT_ERROR(500,"SMP:180",ErrorBusinessCode.TECHNICAL, "Error occurred while reading the resource document: [id: '%s', sch.: '%s']! Error [%s]"),
 
 
