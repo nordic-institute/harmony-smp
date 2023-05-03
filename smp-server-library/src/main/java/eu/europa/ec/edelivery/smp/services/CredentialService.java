@@ -79,9 +79,7 @@ public class CredentialService {
         DBCredential credential;
         try {
             Optional<DBCredential> dbCredential = mCredentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
-            if (!dbCredential.isPresent()
-                    || !dbCredential.get().getUser().isActive()
-                    || !dbCredential.get().isActive()) {
+            if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider");
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, "Username does not exits", username);
                 delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
@@ -136,7 +134,7 @@ public class CredentialService {
         try {
             Optional<DBCredential> dbCredential = mCredentialDao.findAccessTokenCredentialForAPI(authenticationTokenId);
 
-            if (!dbCredential.isPresent() || !dbCredential.get().getUser().isActive()) {
+            if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, authenticationTokenId);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
@@ -179,6 +177,29 @@ public class CredentialService {
         return smpAuthenticationToken;
     }
 
+    protected boolean isNotValidCredential(DBCredential credential) {
+        if (!credential.isActive()) {
+            LOG.debug("User credential [{}] is not active", credential);
+            return true;
+        }
+        if (!credential.getUser().isActive()) {
+            LOG.debug("User credential [{}] is not valid because user is not active", credential);
+            return true;
+        }
+
+        OffsetDateTime dateTimeNow = OffsetDateTime.now();
+        if (credential.getActiveFrom() != null && dateTimeNow.isBefore(credential.getActiveFrom())) {
+            LOG.debug("User credential [{}] is not yet valid active from [{}]", credential, credential.getActiveFrom());
+            return true;
+        }
+
+        if (credential.getExpireOn() != null && dateTimeNow.isAfter(credential.getExpireOn())) {
+            LOG.debug("User credential [{}] is expired from [{}]", credential, credential.getActiveFrom());
+            return true;
+        }
+        return false;
+    }
+
     @Transactional(dontRollbackOn = {AuthenticationException.class, BadCredentialsException.class})
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
@@ -204,7 +225,7 @@ public class CredentialService {
         DBCredential credential;
         try {
             Optional<DBCredential> optCredential = mCredentialDao.findUserByCertificateId(certificateIdentifier, true);
-            if (!optCredential.isPresent() || !optCredential.get().getUser().isActive()) {
+            if (!optCredential.isPresent() || isNotValidCredential(optCredential.get())) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, certificateIdentifier);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException

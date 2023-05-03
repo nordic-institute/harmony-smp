@@ -1,43 +1,58 @@
-import {Component, Output, ViewChild,} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
 import {UserService} from "../../system-settings/user/user.service";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {UserRo} from "../../system-settings/user/user-ro.model";
-import {
-  UserProfilePanelComponent
-} from "../../common/panels/user-settings-panel/user-profile-panel.component";
+import {UserProfilePanelComponent} from "../../common/panels/user-settings-panel/user-profile-panel.component";
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
 import {
   PasswordChangeDialogComponent
 } from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {UserDetailsDialogMode} from "../../system-settings/user/user-details-dialog/user-details-dialog.component";
+import {SecurityEventService} from "../../security/security-event.service";
+import {Subscription} from "rxjs";
 
 
 @Component({
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss']
 })
-export class UserProfileComponent implements BeforeLeaveGuard {
+export class UserProfileComponent implements OnInit, OnDestroy, BeforeLeaveGuard {
 
   @ViewChild('userProfilePanel') userProfilePanel: UserProfilePanelComponent;
   currentUserData: UserRo;
   loggedInUser: User;
 
+  private securityEventServiceSub: Subscription = Subscription.EMPTY;
+  private onProfileDataChangedEventSub: Subscription = Subscription.EMPTY;
+
   constructor(
     private userService: UserService,
     private securityService: SecurityService,
+    private securityEventService: SecurityEventService,
     public dialog: MatDialog) {
 
 
-    userService.onProfileDataChangedEvent().subscribe(updatedUser => {
+    this.securityEventServiceSub = this.securityEventService.onLoginSuccessEvent().subscribe(() => {
+        this.updateUserData(this.securityService.getCurrentUser())
+      }
+    );
+    this.onProfileDataChangedEventSub = userService.onProfileDataChangedEvent().subscribe(updatedUser => {
         this.updateUserData(updatedUser);
       }
     );
-
-    this.updateUserData(this.securityService.getCurrentUser())
-
   }
+
+  ngOnInit(): void {
+    this.updateUserData(this.securityService.getCurrentUser())
+  }
+
+  ngOnDestroy(): void {
+    this.securityEventServiceSub.unsubscribe();
+    this.onProfileDataChangedEventSub.unsubscribe();
+  }
+
 
   private updateUserData(user: User) {
     this.currentUserData = this.convert(user);
