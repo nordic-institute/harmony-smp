@@ -185,9 +185,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   protected findNodeByCode(nodeCode: string, parentNode: NavigationNode): NavigationNode {
-    console.log("find [" + nodeCode + "] from parent: " + parentNode.code)
     if (!parentNode.children) {
-      console.log(parentNode.code + " has not childrem")
       return null;
     }
     console.log("find " + nodeCode + "from parent2: " + parentNode.code)
