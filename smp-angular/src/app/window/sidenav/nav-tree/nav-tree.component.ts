@@ -25,8 +25,6 @@ export class NavTree {
         this.treeControl.collapseAll();
         selectedPath.forEach(pathNode => this.treeControl.expand(pathNode));
       });
-
-
   }
 
   fullMenu: boolean = true;

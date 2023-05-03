@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator} from "@angular/material/paginator";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
@@ -15,7 +15,7 @@ import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resour
   templateUrl: './edit-group.component.html',
   styleUrls: ['./edit-group.component.css']
 })
-export class EditGroupComponent implements AfterViewInit, BeforeLeaveGuard {
+export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
 
   @Output() onSelectedGroup: EventEmitter<GroupRo> = new EventEmitter<GroupRo>();
 
@@ -50,8 +50,10 @@ export class EditGroupComponent implements AfterViewInit, BeforeLeaveGuard {
 
   @Input() set selectedGroup(group: GroupRo) {
     this._selectedGroup = group;
+    this.loading = false;
   };
 
+  loading: boolean = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -61,15 +63,17 @@ export class EditGroupComponent implements AfterViewInit, BeforeLeaveGuard {
 
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.refreshDomains();
   }
 
   refreshDomains() {
+    this.loading = true;
     this.domainService.getDomainsForGroupAdminUserObservable()
       .subscribe((result: DomainRo[]) => {
         this.updateDomainList(result)
       }, (error: any) => {
+        this.loading = false;
         this.alertService.error(error.error?.errorDescription)
       });
   }
@@ -77,13 +81,16 @@ export class EditGroupComponent implements AfterViewInit, BeforeLeaveGuard {
   refreshGroups() {
     if (!this.selectedDomain) {
       this.updateGroupList([]);
+      this.loading = false;
       return;
     }
+    this.loading = true;
     this.groupService.getDomainGroupsForGroupAdminObservable(this.selectedDomain)
       .subscribe((result: GroupRo[]) => {
         this.updateGroupList(result)
       }, (error: any) => {
         this.alertService.error(error.error?.errorDescription)
+        this.loading = false;
       });
   }
 
@@ -100,6 +107,8 @@ export class EditGroupComponent implements AfterViewInit, BeforeLeaveGuard {
     this.domainList = list;
     if (!!this.domainList && this.domainList.length > 0) {
       this.selectedDomain = this.domainList[0];
+    } else {
+      this.loading = false;
     }
   }
 
@@ -107,6 +116,8 @@ export class EditGroupComponent implements AfterViewInit, BeforeLeaveGuard {
     this.groupList = list
     if (!!this.groupList && this.groupList.length > 0) {
       this.selectedGroup = this.groupList[0];
+    }else {
+      this.loading = false;
     }
   }
 

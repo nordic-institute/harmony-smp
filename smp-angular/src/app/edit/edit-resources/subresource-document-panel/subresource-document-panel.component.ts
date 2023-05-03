@@ -281,6 +281,10 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
     return !this.documentForm.controls['payload']?.value
   }
 
+  get cancelButtonDisabled(): boolean {
+    return !this.documentForm.dirty;
+  }
+
   get saveButtonDisabled(): boolean {
     return !this.documentForm.dirty || !this.documentForm.controls['payload']?.value;
   }

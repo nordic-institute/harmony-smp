@@ -117,8 +117,6 @@ public class DomainAdminController {
         return domainRO;
     }
 
-
-
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(value = "/{user-id}/sml-register/{domain-code}")
     public SMLIntegrationResult registerDomainAndParticipants(@PathVariable("user-id") String userId,

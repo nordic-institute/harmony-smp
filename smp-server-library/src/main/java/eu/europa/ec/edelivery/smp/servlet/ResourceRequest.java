@@ -41,7 +41,9 @@ public class ResourceRequest {
     }
 
     public String getOwnerHttpParameter() {
-        return getHeader(WebConstants.HTTP_PARAM_OWNER);
+        String owner =  getHeader(WebConstants.HTTP_PARAM_OWNER);
+
+        return owner;
     }
 
     public String getDomainHttpParameter() {
