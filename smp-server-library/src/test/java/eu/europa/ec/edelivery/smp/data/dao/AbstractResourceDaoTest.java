@@ -41,9 +41,13 @@ public abstract class AbstractResourceDaoTest extends AbstractBaseDao {
     @Autowired
     UserDao userDao;
 
+    @Autowired
+    ResourceMemberDao resourceMemberDao;
+
 
     @Before
     public void prepareDatabase() {
+        testUtilsDao.clearData();
         // setup initial data!
         testUtilsDao.createResourceDefinitionsForDomains();
         testUtilsDao.createGroups();
