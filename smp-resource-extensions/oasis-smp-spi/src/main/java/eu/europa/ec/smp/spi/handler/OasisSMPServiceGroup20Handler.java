@@ -10,7 +10,7 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.converter.ServiceMetadata10Converter;
+import eu.europa.ec.smp.spi.converter.DomUtils;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceMetadata20;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
@@ -99,7 +99,7 @@ public class OasisSMPServiceGroup20Handler extends AbstractOasisSMPHandler {
         try {
             Document doc = reader.objectToDocument(serviceGroup);
             signatureApi.createEnvelopedSignature(resourceData, doc.getDocumentElement(), Collections.emptyList());
-            ServiceMetadata10Converter.serialize(doc, responseData.getOutputStream());
+            DomUtils.serialize(doc, responseData.getOutputStream());
         } catch (SignatureException | TechnicalException | TransformerException e) {
             throw new ResourceException(PROCESS_ERROR, "Error occurred while signing the service group 2.0 message!: ["
                     + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);

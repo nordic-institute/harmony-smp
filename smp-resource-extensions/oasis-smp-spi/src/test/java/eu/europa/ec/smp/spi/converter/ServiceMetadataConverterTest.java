@@ -13,45 +13,49 @@
 
 package eu.europa.ec.smp.spi.converter;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.hamcrest.Matchers;
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP10ServiceMetadataReader;
+import eu.europa.ec.dynamicdiscovery.exception.BindException;
+import eu.europa.ec.smp.spi.testutils.XmlTestUtils;
+import gen.eu.europa.ec.ddc.api.smp10.RedirectType;
+import gen.eu.europa.ec.ddc.api.smp10.ServiceEndpointList;
+import gen.eu.europa.ec.ddc.api.smp10.ServiceInformationType;
+import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadata;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Created by gutowpa on 05/01/2017.
  */
 public class ServiceMetadataConverterTest {
-/*
+
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
     private static final String RES_PATH = "/examples/conversion/";
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
 
+    OasisSMP10ServiceMetadataReader testInstance = new OasisSMP10ServiceMetadataReader();
+
     @Test
-    public void testUnmarshalServiceInformation() throws IOException, SAXException, ParserConfigurationException, JAXBException {
+    public void testUnmarshalServiceInformation() throws Exception {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
 
         //when
-        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        ServiceMetadata serviceMetadata = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
         assertNotNull(serviceMetadata);
@@ -66,12 +70,12 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testUnmarshalServiceInformationUtf8() throws IOException, SAXException, ParserConfigurationException, JAXBException {
+    public void testUnmarshalServiceInformationUtf8() throws Exception {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformationUtf8.xml");
 
         //when
-        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        ServiceMetadata serviceMetadata = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
         String serviceDescription = serviceMetadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0).getServiceDescription();
@@ -80,12 +84,12 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testUnmarshalRedirect() throws IOException, SAXException, ParserConfigurationException, JAXBException {
+    public void testUnmarshalRedirect() throws Exception {
         //given
-        byte[]  inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithRedirect.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithRedirect.xml");
 
         //when
-        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        ServiceMetadata serviceMetadata = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
         assertNotNull(serviceMetadata);
@@ -97,36 +101,31 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testUnmarshalMalformedInput() throws ParserConfigurationException, IOException, SAXException, JAXBException {
+    public void testUnmarshalMalformedInput() throws Exception {
 
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metadata. Error"));
-        //when
-        ServiceMetadataConverter.unmarshal("this is malformed XML body".getBytes());
+        byte[] inputDoc ="this is malformed XML body".getBytes();
+
+        //when then
+        BindException result = assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
+        MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("Content is not allowed in prolog"));
     }
 
     @Test
-    public void testUnmarshalMissingMandatoryFields() throws IOException, SAXException, ParserConfigurationException, JAXBException {
+    public void testInvalidDocumentNamespace() throws Exception {
         //given
-        byte[]  inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataMissingMandatoryFields.xml");
-
-        //when
-        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
-
-        //then
-        assertNotNull(serviceMetadata);
-        //Parsing did not throw an error, validation against XSD must be done separately
-        assertNull(serviceMetadata.getServiceInformation());
-        assertNull(serviceMetadata.getRedirect());
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataMissingMandatoryFields.xml");
+        //when then
+        BindException result = assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
+        MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("unexpected element "));
     }
 
     @Test
-    public void testToSignedServiceMetadataDocument() throws IOException, SAXException, ParserConfigurationException, TransformerException {
+    public void testToSignedServiceMetadataDocument() throws Exception {
         //given
-        byte[]  inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
 
         //when
-        Document signedServiceMetadataDoc = ServiceMetadataConverter.toSignedServiceMetadataDocument(inputDoc);
+        Document signedServiceMetadataDoc = DomUtils.toSignedServiceMetadata10Document(inputDoc);
 
         //then
         Element root = signedServiceMetadataDoc.getDocumentElement();
@@ -140,29 +139,14 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testToSignedServiceMetadataDocumentMalformedInput() throws ParserConfigurationException, IOException, SAXException, JAXBException {
+    public void testVulnerabilityParsingDTD() throws Exception {
 
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metadata. Error:"));
-        //when
-        ServiceMetadataConverter.toSignedServiceMetadataDocument("this is malformed XML body".getBytes());
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithDOCTYPE.xml");
+
+        //when then
+        BindException result = assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
+        MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("DOCTYPE is disallowed"));
+
     }
 
-    @Test
-    public void testVulnerabilityParsingDTD() throws IOException {
-
-        //given
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage(Matchers.containsString("DOCTYPE is disallowed"));
-        expectedExeption.expectCause(Matchers.isA(SAXParseException.class));
-
-
-        byte[]  inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithDOCTYPE.xml");
-
-        ServiceMetadataConverter.unmarshal(inputDoc);
-
-        fail("DOCTYPE declaration must be blocked to prevent from XXE attacks");
-    }
-
- */
 }
