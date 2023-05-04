@@ -10,12 +10,11 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.converter.ServiceMetadata10Converter;
+import eu.europa.ec.smp.spi.converter.DomUtils;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
 import gen.eu.europa.ec.ddc.api.smp10.*;
-import gen.eu.europa.ec.ddc.api.smp20.ServiceGroup;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +127,7 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
         }
 
         try {
-            ServiceMetadata10Converter.serialize(docEnvelopedMetadata, responseData.getOutputStream());
+            DomUtils.serialize(docEnvelopedMetadata, responseData.getOutputStream());
             responseData.setContentType("text/xml");
         } catch (TransformerException e) {
             throw new ResourceException(INTERNAL_ERROR, "Error occurred while writing the message: ["

@@ -10,7 +10,7 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.converter.ServiceMetadata20Converter;
+import eu.europa.ec.smp.spi.converter.DomUtils;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata20Validator;
@@ -26,7 +26,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -145,9 +147,10 @@ public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
 
         Document docEnvelopedMetadata;
         try {
+
             byte[] bytearray = readFromInputStream(resourceData.getResourceInputStream());
-            docEnvelopedMetadata = ServiceMetadata20Converter.toSignedServiceMetadataDocument(bytearray);
-        } catch (IOException e) {
+            docEnvelopedMetadata = DomUtils.parse(bytearray);
+        } catch (IOException | SAXException | ParserConfigurationException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: ["
                     + resourceIdentifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
@@ -160,7 +163,7 @@ public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
         }
 
         try {
-            ServiceMetadata20Converter.serialize(docEnvelopedMetadata, responseData.getOutputStream());
+            DomUtils.serialize(docEnvelopedMetadata, responseData.getOutputStream());
             responseData.setContentType("text/xml");
         } catch (TransformerException e) {
             throw new ResourceException(INTERNAL_ERROR, "Error occurred while writing the message: ["
