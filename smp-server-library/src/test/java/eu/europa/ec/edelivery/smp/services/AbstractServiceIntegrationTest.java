@@ -42,7 +42,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {IdentifierService.class,SmlConnector.class, SmpXmlSignatureService.class, MailService.class,
-        DomainService.class, ServiceMetadataService.class,
+        DomainService.class,
         ResourceDao.class, SubresourceDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class, AlertDao.class,
         UITruststoreService.class, UIKeystoreService.class, ConversionTestConfig.class, SMLIntegrationService.class,
         CRLVerifierService.class,

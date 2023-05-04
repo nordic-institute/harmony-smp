@@ -22,7 +22,6 @@ import java.util.List;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@Ignore
 public class BaseDaoTest extends AbstractBaseDao {
 
 

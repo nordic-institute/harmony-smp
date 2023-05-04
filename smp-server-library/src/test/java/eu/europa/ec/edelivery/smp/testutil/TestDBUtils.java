@@ -187,8 +187,8 @@ public class TestDBUtils {
     }
 
 
-    public static DBCredential createDBCredential() {
-        return createDBCredential("name", "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+    public static DBCredential createDBCredential(String name) {
+        return createDBCredential(name, "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
     }
 
     public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
@@ -294,7 +294,11 @@ public class TestDBUtils {
 
     public static DBUser createDBUser(String userName, String certId, OffsetDateTime validFrom, OffsetDateTime validTo) {
         DBUser dbuser = createDBUserByUsername(userName);
-        // dbuser.setCertificate(createDBCertificate(certId, validFrom, validTo));
+        DBCredential credential = createDBCredential(dbuser, certId,"", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        credential.setActiveFrom(validFrom);
+        credential.setExpireOn(validTo);
+        credential.setCertificate(createDBCertificate(certId, validFrom, validTo));
+        dbuser.getUserCredentials().add(credential);
         return dbuser;
     }
     

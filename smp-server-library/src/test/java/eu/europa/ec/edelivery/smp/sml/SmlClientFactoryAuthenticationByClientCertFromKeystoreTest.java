@@ -16,7 +16,7 @@ package eu.europa.ec.edelivery.smp.sml;
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -24,16 +24,12 @@ import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.net.ssl.KeyManager;
@@ -52,14 +48,10 @@ import static org.junit.Assert.*;
 /**
  * Created by gutowpa on 08/01/2018.
  */
-@Ignore
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmlClientFactory.class, SmlConnector.class})
-public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends AbstractServiceIntegrationTest {
+public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends AbstractServiceTest {
 
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
+    private static final String CERTIFICATE_DN_SECOND_DOMAIN = "CN=Second Domain,OU=edelivery,O=digit,C=eu";
+    private static final String CERTIFICATE_DN_FIRST_DOMAIN = "CN=SMP Mock Services,OU=DIGIT,O=European Commision,C=BE";
 
     Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
 
@@ -112,7 +104,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         Map httpHeaders = (Map) requestContext.get(Message.PROTOCOL_HEADERS);
         assertTrue(httpHeaders == null || httpHeaders.isEmpty());
 
-        assertEquals("C=BE,O=CEF Digital,OU=SMP,CN=Secodn domain", clientCert.getSubjectDN().getName());
+        assertEquals(CERTIFICATE_DN_SECOND_DOMAIN, clientCert.getSubjectX500Principal().getName());
         assertEquals("https://localhost/edelivery-sml/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
@@ -137,7 +129,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         Map httpHeaders = (Map) requestContext.get(Message.PROTOCOL_HEADERS);
         assertTrue(httpHeaders == null || httpHeaders.isEmpty());
 
-        assertEquals("C=BE,O=CEF Digital,OU=SMP,CN=Secodn domain", clientCert.getSubjectDN().getName());
+        assertEquals(CERTIFICATE_DN_SECOND_DOMAIN, clientCert.getSubjectX500Principal().getName());
         assertEquals("https://localhost/edelivery-sml/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
@@ -157,7 +149,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         Map<String, Object> requestContext = cxfClient.getRequestContext();
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
-        assertEquals("C=BE,O=European Commision,OU=DIGIT,CN=SMP Mock Services", clientCert.getSubjectDN().getName());
+        assertEquals(CERTIFICATE_DN_FIRST_DOMAIN, clientCert.getSubjectX500Principal().getName());
         assertEquals("https://localhost/edelivery-sml/changedEndpoint", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
@@ -178,7 +170,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         Map<String, Object> requestContext = cxfClient.getRequestContext();
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
-        assertEquals("C=BE,O=European Commision,OU=DIGIT,CN=SMP Mock Services", clientCert.getSubjectDN().getName());
+        assertEquals(CERTIFICATE_DN_FIRST_DOMAIN, clientCert.getSubjectX500Principal().getName());
         assertEquals("https://localhost/edelivery-sml/changedEndpoint", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
@@ -190,13 +182,10 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(false);
 
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("More than one key in Keystore! Define alias for the domain SML authentication!");
+        IllegalStateException result = assertThrows(IllegalStateException.class,
+                () -> testInstance.configureClient("changedEndpoint", client, domain));
 
-
-        // when
-        testInstance.configureClient("changedEndpoint", client, domain);
-
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid integration configuration. Missing Client cert configuration!"));
     }
 
     @Test
@@ -208,10 +197,10 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(false);
 
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage("More than one key in Keystore! Define alias for the domain SML authentication!");
-        // when
-        testInstance.configureClient("changedEndpoint", client, domain);
+        IllegalStateException result = assertThrows(IllegalStateException.class,
+                () -> testInstance.configureClient("changedEndpoint", client, domain));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid integration configuration. Missing Client cert configuration!"));
     }
 
     @Test
@@ -238,7 +227,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         Map<String, Object> requestContext = cxfClient.getRequestContext();
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
-        assertEquals("C=BE,O=European Commision,OU=DIGIT,CN=SMP Mock Services", clientCert.getSubjectDN().getName());
+        assertEquals(CERTIFICATE_DN_FIRST_DOMAIN, clientCert.getSubjectX500Principal().getName());
 
     }
 
@@ -253,5 +242,4 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
         assertNotNull(key);
         return ((X509KeyManager) keyManager).getCertificateChain(alias)[0];
     }
-
 }

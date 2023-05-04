@@ -16,7 +16,6 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
-import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -28,12 +27,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_USER_NO_IDENTIFIERS;
 
 /**
  * @author gutowpa
@@ -42,10 +41,6 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USER
 @Repository
 public class UserDao extends BaseDao<DBUser> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserDao.class);
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_START_DATE = "startAlertDate";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_END_DATE = "endAlertDate";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE = "expireDate";
-    private static final String QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE = "lastSendAlertDate";
 
 
     /**
@@ -57,9 +52,10 @@ public class UserDao extends BaseDao<DBUser> {
     @Transactional
     public void persistFlushDetach(DBUser user) {
         // update username to lower caps
-        if (!StringUtils.isBlank(user.getUsername())) {
-            user.setUsername(user.getUsername().toLowerCase());
+        if (StringUtils.isBlank(user.getUsername())) {
+            throw new SMPRuntimeException(INVALID_USER_NO_IDENTIFIERS);
         }
+        user.setUsername(user.getUsername().toLowerCase());
         super.persistFlushDetach(user);
     }
 
@@ -201,90 +197,7 @@ public class UserDao extends BaseDao<DBUser> {
             throw new SMPRuntimeException(ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY, username);
         }
     }
-/*
-    public List<DBUser> getBeforePasswordExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
 
-        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_BEFORE_PASSWORD_EXPIRE, DBUser.class);
-        query.setParameter(PARAM_CREDENTIAL_TYPE, CredentialType.USERNAME_PASSWORD );
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
-    }
-
-    public List<DBUser> getPasswordExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        // the alert period must be less then expire day
-        OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
-
-        TypedQuery<DBUser> query = memEManager.createNamedQuery(QUERY_USER_WITH_PASSWORD_EXPIRED, DBUser.class);
-        query.setParameter(PARAM_CREDENTIAL_TYPE, CredentialType.USERNAME_PASSWORD );
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
-    }
-
-    public List<DBUser> getBeforeAccessTokenExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
-
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforeAccessTokenExpireAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
-    }
-
-    public List<DBUser> getAccessTokenExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        // the alert period must be less then expire day
-        OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
-
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForAccessTokenExpiredAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
-    }
-
-    public List<DBUser> getBeforeCertificateExpireUsersForAlerts(int beforeStartDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        OffsetDateTime startDateTime = expireDate.plusDays(beforeStartDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
-
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForBeforeCertificateExpireAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_START_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
-    }
-
-    public List<DBUser> getCertificateExpiredUsersForAlerts(int alertPeriodDays, int alertInterval, int maxAlertsInBatch) {
-        OffsetDateTime expireDate = OffsetDateTime.now();
-        // the alert period must be less then expire day
-        OffsetDateTime startDateTime = expireDate.minusDays(alertPeriodDays);
-        OffsetDateTime lastSendAlertDate = expireDate.minusDays(alertInterval);
-
-        TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUsersForCertificateExpiredAlerts", DBUser.class);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_END_DATE, startDateTime);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_EXPIRE_DATE, expireDate);
-        query.setParameter(QUERY_PARAM_ALERT_CREDENTIAL_LAST_ALERT_DATE, lastSendAlertDate);
-        query.setMaxResults(maxAlertsInBatch);
-        return query.getResultList();
-    }
-*/
     /**
      * Validation report for users which owns service group
      *
@@ -310,7 +223,7 @@ public class UserDao extends BaseDao<DBUser> {
             query.setMaxResults(iPageSize);
         }
         if (hasFilter) {
-            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter), "%"));
         }
         return query.getResultList();
     }
@@ -319,7 +232,7 @@ public class UserDao extends BaseDao<DBUser> {
         boolean hasFilter = StringUtils.isNotBlank(filter);
         TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_USER_FILTER_COUNT : QUERY_USER_COUNT, Long.class);
         if (hasFilter) {
-            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter), "%"));
         }
         return query.getSingleResult();
     }

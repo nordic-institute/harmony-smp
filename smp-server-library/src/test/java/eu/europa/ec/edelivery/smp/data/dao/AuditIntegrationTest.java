@@ -104,7 +104,7 @@ public class AuditIntegrationTest extends AbstractBaseDao{
         DBUser user = createDBUser("Credential-test");
         persist(user);
 
-        DBCredential dbCredential = createDBCredential();
+        DBCredential dbCredential = createDBCredential("test");
         dbCredential.setUser(user);
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("name", UUID.randomUUID().toString());
