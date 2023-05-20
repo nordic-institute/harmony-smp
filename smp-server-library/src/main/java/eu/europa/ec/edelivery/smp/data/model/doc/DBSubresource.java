@@ -46,7 +46,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @NamedQuery(name = QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_ID , query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id " +
         " AND d.identifierValue=:subresource_identifier " +
-        " AND d.identifierScheme=:subresource_scheme"
+        " AND (:subresource_scheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR d.identifierScheme = :subresource_scheme)"
 )
 
 @NamedQuery(name = QUERY_SUBRESOURCE_BY_RESOURCE_ID , query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id order by id asc")

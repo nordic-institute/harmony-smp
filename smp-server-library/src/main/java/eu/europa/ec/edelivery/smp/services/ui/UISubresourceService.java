@@ -93,24 +93,22 @@ public class UISubresourceService {
         if (!optRedef.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Subresource definition [" + subResourceRO.getSubresourceTypeIdentifier() + "] does not exist!");
         }
-        Identifier docId = identifierService.normalizeDocument(subResourceRO.getIdentifierScheme(), subResourceRO.getIdentifierValue());
+        Identifier docId = identifierService.normalizeDocument(subResourceRO.getIdentifierScheme(),
+                subResourceRO.getIdentifierValue());
         Optional<DBSubresource> exists= subresourceDao.getSubResourcesForResource(docId, resParent);
         if (exists.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Subresource definition [val:" + docId.getValue() + " scheme:" + docId.getScheme() + "] already exists for the resource!");
         }
 
         DBSubresource subresource = new DBSubresource();
-        subresource.setIdentifierScheme(docId.getValue());
-        subresource.setIdentifierValue(docId.getScheme());
+        subresource.setIdentifierScheme(docId.getScheme());
+        subresource.setIdentifierValue(docId.getValue());
         subresource.setResource(resParent);
         subresource.setSubresourceDef(optRedef.get());
         DBDocument document = createDocumentForSubresourceDef(optRedef.get());
         subresource.setDocument(document);
         subresourceDao.persist(subresource);
         // create first member as admin user
-
-
-
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 
