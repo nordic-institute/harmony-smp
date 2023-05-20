@@ -65,7 +65,6 @@ public class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTes
         for (String username : usernames) {
             Optional<DBUser> user = userDao.findUserByUsername(username);
             DBResourceMember member = testUtilsDao.createResourceMembership(MembershipRoleType.ADMIN, user.get(), resource);
-            resourceMemberDao.persistFlushDetach(member);
             resource.getMembers().add(member);
         }
 

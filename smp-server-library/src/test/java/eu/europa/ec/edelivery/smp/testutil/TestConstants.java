@@ -47,6 +47,8 @@ public class TestConstants {
     public static final String USERNAME_1 = "test-user_001";
     public static final String USERNAME_2 = "test-user_002";
     public static final String USERNAME_3 = "test-user_003";
+    public static final String USERNAME_4 = "test-user_004";
+    public static final String USERNAME_5 = "test-user_005";
     public static final String USERNAME_TOKEN_1 = TOKEN_PREFIX + USERNAME_1;
     public static final String USERNAME_TOKEN_2 = TOKEN_PREFIX + USERNAME_2;
     public static final String USERNAME_TOKEN_3 = TOKEN_PREFIX + USERNAME_3;

@@ -41,9 +41,8 @@
       >
     </mat-form-field>
     <mat-form-field style="width:100%">
-      <mat-label>Group visibility</mat-label>
-      <mat-select placeholder="Resource visibility"
-                  formControlName="visibility"
+      <mat-label>Resource visibility</mat-label>
+      <mat-select formControlName="visibility"
                   matTooltip="Resource visibility."
                   id="visibility_id" required>
         <mat-option *ngFor="let visibility of groupVisibilityOptions"
@@ -51,8 +50,13 @@
           {{visibility.key}}
         </mat-option>
       </mat-select>
-      <mat-hint>Choose resource visibility</mat-hint>
     </mat-form-field>
+
+    <smp-warning-panel
+      type="desc"
+      icon="info"
+      [label]="visibilityDescription"
+    ></smp-warning-panel>
   </form>
 
 </div>
