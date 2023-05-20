@@ -38,10 +38,14 @@ public class TestDBUtils {
     }
 
     public static DBGroup createDBGroup(String groupName) {
+        return  createDBGroup(groupName, VisibilityType.PUBLIC);
+    }
+
+    public static DBGroup createDBGroup(String groupName, VisibilityType visibility){
         DBGroup group = new DBGroup();
         group.setGroupName(groupName);
         group.setGroupDescription(anyString());
-        group.setVisibility(VisibilityType.PUBLIC);
+        group.setVisibility(visibility);
         return group;
     }
 
