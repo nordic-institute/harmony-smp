@@ -65,6 +65,13 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
         resizable: "false",
       },
       {
+        name: 'Domain',
+        width: 120,
+        maxWidth: 200,
+        prop: 'domainCode',
+        showInitially: true,
+      },
+      {
         name: 'Resource scheme',
         prop: 'participantScheme',
         showInitially: true,
