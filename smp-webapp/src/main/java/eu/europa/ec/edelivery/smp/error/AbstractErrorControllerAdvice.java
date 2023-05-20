@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
 import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.exceptions.MalformedIdentifierException;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,10 @@ abstract class AbstractErrorControllerAdvice {
         }else if (runtimeException instanceof BadRequestException){
             BadRequestException ex = (BadRequestException)runtimeException;
             response = buildAndLog(UNPROCESSABLE_ENTITY, ex.getErrorBusinessCode(), ex.getMessage(), ex);
+        }
+        else if (runtimeException instanceof MalformedIdentifierException){
+            MalformedIdentifierException ex = (MalformedIdentifierException)runtimeException;
+            response = buildAndLog(BAD_REQUEST, ErrorBusinessCode.FORMAT_ERROR, ex.getMessage(), ex);
         }
         else {
             response = buildAndLog(INTERNAL_SERVER_ERROR, TECHNICAL, "Unexpected technical error occurred.", runtimeException);

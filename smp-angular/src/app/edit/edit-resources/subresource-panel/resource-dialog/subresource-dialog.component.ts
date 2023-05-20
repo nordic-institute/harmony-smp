@@ -10,9 +10,6 @@ import {ResourceDefinitionRo} from "../../../../system-settings/admin-extension/
 import {EditGroupService} from "../../../edit-group/edit-group.service";
 import {SubresourceRo} from "../../../../common/model/subresource-ro.model";
 import {EditResourceService} from "../../edit-resource.service";
-
-
-
 @Component({
   templateUrl: './subresource-dialog.component.html',
   styleUrls: ['./subresource-dialog.component.css']
@@ -56,8 +53,8 @@ export class SubresourceDialogComponent {
 
   get subresource(): SubresourceRo {
     let entity = {...this._subresource};
-    entity.identifierScheme = this.resourceForm.get('identifierValue').value;
-    entity.identifierValue = this.resourceForm.get('identifierScheme').value;
+    entity.identifierScheme = this.resourceForm.get('identifierScheme').value;
+    entity.identifierValue = this.resourceForm.get('identifierValue').value;
     entity.subresourceTypeIdentifier = this.resourceForm.get('subresourceTypeIdentifier').value;
     return entity;
   }
