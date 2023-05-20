@@ -75,6 +75,19 @@ public class DBResourceFilter {
         return user == null ? null : user.getId();
     }
 
+
+    @Override
+    public String toString() {
+        return "DBResourceFilter{" +
+                "user=" + user +
+                ", membershipRoleType=" + membershipRoleType +
+                ", resourceDef=" + resourceDef +
+                ", group=" + group +
+                ", domain=" + domain +
+                ", identifierFilter='" + identifierFilter + '\'' +
+                '}';
+    }
+
     public static Builder createBuilder() {
         return new Builder();
     }

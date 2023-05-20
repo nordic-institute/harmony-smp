@@ -30,7 +30,6 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
 
-
   resourceForm: FormGroup;
 
 
@@ -82,8 +81,6 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     let node:NavigationNode = this.createNew();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
-
-
   }
 
   public createNew():NavigationNode{
@@ -100,6 +97,19 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
 
   isDirty(): boolean {
     return false;
+  }
+
+  get visibilityDescription(): string {
+    if (this.resourceForm.get('visibility').value == VisibilityEnum.Private) {
+      return "The private resource is accessible only to the resource members!"
+    }
+    if (this.group.visibility == VisibilityEnum.Private) {
+      return "The resource belongs to the private group. The resource is accessible only to the members of the group (direct and indirect group members)!"
+    }
+    if (this.domain.visibility == VisibilityEnum.Private) {
+      return "The resource belongs to the private domain. The resource is accessible only to the members of the domain (direct and indirect domain members)!"
+    }
+    return "The resource is public on the public group and the public domain. The resource data is accessible to all users."
   }
 }
 

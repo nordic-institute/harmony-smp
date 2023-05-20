@@ -62,6 +62,11 @@ public class QueryNames {
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_COUNT = "DBResource.getResByDomainIdCount";
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT = "DBResource.getResByDomainIdAndResourceDefCount";
 
+
+    public static final String QUERY_RESOURCE_ALL_FOR_USER = "DBResource.getPublicSearch";
+
+    public static final String QUERY_RESOURCE_ALL_FOR_USER_COUNT = "DBResource.getPublicSearchCount";
+
     public static final String QUERY_RESOURCE_FILTER = "DBResource.getResourcesByFilter";
     public static final String QUERY_RESOURCE_FILTER_COUNT = "DBResource.getResourcesByFilterCount";
 
