@@ -56,6 +56,9 @@ public class TestUtilsDao {
     DBUser user2;
     DBUser user3;
 
+    DBUser user4;
+    DBUser user5;
+
     DBGroup groupD1G1;
     DBGroup groupD1G2;
     DBGroup groupD2G1;
@@ -83,6 +86,8 @@ public class TestUtilsDao {
 
     DBExtension extension;
 
+    boolean searchDataCreated = false;
+
     /**
      * Database can be cleaned by script before the next test; clean also the objects
      */
@@ -98,6 +103,8 @@ public class TestUtilsDao {
         user1 = null;
         user2 = null;
         user3 = null;
+        user4 = null;
+        user5 = null;
         groupD1G1 = null;
         groupD1G2 = null;
         groupD2G1 = null;
@@ -120,6 +127,8 @@ public class TestUtilsDao {
         //resourceInternalD1G1RD1 = null;
 
         extension = null;
+        searchDataCreated = false;
+
     }
 
 
@@ -204,13 +213,20 @@ public class TestUtilsDao {
         user1 = createDBUserByUsername(USERNAME_1);
         user2 = createDBUserByCertificate(USER_CERT_2);
         user3 = createDBUserByUsername(USERNAME_3);
+        user4 = createDBUserByUsername(USERNAME_4);
+        user5 = createDBUserByUsername(USERNAME_5);
+
         persistFlushDetach(user1);
         persistFlushDetach(user2);
         persistFlushDetach(user3);
+        persistFlushDetach(user4);
+        persistFlushDetach(user5);
 
         assertNotNull(user1.getId());
         assertNotNull(user2.getId());
         assertNotNull(user3.getId());
+        assertNotNull(user4.getId());
+        assertNotNull(user5.getId());
     }
 
     /**
@@ -228,12 +244,6 @@ public class TestUtilsDao {
         createUsers();
         domainMemberU1D1Admin = createDomainMembership(MembershipRoleType.ADMIN, user1, d1);
         domainMemberU1D2Viewer = createDomainMembership(MembershipRoleType.VIEWER, user1, d2);
-
-        persistFlushDetach(domainMemberU1D1Admin);
-        persistFlushDetach(domainMemberU1D2Viewer);
-
-        assertNotNull(domainMemberU1D1Admin.getId());
-        assertNotNull(domainMemberU1D2Viewer.getId());
     }
 
     @Transactional
@@ -246,12 +256,6 @@ public class TestUtilsDao {
         createUsers();
         groupMemberU1D1G1Admin = createGroupMembership(MembershipRoleType.ADMIN, user1, groupD1G1);
         groupMemberU1D2G1Viewer = createGroupMembership(MembershipRoleType.VIEWER, user1, groupD2G1);
-
-        persistFlushDetach(groupMemberU1D1G1Admin);
-        persistFlushDetach(groupMemberU1D2G1Viewer);
-
-        assertNotNull(groupMemberU1D1G1Admin.getId());
-        assertNotNull(groupMemberU1D2G1Viewer.getId());
     }
 
     @Transactional
@@ -264,71 +268,97 @@ public class TestUtilsDao {
         createResources();
         resourceMemberU1R1_D2G1RD1_Admin = createResourceMembership(MembershipRoleType.ADMIN, user1, resourceD1G1RD1);
         resourceMemberU1R2_D2G1RD1_Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceD2G1RD1);
-
-
-        persistFlushDetach(resourceMemberU1R1_D2G1RD1_Admin);
-        persistFlushDetach(resourceMemberU1R2_D2G1RD1_Viewer);
-
-        assertNotNull(resourceMemberU1R1_D2G1RD1_Admin.getId());
-        assertNotNull(resourceMemberU1R2_D2G1RD1_Viewer.getId());
     }
 
     @Transactional
-    public void createResourcePrivateInternalMemberships() {
-        if (resourcePrivateD1G1RD1 != null) {
-            LOG.trace("privateInternalMemberships are already initialized!");
+    public void createResourcesForSearch() {
+
+        if (searchDataCreated) {
+            LOG.trace("Search Data is already initialized!");
             return;
         }
-        createResourceMemberships();
 
-        resourcePrivateD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1+"Private", TEST_SG_SCHEMA_1, true);
-        resourcePrivateD1G1RD1.setVisibility(VisibilityType.PRIVATE);
-        resourcePrivateD1G1RD1.setGroup(groupD1G1);
-        resourcePrivateD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
-        /*
-        resourceInternalD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1+"Internal", TEST_SG_SCHEMA_1, true);
-        resourceInternalD1G1RD1.setVisibility(VisibilityType.PRIVATE);
-        resourceInternalD1G1RD1.setGroup(groupD1G1);
-        resourceInternalD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
+        createUsers();
+        createResourceDefinitions();
 
-         */
+        DBDomain publicDomain = createDomain("publicDomain", VisibilityType.PUBLIC);
+        DBDomain privateDomain = createDomain("privateDomain", VisibilityType.PRIVATE);
 
-        //persistFlushDetach(resourceInternalD1G1RD1);
-        persistFlushDetach(resourcePrivateD1G1RD1);
+        DBDomainResourceDef publicDomainResourceDef = registerDomainResourceDefinition(publicDomain, resourceDefSmp);
+        DBDomainResourceDef privateDomainResourceDef= registerDomainResourceDefinition(privateDomain, resourceDefSmp);
+        // membership of the domain
+        createDomainMembership(MembershipRoleType.VIEWER, user3, privateDomain);
 
-        //assertNotNull(resourceInternalD1G1RD1.getId());
-        assertNotNull(resourcePrivateD1G1RD1.getId());
+        DBGroup pubPubGroup = createGroup("pubPubGroup", VisibilityType.PUBLIC, publicDomain);
+        DBGroup pubPrivGroup = createGroup("pubPrivGroup", VisibilityType.PRIVATE, publicDomain);
+        DBGroup privPubGroup = createGroup("privPubGroup", VisibilityType.PUBLIC, privateDomain);
+        DBGroup privPrivGroup = createGroup("privPrivGroup", VisibilityType.PRIVATE, privateDomain);
 
+        createGroupMembership(MembershipRoleType.VIEWER, user4, privPrivGroup);
 
+        DBResource pubPubPubRes = createResource("pubPubPub", "1-1-1", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPubGroup);
+        DBResource pubPubPrivRes = createResource("pubPubPriv", "2-2-2", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPubGroup);
+        DBResource pubPrivPubRes = createResource("pubPrivPub", "3-3-3", VisibilityType.PUBLIC, publicDomainResourceDef,  pubPrivGroup);
+        DBResource pubPrivPrivRes = createResource("pubPrivPriv", "4-4-4", VisibilityType.PRIVATE, publicDomainResourceDef,  pubPrivGroup);
 
-        DBResourceMember  privateRM_U1R1_D1G1Admin = createResourceMembership(MembershipRoleType.ADMIN, user1, resourcePrivateD1G1RD1);
-        //DBResourceMember  internalRM_U1R1_D1G1Viewer = createResourceMembership(MembershipRoleType.VIEWER, user1, resourceInternalD1G1RD1);
+        DBResource privPubPubRes = createResource("privPubPub", "5-5-5", VisibilityType.PUBLIC, privateDomainResourceDef,  privPubGroup);
+        DBResource privPubPrivRes = createResource("privPubPriv", "6-6-6", VisibilityType.PRIVATE, privateDomainResourceDef,  privPubGroup);
+        DBResource privPrivPubRes = createResource("privPrivPub", "7-7-7", VisibilityType.PUBLIC, privateDomainResourceDef,  privPrivGroup);
+        DBResource privPrivPrivRes = createResource("privPrivPriv", "8-8-8", VisibilityType.PRIVATE, privateDomainResourceDef,  privPrivGroup);
 
-        persistFlushDetach(privateRM_U1R1_D1G1Admin);
-       // persistFlushDetach(internalRM_U1R1_D1G1Viewer);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPubPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPubPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPubPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPubPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPrivPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPrivPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, pubPrivPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, pubPrivPrivRes);
+
+        createResourceMembership(MembershipRoleType.ADMIN, user1, privPubPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, privPubPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, privPubPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, privPubPrivRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, privPrivPubRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, privPrivPubRes);
+        createResourceMembership(MembershipRoleType.ADMIN, user1, privPrivPrivRes);
+        createResourceMembership(MembershipRoleType.VIEWER, user2, privPrivPrivRes);
+
+        createResourceMembership(MembershipRoleType.VIEWER, user5, privPrivPrivRes);
+
+        searchDataCreated = true;
     }
 
+    @Transactional
     public DBDomainMember createDomainMembership(MembershipRoleType roleType, DBUser user, DBDomain domain){
         DBDomainMember domainMember = new DBDomainMember();
         domainMember.setRole(roleType);
         domainMember.setUser(user);
         domainMember.setDomain(domain);
+        persistFlushDetach(domainMember);
+        assertNotNull(domainMember.getId());
         return domainMember;
     }
 
+    @Transactional
     public DBGroupMember createGroupMembership(MembershipRoleType roleType, DBUser user, DBGroup group){
         DBGroupMember member = new DBGroupMember();
         member.setRole(roleType);
         member.setUser(user);
         member.setGroup(group);
+        persistFlushDetach(member);
+        assertNotNull(member.getId());
         return member;
     }
 
+    @Transactional
     public DBResourceMember createResourceMembership(MembershipRoleType roleType, DBUser user, DBResource resource){
         DBResourceMember member = new DBResourceMember();
         member.setRole(roleType);
         member.setUser(user);
         member.setResource(resource);
+        persistFlushDetach(member);
+        assertNotNull(member.getId());
         return member;
     }
 
@@ -351,20 +381,35 @@ public class TestUtilsDao {
         documentD1G1RD1 = createDocument(2);
         documentD2G1RD1 = createDocument(2);
         resourceD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
-        resourceD1G1RD1.setGroup(groupD1G1);
-        resourceD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
         resourceD1G1RD1.setDocument(documentD1G1RD1);
 
+        resourceD1G1RD1.setGroup(groupD1G1);
+        resourceD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
+
         resourceD2G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_2, null);
+        resourceD2G1RD1.setDocument(documentD2G1RD1);
+
         resourceD2G1RD1.setGroup(groupD2G1);
         resourceD2G1RD1.setDomainResourceDef(domainResourceDefD2R1);
-        resourceD2G1RD1.setDocument(documentD2G1RD1);
 
         persistFlushDetach(resourceD1G1RD1);
         persistFlushDetach(resourceD2G1RD1);
 
         assertNotNull(resourceD1G1RD1.getId());
         assertNotNull(resourceD2G1RD1.getId());
+    }
+
+    @Transactional
+    public DBResource createResource(String identifier, String schema, VisibilityType visibilityType, DBDomainResourceDef domainResourceDef, DBGroup group) {
+
+        DBResource resource = TestDBUtils.createDBResource(identifier, schema);
+        resource.setVisibility(visibilityType);
+        resource.setGroup(group);
+        resource.setDomainResourceDef(domainResourceDef);
+
+        persistFlushDetach(resource);
+        assertNotNull(resource.getId());
+        return resource;
     }
 
 
@@ -458,17 +503,19 @@ public class TestUtilsDao {
             return;
         }
         createDomains();
-        groupD1G1 = TestDBUtils.createDBGroup(TEST_GROUP_A);
-        groupD1G2 = TestDBUtils.createDBGroup(TEST_GROUP_B);
-        groupD2G1 = TestDBUtils.createDBGroup(TEST_GROUP_A);
+        groupD1G1 = createGroup(TEST_GROUP_A, VisibilityType.PUBLIC, d1);
+        groupD1G2 = createGroup(TEST_GROUP_B, VisibilityType.PUBLIC, d1);
+        groupD2G1 = createGroup(TEST_GROUP_A, VisibilityType.PUBLIC, d2);
+    }
 
-        groupD1G1.setDomain(d1);
-        groupD1G2.setDomain(d1);
-        groupD2G1.setDomain(d2);
+    @Transactional
+    public DBGroup createGroup(String groupName, VisibilityType visibility, DBDomain domain){
+        DBGroup group = createDBGroup(groupName, visibility);
+        group.setDomain(domain);
+        persistFlushDetach(group);
+        assertNotNull(group.getId());
 
-        persistFlushDetach(groupD1G1);
-        persistFlushDetach(groupD1G2);
-        persistFlushDetach(groupD2G1);
+        return group;
     }
 
     @Transactional
@@ -480,7 +527,13 @@ public class TestUtilsDao {
 
     @Transactional
     public DBDomain createDomain(String domainCode) {
+     return createDomain(domainCode, VisibilityType.PUBLIC);
+    }
+
+    @Transactional
+    public DBDomain createDomain(String domainCode, VisibilityType visibility) {
         DBDomain d = TestDBUtils.createDBDomain(domainCode);
+        d.setVisibility(visibility);
         persistFlushDetach(d);
         return d;
     }
@@ -561,6 +614,14 @@ public class TestUtilsDao {
 
     public DBUser getUser3() {
         return user3;
+    }
+
+    public DBUser getUser4() {
+        return user4;
+    }
+
+    public DBUser getUser5() {
+        return user5;
     }
 
     public DBGroup getGroupD1G1() {

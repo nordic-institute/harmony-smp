@@ -58,6 +58,7 @@ public class ResourceDao extends BaseDao<DBResource> {
      * @return DBResource from the database
      */
     public Optional<DBResource> getResource(String identifierValue, String identifierSchema, DBResourceDef resourceDef, DBDomain domain) {
+        LOG.debug("Get resource (identifier [{}], scheme [{}])", identifierValue, identifierSchema);
         try {
             TypedQuery<DBResource> query = memEManager.createNamedQuery(QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, DBResource.class);
             query.setParameter(PARAM_DOMAIN_ID, domain.getId());
@@ -75,6 +76,7 @@ public class ResourceDao extends BaseDao<DBResource> {
 
 
     public Long getResourcesForFilterCount(DBResourceFilter resourceFilter) {
+        LOG.debug("Get resources count for filter [{}]", resourceFilter);
 
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_FILTER_COUNT, Long.class);
         query.setParameter(PARAM_GROUP_ID, resourceFilter.getGroupId());
@@ -87,7 +89,7 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
     public List<DBResource> getResourcesForFilter(int iPage, int iPageSize, DBResourceFilter resourceFilter) {
-
+        LOG.debug("Get resources page [{}] and page size [{}] for filter [{}]", iPage, iPageSize, resourceFilter);
         TypedQuery<DBResource> query = memEManager.createNamedQuery(QUERY_RESOURCE_FILTER, DBResource.class);
 
         if (iPageSize > -1 && iPage > -1) {
@@ -107,7 +109,9 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
     public List<DBResource> getPublicResourcesSearch(int iPage, int iPageSize, DBUser user, String schema, String identifier) {
-        TypedQuery<DBResource> query = memEManager.createNamedQuery("DBResource.getPublicSearch", DBResource.class);
+        LOG.debug("Get resources for user [{}]", user);
+
+        TypedQuery<DBResource> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER, DBResource.class);
         if (iPageSize > -1 && iPage > -1) {
             query.setFirstResult(iPage * iPageSize);
         }
@@ -115,18 +119,19 @@ public class ResourceDao extends BaseDao<DBResource> {
             query.setMaxResults(iPageSize);
         }
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
-        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema)? null: StringUtils.wrapIfMissing(schema,"%"));
-        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier)? null: StringUtils.wrapIfMissing(identifier,"%"));
+        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema) ? null : StringUtils.wrapIfMissing(schema, "%"));
+        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier) ? null : StringUtils.wrapIfMissing(identifier, "%"));
 
         return query.getResultList();
     }
 
     public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier) {
-        TypedQuery<Long> query = memEManager.createNamedQuery("DBResource.getPublicSearchCount", Long.class);
+        LOG.debug("Get resources count for user [{}]", user);
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER_COUNT, Long.class);
 
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
-        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema)? null: StringUtils.wrapIfMissing(schema,"%"));
-        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier)? null: StringUtils.wrapIfMissing(identifier,"%"));
+        query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema) ? null : StringUtils.wrapIfMissing(schema, "%"));
+        query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier) ? null : StringUtils.wrapIfMissing(identifier, "%"));
 
         return query.getSingleResult();
     }
@@ -245,7 +250,6 @@ public class ResourceDao extends BaseDao<DBResource> {
             }
             lstResult = q.getResultList();
         } catch (NoResultException ex) {
-            //LOG.warn("No result for '" + filterType.getName() + "' does not have a setter!", ex);
             lstResult = new ArrayList<>();
         }
         return lstResult;
