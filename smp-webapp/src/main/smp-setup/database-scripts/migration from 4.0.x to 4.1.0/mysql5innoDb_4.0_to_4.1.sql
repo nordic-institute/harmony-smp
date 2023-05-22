@@ -3,9 +3,9 @@
 -- create backup old tables
 -- --------------------------------------------------------------------------------------------------------- 
 alter table smp_domain rename to SMP_DOMAIN_BCK;
-alter table SMP_RESOURCE_MEMBER rename to SMP_RESOURCE_MEMBER_BCK;
-alter table SMP_RESOURCE rename to SMP_RESOURCE_BCK;
-alter table SMP_SUBRESOURCE rename to SMP_SUBRESOURCE_BCK;
+alter table smp_ownership rename to SMP_OWNERSHIP_BCK;
+alter table smp_service_group rename to SMP_SERVICE_GROUP_BCK;
+alter table smp_service_metadata rename to SMP_SERVICE_METADATA_BCK;
 alter table smp_user rename to SMP_USER_BCK;
 
 -- --------------------------------------------------------------------------------------------------------- 
@@ -80,13 +80,13 @@ alter table smp_user rename to SMP_USER_BCK;
 
  
 
-    create table SMP_RESOURCE_MEMBER (
+    create table SMP_OWNERSHIP (
        FK_SG_ID bigint not null,
         FK_USER_ID bigint not null,
         primary key (FK_SG_ID, FK_USER_ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_RESOURCE_MEMBER_AUD (
+    create table SMP_OWNERSHIP_AUD (
        REV bigint not null,
         FK_SG_ID bigint not null,
         FK_USER_ID bigint not null,
@@ -107,27 +107,27 @@ alter table smp_user rename to SMP_USER_BCK;
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-    create table SMP_RESOURCE (
+    create table SMP_SERVICE_GROUP (
        ID bigint not null auto_increment,
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
-        IDENTIFIER_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
-        IDENTIFIER_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        PARTICIPANT_IDENTIFIER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        PARTICIPANT_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_RESOURCE_AUD (
+    create table SMP_SERVICE_GROUP_AUD (
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
-        IDENTIFIER_VALUE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PARTICIPANT_IDENTIFIER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PARTICIPANT_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_RESOURCE_DOMAIN (
+    create table SMP_SERVICE_GROUP_DOMAIN (
        ID bigint not null auto_increment,
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
@@ -137,7 +137,7 @@ alter table smp_user rename to SMP_USER_BCK;
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_RESOURCE_DOMAIN_AUD (
+    create table SMP_SERVICE_GROUP_DOMAIN_AUD (
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
@@ -149,44 +149,44 @@ alter table smp_user rename to SMP_USER_BCK;
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_RESOURCE_DOMAIN_SEQ (
+    create table SMP_SERVICE_GROUP_DOMAIN_SEQ (
        next_val bigint
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
-    create table SMP_RESOURCE_SEQ (
+    create table SMP_SERVICE_GROUP_SEQ (
        next_val bigint
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_SUBRESOURCE (
+    create table SMP_SERVICE_METADATA (
        ID bigint not null auto_increment,
         CREATED_ON datetime not null,
-        IDENTIFIER_VALUE varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin not null,
-        IDENTIFIER_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DOCUMENT_IDENTIFIER varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        DOCUMENT_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
         LAST_UPDATED_ON datetime not null,
         FK_SG_DOM_ID bigint not null,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_SUBRESOURCE_AUD (
+    create table SMP_SERVICE_METADATA_AUD (
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
         CREATED_ON datetime,
-        IDENTIFIER_VALUE varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
-        IDENTIFIER_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DOCUMENT_IDENTIFIER varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
+        DOCUMENT_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
         LAST_UPDATED_ON datetime,
         FK_SG_DOM_ID bigint,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_SUBRESOURCE_SEQ (
+    create table SMP_SERVICE_METADATA_SEQ (
        next_val bigint
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-    create table SMP_DOCUMENT (
+    create table SMP_SERVICE_METADATA_XML (
        ID bigint not null,
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
@@ -194,7 +194,7 @@ alter table smp_user rename to SMP_USER_BCK;
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    create table SMP_DOCUMENT_AUD (
+    create table SMP_SERVICE_METADATA_XML_AUD (
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
@@ -272,45 +272,45 @@ INSERT INTO SMP_USER (EMAIL,ACTIVE,CREATED_ON,LAST_UPDATED_ON,USERNAME, PASSWORD
 INSERT INTO SMP_CERTIFICATE (ID,CERTIFICATE_ID,CREATED_ON,LAST_UPDATED_ON) SELECT ID ,USERNAME, CREATED_ON, LAST_UPDATED_ON  FROM SMP_USER where PASSWORD ='';
 
 -- migrate service groups
-INSERT INTO  SMP_RESOURCE ( CREATED_ON, LAST_UPDATED_ON, IDENTIFIER_VALUE, IDENTIFIER_SCHEME)
-    select  NOW(), NOW(), businessidentifier, businessidentifierscheme from SMP_RESOURCE_BCK;
+INSERT INTO  SMP_SERVICE_GROUP ( CREATED_ON, LAST_UPDATED_ON, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME)
+    select  NOW(), NOW(), businessidentifier, businessidentifierscheme from SMP_SERVICE_GROUP_BCK;
 -- insert extensions
 INSERT INTO SMP_SG_EXTENSION (ID, CREATED_ON, LAST_UPDATED_ON, EXTENSION) 
-    select sg.id, NOW(),NOW(), sgb.extension  from SMP_RESOURCE sg INNER JOIN  SMP_RESOURCE_BCK sgb
-    ON sg.IDENTIFIER_VALUE= sgb.businessidentifier
-        and sg.IDENTIFIER_SCHEME= sgb.businessidentifierscheme WHERE sgb.extension != '';
+    select sg.id, NOW(),NOW(), sgb.extension  from SMP_SERVICE_GROUP sg INNER JOIN  SMP_SERVICE_GROUP_BCK sgb
+    ON sg.PARTICIPANT_IDENTIFIER= sgb.businessidentifier 
+        and sg.PARTICIPANT_SCHEME= sgb.businessidentifierscheme WHERE sgb.extension != '';
 
 -- insert service group domains 
-INSERT INTO SMP_RESOURCE_DOMAIN ( CREATED_ON, LAST_UPDATED_ON, SML_REGISTERED, FK_DOMAIN_ID, FK_SG_ID )
-    select  NOW(), NOW(), 0, D.ID, SG.ID from SMP_RESOURCE_BCK SGB INNER JOIN  SMP_RESOURCE SG ON
-        SGB.businessidentifier = SG.IDENTIFIER_VALUE
-        and SGB.businessidentifierscheme = SG.IDENTIFIER_SCHEME
+INSERT INTO SMP_SERVICE_GROUP_DOMAIN ( CREATED_ON, LAST_UPDATED_ON, SML_REGISTERED, FK_DOMAIN_ID, FK_SG_ID )
+    select  NOW(), NOW(), 0, D.ID, SG.ID from SMP_SERVICE_GROUP_BCK SGB INNER JOIN  SMP_SERVICE_GROUP SG ON
+        SGB.businessidentifier = SG.PARTICIPANT_IDENTIFIER
+        and SGB.businessidentifierscheme = SG.PARTICIPANT_SCHEME
         INNER JOIN SMP_DOMAIN D ON
          SGB.domainid = D.DOMAIN_CODE;
 
 
 -- migrate service metadata (on migration there could be only one domain per service group therefore no need for domain)
-INSERT INTO  SMP_SUBRESOURCE ( CREATED_ON, LAST_UPDATED_ON, IDENTIFIER_VALUE, IDENTIFIER_SCHEME, FK_SG_DOM_ID)
+INSERT INTO  SMP_SERVICE_METADATA ( CREATED_ON, LAST_UPDATED_ON, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME, FK_SG_DOM_ID)
     select  NOW(), NOW(), MD.documentidentifier,  MD.documentidentifierscheme, SGD.ID
-        from SMP_SUBRESOURCE_BCK MD INNER JOIN SMP_RESOURCE SG
-            ON  MD.businessidentifier = SG.IDENTIFIER_VALUE and MD.businessidentifierscheme = SG.IDENTIFIER_SCHEME
-              INNER JOIN SMP_RESOURCE_DOMAIN SGD ON SGD.FK_SG_ID = SG.id;
+        from SMP_SERVICE_METADATA_BCK MD INNER JOIN SMP_SERVICE_GROUP SG
+            ON  MD.businessidentifier = SG.PARTICIPANT_IDENTIFIER and MD.businessidentifierscheme = SG.PARTICIPANT_SCHEME
+              INNER JOIN SMP_SERVICE_GROUP_DOMAIN SGD ON SGD.FK_SG_ID = SG.id;
                 
 -- update service metadata xml
-INSERT INTO  SMP_DOCUMENT ( ID, CREATED_ON, LAST_UPDATED_ON, XML_CONTENT)
+INSERT INTO  SMP_SERVICE_METADATA_XML ( ID, CREATED_ON, LAST_UPDATED_ON, XML_CONTENT)
     select MD.ID, NOW(), NOW(),  MDB.xmlcontent
-        from SMP_SUBRESOURCE_BCK MDB, SMP_RESOURCE SG, SMP_RESOURCE_DOMAIN SGD, SMP_SUBRESOURCE MD
-            where MDB.businessidentifier = SG.IDENTIFIER_VALUE and MDB.businessidentifierscheme = SG.IDENTIFIER_SCHEME
+        from SMP_SERVICE_METADATA_BCK MDB, SMP_SERVICE_GROUP SG, SMP_SERVICE_GROUP_DOMAIN SGD, SMP_SERVICE_METADATA MD
+            where MDB.businessidentifier = SG.PARTICIPANT_IDENTIFIER and MDB.businessidentifierscheme = SG.PARTICIPANT_SCHEME
                  and SGD.FK_SG_ID = SG.id -- only one service group domain at migration time
                  and MD.FK_SG_DOM_ID = SGD.id
-                 and MDB.documentidentifier = MD.IDENTIFIER_VALUE
-                 and MDB.documentidentifierscheme = MD.IDENTIFIER_SCHEME;
+                 and MDB.documentidentifier = MD.DOCUMENT_IDENTIFIER
+                 and MDB.documentidentifierscheme = MD.DOCUMENT_SCHEME;
 
 -- owners
-INSERT INTO SMP_RESOURCE_MEMBER (FK_SG_ID, FK_USER_ID)
-    select SG.ID, U.ID FROM SMP_RESOURCE_MEMBER_BCK OB INNER JOIN SMP_RESOURCE SG ON
-       OB.businessidentifier = SG.IDENTIFIER_VALUE
-            and OB.businessidentifierscheme = SG.IDENTIFIER_SCHEME
+INSERT INTO SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID)
+    select SG.ID, U.ID FROM SMP_OWNERSHIP_BCK OB INNER JOIN SMP_SERVICE_GROUP SG ON
+       OB.businessidentifier = SG.PARTICIPANT_IDENTIFIER
+            and OB.businessidentifierscheme = SG.PARTICIPANT_SCHEME
     INNER JOIN SMP_USER U ON OB.USERNAME =U.USERNAME;
             
 
@@ -325,15 +325,15 @@ UPDATE SMP_DOMAIN set SML_BLUE_COAT_AUTH=0 where SML_BLUE_COAT_AUTH IS NULL;
 -- update sequences and remove auto_increment
 -- --------------------------------------------------------------------------------------------------------
     alter table SMP_DOMAIN modify column id bigint not null;
-    alter table SMP_RESOURCE modify column id bigint not null;
-    alter table SMP_RESOURCE_DOMAIN modify column id bigint not null;
-    alter table SMP_SUBRESOURCE modify column id bigint not null;
+    alter table SMP_SERVICE_GROUP modify column id bigint not null;
+    alter table SMP_SERVICE_GROUP_DOMAIN modify column id bigint not null;
+    alter table SMP_SERVICE_METADATA modify column id bigint not null;
     alter table SMP_USER modify column id bigint not null;
 
     insert into SMP_USER_SEQ select count(id) +1 from SMP_USER;
-    insert into SMP_SUBRESOURCE_SEQ select count(id) +1 from SMP_SUBRESOURCE;
-    insert into SMP_RESOURCE_SEQ select count(id) +1 from SMP_RESOURCE;
-    insert into SMP_RESOURCE_DOMAIN_SEQ select count(id) +1 from SMP_RESOURCE_DOMAIN;
+    insert into SMP_SERVICE_METADATA_SEQ select count(id) +1 from SMP_SERVICE_METADATA;
+    insert into SMP_SERVICE_GROUP_SEQ select count(id) +1 from SMP_SERVICE_GROUP;
+    insert into SMP_SERVICE_GROUP_DOMAIN_SEQ select count(id) +1 from SMP_SERVICE_GROUP_DOMAIN;
     insert into SMP_DOMAIN_SEQ select count(id) +1 from SMP_DOMAIN;
     insert into SMP_REVISION_SEQ values ( 1 );
 -- -------------------------------------------------------------------------------------------------------- 
@@ -349,16 +349,16 @@ UPDATE SMP_DOMAIN set SML_BLUE_COAT_AUTH=0 where SML_BLUE_COAT_AUTH IS NULL;
 
     alter table SMP_DOMAIN 
        add constraint UK_likb3jn0nlxlekaws0xx10uqc unique (SML_SUBDOMAIN);
-create index SMP_SG_PART_ID_IDX on SMP_RESOURCE (IDENTIFIER_VALUE);
-create index SMP_SG_PART_SCH_IDX on SMP_RESOURCE (IDENTIFIER_SCHEME);
+create index SMP_SG_PART_ID_IDX on SMP_SERVICE_GROUP (PARTICIPANT_IDENTIFIER);
+create index SMP_SG_PART_SCH_IDX on SMP_SERVICE_GROUP (PARTICIPANT_SCHEME);
 
-    alter table SMP_RESOURCE
-       add constraint SMP_SG_UNIQ_PARTC_IDX unique (IDENTIFIER_SCHEME, IDENTIFIER_VALUE);
-create index SMP_SMD_DOC_ID_IDX on SMP_SUBRESOURCE (IDENTIFIER_VALUE);
-create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
+    alter table SMP_SERVICE_GROUP 
+       add constraint SMP_SG_UNIQ_PARTC_IDX unique (PARTICIPANT_SCHEME, PARTICIPANT_IDENTIFIER);
+create index SMP_SMD_DOC_ID_IDX on SMP_SERVICE_METADATA (DOCUMENT_IDENTIFIER);
+create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
-    alter table SMP_SUBRESOURCE
-       add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, IDENTIFIER_VALUE, IDENTIFIER_SCHEME);
+    alter table SMP_SERVICE_METADATA 
+       add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME);
 
     alter table SMP_USER 
        add constraint UK_rt1f0anklfo05lt0my05fqq6 unique (USERNAME);
@@ -378,57 +378,57 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
        foreign key (REV) 
        references SMP_REV_INFO (id);
 
-    alter table SMP_RESOURCE_MEMBER
+    alter table SMP_OWNERSHIP 
        add constraint FKrnqwq06lbfwciup4rj8nvjpmy 
        foreign key (FK_USER_ID) 
        references SMP_USER (ID);
 
-    alter table SMP_RESOURCE_MEMBER
+    alter table SMP_OWNERSHIP 
        add constraint FKgexq5n6ftsid8ehqljvjh8p4i 
        foreign key (FK_SG_ID) 
-       references SMP_RESOURCE (ID);
+       references SMP_SERVICE_GROUP (ID);
 
-    alter table SMP_RESOURCE_MEMBER_AUD
+    alter table SMP_OWNERSHIP_AUD 
        add constraint FK1lqynlbk8ow1ouxetf5wybk3k 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 
-    alter table SMP_RESOURCE_AUD
+    alter table SMP_SERVICE_GROUP_AUD 
        add constraint FKj3caimhegwyav1scpwrxoslef 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 
-    alter table SMP_RESOURCE_DOMAIN
+    alter table SMP_SERVICE_GROUP_DOMAIN 
        add constraint FKo186xtefda6avl5p1tuqchp3n 
        foreign key (FK_DOMAIN_ID) 
        references SMP_DOMAIN (ID);
 
-    alter table SMP_RESOURCE_DOMAIN
+    alter table SMP_SERVICE_GROUP_DOMAIN 
        add constraint FKgcvhnk2n34d3c6jhni5l3s3x3 
        foreign key (FK_SG_ID) 
-       references SMP_RESOURCE (ID);
+       references SMP_SERVICE_GROUP (ID);
 
-    alter table SMP_RESOURCE_DOMAIN_AUD
+    alter table SMP_SERVICE_GROUP_DOMAIN_AUD 
        add constraint FK6uc9r0eqw16baooxtmqjkih0j 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 
-    alter table SMP_SUBRESOURCE
+    alter table SMP_SERVICE_METADATA 
        add constraint FKfvcml6b8x7kn80m30h8pxs7jl 
        foreign key (FK_SG_DOM_ID) 
-       references SMP_RESOURCE_DOMAIN (ID);
+       references SMP_SERVICE_GROUP_DOMAIN (ID);
 
-    alter table SMP_SUBRESOURCE_AUD
+    alter table SMP_SERVICE_METADATA_AUD 
        add constraint FKbqr9pdnik1qxx2hi0xn4n7f61 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 
-    alter table SMP_DOCUMENT
+    alter table SMP_SERVICE_METADATA_XML 
        add constraint FK4b1x06xlavcgbjnuilgksi7nm 
        foreign key (ID) 
-       references SMP_SUBRESOURCE (ID);
+       references SMP_SERVICE_METADATA (ID);
 
-    alter table SMP_DOCUMENT_AUD
+    alter table SMP_SERVICE_METADATA_XML_AUD 
        add constraint FKevatmlvvwoxfnjxkvmokkencb 
        foreign key (REV) 
        references SMP_REV_INFO (id);
@@ -436,7 +436,7 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
     alter table SMP_SG_EXTENSION 
        add constraint FKtf0mfonugp2jbkqo2o142chib 
        foreign key (ID) 
-       references SMP_RESOURCE (ID);
+       references SMP_SERVICE_GROUP (ID);
 
     alter table SMP_SG_EXTENSION_AUD 
        add constraint FKmdo9v2422adwyebvl34qa3ap6 
@@ -454,9 +454,9 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
 
 -- remove backup if migration succeeded- do in manually
 -- drop table SMP_DOMAIN_BCK;
--- drop table SMP_RESOURCE_MEMBER_BCK;
--- drop table SMP_SUBRESOURCE_BCK;
--- drop table SMP_RESOURCE_BCK;
+-- drop table SMP_OWNERSHIP_BCK;
+-- drop table SMP_SERVICE_METADATA_BCK;
+-- drop table SMP_SERVICE_GROUP_BCK;
 -- drop table SMP_USER_BCK;
 
 
