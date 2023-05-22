@@ -16,6 +16,7 @@ import {
 } from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {UserDetailsDialogMode} from "../user/user-details-dialog/user-details-dialog.component";
 import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
+import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
 
 
 @Component({
@@ -39,6 +40,7 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private adminUserService: AdminUserService,
+              private httpErrorHandlerService: HttpErrorHandlerService,
               private securityService: SecurityService,
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
@@ -127,6 +129,9 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         this.selected = selectUser;
       }
     }, (error) => {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+        return;
+      }
       this.alertService.error(error.error?.errorDescription)
     });
   }
@@ -149,6 +154,9 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         this.alertService.success("User [" + user.username + "] updated!");
       }
     }, (error) => {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+        return;
+      }
       this.alertService.error(error.error?.errorDescription)
     });
   }
@@ -163,6 +171,9 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         this.alertService.success("User [" + user.username + "] created!");
       }
     }, (error) => {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+        return;
+      }
       this.alertService.error(error.error?.errorDescription)
     });
   }
@@ -192,6 +203,9 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         this.alertService.success("User [" + user.username + "] deleted!");
       }
     }, (error) => {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+        return;
+      }
       this.alertService.error(error.error?.errorDescription)
     });
 

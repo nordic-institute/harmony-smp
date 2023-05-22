@@ -1,4 +1,4 @@
-import {Component, Inject, Output} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {SmpConstants} from "../../../smp.constants";
@@ -7,6 +7,7 @@ import {UserService} from "../../../system-settings/user/user.service";
 import {CredentialRo} from "../../../security/credential.model";
 import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
 import {CertificateService} from "../../../system-settings/user/certificate.service";
+import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
 
 
 @Component({
@@ -34,6 +35,7 @@ export class CredentialDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private userService: UserService,
+              private httpErrorHandlerService: HttpErrorHandlerService,
               private certificateService: CertificateService,
               public dialogRef: MatDialogRef<CredentialDialogComponent>,
               private formBuilder: FormBuilder
@@ -138,6 +140,7 @@ export class CredentialDialogComponent {
           });
           if (res.invalid) {
             this.showErrorMessage(res.invalidReason);
+
           } else {
             this.clearAlert()
           }
@@ -154,6 +157,10 @@ export class CredentialDialogComponent {
       },
       err => {
         this.clearCertificateData()
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+          this.closeDialog();
+          return;
+        }
         this.showErrorMessage("Error uploading certificate file [" + file.name + "]." + err.error?.errorDescription)
       }
     );
@@ -175,6 +182,10 @@ export class CredentialDialogComponent {
       this.userService.notifyAccessTokenUpdated(response.credential);
       this.setDisabled(true);
     }, (err) => {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+        this.closeDialog();
+        return;
+      }
       this.showErrorMessage(err.error.errorDescription);
     });
   }
@@ -208,16 +219,17 @@ export class CredentialDialogComponent {
     }
     return null;
   }
+
   get minSelectableDate(): Date {
-    return this.credentialType == CredentialDialogComponent.ACCESS_TOKEN_TYPE? new Date():null;
+    return this.credentialType == CredentialDialogComponent.ACCESS_TOKEN_TYPE ? new Date() : null;
   }
 
-  showSuccessMessage(value:string) {
+  showSuccessMessage(value: string) {
     this.message = value;
     this.messageType = "success";
   }
 
-  showErrorMessage(value:string) {
+  showErrorMessage(value: string) {
     this.message = value;
     this.messageType = "error";
   }

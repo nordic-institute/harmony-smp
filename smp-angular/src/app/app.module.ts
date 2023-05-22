@@ -146,6 +146,7 @@ import {SubresourceDocumentPanelComponent} from "./edit/edit-resources/subresour
 import {SubresourceDocumentWizardComponent} from "./edit/edit-resources/subresource-document-wizard-dialog/subresource-document-wizard.component";
 import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/smp-warning-panel.component";
 import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dialog/manage-members-dialog.component";
+import {HttpErrorHandlerService} from "./common/error/http-error-handler.service";
 
 
 @NgModule({
@@ -293,6 +294,7 @@ import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dial
     EditDomainService,
     EditGroupService,
     EditResourceService,
+    HttpErrorHandlerService,
     ExtensionService,
     GlobalLookups,
     HttpEventService,

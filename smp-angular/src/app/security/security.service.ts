@@ -2,7 +2,7 @@
 import {Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
 import {SecurityEventService} from './security-event.service';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
@@ -169,4 +169,5 @@ export class SecurityService {
   private clearLocalStorage() {
     localStorage.removeItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
   }
+
 }
