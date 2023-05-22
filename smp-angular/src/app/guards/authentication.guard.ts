@@ -8,7 +8,6 @@ export const authenticationGuard = () => {
   const navigationService = inject(NavigationService);
   const securityService = inject(SecurityService);
   const alertService = inject(AlertMessageService);
-  const router = inject(Router);
 
   // test if logged in
   securityService.isAuthenticated(true).subscribe((isAuthenticated: boolean) => {
@@ -17,9 +16,7 @@ export const authenticationGuard = () => {
     } else {
       alertService.error('You have been logged out because of inactivity or missing access permissions.', true);
       // Redirect to the login page
-      navigationService.reset();
-      router.navigate(['/login'], {queryParams: {returnUrl: router.url}});
-      router.parseUrl('/login');
+      navigationService.navigateToLogin();
     }
   });
 };

@@ -317,4 +317,9 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     return false;
   }
 
+  public navigateToLogin(): void {
+    this.reset();
+    this.router.navigate(['/login'], {queryParams: {returnUrl: this.router.url}});
+    this.router.parseUrl('/login');
+  }
 }

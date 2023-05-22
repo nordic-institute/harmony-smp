@@ -30,7 +30,7 @@ public class TruststoreController {
         this.payloadValidatorService = payloadValidatorService;
     }
 
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PostMapping(path = "/{user-id}/validate-certificate", consumes = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public CertificateRO validateCertificate(@PathVariable("user-id") String userId, @RequestBody byte[] data) {
         LOG.info("Got certificate data size: {}", data.length);
