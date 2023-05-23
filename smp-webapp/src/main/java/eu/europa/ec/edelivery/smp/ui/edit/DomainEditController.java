@@ -47,7 +47,9 @@ public class DomainEditController {
      * @return Domain list where user has role domain administrator
      */
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.isAnyGroupAdministrator or @smpAuthorizationService.isAnyDomainAdministrator)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.isAnyGroupAdministrator " +
+            " or @smpAuthorizationService.isAnyDomainAdministrator" +
+            " or @smpAuthorizationService.isAnyResourceAdministrator)")
     public List<DomainRO> getDomainsForUserType(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @RequestParam(value = PARAM_NAME_TYPE, defaultValue = "domain-admin", required = false) String forRole) {
@@ -117,7 +119,9 @@ public class DomainEditController {
 
     @GetMapping(value = SUB_CONTEXT_PATH_EDIT_DOMAIN_RESOURCE_DEF)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and " +
-            "(@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId) or  @smpAuthorizationService.isAnyDomainGroupAdministrator(#domainEncId))")
+            "(@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId) " +
+            "or @smpAuthorizationService.isAnyDomainGroupAdministrator(#domainEncId)" +
+            "or @smpAuthorizationService.isAnyResourceAdministrator)")
     public List<ResourceDefinitionRO>  getDomainResourceDefinitions(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId

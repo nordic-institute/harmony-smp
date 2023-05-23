@@ -54,7 +54,9 @@ public class GroupEditController {
      */
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) " +
-            "and (@smpAuthorizationService.isDomainAdministrator(#domainEncId) or @smpAuthorizationService.isAnyDomainGroupAdministrator(#domainEncId))")
+            "and (@smpAuthorizationService.isDomainAdministrator(#domainEncId) " +
+            "or @smpAuthorizationService.isAnyDomainGroupAdministrator(#domainEncId)" +
+            "or @smpAuthorizationService.isAnyResourceAdministrator)")
     public List<GroupRO> getGroupsForDomain(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,

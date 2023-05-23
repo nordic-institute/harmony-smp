@@ -21,7 +21,6 @@ import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
-import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -192,7 +191,7 @@ public class UIResourceService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
         }
         Identifier resourceIdentifier = identifierService.normalizeParticipant(resourceRO.getIdentifierScheme(),
-                resourceRO.getIdentifierValue() );
+                resourceRO.getIdentifierValue());
 
         DBResource resource = new DBResource();
         resource.setIdentifierScheme(resourceIdentifier.getScheme());
@@ -270,7 +269,7 @@ public class UIResourceService {
     }
 
     @Transactional
-    public MemberRO addMemberToResource(Long resourceId, Long groupId,  MemberRO memberRO, Long memberId) {
+    public MemberRO addMemberToResource(Long resourceId, Long groupId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to resource [{}]", memberRO.getUsername(), resourceId);
         validateGroupAndResource(resourceId, groupId, "AddMemberToResource");
 
@@ -292,7 +291,7 @@ public class UIResourceService {
     }
 
     @Transactional
-    public MemberRO deleteMemberFromResource(Long resourceId,  Long groupId,  Long memberId) {
+    public MemberRO deleteMemberFromResource(Long resourceId, Long groupId, Long memberId) {
         LOG.info("Delete member [{}] from resource [{}]", memberId, resourceId);
         validateGroupAndResource(resourceId, groupId, "DeleteMemberFromResource");
         DBResourceMember resourceMember = resourceMemberDao.find(memberId);
@@ -306,6 +305,7 @@ public class UIResourceService {
         resourceMemberDao.remove(resourceMember);
         return conversionService.convert(resourceMember, MemberRO.class);
     }
+
     public DBResource validateGroupAndResource(Long resourceId, Long groupId, String action) {
         DBResource resource = resourceDao.find(resourceId);
         if (resource == null) {
