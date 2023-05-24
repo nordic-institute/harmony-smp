@@ -59,14 +59,12 @@ alter table SMP_USER_AUD drop constraint FK2786r5minnkai3d22b191iiiq;
  ALTER TABLE SMP_USER RENAME TO BCK_USER;
  ALTER TABLE SMP_USER_AUD RENAME TO BCK_USER_AUD;
 
-
 -- create new sequences
 create sequence SMP_CREDENTIAL_SEQ start with 1 increment by  1;
 create sequence SMP_DOCUMENT_SEQ start with 1 increment by  1;
 create sequence SMP_DOCUMENT_VERSION_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_MEMBER_SEQ start with 1 increment by  1;
 create sequence SMP_GROUP_MEMBER_SEQ start with 1 increment by  1;
-create sequence SMP_GROUP_SEQ start with 1 increment by  1;
 create sequence SMP_RESOURCE_MEMBER_SEQ start with 1 increment by  1;
 -- set manual inserts in v2 script -start with 10
 create sequence SMP_EXTENSION_SEQ start with 10 increment by  1;
@@ -75,9 +73,12 @@ create sequence SMP_SUBRESOURCE_DEF_SEQ start with 10 increment by  1;
 -- set SMP_DOMAIN_RESOURCE_DEF_SEQ to start from SMP_DOMAIN_SEQ!
 declare
     l_new_seq INTEGER;
+    l_new_seqDom INTEGER;
 begin
-   select SMP_DOMAIN_SEQ.nextval into l_new_seq from   dual;
+   select SMP_SERVICE_GROUP_DOMAIN_SEQ.nextval into l_new_seq from dual;
+   select SMP_DOMAIN_SEQ.nextval into l_new_seqDom from dual;
    execute immediate 'create sequence SMP_DOMAIN_RESOURCE_DEF_SEQ start with ' || l_new_seq || ' increment by 1';
+   execute immediate 'create sequence SMP_GROUP_SEQ start with ' || l_new_seqDom || ' increment by 1';
 end;
 /
 
