@@ -4,9 +4,6 @@ import java.security.cert.CertificateException;
 
 public class CertificateNotTrustedException extends CertificateException {
 
-    public CertificateNotTrustedException() {
-    }
-
     public CertificateNotTrustedException(String msg) {
         super(msg);
     }

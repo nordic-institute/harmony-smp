@@ -1,0 +1,46 @@
+﻿<mat-toolbar color="primary" id="window-toolbar" >
+    <mat-toolbar-row>
+      <smp-breadcrumb  [style.padding-left]="fullMenu ? '180px' : '60px'"></smp-breadcrumb>
+      <div id="topLogo"  class="mat-mdc-card">
+        <img src="assets/images/DomiSMP_logo.svg" [attr.height]="fullMenu ? '140px' : '30px'"
+             [attr.width]="fullMenu ? '180px' : '50px'"/>
+      </div>
+    <span class="window-toolbar-spacer"></span>
+    <a id="login_id" class="window-toolbar-item" *ngIf="!currentUser" [routerLink]="['/login']" (click)="clearWarning()"> Login </a>
+    <span class="window-toolbar-item" *ngIf="currentUser">{{currentUserRoleDescription}}: {{currentUser}}  </span>
+    <button class="window-toolbar-item" [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id"
+             matTooltip="Menu"  >
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <mat-menu x-position="before" #settingsMenu="matMenu">
+      <div *ngIf="currentUser">
+        <button id="currentuser_id" mat-menu-item  (click)="editCurrentUser()">
+          <mat-icon>person</mat-icon>
+          <span>{{currentUser}}</span>
+        </button>
+        <button id="changePassword_id"  *ngIf="isUserAuthPasswdEnabled" mat-menu-item
+                (click)="changeCurrentUserPassword()">
+          <span>Change password</span>
+        </button>
+        <button  id="showSSODetails_id" *ngIf="isUserAuthSSOEnabled" mat-menu-item
+                (click)="openCurrentCasUserData()">
+          <span>Open CAS user data</span>
+        </button>
+        <hr/>
+        <button id="logout_id" mat-menu-item (click)="logout($event)">
+          <mat-icon>power_settings_new</mat-icon>
+          <span>Logout</span>
+        </button>
+
+      </div>
+      <div *ngIf="!currentUser" style="text-align: center; vertical-align: middle;margin: 2px;">
+        <button mat-menu-item disabled="true">
+          <mat-icon>person_outline</mat-icon>
+          <span>Not logged in</span>
+        </button>
+      </div>
+    </mat-menu>
+  </mat-toolbar-row>
+
+</mat-toolbar>

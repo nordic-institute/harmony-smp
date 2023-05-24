@@ -1,0 +1,7 @@
+﻿<div class="smp-breadcrumb">
+  <smp-breadcrumb-item *ngFor="let item of navigationModel.selectedPath"
+                       [value]="item"
+                       (onClickEvent)="itemClickHandler(item)"
+  >
+  </smp-breadcrumb-item>
+</div>

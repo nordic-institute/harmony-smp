@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.cron;
 
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TriggerContext;

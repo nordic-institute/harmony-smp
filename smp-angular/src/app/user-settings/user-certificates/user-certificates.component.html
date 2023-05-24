@@ -1,0 +1,21 @@
+<div id="user-certificates-panel">
+  <data-panel title="User X509 Certificates"
+              text="Register a Client X509 certificates to access the DomiSMP API using the mutual TLS authentication."
+              [labelColumnContent]="commonToolbar">
+    <user-certificate-panel *ngFor="let item of certificates; trackBy: trackListItem"
+                        (onDeleteEvent)="onDeleteItemClicked(item)"
+                        (onSaveEvent)="onSaveItemClicked(item)"
+                       (onShowCertificate)="onShowItemClicked(item)"
+                        [credential]="item"></user-certificate-panel>
+  </data-panel>
+</div>
+
+<ng-template #commonToolbar>
+  <button mat-raised-button color="primary" matTooltip="Import new certificate" style="margin: 2em "
+  (click)="createNew()">
+    <mat-icon>article</mat-icon>
+    <span>Import new certificate</span>
+  </button>
+</ng-template>
+
+

@@ -28,11 +28,6 @@
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.edelivery</groupId>
-            <artifactId>smp-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.edelivery</groupId>
             <artifactId>smp-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -110,12 +105,12 @@
             <artifactId>jackson-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -154,22 +149,11 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15to18</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15to18</artifactId>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
         </dependency>
 
         <!-- Tests -->
@@ -282,7 +266,7 @@
                                 2. script version
                                 3. export scripts.-->
                             <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator" fork="true" failonerror="true">
-                                <arg value="org.hibernate.dialect.Oracle10gDialect,org.hibernate.dialect.MySQL5InnoDBDialect" />
+                                <arg value="org.hibernate.dialect.MySQL5InnoDBDialect,org.hibernate.dialect.Oracle10gDialect" />
                                 <arg value="${project.version}" />
                                 <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts" />
                                 <!-- reference to the passed-in classpath reference -->

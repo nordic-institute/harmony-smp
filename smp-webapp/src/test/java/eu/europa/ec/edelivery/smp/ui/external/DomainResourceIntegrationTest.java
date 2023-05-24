@@ -84,11 +84,10 @@ public class DomainResourceIntegrationTest {
             DomainRO sgro = mapper.convertValue(sgMap, DomainRO.class);
             assertNotNull(sgro.getDomainCode());
             assertNotNull(sgro.getSmlSubdomain());
-            // for public endpot all other data must be null!
-            assertNull(sgro.getId());
+            // for public endpoint all other data must be null!
+            assertNull(sgro.getDomainId());
             assertNull(sgro.getSmlSmpId());
             assertNull(sgro.getSignatureKeyAlias());
-            assertNull(sgro.getSmlParticipantIdentifierRegExp());
         });
     }
 }

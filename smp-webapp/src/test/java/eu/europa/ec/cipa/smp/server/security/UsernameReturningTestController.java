@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class UsernameReturningTestController {
 
-    @RequestMapping("/getLoggedUsername")
+    @RequestMapping(SecurityConfigurationTest.RETURN_LOGGED_USER_PATH)
     @ResponseBody
     public String getLoggedUsername(){
         return SecurityContextHolder.getContext().getAuthentication().getName();

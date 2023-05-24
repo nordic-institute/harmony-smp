@@ -16,6 +16,8 @@ import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
+import {ServiceGroupSearchRo} from "./service-group-search-ro.model";
+import {ServiceMetadataSearchRo} from "./service-metadata-search-ro.model";
 
 @Component({
   moduleId: module.id,
@@ -55,7 +57,7 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
   initColumns(): void {
     this.columnPicker.allColumns = [
       {
-        name: 'Metadata size',
+        name: 'Subres. size',
         prop: 'serviceMetadata.length',
         showInitially: true,
         width: 120,
@@ -63,7 +65,14 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
         resizable: "false",
       },
       {
-        name: 'Participant scheme',
+        name: 'Domain',
+        width: 120,
+        maxWidth: 200,
+        prop: 'domainCode',
+        showInitially: true,
+      },
+      {
+        name: 'Resource scheme',
         prop: 'participantScheme',
         showInitially: true,
         width: 300,
@@ -71,13 +80,13 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
         resizable: "false"
       },
       {
-        name: 'Participant identifier',
+        name: 'Resource identifier',
         prop: 'participantIdentifier',
         showInitially: true,
       },
       {
         cellTemplate: this.rowSMPUrlLinkAction,
-        name: 'OASIS ServiceGroup URL',
+        name: 'Resource URL',
         showInitially: true,
         width: 250,
         maxWidth: 250,
@@ -96,13 +105,21 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
     this.initColumns();
   }
 
-  createServiceGroupURL(row: any) {
-    return encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
+  createServiceGroupURL(row: ServiceGroupSearchRo) {
+
+    return (!row?.domainCode? "" : row.domainCode+ '/')
+          + (!row?.resourceDefUrlSegment?"" : row.resourceDefUrlSegment + '/')
+          + encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
   }
 
-  createServiceMetadataURL(row: any, rowSMD: any) {
-    return encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier) + '/services/' + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
+  createServiceMetadataURL(row: ServiceGroupSearchRo, rowSMD: ServiceMetadataSearchRo) {
+
+    return this.createServiceGroupURL(row)
+            + '/' + rowSMD.subresourceDefUrlSegment + '/'
+            + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
+
+
 
   details(row: any) {
     this.serviceGroupSearchController.showDetails(row);

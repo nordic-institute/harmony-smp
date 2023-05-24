@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.error;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ec.services.smp._1.ErrorResponse;
+import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.junit.Test;

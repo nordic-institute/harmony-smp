@@ -7,6 +7,8 @@ import org.testng.asserts.SoftAssert;
 import pages.components.ConfirmationDialog;
 import pages.components.baseComponents.SMPPage;
 import pages.components.messageArea.AlertMessage;
+import pages.login.LoginPage;
+import pages.service_groups.search.SearchPage;
 import pages.users.UserPopup;
 import pages.users.UsersPage;
 import utils.Generator;
@@ -36,26 +38,72 @@ public class UsersPgTest extends BaseTest {
 		page.sidebar.goToPage(UsersPage.class);
 	}
 
+	@Test(description = "USR-0")
+	public void existingUserPasswordDialogView() {
+		SoftAssert soft = new SoftAssert();
+		String username = Generator.randomAlphaNumeric(10);
+		String email = "system@gmail.com";
+		UsersPage usersPage = new UsersPage(driver);
+		UserPopup popup = usersPage.clickNew();
+		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
+		popup.fillDetailsForm(username, email);
+		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
+		popup.clickOK();
+		soft.assertTrue(usersPage.isSaveButtonEnabled(), "Save button is enabled");
+		soft.assertTrue(usersPage.isCancelButtonEnabled(), "Cancel button is enabled");
+
+		usersPage.clickSave().confirm();
+
+		soft.assertTrue(!usersPage.alertArea.getAlertMessage().isError(), "Message listed is success");
+		soft.assertTrue(usersPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
+
+		soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
+
+		int index = usersPage.grid().scrollToUser(username);
+
+		usersPage.grid().selectRow(index);
+		popup = usersPage.clickEdit();
+
+		popup.clickSetOrChangePassword();
+		soft.assertTrue(popup.isAdminPasswordInputEnable(), "Admin password field input is not enabled after open password change popup for an existing user");
+		soft.assertTrue(popup.isNewPasswordInputEnable(), "New password field input is not enabled after open password change popup for an existing user");
+		soft.assertTrue(popup.isConfirmPasswordInputEnable(), "Confirm password field input is not enabled after open password change popup for an existing user");
+
+		popup.clickClosePasswordDialog();
+		popup.clickOK();
+		usersPage.clickDelete();
+		usersPage.waitForXMillis(200);
+		soft.assertTrue(!usersPage.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted(2)");
+		soft.assertTrue(usersPage.isSaveButtonEnabled(), "Save button is enabled after user is deleted(2)");
+		soft.assertTrue(usersPage.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted(2)");
+
+		usersPage.clickSave().confirm();
+
+		soft.assertTrue(usersPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
+		soft.assertTrue(!usersPage.grid().isUserListed(username), "After saving deleted user is not listed");
+
+		soft.assertAll();
+
+	}
+
+
 	@Test(description = "USR-10")
 	public void newUser() {
 		String username = Generator.randomAlphaNumeric(10);
-		String validPass = "QW!@qw12";
+		String validPass = "Aabcdefghijklm1@";
+		String email = "system@gmail.com";
 
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage usersPage = new UsersPage(driver);
 
-//		soft.assertTrue(usersPage.isNewButtonEnabled(), "New button should be enabled");
 
 		UserPopup popup = usersPage.clickNew();
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
-
+		popup.fillDetailsForm(username, email);
 		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-
-		popup.clickUserDetailsToggle();
-
-		popup.fillDetailsForm(username, validPass, validPass);
 		popup.clickOK();
+
 
 		soft.assertTrue(usersPage.isSaveButtonEnabled(), "Save button is enabled");
 		soft.assertTrue(usersPage.isCancelButtonEnabled(), "Cancel button is enabled");
@@ -65,7 +113,27 @@ public class UsersPgTest extends BaseTest {
 		soft.assertTrue(!usersPage.alertArea.getAlertMessage().isError(), "Message listed is success");
 		soft.assertTrue(usersPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
 
-        soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
+		soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
+		String adminPass = "123456";
+		int index = usersPage.grid().scrollToUser(username);
+
+		usersPage.grid().selectRow(index);
+		popup = usersPage.clickEdit();
+		try {
+			Thread.sleep(10000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		popup.clickSetOrChangePassword();
+		popup.setOrChangePassword(adminPass, validPass, validPass);
+		popup.clickChangedPassword();
+		popup.clickCloseAfterChangedPass();
+		try {
+			Thread.sleep(1000);
+		} catch (Exception e) {
+		}
+		popup.clickOK();
+		soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
 
 		soft.assertAll();
 	}
@@ -81,19 +149,16 @@ public class UsersPgTest extends BaseTest {
 		UsersPage usersPage = new UsersPage(driver);
 		UserPopup popup = usersPage.clickNew();
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
-
+		popup.fillDetailsForm("tst", "smp@gmail.com");
 		popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
 
-		popup.clickUserDetailsToggle();
-
-		popup.fillDetailsForm("tst", validPass, validPass);
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(2)");
 		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(2)");
-		popup.fillDetailsForm("#$^&*^%&$#@%@$#%$", validPass, validPass);
+		popup.fillDetailsForm("#$^&*^%&$#@%@$#%$", "system@gmail.com");
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(3)");
 		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(3)");
 		//noinspection SpellCheckingInspection
-		popup.fillDetailsForm("QWERQWERQWERQWERQWERQWERQWERQWE33", validPass, validPass);
+		popup.fillDetailsForm("QWERQWERQWERQWERQWERQWERQWERQWE33", "system@gmail.com");
 		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup(4)");
 		soft.assertEquals(popup.getUsernameValidationError(), SMPMessages.USERNAME_VALIDATION_MESSAGE, "Validation error message is displayed(4)");
 
@@ -104,31 +169,35 @@ public class UsersPgTest extends BaseTest {
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test(description = "USR-30")
 	public void passwordValidation() {
-
+		String username = Generator.randomAlphaNumeric(10);
+		String email = "system@gmail.com";
 		ArrayList<String> passToValidate = new ArrayList<>(Arrays.asList("qwqw",
-				"QWERQWERQWERQWERQWERQWERQWERQWE33",
-//				"QWERTYUIOP",
-//				"qwertyuiop",
-//				"321654987",
-//				"~!@#$%^&*()_",
-//				"~1Aa#",
-				"~1a#2d2dds"));
+				"QWERQWERQWERQWERQWERQWERQWERQWE33"));
 
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage usersPage = new UsersPage(driver);
+		usersPage.clickVoidSpace();
 
+		UserPopup popup = usersPage.clickNew();
+		popup.fillDetailsForm(username, email);
+		popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
+		popup.clickOK();
+		usersPage.clickSave().confirm();
+		soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
+		int index = usersPage.grid().scrollToUser(username);
+		usersPage.grid().selectRow(index);
+		String adminPass = "123456";
 		for (String pass : passToValidate) {
-//			usersPage.refreshPage();
-			usersPage.clickVoidSpace();
 
-			UserPopup popup = usersPage.clickNew();
-			popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
-			popup.clickUserDetailsToggle();
+			popup = usersPage.clickEdit();
 
-			popup.fillDetailsForm("test11", pass, pass);
-			soft.assertTrue(!popup.isOKButtonActive(), String.format("OK button should be disabled until valid data is filled in the popup - %s ", pass));
-			soft.assertEquals(popup.getPassValidationError(), SMPMessages.PASS_POLICY_MESSAGE, String.format("Pass policy message is displayed - %s", pass));
+			popup.clickSetOrChangePassword();
+			popup.setOrChangePassword(adminPass, pass, pass);
+			popup.clickClosePasswordDialog();
+			popup.clickCancel();
+
+			soft.assertTrue(!popup.isChangedPasswordActive(), String.format("ChangePassword button should be disabled until valid data is filled in the popup - %s ", pass));
 		}
 
 		soft.assertAll();
@@ -173,23 +242,23 @@ public class UsersPgTest extends BaseTest {
 
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-        int index = page.grid().scrollToUser(username);
-        page.grid().selectRow(index);
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+		int index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted");
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted");
 
-        page.clickCancel().confirm();
-        new ConfirmationDialog(driver).confirm();
-        soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
+		page.clickCancel().confirm();
+		new ConfirmationDialog(driver).confirm();
+		soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
 
 
-        index = page.grid().scrollToUser(username);
-        page.grid().selectRow(index);
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
+		index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
 
 		page.clickDelete();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted(2)");
@@ -198,8 +267,8 @@ public class UsersPgTest extends BaseTest {
 
 		page.clickSave().confirm();
 
-        soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
-        soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
+		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
+		soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
 
 		soft.assertAll();
 	}
@@ -209,8 +278,8 @@ public class UsersPgTest extends BaseTest {
 
 		SoftAssert soft = new SoftAssert();
 
-        UsersPage page = new UsersPage(driver);
-        int index = page.grid().scrollToUserWithRole("SYSTEM_ADMIN");
+		UsersPage page = new UsersPage(driver);
+		int index = page.grid().scrollToUserWithRole("SYSTEM_ADMIN");
 
 		page.grid().selectRow(index);
 		UserPopup popup = page.clickEdit();
@@ -226,13 +295,24 @@ public class UsersPgTest extends BaseTest {
 
 		SoftAssert soft = new SoftAssert();
 
-        UsersPage page = new UsersPage(driver);
-        int index = page.grid().scrollToUserWithRole("SMP_ADMIN");
+		UsersPage page = new UsersPage(driver);
+		int index = page.grid().scrollToUserWithRole("SMP_ADMIN");
 
 		page.grid().selectRow(index);
 		UserPopup popup = page.clickEdit();
 
 		List<String> options = popup.rolesSelect.getOptionTexts();
+		soft.assertTrue(options.size() == 2, "Role dropdown has only two values");
+		soft.assertTrue(options.get(0).equalsIgnoreCase("SMP_ADMIN"), "Role dropdown has value \"SMP_ADMIN\"");
+		soft.assertTrue(options.get(1).equalsIgnoreCase("SERVICE_GROUP_ADMIN"), "Role dropdown has value \"SERVICE_GROUP_ADMIN\"");
+		page.refreshPage();
+
+		int index2 = page.grid().scrollToUserWithRole("SERVICE_GROUP_ADMIN");
+
+		page.grid().selectRow(index2);
+		popup = page.clickEdit();
+
+		options = popup.rolesSelect.getOptionTexts();
 		soft.assertTrue(options.size() == 2, "Role dropdown has only two values");
 		soft.assertTrue(options.get(0).equalsIgnoreCase("SMP_ADMIN"), "Role dropdown has value \"SMP_ADMIN\"");
 		soft.assertTrue(options.get(1).equalsIgnoreCase("SERVICE_GROUP_ADMIN"), "Role dropdown has value \"SERVICE_GROUP_ADMIN\"");
@@ -250,9 +330,9 @@ public class UsersPgTest extends BaseTest {
 		UsersPage page = new UsersPage(driver);
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-        int index = page.grid().scrollToUser(username);
-        page.grid().selectRow(index);
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+		int index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		AlertMessage message = page.alertArea.getAlertMessage();
@@ -276,23 +356,23 @@ public class UsersPgTest extends BaseTest {
 		page.refreshPage();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-        int index = page.grid().scrollToUser(username);
-        page.grid().selectRow(index);
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+		int index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted");
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted");
 
-        page.clickCancel().confirm();
-        new ConfirmationDialog(driver).confirm();
-        soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
+		page.clickCancel().confirm();
+		new ConfirmationDialog(driver).confirm();
+		soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
 
 
-        index = page.grid().scrollToUser(username);
-        page.grid().selectRow(index);
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
+		index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
 
 		page.clickDelete();
 		page.waitForXMillis(200);
@@ -302,8 +382,8 @@ public class UsersPgTest extends BaseTest {
 
 		page.clickSave().confirm();
 
-        soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
-        soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
+		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
+		soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
 
 		soft.assertAll();
 	}
@@ -322,9 +402,9 @@ public class UsersPgTest extends BaseTest {
 
 		soft.assertTrue(!page.isDeleteButtonEnabled(), "Delete button is not enabled");
 
-        int index =page.grid(). scrollToUser(username);
-        page.grid().selectRow(index);
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+		int index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		page.waitForRowsToLoad();
@@ -333,14 +413,14 @@ public class UsersPgTest extends BaseTest {
 		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled after user is deleted");
 		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted");
 
-        page.clickCancel().confirm();
-        new ConfirmationDialog(driver).confirm();
-        page.waitForRowsToLoad();
-        soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
+		page.clickCancel().confirm();
+		new ConfirmationDialog(driver).confirm();
+		page.waitForRowsToLoad();
+		soft.assertTrue(page.grid().isUserListed(username), "After canceling delete user is still listed");
 
 
-        index = page.grid().scrollToUser(username);
-        page.grid().selectRow(index);
+		index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
 
 		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
 
@@ -352,8 +432,8 @@ public class UsersPgTest extends BaseTest {
 
 		page.clickSave().confirm();
 
-        soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
-        soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
+		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
+		soft.assertTrue(!page.grid().isUserListed(username), "After saving deleted user is not listed");
 
 		soft.assertAll();
 	}
@@ -381,9 +461,9 @@ public class UsersPgTest extends BaseTest {
 		UsersPage page = new UsersPage(driver);
 		page.refreshPage();
 
-        int index = page.grid().scrollToUser(username);
-        page.grid().selectRow(index);
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+		int index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		AlertMessage message = page.alertArea.getAlertMessage();
@@ -411,16 +491,16 @@ public class UsersPgTest extends BaseTest {
 				new ArrayList<>(Arrays.asList(createdDomains.get(0)))
 		);
 
-		logger.info("Created username "+ username);
+		logger.info("Created username " + username);
 
 		SoftAssert soft = new SoftAssert();
 
 		UsersPage page = new UsersPage(driver);
 		page.refreshPage();
 
-        int index = page.grid().scrollToUser(username);
-        page.grid().selectRow(index);
-        soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
+		int index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is enabled after row select");
 
 		page.clickDelete();
 		page.waitForXMillis(500);
@@ -431,58 +511,225 @@ public class UsersPgTest extends BaseTest {
 		SMPRestClient.deleteSG(pi);
 		SMPRestClient.deleteUser(username);
 
-        soft.assertAll();
-    }
+		soft.assertAll();
+	}
 
-    @Test(description = "USR-121")
-    public void duplicateUserCreation() {
-        SoftAssert soft = new SoftAssert();
-        String userName = Generator.randomAlphaNumeric(10);
-        String validPass = "QW!@qw12";
-        UsersPage page = new UsersPage(driver);
+	@Test(description = "USR-130")
+	public void duplicateUserCreation() {
+		SoftAssert soft = new SoftAssert();
+		String userName = Generator.randomAlphaNumeric(10);
+		String validPass = "Aabcdefghijklm1@";
+		String email = "system@gmail.com";
+		UsersPage page = new UsersPage(driver);
 
-        soft.assertTrue(page.isNewButtonEnabled(), "New button should be enabled");
+		soft.assertTrue(page.isNewButtonEnabled(), "New button should be enabled");
 
-        UserPopup popup = page.clickNew();
-        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
-        popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-        popup.clickUserDetailsToggle();
-        popup.fillDetailsForm(userName, validPass, validPass);
-        popup.clickOK();
-        soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
-        page.clickSave().confirm();
+		UserPopup popup = page.clickNew();
+		soft.assertTrue(!popup.isOKButtonActive(), "OK button is enabled before valid data is filled in the popup");
+		popup.fillDetailsForm(userName, email);
+		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
+		popup.clickOK();
+		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+		page.clickSave().confirm();
+		String adminPass = "123456";
+		int index = page.grid().scrollToUser(userName);
 
-        page.clickNew();
-        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
-        popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
-        popup.clickUserDetailsToggle();
-        popup.fillDetailsForm(userName, validPass, validPass);
-        soft.assertFalse(popup.isOKButtonActive(), "OK button is enable after duplicate user name is filled in the popup");
+		page.grid().selectRow(index);
+		popup = page.clickEdit();
+		popup.clickSetOrChangePassword();
+		popup.setOrChangePassword(adminPass, validPass, validPass);
+		popup.clickChangedPassword();
+		popup.clickCloseAfterChangedPass();
+		popup.clickCancel();
+		soft.assertTrue(page.grid().isUserListed(userName), "User present in the page");
 
-        soft.assertTrue(popup.isDuplicateUserNameErrorMsgDisPlayed(), "The user page is not containing the expected error message");
-        soft.assertAll();
-    }
+		page.clickNew();
 
-    @Test(description = "USR-122")
-    public void verifyPasswordDoNotMatch() {
-        String username = Generator.randomAlphaNumeric(10);
-        String validPass = "QW!@qw12";
-        String confirmPass = "AS@!gh12";
-        String errorMsg = "Passwords do not match";
-        SoftAssert soft = new SoftAssert();
+		popup.fillDetailsForm(userName, email);
+		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
 
-        UsersPage usersPage = new UsersPage(driver);
-        UserPopup popup = usersPage.clickNew();
-        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enable before valid data is filled in the popup");
+		soft.assertFalse(popup.isOKButtonActive(), "OK button is enabled after duplicate user name is filled in the popup");
 
-        popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
+		soft.assertTrue(popup.isDuplicateUserNameErrorMsgDisPlayed(), "The user page is not containing the expected error message");
+		popup.clickCancel();
+		soft.assertAll();
+	}
 
-        popup.clickUserDetailsToggle();
+	@Test(description = "USR-140")
+	public void verifyPasswordDoNotMatch() {
+		String username = Generator.randomAlphaNumeric(10);
+		String validPass = "Aabcdefghijklm1@";
+		String confirmPass = "AS@!gh12fxghfnh43546";
+		String email = "system@gmail.com";
+		String errorMsg = "Confirm valued does not match new password!";
+		String adminPass = "123456";
+		SoftAssert soft = new SoftAssert();
+		UsersPage usersPage = new UsersPage(driver);
+		UserPopup popup = usersPage.clickNew();
+		soft.assertTrue(!popup.isOKButtonActive(), "OK button is enabled before valid data is filled in the popup");
+		popup.fillDetailsForm(username, email);
+		popup.rolesSelect.selectOptionWithText("SMP_ADMIN");
+		popup.clickOK();
+		soft.assertTrue(usersPage.isSaveButtonEnabled(), "Save button is enabled");
+		usersPage.clickSave().confirm();
+		int index = usersPage.grid().scrollToUser(username);
+		usersPage.grid().selectRow(index);
+		popup = usersPage.clickEdit();
+		popup.clickSetOrChangePassword();
+		popup.setOrChangePassword(adminPass, validPass, confirmPass);
+		soft.assertTrue(!popup.isChangePasswordButtonActive(), "password change button is enabled before valid data is filled in the popup(2)");
+		soft.assertTrue(!popup.isPopupChangedPasswordEnabled(), "Change password option is not disable after giving the wrong data in cofirmation password");
+		soft.assertAll();
+	}
 
-        popup.fillDetailsForm(username, validPass, confirmPass);
-        soft.assertTrue(!popup.isOKButtonActive(), "OK button is enabled before valid data is filled in the popup(2)");
-        soft.assertEquals(popup.getPassDontMatchValidationMsg(), errorMsg, "confirmation input does not contain the message 'Passwords do not match' .");
-        soft.assertAll();
-    }
+	@Test(description = "USR-150")
+	public void verifySuspendedUserwithoutPassword() {
+		String username = Generator.randomAlphaNumeric(10);
+		String password = "Aabcdefghijklm1@";
+		String email = "system@gmail.com";
+
+		SoftAssert soft = new SoftAssert();
+
+		UsersPage usersPage = new UsersPage(driver);
+
+		UserPopup popup = usersPage.clickNew();
+		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
+		popup.fillDetailsForm(username, email);
+		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
+		popup.clickOK();
+
+		soft.assertTrue(usersPage.isSaveButtonEnabled(), "Save button is enabled");
+		soft.assertTrue(usersPage.isCancelButtonEnabled(), "Cancel button is enabled");
+
+		usersPage.clickSave().confirm();
+
+		soft.assertTrue(!usersPage.alertArea.getAlertMessage().isError(), "Message listed is success");
+		soft.assertTrue(usersPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
+
+		soft.assertTrue(usersPage.grid().isUserListed(username), "User present in the page");
+
+		usersPage.pageHeader.sandwichMenu.logout();
+		SearchPage page = new SearchPage(driver);
+		logger.info("Going to login page");
+		LoginPage loginPage = page.pageHeader.goToLogin();
+		for (int i = 0; i < 5; i++) {
+			loginPage.invalidLogin(username, password);
+			loginPage.waitForXMillis(2000);
+		}
+		soft.assertTrue(loginPage.isLoginButtonEnable(), "Login Button Is Disabled");
+		logger.info(loginPage.alertArea.getAlertMessage().getMessage());
+		soft.assertTrue(loginPage.alertArea.getAlertMessage().getMessage().contains(SMPMessages.MSG_22), "Message listed is as expected");
+
+		SMPPage smpPage = genericLoginProcedure("SYS_ADMIN");
+		logger.info("Going to User page");
+		smpPage.sidebar.goToPage(UsersPage.class);
+		usersPage = new UsersPage(driver);
+		int index = usersPage.grid().scrollToUser(username);
+		usersPage.grid().selectRow(index);
+		soft.assertTrue(usersPage.isDeleteButtonEnabled(), "Delete button is enabled after row select(2)");
+
+		usersPage.clickDelete();
+		usersPage.waitForXMillis(200);
+		soft.assertTrue(!usersPage.isDeleteButtonEnabled(), "Delete button is not enabled after user is deleted(2)");
+		soft.assertTrue(usersPage.isSaveButtonEnabled(), "Save button is enabled after user is deleted(2)");
+		soft.assertTrue(usersPage.isCancelButtonEnabled(), "Cancel button is enabled after user is deleted(2)");
+
+		usersPage.clickSave().confirm();
+
+		soft.assertTrue(usersPage.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message is as expected");
+		soft.assertTrue(!usersPage.grid().isUserListed(username), "After saving deleted user is not listed");
+
+		soft.assertAll();
+	}
+
+	@Test(description = "USR-160")
+	public void userPageUIAppearanceAndBehaviour() {
+		SoftAssert soft = new SoftAssert();
+
+		UsersPage page = new UsersPage(driver);
+		soft.assertTrue(page.isLoaded());
+		soft.assertTrue(page.isNewButtonEnabled(), "New button is not enabled");
+		soft.assertTrue(page.isEditTruststoreButtonEnabled(), "EditTruststore Button is not enabled");
+		soft.assertTrue(page.isDeleteButtonVisible(), "Delete button is not visible");
+		soft.assertTrue(page.isEditButtonVisible(), "Edit button is not visible");
+		soft.assertTrue(page.isSaveButtonVisible(), "Save button is not visible");
+		soft.assertTrue(page.isCancelButtonVisible(), "Cancel button is not visible");
+		soft.assertTrue(!page.isEditButtonEnabled(), "Edit button is  enabled");
+		soft.assertTrue(!page.isSaveButtonEnabled(), "Save button is  enabled");
+		soft.assertTrue(!page.isCancelButtonEnabled(), "Cancel button is  enabled");
+		int index = 0;
+		page.grid().selectRow(index);
+		soft.assertTrue(page.isDeleteButtonEnabled(), "Delete button is not enabled after row select(2)");
+		soft.assertTrue(page.isEditButtonEnabled(), "Edit button is not enabled after row select(2)");
+
+
+		soft.assertAll();
+	}
+
+	@Test(description = "USR-170")
+	public void editUserUIAppearanceAndBehaviour() {
+		SoftAssert soft = new SoftAssert();
+		UsersPage page = new UsersPage(driver);
+		soft.assertTrue(page.isLoaded());
+		String username = Generator.randomAlphaNumeric(10);
+		String email = "system@gmail.com";
+		UserPopup popup = page.clickNew();
+		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
+		popup.fillDetailsForm(username, email);
+		popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
+		popup.clickOK();
+		soft.assertTrue(page.isSaveButtonEnabled(), "Save button is enabled");
+		soft.assertTrue(page.isCancelButtonEnabled(), "Cancel button is enabled");
+
+		page.clickSave().confirm();
+
+		soft.assertTrue(!page.alertArea.getAlertMessage().isError(), "Message listed is success");
+		soft.assertTrue(page.alertArea.getAlertMessage().getMessage().equalsIgnoreCase(SMPMessages.MSG_18), "Message listed is as expected");
+
+		int index = page.grid().scrollToUser(username);
+		page.grid().selectRow(index);
+		popup = page.clickEdit();
+		soft.assertTrue(!popup.isUsernameFieldEnabled(), "Username field is enabled for an existing user");
+		soft.assertTrue(popup.isEmailFieldEnabled(), "Email field is not enabled for an existing user");
+		soft.assertTrue(popup.isRoleSelectFieldEnabled(), "Role field is not enabled for an existing user");
+		soft.assertTrue(popup.isSetOrChangePassOptionBtnEnabled(), "SetOrChangePassOptionBtn field is not enabled for an existing user");
+		soft.assertTrue(popup.isRegenerateAccesstokenBtnEnabled(), "Email field is not enabled for an existing user");
+		soft.assertTrue(popup.isOKButtonActive(), "Ok btn is not enabled for an existing user in user popup");
+		soft.assertTrue(popup.isCancelButtonActive(), "Cancel btn is not enabled for an existing user in user popup");
+		soft.assertTrue(popup.isImportButtonActive(), "Import btn is not enabled for an existing user in user popup");
+		if (page.grid().userHasCertificate(index)) {
+			soft.assertTrue(popup.isShowDetailsButtonActive(), "ShowDetails btn is not enabled for an existing user in user popup");
+			soft.assertTrue(popup.isClearButtonActive(), "Clear btn is not enabled for an existing user in user popup");
+		} else {
+			soft.assertTrue(!popup.isShowDetailsButtonActive(), "ShowDetails btn is enabled for an existing user in user popup");
+			soft.assertTrue(!popup.isClearButtonActive(), "Clear btn is enabled for an existing user in user popup");
+
+		}
+
+		soft.assertAll();
+
+
+	}
+
+	@Test(description = "USR-180")
+	public void userEmailValidation() {
+		SoftAssert soft = new SoftAssert();
+		UsersPage page = new UsersPage(driver);
+		soft.assertTrue(page.isLoaded());
+		String username = Generator.randomAlphaNumeric(10);
+		ArrayList<String> email = new ArrayList<>(Arrays.asList("sdfdgfdghxvfv@gmail.c",
+				"sdfdgfdghxvfv$gmail.com",
+				"hdbvsdkvdsvf"));
+		UserPopup popup = page.clickNew();
+		soft.assertTrue(!popup.isOKButtonActive(), "OK button should be disabled until valid data is filled in the popup");
+		for (String emailId : email) {
+			popup.fillDetailsForm(username, emailId);
+			popup.rolesSelect.selectOptionWithText("SYSTEM_ADMIN");
+			soft.assertTrue(!popup.isOKButtonActive(), "OK button is active after sending invalid email");
+			soft.assertEquals(popup.userEmailValidationGetErrMsg(), SMPMessages.USER_EMAIL_VALIDATION_MESSAGE, "Message is not in the list");
+		}
+		soft.assertAll();
+	}
+
 
 }

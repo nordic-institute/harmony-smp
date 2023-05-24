@@ -2,8 +2,16 @@ import {Authority} from "./authority.model";
 
 export interface User {
   userId: string;
-  emailAddress: string;
   username: string;
+  role: string;
+  fullName?: string;
+  emailAddress?: string;
+  smpTheme?: string;
+  smpLocale?: string;
+
+
+
+
   accessTokenId?: string;
   accessTokenExpireOn?: Date;
   sequentialTokenLoginFailureCount?:number;

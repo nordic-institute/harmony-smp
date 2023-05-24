@@ -11,7 +11,8 @@ public class AlertMessage {
 	}
 
 	public String getMessage() {
-		return message.replaceAll("×", "").trim();
+        System.out.println("message = " + message);
+        return message.replaceAll("×", "").trim();
 	}
 
 	public void setMessage(String message) {

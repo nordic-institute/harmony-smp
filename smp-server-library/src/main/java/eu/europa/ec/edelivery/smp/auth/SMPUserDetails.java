@@ -1,11 +1,12 @@
 package eu.europa.ec.edelivery.smp.auth;
 
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,10 +19,11 @@ import java.util.List;
  * @since 4.2
  */
 public class SMPUserDetails implements UserDetails {
-    final DBUser user;
-    final SecurityUtils.Secret sessionSecret;
-    boolean casAuthenticated = false;
-    List<SMPAuthority> smpAuthorities = new ArrayList<>();
+    private final DBUser user;
+    @Transient
+    private final SecurityUtils.Secret sessionSecret;
+    private boolean casAuthenticated = false;
+    private List<SMPAuthority> smpAuthorities = new ArrayList<>();
 
     public SMPUserDetails(DBUser user, SecurityUtils.Secret sessionSecret, List<SMPAuthority> smpAuthorities) {
         this.user = user;
@@ -59,7 +61,7 @@ public class SMPUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.user.getUsername();
+        return this.user != null ? this.user.getUsername() : null;
     }
 
     @Override
@@ -80,5 +82,13 @@ public class SMPUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.user.isActive();
+    }
+
+    @Override
+    public String toString() {
+        return "SMPUserDetails{" +
+                "username=" + getUsername() +
+                "user=" + getUser()+
+                '}';
     }
 }

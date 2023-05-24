@@ -1,0 +1,57 @@
+
+.nav-tree-invisible {
+  display: none;
+}
+
+.nav-tree .mat-tree-node {
+  min-height: 3em !important;
+  height: 3em;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.nav-tree ul,
+.nav-tree li {
+  list-style-type: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-left: 1.0em !important;
+}
+
+/* Draw the bottom menu line */
+.nav-tree li {
+  border-bottom: #EEE 1px solid;
+}
+.nav-tree li button {
+  min-height: 2.5em !important;
+  height: 2.5em;
+  padding-left: 1.0em !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+}
+
+.nav-tree-leaf {
+  flex: 1 1 auto;
+}
+
+/*override the mat-icon-button */
+.nav-tree-expand-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 1em !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.nav-tree-expand-button-icon {
+  /*fixed size expand icon */
+  font-size: 0.8em;
+}
+
+.nav-tree .mat-icon {
+  margin-right: 0.2rem
+}
+
+.navigation-selected {
+  border: 1px solid;
+}

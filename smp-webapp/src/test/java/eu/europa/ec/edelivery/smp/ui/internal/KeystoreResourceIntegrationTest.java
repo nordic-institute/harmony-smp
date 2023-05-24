@@ -1,7 +1,9 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
@@ -12,6 +14,7 @@ import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +31,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.getLoggedUserData;
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithSystemAdmin;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_KEYSTORE;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -71,19 +75,19 @@ public class KeystoreResourceIntegrationTest {
         // given when
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         MockHttpSession session = loginWithSystemAdmin(mvc);
-        MvcResult result = mvc.perform(get(PATH)
-                .session(session)
-                .with(csrf()))
+        UserRO userRO = getLoggedUserData(mvc, session);
+        MvcResult result = mvc.perform(get(PATH + "/" + userRO.getUserId())
+                        .session(session)
+                        .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
-        //them
-        ObjectMapper mapper = new ObjectMapper();
-        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
+        //then
+        ObjectMapper mapper = getObjectMapper();
+        List<CertificateRO> listCerts = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<CertificateRO>>(){});
 
-
-        assertNotNull(res);
-        assertEquals(countStart, res.getServiceEntities().size());
-        res.getServiceEntities().forEach(sgMap -> {
+        assertNotNull(listCerts);
+        assertEquals(countStart, listCerts.size());
+        listCerts.forEach(sgMap -> {
             CertificateRO cert = mapper.convertValue(sgMap, CertificateRO.class);
             assertNotNull(cert.getAlias());
             assertNotNull(cert.getCertificateId());
@@ -99,13 +103,13 @@ public class KeystoreResourceIntegrationTest {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/test123")
-                .session(session)
-                .with(csrf())
-                .content("invalid keystore")).
+                        .session(session)
+                        .with(csrf())
+                        .content("invalid keystore")).
                 andExpect(status().isOk()).andReturn();
 
-        //them
-        ObjectMapper mapper = new ObjectMapper();
+        //then
+        ObjectMapper mapper = getObjectMapper();
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
@@ -113,19 +117,20 @@ public class KeystoreResourceIntegrationTest {
     }
 
     @Test
+
     public void uploadKeystoreInvalidPassword() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         // given when
         MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/NewPassword1234")
-                .session(session)
-                .with(csrf())
-                .content(Files.readAllBytes(keystore)))
+                        .session(session)
+                        .with(csrf())
+                        .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = getObjectMapper();
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
@@ -140,13 +145,13 @@ public class KeystoreResourceIntegrationTest {
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         // given when
         MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/test123")
-                .session(session)
-                .with(csrf())
-                .content(Files.readAllBytes(keystore)))
+                        .session(session)
+                        .with(csrf())
+                        .content(Files.readAllBytes(keystore)))
                 .andExpect(status().isOk()).andReturn();
 
-        //them
-        ObjectMapper mapper = new ObjectMapper();
+        //then
+        ObjectMapper mapper = getObjectMapper();
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
@@ -163,18 +168,24 @@ public class KeystoreResourceIntegrationTest {
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         // given when
         MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/delete/second_domain_alias")
-                .session(session)
-                .with(csrf()))
+                        .session(session)
+                        .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
         //them
-        ObjectMapper mapper = new ObjectMapper();
-        KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
+        ObjectMapper mapper = getObjectMapper();
+        CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
 
         assertNotNull(res);
-        assertNull(res.getErrorMessage());
+        assertNull(res.getActionMessage());
         uiKeystoreService.refreshData();
         assertEquals(countStart - 1, uiKeystoreService.getKeystoreEntriesList().size());
+    }
+
+    protected ObjectMapper getObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
 
 }

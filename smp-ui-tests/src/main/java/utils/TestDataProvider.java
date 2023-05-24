@@ -20,7 +20,7 @@ public class TestDataProvider {
             content = new String(Files.readAllBytes(Paths.get(PROPERTIES.TESTDATAFILE)));
          	testData = new JSONObject(content);
         } catch (Exception e) {
-            e.printStackTrace();
+           throw new RuntimeException("Error reading test data file: " + PROPERTIES.TESTDATAFILE);
         }
     }
 

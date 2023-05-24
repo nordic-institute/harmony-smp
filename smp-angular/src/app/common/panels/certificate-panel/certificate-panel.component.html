@@ -1,0 +1,86 @@
+<div id="certificate-panel" class="mat-elevation-z2">
+  <h3>Selected certificate data</h3>
+  <mat-form-field *ngIf="certificate?.invalidReason">
+    <mat-label>Error message</mat-label>
+    <input matInput placeholder="Error message"
+           [value]="certificate?.invalidReason"
+           readonly>
+  </mat-form-field>
+  <div style="display: flex;flex-direction: row;flex:1 1">
+    <mat-form-field *ngIf="!!this.certificate?.publicKeyType"  style="flex:1 1">
+      <mat-label>Public key type</mat-label>
+      <input matInput placeholder="Public key type"
+             id="publicKeyType_id"
+             [value]="certificate?.publicKeyType"
+             readonly>
+    </mat-form-field>
+    <mat-form-field *ngIf="!!this.certificate?.alias"  style="flex:1 1">
+      <mat-label>Alias</mat-label>
+      <input matInput placeholder="Alias"
+             id="alias_id"
+             [value]="certificate?.alias"
+             readonly>
+    </mat-form-field>
+  </div>
+  <mat-form-field>
+    <mat-label>SMP certificate ID</mat-label>
+    <input matInput placeholder="SMP certificate ID"
+           id="certificateId_id"
+           [value]="certificate?.certificateId"
+           resizeable="true" readonly>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Subject Name</mat-label>
+    <input matInput placeholder="Subject Name"
+           id="subject_id"
+           [value]="certificate?.subject"
+           readonly>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Issuer</mat-label>
+    <input matInput placeholder="Issuer"
+           id="issuer_id"
+           [value]="certificate?.issuer"
+           readonly>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Serial Number</mat-label>
+    <input matInput placeholder="Serial Number" id="servialNumber_id"
+           [value]="certificate?.serialNumber"
+           readonly>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Certificate revocation list URL</mat-label>
+    <input matInput placeholder="Certificate revocation list URL" id="clrUrl_id"
+           [value]="certificate?.crlUrl"
+           readonly>
+  </mat-form-field>
+  <div style="display: flex;flex-direction: row;flex-grow: 1">
+    <mat-form-field style="flex-grow: 1">
+      <mat-label>Valid from date</mat-label>
+      <input matInput [ngxMatDatetimePicker]="pickerFromDate"
+             placeholder="Valid from date"
+             [value]="certificate?.validFrom"
+             readonly>
+      <mat-datepicker-toggle matSuffix [for]="pickerFromDate" style="visibility: hidden"></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #pickerFromDate [showSpinners]="false" [showSeconds]="false" [stepHour]="1"
+                               [stepMinute]="1" [stepSecond]="1"
+                               [hideTime]="false">
+      </ngx-mat-datetime-picker>
+    </mat-form-field>
+    <mat-form-field style="flex-grow: 1">
+      <mat-label>Valid to date</mat-label>
+      <input matInput [ngxMatDatetimePicker]="pickerToDate" placeholder="Valid to date"
+             [value]="certificate?.validTo"
+             readonly>
+      <mat-datepicker-toggle matSuffix [for]="pickerToDate" style="visibility: hidden"></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #pickerToDate [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
+                               [stepMinute]="1" [stepSecond]="1"
+                               [hideTime]="false"
+      >
+
+      </ngx-mat-datetime-picker>
+    </mat-form-field>
+  </div>
+
+</div>

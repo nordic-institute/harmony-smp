@@ -28,7 +28,7 @@ import java.util.Objects;
  */
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
-    private static final long serialVersionUID = 1905122041950251200L;
+    private static final long serialVersionUID = 9008583888835630001L;
 
     public abstract Object getId();
 

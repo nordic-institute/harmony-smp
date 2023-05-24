@@ -10,7 +10,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 public class ServiceGroupDomainRO extends BaseRO {
 
 
-    private static final long serialVersionUID = -7111221767041516157L;
+    private static final long serialVersionUID = 9008583888835630014L;
     private Long id;
     private Long domainId;
     String domainCode;

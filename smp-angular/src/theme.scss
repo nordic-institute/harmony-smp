@@ -1,84 +1,98 @@
-@import '~@angular/material/theming';
-// Plus imports for other components in your app.
+@use '@angular/material' as mat;
+@use '_smp-all-themes' as smp;
+@use 'sass:map';
+// DomiSMP default palette
+@use './_colors_smp_light' as smp-colors;
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat-core();
+/* You can add global styles to this file, and also import other style files */
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue.
 
-$input-app-primary: mat-palette($mat-blue);
-$input-app-accent: mat-palette($mat-light-blue);
+//The core mixin must be included exactly once for your application, even if you define multiple themes.
+// Including the core mixin multiple times will result in duplicate CSS in your application.
+@include mat.core();
 
-// Create the theme object (a Sass map containing all of the palettes).
-$input-app-theme: mat-light-theme($input-app-primary, $input-app-accent);
+
+// -----------------------------------------
+// primary theme
+$smp-theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette(smp-colors.$smp-primary-palette),
+    accent: mat.define-palette(smp-colors.$smp-accent-palette),
+    warn: mat.define-palette(smp-colors.$smp-warn-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// -----------------------------------------
+// blue theme
+$blue_theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette(mat.$blue-palette),
+    accent: mat.define-palette(mat.$light-blue-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// indigo-pink theme
+$indigo_pink_theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette(mat.$indigo-palette),
+    accent: mat.define-palette(mat.$pink-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// -----------------------------------------
+// dark theme
+$pink_blue-grey_theme: mat.define-dark-theme((
+  color: (
+    primary: mat.define-palette(mat.$pink-palette),
+    accent: mat.define-palette(mat.$blue-grey-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  // Only include `typography` and `density` in the default dark theme.
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+$purple_green_theme: mat.define-dark-theme((
+  color: (
+    primary: mat.define-palette(mat.$purple-palette),
+    accent: mat.define-palette(mat.$green-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  // Only include `typography` and `density` in the default dark theme.
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// define theme class
+.blue_theme {
+  @include mat.all-component-colors($blue-theme);
+  @include smp.all-component-colors($blue-theme);
+}
+
+.indigo_pink_theme {
+  @include mat.all-component-colors($indigo_pink_theme);
+  @include smp.all-component-colors($indigo_pink_theme);
+}
+
+.pink_blue-grey_theme {
+  @include mat.all-component-colors($pink_blue-grey_theme);
+  @include smp.all-component-colors($pink_blue-grey_theme);
+}
+
+.purple_green_theme {
+  @include mat.all-component-colors($purple_green_theme);
+  @include smp.all-component-colors($purple_green_theme);
+}
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($input-app-theme);
-
-$datatable_background_color_hover: map-get($mat-grey, 600);
-$datatable_background_color_focus: map-get($mat-grey, 600);
-$datatable_background_color_active: map-get($mat-grey, 600);
-
-.ngx-datatable.material.cell-selection .datatable-body-cell.active,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active .datatable-row-group {
-  background-color: $datatable_background_color_active;
-  //color: #0d0d0d;
-}
-
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:hover,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:hover .datatable-row-group {
-  background-color: $datatable_background_color_hover;
-  //color: #0d0d0d;
-}
-
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:focus,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:focus .datatable-row-group {
-  background-color: $datatable_background_color_focus;
-  //color: #0d0d0d;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active,
-.ngx-datatable.material.single-selection .datatable-body-row.active .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active,
-.ngx-datatable.material.multi-selection .datatable-body-row.active .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active .datatable-row-group {
-  background-color: $datatable_background_color_active;
-  color: #FFF;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.single-selection .datatable-body-row.active:hover .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.multi-selection .datatable-body-row.active:hover .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active:hover .datatable-row-group {
-  background-color: $datatable_background_color_hover;
-  color: #FFF;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.single-selection .datatable-body-row.active:focus .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.multi-selection .datatable-body-row.active:focus .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active:focus .datatable-row-group {
-  background-color: $datatable_background_color_focus;
-  color: #0d0d0d;
-}
-
-.smpLink {
-  color: #03A9F4;//map-get($mat-blue, A200);
-}
-
-.searchArea {
-  margin: 20px 0 0 0;
-  display:block;
-  a {
-    @extend .smpLink;
-    vertical-align: bottom;
-    margin-left: 10px;
-    color: #03A9F4;
-  }
-}
-
+@include mat.all-component-themes($smp-theme);
+@include smp.all-component-colors($smp-theme);

@@ -106,14 +106,14 @@ deploySMP() {
     
    
    # set initial application properties
-   echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >   $CWD/tomcat/classes/smp.config.properties 
-   echo "hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect" >>  $CWD/tomcat/classes/smp.config.properties    
+   echo "smp.datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >   $CWD/tomcat/classes/smp.config.properties
+   echo "smp.jdbc.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect" >>  $CWD/tomcat/classes/smp.config.properties
    # optional parameters 
   echo "" >>  $CWD/tomcat/classes/smp.config.properties  
    echo "log.folder=$CWD/tomcat/logs/" >>  $CWD/tomcat/classes/smp.config.properties  
    echo "smp.property.refresh.cronJobExpression=0 */1 * * * *" >>  $CWD/tomcat/classes/smp.config.properties  
    echo "authentication.blueCoat.enabled=true" >>  $CWD/tomcat/classes/smp.config.properties 
-   echo "configuration.dir=$CWD/tomcat/smp/" >>  $CWD/tomcat/classes/smp.config.properties 
+   echo "smp.security.folder=$CWD/tomcat/smp/" >>  $CWD/tomcat/classes/smp.config.properties
    
    
 
