@@ -13,11 +13,6 @@
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.edelivery</groupId>
-            <artifactId>smp-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.edelivery</groupId>
             <artifactId>smp-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
