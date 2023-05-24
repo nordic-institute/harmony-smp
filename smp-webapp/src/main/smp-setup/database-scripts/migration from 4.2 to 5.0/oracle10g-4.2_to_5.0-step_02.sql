@@ -50,13 +50,14 @@ insert into SMP_DOCUMENT (ID, CREATED_ON, LAST_UPDATED_ON, CURRENT_VERSION,MIME_
     select SMP_DOCUMENT_SEQ.nextval,sg.CREATED_ON, sg.LAST_UPDATED_ON, 1, 'text/xml', 'ServiceGroup1.0-' || sg.id || '-' ||  sgd.FK_DOMAIN_ID FROM BCK_SERVICE_GROUP sg JOIN BCK_SERVICE_GROUP_DOMAIN sgd on sg.id = sgd.FK_SG_ID;
 -- the FK_DOREDEF_ID is 1  see the SMP_RESOURCE_DEF
 -- the  FK_GROUP_ID is equal to domain id see the: insert into SMP_GROUP ....
+-- the resource ID is equal to BCK_SERVICE_GROUP_DOMAIN, cause the DomiSMP 5.0 has duplicate resources for each domain
 insert into SMP_RESOURCE (ID, CREATED_ON, LAST_UPDATED_ON, IDENTIFIER_SCHEME, IDENTIFIER_VALUE, SML_REGISTERED, VISIBILITY, FK_DOCUMENT_ID, FK_DOREDEF_ID, FK_GROUP_ID)
-    select SMP_RESOURCE_SEQ.nextval, sg.CREATED_ON, sg.LAST_UPDATED_ON, sg.PARTICIPANT_SCHEME, sg.PARTICIPANT_IDENTIFIER, sgd.SML_REGISTERED,
+    select sgd.id, sg.CREATED_ON, sg.LAST_UPDATED_ON, sg.PARTICIPANT_SCHEME, sg.PARTICIPANT_IDENTIFIER, sgd.SML_REGISTERED,
     'PUBLIC', (select id from SMP_DOCUMENT where NAME= 'ServiceGroup1.0-' || sg.id || '-' ||  sgd.FK_DOMAIN_ID ),
-     1, sgd.FK_DOMAIN_ID FROM BCK_SERVICE_GROUP sg JOIN BCK_SERVICE_GROUP_DOMAIN sgd on sg.id = sgd.FK_SG_ID;
+     sgd.FK_DOMAIN_ID, sgd.FK_DOMAIN_ID FROM BCK_SERVICE_GROUP sg JOIN BCK_SERVICE_GROUP_DOMAIN sgd on sg.id = sgd.FK_SG_ID;
 
 insert into SMP_DOCUMENT_VERSION ( ID, CREATED_ON, LAST_UPDATED_ON, DOCUMENT_CONTENT, VERSION, FK_DOCUMENT_ID )
-    select SMP_DOCUMENT_VERSION_SEQ.nextval,  sg.CREATED_ON, sg.LAST_UPDATED_ON,  '<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05" xmlns:ns0="http://www.w3.org/2000/09/xmldsig#"><ParticipantIdentifier scheme="' || sg.PARTICIPANT_SCHEME || '" >' || sg.PARTICIPANT_IDENTIFIER || '</ParticipantIdentifier><ServiceMetadataReferenceCollection />' || DECODE(DBMS_LOB.SUBSTR(ex.EXTENSION), null,'',DBMS_LOB.SUBSTR(ex.EXTENSION))  || '</ServiceGroup>', 1,
+    select SMP_DOCUMENT_VERSION_SEQ.nextval,  sg.CREATED_ON, sg.LAST_UPDATED_ON,  utl_raw.cast_to_raw('<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05" xmlns:ns0="http://www.w3.org/2000/09/xmldsig#"><ParticipantIdentifier scheme="' || sg.PARTICIPANT_SCHEME || '" >' || sg.PARTICIPANT_IDENTIFIER || '</ParticipantIdentifier><ServiceMetadataReferenceCollection />' || DECODE(DBMS_LOB.SUBSTR(ex.EXTENSION), null,'',UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(ex.EXTENSION))) || '</ServiceGroup>'), 1,
     (select id from SMP_DOCUMENT where NAME='ServiceGroup1.0-' || sg.id || '-' || sgd.FK_DOMAIN_ID )
     FROM BCK_SERVICE_GROUP sg JOIN BCK_SERVICE_GROUP_DOMAIN sgd on sg.id = sgd.FK_SG_ID LEFT JOIN BCK_SG_EXTENSION ex on sg.id = ex.id ;
 
