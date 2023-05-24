@@ -4,7 +4,6 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -20,7 +19,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Properties;
 
 
@@ -46,7 +44,7 @@ public class MailService {
     }
 
 
-    public <T extends MailModel<Properties> > void sendMail(final T model, final String from, final String to) {
+    public <T extends MailModel<Properties>> void sendMail(final T model, final String from, final String to) {
         if (StringUtils.isBlank(to)) {
             throw new IllegalArgumentException("The 'to' property cannot be null");
         }
@@ -69,9 +67,11 @@ public class MailService {
             helper.setText(html, true);
             helper.setSubject(model.getSubject());
             helper.setFrom(from);
+            LOG.info("Send mail to : [{}:{}]",javaMailSender.getHost(),javaMailSender.getPort());
+
             javaMailSender.send(message);
         } catch (IOException | MessagingException | TemplateException | MailException e) {
-            LOG.error("Exception while sending mail from[{}] to[{}]", from, to, e);
+            LOG.error("Exception while sending mail from [{}] to [{}]", from, to, e);
             throw new SMPRuntimeException(ErrorCode.MAIL_SUBMISSION_ERROR, e, ExceptionUtils.getRootCauseMessage(e));
         }
     }

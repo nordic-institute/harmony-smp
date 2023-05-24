@@ -6,6 +6,7 @@ services:
     hostname: eulogin.protected.smp.local
     environment:
       - SMP_INIT_PROPERTIES=smp.passwordPolicy.expired.forceChange=false
+        ||smp.automation.authentication.external.tls.SSLClientCert.enabled=true
         ||smp.cluster.enabled=false
         ||smp.ui.authentication.types=PASSWORD|SSO
         ||smp.sso.cas.url=https://eulogin-mock-server:7102/cas

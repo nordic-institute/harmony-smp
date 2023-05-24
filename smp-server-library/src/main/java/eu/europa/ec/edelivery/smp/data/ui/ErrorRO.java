@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import java.io.Serializable;
 
@@ -29,7 +29,9 @@ public class ErrorRO implements Serializable {
     @JsonIgnore
     public int getContentLength() {
         try {
-            return new ObjectMapper().writeValueAsString(this).length();
+            return JsonMapper.builder()
+                    .findAndAddModules()
+                    .build().writeValueAsString(this).length();
         } catch (JsonProcessingException e) {
             return -1;
         }

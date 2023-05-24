@@ -15,8 +15,8 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -25,7 +25,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class SmlIdentifierConverter {
 
-    public static ServiceMetadataPublisherServiceForParticipantType toBusdoxParticipantId(ParticipantIdentifierType participantId, String smpId) {
+    public static ServiceMetadataPublisherServiceForParticipantType toBusdoxParticipantId(Identifier participantId, String smpId) {
         if (isBlank(smpId)) {
             throw new IllegalStateException("SMP ID is null or empty");
         }

@@ -1,0 +1,5 @@
+.flex-dialog-content{
+  display: flex; justify-content: space-around;
+  flex-flow: row;
+  align-items: stretch;height:510px;min-width:950px
+}

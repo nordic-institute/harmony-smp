@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.cron;
 
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.scheduling.Trigger;

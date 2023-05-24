@@ -1,6 +1,6 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,5 +1,5 @@
-# Experiamental SMP docker image
-Purpose of compose plan is to startup fully functinal SMP environment for demo and testing. The plan contains 
+# Experimental SMP docker image
+Purpose of compose plan is to startup fully functional SMP environment for demo and testing. The plan contains. 
  - MySql database
  - SML services
  - CAS instance (EULOGIN)
@@ -37,18 +37,19 @@ Password: sml
 
 ## CAS - EULOGIN 
 url: https://localhost:7102/cas/login
-Users:
- - user/123456
- - smp/123456
- - system/123456
+Users: (For details see the CAS configuration: [userDataBase.xml](eulogin%2Finit-data%2FuserDataBase.xml)):
+- user (Peter.PARKER@dummy-mail-not-exists.eu)/123456
+- system (Bruce.BANNER@dummy-mail-not-exists.eu)/123456
+- user-02 (Tony.STARK@dummy-mail-not-exists.eu)/123456
 
  To use eulogin add the following hostname mappings (Linux: /etc/hosts, windows: C:\Windows\System32\drivers\etc\hosts
                                                                                  
-                                                                                 and add the lines )
  - 127.0.0.1 eulogin-mock-server
  - 127.0.0.1 eulogin.protected.smp.local
 
 
 ## Mail server
-url: http://172.19.0.2:9005/monitor 
 
+Mock mail server for monitoring send alert mails. 
+url: http://localhost:9005/monitor 
+    

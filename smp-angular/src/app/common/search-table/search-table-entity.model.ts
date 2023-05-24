@@ -1,8 +1,10 @@
-import {SearchTableEntityStatus} from './search-table-entity-status.model';
+import {EntityStatus} from '../enums/entity-status.enum';
 
 export interface SearchTableEntity {
   id?: number;
   index?: number;
-  status: SearchTableEntityStatus;
+  status?: EntityStatus;
   deleted?: boolean;
+
+  actionMessage?: string;
 }

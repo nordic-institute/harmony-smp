@@ -13,15 +13,12 @@
 
 package eu.europa.ec.edelivery.smp.error;
 
-import ec.services.smp._1.ErrorResponse;
-import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
+import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import eu.europa.ec.edelivery.smp.exceptions.InvalidOwnerException;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
-import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
-import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -38,7 +35,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 /**
  * Created by gutowpa on 14/09/2017.
  */
-@RestControllerAdvice({"eu.europa.ec.edelivery.smp.controllers", "eu.europa.ec.edelivery.smp.controllers"})
+@RestControllerAdvice({"eu.europa.ec.edelivery.smp.controllers"})
 public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice {
 
     @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class, SMPResponseStatusException.class, AuthenticationException.class,})
@@ -51,33 +48,15 @@ public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice 
         return buildAndLog(BAD_REQUEST, ex.getErrorBusinessCode(), ex.getMessage(), ex);
     }
 
-    @ExceptionHandler(MalformedIdentifierException.class)
-    public ResponseEntity handleMalformedIdentifierException(MalformedIdentifierException ex) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleMalformedIdentifierException(IllegalArgumentException ex) {
         return buildAndLog(BAD_REQUEST, FORMAT_ERROR, ex.getMessage(), ex);
-    }
-
-    @ExceptionHandler(WrongInputFieldException.class)
-    public ResponseEntity handleWrongInputFieldException(WrongInputFieldException ex) {
-        return buildAndLog(BAD_REQUEST, WRONG_FIELD, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity handleAccessDeniedException(AccessDeniedException ex) {
         return buildAndLog(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage() + " - Only SMP Admin or owner of given ServiceGroup is allowed to perform this action", ex);
     }
-
-
-    @ExceptionHandler(InvalidOwnerException.class)
-    public ResponseEntity handleUnknownUserException(InvalidOwnerException ex) {
-        return buildAndLog(BAD_REQUEST, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
-    }
-
-
-    @ExceptionHandler(XmlInvalidAgainstSchemaException.class)
-    public ResponseEntity handleXmlInvalidAgainstSchemaException(XmlInvalidAgainstSchemaException ex) {
-        return buildAndLog(BAD_REQUEST, XSD_INVALID, ex.getMessage(), ex);
-    }
-
 
     ResponseEntity buildAndLog(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
 

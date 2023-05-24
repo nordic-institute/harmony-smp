@@ -12,19 +12,23 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.persistence.EntityManager;
@@ -44,15 +48,10 @@ import static org.junit.Assert.assertTrue;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {H2JPATestConfig.class})
-@Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
-        (transactionMode = SqlConfig.TransactionMode.ISOLATED,
-                transactionManager = "transactionManager",
-                dataSource = "h2DataSource"))
-public class AuditIntegrationTest {
+public class AuditIntegrationTest extends AbstractBaseDao{
+    private static final Logger LOG = LoggerFactory.getLogger(AuditIntegrationTest.class);
 
-    // because envers creates audit on commit we user PersistenceUnit to control commit...
+    // because envers creates audit on commit we use PersistenceUnit to control commit...
     // (instead of  PersistenceContext and transaction annotations... )
     @PersistenceUnit
     EntityManagerFactory emf;
@@ -60,12 +59,11 @@ public class AuditIntegrationTest {
     @Test
     public void testClassesForAudit() {
         AuditReader ar = AuditReaderFactory.get(emf.createEntityManager());
-        assertTrue(ar.isEntityClassAudited(DBServiceGroup.class));
-        assertTrue(ar.isEntityClassAudited(DBServiceMetadata.class));
+        assertTrue(ar.isEntityClassAudited(DBResource.class));
+        assertTrue(ar.isEntityClassAudited(DBSubresource.class));
         assertTrue(ar.isEntityClassAudited(DBDomain.class));
         assertTrue(ar.isEntityClassAudited(DBUser.class));
         assertTrue(ar.isEntityClassAudited(DBCertificate.class));
-        assertTrue(ar.isEntityClassAudited(DBServiceGroupExtension.class));
         assertTrue(ar.isEntityClassAudited(DBAlert.class));
     }
 
@@ -75,7 +73,6 @@ public class AuditIntegrationTest {
         DBDomain domain = createDBDomain();
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("signatureKeyAlias", UUID.randomUUID().toString());
-        alterVal.put("smlClientCertHeader", UUID.randomUUID().toString());
         alterVal.put("smlClientKeyAlias", UUID.randomUUID().toString());
         alterVal.put("smlSubdomain", UUID.randomUUID().toString());
 
@@ -97,57 +94,60 @@ public class AuditIntegrationTest {
 
         DBUser dbuser = createDBUser(UUID.randomUUID().toString());
         Map<String, Object> alterVal = new HashMap<>();
-        alterVal.put("password", UUID.randomUUID().toString());
-        alterVal.put("role", UUID.randomUUID().toString());
-        alterVal.put("passwordChanged", OffsetDateTime.now());
+        alterVal.put("username", UUID.randomUUID().toString());
+        alterVal.put("emailAddress", UUID.randomUUID().toString());
         testAuditEntity(dbuser, alterVal);
     }
 
     @Test
-    public void testAuditDBUserWithCertificate() {
+    public void testAuditDBCredentials() {
+        DBUser user = createDBUser("Credential-test");
+        persist(user);
 
+        DBCredential dbCredential = createDBCredential("test");
+        dbCredential.setUser(user);
+        Map<String, Object> alterVal = new HashMap<>();
+        alterVal.put("name", UUID.randomUUID().toString());
+        alterVal.put("value", UUID.randomUUID().toString());
+        alterVal.put("credentialType", CredentialType.CAS);
+        alterVal.put("credentialTarget", CredentialTargetType.REST_API);
+        alterVal.put("activeFrom", OffsetDateTime.now().plusMinutes(30));
+        alterVal.put("changedOn", OffsetDateTime.now().plusMinutes(30));
+        alterVal.put("expireAlertOn", OffsetDateTime.now().plusMinutes(30));
+        alterVal.put("activeFrom", OffsetDateTime.now().plusMinutes(30));
+        alterVal.put("sequentialLoginFailureCount", 10);
+
+        testAuditEntity(dbCredential, alterVal);
+    }
+
+    @Test
+    public void testAuditDBCredentialsWithCertificate() {
         DBUser dbuser = createDBUser(UUID.randomUUID().toString());
+        persist(dbuser);
+
         DBCertificate cert = createDBCertificate();
-        dbuser.setCertificate(cert);
+        DBCredential dbCredential = createDBCredential(dbuser, cert.getCertificateId(), null, CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        dbCredential.setCertificate(cert);
+
         Map<String, Object> alterValCert = new HashMap<>();
         alterValCert.put("certificateId", UUID.randomUUID().toString());
         alterValCert.put("validFrom", OffsetDateTime.now());
         alterValCert.put("validTo", OffsetDateTime.now());
-        testAuditSubEntity(dbuser, dbuser.getCertificate(), alterValCert);
+        testAuditSubEntity(dbCredential, cert, alterValCert);
     }
-
-    @Test
-    public void testAuditDBServiceGroup() {
-        DBServiceGroup grp = createDBServiceGroup();
-        Map<String, Object> alterVal = new HashMap<>();
-        alterVal.put("extension", UUID.randomUUID().toString().getBytes());
-        testAuditSubEntity(grp, grp.getServiceGroupExtension(), alterVal);
-    }
+/*
 
 
     @Test
-    public void testAuditDBMetaData() {
-
-        DBServiceMetadata md = createDBServiceMetadata(UUID.randomUUID().toString(), UUID.randomUUID().toString());
-        DBDomain domain = createDBDomain();
-        DBServiceGroup grp = createDBServiceGroup();
-        DBServiceGroupDomain serviceGroupDomain = new DBServiceGroupDomain();
-
-        EntityManager em = emf.createEntityManager();
-        persist(em, domain);
-        persist(em, grp);
-        serviceGroupDomain.setDomain(domain);
-        serviceGroupDomain.setServiceGroup(grp);
-        persist(em, serviceGroupDomain);
-        md.setServiceGroupDomain(serviceGroupDomain);
-
+    public void testAuditDBResource() {
+        DBResource resource = createDBResource();
+        resource.setDocument(createDBDocument());
         Map<String, Object> alterVal = new HashMap<>();
-        alterVal.put("xmlContent", UUID.randomUUID().toString().getBytes());
-
-        testAuditSubEntity(md, md.getServiceMetadataXml(), alterVal);
+        alterVal.put("registered", true);
+        alterVal.put("visibility", VisibilityType.PRIVATE);
+        testAuditEntity(resource,  alterVal);
     }
-
-
+*/
     /**
      * Method updates value in Map, then checks if revision increased. Last test in removing the entity.
      *
@@ -156,11 +156,10 @@ public class AuditIntegrationTest {
      */
     private void testAuditEntity(BaseEntity entity, Map<String, Object> alterValues) {
         testAuditSubEntity(entity, entity, alterValues);
-        EntityManager em = emf.createEntityManager();
     }
 
     /**
-     * Method tests altering of subentity parameters. Update and remove is done on master entity
+     * Method tests altering of sub-entity parameters. Update and remove is done on master entity
      *
      * @param entity
      * @param subEntity
@@ -173,7 +172,7 @@ public class AuditIntegrationTest {
         // persist
         persist(em, entity);
         Object dbId = subEntity.getId();
-
+        LOG.info("Store main entity with id [{}]", dbId);
         int iRevSize = ar.getRevisions(subEntity.getClass(), dbId).size();
         // update
         if (alterValues != null && !alterValues.isEmpty()) { // set value to detail
@@ -183,16 +182,24 @@ public class AuditIntegrationTest {
             update(em, entity); // master
             Assert.assertEquals(++iRevSize, ar.getRevisions(subEntity.getClass(), dbId).size());
         }
-
         // remove master
-        remove(em, entity.getClass(), dbId);
+        remove(em, entity.getClass(), entity.getId());
         Assert.assertEquals(++iRevSize, ar.getRevisions(subEntity.getClass(), dbId).size());
+        em.close();
     }
 
-    private void persist(EntityManager em, Object dbEnetity) {
+    private void persist(EntityManager em, Object dbEntity) {
         em.getTransaction().begin();
-        em.persist(dbEnetity);
+        em.persist(dbEntity);
         em.getTransaction().commit();
+    }
+
+    private void persist(Object dbEntity) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(dbEntity);
+        em.getTransaction().commit();
+        em.close();
     }
 
     private void update(EntityManager em, Object dbEntity) {

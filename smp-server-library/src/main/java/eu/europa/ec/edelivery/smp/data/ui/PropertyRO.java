@@ -3,7 +3,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 import java.util.Date;
 
 public class PropertyRO extends BaseRO{
-    private static final long serialVersionUID = -49713386560325302L;
+    private static final long serialVersionUID = 9008583888835630012L;
 
     String property;
     String value;

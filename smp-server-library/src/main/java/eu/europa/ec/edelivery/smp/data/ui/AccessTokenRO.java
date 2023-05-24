@@ -5,12 +5,14 @@ import java.time.OffsetDateTime;
 
 public class AccessTokenRO implements Serializable {
 
-    private static final long serialVersionUID = 2821447495333163882L;
+    private static final long serialVersionUID = 9008583888835630002L;
 
     private String identifier;
     private String value;
     OffsetDateTime generatedOn;
     OffsetDateTime expireOn;
+
+    CredentialRO credential;
 
     public String getIdentifier() {
         return identifier;
@@ -42,5 +44,19 @@ public class AccessTokenRO implements Serializable {
 
     public void setExpireOn(OffsetDateTime expireOn) {
         this.expireOn = expireOn;
+    }
+
+    public CredentialRO getCredential() {
+        return credential;
+    }
+
+    public void setCredential(CredentialRO credential) {
+        if (credential !=null) {
+            identifier = credential.getName();
+            expireOn = credential.getExpireOn();
+            generatedOn = credential.getUpdatedOn();
+        }
+
+        this.credential = credential;
     }
 }

@@ -1,4 +1,4 @@
-{
+ng {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
@@ -117,7 +117,6 @@
       }
     }
   },
-  "defaultProject": "SMP-UI",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
@@ -126,5 +125,8 @@
     "@schematics/angular:directive": {
       "prefix": "app"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

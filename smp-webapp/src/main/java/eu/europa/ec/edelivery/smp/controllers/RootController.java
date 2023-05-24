@@ -35,6 +35,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @RestController
 @RequestMapping("/")
+@Order(HIGHEST_PRECEDENCE)
 public class RootController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(RootController.class);
@@ -46,7 +47,6 @@ public class RootController {
      * @return
      */
     @GetMapping(value = {"/", "web/index.html"})
-    @Order(HIGHEST_PRECEDENCE)
     public ModelAndView redirectOldIndexPath(ModelMap model) {
         return new ModelAndView("redirect:/index.html", model);
     }
@@ -56,9 +56,8 @@ public class RootController {
             "image/ico", "image/x-ico"
     },
             value = {"/index.html", "/favicon.png", "/favicon.ico"})
-    @Order(HIGHEST_PRECEDENCE)
     public byte[] getServiceGroup(HttpServletRequest httpReq, HttpServletResponse httpRes) throws IOException {
-        String host = httpReq.getRemoteHost();
+        String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT, host, httpReq.getPathInfo());
         String value = httpReq.getPathInfo();
         if (value != null && value.endsWith("favicon.png")) {

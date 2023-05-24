@@ -23,10 +23,10 @@ public class DBAlertProperty extends BaseEntity {
     Long id;
 
     @NotNull
-    @Column(name = "PROPERTY")
+    @Column(name = "PROPERTY_NAME")
     protected String property;
 
-    @Column(name = "VALUE", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
+    @Column(name = "PROPERTY_VALUE", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String value;
 
     @NotNull

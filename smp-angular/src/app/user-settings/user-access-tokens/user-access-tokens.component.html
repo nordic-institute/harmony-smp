@@ -1,0 +1,22 @@
+<div id="user-access-token-panel">
+  <data-panel title="Access token"
+              text="You can generate a access token for each application you use that needs access to the DomiSMP API."
+              [labelColumnContent]="commonToolbar">
+    <access-token-panel *ngFor="let item of accessTokens; trackBy: trackListItem"
+                        (onDeleteEvent)="onDeleteItemClicked(item)"
+                        (onSaveEvent)="onSaveItemClicked(item)"
+                        [credential]="item"></access-token-panel>
+  </data-panel>
+</div>
+
+<ng-template #commonToolbar>
+
+  <button mat-raised-button color="primary" matTooltip="Create new Access token " style="margin: 2em "
+  (click)="createNewAccessToken()">
+    <mat-icon>key</mat-icon>
+    <span>Create access Token</span>
+  </button>
+
+</ng-template>
+
+

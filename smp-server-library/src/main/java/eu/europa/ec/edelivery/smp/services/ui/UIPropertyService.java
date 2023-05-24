@@ -1,12 +1,14 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
+import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
 import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.PropertyValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResultProperties;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_PROPERTY_REFRESH;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.CONFIGURATION_DIR;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_CLUSTER_ENABLED;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_CLUSTER_ENABLED;
 import static org.apache.commons.lang3.time.DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT;
 
 /**
@@ -116,7 +118,7 @@ public class UIPropertyService {
         for (PropertyRO property : properties) {
             configurationDao.setPropertyToDatabase(property.getProperty(), property.getValue());
         }
-        Boolean isClusterEnabled = (Boolean) configurationDao.getCachedPropertyValue(SMP_CLUSTER_ENABLED);
+        Boolean isClusterEnabled = configurationDao.getCachedPropertyValue(SMP_CLUSTER_ENABLED);
         if (isClusterEnabled) {
             LOG.info("Properties were updated in database. Changed properties will be activated to all cluster nodes at: [{}]!",
                     ISO_8601_EXTENDED_DATETIME_FORMAT.format(refreshPropertiesTrigger.getNextExecutionDate()));
@@ -147,7 +149,7 @@ public class UIPropertyService {
 
         // try to parse value
         try {
-            File confDir = (File) configurationDao.getCachedPropertyValue(CONFIGURATION_DIR);
+            File confDir = Paths.get(SMPEnvironmentProperties.getInstance().getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
             PropertyUtils.parseProperty(propertyEnum, propertyRO.getValue(), confDir);
         } catch (SMPRuntimeException ex) {
             propertyValidationRO.setErrorMessage(ex.getMessage());

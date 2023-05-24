@@ -14,10 +14,16 @@ import org.springframework.stereotype.Component;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.Key;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
 import java.util.Base64;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @author Joze Rihtarsic
@@ -26,9 +32,16 @@ import java.util.Base64;
 @Component
 public class X509CertificateToCertificateROConverter implements Converter<X509Certificate, CertificateRO> {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CertificateROToDBCertificateConverter.class);
-
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(X509CertificateToCertificateROConverter.class);
     private static final String S_CLIENT_CERT_DATEFORMAT = "MMM dd HH:mm:ss yyyy";
+    // the GMT date format for the Client-Cert header generation!
+    private static final ThreadLocal<DateFormat> dateFormatGMT = ThreadLocal.withInitial(() -> {
+                SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT);
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+                return sdf;
+            }
+    );
+
 
     @Override
     public CertificateRO convert(X509Certificate cert) {
@@ -38,17 +51,35 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         String issuer = data.getIssuerOriginalDN();
         String serial = data.getCertSerial();
         String certId = data.getName();
+        List<String> certPolicyIdentifiers = null;
+
+        try {
+            certPolicyIdentifiers = X509CertificateUtils.getCertificatePolicyIdentifiers(cert);
+        } catch (CertificateException cex) {
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, cex,
+                    "Error occurred while retrieving certPolicyIdentifiers " + subject, cex.getMessage(), cex);
+        }
+
 
         String url = X509CertificateUtils.getCrlDistributionUrl(cert);
+
         CertificateRO cro = new CertificateRO();
         cro.setCertificateId(certId);
         cro.setSubject(subject);
         cro.setIssuer(issuer);
+        cro.setPublicKeyType(getKeyAlgorithm(cert.getPublicKey()));
         cro.setCrlUrl(url);
+        if (certPolicyIdentifiers!=null && !certPolicyIdentifiers.isEmpty()) {
+            cro.getCertificatePolicies().addAll(certPolicyIdentifiers);
+        }
         // set serial as HEX
         cro.setSerialNumber(serial);
-        cro.setValidFrom(cert.getNotBefore());
-        cro.setValidTo(cert.getNotAfter());
+        if (cert.getNotBefore() != null) {
+            cro.setValidFrom(cert.getNotBefore().toInstant().atOffset(ZoneOffset.UTC));
+        }
+        if (cert.getNotAfter() != null) {
+            cro.setValidTo(cert.getNotAfter().toInstant().atOffset(ZoneOffset.UTC));
+        }
         try {
             cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
         } catch (CertificateEncodingException cex) {
@@ -57,7 +88,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
 
         }
         // generate clientCertHeader header
-        SimpleDateFormat sdf = new SimpleDateFormat(S_CLIENT_CERT_DATEFORMAT);
+        DateFormat sdf = dateFormatGMT.get();
         StringWriter sw = new StringWriter();
         sw.write("sno=");
         sw.write(serial);
@@ -84,5 +115,14 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
             }
         }
         return "";
+    }
+    public String getKeyAlgorithm(Key key) {
+        if (StringUtils.equals(key.getAlgorithm(), "1.3.101.112")) {
+            return "Ed25519";
+        }
+        if (StringUtils.equals(key.getAlgorithm(), "1.3.101.113")) {
+            return "Ed448";
+        }
+        return key.getAlgorithm();
     }
 }

@@ -2,7 +2,7 @@ import {SearchTableController} from '../common/search-table/search-table-control
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {ServiceGroupDetailsDialogComponent} from './service-group-details-dialog/service-group-details-dialog.component';
 import {ServiceGroupEditRo} from './service-group-edit-ro.model';
-import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
+import {EntityStatus} from '../common/enums/entity-status.enum';
 import {ServiceMetadataEditRo} from "./service-metadata-edit-ro.model";
 import {ServiceGroupMetadataDialogComponent} from "./service-group-metadata-dialog/service-group-metadata-dialog.component";
 import {of} from "rxjs/internal/observable/of";
@@ -33,7 +33,7 @@ export class ServiceGroupEditController implements SearchTableController {
     // set all rows as deleted
     let sgRow = row as ServiceGroupEditRo;
     sgRow.serviceMetadata.forEach(function (part, index, metaDataList) {
-      metaDataList[index].status = SearchTableEntityStatus.REMOVED;
+      metaDataList[index].status = EntityStatus.REMOVED;
       metaDataList[index].deleted = true;
     });
   }
@@ -55,8 +55,8 @@ export class ServiceGroupEditController implements SearchTableController {
       serviceMetadata: [],
       users: [],
       serviceGroupDomains: [],
-      extensionStatus: SearchTableEntityStatus.NEW,
-      status: SearchTableEntityStatus.NEW
+      extensionStatus: EntityStatus.NEW,
+      status: EntityStatus.NEW
     };
   }
 
@@ -68,8 +68,8 @@ export class ServiceGroupEditController implements SearchTableController {
       smlSubdomain: '',
       domainCode: '',
       domainId: null,
-      status: SearchTableEntityStatus.NEW,
-      xmlContentStatus: SearchTableEntityStatus.NEW,
+      status: EntityStatus.NEW,
+      xmlContentStatus: EntityStatus.NEW,
     };
   }
 
@@ -94,7 +94,7 @@ export class ServiceGroupEditController implements SearchTableController {
 
   isRecordChanged(oldModel, newModel): boolean {
     // different set of properties to compare in case if new entry is reedited or already saved entry is reedited.
-    let propsToCompare = newModel.status === SearchTableEntityStatus.NEW ?
+    let propsToCompare = newModel.status === EntityStatus.NEW ?
       this.compareNewSGProperties : this.compareUpdateSGProperties;
 
     // check if other properties were changed

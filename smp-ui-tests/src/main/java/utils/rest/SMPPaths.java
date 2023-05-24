@@ -1,7 +1,5 @@
 package utils.rest;
 
-import utils.PROPERTIES;
-
 @SuppressWarnings("SpellCheckingInspection")
 public class SMPPaths {
 
@@ -11,5 +9,6 @@ public class SMPPaths {
 	public static final String USER_LIST = "internal/rest/user";
 	public static final String SERVICE_GROUP = "public/rest/service-group";
 	public static final String KEYSTORE = "internal/rest/keystore";
+	public static final String SYS_INFO = "public/rest/application/info";
 
 }

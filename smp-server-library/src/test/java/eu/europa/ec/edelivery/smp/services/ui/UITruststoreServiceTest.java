@@ -1,13 +1,16 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.security.utils.KeystoreUtils;
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -16,11 +19,15 @@ import org.springframework.core.convert.ConversionService;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.Security;
 import java.security.cert.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -175,6 +182,7 @@ public class UITruststoreServiceTest {
                 resultException.getMessage());
     }
 
+
     @Test
     public void validateCertificateSubjectExpressionLegacyValidatedMatch() throws Exception {
         String regularExpression = ".*CN=Something.*";
@@ -200,5 +208,30 @@ public class UITruststoreServiceTest {
         doReturn(null).when(configurationService).getTruststoreCredentialToken();
         result = testInstance.loadTruststore(resourceDirectory.toFile());
         assertNull(result);
+    }
+
+
+    /**
+     * This method is not a tests is it done for generating the  tests Soapui certificates
+     * @throws Exception
+     */
+    @Test
+    @Ignore
+    public void generateSoapUITestCertificates() throws Exception {
+
+        List <String[]> listCerts = Arrays.asList( new String[]{"f71ee8b11cb3b787","CN=EHEALTH_SMP_EC,O=European Commission,C=BE","ehealth_smp_ec",},
+                new String[]{"E07B6b956330a19a","CN=blue_gw,O=eDelivery,C=BE","blue_gw"},
+                new String[]{"9792ce69BC89F14C","CN=red_gw,O=eDelivery,C=BE","red_gw"}
+        );
+        String token = "test123";
+        File keystoreFile = new File( "./target/smp-test-examples.p12");
+        KeyStore keyStore = KeystoreUtils.createNewKeystore(keystoreFile, token);
+        for (String[] data: listCerts) {
+            BigInteger serial = new BigInteger(data[0],16);
+            X509CertificateUtils.createAndStoreSelfSignedCertificate(serial, data[1],data[2], keyStore, token);
+        }
+        try (FileOutputStream fos = new FileOutputStream(keystoreFile)) {
+            keyStore.store(fos, token.toCharArray());
+        }
     }
 }

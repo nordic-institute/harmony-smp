@@ -3,8 +3,8 @@ package eu.europa.ec.edelivery.smp.cron;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 
 /**
  * Class initialize the cron trigger beans

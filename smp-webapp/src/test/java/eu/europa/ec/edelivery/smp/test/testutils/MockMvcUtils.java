@@ -1,7 +1,9 @@
 package eu.europa.ec.edelivery.smp.test.testutils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpSession;
@@ -16,8 +18,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -32,9 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 4.2
  */
 public class MockMvcUtils {
-    static ObjectMapper mapper = new ObjectMapper(){{
-        registerModule(new JavaTimeModule());
-    }};
+    static ObjectMapper mapper = JsonMapper.builder()
+            .findAndAddModules()
+            .build();
 
     public static final String SYS_ADMIN_USERNAME = "sys_admin";
     public static final String SYS_ADMIN_PASSWD = "test123";
@@ -81,22 +86,11 @@ public class MockMvcUtils {
      * @return
      * @throws Exception
      */
-    public static MockHttpSession loginWithSMPAdmin(MockMvc mvc) throws Exception {
-        return loginWithCredentials(mvc, SMP_ADMIN_USERNAME, SMP_ADMIN_PASSWD);
-    }
-
-    /**
-     * Login with SMP admin the username and data
-     *
-     * @param mvc
-     * @return
-     * @throws Exception
-     */
-    public static MockHttpSession loginWithServiceGroupUser(MockMvc mvc) throws Exception {
+    public static MockHttpSession loginWithUserGroupAdmin(MockMvc mvc) throws Exception {
         return loginWithCredentials(mvc, SG_USER_USERNAME, SG_USER_PASSWD);
     }
 
-    public static MockHttpSession loginWithServiceGroupUser2(MockMvc mvc) throws Exception {
+    public static MockHttpSession loginWithUser2(MockMvc mvc) throws Exception {
         return loginWithCredentials(mvc, SG_USER2_USERNAME, SG_USER2_PASSWD);
     }
 
@@ -111,8 +105,8 @@ public class MockMvcUtils {
      */
     public static MockHttpSession loginWithCredentials(MockMvc mvc, String username, String password) throws Exception {
         MvcResult result = mvc.perform(post(CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION)
-                .header(HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-                .content("{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"))
+                        .header(HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+                        .content("{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"))
                 .andExpect(status().isOk()).andReturn();
         // assert successful login
         UserRO userRO = mapper.readValue(result.getResponse().getContentAsString(), UserRO.class);
@@ -130,8 +124,8 @@ public class MockMvcUtils {
      */
     public static UserRO getLoggedUserData(MockMvc mvc, MockHttpSession session) throws Exception {
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SECURITY + "/user")
-                .session(session)
-                .with(csrf()))
+                        .session(session)
+                        .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
         return mapper.readValue(result.getResponse().getContentAsString(), UserRO.class);
     }
@@ -146,4 +140,16 @@ public class MockMvcUtils {
         return mvc;
     }
 
+    public static <T> List<T> parseResponseArray(MvcResult result, Class<T> clazz) throws UnsupportedEncodingException, JsonProcessingException {
+        CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
+        return mapper.readValue(result.getResponse().getContentAsString(), collectionType);
+    }
+
+    public static <T> T parseResponse(MvcResult result, Class<T> clazz) throws UnsupportedEncodingException, JsonProcessingException {
+        return mapper.readValue(result.getResponse().getContentAsString(), clazz);
+    }
+
+    public static String serializeObject(Object object) throws JsonProcessingException {
+        return mapper.writeValueAsString(object);
+    }
 }

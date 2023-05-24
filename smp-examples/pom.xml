@@ -25,6 +25,6 @@
     <packaging>pom</packaging>
     <description>The sub-project contains SMP examples of API and SPI implementations. Currently, SPI payload validation example.</description>
     <modules>
-        <module>smp-spi-example</module>
+        <module>smp-spi-payload-validation-example</module>
     </modules>
 </project>

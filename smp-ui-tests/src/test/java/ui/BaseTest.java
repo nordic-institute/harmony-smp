@@ -1,5 +1,7 @@
 package ui;
 
+import customReporter.ExcelTestReporter;
+import customReporter.TestProgressReporter;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -9,8 +11,6 @@ import utils.DriverManager;
 import utils.Generator;
 import utils.PROPERTIES;
 import utils.TestDataProvider;
-import utils.customReporter.ExcelTestReporter;
-import utils.customReporter.TestProgressReporter;
 import utils.rest.SMPRestClient;
 
 import java.lang.reflect.Method;
@@ -21,33 +21,32 @@ import java.util.List;
 @Listeners({ExcelTestReporter.class, TestProgressReporter.class})
 public class BaseTest {
 
+	public static WebDriver driver;
 	static int methodCount = 1;
-
-	static WebDriver driver;
-	protected Logger logger = Logger.getLogger(this.getClass());
 	static TestDataProvider testDataProvider = new TestDataProvider();
-
 	static ArrayList<String> createdDomains = new ArrayList<>();
 	static ArrayList<String> createdUsers = new ArrayList<>();
 	static ArrayList<String> createdServiceGroups = new ArrayList<>();
+	protected Logger logger = Logger.getLogger(this.getClass());
 
 	@BeforeSuite(alwaysRun = true)
-	/*Starts the browser and navigates to the homepage. This happens once before the test
-	suite and the browser window is reused for all tests in suite*/
 	public void beforeSuite() {
+
+		logger.info("********************** SUT Info **********************");
+
+		System.out.println(SMPRestClient.getSystemInfo());
+
+		logger.info("********************** SUT Info **********************");
+
 		logger.info("Creating necessary data !!!!");
 		createDomains();
 		createUsers();
 		createSGs();
-
-//		logger.info("Starting this puppy!!!!");
-//		driver = DriverManager.getDriver();
-//		driver.get(PROPERTIES.UI_BASE_URL);
 	}
 
 
 	@AfterSuite(alwaysRun = true)
-	/*After the test suite is done we close the browser*/
+	/*After the test suite is done, we close the browser*/
 	public void afterSuite() {
 		logger.info("Deleting created data!!!");
 
@@ -55,7 +54,7 @@ public class BaseTest {
 
 		logger.info("Quitting!!!! Buh bye!!!");
 		try {
-			if(null!=driver){
+			if (null != driver) {
 				driver.quit();
 			}
 		} catch (Exception e) {
@@ -66,23 +65,17 @@ public class BaseTest {
 
 	@AfterClass(alwaysRun = true)
 	public void afterClass() {
-		if(null!=driver){
+		if (null != driver) {
 			driver.quit();
 		}
-//		driver.get(PROPERTIES.UI_BASE_URL);
-//		SMPPage page = new SMPPage(driver);
-//		page.refreshPage();
-//
-//		if(page.pageHeader.sandwichMenu.isLoggedIn()){
-//			logger.info("Logout!!");
-//			page.pageHeader.sandwichMenu.logout();
-//		}
 	}
 
 	@BeforeClass(alwaysRun = true)
 	public void beforeClass() {
+		logger.info("beforeClass entry");
 		driver = DriverManager.getDriver();
 		driver.get(PROPERTIES.UI_BASE_URL);
+		logger.info("beforeClass exit");
 	}
 
 	@BeforeMethod(alwaysRun = true)
@@ -97,7 +90,7 @@ public class BaseTest {
 	private void createDomains() {
 		for (int i = 0; i < 5; i++) {
 			String generated = Generator.randomAlphaNumeric(10);
-			logger.info("creating domain whose value is :"+generated);
+			logger.info("creating domain whose value is :" + generated);
 			boolean created = SMPRestClient.createDomain(generated);
 			if (created) {
 				createdDomains.add(generated);
@@ -126,7 +119,7 @@ public class BaseTest {
 	private void createSGs() {
 		for (int i = 0; i < 5; i++) {
 			String generated = Generator.randomAlphaNumeric(10);
-			String generatedHyphen = generated.substring(0,3)+"-"+generated.substring(3,6)+"-"+generated.substring(6,9);
+			String generatedHyphen = generated.substring(0, 3) + "-" + generated.substring(3, 6) + "-" + generated.substring(6, 9);
 			List<String> users = Arrays.asList(createdUsers.get(0));
 			List<String> domains = Arrays.asList(createdDomains.get(0));
 			boolean created = SMPRestClient.createServiceGroup(generated, generatedHyphen, users, domains);

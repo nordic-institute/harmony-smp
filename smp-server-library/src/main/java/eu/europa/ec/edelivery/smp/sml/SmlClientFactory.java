@@ -38,11 +38,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SmlClientFactory {
 
-    private static final String SERVICE_METADATA_CONTEXT = "manageservicemetadata";
-    private static final String PARTICIPANT_IDENTIFIER_CONTEXT = "manageparticipantidentifier";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmlClientFactory.class);
-
-    private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
     @Autowired
     ConfigurationService configurationService;
@@ -52,7 +48,7 @@ public class SmlClientFactory {
 
     @Bean
     @Scope("prototype")
-    public IManageParticipantIdentifierWS create(String clientKeyAlias, String clientCertHttpHeader, boolean clientCertAuthentication) {
+    public IManageParticipantIdentifierWS create() {
         LOG.info("create IManageParticipantIdentifierWS");
 
 
@@ -61,14 +57,12 @@ public class SmlClientFactory {
                 .setWsdlURL(ManageBusinessIdentifierService.class.getResource("/ManageBusinessIdentifierService-1.0.wsdl"));
         factory.setServiceName(ManageBusinessIdentifierService.SERVICE);
         factory.setEndpointName(ManageBusinessIdentifierService.ManageBusinessIdentifierServicePort);
-        IManageParticipantIdentifierWS smlPort = factory.create(IManageParticipantIdentifierWS.class);
-
-        return smlPort;
+        return factory.create(IManageParticipantIdentifierWS.class);
     }
 
     @Bean
     @Scope("prototype")
-    public IManageServiceMetadataWS createSmp(String clientKeyAlias, String clientCertHttpHeader, boolean clientCertAuthentication) {
+    public IManageServiceMetadataWS createSmp() {
         LOG.info("create IManageServiceMetadataWS");
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
@@ -76,7 +70,6 @@ public class SmlClientFactory {
                 .setWsdlURL(ManageServiceMetadataService.class.getResource("/ManageServiceMetadataService-1.0.wsdl"));
         factory.setServiceName(ManageServiceMetadataService.SERVICE);
         factory.setEndpointName(ManageServiceMetadataService.ManageServiceMetadataServicePort);
-        IManageServiceMetadataWS smlPort = factory.create(IManageServiceMetadataWS.class);
-        return smlPort;
+        return factory.create(IManageServiceMetadataWS.class);
     }
 }

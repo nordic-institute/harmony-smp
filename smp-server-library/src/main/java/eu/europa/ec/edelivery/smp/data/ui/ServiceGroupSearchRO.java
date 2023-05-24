@@ -14,8 +14,11 @@ import java.util.List;
 public class ServiceGroupSearchRO extends BaseRO {
 
 
-    private static final long serialVersionUID = -7523221767041516157L;
+    private static final long serialVersionUID = 9008583888835630016L;
     private Long id;
+
+    private String domainCode;
+    private String resourceDefUrlSegment;
     private String participantIdentifier;
     private String participantScheme;
     private List<ServiceMetadataRO> lstServiceMetadata = new ArrayList<>();
@@ -43,6 +46,22 @@ public class ServiceGroupSearchRO extends BaseRO {
 
     public void setParticipantScheme(String participantScheme) {
         this.participantScheme = participantScheme;
+    }
+
+    public String getDomainCode() {
+        return domainCode;
+    }
+
+    public void setDomainCode(String domainCode) {
+        this.domainCode = domainCode;
+    }
+
+    public String getResourceDefUrlSegment() {
+        return resourceDefUrlSegment;
+    }
+
+    public void setResourceDefUrlSegment(String resourceDefUrlSegment) {
+        this.resourceDefUrlSegment = resourceDefUrlSegment;
     }
 
     public List<ServiceMetadataRO> getServiceMetadata() {

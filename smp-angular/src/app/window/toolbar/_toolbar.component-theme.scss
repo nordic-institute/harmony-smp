@@ -1,0 +1,11 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@use '../../../_smp-theme-helper' as smp;
+
+@mixin set-component-colors($theme) {
+
+  #window-toolbar {
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 150px, smp.get-theme-color($theme));
+  }
+}
+

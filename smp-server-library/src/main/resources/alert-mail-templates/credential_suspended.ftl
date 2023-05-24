@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>eDelivery SMP</title>
+<title>DomiSMP</title>
 </head>
 <body style="margin:0; padding:0; background-color: #f1f1f1;">
 <center>
@@ -41,7 +41,7 @@
                             
                             <!-- TITLE -->
                             <tr>
-                              <td valign="top" align="left" style=" font-size: 30px; font-family: Arial, Helvetica, sans-serif; color: #000;">eDelivery SMP<br/></td>
+                              <td valign="top" align="left" style=" font-size: 30px; font-family: Arial, Helvetica, sans-serif; color: #000;">DomiSMP<br/></td>
                             </tr>
                             <!-- / TITLE --> 
                             

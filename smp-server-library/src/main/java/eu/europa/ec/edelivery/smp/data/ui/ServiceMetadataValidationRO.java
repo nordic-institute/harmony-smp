@@ -7,7 +7,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 public class ServiceMetadataValidationRO extends BaseRO {
 
 
-    private static final long serialVersionUID = 65555540449327185L;
+    private static final long serialVersionUID = 9008583888835630019L;
 
     String participantScheme;
     String participantIdentifier;

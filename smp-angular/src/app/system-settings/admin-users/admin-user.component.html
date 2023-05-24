@@ -1,0 +1,77 @@
+<div id="admin-user-panel">
+  <data-panel id="admin-user-data-panel"
+              title="System User administration"
+              text="System User administration panel is a tool for creating and removing users from DomiSMP"
+              [labelColumnContent]="searchUserPanel">
+    <ng-template #noDataFound>
+      <div class="empty-data-panel">No user selected.</div>
+    </ng-template>
+    <user-profile-panel  *ngIf="managedUserData;else noDataFound"
+      [showDataPanelTitles] =false
+      [managedUserData]="managedUserData"
+      (onSaveUserEvent)="onSaveUserEvent($event)"
+      (onDiscardNew)="onDiscardNew()"
+      (onChangeUserPasswordEvent)="changeUserPasswordEvent($event)"
+      ></user-profile-panel>
+  </data-panel>
+</div>
+
+<ng-template #searchUserPanel>
+  <mat-form-field id="domain-filter">
+    <mat-label>Filter Users</mat-label>
+    <input matInput (keyup)="applyUserFilter($event)" placeholder="User name or full name" #inputUserFilter>
+  </mat-form-field>
+
+  <mat-toolbar class ="mat-elevation-z2">
+    <mat-toolbar-row  class="smp-toolbar-row">
+      <button mat-raised-button
+              mat-flat-button color="primary"
+              (click)="onCreateUserClicked()"
+      >Create User
+      </button>
+
+      <button mat-raised-button
+              [disabled]="canNotDelete"
+              color="primary"
+              (click)="onDeleteSelectedUserClicked()">
+        <mat-icon>delete</mat-icon>
+        <span>Delete selected</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <table class="mat-elevation-z2" id="admin-domain-table" mat-table [dataSource]="userData" >
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef >Username</th>
+      <td mat-cell *matCellDef="let row" [matTooltip]="row.username">{{row.username}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="fullName">
+      <th mat-header-cell *matHeaderCellDef >Full name</th>
+      <td mat-cell *matCellDef="let row" [matTooltip]="row.username">{{row.fullName}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+        (click)="userSelected(row)"
+        [ngClass]="{'datatable-row-selected': row===selected,'datatable-row-odd': odd}"
+    ></tr>
+
+
+    <tr class="mat-row" *matNoDataRow>
+      <td *ngIf="inputUserFilter.value;else noDataFound" class="mat-cell" colspan="2">No users matching the filter
+        "{{inputUserFilter.value}}"
+      </td>
+      <ng-template #noDataFound>
+        <td class="mat-cell" colspan="2">No data</td>
+      </ng-template>
+    </tr>
+  </table>
+
+  <mat-paginator class="mat-elevation-z2" id="extension-paginator"
+                 [length]="resultsLength"
+                 (page)="onPageChanged($event)"
+                 [hidePageSize]="true"
+                 [pageSize]="10"
+                 [showFirstLastButtons]="true"
+                 aria-label="Select page"></mat-paginator>
+</ng-template>

@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.utils;
 
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum.*;
 import static org.junit.Assert.*;
 
 @RunWith(JUnitParamsRunner.class)
@@ -61,7 +61,7 @@ public class PropertyUtilsTest {
                 {EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", Boolean.class},
                 {EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, "true", Boolean.class},
                 {OUTPUT_CONTEXT_PATH, "true", Boolean.class},
-                {PARTC_SCH_REGEXP, ".*", Pattern.class},
+                {PARTC_SCH_VALIDATION_REGEXP, ".*", Pattern.class},
                 {CS_PARTICIPANTS, "casesensitive-participant-scheme1|casesensitive-participant-scheme2", List.class},
                 {CS_DOCUMENTS, "casesensitive-doc-scheme1|casesensitive-doc-scheme2", List.class},
                 {SML_ENABLED, "true", Boolean.class},
@@ -79,7 +79,6 @@ public class PropertyUtilsTest {
                 {TRUSTSTORE_PASSWORD, "ASDFs+dfswWE+=", String.class},
                 {TRUSTSTORE_FILENAME, "truststore.jks", File.class},
                 {CERTIFICATE_CRL_FORCE, "true", Boolean.class},
-                {CONFIGURATION_DIR, "./", File.class},
                 {ENCRYPTION_FILENAME, "enc.key", File.class},
                 {KEYSTORE_PASSWORD_DECRYPTED, "test", String.class}
         };
@@ -129,7 +128,7 @@ public class PropertyUtilsTest {
             PropertyUtils.isValidProperty(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT,
                     "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", ROOT_FOLDER));
 
-        assertEquals("Configuration error: Subject must have less than 256 character!", result.getMessage());
+        assertEquals("Configuration error: [Subject must have less than 256 character]!", result.getMessage());
     }
 
 
@@ -139,7 +138,7 @@ public class PropertyUtilsTest {
                 PropertyUtils.isValidProperty(ALERT_USER_SUSPENDED_LEVEL,
                         "value", ROOT_FOLDER));
 
-        assertEquals("Configuration error: Allowed values are: LOW, MEDIUM, HIGH!", result.getMessage());
+        assertEquals("Configuration error: [Allowed values are: LOW, MEDIUM, HIGH]!", result.getMessage());
     }
 
 
@@ -219,4 +218,148 @@ public class PropertyUtilsTest {
             Assert.assertEquals(expectedValue, PropertyUtils.getMaskedData(smpPropertyEnum.getProperty(),testValue));
         }
     }
+/*
+    @Test
+    public void matchAllValues(){
+        System.out.println("Contains in values");
+
+        List<String> enumList =  Arrays.stream(SMPPropertyEnum.values()).map(val-> val.getProperty()).collect(Collectors.toList());
+        List<String> docList = Arrays.asList(docValues);
+
+        System.out.println("Missing in documentation");
+        for (String enumVal: enumList) {
+            if (!docList.contains(enumVal)) {
+                System.out.println("Missing: " + enumVal);
+            }
+        }
+
+        for (String docVal: docList) {
+            if (!enumList.contains(docVal)) {
+                System.out.println("Not in use: " + docVal);
+            }
+        }
+
+    }
+
+    String[] docValues = new String[] {
+            "contextPath.output",
+            "encodedSlashesAllowedInUrl",
+            "smp.http.forwarded.headers.enabled",
+            "smp.http.httpStrictTransportSecurity.maxAge",
+            "smp.http.header.security.policy",
+            "smp.proxy.host",
+            "smp.noproxy.hosts",
+            "smp.proxy.password",
+            "smp.proxy.port",
+            "smp.proxy.user",
+            "identifiersBehaviour.ParticipantIdentifierScheme.validationRegex",
+            "identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
+            "identifiersBehaviour.scheme.mandatory",
+            "identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate",
+            "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes",
+            "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes",
+            "identifiersBehaviour.splitPattern",
+            "identifiersBehaviour.ParticipantIdentifierScheme.urn.concatenate",
+            "bdmsl.integration.enabled",
+            "bdmsl.participant.multidomain.enabled",
+            "bdmsl.integration.url",
+            "bdmsl.integration.tls.disableCNCheck",
+            "bdmsl.integration.tls.serverSubjectRegex",
+            "bdmsl.integration.logical.address",
+            "bdmsl.integration.physical.address",
+            "bdmsl.integration.tls.useSystemDefaultTruststore",
+            "smp.keystore.password",
+            "smp.keystore.filename",
+            "smp.keystore.type",
+            "smp.truststore.password",
+            "smp.truststore.filename",
+            "smp.truststore.type",
+            "smp.certificate.crl.force",
+            "encryption.key.filename",
+            "smp.keystore.password.decrypted",
+            "smp.truststore.password.decrypted",
+            "smp.certificate.validation.allowedCertificatePolicyOIDs",
+            "smp.certificate.validation.subjectRegex",
+            "smp.property.refresh.cronJobExpression",
+            "smp.ui.session.secure",
+            "smp.ui.session.max-age",
+            "smp.ui.session.strict",
+            "smp.ui.session.path",
+            "smp.ui.session.idle_timeout.admin",
+            "smp.ui.session.idle_timeout.user",
+            "smp.cluster.enabled",
+            "smp.passwordPolicy.validationRegex",
+            "smp.passwordPolicy.validationMessage",
+            "smp.passwordPolicy.validDays",
+            "smp.passwordPolicy.warning.beforeExpiration",
+            "smp.passwordPolicy.expired.forceChange",
+            "smp.user.login.fail.delay",
+            "smp.user.login.maximum.attempt",
+            "smp.user.login.suspension.time",
+            "smp.accessToken.validDays",
+            "smp.accessToken.login.maximum.attempt",
+            "smp.accessToken.login.suspension.time",
+            "smp.accessToken.login.fail.delay",
+            "smp.ui.authentication.types",
+            "smp.automation.authentication.types",
+            "smp.automation.authentication.external.tls.clientCert.enabled",
+            "smp.automation.authentication.external.tls.SSLClientCert.enabled",
+            "smp.sso.cas.ui.label",
+            "smp.sso.cas.url",
+            "smp.sso.cas.urlPath.login",
+            "smp.sso.cas.callback.url",
+            "smp.sso.cas.smp.urlPath",
+            "smp.sso.cas.smp.user.data.urlPath",
+            "smp.sso.cas.token.validation.urlPath",
+            "smp.sso.cas.token.validation.params",
+            "smp.sso.cas.token.validation.groups",
+            "mail.smtp.host",
+            "mail.smtp.port",
+            "mail.smtp.protocol",
+            "mail.smtp.username",
+            "mail.smtp.password",
+            "mail.smtp.properties",
+            "smp.alert.user.login_failure.enabled",
+            "smp.alert.user.login_failure.level",
+            "smp.alert.user.login_failure.mail.subject",
+            "smp.alert.user.suspended.enabled",
+            "smp.alert.user.suspended.level",
+            "smp.alert.user.suspended.mail.subject",
+            "smp.alert.user.suspended.mail.moment",
+            "smp.alert.password.imminent_expiration.enabled",
+            "smp.alert.password.imminent_expiration.delay_days",
+            "smp.alert.password.imminent_expiration.frequency_days",
+            "smp.alert.password.imminent_expiration.level",
+            "smp.alert.password.imminent_expiration.mail.subject",
+            "smp.alert.password.expired.enabled",
+            "smp.alert.password.expired.delay_days",
+            "smp.alert.password.expired.frequency_days",
+            "smp.alert.password.expired.level",
+            "smp.alert.password.expired.mail.subject",
+            "smp.alert.accessToken.imminent_expiration.enabled",
+            "smp.alert.accessToken.imminent_expiration.delay_days",
+            "smp.alert.accessToken.imminent_expiration.frequency_days",
+            "smp.alert.accessToken.imminent_expiration.level",
+            "smp.alert.accessToken.imminent_expiration.mail.subject",
+            "smp.alert.accessToken.expired.enabled",
+            "smp.alert.accessToken.expired.delay_days",
+            "smp.alert.accessToken.expired.frequency_days",
+            "smp.alert.accessToken.expired.level",
+            "smp.alert.accessToken.expired.mail.subject",
+            "smp.alert.certificate.imminent_expiration.enabled",
+            "smp.alert.certificate.imminent_expiration.delay_days",
+            "smp.alert.certificate.imminent_expiration.frequency_days",
+            "smp.alert.certificate.imminent_expiration.level",
+            "smp.alert.certificate.imminent_expiration.mail.subject",
+            "smp.alert.certificate.expired.enabled",
+            "smp.alert.certificate.expired.delay_days",
+            "smp.alert.certificate.expired.frequency_days",
+            "smp.alert.certificate.expired.level",
+            "smp.alert.certificate.expired.mail.subject",
+            "smp.alert.credentials.cronJobExpression",
+            "smp.alert.credentials.serverInstance",
+            "smp.alert.credentials.batch.size",
+            "smp.alert.mail.from"
+    };
+    */
 }

@@ -1,6 +1,5 @@
 package ui;
 
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
@@ -37,7 +36,7 @@ public class SearchPgTest extends BaseTest {
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
 		soft.assertTrue(page.filters.isSearchButtonVisible(), "Search button is not visible");
-		soft.assertTrue(page.filters.isSearchButtonEnable(), "Search button is not enable");
+		soft.assertTrue(page.filters.isSearchButtonEnable(), "Search button is not enabled");
 		soft.assertTrue(page.filters.getParticipantIdentifierInputValue().isEmpty());
 		soft.assertTrue(page.filters.getParticipantSchemeInputValue().isEmpty());
 		soft.assertEquals(page.filters.domainSelect.getSelectedValue(), "All Domains");
@@ -375,19 +374,18 @@ public class SearchPgTest extends BaseTest {
 			}
 
 		}
-      soft.assertAll();
+		soft.assertAll();
 	}
 
 	@Test(description = "SRCH-101")
-	public void verifyCollapsingSidebarPageAfterLogin()
-	{
+	public void verifyCollapsingSidebarPageAfterLogin() {
 		SoftAssert soft = new SoftAssert();
 		SearchPage page = new SearchPage(driver);
 		soft.assertTrue(page.isLoaded());
 		page.sidebar.collapsingSideBar();
-		soft.assertFalse(page.sidebar.isSidebarSearchTextEnable(),"Search button is visible so sidebar page is not collpased");
-        page.sidebar.expandingSideBar();
-		soft.assertTrue(page.sidebar.isSidebarSearchTextEnable(),"Search button is not visible so sidebar page is not expanding");
+		soft.assertFalse(page.sidebar.isSidebarSearchTextEnable(), "Search button is visible so sidebar page is not collpased");
+		page.sidebar.expandingSideBar();
+		soft.assertTrue(page.sidebar.isSidebarSearchTextEnable(), "Search button is not visible so sidebar page is not expanding");
 		soft.assertAll();
 	}
 }

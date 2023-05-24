@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="width:700px">
+  <form [formGroup]="resourceForm">
+    <b *ngIf="newMode">To create a new resource enter unique identifier and scheme and click save.</b>
+    <mat-form-field style="width:100%">
+      <mat-label>Selected resource type</mat-label>
+      <mat-select placeholder="Select resource type for the resource"
+                  matTooltip="Select type for the resource."
+                  id="resourceTypeIdentifier"
+                  formControlName="resourceTypeIdentifier"
+                  required>
+        <mat-option *ngFor="let resDef of domainResourceDefs"
+                    [value]="resDef.identifier">
+          {{resDef.name}} ({{resDef.identifier}})
+        </mat-option>
+
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field  style="width: 100%">
+      <mat-label>Resource identifier</mat-label>
+      <input id="identifierValue_id" type="text" matInput #identifierValue
+             formControlName="identifierValue"
+             required auto-focus-directive
+             maxlength="255" required>
+      <div
+        *ngIf="(newMode && resourceForm.controls['identifierValue'].touched ) &&  resourceForm.controls['identifierValue'].hasError('required')"
+        style="color:red; font-size: 70%">
+        Participant identifier must not be empty and must be up to 255 characters long.
+      </div>
+      <div
+        *ngIf="(newMode &&  resourceForm.controls['identifierValue'].hasError('dbExist'))"
+        style="color:red; font-size: 70%">
+        Participant identifier for given scheme is already defined in database!
+      </div>
+    </mat-form-field>
+
+    <mat-form-field  style="width: 100%">
+      <mat-label>Resource scheme</mat-label>
+      <input id="identifierScheme_id" type="text" matInput
+             formControlName="identifierScheme"
+             maxlength="255"
+             >
+      <div
+        *ngIf="(newMode && resourceForm.controls['identifierScheme'].touched ) &&  resourceForm.controls['identifierScheme'].hasError('required')"
+        style="color:red; font-size: 70%">
+        Participant scheme must not be empty.
+      </div>
+      <div
+        *ngIf="(newMode && resourceForm.controls['identifierScheme'].touched ) &&
+               resourceForm.controls['identifierScheme'].hasError('pattern')"
+        style="color:red; font-size: 70%">
+        {{participantSchemeMessage}}
+      </div>
+    </mat-form-field>
+
+
+    <mat-form-field style="width:100%">
+      <mat-label>Resource visibility</mat-label>
+      <mat-select placeholder="Resource visibility"
+                  formControlName="visibility"
+                  matTooltip="Resource visibility."
+                  id="visibility_id" required>
+        <mat-option *ngFor="let visibility of groupVisibilityOptions"
+                    [value]="visibility.value">
+          {{visibility.key}}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Choose resource visibility</mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    <mat-icon>cancel</mat-icon>
+    <span>Close</span>
+  </button>
+  <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+          [disabled]="!submitButtonEnabled">
+    <mat-icon>save</mat-icon>
+    <span>Save</span>
+  </button>
+</mat-dialog-actions>
+

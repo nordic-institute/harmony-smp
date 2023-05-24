@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.config.properties;
 
 import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 
 
 /**

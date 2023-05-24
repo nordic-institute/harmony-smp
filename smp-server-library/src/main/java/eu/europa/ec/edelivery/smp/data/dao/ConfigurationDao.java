@@ -13,39 +13,48 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.config.DatabaseProperties;
 import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
+import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
+import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
+import eu.europa.ec.edelivery.smp.config.init.SMPConfigurationInitializer;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.TypedQuery;
 import java.io.File;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
 
-
+/**
+ * @author Joze Rihtarsic
+ * @since 4.2
+ */
 @Repository(value = "configurationDao")
-public class ConfigurationDao extends BaseDao<DBConfiguration> {
+public class ConfigurationDao extends BaseDao<DBConfiguration> implements InitializingBean {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
     boolean isRefreshProcess = false;
@@ -53,13 +62,33 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     Map<String, Object> cachedPropertyValues = new HashMap();
     OffsetDateTime lastUpdate = null;
     OffsetDateTime initiateDate = null;
-    ApplicationContext applicationContext;
+
+
     boolean serverRestartNeeded = false;
 
-    public ConfigurationDao(ApplicationContext applicationContext) {
+    protected final SMPEnvironmentProperties environmentProperties = SMPEnvironmentProperties.getInstance();
+    protected final ApplicationContext applicationContext;
+    protected PlatformTransactionManager txManager;
+
+    public ConfigurationDao(ApplicationContext applicationContext, PlatformTransactionManager txManager) {
         this.applicationContext = applicationContext;
+        this.txManager = txManager;
     }
 
+    /**
+     * Validate and initialize database configurations
+     */
+    public void afterPropertiesSet() {
+        LOG.debug("Reload DomiSMP properties");
+        // Transaction might not be yet initialized (@Transactional on this method does not help :) ).
+        // Wrap the method to TransactionTemplate to make possible database property initialization
+        TransactionTemplate tmpl = new TransactionTemplate(txManager);
+        tmpl.execute(status -> {
+            LOG.info("Start initial (re)load of the DomiSMP properties with transaction status object [{}]",  status);
+            reloadPropertiesFromDatabasePrivate();
+            return null;
+        });
+    }
 
     /**
      * Searches for a configuration entity by its  key and returns it if found. Returns an empty {@code Optional} if missing.
@@ -89,7 +118,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     @Transactional
     public DBConfiguration setPropertyToDatabase(SMPPropertyEnum key, String value, String description) {
-        File rootFolder = (File)getCachedPropertyValue(CONFIGURATION_DIR);
+        File rootFolder = getSecurityFolder();
         if (!PropertyUtils.isValidProperty(key, value, rootFolder)) {
             throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, key.getPropertyType().getErrorMessage(key.getProperty()));
         }
@@ -143,11 +172,13 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return result;
     }
 
+    @Transactional
     public String getCachedProperty(SMPPropertyEnum key) {
         return getCachedProperty(key.getProperty(), key.getDefValue());
     }
 
-    public String getCachedProperty(String property,String defValue) {
+    @Transactional
+    public String getCachedProperty(String property, String defValue) {
         if (lastUpdate == null) {
             // init properties
             refreshProperties();
@@ -155,12 +186,13 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         return cachedProperties.getProperty(property, defValue);
     }
 
-    public Object getCachedPropertyValue(SMPPropertyEnum key) {
+    @Transactional
+    public <T extends Object> T getCachedPropertyValue(SMPPropertyEnum key) {
         if (lastUpdate == null) {
             // init properties
             refreshProperties();
         }
-        return cachedPropertyValues.get(key.getProperty());
+        return (T) cachedPropertyValues.get(key.getProperty());
     }
 
     @Transactional
@@ -176,21 +208,32 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         }
     }
 
+    @Transactional
     public void refreshProperties() {
         // get update
         OffsetDateTime lastUpdateFromDB = getLastUpdate();
         if (lastUpdate == null || lastUpdateFromDB == null || lastUpdateFromDB.isAfter(lastUpdate)) {
-            reloadPropertiesFromDatabase();
+            reloadPropertiesFromDatabasePrivate();
         } else {
             LOG.info("Skip property update because max(LastUpdate) of properties in database is not changed: [{}].", lastUpdateFromDB);
         }
     }
 
+    @Transactional
     public void reloadPropertiesFromDatabase() {
+        reloadPropertiesFromDatabasePrivate();
+    }
+
+    protected void reloadPropertiesFromDatabasePrivate() {
         if (!isRefreshProcess) {
             isRefreshProcess = true;
             DatabaseProperties newProperties = new DatabaseProperties(memEManager);
-            // first update deprecated values
+            if (newProperties.isEmpty()) {
+                LOG.info("Database property table is empty! INITIALIZE DATABASE PROPERTIES");
+                SMPConfigurationInitializer configurationInitializer = new SMPConfigurationInitializer(memEManager, environmentProperties);
+                newProperties = configurationInitializer.getDatabaseProperties();
+                newProperties.setLastUpdate(OffsetDateTime.now());
+            }
 
             Map<String, Object> resultProperties;
             try {
@@ -224,9 +267,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
      */
     @EventListener({ContextRefreshedEvent.class})
     public void contextRefreshedEvent() {
-        LOG.debug("Application context is initialized: triggered  refresh  to update all property listeners");
+        LOG.info("Application context is initialized: triggered  refresh  to update all property listeners");
         setInitializedTime(OffsetDateTime.now());
-        reloadPropertiesFromDatabase();
     }
 
     /**
@@ -240,6 +282,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     protected void setInitializedTime(OffsetDateTime dateTime) {
         initiateDate = dateTime;
+        // update property listeners for the first time
+        updatePropertyListeners();
     }
 
 
@@ -248,7 +292,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
     }
 
     public boolean isApplicationInitialized() {
-        return initiateDate!=null;
+        return initiateDate != null;
     }
 
     private void updatePropertyListeners() {
@@ -256,7 +300,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         // some beans are using ConfigurationService also are in PropertyUpdateListener
         // for listener to update properties
         if (!isApplicationInitialized()) {
-            LOG.debug("Application is not started. The PropertyUpdateEvent is not triggered");
+            LOG.debug("Application is not yet started. Skip Property Update Event for listeners!");
             return;
         }
         LOG.debug("Update all property listeners");
@@ -279,7 +323,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     protected void updateListener(String name, PropertyUpdateListener listener) {
         LOG.debug("updateListener [{}]", name);
-        Map<SMPPropertyEnum, Object> mapProp = new HashMap<>();
+        EnumMap<SMPPropertyEnum, Object> mapProp = new EnumMap<>(SMPPropertyEnum.class);
         for (SMPPropertyEnum prop : listener.handledProperties()) {
             LOG.debug("Put property [{}]", prop.getProperty());
             if (this.cachedPropertyValues == null) {
@@ -343,7 +387,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
         // check SML integration data
         Boolean isSMLEnabled = (Boolean) propertyValues.get(SML_ENABLED.getProperty());
-        if (isSMLEnabled) {
+        if (isSMLEnabled != null && isSMLEnabled.booleanValue()) {
             // if SML is enabled then following properties are mandatory
             validateIfExists(propertyValues, SML_URL);
             validateIfExists(propertyValues, SML_PHYSICAL_ADDRESS);
@@ -368,30 +412,25 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         LOG.debug("Validated the basic configuration properties.");
         // retrieve and validate  configuration dir and encryption filename
         // because they are important for 'parsing and validating' other parameters
-        String configurationDir = getProperty(properties, CONFIGURATION_DIR);
-        if (StringUtils.isBlank(configurationDir)) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Empty configuration folder. Property [%s] is mandatory", CONFIGURATION_DIR.getProperty()));
-        }
-
         String encryptionKeyFilename = getProperty(properties, ENCRYPTION_FILENAME);
         if (StringUtils.isBlank(encryptionKeyFilename)) {
-            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Empty configuration folder. Property [%s] is mandatory", CONFIGURATION_DIR.getProperty()));
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Empty configuration folder. Property [%s] is mandatory", ENCRYPTION_FILENAME.getProperty()));
         }
 
-        File configFolder = new File(configurationDir);
+        File configFolder = getSecurityFolder();
         if (!configFolder.exists()) {
-            LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", configurationDir, configFolder.getAbsolutePath());
+            LOG.error("Configuration folder [{}] (absolute path: [{}]) does not exist. Try to create folder", configFolder.getPath(), configFolder.getAbsolutePath());
             if (!configFolder.mkdirs()) {
                 throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Configuration folder does not exists and can not be created! Value: [%s] (Absolute path [%s])",
-                        configurationDir, configFolder.getAbsolutePath()));
+                        configFolder.getPath(), configFolder.getAbsolutePath()));
             }
         }
         if (!configFolder.isDirectory()) {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Configuration folder is not a folder! Value: [%s] (Absolute path [%s])",
-                    configurationDir, configFolder.getAbsolutePath()));
+                    configFolder.getPath(), configFolder.getAbsolutePath()));
         }
 
-        File encryptionKeyFile = new File(configurationDir, encryptionKeyFilename);
+        File encryptionKeyFile = new File(configFolder, encryptionKeyFilename);
         if (!encryptionKeyFile.exists() || !encryptionKeyFile.isFile()) {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, String.format("Encryption file does not exists or is not a File! Value:  [%s]",
                     encryptionKeyFile.getAbsolutePath()));
@@ -421,20 +460,19 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
         // retrieve and validate  configuration dir and encryption filename
         // because they are important for 'parsing and validating' other parameters
         validateBasicProperties(properties);
-        String configurationDir = getProperty(properties, CONFIGURATION_DIR);
         String encryptionKeyFilename = getProperty(properties, ENCRYPTION_FILENAME);
 
-        File configFolder = new File(configurationDir);
-        File encryptionKeyFile = new File(configurationDir, encryptionKeyFilename);
+        File configFolder = getSecurityFolder();
+        File encryptionKeyFile = new File(configFolder, encryptionKeyFilename);
 
         HashMap<String, Object> propertyValues = new HashMap();
         // put the first two values
-        propertyValues.put(CONFIGURATION_DIR.getProperty(), configFolder);
+
         propertyValues.put(ENCRYPTION_FILENAME.getProperty(), encryptionKeyFile);
 
         // parse properties
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
-            if (prop.equals(CONFIGURATION_DIR) || prop.equals(ENCRYPTION_FILENAME)) {
+            if (prop.equals(ENCRYPTION_FILENAME)) {
                 // already checked and added to property values.
                 continue;
             }
@@ -527,5 +565,9 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> {
                     restartPendingProperties.stream().map(DBConfiguration::getProperty).collect(Collectors.toList()));
         }
         return restartNeeded;
+    }
+
+    public File getSecurityFolder() {
+        return Paths.get(environmentProperties.getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
     }
 }

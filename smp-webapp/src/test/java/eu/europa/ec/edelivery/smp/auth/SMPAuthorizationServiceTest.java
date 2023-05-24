@@ -1,11 +1,13 @@
 package eu.europa.ec.edelivery.smp.auth;
 
+import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
+import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,14 +31,15 @@ public class SMPAuthorizationServiceTest {
     UserRO user = null;
     SecurityContext mockSecurityContextSystemAdmin = null;
     SecurityContext mockSecurityContextSMPAdmin = null;
-    SecurityContext mockSecurityContextSGAdmin = null;
-    ServiceGroupService serviceGroupService = Mockito.mock(ServiceGroupService.class);
     ConversionService conversionService = Mockito.mock(ConversionService.class);
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     UserDao userDao = Mockito.mock(UserDao.class);
+    DomainMemberDao domainMemberDao = Mockito.mock(DomainMemberDao.class);
+    GroupMemberDao groupMemberDao = Mockito.mock(GroupMemberDao.class);
+    ResourceMemberDao resourceMemberDao = Mockito.mock(ResourceMemberDao.class);
 
-    SMPAuthorizationService testInstance = new SMPAuthorizationService(serviceGroupService, conversionService,
-            configurationService, userDao);
+    SMPAuthorizationService testInstance = new SMPAuthorizationService(userDao, domainMemberDao, groupMemberDao, resourceMemberDao, conversionService,
+            configurationService);
 
 
     @Before
@@ -48,11 +51,8 @@ public class SMPAuthorizationServiceTest {
             setUsername("sys_admin");
         }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN));
         SMPUserDetails smpUserDetails = new SMPUserDetails(new DBUser() {{
-            setUsername("smp_admin");
-        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SMP_ADMIN));
-        SMPUserDetails sgUserDetails = new SMPUserDetails(new DBUser() {{
-            setUsername("smp_admin");
-        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_SERVICE_GROUP));
+            setUsername("smp_user");
+        }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_USER));
 
         mockSecurityContextSystemAdmin = new SecurityContext() {
             SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", sysUserDetails);
@@ -78,27 +78,7 @@ public class SMPAuthorizationServiceTest {
             public void setAuthentication(Authentication authentication) {
             }
         };
-        mockSecurityContextSGAdmin = new SecurityContext() {
-            SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", sgUserDetails);
 
-            @Override
-            public Authentication getAuthentication() {
-                return smpa;
-            }
-
-            @Override
-            public void setAuthentication(Authentication authentication) {
-            }
-        };
-    }
-
-    @Test
-    public void isSystemAdministratorNotLoggedIn() {
-        // given
-        SecurityContextHolder.setContext(mockSecurityContextSGAdmin);
-        // when then
-        boolean bVal = testInstance.isSystemAdministrator();
-        assertFalse(bVal);
     }
 
     @Test
@@ -111,11 +91,11 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test(expected = BadCredentialsException.class)
-    public void isCurrentlyLoggedInNotLogedIn() {
+    public void isCurrentlyLoggedInNotLoggedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
 
-        testInstance.isCurrentlyLoggedIn("Invalid or null authentication for the session!");
+        testInstance.isCurrentlyLoggedIn("Invalid or Expired session! Please login again.");
     }
 
     @Test
@@ -125,24 +105,6 @@ public class SMPAuthorizationServiceTest {
         // when then
         boolean bVal = testInstance.isCurrentlyLoggedIn(SessionSecurityUtils.encryptedEntityId(10L));
         assertTrue(bVal);
-    }
-
-    @Test
-    public void isAuthorizedForManagingTheServiceMetadataGroupSMPAdmin() throws Exception {
-        // given
-        SecurityContextHolder.setContext(mockSecurityContextSMPAdmin);
-        // when then smp admin is always authorized to manage SMP
-        boolean bVal = testInstance.isAuthorizedForManagingTheServiceMetadataGroup(10L);
-        assertTrue(bVal);
-    }
-
-    @Test
-    public void isAuthorizedForManagingTheServiceMetadataGroupSYSAdmin() throws Exception {
-        // given
-        SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
-        // when then system admin is not  authorized to manage SMP
-        boolean bVal = testInstance.isAuthorizedForManagingTheServiceMetadataGroup(10L);
-        assertFalse(bVal);
     }
 
     @Test

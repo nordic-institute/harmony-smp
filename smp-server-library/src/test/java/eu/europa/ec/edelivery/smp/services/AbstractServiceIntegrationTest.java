@@ -2,17 +2,17 @@ package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.config.ServicesBeansConfiguration;
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.cron.CronTriggerConfig;
 import eu.europa.ec.edelivery.smp.data.dao.*;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.services.mail.MailService;
+import eu.europa.ec.edelivery.smp.services.spi.SmpXmlSignatureService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
@@ -42,22 +41,18 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {H2JPATestConfig.class,
-        CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class, MailService.class,
-        ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
-        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class, AlertDao.class,
+@ContextConfiguration(classes = {IdentifierService.class,SmlConnector.class, SmpXmlSignatureService.class, MailService.class,
+        DomainService.class,
+        ResourceDao.class, SubresourceDao.class, DomainDao.class, UserDao.class,DBAssertion.class, ConfigurationDao.class, AlertDao.class,
         UITruststoreService.class, UIKeystoreService.class, ConversionTestConfig.class, SMLIntegrationService.class,
         CRLVerifierService.class,
         ConfigurationService.class,
         ServicesBeansConfiguration.class,
-        AlertService.class,
+        CredentialsAlertService.class,
         CronTriggerConfig.class})
 @Sql(scripts = {"classpath:cleanup-database.sql",
         "classpath:basic_conf_data-h2.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
-        (transactionMode = SqlConfig.TransactionMode.ISOLATED,
-                transactionManager = "transactionManager",
-                dataSource = "h2DataSource"))
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class AbstractServiceIntegrationTest {
 
 
@@ -65,10 +60,10 @@ public abstract class AbstractServiceIntegrationTest {
     protected Path targetDirectory = Paths.get("target","keystores");
 
     @Autowired
-    protected ServiceGroupDao serviceGroupDao;
+    protected ResourceDao serviceGroupDao;
 
     @Autowired
-    protected ServiceMetadataDao serviceMetadataDao;
+    protected SubresourceDao serviceMetadataDao;
 
     @Autowired
     protected DomainDao domainDao;
@@ -120,29 +115,32 @@ public abstract class AbstractServiceIntegrationTest {
         userDao.persistFlushDetach(u2);
         userDao.persistFlushDetach(u3);
 
-        DBServiceGroup sg1d1 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
-        DBServiceMetadata sg1md1 = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
+        DBResource sg1d1 = TestDBUtils.createDBResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
+        DBSubresource sg1md1 = TestDBUtils.createDBSubresource(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
                 TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
+        /*
         sg1d1.addDomain(testDomain01);
-        sg1d1.getServiceGroupDomains().get(0).addServiceMetadata(sg1md1);
-        sg1d1.getUsers().add(u1);
-        sg1d1.getUsers().add(u2);
+        sg1d1.getResourceDomains().get(0).addServiceMetadata(sg1md1);
+        sg1d1.getMembers().add(new DBResourceMember(sg1d1, u1));
+        sg1d1.getMembers().add(new DBResourceMember(sg1d1, u1));
         serviceGroupDao.persistFlushDetach(sg1d1);
 
-        DBServiceGroup sg2d1 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
-        sg2d1.getUsers().add(u1);
+        DBResource sg2d1 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
+        sg2d1.getMembers().add(new DBResourceMember(sg2d1, u1));
         sg2d1.addDomain(testDomain01);
         serviceGroupDao.update(sg2d1);
 
 
-        DBServiceGroup sg2NoScheme = TestDBUtils.createDBServiceGroup(TEST_SG_ID_NO_SCHEME, null);
-        DBServiceMetadata sg1mdNoScheme = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_NO_SCHEME, null,
+        DBResource sg2NoScheme = TestDBUtils.createDBServiceGroup(TEST_SG_ID_NO_SCHEME, null);
+        DBSubresource sg1mdNoScheme = TestDBUtils.createDBSubresource(TEST_SG_ID_NO_SCHEME, null,
                 TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
         sg2NoScheme.addDomain(testDomain01);
-        sg2NoScheme.getServiceGroupDomains().get(0).addServiceMetadata(sg1mdNoScheme);
-        sg2NoScheme.getUsers().add(u1);
-        sg2NoScheme.getUsers().add(u2);
+        sg2NoScheme.getResourceDomains().get(0).addServiceMetadata(sg1mdNoScheme);
+        sg2NoScheme.getMembers().add(new DBResourceMember(sg2NoScheme, u1));
+        sg2NoScheme.getMembers().add(new DBResourceMember(sg2NoScheme, u1));
         serviceGroupDao.persistFlushDetach(sg2NoScheme);
+
+         */
     }
 
     /**
@@ -173,8 +171,8 @@ public abstract class AbstractServiceIntegrationTest {
 
         DBUser u1 = userDao.findUserByUsername(USERNAME_1).get();
 
-        DBServiceGroup sg2d2 = TestDBUtils.createDBServiceGroup(TEST_SG_ID_3, TEST_SG_SCHEMA_1);
-        sg2d2.getUsers().add(u1);
+        DBResource sg2d2 = TestDBUtils.createDBResource(TEST_SG_ID_3, TEST_SG_SCHEMA_1);
+       // sg2d2.getUsers().add(u1);
         serviceGroupDao.update(sg2d2);
     }
 
@@ -213,21 +211,24 @@ public abstract class AbstractServiceIntegrationTest {
 
     public void prepareDatabaseForMultipeDomainWithMetadataEnv() {
         prepareDatabaseForMultipeDomainEnv();
-        DBServiceGroup sg1 = serviceGroupDao.findServiceGroup(TEST_SG_ID_1, TEST_SG_SCHEMA_1).get();
-        DBServiceMetadata sg1md2 = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
+        /*
+        DBResource sg1 = serviceGroupDao.findServiceGroup(TEST_SG_ID_1, TEST_SG_SCHEMA_1).get();
+        DBSubresource sg1md2 = TestDBUtils.createDBSubresource(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
                 TEST_DOC_ID_2, TEST_DOC_SCHEMA_2);
-        sg1.getServiceGroupDomains().get(0).addServiceMetadata(sg1md2);
+        sg1.getResourceDomains().get(0).addServiceMetadata(sg1md2);
 
         serviceGroupDao.update(sg1);
 
-        DBServiceGroup sg3 = serviceGroupDao.findServiceGroup(TEST_SG_ID_3, TEST_SG_SCHEMA_1).get();
-        DBServiceMetadata sg3md1 = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_2, TEST_SG_SCHEMA_2,
+        DBResource sg3 = serviceGroupDao.findServiceGroup(TEST_SG_ID_3, TEST_SG_SCHEMA_1).get();
+        DBSubresource sg3md1 = TestDBUtils.createDBSubresource(TEST_SG_ID_2, TEST_SG_SCHEMA_2,
                 TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
-        DBServiceMetadata sg3md2 = TestDBUtils.createDBServiceMetadata(TEST_SG_ID_2, TEST_SG_SCHEMA_2,
+        DBSubresource sg3md2 = TestDBUtils.createDBSubresource(TEST_SG_ID_2, TEST_SG_SCHEMA_2,
                 TEST_DOC_ID_2, TEST_DOC_SCHEMA_2);
-        sg3.getServiceGroupDomains().get(0).addServiceMetadata(sg3md1);
-        sg3.getServiceGroupDomains().get(1).addServiceMetadata(sg3md2);
+        sg3.getResourceDomains().get(0).addServiceMetadata(sg3md1);
+        sg3.getResourceDomains().get(1).addServiceMetadata(sg3md2);
         serviceGroupDao.update(sg3);
+
+         */
     }
 
     protected void resetKeystore() throws IOException {

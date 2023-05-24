@@ -1,3 +1,17 @@
+eDelivery SMP 5.0
+
+- environment properties have now 'smp.' prefix
+- application property: 'configuration.dir' was replaced by the environment 'smp.security.folder' property
+- added new properties:
+    smp.truststore.type: Truststore type as JKS/PKCS12
+    smp.keystore.type: Keystore type as JKS/PKCS12
+    smp.certificate.validation.allowed.certificate.type: Allowed user certificate JCE types. Empty value means no restrictions, for other values see the java KeyFactory Algorithms for example: RSA|EC|Ed25519|Ed448.
+    identifiersBehaviour.splitPattern: Regular expression with groups scheme and identifier for splitting the URN identifiers to scheme and identifier part.
+    identifiersBehaviour.splitPattern	^(?i)\\s*?(?<scheme>urn:oasis:names:tc:ebcore:partyid-type:(iso6523:[0-9]{4}|unregistered(:[^:]+)?))::?(?<identifier>.+)?\\s*$	Regular expression with groups <scheme> and <identifier> for splitting the identifiers to scheme and identifier part!	false	REGEXP
+    identifiersBehaviour.ParticipantIdentifierScheme.urn.concatenate		Regular expression to detect URN party identifiers. If the party identifier schema matches the regexp, then the party identifier is concatenated with a single colon in XML responses. Else it is handled as OASIS SMP party identifier. Example: ^(?i)(urn:)|(mailto:).*$	false	REGEXP
+
+- the default keystore type is now PKCS12. Set the keystore type to JKS if properties smp.truststore.type and smp.keystore.type are missing!
+
 eDelivery SMP 4.2
 - added new properties:
     smp.passwordPolicy.validationRegex: Regular expression do define password minimum complexity rules!
@@ -12,7 +26,7 @@ eDelivery SMP 4.2
     smp.ui.session.idle_timeout.admin: Specifies the time, in seconds, between client requests before the SMP will invalidate session for ADMIN users (System)!
     smp.ui.session.idle_timeout.user: Specifies the time, in seconds, between client requests before the SMP will invalidate session for users (Service group, SMP Admin)
     smp.sso.cas.ui.label: The SSO service provider label.
-    smp.sso.cas.url: The SSO CAS URL enpoint
+    smp.sso.cas.url: The SSO CAS URL endpoint
     smp.sso.cas.urlpath.login: The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.login}.
     smp.sso.cas.callback.url: The URL is the callback URL belonging to the local SMP Security System. If using RP make sure it target SMP path '/ui/rest/security/cas'
     smp.sso.cas.token.validation.urlpath: The CAS URL path for login. Complete URL is composed from parameters: ${smp.sso.cas.url}/${smp.sso.cas.urlpath.token.validation}.
@@ -43,4 +57,3 @@ eDelivery SMP 4.2
 
 - added new table SMP_ALERT
 
-    
