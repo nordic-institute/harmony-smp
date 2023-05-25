@@ -29,7 +29,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateRevokedException;
 import java.security.cert.X509Certificate;
@@ -70,7 +70,7 @@ public class CredentialService {
         this.alertService = alertService;
     }
 
-    @Transactional(dontRollbackOn = {RuntimeException.class})
+    @Transactional(noRollbackForClassName = {"java.lang.RuntimeException"})
     public Authentication authenticateByUsernamePassword(String username, String userCredentialToken)
             throws AuthenticationException {
 
@@ -123,7 +123,7 @@ public class CredentialService {
     }
 
 
-    @Transactional(dontRollbackOn = {AuthenticationException.class, BadCredentialsException.class})
+    @Transactional(noRollbackForClassName = {"org.springframework.security.core.AuthenticationException","org.springframework.security.authentication.BadCredentialsException"})
     public Authentication authenticateByAuthenticationToken(String authenticationTokenId, String authenticationTokenValue)
             throws AuthenticationException {
 
@@ -200,7 +200,7 @@ public class CredentialService {
         return false;
     }
 
-    @Transactional(dontRollbackOn = {AuthenticationException.class, BadCredentialsException.class})
+    @Transactional(noRollbackForClassName = {"org.springframework.security.core.AuthenticationException","org.springframework.security.authentication.BadCredentialsException"})
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
 
