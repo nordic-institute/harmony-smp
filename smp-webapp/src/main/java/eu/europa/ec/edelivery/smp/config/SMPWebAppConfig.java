@@ -49,7 +49,6 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
         "eu.europa.ec.smp.spi",})
 @Import({GlobalMethodSecurityConfig.class,
         ServiceErrorControllerAdvice.class,
-        SMPDatabaseConfig.class,
         ServicesBeansConfiguration.class})
 public class SMPWebAppConfig implements WebMvcConfigurer {
     private static final Logger LOG = LoggerFactory.getLogger(SMPWebAppConfig.class);

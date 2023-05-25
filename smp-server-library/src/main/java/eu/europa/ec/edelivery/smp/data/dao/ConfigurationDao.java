@@ -54,7 +54,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
  * @since 4.2
  */
 @Repository(value = "configurationDao")
-public class ConfigurationDao extends BaseDao<DBConfiguration> implements InitializingBean {
+public class ConfigurationDao extends BaseDao<DBConfiguration>  {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
     boolean isRefreshProcess = false;
@@ -68,28 +68,27 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
 
     protected final SMPEnvironmentProperties environmentProperties = SMPEnvironmentProperties.getInstance();
     protected final ApplicationContext applicationContext;
-    protected PlatformTransactionManager txManager;
 
-    public ConfigurationDao(ApplicationContext applicationContext, PlatformTransactionManager txManager) {
+
+    public ConfigurationDao(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        this.txManager = txManager;
     }
 
     /**
      * Validate and initialize database configurations
-     */
-    public void afterPropertiesSet() {
-        LOG.debug("Reload DomiSMP properties");
+
+    public void afterPropertiesSetTEest() {
+        LOG.info("Reload DomiSMP properties");
         // Transaction might not be yet initialized (@Transactional on this method does not help :) ).
         // Wrap the method to TransactionTemplate to make possible database property initialization
         TransactionTemplate tmpl = new TransactionTemplate(txManager);
         tmpl.execute(status -> {
             LOG.info("Start initial (re)load of the DomiSMP properties with transaction status object [{}]",  status);
-            reloadPropertiesFromDatabasePrivate();
+            refreshProperties();
             return null;
         });
     }
-
+     */
     /**
      * Searches for a configuration entity by its  key and returns it if found. Returns an empty {@code Optional} if missing.
      *
@@ -186,7 +185,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
         return cachedProperties.getProperty(property, defValue);
     }
 
-    @Transactional
+
     public <T extends Object> T getCachedPropertyValue(SMPPropertyEnum key) {
         if (lastUpdate == null) {
             // init properties

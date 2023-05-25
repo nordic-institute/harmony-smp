@@ -38,7 +38,6 @@ public class DatabaseConnectionBeanCreator {
 
     public DataSource getDataSource() {
         String jndiDatasourceName = databaseConnectionConfig.getDatabaseJNDI();
-
         if (StringUtils.isNotBlank(jndiDatasourceName)) {
             LOG.info("User datasource with JNDI: [{}] ", jndiDatasourceName);
             JndiObjectFactoryBean jndiDataSource = new JndiObjectFactoryBean();
@@ -72,6 +71,7 @@ public class DatabaseConnectionBeanCreator {
         prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
 
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
+        lef.setPersistenceUnitName("smpEntityManagerFactory");
         lef.setDataSource(dataSource);
         lef.setJpaVendorAdapter(jpaVendorAdapter);
         lef.setPackagesToScan(

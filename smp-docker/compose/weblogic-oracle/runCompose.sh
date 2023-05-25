@@ -4,8 +4,11 @@
 WORKING_DIR="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
+#SMP_INIT_DATABASE="/cef/test/smp-migration/smp-5.0/smp-4.2/database-scripts/mig/oracle10g.ddl"
+
 #SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
 SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql"
+#SMP_INIT_DATABASE_DATA="/cef/test/smp-migration/smp-5.0/smp-4.2/database-scripts/mig/data-mig.ddl"
 # soap ui data
 PREFIX="smp-wls12-orcl"
 SMP_VERSION=
