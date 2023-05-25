@@ -9,7 +9,7 @@ import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 

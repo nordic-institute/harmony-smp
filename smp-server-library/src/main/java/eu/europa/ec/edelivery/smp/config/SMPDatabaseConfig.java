@@ -16,9 +16,9 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.smp.config.init.DatabaseConnectionBeanCreator;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.*;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -42,25 +42,30 @@ public class SMPDatabaseConfig {
     final DatabaseConnectionBeanCreator databaseConnectionBeanCreator;
 
     public SMPDatabaseConfig() {
-
         databaseConnectionBeanCreator = new DatabaseConnectionBeanCreator(SMPEnvironmentProperties.getInstance());
     }
 
-    @Bean(name = "dataSource")
+    @Primary
+    @Bean(name = "smpDataSource")
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public DataSource getDataSource() {
-        LOG.debug("Create DomiSMP datasource");
+        LOG.info("Create DomiSMP datasource");
         return databaseConnectionBeanCreator.getDataSource();
     }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
-        LOG.debug("Create DomiSMP EntityManagerFactory");
+    @Primary
+    @Bean(name = "smpEntityManagerFactory")
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory(@Qualifier("smpDataSource") DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+        LOG.info("Create DomiSMP EntityManagerFactory");
         return databaseConnectionBeanCreator.smpEntityManagerFactory(dataSource, jpaVendorAdapter);
     }
 
-    @Bean
-    public PlatformTransactionManager smpTransactionManager(EntityManagerFactory emf) {
-        LOG.debug("Create DomiSMP TransactionManager");
+    @Primary
+    @Bean(name = "transactionManager")
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public PlatformTransactionManager smpTransactionManager(@Qualifier("smpEntityManagerFactory") EntityManagerFactory emf) {
+        LOG.info("Create DomiSMP TransactionManager");
         return databaseConnectionBeanCreator.getSmpTransactionManager(emf);
     }
 
