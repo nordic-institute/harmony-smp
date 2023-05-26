@@ -88,4 +88,4 @@ insert into SMP_RESOURCE_MEMBER ( ID, CREATED_ON, LAST_UPDATED_ON, MEMBERSHIP_RO
 
 -- the SMP Resource memberships
 insert into SMP_RESOURCE_MEMBER (ID, CREATED_ON, LAST_UPDATED_ON, MEMBERSHIP_ROLE, FK_RESOURCE_ID, FK_USER_ID)
-    select SMP_RESOURCE_MEMBER_SEQ.nextval, sysdate, sysdate, 'ADMIN', ow.FK_SG_ID, usr.ID from BCK_USER usr JOIN BCK_OWNERSHIP ow ON  ow.FK_USER_ID = usr.id where usr.ROLE='SERVICE_GROUP_ADMIN';
+    select SMP_RESOURCE_MEMBER_SEQ.nextval, sysdate, sysdate, 'ADMIN', sgd.ID, usr.ID from BCK_USER usr JOIN BCK_OWNERSHIP ow ON ow.FK_USER_ID = usr.id  JOIN BCK_SERVICE_GROUP_DOMAIN sgd ON sgd.FK_SG_ID=ow.FK_SG_ID  where usr.ROLE='SERVICE_GROUP_ADMIN';
