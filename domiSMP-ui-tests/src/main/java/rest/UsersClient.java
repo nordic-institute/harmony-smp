@@ -19,7 +19,18 @@ public class UsersClient extends BaseRestClient {
         JSONArray payload = new JSONArray();
         payload.put(usrObj);
 
-        String usersPath = new RestServicePaths().getUsersPath();
+
+
+        if (!isLoggedIn()) {
+            try {
+                refreshCookies();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        String usersPath = RestServicePaths.getUsersPath(data.userId);
+
         ClientResponse response = jsonPUT(resource.path(usersPath), usrObj);
 
         if (response.getStatus() != 200) {

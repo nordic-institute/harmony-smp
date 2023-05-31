@@ -19,7 +19,7 @@ public class TestRunData {
     public static SimpleDateFormat REST_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     public static SimpleDateFormat REST_JMS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     public static SimpleDateFormat DATEWIDGET_DATE_FORMAT = new SimpleDateFormat(" dd/MM/yyyy HH:mm");
-    public static String userId;
+    public String userId;
     static Properties prop = new Properties();
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -34,7 +34,7 @@ public class TestRunData {
     }
 
     public void setUserId(String userId) {
-        TestRunData.userId = userId;
+        this.userId = userId;
     }
 
     private void loadTestData() {

@@ -19,7 +19,7 @@ public class DriverManager {
     public static WebDriver getDriver() {
 
         WebDriver driver;
-        if (StringUtils.equalsIgnoreCase(data.getRunBrowser(), "firefox")) {
+        if ( StringUtils.equalsIgnoreCase(data.getRunBrowser(), "firefox")) {
             driver = getFirefoxDriver();
         } else {
             driver = getChromeDriver();
