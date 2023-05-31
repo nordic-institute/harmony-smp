@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.*;
 
-@Ignore
 public class AlertDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired

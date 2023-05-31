@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="width:700px">
+  <form [formGroup]="memberForm">
+    <b *ngIf="newMode">You're inviting members to {{inviteTarget}}.</b>
+    <mat-form-field  style="width: 100%">
+      <mat-label>Choose User to invite</mat-label>
+      <input id="member-user" type="text" matInput formControlName="member-user"
+             [matAutocomplete]="auto" (keyup)="applyUserFilter($event)"
+             required>
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let user of filteredOptions | async" [value]="user.username">
+          {{user.username}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint *ngIf="newMode">Type username or name to locate the user and select user from the list</mat-hint>
+    </mat-form-field>
+
+
+    <mat-form-field style="width:100%">
+      <mat-label>Select role for the user</mat-label>
+      <mat-select placeholder="Role for the member"
+                  formControlName="member-roleType"
+                  name="Role type"
+                  matTooltip="Role type for the member."
+                  id="member-user_id" required>
+        <mat-option *ngFor="let role of memberRoles"
+                    [value]="role.value">
+          {{role.key}}
+        </mat-option>
+      </mat-select>
+      <mat-hint> Choose member role</mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    <mat-icon>cancel</mat-icon>
+    <span>Close</span>
+  </button>
+  <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+          [disabled]="!submitButtonEnabled">
+    <mat-icon>save</mat-icon>
+    <span>Save</span>
+  </button>
+</mat-dialog-actions>
+

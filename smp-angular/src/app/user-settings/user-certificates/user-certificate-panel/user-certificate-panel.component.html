@@ -1,4 +1,8 @@
 <div class="panel smp-data-panel"  [formGroup]="credentialForm" (ngSubmit)="onSaveButtonClicked()">
+  <smp-warning-panel *ngIf="_credential.certificate?.invalid;"
+                     icon="error"
+                     label="Invalid certificate: {{_credential.certificate.invalidReason}}">
+  </smp-warning-panel>
   <div style="display: flex;flex-flow: row wrap;">
     <mat-form-field style="flex-grow: 2">
       <mat-label>Certificate ID</mat-label>
@@ -40,15 +44,13 @@
       Active
     </mat-checkbox>
     <mat-form-field appearance="fill" style="flex-grow: 1">
-      <mat-label>Enter a valid date range</mat-label>
-      <mat-date-range-input [rangePicker]="picker" >
+      <mat-label>Validity period of the certificate</mat-label>
+      <mat-date-range-input  >
         <input matStartDate formControlName="activeFrom" placeholder="Start date">
         <input matEndDate formControlName="expireOn" placeholder="End date">
       </mat-date-range-input>
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-date-range-picker #picker></mat-date-range-picker>
-      <mat-error *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">Invalid active from date</mat-error>
-      <mat-error *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">Invalid expire on date</mat-error>
+      <smp-field-error  *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">Invalid active from date</smp-field-error >
+      <smp-field-error  *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">Invalid expire on date</smp-field-error >
     </mat-form-field>
   </div>
 </div>

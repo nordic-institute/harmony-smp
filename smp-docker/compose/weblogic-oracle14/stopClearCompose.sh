@@ -6,10 +6,7 @@ cd "$WORKING_DIR"
 
 PREFIX="smp-wls14-orcl"
 
-# clear volume and containers - to run  restart from strach 
-
-
-
+# clear volume and containers - to run  restart from strach
 function clearOldContainers {
   echo "Database stopped"  > ./status-folder/database.status
 

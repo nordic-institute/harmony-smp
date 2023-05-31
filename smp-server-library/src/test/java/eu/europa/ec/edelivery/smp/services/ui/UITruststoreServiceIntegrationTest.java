@@ -190,7 +190,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/SMPtest.crt"));
 
         // when
-        CertificateRO cer = testInstance.getCertificateData(buff, true);
+        CertificateRO cer = testInstance.getCertificateData(buff, true, true);
 
         //then
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", cer.getCertificateId());

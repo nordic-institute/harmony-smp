@@ -147,9 +147,6 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
     }
 
-    public List<String> getAllowedDocumentCertificateTypes() {
-        return configurationDAO.getCachedPropertyValue(DOCUMENT_RESTRICTION_CERT_TYPES);
-    }
 
     public boolean getParticipantSchemeMandatory() {
         // not mandatory by default
@@ -256,12 +253,6 @@ public class ConfigurationService {
 
     public boolean smlDisableCNCheck() {
         Boolean value = configurationDAO.getCachedPropertyValue(SML_TLS_DISABLE_CN_CHECK);
-        // by default is not forced
-        return value != null && value;
-    }
-
-    public boolean trustCertificateOnUserRegistration() {
-        Boolean value = configurationDAO.getCachedPropertyValue(TRUSTSTORE_ADD_CERT_ON_USER_UPDATE);
         // by default is not forced
         return value != null && value;
     }

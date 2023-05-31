@@ -94,6 +94,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     protected void updateUserStatus(UserRO user) {
+        /*
         // never return password even if is hashed...
         if (user.getCertificate() != null && !StringUtils.isBlank(user.getCertificate().getCertificateId())) {
             // validate certificate
@@ -103,7 +104,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             } else {
                 // validate just the database data
                 try {
-                    truststoreService.checkFullCertificateValidity(user.getCertificate());
+                    truststoreService.checkFullCertificateValidityLegacy(user.getCertificate());
                 } catch (CertificateException e) {
                     LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
                     user.getCertificate().setInvalid(true);
@@ -111,18 +112,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 }
             }
         }
-    }
 
-    public X509Certificate getX509CertificateFromCertificateRO(CertificateRO certificateRO) {
-        if (certificateRO == null || certificateRO.getEncodedValue() == null) {
-            return null;
-        }
-        try {
-            return X509CertificateUtils.getX509Certificate(Base64.getMimeDecoder().decode(certificateRO.getEncodedValue()));
-        } catch (CertificateException e) {
-            LOG.error("Error occurred while parsing the certificate encoded value for certificate id:[" + certificateRO.getCertificateId() + "].", e);
-            return null;
-        }
+         */
     }
 
     public AccessTokenRO createAccessTokenForUser(Long userId, CredentialRO credInit) {
@@ -181,6 +172,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CertificateCredentials", "Certificate is not given for certificate credential!");
         }
 
+
         DBCredential dbCredential = conversionService.convert(credential, DBCredential.class);
         dbCredential.setCredentialType(CredentialType.CERTIFICATE);
         dbCredential.setCredentialTarget(CredentialTargetType.REST_API);
@@ -197,13 +189,13 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbCredential.setCertificate(dbCertificate);
         credentialDao.persistFlushDetach(dbCredential);
 
+
         CredentialRO result = conversionService.convert(dbCredential, CredentialRO.class);
-        CertificateRO resultCertificate = conversionService.convert(dbCredential.getCertificate(), CertificateRO.class);
+        CertificateRO resultCertificate = truststoreService.getCertificateData(dbCertificate.getPemEncoding(), true, false);
         result.setCertificate(resultCertificate);
         result.setStatus(EntityROStatus.NEW.getStatusNumber());
         return result;
     }
-
 
     /**
      * Method updates the user password
@@ -267,8 +259,13 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbCredential.setExpireOn(adminUpdate ? null :
                 currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
 
+        // if the credentials are not managed by the session , e.g. new  - the parsist it
+        if (dbCredential.getId()==null) {
+            credentialDao.persist(dbCredential);
+        }
         return dbCredential.getUser();
     }
+
 
     /**
      * Method creates Username/passwords credentials for the user with given userId.
@@ -308,13 +305,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return updateUserPassword(authorizedUserId, userToUpdateId, authorizationPassword, newPassword, true);
     }
 
-    @Transactional
-    public void updateUserList(List<UserRO> lst, OffsetDateTime passwordChange) {
-        for (UserRO userRO : lst) {
-            createOrUpdateUser(userRO, passwordChange);
-        }
-    }
-
     /**
      * Method updates user profile data to database
      *
@@ -336,60 +326,51 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setSmpLocale(user.getSmpLocale());
     }
 
-    protected void createOrUpdateUser(UserRO userRO, OffsetDateTime passwordChange) {
-        /*
-        if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
-            DBUser dbUser = convertFromRo(userRO);
-            if (!StringUtils.isBlank(userRO.getPassword())) {
-                dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
-            }
-            userDao.persistFlushDetach(dbUser);
-            return;
+    @Transactional
+    public void adminUpdateUserData(Long userId, UserRO user) {
+        DBUser dbUser = userDao.find(userId);
+        if (dbUser == null) {
+            LOG.error("Can not update user because user for id [{}] does not exist!", userId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-        Optional<DBUser> optionalDBUser = userDao.findUserByUsername(userRO.getUsername());
-        if (!optionalDBUser.isPresent()) {
-            return;
+        LOG.debug("Update user [{}]: email [{}], fullname [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
+        // update user data by admin
+        dbUser.setActive(user.isActive());
+        dbUser.setApplicationRole(user.getRole());
+        dbUser.setEmailAddress(user.getEmailAddress());
+        dbUser.setFullName(user.getFullName());
+        dbUser.setSmpTheme(user.getSmpTheme());
+        dbUser.setSmpLocale(user.getSmpLocale());
+    }
+
+    @Transactional
+    public UserRO adminCreateUserData(UserRO user) {
+
+        Optional<DBUser> testUser = userDao.findUserByUsername(user.getUsername());
+        if (testUser.isPresent()) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CreateUser", "User with username ["+user.getUsername()+"] already exists!");
         }
-        DBUser dbUser = optionalDBUser.get();
+        DBUser dbUser = new DBUser();
+        // update user data by admin
+        dbUser.setUsername(user.getUsername());
+        dbUser.setApplicationRole(user.getRole());
+        dbUser.setEmailAddress(user.getEmailAddress());
+        dbUser.setFullName(user.getFullName());
+        dbUser.setSmpTheme(user.getSmpTheme());
+        dbUser.setSmpLocale(user.getSmpLocale());
+        userDao.persistFlushDetach(dbUser);
+        return conversionService.convert(dbUser, UserRO.class);
+    }
 
-
-        if (userRO.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
-
-            dbUser.setEmailAddress(userRO.getEmailAddress());
-            dbUser.setRole(userRO.getRole());
-            dbUser.setActive(userRO.isActive());
-            dbUser.setUsername(userRO.getUsername());
-            if (StringUtils.isBlank(userRO.getUsername())) {
-                // if username is empty than clear the password
-                dbUser.setPassword("");
-            } else if (!StringUtils.isBlank(userRO.getPassword())) {
-                // check for new password
-                dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
-                dbUser.setPasswordChanged(passwordChange);
-            }
-            // update certificate data
-            if (userRO.getCertificate() == null || StringUtils.isBlank(userRO.getCertificate().getCertificateId())) {
-                dbUser.setCertificate(null);
-            } else {
-                CertificateRO certificateRO = userRO.getCertificate();
-                DBCertificate dbCertificate = dbUser.getCertificate() != null ? dbUser.getCertificate() : new DBCertificate();
-                dbUser.setCertificate(dbCertificate);
-                if (certificateRO.getValidFrom() != null) {
-                    dbCertificate.setValidFrom(OffsetDateTime.ofInstant(certificateRO.getValidFrom().toInstant(), ZoneId.systemDefault()));
-                }
-                if (certificateRO.getValidTo() != null) {
-                    dbCertificate.setValidTo(OffsetDateTime.ofInstant(certificateRO.getValidTo().toInstant(), ZoneId.systemDefault()));
-                }
-                dbCertificate.setCertificateId(certificateRO.getCertificateId());
-                dbCertificate.setSerialNumber(certificateRO.getSerialNumber());
-                dbCertificate.setSubject(certificateRO.getSubject());
-                dbCertificate.setIssuer(certificateRO.getIssuer());
-            }
-            userDao.update(dbUser);
-        } else if (userRO.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
-            userDao.removeById(dbUser.getId());
-        }*/
-
+    @Transactional
+    public UserRO adminDeleteUserData(Long userId) {
+        DBUser dbUser = userDao.find(userId);
+        if (dbUser == null) {
+            LOG.error("Can not delete user because user for id [{}] does not exist!", userId);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+        }
+        userDao.remove(dbUser);
+        return conversionService.convert(dbUser, UserRO.class);
     }
 
     /**
@@ -407,7 +388,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Transactional(readOnly = true)
     public UserRO getUserById(Long userId) {
         DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
-        return convertToRo(user);
+        UserRO result =  convertToRo(user);
+
+        return result;
+
     }
 
     public List<CredentialRO> getUserCredentials(Long userId,
@@ -418,8 +402,26 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         List<DBCredential> credentialROs = credentialDao
                 .findUserCredentialForByUserIdTypeAndTarget(userId, credentialType, credentialTargetType);
 
-        return credentialROs.stream().map(credential -> conversionService.convert(credential, CredentialRO.class))
+        List<CredentialRO> credentialROList = credentialROs.stream().map(this::convertAndValidateCertificateCredential)
                 .collect(Collectors.toList());
+        return credentialROList;
+    }
+
+    public CredentialRO convertAndValidateCertificateCredential(DBCredential credential){
+        CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
+        if (credential.getCertificate() != null) {
+            DBCertificate dbCert = credential.getCertificate();
+
+            CertificateRO certificateRO;
+            if (StringUtils.isNotBlank(dbCert.getPemEncoding())) {
+                certificateRO = truststoreService.getCertificateData(dbCert.getPemEncoding(), true, false);
+
+            } else {
+                 certificateRO = conversionService.convert(credential.getCertificate(), CertificateRO.class);
+            }
+            credentialRO.setCertificate(certificateRO);
+        }
+        return credentialRO;
     }
 
     @Transactional
@@ -447,6 +449,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         credentialDao.remove(credential);
         CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
         credentialRO.setStatus(EntityROStatus.REMOVE.getStatusNumber());
+
         return credentialRO;
     }
 
@@ -492,6 +495,25 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         return credentialResultRO;
     }
+
+    @Transactional
+    public ServiceResult<SearchUserRO> searchUsers(int page, int pageSize, String filter) {
+        Long count = userDao.getFilteredUserListCount(filter);
+        ServiceResult<SearchUserRO> result = new ServiceResult<>();
+        result.setPage(page);
+        result.setPageSize(pageSize);
+        if (count < 1) {
+            result.setCount(0L);
+            return result;
+        }
+        result.setCount(count);
+        List<DBUser> users = userDao.getFilteredUserList(page, pageSize, filter);
+        List<SearchUserRO> userList = users.stream().map(usr -> conversionService.convert(usr, SearchUserRO.class)).collect(Collectors.toList());
+
+        result.getServiceEntities().addAll(userList);
+        return result;
+    }
+
 
     @Transactional(readOnly = true)
     public DBUser findUserByUsername(String userName) {

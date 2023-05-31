@@ -17,7 +17,6 @@ import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBServiceGroupExtension;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
@@ -65,7 +64,6 @@ public class AuditIntegrationTest extends AbstractBaseDao{
         assertTrue(ar.isEntityClassAudited(DBDomain.class));
         assertTrue(ar.isEntityClassAudited(DBUser.class));
         assertTrue(ar.isEntityClassAudited(DBCertificate.class));
-        assertTrue(ar.isEntityClassAudited(DBServiceGroupExtension.class));
         assertTrue(ar.isEntityClassAudited(DBAlert.class));
     }
 
@@ -75,7 +73,6 @@ public class AuditIntegrationTest extends AbstractBaseDao{
         DBDomain domain = createDBDomain();
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("signatureKeyAlias", UUID.randomUUID().toString());
-        alterVal.put("smlClientCertHeader", UUID.randomUUID().toString());
         alterVal.put("smlClientKeyAlias", UUID.randomUUID().toString());
         alterVal.put("smlSubdomain", UUID.randomUUID().toString());
 
@@ -107,7 +104,7 @@ public class AuditIntegrationTest extends AbstractBaseDao{
         DBUser user = createDBUser("Credential-test");
         persist(user);
 
-        DBCredential dbCredential = createDBCredential();
+        DBCredential dbCredential = createDBCredential("test");
         dbCredential.setUser(user);
         Map<String, Object> alterVal = new HashMap<>();
         alterVal.put("name", UUID.randomUUID().toString());

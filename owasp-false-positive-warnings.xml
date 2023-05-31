@@ -2,7 +2,7 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
         <notes><![CDATA[
-   file name: spring-security-crypto-5.8.2.jar
+   file name: spring-security-crypto-5.8.*.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-5408</vulnerabilityName>
@@ -10,7 +10,7 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: spring-web-5.3.26.jar
+   file name: spring-web-5.3.*.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(web|core)@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
@@ -18,9 +18,8 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: smp.war: spring-core-5.3.26.jar
+   file name: smp.war: spring-core-5.3.*.jar
    ]]></notes>
-        <sha1>81f0f0bbba14ca6e17d52f0b1c7d52da8c4da098</sha1>
         <cve>CVE-2016-1000027</cve>
     </suppress>
     <suppress>

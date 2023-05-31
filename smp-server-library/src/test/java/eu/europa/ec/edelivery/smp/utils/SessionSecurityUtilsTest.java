@@ -39,7 +39,7 @@ public class SessionSecurityUtilsTest {
 
         assertNotNull(result);
         String decResult = SecurityUtils.decryptUrlSafe(token.getSecret(), result);
-        assertEquals(value, Long.valueOf(decResult));
+        assertEquals(value, Long.valueOf(decResult.substring(0, decResult.indexOf('#')) ));
     }
 
     @Test

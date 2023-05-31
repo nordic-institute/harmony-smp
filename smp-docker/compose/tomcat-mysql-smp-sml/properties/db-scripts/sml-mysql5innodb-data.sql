@@ -23,33 +23,27 @@ insert into bdmsl_configuration(property, value, description, created_on, last_u
 ('configurationDir','/opt/smlconf/','The absolute path to the folder containing all the configuration files (keystore and sig0 key)', NOW(), NOW()),
 ('certificateChangeCronExpression','0 0 2 ? * *','Cron expression for the changeCertificate job. Example: 0 0 2 ? * * (everyday at 2:00 am)', NOW(), NOW()),
 ('authorization.smp.certSubjectRegex','^.*(CN=SMP_|OU=PEPPOL TEST SMP).*$','User with ROOT-CA is granted SMP_ROLE only if its certificates Subject matches configured regexp', NOW(), NOW()),
-('smp.automation.authentication.external.tls.clientCert.enabled','true','Enables reverse proxy authentication.', NOW(), NOW()),
+('authentication.bluecoat.enabled','true','Enables reverse proxy authentication.', NOW(), NOW()),
 ('adminPassword','$2a$10$9RzbkquhBYRkHUoKMTNZhOPJmevTbUKWf549MEiCWUd.1LdblMhBi','BCrypt Hashed password to access admin services', NOW(), NOW()),
 ('mail.smtp.host','smtp.localhost','BCrypt Hashed password to access admin services', NOW(), NOW()),
 ('mail.smtp.port','25','BCrypt Hashed password to access admin services', NOW(), NOW()),
 ('sml.property.refresh.cronJobExpression','5 */1 * * * *','Properies update', NOW(), NOW());   
 
 
-
 insert into bdmsl_subdomain(subdomain_id, subdomain_name,dns_zone, description, participant_id_regexp, dns_record_types, smp_url_schemas, created_on, last_updated_on) values
-(1, 'test.edelivery.local', 'test.edelivery.local','Test domain', '^.*$','all','all', NOW(), NOW()),
-(2, 'ehealth.test.edelivery.local','test.edelivery.local','Domain for eHealth ','^.*$','all','all',NOW(), NOW()),
-(3, 'isaitb.test.edelivery.local','test.edelivery.local','Domain for isaitb ','^.*$','all','all',NOW(), NOW()),
-(4, 'peppol.test.edelivery.local', 'test.edelivery.local','Domain for OpenPeppol ', '^((((0002|0007|0009|0037|0060|0088|0096|0097|0106|0135|0142|9901|9902|9904|9905|9906|9907|9908|9909|9910|9912|9913|9914|9915|9916|9917|9918|9919|9920|9921|9922|9923|9924|9925|9926|9927|9928|9929|9930|9931|9932|9933|9934|9935|9936|9937|9938|9939|9940|9941|9942|9943|9944|9945|9946|9947|9948|9949|9950|9951|9952|9953|9954|9955|9956|9957|0184):).*)|(\\*))$','all','all', NOW(), NOW());
+(1, 'domain-01.test.edelivery.local','test.edelivery.local','Domain for no trestriction ','^.*$','all','all', NOW(), NOW()),
+(2, 'domain-02.test.edelivery.local', 'test.edelivery.local','Domain for with party id restriction', '^((((0002|0007|0009|0037|0060|0088|0096|0097|0106|0135|0142|9901|9902|9904|9905|9906|9907|9908|9909|9910|9912|9913|9914|9915|9916|9917|9918|9919|9920|9921|9922|9923|9924|9925|9926|9927|9928|9929|9930|9931|9932|9933|9934|9935|9936|9937|9938|9939|9940|9941|9942|9943|9944|9945|9946|9947|9948|9949|9950|9951|9952|9953|9954|9955|9956|9957|0184):).*)|(\\*))$','all','all',  NOW(), NOW());
 
 
-INSERT INTO bdmsl_certificate_domain(certificate, crl_url,  is_root_ca, fk_subdomain_id, created_on, last_updated_on, is_admin) VALUES
-('CN=unsecure_root,O=delete_in_production,C=only_for_testing','',1, 2, NOW(), NOW(),1),
-('CN=unsecure_root_testTeam,O=delete_in_production,C=only_for_testing','',1, 2, NOW(), NOW(),1),
-('CN=rootCNTest,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE','',1, 1, NOW(), NOW(),0),
-('CN=rootCNIsa,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE','',1, 3, NOW(), NOW(),1),
-('CN=AdministratorSML,OU=B4,O=DIGIT,C=BE','',0, 2, NOW(), NOW(),1);
+INSERT INTO bdmsl_certificate_domain(truststore_alias, certificate, crl_url,  is_root_ca, fk_subdomain_id, created_on, last_updated_on, is_admin) VALUES
+('CN=smp_domain_01', 'CN=smp_domain_01,O=digit,C=eu','',0, 1, NOW(), NOW(),1),
+('CN=smp_domain_02','CN=smp_domain_02,O=digit,C=eu','',0, 2, NOW(), NOW(),1);
 
 INSERT INTO bdmsl_certificate (id, certificate_id, valid_from ,valid_until,created_on, last_updated_on ) VALUES
-(id, 'CN=SMP_TEST-PRE-SET-EXAMPLE,O=DIGITAL,C=BE:00000000000000000000000000000001',DATE_ADD(NOW(), INTERVAL -3 DAY),DATE_ADD(NOW(), INTERVAL 365 DAY), NOW(), NOW());
+(1, 'CN=smp_domain_01,O=digit,C=eu:0000000000000000000000006443d8a8',DATE_ADD(NOW(), INTERVAL -3 DAY),DATE_ADD(NOW(), INTERVAL 365 DAY), NOW(), NOW());
 
 INSERT INTO bdmsl_smp (smp_id, fk_certificate_id, fk_subdomain_id, endpoint_logical_address, endpoint_physical_address, created_on, last_updated_on ) VALUES
-('CEF-SMP-001', 1,1, 'http://localhost:8080/smp/','0.0.0.0',NOW(), NOW());
+('DOMI-SMP-001', 1,1, 'http://localhost:8080/smp/','0.0.0.0',NOW(), NOW());
 
 
 

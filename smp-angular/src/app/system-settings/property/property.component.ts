@@ -16,7 +16,7 @@ import {SmpConstants} from "../../smp.constants";
 import {GlobalLookups} from "../../common/global-lookups";
 import {SearchTableComponent} from "../../common/search-table/search-table.component";
 import {SecurityService} from "../../security/security.service";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 
 
 @Component({

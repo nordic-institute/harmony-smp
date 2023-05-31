@@ -8,7 +8,7 @@ import {RowLimiter} from '../row-limiter/row-limiter.model';
 import {SearchTableController} from './search-table-controller';
 import {finalize} from 'rxjs/operators';
 import {SearchTableEntity} from './search-table-entity.model';
-import {EntityStatus} from '../model/entity-status.model';
+import {EntityStatus} from '../enums/entity-status.enum';
 import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
 import {SaveDialogComponent} from '../dialogs/save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
@@ -17,7 +17,6 @@ import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confir
 import {SearchTableValidationResult} from "./search-table-validation-result.model";
 import {ExtendedHttpClient} from "../../http/extended-http-client";
 import {Router} from "@angular/router";
-import {AuthenticatedGuard} from "../../guards/authenticated.guard";
 import ObjectUtils from "../utils/object-utils";
 
 @Component({
@@ -30,8 +29,6 @@ export class SearchTableComponent implements OnInit {
   @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
   @ViewChild('rowIndex', {static: true}) rowIndex: TemplateRef<any>;
-
-
   @Input() additionalToolButtons: TemplateRef<any>;
   @Input() additionalRowActionButtons: TemplateRef<any>;
   @Input() searchPanel: TemplateRef<any>;
@@ -72,12 +69,24 @@ export class SearchTableComponent implements OnInit {
   forceRefresh: boolean = false;
   showSpinner: boolean = false;
   currentResult: SearchTableResult = null;
+ // override datatable messages to remove selectedMessage message
+ datatableMessages: any =  {
+  // Message to show when array is presented
+  // but contains no values
+  emptyMessage: 'No data to display',
+
+  // Footer total message
+  totalMessage: 'total',
+
+  // Footer selected message
+  selectedMessage: null
+};
 
   constructor(protected http: ExtendedHttpClient,
               protected alertService: AlertMessageService,
               private downloadService: DownloadService,
               public dialog: MatDialog,
-              private router: Router, private authenticatedGuard: AuthenticatedGuard) {
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -138,6 +147,7 @@ export class SearchTableComponent implements OnInit {
 
   getRowClass(row) {
     return {
+      'datatable-row-selected': (this.selected && this.selected.length >= 0 && this.rows.indexOf(row) === this.rowNumber),
       'table-row-new': (row.status === EntityStatus.NEW),
       'table-row-updated': (row.status === EntityStatus.UPDATED),
       'deleted': (row.status === EntityStatus.REMOVED)
@@ -243,11 +253,7 @@ export class SearchTableComponent implements OnInit {
 
 
   onNewButtonClicked() {
-    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
-      if (authorized) {
         this.fireCreateNewEntityEvent();
-      }
-    })
   }
 
   fireCreateNewEntityEvent() {
@@ -257,9 +263,7 @@ export class SearchTableComponent implements OnInit {
     formRef.afterClosed().subscribe(result => {
       if (result) {
         this.rows = [...this.rows, {...formRef.componentInstance.getCurrent()}];
-        //this.rows = this.rows.concat(formRef.componentInstance.current);
         this.count++;
-        // this.searchable.refresh();
       } else {
         this.unselectRows();
       }
@@ -267,11 +271,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteButtonClicked() {
-    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
-      if (authorized) {
         this.fireDeleteEntityEvent();
-      }
-    })
   }
 
   fireDeleteEntityEvent() {
@@ -279,20 +279,11 @@ export class SearchTableComponent implements OnInit {
   }
 
   onDeleteRowActionClicked(row: SearchTableEntity) {
-    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
-      if (authorized) {
         this.deleteSearchTableEntities([row]);
-      }
-    })
-
   }
 
   onEditButtonClicked() {
-    this.authenticatedGuard.canActivate(this.router.routerState.snapshot.root, this.router.routerState.snapshot).subscribe(authorized => {
-      if (authorized) {
         this.fireEditEntityEvent();
-      }
-    })
   }
 
   fireEditEntityEvent() {
@@ -308,14 +299,10 @@ export class SearchTableComponent implements OnInit {
     try {
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
         if (result) {
-          // this.unselectRows();
           const modifiedRowEntities = this.rows.filter(el => el.status !== EntityStatus.PERSISTED);
-          // this.isBusy = true;
           this.showSpinner = true;
           this.http.put(this.managementUrl, modifiedRowEntities).toPromise().then(res => {
             this.showSpinner = false;
-            // this.isBusy = false;
-            // this.getUsers();
             this.alertService.success('The operation \'update\' completed successfully.', false);
             this.forceRefresh = true;
             this.onRefresh();

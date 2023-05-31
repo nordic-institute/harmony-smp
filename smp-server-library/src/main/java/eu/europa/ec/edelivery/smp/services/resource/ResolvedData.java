@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
@@ -9,6 +10,7 @@ import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 public class ResolvedData {
     boolean resolved;
     DBDomain domain;
+    DBGroup group;
     DBResourceDef resourceDef;
     DBSubresourceDef subResourceDef;
     DBResource resource;
@@ -60,5 +62,13 @@ public class ResolvedData {
 
     public void setResolved(boolean resolved) {
         this.resolved = resolved;
+    }
+
+    public DBGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(DBGroup group) {
+        this.group = group;
     }
 }

@@ -12,7 +12,7 @@ import {
 } from '@angular/forms';
 import {Role} from '../../../security/role.model';
 import {UserRo} from '../user-ro.model';
-import {EntityStatus} from '../../../common/model/entity-status.model';
+import {EntityStatus} from '../../../common/enums/entity-status.enum';
 import {AlertMessageService} from '../../../common/alert-message/alert-message.service';
 import {CertificateService} from '../certificate.service';
 import {CertificateRo} from "../certificate-ro.model";
@@ -24,6 +24,7 @@ import {UserController} from "../user-controller";
 import {HttpClient} from "@angular/common/http";
 import {CertificateDialogComponent} from "../../../common/dialogs/certificate-dialog/certificate-dialog.component";
 import {SmpConstants} from "../../../smp.constants";
+import {ApplicationRoleEnum} from "../../../common/enums/application-role.enum";
 
 @Component({
   selector: 'user-details-dialog',
@@ -124,7 +125,7 @@ export class UserDetailsDialogComponent {
         sequentialTokenLoginFailureCount: null,
         lastTokenFailedLoginAttempt: null,
         tokenSuspendedUtil: null,
-        role: '',
+        role: ApplicationRoleEnum.USER,
         encodedValue: '',
         crlUrl: '',
         status: EntityStatus.NEW,
@@ -388,10 +389,10 @@ export class UserDetailsDialogComponent {
       index: null,
       username: '',
       emailAddress: '',
-      role: '',
+      role: ApplicationRoleEnum.USER,
       active: true,
       status: EntityStatus.NEW,
-      statusPassword: EntityStatus.NEW
+
     }
   }
 

@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import org.springframework.stereotype.Repository;
@@ -20,11 +21,13 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
 /**
@@ -55,10 +58,15 @@ public class GroupDao extends BaseDao<DBGroup> {
      * @return
      */
     public List<DBGroup> getAllGroupsForDomain(DBDomain domain) {
+        return getAllGroupsForDomain(domain.getId());
+    }
+
+    public List<DBGroup> getAllGroupsForDomain(Long domainId) {
         TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_DOMAIN, DBGroup.class);
-        query.setParameter(PARAM_DOMAIN_ID, domain.getId());
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
         return query.getResultList();
     }
+
 
     /**
      * Returns the group or Optional.empty() if there is no group for name and domain.
@@ -70,17 +78,31 @@ public class GroupDao extends BaseDao<DBGroup> {
      * @throws IllegalStateException if no group is not configured
      */
     public Optional<DBGroup> getGroupByNameAndDomain(String name, DBDomain domain) {
+        return getGroupByNameAndDomain(name, domain.getId());
+    }
+
+    /**
+     * Returns the group or Optional.empty() if there is no group for name and domain.
+     *
+     * @param name is the group name
+     * @param domainId where the group is registered
+     *
+     * @return the only single record for name  from smp_group table or empty value
+     * @throws IllegalStateException if no group is not configured
+     */
+    public Optional<DBGroup> getGroupByNameAndDomain(String name, Long domainId) {
         try {
             TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_NAME_DOMAIN, DBGroup.class);
             query.setParameter(PARAM_NAME, name);
-            query.setParameter(PARAM_DOMAIN_ID, domain.getId());
+            query.setParameter(PARAM_DOMAIN_ID, domainId);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(name, domain.getDomainCode()));
+            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY.getMessage(name,domainId));
         }
     }
+
 
     /**
      * Returns the group or Optional.empty() if there is no group for name and domain code
@@ -103,6 +125,40 @@ public class GroupDao extends BaseDao<DBGroup> {
             throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(name,domainCode));
         }
     }
+
+    public Long getGroupsByUserIdAndRolesCount(Long userId, MembershipRoleType... roleTypes) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_GROUP_BY_USER_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getSingleResult();
+    }
+
+    public List<DBGroup> getGroupsByUserIdAndRoles(Long userId, MembershipRoleType... roleTypes) {
+        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_USER_GROUP_ROLES, DBGroup.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
+    public List<DBGroup> getGroupsByDomainUserIdAndGroupRoles(Long domainId, Long userId, MembershipRoleType... roleTypes) {
+
+        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_DOMAIN_USER_GROUP_ROLES, DBGroup.class);
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
+    public List<DBGroup> getGroupsByDomainUserIdAndResourceRoles(Long domainId, Long userId, MembershipRoleType... roleTypes) {
+
+        TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_DOMAIN_USER_RESOURCE_ROLES, DBGroup.class);
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
     /**
      * Removes Entity by given domain code
      *
@@ -110,13 +166,17 @@ public class GroupDao extends BaseDao<DBGroup> {
      * False if entity did not exist, so nothing was changed
      */
     @Transactional
-    public boolean removeByNameAndDomain(String domainCode, DBDomain domain) {
-        Optional<DBGroup> optd = getGroupByNameAndDomain(domainCode, domain);
+    public boolean removeByNameAndDomain(String name, DBDomain domain) {
+        Optional<DBGroup> optd = getGroupByNameAndDomain(name, domain);
         if (optd.isPresent()) {
             memEManager.remove(optd.get());
             return true;
         }
         return false;
+    }
+
+    public List<MembershipRoleType> toList(MembershipRoleType ... roleTypes){
+        return Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
     }
 
 }

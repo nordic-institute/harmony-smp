@@ -1,9 +1,9 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {DomainRo} from "../../admin-domain/domain-ro.model";
+import {DomainRo} from "../../../common/model/domain-ro.model";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
-import {EntityStatus} from "../../../common/model/entity-status.model";
+import {EntityStatus} from "../../../common/enums/entity-status.enum";
 import {GlobalLookups} from "../../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {BreakpointObserver} from "@angular/cdk/layout";
@@ -81,7 +81,6 @@ export class DomainDetailsDialogComponent {
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSubdomain), this.current.smlSubdomain)]),
       'smlSmpId': new UntypedFormControl({value: ''}, [Validators.pattern(this.smpIdDomainPattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSmpId), this.current.smlSmpId)]),
-      'smlClientCertHeader': new UntypedFormControl({value: ''}, null),
       'smlClientKeyAlias': new UntypedFormControl({value: ''}, null),
       'smlClientKeyCertificate': new UntypedFormControl({value: this.selectedSMLCert}, null),
       'signatureKeyAlias': new UntypedFormControl({value: ''}, null),
@@ -95,7 +94,6 @@ export class DomainDetailsDialogComponent {
     this.domainForm.controls['smlSmpId'].setValue(this.current.smlSmpId);
 
     this.domainForm.controls['smlClientKeyAlias'].setValue(this.current.smlClientKeyAlias);
-    this.domainForm.controls['smlClientCertHeader'].setValue(this.current.smlClientCertHeader);
     this.domainForm.controls['signatureKeyAlias'].setValue(this.current.signatureKeyAlias);
 
     this.domainForm.controls['smlRegistered'].setValue(this.current.smlRegistered);
@@ -164,13 +162,10 @@ export class DomainDetailsDialogComponent {
       this.current.smlSubdomain = this.domainForm.value['smlSubdomain'];
     }
     this.current.smlSmpId = this.domainForm.value['smlSmpId'];
-    this.current.smlClientCertHeader = this.domainForm.value['smlClientCertHeader'];
     if (this.domainForm.value['smlClientKeyCertificate']) {
       this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyCertificate'].alias;
-      this.current.smlClientCertHeader = this.domainForm.value['smlClientKeyCertificate'].clientCertHeader;
     } else {
       this.current.smlClientKeyAlias = '';
-      this.current.smlClientCertHeader = '';
     }
     this.current.signatureKeyAlias = this.domainForm.value['signatureKeyAlias'];
     this.current.smlClientCertAuth = this.domainForm.value['smlClientCertAuth'];

@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.junit.Test;
@@ -18,9 +19,9 @@ public class CredentialValidatorServiceTest {
 
     ConfigurationService mockConfigService = Mockito.mock(ConfigurationService.class);
     CredentialsAlertService mockAlertService = Mockito.mock(CredentialsAlertService.class);
-    UserDao mockUserDao = Mockito.mock(UserDao.class);
+    CredentialDao mockCredentialDao = Mockito.mock(CredentialDao.class);
 
-    CredentialValidatorService testInstance = new CredentialValidatorService(mockConfigService, mockAlertService, mockUserDao);
+    CredentialValidatorService testInstance = new CredentialValidatorService(mockConfigService, mockAlertService, mockCredentialDao);
 
     @Test
     public void testSkipCredentialValidationFalseNotCluster() {
@@ -52,7 +53,7 @@ public class CredentialValidatorServiceTest {
 
     @Test
     public void validateCredentialsForBeforeExpireUsernames() {
-        DBUser user = Mockito.mock(DBUser.class);
+        DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
         Integer iBatchSize = 20;
@@ -61,7 +62,7 @@ public class CredentialValidatorServiceTest {
         doReturn(iPeriod).when(mockConfigService).getAlertBeforeExpirePasswordPeriod();
         doReturn(iInterval).when(mockConfigService).getAlertBeforeExpirePasswordInterval();
         doReturn(iBatchSize).when(mockConfigService).getAlertCredentialsBatchSize();
-        doReturn(Collections.singletonList(user)).when(mockUserDao).getBeforePasswordExpireUsersForAlerts(anyInt(), anyInt(), anyInt());
+        doReturn(Collections.singletonList(userCredentials)).when(mockCredentialDao).getBeforePasswordExpireUsersForAlerts(anyInt(), anyInt(), anyInt());
 
         testInstance.validateCredentialsForBeforeExpireUsernames();
 
@@ -69,23 +70,23 @@ public class CredentialValidatorServiceTest {
         ArgumentCaptor<Integer> period = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> interval = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> batchSize = ArgumentCaptor.forClass(Integer.class);
-        ArgumentCaptor<DBUser> userCapture = ArgumentCaptor.forClass(DBUser.class);
+        ArgumentCaptor<DBCredential> userCapture = ArgumentCaptor.forClass(DBCredential.class);
 
 
-        verify(mockUserDao, Mockito.times(1))
+        verify(mockCredentialDao, Mockito.times(1))
                 .getBeforePasswordExpireUsersForAlerts(period.capture(), interval.capture(), batchSize.capture());
         verify(mockAlertService, Mockito.times(1))
-                .alertBeforeUsernamePasswordExpire(userCapture.capture());
+                .alertBeforeCredentialExpire(userCapture.capture());
 
         assertEquals(iPeriod, period.getValue());
         assertEquals(iInterval, interval.getValue());
         assertEquals(iBatchSize, batchSize.getValue());
-        assertEquals(user, userCapture.getValue());
+        assertEquals(userCredentials, userCapture.getValue());
     }
 
     @Test
     public void validateCredentialsForExpiredUsernames() {
-        DBUser user = Mockito.mock(DBUser.class);
+        DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
         Integer iBatchSize = 20;
@@ -94,7 +95,7 @@ public class CredentialValidatorServiceTest {
         doReturn(iPeriod).when(mockConfigService).getAlertExpiredPasswordPeriod();
         doReturn(iInterval).when(mockConfigService).getAlertExpiredPasswordInterval();
         doReturn(iBatchSize).when(mockConfigService).getAlertCredentialsBatchSize();
-        doReturn(Collections.singletonList(user)).when(mockUserDao).getPasswordExpiredUsersForAlerts(anyInt(), anyInt(), anyInt());
+        doReturn(Collections.singletonList(userCredentials)).when(mockCredentialDao).getPasswordExpiredUsersForAlerts(anyInt(), anyInt(), anyInt());
 
         testInstance.validateCredentialsForExpiredUsernames();
 
@@ -102,23 +103,23 @@ public class CredentialValidatorServiceTest {
         ArgumentCaptor<Integer> period = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> interval = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> batchSize = ArgumentCaptor.forClass(Integer.class);
-        ArgumentCaptor<DBUser> userCapture = ArgumentCaptor.forClass(DBUser.class);
+        ArgumentCaptor<DBCredential> userCapture = ArgumentCaptor.forClass(DBCredential.class);
 
 
-        verify(mockUserDao, Mockito.times(1))
+        verify(mockCredentialDao, Mockito.times(1))
                 .getPasswordExpiredUsersForAlerts(period.capture(), interval.capture(), batchSize.capture());
         verify(mockAlertService, Mockito.times(1))
-                .alertUsernamePasswordExpired(userCapture.capture());
+                .alertCredentialExpired(userCapture.capture());
 
         assertEquals(iPeriod, period.getValue());
         assertEquals(iInterval, interval.getValue());
         assertEquals(iBatchSize, batchSize.getValue());
-        assertEquals(user, userCapture.getValue());
+        assertEquals(userCredentials, userCapture.getValue());
     }
 
     @Test
     public void validateCredentialsForBeforeExpireAccessToken() {
-        DBUser user = Mockito.mock(DBUser.class);
+        DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
         Integer iBatchSize = 20;
@@ -127,7 +128,7 @@ public class CredentialValidatorServiceTest {
         doReturn(iPeriod).when(mockConfigService).getAlertBeforeExpireAccessTokenPeriod();
         doReturn(iInterval).when(mockConfigService).getAlertBeforeExpireAccessTokenInterval();
         doReturn(iBatchSize).when(mockConfigService).getAlertCredentialsBatchSize();
-        doReturn(Collections.singletonList(user)).when(mockUserDao).getBeforeAccessTokenExpireUsersForAlerts(anyInt(), anyInt(), anyInt());
+        doReturn(Collections.singletonList(userCredentials)).when(mockCredentialDao).getBeforeAccessTokenExpireUsersForAlerts(anyInt(), anyInt(), anyInt());
 
         testInstance.validateCredentialsForBeforeExpireAccessToken();
 
@@ -135,23 +136,23 @@ public class CredentialValidatorServiceTest {
         ArgumentCaptor<Integer> period = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> interval = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> batchSize = ArgumentCaptor.forClass(Integer.class);
-        ArgumentCaptor<DBUser> userCapture = ArgumentCaptor.forClass(DBUser.class);
+        ArgumentCaptor<DBCredential> userCapture = ArgumentCaptor.forClass(DBCredential.class);
 
 
-        verify(mockUserDao, Mockito.times(1))
+        verify(mockCredentialDao, Mockito.times(1))
                 .getBeforeAccessTokenExpireUsersForAlerts(period.capture(), interval.capture(), batchSize.capture());
         verify(mockAlertService, Mockito.times(1))
-                .alertBeforeAccessTokenExpire(userCapture.capture());
+                .alertBeforeCredentialExpire(userCapture.capture());
 
         assertEquals(iPeriod, period.getValue());
         assertEquals(iInterval, interval.getValue());
         assertEquals(iBatchSize, batchSize.getValue());
-        assertEquals(user, userCapture.getValue());
+        assertEquals(userCredentials, userCapture.getValue());
     }
 
     @Test
     public void validateCredentialsForExpiredAccessToken() {
-        DBUser user = Mockito.mock(DBUser.class);
+        DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
         Integer iBatchSize = 20;
@@ -160,7 +161,7 @@ public class CredentialValidatorServiceTest {
         doReturn(iPeriod).when(mockConfigService).getAlertExpiredAccessTokenPeriod();
         doReturn(iInterval).when(mockConfigService).getAlertExpiredAccessTokenInterval();
         doReturn(iBatchSize).when(mockConfigService).getAlertCredentialsBatchSize();
-        doReturn(Collections.singletonList(user)).when(mockUserDao).getAccessTokenExpiredUsersForAlerts(anyInt(), anyInt(), anyInt());
+        doReturn(Collections.singletonList(userCredentials)).when(mockCredentialDao).getAccessTokenExpiredUsersForAlerts(anyInt(), anyInt(), anyInt());
 
         testInstance.validateCredentialsForExpiredAccessToken();
 
@@ -168,23 +169,23 @@ public class CredentialValidatorServiceTest {
         ArgumentCaptor<Integer> period = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> interval = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> batchSize = ArgumentCaptor.forClass(Integer.class);
-        ArgumentCaptor<DBUser> userCapture = ArgumentCaptor.forClass(DBUser.class);
+        ArgumentCaptor<DBCredential> userCapture = ArgumentCaptor.forClass(DBCredential.class);
 
 
-        verify(mockUserDao, Mockito.times(1))
+        verify(mockCredentialDao, Mockito.times(1))
                 .getAccessTokenExpiredUsersForAlerts(period.capture(), interval.capture(), batchSize.capture());
         verify(mockAlertService, Mockito.times(1))
-                .alertAccessTokenExpired(userCapture.capture());
+                .alertCredentialExpired(userCapture.capture());
 
         assertEquals(iPeriod, period.getValue());
         assertEquals(iInterval, interval.getValue());
         assertEquals(iBatchSize, batchSize.getValue());
-        assertEquals(user, userCapture.getValue());
+        assertEquals(userCredentials, userCapture.getValue());
     }
 
     @Test
     public void validateCredentialsForBeforeExpireCertificate() {
-        DBUser user = Mockito.mock(DBUser.class);
+        DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
         Integer iBatchSize = 20;
@@ -193,7 +194,7 @@ public class CredentialValidatorServiceTest {
         doReturn(iPeriod).when(mockConfigService).getAlertBeforeExpireCertificatePeriod();
         doReturn(iInterval).when(mockConfigService).getAlertBeforeExpireCertificateInterval();
         doReturn(iBatchSize).when(mockConfigService).getAlertCredentialsBatchSize();
-        doReturn(Collections.singletonList(user)).when(mockUserDao).getBeforeCertificateExpireUsersForAlerts(anyInt(), anyInt(), anyInt());
+        doReturn(Collections.singletonList(userCredentials)).when(mockCredentialDao).getBeforeCertificateExpireUsersForAlerts(anyInt(), anyInt(), anyInt());
 
         testInstance.validateCredentialsForBeforeExpireCertificate();
 
@@ -201,23 +202,23 @@ public class CredentialValidatorServiceTest {
         ArgumentCaptor<Integer> period = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> interval = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> batchSize = ArgumentCaptor.forClass(Integer.class);
-        ArgumentCaptor<DBUser> userCapture = ArgumentCaptor.forClass(DBUser.class);
+        ArgumentCaptor<DBCredential> userCapture = ArgumentCaptor.forClass(DBCredential.class);
 
 
-        verify(mockUserDao, Mockito.times(1))
+        verify(mockCredentialDao, Mockito.times(1))
                 .getBeforeCertificateExpireUsersForAlerts(period.capture(), interval.capture(), batchSize.capture());
         verify(mockAlertService, Mockito.times(1))
-                .alertBeforeCertificateExpire(userCapture.capture());
+                .alertBeforeCredentialExpire(userCapture.capture());
 
         assertEquals(iPeriod, period.getValue());
         assertEquals(iInterval, interval.getValue());
         assertEquals(iBatchSize, batchSize.getValue());
-        assertEquals(user, userCapture.getValue());
+        assertEquals(userCredentials, userCapture.getValue());
     }
 
     @Test
     public void validateCredentialsForExpiredCertificate() {
-        DBUser user = Mockito.mock(DBUser.class);
+        DBCredential userCredentials = Mockito.mock(DBCredential.class);
         Integer iPeriod = 10;
         Integer iInterval = 15;
         Integer iBatchSize = 20;
@@ -226,7 +227,7 @@ public class CredentialValidatorServiceTest {
         doReturn(iPeriod).when(mockConfigService).getAlertExpiredCertificatePeriod();
         doReturn(iInterval).when(mockConfigService).getAlertExpiredCertificateInterval();
         doReturn(iBatchSize).when(mockConfigService).getAlertCredentialsBatchSize();
-        doReturn(Collections.singletonList(user)).when(mockUserDao).getCertificateExpiredUsersForAlerts(anyInt(), anyInt(), anyInt());
+        doReturn(Collections.singletonList(userCredentials)).when(mockCredentialDao).getCertificateExpiredUsersForAlerts(anyInt(), anyInt(), anyInt());
 
         testInstance.validateCredentialsForExpiredCertificate();
 
@@ -234,17 +235,17 @@ public class CredentialValidatorServiceTest {
         ArgumentCaptor<Integer> period = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> interval = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> batchSize = ArgumentCaptor.forClass(Integer.class);
-        ArgumentCaptor<DBUser> userCapture = ArgumentCaptor.forClass(DBUser.class);
+        ArgumentCaptor<DBCredential> userCapture = ArgumentCaptor.forClass(DBCredential.class);
 
 
-        verify(mockUserDao, Mockito.times(1))
+        verify(mockCredentialDao, Mockito.times(1))
                 .getCertificateExpiredUsersForAlerts(period.capture(), interval.capture(), batchSize.capture());
         verify(mockAlertService, Mockito.times(1))
-                .alertCertificateExpired(userCapture.capture());
+                .alertCredentialExpired(userCapture.capture());
 
         assertEquals(iPeriod, period.getValue());
         assertEquals(iInterval, interval.getValue());
         assertEquals(iBatchSize, batchSize.getValue());
-        assertEquals(user, userCapture.getValue());
+        assertEquals(userCredentials, userCapture.getValue());
     }
 }

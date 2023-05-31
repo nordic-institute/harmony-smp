@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 @use '_smp-all-themes' as smp;
 @use 'sass:map';
-// DomiSMP default pallete
+// DomiSMP default palette
 @use './_colors_smp_light' as smp-colors;
 
 /* You can add global styles to this file, and also import other style files */
@@ -23,7 +23,6 @@ $smp-theme: mat.define-light-theme((
   typography: mat.define-typography-config(),
   density: 0,
 ));
-
 
 // -----------------------------------------
 // blue theme
@@ -81,14 +80,17 @@ $purple_green_theme: mat.define-dark-theme((
   @include mat.all-component-colors($indigo_pink_theme);
   @include smp.all-component-colors($indigo_pink_theme);
 }
+
 .pink_blue-grey_theme {
   @include mat.all-component-colors($pink_blue-grey_theme);
   @include smp.all-component-colors($pink_blue-grey_theme);
 }
+
 .purple_green_theme {
   @include mat.all-component-colors($purple_green_theme);
   @include smp.all-component-colors($purple_green_theme);
 }
+
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.

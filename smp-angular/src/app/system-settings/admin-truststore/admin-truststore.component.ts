@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
@@ -7,8 +7,9 @@ import {AdminTruststoreService} from "./admin-truststore.service";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -16,12 +17,14 @@ import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
   templateUrl: './admin-truststore.component.html',
   styleUrls: ['./admin-truststore.component.css']
 })
-export class AdminTruststoreComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
+export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['alias'];
   dataSource: MatTableDataSource<CertificateRo> = new MatTableDataSource();
   selected?: CertificateRo;
 
   trustedCertificateList: CertificateRo[];
+  private updateTruststoreCertificatesSub: Subscription = Subscription.EMPTY;
+  private updateTruststoreCertificateSub: Subscription = Subscription.EMPTY;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -30,12 +33,12 @@ export class AdminTruststoreComponent implements OnInit, AfterViewInit, BeforeLe
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
 
-    truststoreService.onTruststoreUpdatedEvent().subscribe(updatedTruststore => {
+    this.updateTruststoreCertificatesSub = truststoreService.onTruststoreUpdatedEvent().subscribe(updatedTruststore => {
         this.updateTruststoreCertificates(updatedTruststore);
       }
     );
 
-    truststoreService.onTruststoreEntryUpdatedEvent().subscribe(updatedCertificate => {
+    this.updateTruststoreCertificateSub = truststoreService.onTruststoreEntryUpdatedEvent().subscribe(updatedCertificate => {
         this.updateTruststoreCertificate(updatedCertificate);
       }
     );
@@ -52,6 +55,12 @@ export class AdminTruststoreComponent implements OnInit, AfterViewInit, BeforeLe
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
+
+  ngOnDestroy(): void {
+    this.updateTruststoreCertificatesSub.unsubscribe();
+    this.updateTruststoreCertificateSub.unsubscribe();
+  }
+
 
   updateTruststoreCertificates(truststoreCertificates: CertificateRo[]) {
     this.trustedCertificateList = truststoreCertificates

@@ -20,7 +20,12 @@
   }
 
   .datatable-row-odd {
-    background-color: smp.get-theme-color($theme, primary,50, 0.2)  !important;
+    background-color: smp.get-theme-color($theme, primary, 50, 0.2) !important;
+  }
+
+  .datatable-row-error {
+    font-weight: bold;
+    color: smp.get-theme-color($theme, warn, 500) !important;
   }
 
   .datatable-row-selected {
@@ -37,6 +42,29 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
     background-color: smp.get-theme-color($theme, primary, 800, 0.1) !important;
     text-align: center;
+  }
+
+  .smp-field-error {
+    color: smp.get-theme-color($theme, warn, 500) !important;
+    font-size: 70%;
+  }
+
+  .error-data-panel {
+    color: smp.get-theme-color($theme, warn, 500 -contrast) !important;
+    background-color: smp.get-theme-color($theme, warn, 500) !important;
+  }
+
+  .alert-error {
+    background-color: #f44336;
+  }
+  .alert-success {
+    background-color: #4CAF50;
+  }
+  .alert-info {
+    background-color: #2196F3;
+  }
+  .alert-warning {
+    background-color: #ff9800;
   }
 
 }

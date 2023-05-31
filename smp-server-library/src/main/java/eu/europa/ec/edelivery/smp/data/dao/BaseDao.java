@@ -25,7 +25,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -45,7 +45,7 @@ public abstract class BaseDao<E extends BaseEntity> {
 
     protected String defaultSortMethod;
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "smpEntityManagerFactory")
     protected EntityManager memEManager;
 
     private final Class<E> entityClass;

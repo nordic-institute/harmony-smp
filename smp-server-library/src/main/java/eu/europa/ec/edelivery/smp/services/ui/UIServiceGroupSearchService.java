@@ -5,11 +5,14 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
+import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +28,7 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBResource, Servi
     DomainDao domainDao;
 
     @Autowired
-    ResourceDao serviceGroupDao;
+    ResourceDao resourceDao;
 
     @Autowired
     UserDao userDao;
@@ -33,7 +36,7 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBResource, Servi
 
     @Override
     protected BaseDao<DBResource> getDatabaseDao() {
-        return serviceGroupDao;
+        return resourceDao;
     }
 
     /**
@@ -54,22 +57,22 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBResource, Servi
         ServiceResult<ServiceGroupSearchRO> sg = new ServiceResult<>();
         sg.setPage(page < 0 ? 0 : page);
         sg.setPageSize(pageSize);
-        long iCnt = serviceGroupDao.getServiceGroupCount(filter);
+        DBUser user = SessionSecurityUtils.getSessionUserDetails() != null ? SessionSecurityUtils.getSessionUserDetails().getUser() : null;
+
+        long iCnt = resourceDao.getPublicResourcesSearchCount(user, filter.getIdentifierSchemeLike(), filter.getIdentifierValueLike());
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
-            int iStartIndex = pageSize<0?-1:page * pageSize;
-            if (iStartIndex >= iCnt && page > 0){
-                page = page -1;
+            int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
+            if (iStartIndex >= iCnt && page > 0) {
+                page = page - 1;
                 sg.setPage(page); // go back for a page
-                iStartIndex = pageSize<0?-1:page * pageSize;
+                iStartIndex = pageSize < 0 ? -1 : page * pageSize;
             }
-
-
-            List<DBResource> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
+            List<DBResource> lst = resourceDao.getPublicResourcesSearch(page, pageSize, user, filter.getIdentifierSchemeLike(), filter.getIdentifierValueLike());
             List<ServiceGroupSearchRO> lstRo = new ArrayList<>();
-            for (DBResource dbServiceGroup : lst) {
-                ServiceGroupSearchRO serviceGroupRo = convertToRo(dbServiceGroup);
+            for (DBResource resource : lst) {
+                ServiceGroupSearchRO serviceGroupRo = convertToRo(resource);
                 serviceGroupRo.setIndex(iStartIndex++);
                 lstRo.add(serviceGroupRo);
             }
@@ -81,29 +84,27 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBResource, Servi
     /**
      * Convert Database object to Rest object for UI
      *
-     * @param dbServiceGroup - database  entity
+     * @param resource - database  entity
      * @return ServiceGroupRO
      */
-    public ServiceGroupSearchRO convertToRo(DBResource dbServiceGroup) {
+    public ServiceGroupSearchRO convertToRo(DBResource resource) {
         ServiceGroupSearchRO serviceGroupRo = new ServiceGroupSearchRO();
 
-        serviceGroupRo.setId(dbServiceGroup.getId());
-        serviceGroupRo.setParticipantIdentifier(dbServiceGroup.getIdentifierValue());
-        serviceGroupRo.setParticipantScheme(dbServiceGroup.getIdentifierScheme());
-        /*
-        dbServiceGroup.getResourceDomains().forEach(sgd -> {
-            DomainRO dmn = new DomainRO();
-            sgd.getSubresourcesList().forEach(sgmd -> {
-                ServiceMetadataRO smdro = new ServiceMetadataRO();
-                smdro.setDocumentIdentifier(sgmd.getDocumentIdentifier());
-                smdro.setDocumentIdentifierScheme(sgmd.getDocumentIdentifierScheme());
-                smdro.setDomainCode(sgd.getDomain().getDomainCode());
-                smdro.setSmlSubdomain(sgd.getDomain().getSmlSubdomain());
-                serviceGroupRo.getServiceMetadata().add(smdro);
-            });
+        serviceGroupRo.setId(resource.getId());
+        serviceGroupRo.setDomainCode(resource.getDomainResourceDef().getDomain().getDomainCode());
+        serviceGroupRo.setResourceDefUrlSegment(resource.getDomainResourceDef().getResourceDef().getUrlSegment());
+        serviceGroupRo.setParticipantIdentifier(resource.getIdentifierValue());
+        serviceGroupRo.setParticipantScheme(resource.getIdentifierScheme());
+
+        resource.getSubresources().forEach(subresource -> {
+            ServiceMetadataRO smdro = new ServiceMetadataRO();
+            smdro.setSubresourceDefUrlSegment(subresource.getSubresourceDef().getUrlSegment());
+            smdro.setDocumentIdentifier(subresource.getIdentifierValue());
+            smdro.setDocumentIdentifierScheme(subresource.getIdentifierScheme());
+            serviceGroupRo.getServiceMetadata().add(smdro);
+
         });
 
-         */
         return serviceGroupRo;
     }
 }

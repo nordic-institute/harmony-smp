@@ -19,6 +19,7 @@ import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,10 +118,10 @@ public class ResourceResolverService {
 
         locationVector.setResource(resource);
         if (resourceGuard.userIsNotAuthorizedForAction(user, resourceRequest.getAction(), resource, domain)) {
-            LOG.info(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]", user, resourceRequest.getAction(), resource);
-            throw new SMPRuntimeException(ErrorCode.USER_IS_NOT_OWNER, user.getUsername(), resource.getIdentifierValue(), resource.getIdentifierScheme());
+            LOG.info(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]", getUsername(user), resourceRequest.getAction(), resource);
+            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
         } else {
-            LOG.info(SECURITY_MARKER, "User: [{}] is authorized for action [{}] on the resource [{}]", user, resourceRequest.getAction(), resource);
+            LOG.info(SECURITY_MARKER, "User: [{}] is authorized for action [{}] on the resource [{}]", getUsername(user), resourceRequest.getAction(), resource);
         }
 
         if (pathParameters.size() == ++iParameterIndex) {
@@ -133,7 +134,7 @@ public class ResourceResolverService {
             // test if subresourceDef exists
             DBSubresourceDef subresourceDef = getSubresource(resourceDef, subResourceDefUrl);
 
-            Identifier subResourceId = identifierService.normalizeParticipantIdentifier(pathParameters.get(++iParameterIndex));
+            Identifier subResourceId = identifierService.normalizeDocumentIdentifier(pathParameters.get(++iParameterIndex));
             DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId);
             LOG.debug("Got subresource [{}]", subresource);
             if (subresource == null) {
@@ -294,7 +295,10 @@ public class ResourceResolverService {
         if (configurationService.getParticipantSchemeMandatory() && StringUtils.isBlank(identifier.getScheme())) {
             throw new SMPRuntimeException(SML_INVALID_IDENTIFIER, identifier.getValue());
         }
+    }
 
+    public String getUsername(UserDetails user){
+        return user ==null? "Anonymous":user.getUsername();
     }
 
 }

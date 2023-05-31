@@ -15,11 +15,13 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
@@ -92,6 +94,64 @@ public class ResourceMemberDao extends BaseDao<DBResourceMember> {
         } else if (resourceMembers.get(0).getRole() != MembershipRoleType.ADMIN) {
             resourceMembers.get(0).setRole(MembershipRoleType.ADMIN);
         }
+    }
+
+    public boolean isUserAnyGroupResourceMemberWithRole(Long userId, Long groupId, MembershipRoleType roleType) {
+        LOG.debug("User [{}], group [{}], Role [{}]", userId, groupId, roleType);
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_ROLE_COUNT,
+                Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_GROUP_ID, groupId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLE, roleType);
+        return query.getSingleResult() > 0;
+    }
+
+    public boolean isUserAnyGroupResourceMember(DBUser user, DBGroup group) {
+        LOG.debug("User [{}], group [{}]", user, group);
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_MEMBER_BY_USER_GROUP_RESOURCES_COUNT,
+                Long.class);
+        query.setParameter(PARAM_USER_ID, user.getId());
+        query.setParameter(PARAM_GROUP_ID, group.getId());
+        return query.getSingleResult() > 0;
+    }
+
+
+    public List<DBResourceMember> getResourceMembers(Long resourceId, int iPage, int iPageSize, String filter) {
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        TypedQuery<DBResourceMember> query = memEManager.createNamedQuery(hasFilter ?
+                QUERY_RESOURCE_MEMBERS_FILTER : QUERY_RESOURCE_MEMBERS, DBResourceMember.class);
+
+        if (iPageSize > -1 && iPage > -1) {
+            query.setFirstResult(iPage * iPageSize);
+        }
+        if (iPageSize > 0) {
+            query.setMaxResults(iPageSize);
+        }
+        query.setParameter(PARAM_RESOURCE_ID, resourceId);
+        if (hasFilter) {
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter), "%"));
+        }
+        return query.getResultList();
+    }
+
+    public Long getResourceMemberCount(Long groupId, String filter) {
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_RESOURCE_MEMBERS_FILTER_COUNT : QUERY_RESOURCE_MEMBERS_COUNT, Long.class);
+        query.setParameter(PARAM_RESOURCE_ID, groupId);
+        if (hasFilter) {
+            query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter), "%"));
+        }
+        return query.getSingleResult();
+    }
+
+
+    public DBResourceMember addMemberToResource(DBResource resource, DBUser user, MembershipRoleType role) {
+        DBResourceMember resourceMember = new DBResourceMember();
+        resourceMember.setRole(role);
+        resourceMember.setUser(user);
+        resourceMember.setResource(resource);
+        resourceMember = merge(resourceMember);
+        return resourceMember;
     }
 
 

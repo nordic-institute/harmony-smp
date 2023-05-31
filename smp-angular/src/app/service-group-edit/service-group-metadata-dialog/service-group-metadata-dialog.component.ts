@@ -2,7 +2,7 @@ import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {ServiceMetadataEditRo} from "../service-metadata-edit-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {ServiceMetadataWizardDialogComponent} from "../service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";

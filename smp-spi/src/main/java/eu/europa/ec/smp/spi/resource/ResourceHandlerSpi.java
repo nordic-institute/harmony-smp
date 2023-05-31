@@ -6,6 +6,7 @@ import eu.europa.ec.smp.spi.exceptions.ResourceException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 
 /**
@@ -31,9 +32,14 @@ public interface ResourceHandlerSpi {
     /**
      * Validate resource schema and data. if resource is invalid the error is thrown
      * @param resourceData the resource data
-     * @param responseData the response data
      */
-    void validateResource(RequestData resourceData, ResponseData responseData) throws ResourceException;
+    void validateResource(RequestData resourceData) throws ResourceException;
 
+
+    /**
+     * Validate resource schema and data. if resource is invalid the error is thrown
+     * @param resourceData the resource data
+     */
+    void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException;
 
 }

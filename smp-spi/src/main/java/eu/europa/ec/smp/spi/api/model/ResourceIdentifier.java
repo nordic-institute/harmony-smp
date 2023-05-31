@@ -40,7 +40,7 @@ public class ResourceIdentifier {
 
     @Override
     public String toString() {
-        return "UrlIdentifier{" +
+        return "ResourceIdentifier {" +
                 "value='" + value + '\'' +
                 ", scheme='" + scheme + '\'' +
                 '}';

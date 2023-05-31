@@ -47,15 +47,10 @@ import static java.util.Locale.US;
  * @since 4.1
  */
 @Service
-public class UITruststoreService {
+public class UITruststoreService extends BasicKeystoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
-    private static final String CERT_ERROR_MSG_NOT_TRUSTED = "Certificate is not trusted!";
-    private static final String CERT_ERROR_MSG_REVOKED = "Certificate is revoked!";
-    private static final String CERT_ERROR_MSG_EXPIRED = "Certificate is expired!";
-    private static final String CERT_ERROR_MSG_NOT_YET_VALID = "Certificate is not yet valid!";
-    private static final String CERT_ERROR_MSG_NOT_VALIDATED = "Certificate not validated!";
 
     private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() ->
             new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
@@ -63,7 +58,6 @@ public class UITruststoreService {
 
     // dependent beans
     private final ConfigurationService configurationService;
-    private final CRLVerifierService crlVerifierService;
     private final ConversionService conversionService;
     private final UserDao userDao;
 
@@ -76,8 +70,8 @@ public class UITruststoreService {
     KeyStore trustStore = null;
 
     public UITruststoreService(ConfigurationService configurationService, CRLVerifierService crlVerifierService, @Lazy ConversionService conversionService, UserDao userDao) {
+        super(crlVerifierService);
         this.configurationService = configurationService;
-        this.crlVerifierService = crlVerifierService;
         this.conversionService = conversionService;
         this.userDao = userDao;
     }
@@ -176,7 +170,12 @@ public class UITruststoreService {
     }
 
     public CertificateRO getCertificateData(byte[] buff) {
-        return getCertificateData(buff, false);
+        return getCertificateData(buff, false, false);
+    }
+
+
+    public CertificateRO getCertificateData(String base64Cert, boolean validate, boolean validateDuplicate) {
+        return getCertificateData(Base64.getMimeDecoder().decode(base64Cert), validate, validateDuplicate);
     }
 
     /**
@@ -186,7 +185,7 @@ public class UITruststoreService {
      * @param validate
      * @return
      */
-    public CertificateRO getCertificateData(byte[] buff, boolean validate) {
+    public CertificateRO getCertificateData(byte[] buff, boolean validate, boolean validateDuplicate) {
         X509Certificate cert;
         CertificateRO cro;
         try {
@@ -202,18 +201,22 @@ public class UITruststoreService {
 
         cro = convertToRo(cert);
         if (validate) {
-            validateCertificate(cert, cro);
+            validateCertificate(cert, cro, validateDuplicate);
         }
         return cro;
     }
-
     public void validateCertificate(X509Certificate cert, CertificateRO cro) {
+        validateCertificate(cert, cro, true);
+    }
+    public void validateCertificate(X509Certificate cert, CertificateRO cro, boolean validateDuplicate) {
         // first expect the worst
         cro.setInvalid(true);
         cro.setInvalidReason(CERT_ERROR_MSG_NOT_VALIDATED);
         try {
             checkFullCertificateValidity(cert);
-            validateCertificateNotUsed(cro);
+            if (validateDuplicate) {
+                validateCertificateNotUsed(cro);
+            }
             cro.setInvalid(false);
             cro.setInvalidReason(null);
         } catch (CertificateExpiredException ex) {
@@ -237,6 +240,7 @@ public class UITruststoreService {
             }
         }
     }
+
 
     public void validateCertificateWithTruststore(X509Certificate x509Certificate) throws CertificateException {
 
@@ -292,7 +296,6 @@ public class UITruststoreService {
         // backward compatibility
         if (!normalizedTrustedList.isEmpty() && !(isSubjectOnTrustedList(cert.getSubjectX500Principal().getName())
                 || isSubjectOnTrustedList(cert.getIssuerDN().getName()))) {
-
             throw new CertificateNotTrustedException(CERT_ERROR_MSG_NOT_TRUSTED);
         }
 
@@ -318,10 +321,15 @@ public class UITruststoreService {
             LOG.debug("Certificate with id: [{}] is already used by user with username [{}]", cert.getCertificateId(), user.get().getUsername());
             throw new CertificateException(msg);
         }
-
     }
 
-    public void checkFullCertificateValidity(CertificateRO cert) throws CertificateException {
+    /**
+     * The legacy certificate validation. The validation is done only certificate metadata
+     *
+     * @param cert
+     * @throws CertificateException
+     */
+    public void checkFullCertificateValidityLegacy(CertificateRO cert) throws CertificateException {
         // trust data in database
         if (cert.getValidFrom() != null && OffsetDateTime.now().isBefore(cert.getValidFrom())) {
             throw new CertificateNotYetValidException("Certificate: " + cert.getCertificateId() + " is valid from: "
@@ -339,7 +347,6 @@ public class UITruststoreService {
             if (!isSubjectOnTrustedList(cert.getIssuer()) && !isSubjectOnTrustedList(cert.getSubject())) {
                 throw new CertificateNotTrustedException(CERT_ERROR_MSG_NOT_TRUSTED);
             }
-
         }
 
         // Check crl list
@@ -561,6 +568,7 @@ public class UITruststoreService {
             truststoreCertificates.forEach((alias, cert) -> {
                 CertificateRO certificateRO = convertToRo(cert);
                 certificateRO.setAlias(alias);
+                basicCertificateValidation(cert, certificateRO);
                 certificateROList.add(certificateRO);
             });
         }

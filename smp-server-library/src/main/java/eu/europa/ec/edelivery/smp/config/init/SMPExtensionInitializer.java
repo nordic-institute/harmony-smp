@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.config.init;
 
 
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.dao.ExtensionDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDefDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDefDao;
@@ -42,13 +43,22 @@ public class SMPExtensionInitializer implements InitializingBean {
     protected final ResourceDefDao resourceDefDao;
     protected final SubresourceDefDao subresourceDefDao;
 
+    protected final ConfigurationDao configurationDao;
 
-    public SMPExtensionInitializer(ApplicationContext applicationContext, PlatformTransactionManager txManager, ExtensionDao extensionDao, ResourceDefDao resourceDefDao, SubresourceDefDao subresourceDefDao) {
+
+
+    public SMPExtensionInitializer(ApplicationContext applicationContext,
+                                   PlatformTransactionManager txManager,
+                                   ExtensionDao extensionDao,
+                                   ResourceDefDao resourceDefDao,
+                                   SubresourceDefDao subresourceDefDao,
+                                   ConfigurationDao configurationDao) {
         this.applicationContext = applicationContext;
         this.txManager = txManager;
         this.extensionDao = extensionDao;
         this.resourceDefDao = resourceDefDao;
         this.subresourceDefDao = subresourceDefDao;
+        this.configurationDao = configurationDao;
     }
 
     /**
@@ -67,6 +77,8 @@ public class SMPExtensionInitializer implements InitializingBean {
     }
 
     public void validateExtensionData() {
+        LOG.info("Load properties from database!");
+        configurationDao.reloadPropertiesFromDatabase();
         // find all extension services
         Map<String, ExtensionInfo> registeredExtensions = applicationContext.getBeansOfType(ExtensionInfo.class);
         LOG.debug("Found registered extension count [{}]", registeredExtensions.size());

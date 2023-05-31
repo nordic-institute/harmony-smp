@@ -13,12 +13,15 @@
 
 package eu.europa.ec.smp.spi.converter;
 
-import eu.europa.ec.smp.spi.exceptions.ResourceException;
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP10ServiceGroupReader;
+import eu.europa.ec.dynamicdiscovery.exception.BindException;
 import eu.europa.ec.smp.spi.testutils.XmlTestUtils;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceGroup;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
 
 import static org.junit.Assert.*;
 
@@ -27,16 +30,19 @@ import static org.junit.Assert.*;
  */
 class ServiceGroupConverterTest {
 
+    OasisSMP10ServiceGroupReader testInstance = new OasisSMP10ServiceGroupReader();
+
     private static final String RES_PATH = "/examples/conversion/";
 
 
     @Test
     void testUnmashallingServiceGroup() throws Exception {
+
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupOK.xml");
 
         //when
-        ServiceGroup serviceGroup = ServiceGroup10Converter.unmarshal(inputDoc);
+        ServiceGroup serviceGroup = testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
         assertNotNull(serviceGroup);
@@ -44,30 +50,13 @@ class ServiceGroupConverterTest {
         assertEquals("http://poland.pl", serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences().get(0).getHref());
     }
 
-    @Test
-    void testExtractExtensionsPayload() throws Exception {
-        //given
-        String expectedExt = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension</ex:dummynode></Extension>";
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupWithExtension.xml");
-        ServiceGroup serviceGroup = ServiceGroup10Converter.unmarshal(inputDoc);
-
-        //when
-        byte[] val = ServiceGroup10Converter.extractExtensionsPayload(serviceGroup);
-
-        //then
-        assertNotNull(val);
-        assertEquals(expectedExt, new String(val, "UTF-8"));
-    }
 
     @Test
     void testVulnerabilityParsingDTD() throws Exception {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupWithDOCTYPE.xml");
-
         //when then
-        ResourceException result = assertThrows(ResourceException.class, () -> ServiceGroup10Converter.unmarshal(inputDoc));
-
-        assertEquals(ResourceException.ErrorCode.PARSE_ERROR, result.getErrorCode());
+        BindException result = assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
         MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("DOCTYPE is disallowed"));
     }
 }

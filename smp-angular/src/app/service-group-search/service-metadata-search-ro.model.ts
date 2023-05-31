@@ -4,5 +4,6 @@ export interface ServiceMetadataSearchRo extends SearchTableEntity {
   documentIdentifier: string;
   documentIdentifierScheme: string;
   smlSubdomain: string;
+  subresourceDefUrlSegment?:string;
   domainCode: string;
 }

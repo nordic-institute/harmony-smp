@@ -14,6 +14,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
@@ -28,7 +29,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateRevokedException;
 import java.security.cert.X509Certificate;
@@ -43,8 +44,8 @@ import static java.util.Locale.US;
 @Service
 public class CredentialService {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialService.class);
-    protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException("Login failed; Invalid userID or password");
-    private static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException("The user is suspended. Please try again later or contact your administrator.");
+    protected static final BadCredentialsException BAD_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_INVALID_USERNAME_PASSWORD.getMessage());
+    protected static final BadCredentialsException SUSPENDED_CREDENTIALS_EXCEPTION = new BadCredentialsException(ErrorCode.UNAUTHORIZED_CREDENTIAL_SUSPENDED.getMessage());
     final UserDao mUserDao;
     final CredentialDao mCredentialDao;
     final ConversionService conversionService;
@@ -69,7 +70,7 @@ public class CredentialService {
         this.alertService = alertService;
     }
 
-    @Transactional(dontRollbackOn = {RuntimeException.class})
+    @Transactional(noRollbackForClassName = {"java.lang.RuntimeException"})
     public Authentication authenticateByUsernamePassword(String username, String userCredentialToken)
             throws AuthenticationException {
 
@@ -78,9 +79,7 @@ public class CredentialService {
         DBCredential credential;
         try {
             Optional<DBCredential> dbCredential = mCredentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
-            if (!dbCredential.isPresent()
-                    || !dbCredential.get().getUser().isActive()
-                    || !dbCredential.get().isActive()) {
+            if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider");
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, "Username does not exits", username);
                 delayResponse(CredentialType.USERNAME_PASSWORD, startTime);
@@ -108,7 +107,7 @@ public class CredentialService {
                 userDetails);
         try {
             if (!BCrypt.checkpw(userCredentialToken, credential.getValue())) {
-                LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username);
+                LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username, credential.getName(), credential.getCredentialType(), credential.getCredentialTarget());
                 loginAttemptFailedAndThrowError(credential, true, startTime);
             }
             credential.setSequentialLoginFailureCount(0);
@@ -124,7 +123,7 @@ public class CredentialService {
     }
 
 
-    @Transactional(dontRollbackOn = {AuthenticationException.class, BadCredentialsException.class})
+    @Transactional(noRollbackForClassName = {"org.springframework.security.core.AuthenticationException","org.springframework.security.authentication.BadCredentialsException"})
     public Authentication authenticateByAuthenticationToken(String authenticationTokenId, String authenticationTokenValue)
             throws AuthenticationException {
 
@@ -135,7 +134,7 @@ public class CredentialService {
         try {
             Optional<DBCredential> dbCredential = mCredentialDao.findAccessTokenCredentialForAPI(authenticationTokenId);
 
-            if (!dbCredential.isPresent() || !dbCredential.get().getUser().isActive()) {
+            if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, authenticationTokenId);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
@@ -178,7 +177,30 @@ public class CredentialService {
         return smpAuthenticationToken;
     }
 
-    @Transactional(dontRollbackOn = {AuthenticationException.class, BadCredentialsException.class})
+    protected boolean isNotValidCredential(DBCredential credential) {
+        if (!credential.isActive()) {
+            LOG.debug("User credential [{}] is not active", credential);
+            return true;
+        }
+        if (!credential.getUser().isActive()) {
+            LOG.debug("User credential [{}] is not valid because user is not active", credential);
+            return true;
+        }
+
+        OffsetDateTime dateTimeNow = OffsetDateTime.now();
+        if (credential.getActiveFrom() != null && dateTimeNow.isBefore(credential.getActiveFrom())) {
+            LOG.debug("User credential [{}] is not yet valid active from [{}]", credential, credential.getActiveFrom());
+            return true;
+        }
+
+        if (credential.getExpireOn() != null && dateTimeNow.isAfter(credential.getExpireOn())) {
+            LOG.debug("User credential [{}] is expired from [{}]", credential, credential.getActiveFrom());
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional(noRollbackForClassName = {"org.springframework.security.core.AuthenticationException","org.springframework.security.authentication.BadCredentialsException"})
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
 
@@ -203,7 +225,7 @@ public class CredentialService {
         DBCredential credential;
         try {
             Optional<DBCredential> optCredential = mCredentialDao.findUserByCertificateId(certificateIdentifier, true);
-            if (!optCredential.isPresent() || !optCredential.get().getUser().isActive()) {
+            if (!optCredential.isPresent() || isNotValidCredential(optCredential.get())) {
                 LOG.securityWarn(SMPMessageCode.SEC_USER_NOT_EXISTS, certificateIdentifier);
                 //https://www.owasp.org/index.php/Authentication_Cheat_Sheet
                 // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
@@ -334,7 +356,8 @@ public class CredentialService {
         mCredentialDao.update(credential);
         String username = credential.getUser().getUsername();
         LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username,
-                credential.getName(), credential.getCredentialType(),
+                credential.getName(),
+                credential.getCredentialType(),
                 credential.getCredentialTarget());
 
         boolean isUserSuspended = credential.getSequentialLoginFailureCount() >= getLoginMaxAttempts(credentialType);
@@ -343,11 +366,11 @@ public class CredentialService {
             // at notYetSuspended alert is sent for all settings AT_LOGON, WHEN_BLOCKED
             if (notYetSuspended ||
                     getAlertBeforeUserSuspendedAlertMoment() == AlertSuspensionMomentEnum.AT_LOGON) {
-                alertService.alertCredentialsSuspended(credential.getUser(), credential.getCredentialType());
+                alertService.alertCredentialsSuspended(credential);
             }
         } else {
             // always invoke the method. The method handles the smp.alert.user.login_failure.enabled
-            alertService.alertCredentialVerificationFailed(credential.getUser(), credential.getCredentialType());
+            alertService.alertCredentialVerificationFailed(credential);
         }
         delayResponse(credentialType, startTime);
         if (isUserSuspended) {

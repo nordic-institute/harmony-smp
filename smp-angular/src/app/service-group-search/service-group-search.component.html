@@ -18,22 +18,26 @@
 
 
   <ng-template #searchPanel>
-    <mat-form-field>
-      <input matInput placeholder="Participant Identifier" name="ParticipantIdentifier"
+    <div style="display: flex;flex-direction: row;width: 100%">
+    <mat-form-field class="smp-data-panel-field">
+      <mat-label>Resource Identifier filter</mat-label>
+      <input matInput name="ResourceIdentifier"
              [(ngModel)]="filter.participantIdentifier"
-             #messageId="ngModel" id="participantIdentifier">
+             #messageId="ngModel" id="ResourceIdentifier">
     </mat-form-field>
-    <mat-form-field>
-      <input matInput placeholder="Participant scheme" name="patricipantScheme" [(ngModel)]="filter.participantScheme"
-             #messageId="ngModel" id="participantScheme">
+    <mat-form-field  class="smp-data-panel-field">
+      <mat-label>Resource scheme filter</mat-label>
+      <input matInput  name="ResourceScheme" [(ngModel)]="filter.participantScheme"
+             #messageId="ngModel" id="ResourceScheme">
     </mat-form-field>
-    <mat-select placeholder="All Domains" [(ngModel)]="filter.domain" name="domain"
+    <mat-select placeholder="All Domains" [(ngModel)]="filter.domain" name="domain" *ngIf="false"
                 id="domain_id">
       <mat-option [value]="''">All Domains</mat-option>
       <mat-option *ngFor="let domain of lookups.cachedDomainList" [value]="domain.domainCode">
         {{domain.domainCode}} ({{domain.smlSubdomain}})
       </mat-option>
     </mat-select>
+    </div>
   </ng-template>
 
 
@@ -43,7 +47,7 @@
   <ng-template #tableRowDetailContainer let-row="row">
 
     <div *ngIf="row.serviceMetadata.length===0" style="padding-left:20px;">
-      No service metadata
+      No subresources
     </div>
     <div *ngIf="row.serviceMetadata.length !== 0">
       <ngx-datatable
@@ -54,10 +58,9 @@
         [headerHeight]='50'
         [footerHeight]='50'
         [rowHeight]='"auto"'>
-        <ngx-datatable-column prop="domainCode" name="Domain" maxWidth="250"></ngx-datatable-column>
-        <ngx-datatable-column prop="documentIdentifierScheme" name="Document identifier scheme"
+        <ngx-datatable-column prop="documentIdentifierScheme" name="Subresource identifier scheme"
                               maxWidth="350"></ngx-datatable-column>
-        <ngx-datatable-column prop="documentIdentifier" name="Document identifier"
+        <ngx-datatable-column prop="documentIdentifier" name="Subresource identifier"
                               maxWidth="250"></ngx-datatable-column>
         <ngx-datatable-column [cellTemplate]="rowMetadataSMPUrlLinkAction" name="URL"
                               maxWidth="250"></ngx-datatable-column>

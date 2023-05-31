@@ -29,15 +29,12 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.TypedQuery;
 import java.io.File;
@@ -54,7 +51,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
  * @since 4.2
  */
 @Repository(value = "configurationDao")
-public class ConfigurationDao extends BaseDao<DBConfiguration> implements InitializingBean {
+public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
     boolean isRefreshProcess = false;
@@ -62,32 +59,14 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
     Map<String, Object> cachedPropertyValues = new HashMap();
     OffsetDateTime lastUpdate = null;
     OffsetDateTime initiateDate = null;
-
-
     boolean serverRestartNeeded = false;
 
     protected final SMPEnvironmentProperties environmentProperties = SMPEnvironmentProperties.getInstance();
     protected final ApplicationContext applicationContext;
-    protected PlatformTransactionManager txManager;
 
-    public ConfigurationDao(ApplicationContext applicationContext, PlatformTransactionManager txManager) {
+
+    public ConfigurationDao(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        this.txManager = txManager;
-    }
-
-    /**
-     * Validate and initialize database configurations
-     */
-    public void afterPropertiesSet() {
-        LOG.debug("Reload DomiSMP properties");
-        // Transaction might not be yet initialized (@Transactional on this method does not help :) ).
-        // Wrap the method to TransactionTemplate to make possible database property initialization
-        TransactionTemplate tmpl = new TransactionTemplate(txManager);
-        tmpl.execute(status -> {
-            LOG.info("Start initial (re)load of the DomiSMP properties with transaction status object [{}]",  status);
-            reloadPropertiesFromDatabasePrivate();
-            return null;
-        });
     }
 
     /**
@@ -233,7 +212,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
                 SMPConfigurationInitializer configurationInitializer = new SMPConfigurationInitializer(memEManager, environmentProperties);
                 newProperties = configurationInitializer.getDatabaseProperties();
                 newProperties.setLastUpdate(OffsetDateTime.now());
-            }            // first update deprecated values
+            }
 
             Map<String, Object> resultProperties;
             try {
@@ -282,6 +261,8 @@ public class ConfigurationDao extends BaseDao<DBConfiguration> implements Initia
 
     protected void setInitializedTime(OffsetDateTime dateTime) {
         initiateDate = dateTime;
+        // update property listeners for the first time
+        updatePropertyListeners();
     }
 
 

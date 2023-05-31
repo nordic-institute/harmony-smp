@@ -23,7 +23,11 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
@@ -38,55 +42,14 @@ import java.util.Objects;
         " WHERE upper(c.name) = upper(:credential_name) " +
         " AND c.credentialType = :credential_type " +
         " AND c.credentialTarget = :credential_target")
-//@NamedQueries({
 
-// @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
-//@NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.accessTokenIdentifier = :patId"),
-//@NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE upper(u.certificate.certificateId) = upper(:certificateId)"),
-        /*@NamedQuery(name = "DBUser.getUsersForBeforePasswordExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
-                        " AND u.passwordExpireOn <= :startAlertDate " +
-                        " AND u.passwordExpireOn > :expireDate" +
-                        " AND (u.passwordExpireAlertOn IS NULL OR u.passwordExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForPasswordExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
-                        " AND u.passwordExpireOn > :endAlertDate " +
-                        " AND u.passwordExpireOn <= :expireDate" +
-                        " AND (u.passwordExpireAlertOn IS NULL " +
-                        "   OR u.passwordExpireAlertOn <= u.passwordExpireOn " +
-                        "   OR u.passwordExpireAlertOn < :lastSendAlertDate )"),
 
-        @NamedQuery(name = "DBUser.getUsersForBeforeAccessTokenExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
-                        " AND u.accessTokenExpireOn <= :startAlertDate " +
-                        " AND u.accessTokenExpireOn > :expireDate" +
-                        " AND (u.accessTokenExpireAlertOn IS NULL OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForAccessTokenExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
-                        " AND u.accessTokenExpireOn > :endAlertDate " +
-                        " AND u.accessTokenExpireOn <= :expireDate" +
-                        " AND (u.accessTokenExpireAlertOn IS NULL " +
-                        "   OR u.accessTokenExpireAlertOn <= u.accessTokenExpireOn " +
-                        "   OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
-/*
-        @NamedQuery(name = "DBUser.getUsersForBeforeCertificateExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
-                        " AND u.certificate.validTo IS NOT NULL " +
-                        " AND u.certificate.validTo <= :startAlertDate " +
-                        " AND u.certificate.validTo > :expireDate" +
-                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
-                        "       OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForCertificateExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
-                        " AND u.certificate.validTo IS NOT NULL " +
-                        " AND u.certificate.validTo > :endAlertDate " +
-                        " AND u.certificate.validTo <= :expireDate" +
-                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
-                        "     OR u.certificate.certificateLastExpireAlertOn <= u.certificate.validTo " +
-
-                        "     OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )")
-                        })
-         */
+@NamedQuery(name = QUERY_USER_COUNT, query = "SELECT count(c) FROM DBUser c")
+@NamedQuery(name = QUERY_USERS, query = "SELECT c FROM DBUser c  order by c.username")
+@NamedQuery(name = QUERY_USER_FILTER_COUNT, query = "SELECT count(c) FROM DBUser c " +
+        " WHERE (lower(c.username) like lower(:user_filter) OR  lower(c.fullName) like lower(:user_filter))")
+@NamedQuery(name = QUERY_QUERY_USERS_FILTER, query = "SELECT c FROM DBUser c " +
+        " WHERE (lower(c.username) like lower(:user_filter) OR  lower(c.fullName) like lower(:user_filter))  order by c.username")
 @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
         resultSetMapping = "DBUserDeleteValidationMapping",
         query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
@@ -139,6 +102,36 @@ public class DBUser extends BaseEntity {
     @ColumnDescription(comment = "DomiSMP settings: locale for the user")
     private String smpLocale;
 
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBCredential> userCredentials = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBDomainMember> domainMembers = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBGroupMember> groupMembers = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBResourceMember> resourceMembers = new ArrayList<>();
     @Override
     public Long getId() {
         return id;
@@ -202,6 +195,22 @@ public class DBUser extends BaseEntity {
 
     public void setSmpLocale(String smpLocale) {
         this.smpLocale = smpLocale;
+    }
+
+    public List<DBCredential> getUserCredentials() {
+        return userCredentials;
+    }
+
+    public List<DBDomainMember> getDomainMembers() {
+        return domainMembers;
+    }
+
+    public List<DBGroupMember> getGroupMembers() {
+        return groupMembers;
+    }
+
+    public List<DBResourceMember> getResourceMembers() {
+        return resourceMembers;
     }
 
     @Override

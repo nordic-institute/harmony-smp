@@ -2,7 +2,7 @@ import {SearchTableController} from '../common/search-table/search-table-control
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {ServiceGroupDetailsDialogComponent} from './service-group-details-dialog/service-group-details-dialog.component';
 import {ServiceGroupEditRo} from './service-group-edit-ro.model';
-import {EntityStatus} from '../common/model/entity-status.model';
+import {EntityStatus} from '../common/enums/entity-status.enum';
 import {ServiceMetadataEditRo} from "./service-metadata-edit-ro.model";
 import {ServiceGroupMetadataDialogComponent} from "./service-group-metadata-dialog/service-group-metadata-dialog.component";
 import {of} from "rxjs/internal/observable/of";

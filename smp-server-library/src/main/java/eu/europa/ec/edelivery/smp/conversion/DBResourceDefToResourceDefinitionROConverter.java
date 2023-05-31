@@ -37,6 +37,8 @@ public class DBResourceDefToResourceDefinitionROConverter implements Converter<D
             List<SubresourceDefinitionRO> resourceDefinitionROList = source.getSubresources().stream().map(resourceDef ->
                     conversionService.convert(resourceDef, SubresourceDefinitionRO.class)
             ).collect(Collectors.toList());
+
+
             target.getSubresourceDefinitions().addAll(resourceDefinitionROList);
         } catch (IllegalAccessException | InvocationTargetException e) {
             LOG.error("Error occurred while converting DBResourceDef", e);

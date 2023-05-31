@@ -4,11 +4,12 @@ import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {CertificateDialogComponent} from "../../common/dialogs/certificate-dialog/certificate-dialog.component";
 import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/credential-dialog.component";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {UserCertificatePanelComponent} from "./user-certificate-panel/user-certificate-panel.component";
+import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
 
 
 @Component({
@@ -23,6 +24,7 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
   userCertificateCredentialComponents: QueryList<UserCertificatePanelComponent>;
 
   constructor(private securityService: SecurityService,
+              private httpErrorHandlerService: HttpErrorHandlerService,
               private userService: UserService,
               public dialog: MatDialog) {
 
@@ -78,21 +80,27 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
   }
 
   public createNew() {
-    this.dialog.open(CredentialDialogComponent,{
-      data:{
+    this.dialog.open(CredentialDialogComponent, {
+      data: {
         credentialType: CredentialDialogComponent.CERTIFICATE_TYPE,
         formTitle: "Import certificate dialog"
       }
-    } ).afterClosed();
+    }).afterClosed();
 
   }
-  public onShowItemClicked(credential: CredentialRo) {
-    this.userService.getUserCertificateCredentialObservable(credential).subscribe((response: CredentialRo) => {
-      this.dialog.open(CertificateDialogComponent, {
-        data: {row: response.certificate}
-      });
 
-    });
+  public onShowItemClicked(credential: CredentialRo) {
+    this.userService.getUserCertificateCredentialObservable(credential)
+      .subscribe((response: CredentialRo) => {
+        this.dialog.open(CertificateDialogComponent, {
+          data: {row: response.certificate}
+        });
+
+      }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+          return;
+        }
+      });
   }
 
 
@@ -119,7 +127,7 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
   }
 
   isDirty(): boolean {
-    let dirtyComp = !this.userCertificateCredentialComponents?null: this.userCertificateCredentialComponents.find(cmp => cmp.isDirty())
+    let dirtyComp = !this.userCertificateCredentialComponents ? null : this.userCertificateCredentialComponents.find(cmp => cmp.isDirty())
     return !!dirtyComp;
   }
 }

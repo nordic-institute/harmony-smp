@@ -1,0 +1,77 @@
+<div id="admin-group-panel">
+
+  <data-panel
+
+    id="admin-group-data-panel"
+    title="Edit Group"
+    text="Edit group administration panel is a tool for group administrators to manage group members and resources"
+    [labelColumnContent]="searchGroupPanel">
+
+
+    <mat-tab-group #domainTabs
+                   *ngIf="!!domainList &&  domainList.length>0;else noUserAdminGroupsDataFound"
+                   style="height: 100%">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <smp-label icon="groups" label="Members"></smp-label>
+        </ng-template>
+        <domain-member-panel #groupMemberPanelComponent
+                             [membershipType]="groupMembershipType"
+                             [domain]="selectedDomain"
+                             [group]="selectedGroup"
+
+        ></domain-member-panel>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <smp-label icon="article" label="Resources"></smp-label>
+        </ng-template>
+        <group-resource-panel #groupResourcePanel
+                              [domainResourceDefs]="_selectedDomainResourceDef"
+                              [domain]="selectedDomain"
+                              [group]="selectedGroup"
+        ></group-resource-panel>
+      </mat-tab>
+    </mat-tab-group>
+    <ng-template #noUserAdminGroupsDataFound>
+      <smp-warning-panel  *ngIf="!loading"
+                         class="smp-no-data-panel"
+                         icon="warning"
+                         type="warning"
+                         label="User is not administrator of any of the groups "></smp-warning-panel>
+    </ng-template>
+  </data-panel>
+
+</div>
+
+<ng-template #searchGroupPanel>
+  <div *ngIf="!!domainList &&  domainList.length>0">
+    <mat-form-field style="width:100%">
+      <mat-label>Selected domain</mat-label>
+      <mat-select placeholder="Select domain"
+                  matTooltip="Select domain."
+                  id="domain_id"
+                  [(value)]="selectedDomain"
+                  required>
+        <mat-option *ngFor="let domain of domainList"
+                    [value]="domain"
+        >
+          {{domain.domainCode}}
+        </mat-option>
+
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field style="width:100%">
+      <mat-label>Selected Group</mat-label>
+      <mat-select placeholder="Select group"
+                  matTooltip="Select group."
+                  id="group_id"
+                  [(value)]="selectedGroup"
+                  required>
+        <mat-option *ngFor="let group of groupList"
+                    [value]="group">{{group.groupName}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+</ng-template>

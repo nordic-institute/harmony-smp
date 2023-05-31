@@ -52,7 +52,7 @@ import java.util.*;
 
 
 @Service
-public class CRLVerifierService {
+public class CRLVerifierService implements ICRLVerifierService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CRLVerifierService.class);
 
@@ -70,6 +70,7 @@ public class CRLVerifierService {
     ConfigurationService configurationService;
 
 
+    @Override
     public void verifyCertificateCRLs(X509Certificate cert) throws CertificateRevokedException, CertificateParsingException {
 
         List<String> crlDistPoints = X509CertificateUtils.getCrlDistributionPoints(cert);
@@ -82,6 +83,7 @@ public class CRLVerifierService {
         verifyCertificateCRLs(serNumber, crlUrl);
     }
 
+    @Override
     public void verifyCertificateCRLs(String serial, String crlDistributionPointURL) throws CertificateRevokedException {
         // remove
         String cleanSerial = serial.trim().replaceAll("\\s", "");
@@ -90,6 +92,7 @@ public class CRLVerifierService {
     }
 
 
+    @Override
     public void verifyCertificateCRLs(BigInteger serial, String crlDistributionPointURL) throws CertificateRevokedException {
         LOG.info("Download CRL {}.", crlDistributionPointURL);
         X509CRL crl = getCRLByURL(crlDistributionPointURL);
