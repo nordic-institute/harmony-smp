@@ -9,15 +9,15 @@ import utils.DriverManager;
 import java.lang.reflect.Method;
 
 public class SeleniumTest extends BaseTest {
-    public static final Logger log = LoggerFactory.getLogger(SeleniumTest.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(SeleniumTest.class);
     static int methodCount = 1;
     public String logFilename;
 
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite() {
 
-        log.info("Log file name is " + logFilename);
-        log.info("-------- Starting -------");
+        LOG.info("Log file name is " + logFilename);
+        LOG.info("-------- Starting -------");
     }
 
 
@@ -27,7 +27,7 @@ public class SeleniumTest extends BaseTest {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        log.info("--------Initialize test class-------");
+        LOG.info("--------Initialize test class-------");
         driver = DriverManager.getDriver();
 
 //        if (!rest.isLoggedIn()) {
@@ -44,8 +44,8 @@ public class SeleniumTest extends BaseTest {
 
         MDC.put("logFileName", method.getDeclaringClass().getSimpleName());
 
-        log.info("--------------------------- Running test number: " + methodCount);
-        log.info("--------------------------- Running test method: " + method.getDeclaringClass().getSimpleName() + "." + method.getName());
+        LOG.info("--------------------------- Running test number: " + methodCount);
+        LOG.info("--------------------------- Running test method: " + method.getDeclaringClass().getSimpleName() + "." + method.getName());
         methodCount++;
 
         try {
@@ -63,12 +63,12 @@ public class SeleniumTest extends BaseTest {
     @AfterClass(alwaysRun = true)
     protected void afterClass() {
 
-        log.info("-------- Quitting driver after test class-------");
+        LOG.info("-------- Quitting driver after test class-------");
         try {
             driver.quit();
         } catch (Exception e) {
-            log.warn("Closing the driver failed");
-            log.error("EXCEPTION: ", e);
+            LOG.warn("Closing the driver failed");
+            LOG.error("EXCEPTION: ", e);
         }
     }
 

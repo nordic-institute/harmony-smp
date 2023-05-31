@@ -143,13 +143,7 @@ public class BaseRestClient {
 
     protected ClientResponse requestPOST(WebResource resource, String params, String type) {
 
-        if (!isLoggedIn()) {
-            try {
-                refreshCookies();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+
 
         WebResource.Builder builder = decorateBuilder(resource);
 
