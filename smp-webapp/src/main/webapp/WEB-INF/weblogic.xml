@@ -19,6 +19,8 @@
             <!-- used by Hibernate and JPA -->
             <package-name>javax.persistence.*</package-name>
             <package-name>javassist.*</package-name>
+            <package-name>org.hibernate.*</package-name>
+            <package-name>org.springframework.*</package-name>
 
             <!-- used for logging -->
             <package-name>org.slf4j.*</package-name>

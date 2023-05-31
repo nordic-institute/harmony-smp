@@ -26,7 +26,6 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
-
 @Entity
 @Audited
 @Table(name = "SMP_CREDENTIAL",
@@ -34,66 +33,32 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
             @Index(name = "SMP_CRD_USER_NAME_TYPE_IDX", columnList = "CREDENTIAL_NAME, CREDENTIAL_TYPE, CREDENTIAL_TARGET",  unique = true),
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_CREDENTIAL", comment = "Credentials for the users")
-@NamedQueries({
-        @NamedQuery(name = QUERY_CREDENTIAL_ALL, query = "SELECT u FROM DBCredential u"),
-        @NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
-                "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
-        @NamedQuery(name = QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
-                "WHERE c.user.id = :user_id and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
+@NamedQuery(name = QUERY_CREDENTIAL_ALL, query = "SELECT u FROM DBCredential u")
+@NamedQuery(name = QUERY_CREDENTIALS_BY_CI_USERNAME_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
+        "WHERE upper(c.user.username) = upper(:username) and c.credentialType = :credential_type and c.credentialTarget = :credential_target")
+@NamedQuery(name = QUERY_CREDENTIALS_BY_USERID_CREDENTIAL_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
+        "WHERE c.user.id = :user_id and c.credentialType = :credential_type and c.credentialTarget = :credential_target order by c.id")
+// case-insensitive search
+@NamedQuery(name = QUERY_CREDENTIAL_BY_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
+        "WHERE c.name = :credential_name and c.credentialType = :credential_type and c.credentialTarget = :credential_target")
+@NamedQuery(name = QUERY_CREDENTIAL_BY_CERTIFICATE_ID, query = "SELECT u FROM DBCredential u WHERE u.certificate.certificateId = :certificate_identifier")
+@NamedQuery(name = QUERY_CREDENTIAL_BY_CI_CERTIFICATE_ID, query = "SELECT u FROM DBCredential u WHERE upper(u.certificate.certificateId) = upper(:certificate_identifier)")
 
+@NamedQuery(name = QUERY_CREDENTIAL_BEFORE_EXPIRE,
+        query = "SELECT distinct c FROM DBCredential c WHERE c.credentialType=:credential_type  " +
+                " AND c.expireOn IS NOT NULL" +
+                " AND c.expireOn <= :start_alert_send_date " +
+                " AND c.expireOn > :expire_test_date" +
+                " AND (c.expireAlertOn IS NULL OR c.expireAlertOn < :lastSendAlertDate )")
+@NamedQuery(name = QUERY_CREDENTIAL_EXPIRED,
+        query = "SELECT distinct c FROM DBCredential c WHERE  c.credentialType=:credential_type" +
+                " AND  c.expireOn IS NOT NULL" +
+                " AND c.expireOn > :endAlertDate " +
+                " AND c.expireOn <= :expire_test_date" +
+                " AND (c.expireAlertOn IS NULL " +
+                "   OR c.expireAlertOn <= c.expireOn " +
+                "   OR c.expireAlertOn < :lastSendAlertDate )")
 
-        // case-insensitive search
-        @NamedQuery(name = QUERY_CREDENTIAL_BY_CREDENTIAL_NAME_TYPE_TARGET, query = "SELECT c FROM DBCredential c " +
-                "WHERE c.name = :credential_name and c.credentialType = :credential_type and c.credentialTarget = :credential_target"),
-        @NamedQuery(name = QUERY_CREDENTIAL_BY_CERTIFICATE_ID, query = "SELECT u FROM DBCredential u WHERE u.certificate.certificateId = :certificate_identifier"),
-        @NamedQuery(name = QUERY_CREDENTIAL_BY_CI_CERTIFICATE_ID, query = "SELECT u FROM DBCredential u WHERE upper(u.certificate.certificateId) = upper(:certificate_identifier)"),
-
-        //@NamedQuery(name = "DBUser.getUserByPatId", query = "SELECT u FROM DBUser u WHERE u.accessTokenIdentifier = :patId"),
-        //@NamedQuery(name = "DBUser.getUserByCertificateIdCaseInsensitive", query = "SELECT u FROM DBUser u WHERE upper(u.certificate.certificateId) = upper(:certificateId)"),
-        /*@NamedQuery(name = "DBUser.getUsersForBeforePasswordExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
-                        " AND u.passwordExpireOn <= :startAlertDate " +
-                        " AND u.passwordExpireOn > :expireDate" +
-                        " AND (u.passwordExpireAlertOn IS NULL OR u.passwordExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForPasswordExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.passwordExpireOn IS NOT NULL" +
-                        " AND u.passwordExpireOn > :endAlertDate " +
-                        " AND u.passwordExpireOn <= :expireDate" +
-                        " AND (u.passwordExpireAlertOn IS NULL " +
-                        "   OR u.passwordExpireAlertOn <= u.passwordExpireOn " +
-                        "   OR u.passwordExpireAlertOn < :lastSendAlertDate )"),
-
-        @NamedQuery(name = "DBUser.getUsersForBeforeAccessTokenExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
-                        " AND u.accessTokenExpireOn <= :startAlertDate " +
-                        " AND u.accessTokenExpireOn > :expireDate" +
-                        " AND (u.accessTokenExpireAlertOn IS NULL OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForAccessTokenExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.accessTokenExpireOn IS NOT NULL" +
-                        " AND u.accessTokenExpireOn > :endAlertDate " +
-                        " AND u.accessTokenExpireOn <= :expireDate" +
-                        " AND (u.accessTokenExpireAlertOn IS NULL " +
-                        "   OR u.accessTokenExpireAlertOn <= u.accessTokenExpireOn " +
-                        "   OR u.accessTokenExpireAlertOn < :lastSendAlertDate )"),
-/*
-        @NamedQuery(name = "DBUser.getUsersForBeforeCertificateExpireAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
-                        " AND u.certificate.validTo IS NOT NULL " +
-                        " AND u.certificate.validTo <= :startAlertDate " +
-                        " AND u.certificate.validTo > :expireDate" +
-                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
-                        "       OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )"),
-        @NamedQuery(name = "DBUser.getUsersForCertificateExpiredAlerts",
-                query = "SELECT u FROM DBUser u WHERE u.certificate IS NOT NULL" +
-                        " AND u.certificate.validTo IS NOT NULL " +
-                        " AND u.certificate.validTo > :endAlertDate " +
-                        " AND u.certificate.validTo <= :expireDate" +
-                        " AND (u.certificate.certificateLastExpireAlertOn IS NULL " +
-                        "     OR u.certificate.certificateLastExpireAlertOn <= u.certificate.validTo " +
-                        "     OR u.certificate.certificateLastExpireAlertOn < :lastSendAlertDate )")
-        */
-
-})
 
 @NamedNativeQueries({
         @NamedNativeQuery(name = "DBCredentialDeleteValidation.validateUsersForOwnership",

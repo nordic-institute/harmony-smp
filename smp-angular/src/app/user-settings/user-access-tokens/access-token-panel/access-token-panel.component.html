@@ -2,7 +2,7 @@
   <div style="display: flex;flex-flow: row wrap;">
     <mat-form-field style="flex-grow: 2">
       <mat-label>Access token ID</mat-label>
-      <input matInput placeholder="Access token ID"
+      <input matInput
              [value]="credential?.name"
              maxlength="255" readonly>
     </mat-form-field>
@@ -24,44 +24,55 @@
   </div>
   <mat-form-field style="width: 100%">
     <mat-label>Description</mat-label>
-    <input matInput placeholder="Description"
+    <input matInput
            formControlName="description"
            maxlength="255">
   </mat-form-field>
   <div style="display: flex;flex-flow: row wrap;">
-    <mat-checkbox formControlName="active">
+
+    <mat-checkbox formControlName="active" style="align-self: center; padding-bottom: 1em;padding-right: 2em">
       Active
     </mat-checkbox>
+
     <mat-form-field appearance="fill" style="flex-grow: 1">
       <mat-label>Enter a valid date range</mat-label>
-      <mat-date-range-input [rangePicker]="picker" >
+      <mat-date-range-input [rangePicker]="picker" [min]="minSelectableDate" >
         <input matStartDate formControlName="activeFrom" placeholder="Start date">
         <input matEndDate formControlName="expireOn" placeholder="End date">
       </mat-date-range-input>
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-date-range-picker #picker></mat-date-range-picker>
-      <mat-error *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">Invalid active from date</mat-error>
-      <mat-error *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">Invalid expire on date</mat-error>
+      <smp-field-error  *ngIf="credentialForm.controls.activeFrom.hasError('matStartDateInvalid')">Invalid active from date</smp-field-error >
+      <smp-field-error  *ngIf="credentialForm.controls.expireOn.hasError('matEndDateInvalid')">Invalid expire on date</smp-field-error >
     </mat-form-field>
   </div>
-  <div style="display: flex;flex-flow: row wrap;">
+  <div style="display: flex;flex-flow: row;">
     <mat-form-field style="flex-grow: 1">
       <mat-label>Seq. failed attempts</mat-label>
-      <input matInput placeholder="Seq. failed attempts"
+      <input matInput
              [value]="sequentialLoginFailureCount"
              id="sequentialTokenLoginFailureCount_id" maxlength="255" disabled readonly>
     </mat-form-field>
-    <mat-form-field style="flex-grow: 2">
+    <mat-form-field style="flex-grow:2 "  floatLabel="always">
       <mat-label>Last failed attempt</mat-label>
-      <input matInput placeholder="Last failed attempt"
+      <input id="LastFailedAttempt_id" matInput [ngxMatDatetimePicker]="LastFailedAttemptPicker"
              [value]="lastFailedLoginAttempt"
-             maxlength="255" disabled>
+             placeholder="---"
+             readonly>
+      <mat-datepicker-toggle matSuffix [for]="LastFailedAttemptPicker" style="visibility: hidden"></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #LastFailedAttemptPicker [showSpinners]="true" [showSeconds]="false"
+                               [hideTime]="false"></ngx-mat-datetime-picker>
     </mat-form-field>
-    <mat-form-field style="flex-grow: 2">
+    <mat-form-field style="flex-grow: 2"  floatLabel="always">
       <mat-label>Suspended until</mat-label>
-      <input matInput placeholder="Suspended until"
+      <input id="SuspendedUtil_id" matInput [ngxMatDatetimePicker]="suspendedUtilPicker"
              [value]="suspendedUtil"
-             maxlength="255" disabled>
+             placeholder="---"
+             readonly>
+      <mat-datepicker-toggle matSuffix [for]="suspendedUtilPicker" style="visibility: hidden"></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #suspendedUtilPicker [showSpinners]="true" [showSeconds]="false"
+                               [hideTime]="false"></ngx-mat-datetime-picker>
+
     </mat-form-field>
   </div>
 </div>

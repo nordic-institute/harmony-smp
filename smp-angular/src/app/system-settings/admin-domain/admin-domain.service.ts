@@ -4,7 +4,7 @@ import {Observable, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {SecurityService} from "../../security/security.service";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {DomainRo} from "./domain-ro.model";
+import {DomainRo} from "../../common/model/domain-ro.model";
 import {User} from "../../security/user.model";
 import {SmpConstants} from "../../smp.constants";
 

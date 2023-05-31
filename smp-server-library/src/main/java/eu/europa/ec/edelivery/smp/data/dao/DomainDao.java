@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -22,7 +23,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,6 +111,58 @@ public class DomainDao extends BaseDao<DBDomain> {
         query.setParameter(PARAM_DOMAIN_ID, domainId);
         return query.getSingleResult();
     }
+
+    public Long getDomainsByUserIdAndDomainRolesCount(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getSingleResult();
+    }
+
+    public List<DBDomain> getDomainsByUserIdAndDomainRoles(Long userId, MembershipRoleType ... roleTypes) {
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_ROLES, DBDomain.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
+    public Long getDomainsByUserIdAndGroupRolesCount(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getSingleResult();
+    }
+
+    public List<DBDomain> getDomainsByUserIdAndGroupRoles(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_GROUP_ROLES, DBDomain.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
+    public Long getDomainsByUserIdAndResourceRolesCount(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_RESOURCE_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getSingleResult();
+    }
+
+    public List<DBDomain> getDomainsByUserIdAndResourceRoles(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_RESOURCE_ROLES, DBDomain.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
+    public List<MembershipRoleType> toList(MembershipRoleType ... roleTypes){
+        return Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
+    }
+
 
     /**
      * Check if domain for domain code exists. If not SMPRuntimeException with DOMAIN_NOT_EXISTS is thrown.

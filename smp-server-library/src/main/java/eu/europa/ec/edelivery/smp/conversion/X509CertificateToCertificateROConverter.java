@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.Key;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -66,7 +67,7 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         cro.setCertificateId(certId);
         cro.setSubject(subject);
         cro.setIssuer(issuer);
-        cro.setPublicKeyType(cert.getPublicKey().getAlgorithm());
+        cro.setPublicKeyType(getKeyAlgorithm(cert.getPublicKey()));
         cro.setCrlUrl(url);
         if (certPolicyIdentifiers!=null && !certPolicyIdentifiers.isEmpty()) {
             cro.getCertificatePolicies().addAll(certPolicyIdentifiers);
@@ -114,5 +115,14 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
             }
         }
         return "";
+    }
+    public String getKeyAlgorithm(Key key) {
+        if (StringUtils.equals(key.getAlgorithm(), "1.3.101.112")) {
+            return "Ed25519";
+        }
+        if (StringUtils.equals(key.getAlgorithm(), "1.3.101.113")) {
+            return "Ed448";
+        }
+        return key.getAlgorithm();
     }
 }

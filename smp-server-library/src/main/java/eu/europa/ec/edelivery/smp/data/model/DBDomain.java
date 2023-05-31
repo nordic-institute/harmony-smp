@@ -41,6 +41,36 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedNativeQuery(name = "DBDomain.updateNullSMLAlias",
         query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias " +
                 "WHERE SML_CLIENT_KEY_ALIAS IS null")
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_ROLES_COUNT, query = "SELECT count( distinct c) FROM DBDomain c JOIN DBDomainMember dm ON c.id = dm.domain.id " +
+        " WHERE dm.role in (:membership_roles) and dm.user.id= :user_id")
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_ROLES, query = "SELECT distinct c FROM DBDomain c JOIN DBDomainMember dm ON c.id = dm.domain.id " +
+        " WHERE dm.role in (:membership_roles) and dm.user.id= :user_id")
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT, query = "SELECT count( distinct d) FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBGroupMember gm ON g.id = gm.group.id " +
+        " WHERE gm.role in (:membership_roles) and gm.user.id= :user_id")
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_GROUP_ROLES, query = "SELECT distinct d FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBGroupMember gm ON g.id = gm.group.id " +
+        " WHERE gm.role in (:membership_roles) and gm.user.id= :user_id")
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_RESOURCE_ROLES_COUNT, query = "SELECT count(distinct d) FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " JOIN DBResourceMember rm ON r.id = rm.resource.id " +
+        " WHERE rm.role in (:membership_roles) and rm.user.id= :user_id")
+
+
+@NamedQuery(name = QUERY_DOMAIN_BY_USER_RESOURCE_ROLES, query = "SELECT distinct d FROM DBDomain d " +
+        " JOIN DBGroup g ON d.id = g.domain.id " +
+        " JOIN DBResource r ON  g.id = r.group.id " +
+        " JOIN DBResourceMember rm ON r.id = rm.resource.id " +
+        " WHERE rm.role in (:membership_roles) and rm.user.id= :user_id")
+
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOMAIN", comment = "SMP can handle multiple domains. This table contains domain specific data")
 public class DBDomain extends BaseEntity {
 
@@ -62,9 +92,6 @@ public class DBDomain extends BaseEntity {
     @Column(name = "SML_SMP_ID", length = CommonColumnsLengths.MAX_SML_SMP_ID_LENGTH)
     @ColumnDescription(comment = "SMP ID used for SML integration")
     String smlSmpId;
-    @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
-    @ColumnDescription(comment = "Client-Cert header used behind RP - ClientCertHeader for SML integration")
-    String smlClientCertHeader;
     @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     @ColumnDescription(comment = "Client key alias used for SML integration")
     String smlClientKeyAlias;
@@ -109,7 +136,7 @@ public class DBDomain extends BaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<DBDomainResourceDef> domainResourceDefs= new ArrayList<>();
+    private List<DBDomainResourceDef> domainResourceDefs = new ArrayList<>();
 
     @Override
     public Long getId() {
@@ -142,14 +169,6 @@ public class DBDomain extends BaseEntity {
 
     public void setSmlSmpId(String smlSmpId) {
         this.smlSmpId = smlSmpId;
-    }
-
-    public String getSmlClientCertHeader() {
-        return smlClientCertHeader;
-    }
-
-    public void setSmlClientCertHeader(String smlClientCertHeader) {
-        this.smlClientCertHeader = smlClientCertHeader;
     }
 
     public String getSmlClientKeyAlias() {
@@ -249,7 +268,6 @@ public class DBDomain extends BaseEntity {
                 .append(id, dbDomain.id).append(domainCode, dbDomain.domainCode)
                 .append(smlSubdomain, dbDomain.smlSubdomain)
                 .append(smlSmpId, dbDomain.smlSmpId)
-                .append(smlClientCertHeader, dbDomain.smlClientCertHeader)
                 .append(smlClientKeyAlias, dbDomain.smlClientKeyAlias)
                 .append(signatureKeyAlias, dbDomain.signatureKeyAlias)
                 .append(signatureAlgorithm, dbDomain.signatureAlgorithm)

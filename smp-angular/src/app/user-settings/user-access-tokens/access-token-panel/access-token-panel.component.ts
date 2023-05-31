@@ -11,13 +11,13 @@ import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guar
 })
 export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 
+  @Output() minSelectableDate: Date = new Date();
   @Output() onDeleteEvent: EventEmitter<CredentialRo> = new EventEmitter();
   @Output() onSaveEvent: EventEmitter<CredentialRo> = new EventEmitter();
 
   dateFormat: string = 'yyyy-MM-dd'
 
   _credential: CredentialRo;
-
   credentialForm: FormGroup;
 
 
@@ -77,14 +77,12 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
       this._credential.sequentialLoginFailureCount + "" : "0";
   }
 
-  get suspendedUtil(): string {
-    return this._credential && this._credential.suspendedUtil ?
-      this._credential.suspendedUtil.toLocaleDateString() : "---";
+  get suspendedUtil(): Date {
+    return this._credential?.suspendedUtil;
   }
 
-  get lastFailedLoginAttempt(): string {
-    return this._credential && this._credential.lastFailedLoginAttempt ?
-      this._credential.lastFailedLoginAttempt.toLocaleDateString() : "---";
+  get lastFailedLoginAttempt(): Date {
+    return this._credential?.lastFailedLoginAttempt
   }
 
   isDirty(): boolean {

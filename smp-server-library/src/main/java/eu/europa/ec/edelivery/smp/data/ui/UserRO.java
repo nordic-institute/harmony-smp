@@ -27,26 +27,18 @@ public class UserRO extends BaseRO {
     // operational UI data
     private boolean casAuthenticated = false;
     private String casUserDataUrl;
-
-
     private OffsetDateTime passwordExpireOn;
     private Integer sequentialLoginFailureCount;
     private OffsetDateTime lastFailedLoginAttempt;
     private OffsetDateTime suspendedUtil;
-    private String accessTokenId;
-    private OffsetDateTime accessTokenExpireOn;
-    private Integer sequentialTokenLoginFailureCount;
-    private OffsetDateTime lastTokenFailedLoginAttempt;
-    private OffsetDateTime tokenSuspendedUtil;
+    private OffsetDateTime passwordUpdatedOn;
 
     private Collection<SMPAuthority> authorities;
 
-    private CertificateRO certificate;
     private int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
     private boolean passwordExpired = false;
     private boolean showPasswordExpirationWarning = false;
     private boolean forceChangeExpiredPassword = false;
-
 
     /**
      * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
@@ -119,15 +111,6 @@ public class UserRO extends BaseRO {
         this.smpLocale = smpLocale;
     }
 
-    public String getAccessTokenId() {
-        return accessTokenId;
-    }
-
-    public void setAccessTokenId(String accessTokenId) {
-        this.accessTokenId = accessTokenId;
-    }
-
-
     public boolean isPasswordExpired() {
         return passwordExpired;
     }
@@ -145,20 +128,12 @@ public class UserRO extends BaseRO {
         this.passwordExpireOn = passwordExpireOn;
     }
 
-    public OffsetDateTime getAccessTokenExpireOn() {
-        return accessTokenExpireOn;
+    public OffsetDateTime getPasswordUpdatedOn() {
+        return passwordUpdatedOn;
     }
 
-    public void setAccessTokenExpireOn(OffsetDateTime accessTokenExpireOn) {
-        this.accessTokenExpireOn = accessTokenExpireOn;
-    }
-
-    public CertificateRO getCertificate() {
-        return certificate;
-    }
-
-    public void setCertificate(CertificateRO certificate) {
-        this.certificate = certificate;
+    public void setPasswordUpdatedOn(OffsetDateTime passwordUpdatedOn) {
+        this.passwordUpdatedOn = passwordUpdatedOn;
     }
 
     public Collection<SMPAuthority> getAuthorities() {
@@ -231,29 +206,5 @@ public class UserRO extends BaseRO {
 
     public void setSuspendedUtil(OffsetDateTime suspendedUtil) {
         this.suspendedUtil = suspendedUtil;
-    }
-
-    public Integer getSequentialTokenLoginFailureCount() {
-        return sequentialTokenLoginFailureCount;
-    }
-
-    public void setSequentialTokenLoginFailureCount(Integer sequentialTokenLoginFailureCount) {
-        this.sequentialTokenLoginFailureCount = sequentialTokenLoginFailureCount;
-    }
-
-    public OffsetDateTime getLastTokenFailedLoginAttempt() {
-        return lastTokenFailedLoginAttempt;
-    }
-
-    public void setLastTokenFailedLoginAttempt(OffsetDateTime lastTokenFailedLoginAttempt) {
-        this.lastTokenFailedLoginAttempt = lastTokenFailedLoginAttempt;
-    }
-
-    public OffsetDateTime getTokenSuspendedUtil() {
-        return tokenSuspendedUtil;
-    }
-
-    public void setTokenSuspendedUtil(OffsetDateTime tokenSuspendedUtil) {
-        this.tokenSuspendedUtil = tokenSuspendedUtil;
     }
 }

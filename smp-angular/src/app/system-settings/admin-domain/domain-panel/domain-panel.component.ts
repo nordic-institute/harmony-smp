@@ -1,5 +1,5 @@
 import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
-import {DomainRo} from "../domain-ro.model";
+import {DomainRo} from "../../../common/model/domain-ro.model";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AdminDomainService} from "../admin-domain.service";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
@@ -8,7 +8,6 @@ import {CertificateRo} from "../../user/certificate-ro.model";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
-
 
 @Component({
   selector: 'domain-panel',
@@ -19,10 +18,10 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
   @Output() onSaveBasicDataEvent: EventEmitter<DomainRo> = new EventEmitter();
 
   @Output() onDiscardNew: EventEmitter<any> = new EventEmitter();
-  readonly warningTimeout: number = 50000;
+  readonly warningTimeout: number = 3000;
   readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
   readonly domainVisibilityOptions = Object.keys(VisibilityEnum)
-    .filter(el => el !== "Private").map(el => {
+    .map(el => {
       return {key: el, value: VisibilityEnum[el]}
     });
 
@@ -61,7 +60,14 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
    * @param value
    */
   onFieldKeyPressed(controlName: string, showTheWarningReference: string) {
+
+    if (this.domainForm.controls['domainCode'].hasError('pattern')) {
+      // already visible error - skip the length validation
+      return;
+    }
+
     let value = this.domainForm.get(controlName).value
+
 
     if (!!value && value.length >= 63 && !this.fieldWarningTimeoutMap[showTheWarningReference]) {
       this.fieldWarningTimeoutMap[showTheWarningReference] = setTimeout(() => {
@@ -103,6 +109,9 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['visibility'].setValue(this._domain.visibility);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue(this._domain.defaultResourceTypeIdentifier);
       this.domainForm.enable();
+      if (!!value?.domainId) {
+        this.domainForm.controls['domainCode'].disable();
+      }
     } else {
       this.domainForm.controls['domainCode'].setValue("");
       this.domainForm.controls['signatureKeyAlias'].setValue("");
@@ -121,12 +130,13 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     return this.isNewDomain() || this.domainForm?.dirty;
   }
 
-  get domainResourceTypes(){
-    if (!this._domain || !this._domain.resourceDefinitions){
+  get domainResourceTypes() {
+    if (!this._domain || !this._domain.resourceDefinitions) {
       return [];
     }
     return this.domiSMPResourceDefinitions.filter(resType => this._domain.resourceDefinitions.includes(resType.identifier))
   }
+
   get submitButtonEnabled(): boolean {
     return this.domainForm.valid && this.domainForm.dirty;
   }

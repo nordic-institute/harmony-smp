@@ -31,7 +31,6 @@ public class TestDBUtils {
         DBDomain domain = new DBDomain();
         domain.setDomainCode(domainCode);
         domain.setSignatureKeyAlias(anyString());
-        domain.setSmlClientCertHeader(anyString());
         domain.setSmlClientKeyAlias(anyString());
         domain.setSmlSubdomain(anyString());
         domain.setSmlSmpId(anyString());
@@ -39,10 +38,14 @@ public class TestDBUtils {
     }
 
     public static DBGroup createDBGroup(String groupName) {
+        return  createDBGroup(groupName, VisibilityType.PUBLIC);
+    }
+
+    public static DBGroup createDBGroup(String groupName, VisibilityType visibility){
         DBGroup group = new DBGroup();
         group.setGroupName(groupName);
         group.setGroupDescription(anyString());
-        group.setVisibility(VisibilityType.PUBLIC);
+        group.setVisibility(visibility);
         return group;
     }
 
@@ -159,6 +162,7 @@ public class TestDBUtils {
         DBResource resource = new DBResource();
         resource.setIdentifierValue(id);
         resource.setIdentifierScheme(sch);
+        resource.setVisibility(VisibilityType.PUBLIC);
         if (withExtension) {
             DBDocument document = createDBDocument();
             DBDocumentVersion documentVersion = createDBDocumentVersion();
@@ -187,13 +191,34 @@ public class TestDBUtils {
     }
 
 
-    public static DBCredential createDBCredential() {
-        return createDBCredential("name", "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+    public static DBCredential createDBCredential(String name) {
+        return createDBCredential(name, "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
     }
 
-    public static DBCredential createDBCredentialForUser(DBUser user) {
-        return createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
+        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+        credential.setExpireOn(to);
+        credential.setActiveFrom(from);
+        credential.setExpireAlertOn(lastAlertSent);
+        return credential;
     }
+
+    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
+        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
+        credential.setExpireOn(to);
+        credential.setActiveFrom(from);
+        credential.setExpireAlertOn(lastAlertSent);
+        return credential;
+    }
+
+    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
+        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        credential.setExpireOn(to);
+        credential.setActiveFrom(from);
+        credential.setExpireAlertOn(lastAlertSent);
+        return credential;
+    }
+
 
     public static DBCredential createDBCredential(DBUser dbUser, String name, String value, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         DBCredential dbCredential = new DBCredential();
@@ -273,7 +298,11 @@ public class TestDBUtils {
 
     public static DBUser createDBUser(String userName, String certId, OffsetDateTime validFrom, OffsetDateTime validTo) {
         DBUser dbuser = createDBUserByUsername(userName);
-        // dbuser.setCertificate(createDBCertificate(certId, validFrom, validTo));
+        DBCredential credential = createDBCredential(dbuser, certId,"", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        credential.setActiveFrom(validFrom);
+        credential.setExpireOn(validTo);
+        credential.setCertificate(createDBCertificate(certId, validFrom, validTo));
+        dbuser.getUserCredentials().add(credential);
         return dbuser;
     }
     

@@ -7,6 +7,7 @@ import {UserService} from "../../../system-settings/user/user.service";
 import {CredentialRo} from "../../../security/credential.model";
 import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
 import {CertificateService} from "../../../system-settings/user/certificate.service";
+import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
 
 
 @Component({
@@ -34,6 +35,7 @@ export class CredentialDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private userService: UserService,
+              private httpErrorHandlerService: HttpErrorHandlerService,
               private certificateService: CertificateService,
               public dialogRef: MatDialogRef<CredentialDialogComponent>,
               private formBuilder: FormBuilder
@@ -60,8 +62,7 @@ export class CredentialDialogComponent {
       'encodedValue': new FormControl({value: null, readonly: true})
     });
 
-
-    this.credentialForm.controls['active'].setValue('');
+    this.credentialForm.controls['active'].setValue(true);
     this.credentialForm.controls['description'].setValue('');
     this.credentialForm.controls['activeFrom'].setValue('');
     this.credentialForm.controls['expireOn'].setValue('');
@@ -102,6 +103,11 @@ export class CredentialDialogComponent {
       this.credentialForm.controls['description'].enable();
       this.credentialForm.controls['activeFrom'].enable();
       this.credentialForm.controls['expireOn'].enable();
+      if (this.isCertificateType) {
+        this.credentialForm.controls['activeFrom'].disable();
+        this.credentialForm.controls['expireOn'].disable();
+      }
+
     }
     this.isReadOnly = disabled
 
@@ -114,6 +120,7 @@ export class CredentialDialogComponent {
       this.storeCertificateCredentials();
     }
   }
+
 
   uploadCertificate(event) {
     this.newCertFile = null;
@@ -133,18 +140,27 @@ export class CredentialDialogComponent {
           });
           if (res.invalid) {
             this.showErrorMessage(res.invalidReason);
+
           } else {
             this.clearAlert()
           }
+
+          this.credentialForm.controls['activeFrom'].setValue(res.validFrom);
+          this.credentialForm.controls['expireOn'].setValue(res.validTo);
+
           this.isCertificateInvalid = res.invalid;
           this.newCertFile = file;
         } else {
           this.clearCertificateData()
-          this.showErrorMessage("Error occurred while reading certificate.  Check if uploaded file has valid certificate type")
+          this.showErrorMessage("Error occurred while reading certificate. Check if uploaded file has valid certificate type")
         }
       },
       err => {
         this.clearCertificateData()
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+          this.closeDialog();
+          return;
+        }
         this.showErrorMessage("Error uploading certificate file [" + file.name + "]." + err.error?.errorDescription)
       }
     );
@@ -152,10 +168,8 @@ export class CredentialDialogComponent {
 
   storeCertificateCredentials() {
     this.clearAlert();
-
     this.userService.storeUserCertificateCredential(this.initCredential);
     this.closeDialog();
-
   }
 
 
@@ -163,10 +177,15 @@ export class CredentialDialogComponent {
 
     this.clearAlert();
     this.userService.generateUserAccessTokenCredential(this.initCredential).subscribe((response: AccessTokenRo) => {
-      this.showSuccessMessage("Token with id: [" + response.identifier + "] and value: [" + response.value + "] was generated!")
+      this.showSuccessMessage("Token with ID: \"" + response.identifier + "\" and value: \"" + response.value + "\" was generated!" +
+        "<br \><br \>Copy the access token's value and save it in a safe space. <br \><b>You won't be able to see your token's value once you click Close.</b>")
       this.userService.notifyAccessTokenUpdated(response.credential);
       this.setDisabled(true);
     }, (err) => {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+        this.closeDialog();
+        return;
+      }
       this.showErrorMessage(err.error.errorDescription);
     });
   }
@@ -201,12 +220,16 @@ export class CredentialDialogComponent {
     return null;
   }
 
-  showSuccessMessage(value:string) {
+  get minSelectableDate(): Date {
+    return this.credentialType == CredentialDialogComponent.ACCESS_TOKEN_TYPE ? new Date() : null;
+  }
+
+  showSuccessMessage(value: string) {
     this.message = value;
     this.messageType = "success";
   }
 
-  showErrorMessage(value:string) {
+  showErrorMessage(value: string) {
     this.message = value;
     this.messageType = "error";
   }

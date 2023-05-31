@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,11 @@ import java.util.stream.Collectors;
 public class SessionSecurityUtils {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SessionSecurityUtils.class);
 
+
+    protected SessionSecurityUtils() {
+    }
+
     /**
-     *
      * Current supported SMP authentication tokens.
      */
     protected static final List<Class> sessionAuthenticationClasses = Arrays.asList(
@@ -48,7 +52,11 @@ public class SessionSecurityUtils {
         }
         SecurityUtils.Secret secret = getAuthenticationSecret();
         String idValue = id.toString();
-        return secret != null ? SecurityUtils.encryptURLSafe(secret, idValue) : idValue;
+        if (secret == null) {
+            return idValue;
+        }
+        String valWithSeed = idValue + '#' + Calendar.getInstance().getTimeInMillis();
+        return SecurityUtils.encryptURLSafe(secret, valWithSeed);
     }
 
 
@@ -57,7 +65,13 @@ public class SessionSecurityUtils {
             return null;
         }
         SecurityUtils.Secret secret = getAuthenticationSecret();
-        String value = secret != null ? SecurityUtils.decryptUrlSafe(secret, id) : id;
+        if (secret == null) {
+            // try to convert to long value
+            return new Long(id);
+        }
+        String decVal = SecurityUtils.decryptUrlSafe(secret, id);
+        int indexOfSeparator = decVal.indexOf('#');
+        String value = indexOfSeparator > -1 ? decVal.substring(0, indexOfSeparator) : decVal;
         return new Long(value);
     }
 

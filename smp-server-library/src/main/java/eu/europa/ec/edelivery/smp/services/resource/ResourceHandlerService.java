@@ -1,7 +1,10 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
 
+import eu.europa.ec.edelivery.smp.data.dao.GroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
@@ -13,6 +16,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.spi.data.SpiResponseData;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
@@ -25,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
@@ -44,10 +48,15 @@ public class ResourceHandlerService extends AbstractResourceHandler {
 
     final ResourceMemberDao resourceMemberDao;
 
+    final GroupDao groupDao;
+    final SMLIntegrationService integrationService;
+
     public ResourceHandlerService(List<ResourceDefinitionSpi> resourceDefinitionSpiList, ResourceStorage resourceStorage,
-                                  ResourceMemberDao resourceMemberDao) {
+                                  ResourceMemberDao resourceMemberDao, GroupDao groupDao,SMLIntegrationService integrationService) {
         super(resourceDefinitionSpiList, resourceStorage);
         this.resourceMemberDao = resourceMemberDao;
+        this.groupDao = groupDao;
+        this.integrationService = integrationService;
     }
 
     public void readResource(ResourceRequest resourceRequest,
@@ -94,6 +103,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
 
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         DBResource resource = resolvedData.getResource();
+        DBDomain domain = resolvedData.getDomain();
         ResourceHandlerSpi handlerSpi = getResourceHandler(resolvedData.getResourceDef());
 
         boolean isNewResource = resource.getId() == null;
@@ -113,11 +123,11 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         } catch (ResourceException e) {
             switch (e.getErrorCode()) {
                 case INVALID_PARAMETERS:
-                    throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, ExceptionUtils.getRootCauseMessage(e));
+                    throw new BadRequestException(ErrorBusinessCode.WRONG_FIELD, e.getMessage());
                 case INVALID_RESOURCE:
                     throw new SMPRuntimeException(ErrorCode.INVALID_EXTENSION_FOR_SG, resource.getIdentifierValue(),
                             resource.getIdentifierScheme(),
-                            ExceptionUtils.getRootCauseMessage(e));
+                            e.getMessage());
                 default:
                     throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the resource!", e);
             }
@@ -141,8 +151,18 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         DBResource managedResource = resourceStorage.addDocumentVersionForResource(resource, documentVersion);
 
         if (isNewResource) {
-            resourceRequest.getOwnerHttpParameter();
             resourceMemberDao.setAdminMemberShip(user, managedResource);
+            if (managedResource.getGroup() == null) {
+
+                if (resolvedData.getGroup() != null) {
+                    managedResource.setGroup(resolvedData.getGroup());
+                } else {
+                    // if group is empty add first group from domain
+                    List<DBGroup> groupList = groupDao.getAllGroupsForDomain(domain);
+                    managedResource.setGroup(groupList.get(0));
+                }
+            }
+            integrationService.registerParticipant(managedResource, domain);
         }
     }
 
@@ -211,6 +231,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         // locate the resource handler
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         DBResource resource = resolvedData.getResource();
+        integrationService.unregisterParticipant(resource, resolvedData.domain);
         resourceStorage.deleteResource(resource);
     }
 

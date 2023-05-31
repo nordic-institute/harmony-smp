@@ -13,11 +13,13 @@ export class AlertMessageComponent implements OnInit {
   showSticky:boolean = false;
   message: any=null;
 
+  readonly successTimeout: number = 3000;
+
 
   constructor(private alertService: AlertMessageService) { }
 
   ngOnInit() {
-    this.alertService.getMessage().subscribe(message => { this.message = message; });
+    this.alertService.getMessage().subscribe(message => { this.showMessage(message); });
   }
 
   clearAlert():void {
@@ -25,14 +27,22 @@ export class AlertMessageComponent implements OnInit {
   }
 
   setSticky(sticky: boolean):void {
-    console.log("set sticky " + sticky)
     this.showSticky = sticky;
-
   }
 
   get messageText(){
     if (!!this.message){
       return this.message.text;
     }
+  }
+
+  showMessage(message: any) {
+    this.message = message;
+    if (message?.type==='success') {
+      setTimeout(() => {
+        this.clearAlert();
+      }, this.successTimeout);
+    }
+
   }
 }

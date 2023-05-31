@@ -218,4 +218,148 @@ public class PropertyUtilsTest {
             Assert.assertEquals(expectedValue, PropertyUtils.getMaskedData(smpPropertyEnum.getProperty(),testValue));
         }
     }
+/*
+    @Test
+    public void matchAllValues(){
+        System.out.println("Contains in values");
+
+        List<String> enumList =  Arrays.stream(SMPPropertyEnum.values()).map(val-> val.getProperty()).collect(Collectors.toList());
+        List<String> docList = Arrays.asList(docValues);
+
+        System.out.println("Missing in documentation");
+        for (String enumVal: enumList) {
+            if (!docList.contains(enumVal)) {
+                System.out.println("Missing: " + enumVal);
+            }
+        }
+
+        for (String docVal: docList) {
+            if (!enumList.contains(docVal)) {
+                System.out.println("Not in use: " + docVal);
+            }
+        }
+
+    }
+
+    String[] docValues = new String[] {
+            "contextPath.output",
+            "encodedSlashesAllowedInUrl",
+            "smp.http.forwarded.headers.enabled",
+            "smp.http.httpStrictTransportSecurity.maxAge",
+            "smp.http.header.security.policy",
+            "smp.proxy.host",
+            "smp.noproxy.hosts",
+            "smp.proxy.password",
+            "smp.proxy.port",
+            "smp.proxy.user",
+            "identifiersBehaviour.ParticipantIdentifierScheme.validationRegex",
+            "identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
+            "identifiersBehaviour.scheme.mandatory",
+            "identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate",
+            "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes",
+            "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes",
+            "identifiersBehaviour.splitPattern",
+            "identifiersBehaviour.ParticipantIdentifierScheme.urn.concatenate",
+            "bdmsl.integration.enabled",
+            "bdmsl.participant.multidomain.enabled",
+            "bdmsl.integration.url",
+            "bdmsl.integration.tls.disableCNCheck",
+            "bdmsl.integration.tls.serverSubjectRegex",
+            "bdmsl.integration.logical.address",
+            "bdmsl.integration.physical.address",
+            "bdmsl.integration.tls.useSystemDefaultTruststore",
+            "smp.keystore.password",
+            "smp.keystore.filename",
+            "smp.keystore.type",
+            "smp.truststore.password",
+            "smp.truststore.filename",
+            "smp.truststore.type",
+            "smp.certificate.crl.force",
+            "encryption.key.filename",
+            "smp.keystore.password.decrypted",
+            "smp.truststore.password.decrypted",
+            "smp.certificate.validation.allowedCertificatePolicyOIDs",
+            "smp.certificate.validation.subjectRegex",
+            "smp.property.refresh.cronJobExpression",
+            "smp.ui.session.secure",
+            "smp.ui.session.max-age",
+            "smp.ui.session.strict",
+            "smp.ui.session.path",
+            "smp.ui.session.idle_timeout.admin",
+            "smp.ui.session.idle_timeout.user",
+            "smp.cluster.enabled",
+            "smp.passwordPolicy.validationRegex",
+            "smp.passwordPolicy.validationMessage",
+            "smp.passwordPolicy.validDays",
+            "smp.passwordPolicy.warning.beforeExpiration",
+            "smp.passwordPolicy.expired.forceChange",
+            "smp.user.login.fail.delay",
+            "smp.user.login.maximum.attempt",
+            "smp.user.login.suspension.time",
+            "smp.accessToken.validDays",
+            "smp.accessToken.login.maximum.attempt",
+            "smp.accessToken.login.suspension.time",
+            "smp.accessToken.login.fail.delay",
+            "smp.ui.authentication.types",
+            "smp.automation.authentication.types",
+            "smp.automation.authentication.external.tls.clientCert.enabled",
+            "smp.automation.authentication.external.tls.SSLClientCert.enabled",
+            "smp.sso.cas.ui.label",
+            "smp.sso.cas.url",
+            "smp.sso.cas.urlPath.login",
+            "smp.sso.cas.callback.url",
+            "smp.sso.cas.smp.urlPath",
+            "smp.sso.cas.smp.user.data.urlPath",
+            "smp.sso.cas.token.validation.urlPath",
+            "smp.sso.cas.token.validation.params",
+            "smp.sso.cas.token.validation.groups",
+            "mail.smtp.host",
+            "mail.smtp.port",
+            "mail.smtp.protocol",
+            "mail.smtp.username",
+            "mail.smtp.password",
+            "mail.smtp.properties",
+            "smp.alert.user.login_failure.enabled",
+            "smp.alert.user.login_failure.level",
+            "smp.alert.user.login_failure.mail.subject",
+            "smp.alert.user.suspended.enabled",
+            "smp.alert.user.suspended.level",
+            "smp.alert.user.suspended.mail.subject",
+            "smp.alert.user.suspended.mail.moment",
+            "smp.alert.password.imminent_expiration.enabled",
+            "smp.alert.password.imminent_expiration.delay_days",
+            "smp.alert.password.imminent_expiration.frequency_days",
+            "smp.alert.password.imminent_expiration.level",
+            "smp.alert.password.imminent_expiration.mail.subject",
+            "smp.alert.password.expired.enabled",
+            "smp.alert.password.expired.delay_days",
+            "smp.alert.password.expired.frequency_days",
+            "smp.alert.password.expired.level",
+            "smp.alert.password.expired.mail.subject",
+            "smp.alert.accessToken.imminent_expiration.enabled",
+            "smp.alert.accessToken.imminent_expiration.delay_days",
+            "smp.alert.accessToken.imminent_expiration.frequency_days",
+            "smp.alert.accessToken.imminent_expiration.level",
+            "smp.alert.accessToken.imminent_expiration.mail.subject",
+            "smp.alert.accessToken.expired.enabled",
+            "smp.alert.accessToken.expired.delay_days",
+            "smp.alert.accessToken.expired.frequency_days",
+            "smp.alert.accessToken.expired.level",
+            "smp.alert.accessToken.expired.mail.subject",
+            "smp.alert.certificate.imminent_expiration.enabled",
+            "smp.alert.certificate.imminent_expiration.delay_days",
+            "smp.alert.certificate.imminent_expiration.frequency_days",
+            "smp.alert.certificate.imminent_expiration.level",
+            "smp.alert.certificate.imminent_expiration.mail.subject",
+            "smp.alert.certificate.expired.enabled",
+            "smp.alert.certificate.expired.delay_days",
+            "smp.alert.certificate.expired.frequency_days",
+            "smp.alert.certificate.expired.level",
+            "smp.alert.certificate.expired.mail.subject",
+            "smp.alert.credentials.cronJobExpression",
+            "smp.alert.credentials.serverInstance",
+            "smp.alert.credentials.batch.size",
+            "smp.alert.mail.from"
+    };
+    */
 }

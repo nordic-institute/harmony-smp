@@ -85,17 +85,6 @@ public class TestROUtils {
         return String.format(SIMPLE_DOCUMENT_XML, partSch, partId, docSch, docId, UUID.randomUUID().toString());
     }
 
-    public static ServiceGroupValidationRO getInvalid() throws IOException {
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionInvalid.xml");
-        return getExtensionRO(inputDoc);
-    }
-
-    public static ServiceGroupValidationRO getCustomExtension() throws IOException {
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionCustom.xml");
-        return getExtensionRO(inputDoc);
-    }
-
-
     public static ServiceGroupValidationRO getExtensionRO(String extension) {
         ServiceGroupValidationRO sg = new ServiceGroupValidationRO();
         sg.setServiceGroupId((long) 1);

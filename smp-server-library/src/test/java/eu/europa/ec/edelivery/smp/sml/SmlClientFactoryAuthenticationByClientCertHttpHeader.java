@@ -71,9 +71,8 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
     @Test
     public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
         //given
-        IManageParticipantIdentifierWS client = smlClientFactory.create(null, null, false);
+        IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
-        domain.setSmlClientCertHeader(CLIENT_CERT_HTTP_HEADER);
         domain.setSmlClientCertAuth(true);
         // when
         testInstance.configureClient("manageparticipantidentifier", client, domain);
@@ -94,9 +93,8 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
     public void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
 
         //given
-        IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
+        IManageServiceMetadataWS client = smlClientFactory.createSmp();
         DBDomain domain = new DBDomain();
-        domain.setSmlClientCertHeader(CLIENT_CERT_HTTP_HEADER);
         domain.setSmlClientCertAuth(true);
         // when
         testInstance.configureClient("manageservicemetadata", client, domain);
@@ -117,7 +115,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
     public void factoryProducesSMPClientNoDefinedAlias() {
 
         //given
-        IManageServiceMetadataWS client = smlClientFactory.createSmp(null, null, false);
+        IManageServiceMetadataWS client = smlClientFactory.createSmp();
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(true);

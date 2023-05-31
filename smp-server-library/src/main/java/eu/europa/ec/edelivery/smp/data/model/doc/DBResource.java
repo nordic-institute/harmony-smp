@@ -33,7 +33,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
 @Entity
 @Audited
-// the SMP_SG_UNIQ_PARTC_IDX  is natural key
 @Table(name = "SMP_RESOURCE",
         indexes = {@Index(name = "SMP_RS_UNIQ_IDENT_DOREDEF_IDX", columnList = "IDENTIFIER_SCHEME, IDENTIFIER_VALUE, FK_DOREDEF_ID", unique = true),
                 @Index(name = "SMP_RS_ID_IDX", columnList = "IDENTIFIER_VALUE"),
@@ -41,26 +40,90 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         })
 @org.hibernate.annotations.Table(appliesTo = "SMP_RESOURCE", comment = "SMP resource Identifier and scheme")
 @NamedQuery(name = QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN, query = "SELECT d FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
-    " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
-    " AND d.identifierValue = :identifier_value " +
-    " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
-    " OR d.identifierScheme = :identifier_scheme)")
+        " AND d.domainResourceDef.resourceDef.id=:resource_def_id" +
+        " AND d.identifierValue = :identifier_value " +
+        " AND (:identifier_scheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR d.identifierScheme = :identifier_scheme)")
 
 @NamedQuery(name = QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT, query = "SELECT count(d.id) FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id " +
         " and d.domainResourceDef.resourceDef.id = :resource_def_id ")
-
 @NamedQuery(name = QUERY_RESOURCES_BY_DOMAIN_ID_COUNT, query = "SELECT count(d.id) FROM DBResource d WHERE d.domainResourceDef.domain.id = :domain_id ")
-
-
+@NamedQuery(name = QUERY_RESOURCE_FILTER_COUNT, query = "SELECT count(r.id) FROM DBResource r " +
+        " JOIN DBDomainResourceDef dr ON dr.id = r.domainResourceDef.id  " +
+        " WHERE (:group_id IS NULL OR r.group.id = :group_id) " +
+        " AND (:user_id IS NULL OR r.id in (select rm.resource.id from DBResourceMember rm where rm.user.id = :user_id AND rm.role in (:membership_roles) )) " +
+        " AND (:domain_id IS NULL OR dr.domain.id = :domain_id) " +
+        " AND (:resource_def_id IS NULL OR dr.resourceDef.id = :resource_def_id) " +
+        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter))) "
+)
+@NamedQuery(name = QUERY_RESOURCE_FILTER, query = "SELECT r FROM  DBResource r " +
+        " JOIN DBDomainResourceDef dr ON dr.id = r.domainResourceDef.id  " +
+        " WHERE (:group_id IS NULL OR r.group.id = :group_id) " +
+        " AND (:user_id IS NULL OR r.id in (select rm.resource.id from DBResourceMember rm where rm.user.id = :user_id AND rm.role in (:membership_roles) )) " +
+        " AND (:domain_id IS NULL OR dr.domain.id = :domain_id) " +
+        " AND (:resource_def_id IS NULL OR dr.resourceDef.id = :resource_def_id) " +
+        " AND (:resource_filter IS NULL OR lower(r.identifierValue) like lower(:resource_filter) OR (r.identifierScheme IS NOT NULL AND lower(r.identifierScheme) like lower(:resource_filter)) )" +
+        "order by r.id asc")
 @NamedQuery(name = "DBResource.getServiceGroupByID", query = "SELECT d FROM DBResource d WHERE d.id = :id")
 @NamedQuery(name = "DBResource.getServiceGroupByIdentifier", query = "SELECT d FROM DBResource d WHERE d.identifierValue = :participantIdentifier " +
         " AND (:participantScheme IS NULL AND d.identifierScheme IS NULL " +
         " OR d.identifierScheme = :participantScheme)")
 @NamedQuery(name = "DBResource.deleteById", query = "DELETE FROM DBResource d WHERE d.id = :id")
 
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "DBResource.deleteAllOwnerships", query = "DELETE FROM SMP_RESOURCE_MEMBER WHERE FK_SG_ID=:serviceGroupId")
-})
+@NamedNativeQuery(name = "DBResource.deleteAllOwnerships", query = "DELETE FROM SMP_RESOURCE_MEMBER WHERE FK_SG_ID=:serviceGroupId")
+
+// get All public
+@NamedQuery(name = "DBResource.getPublicSearch2", query = "SELECT r FROM  DBResource r WHERE r.group.visibility='PUBLIC' " +
+        " AND (r.group.domain.visibility='PUBLIC' " +
+        "    OR :user_id IS NOT NULL " +
+        "     AND ( (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
+        "      OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
+        "      OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
+        "     ) " +
+        "  ) " +
+        " AND (r.group.visibility='PUBLIC' " +
+        "    OR  (:user_id IS NOT NULL " +
+        "     AND ( (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.id = r.group.id) > 0 " +
+        "      OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.id = r.group.id) > 0 " +
+        "     ) )" +
+        "  ) " +
+        " AND ( r.visibility = 'PUBLIC' " +
+        "   OR (:user_id IS NOT NULL " +
+        "     AND (select count(id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.id = r.id) > 0 )) " +
+        " AND (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier )" +
+        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) order by r.identifierScheme, r.identifierValue"
+)
+@NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
+        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
+        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
+        " AND :user_id IS NOT NULL AND rm.user.id = :user_id "  +
+        " OR  r.visibility ='PUBLIC' " + // user must be member of the group or the group is public
+        "   AND (:user_id IS NOT NULL " +
+        "         AND  ((select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = r.group.id) > 0 " +
+        "            OR  (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.id = r.group.id) > 0) " +
+        "       OR  r.group.visibility = 'PUBLIC'  " +
+        "           AND (r.group.domain.visibility = 'PUBLIC' " +
+        "            OR  (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
+        "            OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
+        "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
+        "))"+
+        "order by r.identifierScheme, r.identifierValue"
+)
+@NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER_COUNT, query = "SELECT count(distinct r.id) FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
+        " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
+        " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
+        " AND :user_id IS NOT NULL AND rm.user.id = :user_id "  +
+        " OR  r.visibility ='PUBLIC' " + // user must be member of the group or the group is public
+        "   AND (:user_id IS NOT NULL " +
+        "         AND  ((select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = r.group.id) > 0 " +
+        "            OR  (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.id = r.group.id) > 0) " +
+        "       OR  r.group.visibility = 'PUBLIC'  " +
+        "           AND (r.group.domain.visibility = 'PUBLIC' " +
+        "            OR  (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
+        "            OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
+        "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
+        "))"
+)
 public class DBResource extends BaseEntity {
 
     @Id
@@ -84,12 +147,9 @@ public class DBResource extends BaseEntity {
     private VisibilityType visibility = VisibilityType.PUBLIC;
 
     // The domain group list which handles the resource
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "SMP_GROUP_RESOURCE",
-            joinColumns = @JoinColumn(name = "FK_RESOURCE_ID"),
-            inverseJoinColumns = @JoinColumn(name = "FK_GROUP_ID")
-    )
-    private List<DBGroup> groups = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FK_GROUP_ID", nullable = true)
+    private DBGroup group;
 
     // The domain to which the resource belongs
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -155,14 +215,13 @@ public class DBResource extends BaseEntity {
         return this.resourceMembers;
     }
 
-    public List<DBGroup> getGroups() {
-        return this.groups;
+    public DBGroup getGroup() {
+        return group;
     }
 
-    public void addGroup(DBGroup group) {
-        this.groups.add(group);
+    public void setGroup(DBGroup group) {
+        this.group = group;
     }
-
 
     public List<DBSubresource> getSubresources() {
         return subresources;

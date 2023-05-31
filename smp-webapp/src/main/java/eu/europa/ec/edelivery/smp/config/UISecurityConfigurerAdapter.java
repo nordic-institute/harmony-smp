@@ -48,7 +48,6 @@ import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.SMP_UI_AUTH
 @Order(2)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-@ComponentScan("eu.europa.ec.edelivery.smp.auth")
 public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(UISecurityConfigurerAdapter.class);

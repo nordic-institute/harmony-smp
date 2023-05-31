@@ -22,8 +22,8 @@
   </mat-form-field>
 
   <h3>Resource definitions</h3>
-  <mat-toolbar>
-    <mat-toolbar-row class="mat-elevation-z5">
+  <mat-toolbar class ="mat-elevation-z2">
+    <mat-toolbar-row  class="smp-toolbar-row">
       <button id="showSelectedResourceButton" mat-raised-button
               [disabled]="!selected"
               (click)="onShowSelectedResourceDetails()"
@@ -68,7 +68,7 @@
 
   </table>
 
-  <mat-paginator class="mat-elevation-z8" #resourcePaginator
+  <mat-paginator class="mat-elevation-z2" #resourcePaginator
                  [hidePageSize]="true"
                  [showFirstLastButtons]="true"
                  [pageSize]="5" aria-label="Select page"></mat-paginator>

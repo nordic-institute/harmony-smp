@@ -15,7 +15,7 @@ import {HttpClient} from '@angular/common/http';
 import {SearchTableComponent} from "../../common/search-table/search-table.component";
 import {SecurityService} from "../../security/security.service";
 import {GlobalLookups} from "../../common/global-lookups";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {SmpConstants} from "../../smp.constants";
 
 @Component({

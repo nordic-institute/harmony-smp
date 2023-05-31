@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output,} from '@angular/core';
-import {DomainRo} from "../domain-ro.model";
+import {DomainRo} from "../../../common/model/domain-ro.model";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AdminDomainService} from "../admin-domain.service";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
@@ -81,7 +81,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         disabled: this.isDomainRegistered
       }, [Validators.pattern(this.smpIdDomainPattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSmpId), this._domain?.smlSmpId)]),
-      'smlClientCertHeader': new FormControl({value: '', readonly: true}),
       'smlClientKeyAlias': new FormControl({value: '', readonly: true}),
       'smlClientCertAuth': new FormControl({value: '', readonly: true}),
       'smlClientKeyCertificate': new FormControl({value: '', readonly: true}),
@@ -96,7 +95,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     newDomain.smlSubdomain = this.domainForm.get('smlSubdomain').value;
     newDomain.smlSmpId = this.domainForm.get('smlSmpId').value;
     newDomain.smlClientKeyAlias = this.domainForm.get('smlClientKeyAlias').value;
-    newDomain.smlClientCertHeader = this.domainForm.get('smlClientCertHeader').value;
     newDomain.smlClientCertAuth = this.domainForm.get('smlClientCertAuth').value;
     return newDomain;
   }
@@ -107,15 +105,16 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       this.domainForm.controls['smlSubdomain'].setValue(this._domain.smlSubdomain);
       this.domainForm.controls['smlSmpId'].setValue(this._domain.smlSmpId);
       this.domainForm.controls['smlClientKeyAlias'].setValue(this._domain.smlClientKeyAlias);
-      this.domainForm.controls['smlClientCertHeader'].setValue(this._domain.smlClientCertHeader);
       this.domainForm.controls['smlRegistered'].setValue(this._domain.smlRegistered);
       this.domainForm.controls['smlClientCertAuth'].setValue(this._domain.smlClientCertAuth);
       this.domainForm.enable();
+      if (this.isDomainRegistered) {
+        this.domainForm.controls['smlSmpId'].disable()
+      }
     } else {
       this.domainForm.controls['smlSubdomain'].setValue("");
       this.domainForm.controls['smlSmpId'].setValue("");
       this.domainForm.controls['smlClientKeyAlias'].setValue("");
-      this.domainForm.controls['smlClientCertHeader'].setValue("");
       this.domainForm.controls['smlRegistered'].setValue("");
       this.domainForm.controls['smlClientCertAuth'].setValue("");
       this.domainForm.disable();
@@ -156,14 +155,12 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       return false;
     }
 
-    if (!this._domain.smlClientCertHeader && this._domain.smlClientCertAuth) {
+    if (!this._domain.smlClientKeyAlias ) {
+      console.log("enableSMLRegister 4")
       return false;
     }
-    if (!this._domain.smlClientKeyAlias && !this._domain.smlClientCertAuth) {
-      return false;
-    }
-
-    // entity must be first persisted in order to be enabled to registering to SML
+    console.log("enableSMLRegister 5")
+    // entity must be first persisted in order to be enabled to register to SML
     return !this._domain.smlRegistered;
   }
 
@@ -172,9 +169,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       return false;
     }
 
-    if (this._domain.smlClientCertHeader && this._domain.smlClientCertAuth) {
-      return false;
-    }
     if (!this._domain.smlClientKeyAlias && !this._domain.smlClientCertAuth) {
       return false;
     }
@@ -183,7 +177,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     return this.isDomainRegistered;
   }
 
-  get isDomainRegistered() {
+  get isDomainRegistered():boolean {
     return this._domain?.smlRegistered;
   }
 
@@ -196,7 +190,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Unregister domain to SML",
-        description: "Action will unregister domain: " + this._domain + " and all its resources from SML. Do you wish to continue?"
+        description: "Action will unregister domain: [" + this._domain?.domainCode + "] and all its resources from SML. Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -213,7 +207,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Register domain to SML",
-        description: "Action will register domain: " + this._domain + " and all its service groups to SML. Do you wish to continue?"
+        description: "Action will register domain: [" + this._domain?.domainCode + "] and all its service groups to SML. Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -229,9 +223,10 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         // this.searchTable.showSpinner = false;
         if (res) {
           if (res.success) {
-            this.alertService.success("Domain " + domain.domainCode + " registered to sml!");
+            this.alertService.success("Domain [" + domain.domainCode + "] registered to sml!");
             this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = true;
+            this.domain = domain;
           } else {
             this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, res.errorMessage);
           }
@@ -252,9 +247,10 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         // this.searchTable.showSpinner = false;
         if (res) {
           if (res.success) {
-            this.alertService.success("Domain " + domain.domainCode + " unregistered from sml!");
+            this.alertService.success("Domain [" + domain.domainCode + "] unregistered from sml!");
             this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = false;
+            this.domain = domain;
           } else {
             this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, res.errorMessage);
           }

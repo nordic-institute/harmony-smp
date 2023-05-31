@@ -31,7 +31,7 @@ public class DBDomainToDomainROConverter implements Converter<DBDomain, DomainRO
             target.getResourceDefinitions().addAll(domainDocuments);
             target.setDomainId(SessionSecurityUtils.encryptedEntityId(source.getId()));
         } catch (IllegalAccessException | InvocationTargetException e) {
-            LOG.error("Error occurred while converting DBExtension", e);
+            LOG.error("Error occurred while converting DBDomain", e);
             return null;
         }
         return target;

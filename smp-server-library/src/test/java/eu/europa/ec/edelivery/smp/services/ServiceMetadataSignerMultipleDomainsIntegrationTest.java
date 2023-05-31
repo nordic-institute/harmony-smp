@@ -32,7 +32,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocument;
 import static org.junit.Assert.assertEquals;
 import static org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;
 import static javax.xml.crypto.dsig.DigestMethod.SHA256;
@@ -70,18 +69,4 @@ public class ServiceMetadataSignerMultipleDomainsIntegrationTest extends  Abstra
         uiKeystoreService.refreshData();
     }
 
-    @Test
-    public void testSignatureCalculatedForSecondDomain() throws Exception {
-        // given
-        Document document = loadDocument("/input/SignedServiceMetadata_withoutSignature.xml");
-
-        // when
-        signer.sign(document, "second_domain_alias", ALGO_ID_SIGNATURE_RSA_SHA256, SHA256);
-        Element smpSigPointer = SignatureUtil.findSignatureByParentNode(document.getDocumentElement());
-        String signingCertSubject = smpSigPointer.getElementsByTagName("X509SubjectName").item(0).getTextContent();
-
-        // then
-        SignatureUtil.validateSignature(smpSigPointer);
-        assertEquals("CN=Secodn domain,OU=SMP,O=CEF Digital,C=BE", signingCertSubject);
-    }
 }

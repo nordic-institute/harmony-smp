@@ -5,8 +5,8 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,6 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Component
 public class SmlIntegrationConfiguration {
 
-    protected final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
     protected DBDomain defaultDomain;
 
 
@@ -50,14 +49,14 @@ public class SmlIntegrationConfiguration {
         defaultDomain.setSmlRegistered(false);
         defaultDomain.setSmlClientCertAuth(false);
         defaultDomain.setSmlClientKeyAlias("clientAlias");
-        defaultDomain.setSmlClientCertHeader("clientCertClientHeader");
         setThrowExceptionAfterParticipantCallCount(-1);
         setThrowException(null);
     }
 
-    @Bean
+    @Bean("MockIManageServiceMetadataWS")
+    @Primary
     @Scope(SCOPE_PROTOTYPE)
-    public IManageServiceMetadataWS smpManagerClient(String clientKeyAlias, String clientCertHttpHeader, boolean authClientCert) throws BadRequestFault, UnauthorizedFault, InternalErrorFault, NotFoundFault {
+    public IManageServiceMetadataWS smpManagerClient() throws BadRequestFault, UnauthorizedFault, InternalErrorFault, NotFoundFault {
 
 
 
@@ -70,16 +69,14 @@ public class SmlIntegrationConfiguration {
         }
 
         AuthenticationTestDataHolder dh = new AuthenticationTestDataHolder();
-        dh.setAlias(clientKeyAlias);
-        dh.setClientCertHeader(clientCertHttpHeader);
         smpManagerClientMocks.add(clientMock);
         smpManagerClientMocksData.put(clientMock, dh);
         return clientMock;
     }
 
-    @Bean
+    @Bean("MockIManageParticipantIdentifierWS")
     @Scope(SCOPE_PROTOTYPE)
-    public IManageParticipantIdentifierWS smpParticipantClient(String clientKeyAlias, String clientCertHttpHeader,boolean authClientCert) throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public IManageParticipantIdentifierWS smpParticipantClient() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
 
 
         if (throwExceptionAfterParticipantCallCount >0 &&  throwExceptionAfterParticipantCallCount  <= smlClientMocks.size()){
@@ -98,19 +95,9 @@ public class SmlIntegrationConfiguration {
 
 
         AuthenticationTestDataHolder dh = new AuthenticationTestDataHolder();
-        dh.setAlias(clientKeyAlias);
-        dh.setClientCertHeader(clientCertHttpHeader);
         smlClientMocks.add(clientMock);
         smlClientMocksData.put(clientMock, dh);
         return clientMock;
-    }
-
-    public ParticipantIdentifierType getParticipantId() {
-        return PARTICIPANT_ID;
-    }
-
-    public DBDomain getDefaultDomain() {
-        return defaultDomain;
     }
 
     public List<IManageServiceMetadataWS> getSmpManagerClientMocks() {

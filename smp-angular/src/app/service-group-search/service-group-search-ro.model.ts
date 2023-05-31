@@ -4,5 +4,7 @@ import {SearchTableEntity} from "../common/search-table/search-table-entity.mode
 export interface ServiceGroupSearchRo extends SearchTableEntity {
   participantIdentifier: string;
   participantScheme: string;
+  domainCode?:string;
+  resourceDefUrlSegment?:string;
   serviceMetadata: Array<ServiceMetadataSearchRo>;
 }

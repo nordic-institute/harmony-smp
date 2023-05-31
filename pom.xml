@@ -12,18 +12,16 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.edelivery</groupId>
     <artifactId>smp-modules</artifactId>
     <packaging>pom</packaging>
     <name>SMP</name>
-    <version>5.0-SNAPSHOT</version>
+    <version>5.0-RC2-SNAPSHOT</version>
 
     <modules>
         <module>smp-angular</module>
-        <module>smp-api</module>
         <module>smp-spi</module>
         <module>smp-server-library</module>
         <module>smp-resource-extensions</module>
@@ -38,8 +36,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.12-SNAPSHOT</edelivery.ssl-auth.version>
-        <edelivery.dynamic-discovery-client.version>2.0-SNAPSHOT</edelivery.dynamic-discovery-client.version>
+        <edelivery.ssl-auth.version>1.12</edelivery.ssl-auth.version>
+        <edelivery.dynamic-discovery-client.version>2.0</edelivery.dynamic-discovery-client.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ant-commons-net.version>1.6.5</ant-commons-net.version>
@@ -86,12 +84,11 @@
         <orika.version>1.5.4</orika.version>
         <servlet-api.version>3.0.1</servlet-api.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <soapui.plugin.version>5.1.2</soapui.plugin.version>
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
-        <spring-boot.version>2.7.10</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.73</spring-boot.tomcat.version>
-        <spring.security.version>5.8.2</spring.security.version>
-        <spring.version>5.3.26</spring.version>
+        <spring-boot.version>2.7.12</spring-boot.version>
+        <spring-boot.tomcat.version>9.0.74</spring-boot.tomcat.version>
+        <spring.security.version>5.8.3</spring.security.version>
+        <spring.version>5.3.27</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
         <!-- plugins -->
@@ -126,8 +123,7 @@
         </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
-        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
-        </release.arguments>
+        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
     </properties>
 
@@ -136,17 +132,6 @@
         </developerConnection>
         <tag>HEAD</tag>
     </scm>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>SmartBearPluginRepository</id>
-            <url>http://www.soapui.org/repository/maven2/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>eviwarePluginRepository</id>
-            <url>http://www.eviware.com/repository/maven2/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <repositories>
         <repository>
@@ -271,6 +256,12 @@
                 <version>${h2.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.santuario</groupId>
+                <artifactId>xmlsec</artifactId>
+                <version>2.3.3</version>
+            </dependency>
+
+            <!-- dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
@@ -284,7 +275,7 @@
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-core</artifactId>
                 <version>${jaxb.version}</version>
-            </dependency>
+            </dependency -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
@@ -723,16 +714,6 @@
                     <version>3.3.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.smartbear.soapui</groupId>
-                    <artifactId>soapui-pro-maven-plugin</artifactId>
-                    <version>${soapui.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.smartbear.soapui</groupId>
-                    <artifactId>soapui-maven-plugin</artifactId>
-                    <version>${soapui.plugin.version}</version>
-                </plugin>
-                <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot.version}</version>
@@ -831,7 +812,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.1.2</version>
+                        <version>8.2.1</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>

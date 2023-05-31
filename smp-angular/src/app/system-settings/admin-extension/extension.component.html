@@ -4,7 +4,10 @@
               text="Registered DomiSMP extensions. <br /> DomiSMP supports document types via custom designed extension. The extensions implements
                tools for validating and generating the resources and subresources. <br /> Extensions can also implement custom logic for the payload scaning eg. virus detections. "
               [labelColumnContent]="searchExtensionPanel">
-    <extension-panel [extension]="selected"></extension-panel>
+    <ng-template #noDataFound>
+      <div class="empty-data-panel">No extension selected.</div>
+    </ng-template>
+    <extension-panel [extension]="selected"  *ngIf="selected;else noDataFound "></extension-panel>
   </data-panel>
 </div>
 

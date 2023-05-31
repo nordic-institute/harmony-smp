@@ -1,8 +1,8 @@
 <form [formGroup]="domainForm" >
 
   <div id="domain-resource-type-panel" class="mat-elevation-z2">
-    <mat-toolbar>
-      <mat-toolbar-row>
+    <mat-toolbar class ="mat-elevation-z2">
+      <mat-toolbar-row  class="smp-toolbar-row">
         <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
                 [disabled]="!resetButtonEnabled">
           <mat-icon>refresh</mat-icon>

@@ -4,10 +4,16 @@
               text="System Domain administration panel is a tool for creating and removing domains from DomiSMP"
               [labelColumnContent]="searchDomainPanel">
 
-
-    <mat-tab-group #domainTabs style="height: 100%" >
-      <mat-tab label="Domain data">
+    <ng-template #noDataFound>
+      <div class="empty-data-panel">No domain selected.</div>
+    </ng-template>
+    <mat-tab-group #domainTabs style="height: 100%" *ngIf="selected;else noDataFound">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <smp-label icon="domain" label="Domain data"></smp-label>
+        </ng-template>
         <domain-panel #domainPanelComponent
+                      [domainList]="domainList"
                       [domain]="selected"
                       [keystoreCertificates]="keystoreCertificates"
                       [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
@@ -15,22 +21,34 @@
                       (onDiscardNew)="onDiscardNew()"
         ></domain-panel>
       </mat-tab>
-      <mat-tab label="Resource Types">
-        <domain-resource-type-panel  #domainResourceTypePanelComponent
-          [domain]="selected"
-          [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
-          (onSaveResourceTypesEvent)="onSaveResourceTypesEvent($event)"
+      <mat-tab *ngIf="selected?.domainId;">
+        <ng-template mat-tab-label>
+          <smp-label icon="extension" label="Resource Types"></smp-label>
+        </ng-template>
+        <domain-resource-type-panel #domainResourceTypePanelComponent
+                                    [domain]="selected"
+                                    [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
+                                    (onSaveResourceTypesEvent)="onSaveResourceTypesEvent($event)"
         ></domain-resource-type-panel>
       </mat-tab>
-      <mat-tab label="SML integration">
-        <domain-sml-integration-panel #domainSmlIntegrationPanelComponent
-          [keystoreCertificates]="keystoreCertificates"
-          [domain]="selected"
-          (onSaveSmlIntegrationDataEvent)="onSaveSmlIntegrationDataEvent($event)"
-        ></domain-sml-integration-panel>
+      <mat-tab label="Members" *ngIf="selected?.domainId;">
+        <ng-template mat-tab-label>
+          <smp-label icon="groups" label="Members"></smp-label>
+        </ng-template>
+        <domain-member-panel #domainMemberPanelComponent
+                             [membershipType]="membershipType"
+                             [domain]="selected"
+        ></domain-member-panel>
       </mat-tab>
-      <mat-tab label="Members">
-        Content 3
+      <mat-tab *ngIf="selected?.domainId;">
+        <ng-template mat-tab-label>
+          <smp-label icon="dns" label="SML integration"></smp-label>
+        </ng-template>
+        <domain-sml-integration-panel #domainSmlIntegrationPanelComponent
+                                      [keystoreCertificates]="keystoreCertificates"
+                                      [domain]="selected"
+                                      (onSaveSmlIntegrationDataEvent)="onSaveSmlIntegrationDataEvent($event)"
+        ></domain-sml-integration-panel>
       </mat-tab>
     </mat-tab-group>
   </data-panel>
@@ -39,16 +57,15 @@
 <ng-template #searchDomainPanel>
   <mat-form-field id="domain-filter">
     <mat-label>Filter Domain by domain code</mat-label>
-    <input matInput (keyup)="applyDomainFilter($event)" placeholder="Domain code" #inputDomainFilter>
+    <input matInput (keyup)="applyDomainFilter($event)"  #inputDomainFilter>
   </mat-form-field>
 
-  <mat-toolbar>
-    <mat-toolbar-row class="mat-elevation-z5">
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
       <button mat-raised-button
               mat-flat-button color="primary"
-              onDiscardNew
               (click)="onCreateDomainClicked()"
-              >Create domain
+      >Create domain
       </button>
 
       <button mat-raised-button
@@ -69,7 +86,7 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
         (click)="domainSelected(row)"
-        [ngClass]="{'datatable-row-selected': row==selected,'datatable-row-odd': odd}"
+        [ngClass]="{'datatable-row-selected': row===selected,'datatable-row-odd': odd}"
     ></tr>
 
 
@@ -83,9 +100,9 @@
     </tr>
   </table>
 
-  <mat-paginator class="mat-elevation-z2" id="extension-paginator"
+  <mat-paginator class="mat-elevation-z2" id="domain-paginator"
                  [hidePageSize]="true"
                  [showFirstLastButtons]="true"
-                 [pageSize]="5" aria-label="Select page"></mat-paginator>
+                 [pageSize]="10" aria-label="Select page"></mat-paginator>
 
 </ng-template>

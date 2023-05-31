@@ -38,12 +38,22 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         })
 
 @org.hibernate.annotations.Table(appliesTo = "SMP_GROUP", comment = "The group spans the resources belonging to the domain group.")
-@NamedQueries({
-        @NamedQuery(name = QUERY_GROUP_ALL, query = "SELECT u FROM DBGroup u"),
-        @NamedQuery(name = QUERY_GROUP_BY_DOMAIN, query = "SELECT u FROM DBGroup u where u.domain.id = :domain_id"),
-        @NamedQuery(name = QUERY_GROUP_BY_NAME_DOMAIN, query = "SELECT u FROM DBGroup u where u.groupName = :name and u.domain.id = :domain_id"),
-        @NamedQuery(name = QUERY_GROUP_BY_NAME_DOMAIN_CODE, query = "SELECT u FROM DBGroup u where u.groupName = :name and u.domain.domainCode = :domain_code"),
-})
+@NamedQuery(name = QUERY_GROUP_ALL, query = "SELECT u FROM DBGroup u")
+@NamedQuery(name = QUERY_GROUP_BY_DOMAIN, query = "SELECT u FROM DBGroup u where u.domain.id = :domain_id")
+@NamedQuery(name = QUERY_GROUP_BY_NAME_DOMAIN, query = "SELECT u FROM DBGroup u where u.groupName = :name and u.domain.id = :domain_id")
+@NamedQuery(name = QUERY_GROUP_BY_NAME_DOMAIN_CODE, query = "SELECT u FROM DBGroup u where u.groupName = :name and u.domain.domainCode = :domain_code")
+@NamedQuery(name = QUERY_GROUP_BY_USER_ROLES_COUNT, query = "SELECT count(distinct c) FROM DBGroup c JOIN DBGroupMember dm ON c.id = dm.group.id " +
+        " WHERE dm.role in (:membership_roles) and dm.user.id= :user_id")
+
+@NamedQuery(name = QUERY_GROUP_BY_USER_GROUP_ROLES, query = "SELECT distinct c FROM DBGroup c JOIN DBGroupMember gm ON c.id = gm.group.id " +
+        " WHERE gm.role in (:membership_roles) and gm.user.id= :user_id")
+@NamedQuery(name = QUERY_GROUP_BY_DOMAIN_USER_GROUP_ROLES, query = "SELECT distinct c FROM DBGroup c JOIN DBGroupMember dm ON c.id = dm.group.id " +
+        " WHERE c.domain.id = :domain_id AND dm.role in (:membership_roles) and dm.user.id= :user_id")
+@NamedQuery(name = QUERY_GROUP_BY_DOMAIN_USER_RESOURCE_ROLES, query = "SELECT distinct c FROM DBGroup c " +
+        " JOIN DBResource r ON c.id = r.group.id " +
+        " JOIN DBResourceMember rm on r.id = rm.resource.id" +
+        " WHERE c.domain.id = :domain_id AND rm.role in (:membership_roles) and rm.user.id= :user_id")
+
 public class DBGroup extends BaseEntity {
 
     @Id

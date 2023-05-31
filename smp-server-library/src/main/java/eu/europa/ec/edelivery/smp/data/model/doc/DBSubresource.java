@@ -43,6 +43,14 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND d.resource.identifierValue=:resource_identifier " +
         " AND d.resource.identifierScheme=:resource_scheme order by id asc"
 )
+
+@NamedQuery(name = QUERY_SUBRESOURCE_BY_IDENTIFIER_RESOURCE_ID , query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id " +
+        " AND d.identifierValue=:subresource_identifier " +
+        " AND (:subresource_scheme IS NULL AND d.identifierScheme IS NULL " +
+        " OR d.identifierScheme = :subresource_scheme)"
+)
+
+@NamedQuery(name = QUERY_SUBRESOURCE_BY_RESOURCE_ID , query = "SELECT d FROM DBSubresource d WHERE d.resource.id = :resource_id order by id asc")
 @NamedQuery(name = "DBSubresource.deleteById", query = "DELETE FROM DBSubresource d WHERE d.id = :id")
 public class DBSubresource extends BaseEntity {
 

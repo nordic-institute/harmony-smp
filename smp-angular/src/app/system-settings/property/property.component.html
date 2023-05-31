@@ -15,8 +15,9 @@
   [tableTitle]="tableTitle"
 >
   <ng-template #searchPanel>
-    <mat-form-field>
-      <input matInput placeholder="Property" name="Property"
+    <mat-form-field style="width: 100%" >
+      <mat-label>Filter by property name</mat-label>
+      <input matInput name="Property"
              [(ngModel)]="filter.property"
              [matTooltip]='"Filter by property name"' (input)="searchPropertyChanged()" id="searchProperty">
     </mat-form-field>

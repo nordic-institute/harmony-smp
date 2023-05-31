@@ -39,188 +39,6 @@ let PUBLIC_NAVIGATION_TREE: NavigationNode = {
 };
 
 
-let NAVIGATION_TREE: NavigationNode =
-  {
-    code: "home",
-    name: "Home",
-    icon: "home",
-    children: [
-
-      {
-        code: "search-tools",
-        name: "Search",
-        icon: "search",
-        tooltip: "Search tools",
-        routerLink: "/",
-        children: [
-          {
-            code: "search-resources",
-            name: "Resources",
-            icon: "find_in_page",
-            tooltip: "Search registered resources",
-            routerLink: "/",
-
-          },
-          {
-            code: "search-lookup",
-            name: "DNS lookup",
-            icon: "dns",
-            tooltip: "DNS lookup tool",
-            routerLink: "/dns-lookup",
-          }
-        ]
-      },
-
-      {
-        code: "admin-domains",
-        name: "Domain Admin",
-        icon: "domain",
-        routerLink: "/domain",
-        children: [
-          {
-            code: "admin-domains-settings",
-            name: "Settings",
-            icon: "settings",
-          },
-          {
-            code: "admin-domains-members",
-            name: "Members",
-            icon: "person",
-          },
-          {
-            code: "admin-domains-groups",
-            name: "Groups",
-            icon: "group",
-          },
-          {
-            code: "admin-domains-resource-types",
-            name: "Resource types",
-            icon: "folder"
-          }
-        ]
-      },
-      {
-        code: "admin-group",
-        name: "Group Admin",
-        icon: "group",
-        children: [
-          {
-            code: "admin-group-settings",
-            name: "Settings",
-            icon: "settings",
-          },
-          {
-            code: "admin-group-members",
-            name: "Members",
-            icon: "person",
-          },
-          {
-            code: "admin-group-resources",
-            name: "Resources",
-            icon: "description"
-          }
-        ]
-      },
-      {
-        code: "admin-resources",
-        name: "Resources Admin",
-        icon: "edit_document",
-        children: [
-          {
-            code: "admin-resource-settings",
-            name: "Settings",
-            icon: "settings"
-          },
-          {
-            code: "admin-resource-members",
-            name: "Members",
-            icon: "person",
-          },
-          {
-            code: "admin-subresources",
-            name: "Resources",
-            icon: "file-open"
-          }
-        ]
-      },
-      {
-        code: "system-admin",
-        name: "System settings",
-        icon: "admin_panel_settings",
-        children: [
-          {
-            code: "system-admin-domain",
-            name: "Domain",
-            icon: "domain",
-            routerLink: "/domain",
-          },
-          {
-            code: "system-admin-users",
-            name: "Users",
-            icon: "people",
-            routerLink: "/users",
-          },
-          {
-            code: "system-admin-authentication",
-            name: "Authentication",
-            icon: "shield",
-          },
-          {
-            code: "system-admin-properties",
-            name: "Properties",
-            icon: "shield",
-          },
-          {
-            code: "system-admin-keystore",
-            name: "Keystore"
-          },
-          {
-            code: "system-admin-truststore",
-            name: "Truststore"
-          },
-          {
-            code: "system-admin-extensions",
-            name: "Extensions",
-            icon: "extension"
-          }
-        ]
-      },
-      {
-        code: "alerts",
-        name: "Alerts",
-        icon: "notifications",
-      },
-      {
-        code: "user-data",
-        name: "User profile",
-        icon: "account_circle",
-        children: [
-          {
-            code: "user-data-profile",
-            name: "User profile",
-            icon: "account_circle",
-          },
-          {
-            code: "user-data-access-token",
-            name: "Access tokens",
-            icon: "key",
-          },
-          {
-            code: "user-data-certificates",
-            name: "Certificates",
-            icon: "article",
-          },
-          {
-            code: "user-data-membership",
-            name: "Membership",
-            icon: "person",
-          }
-        ]
-      },
-    ]
-  };
-
-
 /**
  * Navigation  data with nested structure.
  * Each node has a name and an optional list of children.
@@ -234,6 +52,7 @@ export interface NavigationNode {
   children?: NavigationNode[];
 
   selected?: boolean;
+  transient?: boolean; // if true then node must be ignored
 }
 
 @Injectable()
@@ -295,6 +114,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       this.selectedPathSubject.next(this.selectedPath);
       let navigationPath: string[] = this.getNavigationPath(this.selectedPath);
       // navigate to selected path
+
       this.router.navigate(navigationPath);
     } else {
       this.selectedPathSubject.next(null);
@@ -319,12 +139,21 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   protected findLeaf(targetNode: NavigationNode): NavigationNode {
-    if (!targetNode || !targetNode.children || targetNode.children.length == 0) {
+    if (this.noTargetChildren(targetNode)) {
       return targetNode;
     }
 
     let newTargetNode = targetNode.children[0]
     return this.findLeaf(newTargetNode);
+  }
+
+  protected noTargetChildren(targetNode: NavigationNode): boolean {
+    if (!targetNode || !targetNode.children || targetNode.children.length == 0) {
+      return true;
+    }
+
+    let nonTransient = targetNode.children.filter(node => !node.transient);
+    return nonTransient.length == 0;
   }
 
   /**
@@ -355,6 +184,15 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     return null;
   }
 
+  protected findNodeByCode(nodeCode: string, parentNode: NavigationNode): NavigationNode {
+    if (!parentNode.children) {
+      return null;
+    }
+    console.log("find " + nodeCode + "from parent2: " + parentNode.code)
+    return parentNode.children.find(node => node.routerLink == nodeCode);
+
+  }
+
   /**
    * Refresh navigation tree for user
    */
@@ -370,8 +208,7 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
         let navigationObserver = this.http.get<NavigationNode>(SmpConstants.REST_PUBLIC_USER_NAVIGATION_TREE.replace(SmpConstants.PATH_PARAM_ENC_USER_ID, currentUser.userId));
 
         navigationObserver.subscribe((userRootNode: NavigationNode) => {
-          this.rootNode = userRootNode;
-          this.data = this.rootNode.children;
+          this.setNavigationTree(userRootNode)
         }, (error: any) => {
           // check if unauthorized
           // just console try latter
@@ -380,6 +217,27 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       }
     });
   };
+
+  setNavigationTree(userRootNode: NavigationNode) {
+    // find the node by the navigation
+    let path: string[] = this.router.url.split('/');
+    let startNode = userRootNode;
+
+    for (let index in path) {
+      let pathSegment = path[index];
+      // the first node is empty - skip all empty nodes
+      if (!!pathSegment) {
+        startNode = this.findNodeByCode(path[index], startNode);
+        if (startNode == null) {
+          break;
+        }
+      }
+    }
+
+    this.rootNode = userRootNode;
+    this.data = this.rootNode?.children;
+    this.select(startNode);
+  }
 
 
   getSelectedPathObservable(): Observable<NavigationNode[]> {
@@ -459,4 +317,9 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     return false;
   }
 
+  public navigateToLogin(): void {
+    this.reset();
+    this.router.navigate(['/login'], {queryParams: {returnUrl: this.router.url}});
+    this.router.parseUrl('/login');
+  }
 }

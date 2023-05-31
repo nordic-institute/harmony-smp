@@ -7,6 +7,7 @@ import {SecurityService} from "../../security/security.service";
 import {Observable, Subject} from "rxjs";
 import {CredentialRo} from "../../security/credential.model";
 import {AccessTokenRo} from "../../common/dialogs/access-token-generation-dialog/access-token-ro.model";
+import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
 
 /**
  * Class handle current user settings such-as profile, credentials, DomiSMP settings... ,
@@ -27,6 +28,7 @@ export class UserService {
 
   constructor(
     private http: HttpClient,
+    private httpErrorHandlerService: HttpErrorHandlerService,
     private securityService: SecurityService,
     private alertService: AlertMessageService,
   ) {
@@ -53,6 +55,9 @@ export class UserService {
       .subscribe((response: CredentialRo) => {
         this.notifyPwdStatusUpdated(response)
       }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+          return;
+        }
         this.alertService.error(error.error?.errorDescription)
       });
   }
@@ -67,6 +72,9 @@ export class UserService {
       .subscribe((response: CredentialRo[]) => {
         this.notifyAccessTokensUpdated(response)
       }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+          return;
+        }
         this.alertService.error(error.error?.errorDescription)
       });
   }
@@ -82,6 +90,9 @@ export class UserService {
       .subscribe((response: CredentialRo) => {
         this.notifyAccessTokenUpdated(response)
       }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+          return;
+        }
         this.alertService.error(error.error?.errorDescription)
       });
   }
@@ -97,6 +108,9 @@ export class UserService {
       .subscribe((response: CredentialRo) => {
         this.notifyAccessTokenUpdated(response)
       }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+          return;
+        }
         this.alertService.error(error.error?.errorDescription)
       });
   }
@@ -112,6 +126,9 @@ export class UserService {
       .subscribe((response: CredentialRo) => {
         this.notifyCertificateUpdated(response)
       }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+          return;
+        }
         this.alertService.error(error.error?.errorDescription)
       });
   }
@@ -127,6 +144,9 @@ export class UserService {
       .subscribe((response: CredentialRo) => {
         this.notifyCertificateUpdated(response)
       }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+          return;
+        }
         this.alertService.error(error.error?.errorDescription)
       });
   }
@@ -153,7 +173,11 @@ export class UserService {
       .subscribe((response: CredentialRo) => {
         this.notifyCertificateUpdated(response)
       }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+          return;
+        }
         this.alertService.error(error.error?.errorDescription)
+
       });
   }
 
@@ -170,6 +194,9 @@ export class UserService {
       .subscribe((response: CredentialRo[]) => {
         this.notifyCertificatesUpdated(response)
       }, error => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)){
+          return;
+        }
         this.alertService.error(error.error?.errorDescription)
       });
   }

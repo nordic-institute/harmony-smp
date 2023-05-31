@@ -8,8 +8,10 @@ import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
@@ -18,7 +20,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 /**
  * Service implements logic if user can activate action on the resource
@@ -42,8 +44,9 @@ public class ResourceGuard {
 
     /**
      * Method validates if the user is authorized for action on the resource
-     * @param user user trying to execute the action
-     * @param action resource action
+     *
+     * @param user     user trying to execute the action
+     * @param action   resource action
      * @param resource target resource
      * @return
      */
@@ -67,10 +70,6 @@ public class ResourceGuard {
         switch (action) {
             case READ:
                 return canRead(user, subresource);
-           /* case UPDATE:
-                return canUpdate(user, subresource);
-            case CREATE:
-                return canCreate(user, subresource); */
             case DELETE:
                 return canDelete(user, subresource);
         }
@@ -81,12 +80,35 @@ public class ResourceGuard {
     public boolean canRead(SMPUserDetails user, DBResource resource) {
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to read resource [{}]", user, resource);
 
+        DBGroup group = resource.getGroup();
+        DBDomain domain = group.getDomain();
+        DBUser dbuser = user == null ? null : user.getUser();
+        // if domain is internal check if user is member of domain, or any internal resources, groups
+        if (domain.getVisibility() == VisibilityType.PRIVATE &&
+                (dbuser == null ||
+                        !(domainMemberDao.isUserDomainMember(dbuser, domain)
+                                || groupMemberDao.isUserAnyDomainGroupResourceMember(dbuser, domain)
+                                || resourceMemberDao.isUserAnyDomainResourceMember(dbuser, domain)))
+        ) {
+            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read internal domain [{}] resources", user, domain);
+            return false;
+        }
+        // if group is internal check if user is member of group, or any group resources,
+        if (group.getVisibility() == VisibilityType.PRIVATE &&
+                (dbuser == null ||
+                        !(groupMemberDao.isUserGroupMember(dbuser, Collections.singletonList(group))
+                                || resourceMemberDao.isUserAnyGroupResourceMember(dbuser, group))
+                )) {
+            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read internal group [{}] resources", user, domain);
+            return false;
+        }
+
         // if resource is public anybody can see it
         if (resource.getVisibility() == VisibilityType.PUBLIC) {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized to read public resource [{}]", user, resource);
             return true;
         }
-        if (user == null || user.getUser() == null) {
+        if (dbuser == null) {
             LOG.debug(SMPLogger.SECURITY_MARKER, "Anonymous user [{}] is not authorized to read resource [{}]", user, resource);
             return false;
         }
@@ -96,14 +118,16 @@ public class ResourceGuard {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized: [{}] to read private resource [{}]", user, isResourceMember, resource);
             return isResourceMember;
         }
+        /*
         // if resource is internal the domain, group members and resource member can see it
         if (resource.getVisibility() == VisibilityType.INTERNAL) {
-            boolean isAuthorized =  domainMemberDao.isUserDomainMember(user.getUser(), resource.getDomainResourceDef().getDomain())
-                    || groupMemberDao.isUserGroupMember(user.getUser(), resource.getGroups());
+
+            boolean isAuthorized = domainMemberDao.isUserDomainMember(dbuser, resource.getDomainResourceDef().getDomain())
+                    || groupMemberDao.isUserGroupMember(dbuser, Collections.singletonList(resource.getGroup()));
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized: [{}] to read internal resource [{}]", user, isAuthorized, resource);
             return isAuthorized;
         }
-
+*/
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read resource [{}]", user, resource);
         return false;
     }
@@ -115,9 +139,9 @@ public class ResourceGuard {
     }
 
     public boolean canCreateOrUpdate(SMPUserDetails user, DBResource resource, DBDomain domain) {
-            return resource.getId() == null?
-                    canCreate(user, resource, domain):
-                    canUpdate(user, resource);
+        return resource.getId() == null ?
+                canCreate(user, resource, domain) :
+                canUpdate(user, resource);
     }
 
     public boolean canUpdate(SMPUserDetails user, DBResource resource) {
@@ -167,29 +191,6 @@ public class ResourceGuard {
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to delete resource [{}]", user, subresource);
         // Subresource can be created by the resource admin, the same as for update
         return canUpdate(user, subresource);
-    }
-
-    /**
-     * Method validates if user is member of the resource with admin rights
-     *
-     * @param userIdentifier
-     * @param resourceIdentifier
-     */
-    public boolean isResourceAdmin(String userIdentifier, String resourceIdentifier) {
-        Identifier pt = identifierService.normalizeParticipantIdentifier(resourceIdentifier);
-        return isResourceAdmin(userIdentifier, pt.getValue(), pt.getScheme());
-    }
-
-    public boolean isResourceAdmin(String userIdentifier, String resourceIdentifierValue, String resourceIdentifierScheme) {
-        // TODO
-        /**
-         *         ParticipantIdentifierType pt = identifierService.normalizeParticipantIdentifier(serviceGroupIdentifier);
-         *         Optional<DBResource> osg = serviceGroupDao.findServiceGroup(pt.getValue(), pt.getScheme());
-         *         Optional<DBUser> own = userDao.findUserByIdentifier(ownerIdentifier);
-         *         return osg.isPresent() && own.isPresent() && osg.get().getUsers().contains(own.get());
-         *     }
-         */
-        return false;
     }
 
     /**

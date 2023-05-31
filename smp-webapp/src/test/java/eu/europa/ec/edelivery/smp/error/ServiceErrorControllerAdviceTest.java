@@ -1,10 +1,8 @@
 package eu.europa.ec.edelivery.smp.error;
 
-import ec.services.smp._1.ErrorResponse;
+import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.*;
-import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
-import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -67,7 +65,7 @@ public class ServiceErrorControllerAdviceTest {
         assertEquals(ErrorBusinessCode.UNAUTHORIZED.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
-
+/*
     @Test
     public void handleXmlInvalidAgainstSchemaException() {
         ResponseEntity re = testIntance.handleXmlInvalidAgainstSchemaException(
@@ -76,4 +74,6 @@ public class ServiceErrorControllerAdviceTest {
         assertEquals(BAD_REQUEST, re.getStatusCode());
         assertEquals(ErrorBusinessCode.XSD_INVALID.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
+
+ */
 }

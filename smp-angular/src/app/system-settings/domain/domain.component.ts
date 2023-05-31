@@ -17,9 +17,9 @@ import {SmpConstants} from "../../smp.constants";
 import {GlobalLookups} from "../../common/global-lookups";
 import {SearchTableComponent} from "../../common/search-table/search-table.component";
 import {SecurityService} from "../../security/security.service";
-import {DomainRo} from "../admin-domain/domain-ro.model";
+import {DomainRo} from "../../common/model/domain-ro.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {EntityStatus} from "../../common/model/entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-dialog.component";
 import {SmpInfoService} from "../../app-info/smp-info.service";
 import {SmlIntegrationService} from "./sml-integration.service";
@@ -123,10 +123,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
 
   ngAfterViewInit() {
     this.initColumns();
-    // if system admin refresh certificate list!
-    if (this.securityService.isCurrentUserSystemAdmin()) {
-      this.lookups.refreshCertificateLookup();
-    }
+
   }
 
   certificateAliasExists(alias: string): boolean {
@@ -168,7 +165,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
       msg = "The domain should have a defined signature CertAlias."
     }
     if (this.lookups.cachedApplicationConfig.smlIntegrationOn) {
-      if (!domain.smlSmpId || !domain.smlClientCertHeader) {
+      if (!domain.smlSmpId || !domain.smlClientKeyAlias) {
         msg = (!msg ? "" : msg + " ") + "For SML integration the SMP SMP ID and SML client certificate must be defined!"
       }
     }
@@ -194,9 +191,6 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
 
-    if (!domainRo.smlClientCertHeader && domainRo.smlClientCertAuth) {
-      return false;
-    }
     if (!domainRo.smlClientKeyAlias && !domainRo.smlClientCertAuth) {
       return false;
     }
@@ -214,9 +208,6 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
     }
     let domainRo = (this.searchTable.selected[0] as DomainRo);
 
-    if (!domainRo.smlClientCertHeader && domainRo.smlClientCertAuth) {
-      return false;
-    }
     if (!domainRo.smlClientKeyAlias && !domainRo.smlClientCertAuth) {
       return false;
     }

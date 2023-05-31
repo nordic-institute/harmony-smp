@@ -2,7 +2,7 @@ import {SearchTableController} from '../../common/search-table/search-table-cont
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {UserDetailsDialogComponent, UserDetailsDialogMode} from './user-details-dialog/user-details-dialog.component';
 import {UserRo} from './user-ro.model';
-import {EntityStatus} from '../../common/model/entity-status.model';
+import {EntityStatus} from '../../common/enums/entity-status.enum';
 import {GlobalLookups} from "../../common/global-lookups";
 import {SearchTableEntity} from "../../common/search-table/search-table-entity.model";
 import {SearchTableValidationResult} from "../../common/search-table/search-table-validation-result.model";
@@ -11,13 +11,12 @@ import {HttpClient} from "@angular/common/http";
 import {CertificateRo} from "./certificate-ro.model";
 import {PasswordChangeDialogComponent} from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {AccessTokenGenerationDialogComponent} from "../../common/dialogs/access-token-generation-dialog/access-token-generation-dialog.component";
+import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 
 
 export class UserController implements SearchTableController {
 
   nullCert:CertificateRo;
-
-
   compareUserProperties = ["username","password","emailAddress","active","role","certificate"];
   compareCertProperties = ["certificateId","subject","issuer","serialNumber","crlUrl","validFrom","validTo"];
 
@@ -70,10 +69,10 @@ export class UserController implements SearchTableController {
       index: null,
       username: '',
       emailAddress: '',
-      role: '',
+      role: ApplicationRoleEnum.USER,
       active: true,
       status: EntityStatus.NEW,
-      statusPassword: EntityStatus.NEW
+
     }
   }
 

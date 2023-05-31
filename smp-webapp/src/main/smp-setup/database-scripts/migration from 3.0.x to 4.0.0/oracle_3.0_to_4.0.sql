@@ -23,11 +23,11 @@ CREATE TABLE smp_domain (
 
 INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('domain1', 'DEFAULT-SMP-ID');
 
-ALTER TABLE SMP_RESOURCE ADD (
+ALTER TABLE smp_service_group ADD (
   domainId  VARCHAR(50) DEFAULT 'domain1' NOT NULL
 );
 
-ALTER TABLE SMP_RESOURCE ADD (
+ALTER TABLE smp_service_group ADD (
   CONSTRAINT
     FK_srv_group_domain FOREIGN KEY (domainId)
     REFERENCES smp_domain (domainId)

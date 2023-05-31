@@ -63,8 +63,6 @@ public enum SMPPropertyEnum {
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes", "casesensitive-doc-scheme1|casesensitive-doc-scheme2", "Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
 
-    DOCUMENT_RESTRICTION_CERT_TYPES("document.restriction.allowed.certificate.types", "", "Allowed certificate types registered when composing service metadata. Empty value means no restrictions, for other values see the java KeyFactory Algorithms for example RSA|EC|Ed25519|Ed448",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
 
     // SML integration!
     SML_ENABLED("bdmsl.integration.enabled", "false", "BDMSL (SML) integration ON/OFF switch",
@@ -96,9 +94,6 @@ public enum SMPPropertyEnum {
             OPTIONAL, ENCRYPTED, NO_RESTART_NEEDED, STRING),
     TRUSTSTORE_FILENAME("smp.truststore.filename", "smp-truststore.p12", "Truststore filename ",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, FILENAME),
-    TRUSTSTORE_ADD_CERT_ON_USER_UPDATE("smp.truststore.add.cert.onUserRegistration",
-            "false", "Automatically add certificate to truststore when assigned to user.",
-            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
     CERTIFICATE_CRL_FORCE("smp.certificate.crl.force", "false", "If false then if CRL is not reachable ignore CRL validation",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
     ENCRYPTION_FILENAME("encryption.key.filename", "encryptionPrivateKey.private", "Key filename to encrypt passwords",

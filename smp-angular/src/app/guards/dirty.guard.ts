@@ -8,6 +8,10 @@ export const dirtyDeactivateGuard = (component: BeforeLeaveGuard) => {
   const navigationService = inject(NavigationService);
   const dialog = inject(MatDialog);
 
+  if (!component) {
+    return true;
+  }
+
   if (component.isDirty && !component.isDirty()) return true;
   return dialog.open(CancelDialogComponent).afterClosed().toPromise().then((cancelChanges: boolean) => {
     // rollback the navigation

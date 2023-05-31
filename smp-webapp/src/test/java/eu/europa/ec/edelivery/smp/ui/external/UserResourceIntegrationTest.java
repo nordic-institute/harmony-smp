@@ -71,10 +71,7 @@ public class UserResourceIntegrationTest {
         UserRO userRO = getLoggedUserData(mvc, session);
         userRO.setActive(!userRO.isActive());
         userRO.setEmailAddress("test@mail.com");
-        if (userRO.getCertificate() == null) {
-            userRO.setCertificate(new CertificateRO());
-        }
-        userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
+
         mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId())
                 .with(csrf())
                 .session(session)
@@ -94,10 +91,7 @@ public class UserResourceIntegrationTest {
         // when
         userRO.setActive(!userRO.isActive());
         userRO.setEmailAddress("test@mail.com");
-        if (userRO.getCertificate() == null) {
-            userRO.setCertificate(new CertificateRO());
-        }
-        userRO.getCertificate().setCertificateId(UUID.randomUUID().toString());
+
 
         mvc.perform(put(PATH_PUBLIC + "/" + userRO.getUserId())
                 .with(getHttpBasicSystemAdminCredentials()) // authenticate with system admin
@@ -129,10 +123,7 @@ public class UserResourceIntegrationTest {
         UserRO updateUserData = mapper.readValue(resultUser.getResponse().getContentAsString(), UserRO.class);
         AccessTokenRO resAccessToken = mapper.readValue(result.getResponse().getContentAsString(), AccessTokenRO.class);
         assertNotNull(resAccessToken);
-        assertNotEquals(userRO.getAccessTokenId(), resAccessToken.getIdentifier());
-        assertNotEquals(userRO.getAccessTokenExpireOn(), resAccessToken.getExpireOn());
-        assertEquals(updateUserData.getAccessTokenId(), resAccessToken.getIdentifier());
-        assertEquals(updateUserData.getAccessTokenExpireOn(), resAccessToken.getExpireOn());
+
     }
 
     @Test
