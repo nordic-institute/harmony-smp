@@ -41,10 +41,6 @@
             <param-name>contextClass</param-name>
             <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
         </init-param>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>eu.europa.ec.edelivery.smp.config.SMPWebAppConfig</param-value>
-        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>smpRestServlet</servlet-name>
@@ -59,8 +55,6 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             eu.europa.ec.edelivery.smp.config.EnvironmentProperties;
-            eu.europa.ec.edelivery.smp.config.WSSecurityConfigurerAdapter;
-            eu.europa.ec.edelivery.smp.config.UISecurityConfigurerAdapter;
             eu.europa.ec.edelivery.smp.config.SMPWebAppConfig;
         </param-value>
     </context-param>

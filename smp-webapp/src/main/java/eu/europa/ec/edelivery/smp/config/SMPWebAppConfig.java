@@ -37,19 +37,52 @@ import java.util.TimeZone;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
- * Created by gutowpa on 11/07/2017.
+ * This is the entry point of the DomiSMP application (beans)configuration/setup.
+ *
+ * The SMPWebAppConfig is initiated from the web.xml.
+ *
+ * The following configurations: ServicesBeansConfiguration, SMPDatabaseConfig, UISecurityConfigurerAdapter, WSSecurityConfigurerAdapter
+ * are configured from the SMPWebAppConfig
+ *
+ * <table border="1">
+ * <tr><th>package</th><th>module</th><th>scan</th></tr>
+ * <tr><td>auth</td><td>smp-server-library/smp-webapp</td><td>SMPWebAppConfig</td></tr>
+ * <tr><td>config</td><td>smp-server-library/smp-webapp</td><td>SMPWebAppConfig</td></tr>
+ * <tr><td>conversion</td><td>smp-server-library</td><td>ServicesBeansConfiguration</td></tr>
+ * <tr><td>controller</td><td>smp-webapp</td><td>SMPWebAppConfig</td></tr>
+ * <tr><td>cron</td><td>smp-server-library</td><td>SMPWebAppConfig</td></tr>
+ * <tr><td>data</td><td>smp-server-library</td><td>SMPDatabaseConfig</td></tr>
+ * <tr><td>exceptions</td><td>smp-server-library</td><td>No beans</td></tr>
+ * <tr><td>error</td><td>smp-webapp</td><td>SMPWebAppConfig</td></tr>
+ * <tr><td>identifiers</td><td>smp-server-library</td><td>No beans</td></tr>
+ * <tr><td>logging</td><td>smp-server-library</td><td>No beans</td></tr>
+ * <tr><td>monitor</td><td>smp-webapp</td><td>SMPWebAppConfig</td></tr>
+ * <tr><td>security</td><td>smp-server-library</td><td>ServicesBeansConfiguration</td></tr>
+ * <tr><td>services</td><td>smp-server-library</td><td>ServicesBeansConfiguration</td></tr>
+ * <tr><td>servlet</td><td>smp-server-library</td><td>No beans</td></tr>
+ * <tr><td>sml</td><td>smp-server-library</td><td>ServicesBeansConfiguration</td></tr>
+ * <tr><td>utils</td><td>smp-server-library</td><td>SMPWebAppConfig</td></tr>
+ * <tr><td>ui</td><td>smp-webapp</td><td>SMPWebAppConfig</td></tr>
+ * </table>
+ *
+ *
+ *  @author gutowpa
+ *  @since 3.0.0
  */
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp",
+        "eu.europa.ec.edelivery.smp.auth",
         "eu.europa.ec.edelivery.smp.config",
+        "eu.europa.ec.edelivery.smp.controllers",
+        "eu.europa.ec.edelivery.smp.error",
         "eu.europa.ec.edelivery.smp.monitor",
         "eu.europa.ec.edelivery.smp.ui",
+        // lib packages
+        "eu.europa.ec.edelivery.smp.utils",
+        "eu.europa.ec.edelivery.smp.cron",
+        // spi properties
         "eu.europa.ec.smp.spi",})
-@Import({GlobalMethodSecurityConfig.class,
-        ServiceErrorControllerAdvice.class,
-        ServicesBeansConfiguration.class})
 public class SMPWebAppConfig implements WebMvcConfigurer {
     private static final Logger LOG = LoggerFactory.getLogger(SMPWebAppConfig.class);
 
