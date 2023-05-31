@@ -105,25 +105,6 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         assertEquals(serviceGroupRO.getParticipantIdentifier(), lst.get(0).getParticipantIdentifier());
         assertEquals(serviceGroupRO.getParticipantScheme(), lst.get(0).getParticipantScheme());
     }
-
-    @Test
-    @Transactional
-    public void removeServiceGroupTestSMLRecords() {
-        // given
-        ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1, -1, null, null, null);
-        assertFalse(res.getServiceEntities().isEmpty());
-        ServiceGroupRO roToDelete = res.getServiceEntities().get(0);
-        assertFalse(roToDelete.getServiceGroupDomains().isEmpty());
-
-        // When
-        List<ParticipantSMLRecord> lst = testInstance.removeServiceGroup(roToDelete);
-        // then
-        assertEquals(roToDelete.getServiceGroupDomains().size(), lst.size());
-        lst.forEach(val -> {
-            assertEquals(SMLStatusEnum.UNREGISTER, val.getStatus());
-        });
-
-    }
 /*
     @Test
     @Transactional

@@ -4,6 +4,7 @@ import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
@@ -37,12 +38,14 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     private final GroupDao groupDao;
     private final GroupMemberDao groupMemberDao;
     private final DomainDao domainDao;
+    private final ResourceDao resourceDao;
     private final UserDao userDao;
     private final ConversionService conversionService;
 
-    public UIGroupPublicService(GroupDao groupDao, DomainDao domainDao, GroupMemberDao groupMemberDao, UserDao userDao, ConversionService conversionService) {
+    public UIGroupPublicService(GroupDao groupDao, DomainDao domainDao, ResourceDao resourceDao, GroupMemberDao groupMemberDao, UserDao userDao, ConversionService conversionService) {
         this.groupDao = groupDao;
         this.domainDao = domainDao;
+        this.resourceDao = resourceDao;
         this.conversionService = conversionService;
         this.groupMemberDao = groupMemberDao;
         this.userDao = userDao;
@@ -63,6 +66,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
      * @param filter
      * @return
      */
+    @Override
     public ServiceResult<GroupRO> getTableList(int page, int pageSize,
                                                String sortField,
                                                String sortOrder, Object filter) {
@@ -140,6 +144,14 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         if (!Objects.equals(group.getDomain().getId(), domainId)) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group does not belong to domain");
         }
+
+        DBResourceFilter resourceFilter = DBResourceFilter.createBuilder().group(group).domain(group.getDomain()).build();
+        Long resCount = resourceDao.getResourcesForFilterCount(resourceFilter);
+
+        if (resCount > 0) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group has resources [" + resCount + "] and can not be deleted");
+        }
+
         Long userCount = groupMemberDao.getGroupMemberCount(groupId, null);
         if (userCount > 0) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group has members [" + userCount + "] and can not be deleted");
@@ -185,7 +197,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     @Transactional
     public ServiceResult<MemberRO> getGroupMembers(Long groupId, Long domainId, int page, int pageSize,
                                                    String filter) {
-        validateDomainAndGroup(groupId, domainId,"GetGroupMembers");
+        validateDomainAndGroup(groupId, domainId, "GetGroupMembers");
 
         Long count = groupMemberDao.getGroupMemberCount(groupId, filter);
         ServiceResult<MemberRO> result = new ServiceResult<>();
@@ -206,7 +218,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     @Transactional
     public MemberRO addMemberToGroup(Long groupId, Long domainId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to group [{}]", memberRO.getUsername(), groupId);
-        validateDomainAndGroup(groupId, domainId,"AddMemberToGroup");
+        validateDomainAndGroup(groupId, domainId, "AddMemberToGroup");
 
         DBUser user = userDao.findUserByUsername(memberRO.getUsername())
                 .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add/edit membership", "User [" + memberRO.getUsername() + "] does not exists!"));
@@ -229,7 +241,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     public MemberRO deleteMemberFromGroup(Long groupId, Long domainId, Long memberId) {
         LOG.info("Delete member [{}] from group [{}]", memberId, groupId);
 
-        validateDomainAndGroup(groupId, domainId,"DeleteMemberFromGroup");
+        validateDomainAndGroup(groupId, domainId, "DeleteMemberFromGroup");
 
         DBGroupMember groupMember = groupMemberDao.find(memberId);
         if (groupMember == null) {

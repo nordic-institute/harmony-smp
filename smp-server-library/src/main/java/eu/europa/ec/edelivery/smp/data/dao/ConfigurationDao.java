@@ -29,15 +29,12 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.TypedQuery;
 import java.io.File;
@@ -54,7 +51,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERRO
  * @since 4.2
  */
 @Repository(value = "configurationDao")
-public class ConfigurationDao extends BaseDao<DBConfiguration>  {
+public class ConfigurationDao extends BaseDao<DBConfiguration> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ConfigurationDao.class);
     boolean isRefreshProcess = false;
@@ -62,8 +59,6 @@ public class ConfigurationDao extends BaseDao<DBConfiguration>  {
     Map<String, Object> cachedPropertyValues = new HashMap();
     OffsetDateTime lastUpdate = null;
     OffsetDateTime initiateDate = null;
-
-
     boolean serverRestartNeeded = false;
 
     protected final SMPEnvironmentProperties environmentProperties = SMPEnvironmentProperties.getInstance();
@@ -74,21 +69,6 @@ public class ConfigurationDao extends BaseDao<DBConfiguration>  {
         this.applicationContext = applicationContext;
     }
 
-    /**
-     * Validate and initialize database configurations
-
-    public void afterPropertiesSetTEest() {
-        LOG.info("Reload DomiSMP properties");
-        // Transaction might not be yet initialized (@Transactional on this method does not help :) ).
-        // Wrap the method to TransactionTemplate to make possible database property initialization
-        TransactionTemplate tmpl = new TransactionTemplate(txManager);
-        tmpl.execute(status -> {
-            LOG.info("Start initial (re)load of the DomiSMP properties with transaction status object [{}]",  status);
-            refreshProperties();
-            return null;
-        });
-    }
-     */
     /**
      * Searches for a configuration entity by its  key and returns it if found. Returns an empty {@code Optional} if missing.
      *
@@ -185,7 +165,7 @@ public class ConfigurationDao extends BaseDao<DBConfiguration>  {
         return cachedProperties.getProperty(property, defValue);
     }
 
-
+    @Transactional
     public <T extends Object> T getCachedPropertyValue(SMPPropertyEnum key) {
         if (lastUpdate == null) {
             // init properties
