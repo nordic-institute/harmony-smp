@@ -208,6 +208,7 @@ public class UITruststoreService extends BasicKeystoreService {
     public void validateCertificate(X509Certificate cert, CertificateRO cro) {
         validateCertificate(cert, cro, true);
     }
+
     public void validateCertificate(X509Certificate cert, CertificateRO cro, boolean validateDuplicate) {
         // first expect the worst
         cro.setInvalid(true);
@@ -251,6 +252,15 @@ public class UITruststoreService extends BasicKeystoreService {
         if (truststore == null) {
             LOG.warn("Truststore is not configured! Skip trust validation against the truststore!");
             return;
+        }
+
+        try {
+            if (truststore.size() == 0) {
+                LOG.warn("Truststore is empty! Skip trust validation against the truststore!");
+                return;
+            }
+        } catch (KeyStoreException e) {
+            throw new CertificateException("Error occurred when reading the truststore!", e);
         }
 
         Pattern subjectRegExp = configurationService.getCertificateSubjectRegularExpression();

@@ -216,7 +216,7 @@ public class CredentialService {
             try {
                 truststoreService.validateCertificateWithTruststore(x509Certificate);
             } catch (CertificateException e) {
-                String message = "Certificate is not trusted!";
+                String message = "Certificate is not trusted! Error: " + ExceptionUtils.getRootCauseMessage(e);
                 LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, certificateIdentifier, message
                         + " The cert chain is not in truststore or either subject regexp or allowed cert policies does not match");
                 throw new BadCredentialsException(message);
