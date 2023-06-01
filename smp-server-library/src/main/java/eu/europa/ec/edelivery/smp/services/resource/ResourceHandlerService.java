@@ -28,8 +28,8 @@ import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
@@ -47,12 +47,14 @@ public class ResourceHandlerService extends AbstractResourceHandler {
     protected static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceHandlerService.class);
 
     final ResourceMemberDao resourceMemberDao;
-
     final GroupDao groupDao;
     final SMLIntegrationService integrationService;
 
-    public ResourceHandlerService(List<ResourceDefinitionSpi> resourceDefinitionSpiList, ResourceStorage resourceStorage,
-                                  ResourceMemberDao resourceMemberDao, GroupDao groupDao,SMLIntegrationService integrationService) {
+    public ResourceHandlerService(List<ResourceDefinitionSpi> resourceDefinitionSpiList,
+                                  ResourceMemberDao resourceMemberDao,
+                                  GroupDao groupDao,
+                                  ResourceStorage resourceStorage,
+                                  SMLIntegrationService integrationService) {
         super(resourceDefinitionSpiList, resourceStorage);
         this.resourceMemberDao = resourceMemberDao;
         this.groupDao = groupDao;
@@ -61,7 +63,6 @@ public class ResourceHandlerService extends AbstractResourceHandler {
 
     public void readResource(ResourceRequest resourceRequest,
                              ResourceResponse resourceResponse) {
-
         LOG.debug("Handle the READ action for resource request [{}]", resourceRequest);
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         ResourceHandlerSpi handlerSpi = getResourceHandler(resolvedData.getResourceDef());
