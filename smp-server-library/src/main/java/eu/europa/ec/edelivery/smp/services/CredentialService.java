@@ -104,7 +104,7 @@ public class CredentialService {
         // the webservice authentication does not support session set the session secret is null!
         LOG.info("authenticateByUsernamePassword:create details [{}]", username);
         SMPUserDetails userDetails = new SMPUserDetails(user,
-                SecurityUtils.generatePrivateSymmetricKey(SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode()),
+                SecurityUtils.generatePrivateSymmetricKey(true),
                 Collections.singletonList(authority));
         LOG.info("authenticateByUsernamePassword:create UILoginAuthenticationToken [{}]", username);
         UILoginAuthenticationToken smpAuthenticationToken = new UILoginAuthenticationToken(username, userCredentialToken,
