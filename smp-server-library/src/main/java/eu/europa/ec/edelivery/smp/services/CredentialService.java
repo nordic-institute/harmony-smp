@@ -76,10 +76,9 @@ public class CredentialService {
             throws AuthenticationException {
 
         long startTime = Calendar.getInstance().getTimeInMillis();
-        LOG.info("authenticateByUsernamePassword: start [{}]", username);
+        LOG.debug("authenticateByUsernamePassword: start [{}]", username);
         DBCredential credential;
         try {
-            LOG.info("authenticateByUsernamePassword: get credentials [{}]", username);
             Optional<DBCredential> dbCredential = mCredentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
             if (!dbCredential.isPresent() || isNotValidCredential(dbCredential.get())) {
                 LOG.debug("User with username does not exists [{}], continue with next authentication provider");
@@ -94,33 +93,26 @@ public class CredentialService {
             throw BAD_CREDENTIALS_EXCEPTION;
 
         }
-        LOG.info("authenticateByUsernamePassword: before validation [{}]", username);
         validateIfCredentialIsSuspended(credential, startTime);
-        LOG.info("authenticateByUsernamePassword: Validated [{}]", username);
         DBUser user = credential.getUser();
 
-        LOG.info("authenticateByUsernamePassword: get SMPAuthority [{}]", username);
         SMPAuthority authority = SMPAuthority.getAuthorityByApplicationRole(user.getApplicationRole());
         // the webservice authentication does not support session set the session secret is null!
-        LOG.info("authenticateByUsernamePassword:create details [{}]", username);
+        LOG.debug("authenticateByUsernamePassword: create details [{}]", username);
         SMPUserDetails userDetails = new SMPUserDetails(user,
                 SecurityUtils.generatePrivateSymmetricKey(true),
                 Collections.singletonList(authority));
-        LOG.info("authenticateByUsernamePassword:create UILoginAuthenticationToken [{}]", username);
         UILoginAuthenticationToken smpAuthenticationToken = new UILoginAuthenticationToken(username, userCredentialToken,
                 userDetails);
         try {
-            LOG.info("authenticateByUsernamePassword:validate security token [{}]", username);
+            LOG.debug("authenticateByUsernamePassword:validate security token [{}]", username);
             if (!BCrypt.checkpw(userCredentialToken, credential.getValue())) {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username, credential.getName(), credential.getCredentialType(), credential.getCredentialTarget());
                 loginAttemptFailedAndThrowError(credential, true, startTime);
             }
-            LOG.info("authenticateByUsernamePassword:update values [{}]", username);
+            LOG.debug("authenticateByUsernamePassword: reset failed attempts for user token [{}]", username);
             credential.setSequentialLoginFailureCount(0);
             credential.setLastFailedLoginAttempt(null);
-            LOG.info("authenticateByUsernamePassword:update values [{}]", username);
-            //mCredentialDao.update(credential);
-            //LOG.info("authenticateByUsernamePassword: done updating [{}]", username);
         } catch (IllegalArgumentException ex) {
             // password is not hashed
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, ex, username);
