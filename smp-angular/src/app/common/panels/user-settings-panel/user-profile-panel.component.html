@@ -108,12 +108,12 @@
       <!-- buttons  -->
       <mat-toolbar class ="mat-elevation-z2">
         <mat-toolbar-row  class="smp-toolbar-row">
-          <button id="cancelButton_id" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+          <button id="resetButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
                   [disabled]="!resetButtonEnabled">
             <mat-icon>refresh</mat-icon>
             <span>Reset</span>
           </button>
-          <button id="saveButton_id" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+          <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
                   [disabled]="!submitButtonEnabled">
             <mat-icon>save</mat-icon>
             <span>Save</span>

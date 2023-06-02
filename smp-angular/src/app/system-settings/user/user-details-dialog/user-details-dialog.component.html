@@ -161,7 +161,7 @@
                      maxlength="255" disabled>
             </mat-form-field>
           </div>
-          <button mat-flat-button color="primary" style="width: 100%" [disabled]="!editMode"
+          <button id="regenerateAccessTokenButton" mat-flat-button color="primary" style="width: 100%" [disabled]="!editMode"
                   (click)="regenerateAccessToken()">
             <span>Regenerate access token</span>
           </button>
@@ -189,7 +189,7 @@
             <label class="custom-file-upload" style="flex-grow: 1">
               <input  #fileInput type="file" id="custom-file-upload" accept=".cer,.crt,.pem,.der"
                      (change)="uploadCertificate($event)">
-              <button mat-flat-button color="primary" (click)="fileInput.click()"
+              <button id="importCertificateButton" mat-flat-button color="primary" (click)="fileInput.click()"
               >Import
               </button>
             </label>

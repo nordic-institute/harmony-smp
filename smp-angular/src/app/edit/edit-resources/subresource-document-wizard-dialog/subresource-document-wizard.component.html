@@ -71,7 +71,7 @@
               <input #fileInput type="file" style="display: inline-block;cursor: pointer; display: none;"
                      id="certificate-file-upload" accept=".cer,.crt,.pem,.der"
                      (change)="uploadCertificate($event)">
-              <button mat-flat-button color="primary"
+              <button id="uploadCertificateButton" mat-flat-button color="primary"
                       (click)="fileInput.click()" >Upload certificate</button>
             </label>
             <div *ngIf="certificateValidationMessage"
@@ -112,13 +112,13 @@
 
 <div class="required-fields">* required fields</div>
 <mat-dialog-actions>
-    <button mat-raised-button color="primary" [mat-dialog-close]="true"
+    <button id="generateSubresourceButton" mat-raised-button color="primary" [mat-dialog-close]="true"
             [disabled]="!dialogForm.valid">
       <mat-icon>check_circle</mat-icon>
       <span>OK</span>
     </button>
 
-    <button mat-raised-button color="primary" mat-dialog-close>
+    <button id="closeDialogButton" mat-raised-button color="primary" mat-dialog-close>
       <mat-icon>cancel</mat-icon>
       <span>Cancel</span>
     </button>
