@@ -109,7 +109,7 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
     public List<DBResource> getPublicResourcesSearch(int iPage, int iPageSize, DBUser user, String schema, String identifier) {
-        LOG.debug("Get resources for user [{}]", user);
+        LOG.debug("Get resources list for user [{}], search scheme [{}] and search value [{}]", user, schema, identifier);
 
         TypedQuery<DBResource> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER, DBResource.class);
         if (iPageSize > -1 && iPage > -1) {
@@ -126,7 +126,7 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
     public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier) {
-        LOG.debug("Get resources count for user [{}]", user);
+        LOG.debug("Get resources count for user [{}], search scheme [{}] and search value [{}]", user, schema, identifier);
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER_COUNT, Long.class);
 
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
