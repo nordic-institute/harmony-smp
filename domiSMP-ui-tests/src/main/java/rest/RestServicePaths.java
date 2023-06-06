@@ -1,7 +1,5 @@
 package rest;
 
-import utils.TestRunData;
-
 public class RestServicePaths {
     private RestServicePaths() {
     }
@@ -14,5 +12,11 @@ public class RestServicePaths {
 
         return "/internal/rest/user/" + currentUserId + "/create";
     }
+
+    public static String getChangePasswordPath(String currentUserId, String forUserId) {
+
+        return "/internal/rest/user/" + currentUserId + "/change-password-for/" + forUserId;
+    }
+
 
 }
