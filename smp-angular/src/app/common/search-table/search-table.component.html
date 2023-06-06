@@ -89,11 +89,13 @@
         <ng-container [ngTemplateOutlet]="additionalRowActionButtons"
                       [ngTemplateOutletContext]="{row:row}"></ng-container>
 
-        <button *ngIf="allowEditItems" mat-icon-button color="primary" [disabled]="row.deleted || loading"
+        <button id="editSearchRowButton" *ngIf="allowEditItems" mat-icon-button color="primary"
+                [disabled]="row.deleted || loading"
                 (click)="editSearchTableEntityRow(row)" matTooltip="Edit">
           <mat-icon>edit</mat-icon>
         </button>
-        <button *ngIf="allowDeleteItems" mat-icon-button color="primary" [disabled]="row.deleted || loading"
+        <button id="deleteRowButton" *ngIf="allowDeleteItems" mat-icon-button color="primary"
+                [disabled]="row.deleted || loading"
                 (click)="onDeleteRowActionClicked(row)" matTooltip="Delete">
           <mat-icon>delete</mat-icon>
         </button>

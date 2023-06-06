@@ -29,7 +29,7 @@
         </mat-form-field>
 
         <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="regenerateAccessToken()"
+          <button id="regenerateAccessTokenButton" mat-raised-button color="primary" (click)="regenerateAccessToken()"
                   [disabled]="!dialogForm.valid">
             <mat-icon>check_circle</mat-icon>
             <span>Regenerate access token</span>
@@ -56,7 +56,7 @@
 <div class="required-fields">* required fields</div>
 
 <mat-dialog-actions>
-  <button mat-raised-button color="primary" (click)="closeDialog()">
+  <button id="closeDialogButton" mat-raised-button color="primary" (click)="closeDialog()">
     <mat-icon>cancel</mat-icon>
     <span>Close</span>
   </button>

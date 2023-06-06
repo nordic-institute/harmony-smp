@@ -3,6 +3,8 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResourceFilter;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,11 +48,23 @@ public class ResourceDaoSearchTest extends AbstractBaseDao {
         assertResources(result, "1-1-1::pubPubPub");
 
         // user1 (admin) and user2 (viewer) are members of all resources
-        result = testInstance.getPublicResourcesSearch(-1,-1,testUtilsDao.getUser1(), null, null);
+        result = testInstance.getPublicResourcesSearch(-1,-1,testUtilsDao.getUser2(), null, null);
         Assert.assertEquals(8, result.size());
+
+        result = testInstance.getPublicResourcesSearch(-1,-1,testUtilsDao.getUser1(), null, "pubPub");
+        Assert.assertEquals(2, result.size());
+        result.forEach(resource -> MatcherAssert.assertThat(resource.getIdentifierValue(), CoreMatchers.containsString("pubPub")));
+
+        result = testInstance.getPublicResourcesSearch(-1,-1,testUtilsDao.getUser1(), "1-1",null);
+        Assert.assertEquals(1, result.size());
+        result.forEach(resource -> MatcherAssert.assertThat(resource.getIdentifierScheme(), CoreMatchers.containsString("1-1")));
+
+        result = testInstance.getPublicResourcesSearch(-1,-1,testUtilsDao.getUser1(), "1-1","priv");
+        Assert.assertEquals(0, result.size());
 
         result = testInstance.getPublicResourcesSearch(-1,-1,testUtilsDao.getUser2(), null, null);
         Assert.assertEquals(8, result.size());
+
 
         // user3 is direct member of private domain - can see only public resource on public groups
         result = testInstance.getPublicResourcesSearch(-1,-1,testUtilsDao.getUser3(), null, null);
@@ -83,6 +97,15 @@ public class ResourceDaoSearchTest extends AbstractBaseDao {
         // user1 (admin) and user2 (viewer) are members of all resources
         result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), null, null);
         Assert.assertEquals(8, result.intValue());
+
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), null, "pubPub");
+        Assert.assertEquals(2, result.intValue());
+
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), "1-1",null);
+        Assert.assertEquals(1, result.intValue());
+
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), "1-1","priv");
+        Assert.assertEquals(0, result.intValue());
 
         result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser2(), null, null);
         Assert.assertEquals(8, result.intValue());

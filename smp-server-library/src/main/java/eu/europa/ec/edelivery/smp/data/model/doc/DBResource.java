@@ -96,7 +96,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
         " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
         " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
-        " AND :user_id IS NOT NULL AND rm.user.id = :user_id "  +
+        " AND ( :user_id IS NOT NULL AND rm.user.id = :user_id "  +
         " OR  r.visibility ='PUBLIC' " + // user must be member of the group or the group is public
         "   AND (:user_id IS NOT NULL " +
         "         AND  ((select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = r.group.id) > 0 " +
@@ -106,13 +106,13 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR  (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
-        "))"+
+        ")))"+
         "order by r.identifierScheme, r.identifierValue"
 )
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER_COUNT, query = "SELECT count(distinct r.id) FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
         " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
         " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
-        " AND :user_id IS NOT NULL AND rm.user.id = :user_id "  +
+        " AND (:user_id IS NOT NULL AND rm.user.id = :user_id "  +
         " OR  r.visibility ='PUBLIC' " + // user must be member of the group or the group is public
         "   AND (:user_id IS NOT NULL " +
         "         AND  ((select count(gm.id) FROM  DBGroupMember gm where gm.user.id = :user_id and gm.group.id = r.group.id) > 0 " +
@@ -122,7 +122,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR  (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
-        "))"
+        ")))"
 )
 public class DBResource extends BaseEntity {
 
