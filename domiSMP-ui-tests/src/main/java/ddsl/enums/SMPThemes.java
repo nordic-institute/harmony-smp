@@ -10,22 +10,17 @@ public enum SMPThemes {
     Purple_Green_theme("Purple & Green theme");
 
 
-    private final String name; // field to store the string value
+    private final String name;
 
-    SMPThemes(String name) { // constructor to assign the string value
+    SMPThemes(String name) {
         this.name = name;
     }
 
-    public static SMPThemes getRandomTheme() {
+    public static String getRandomTheme() {
         SMPThemes[] themes = values();
         int size = themes.length;
         Random random = new Random();
         int index = random.nextInt(size);
-        return themes[index];
+        return themes[index].name;
     }
-
-    public String getName() { // getter method to access the string value
-        return name;
-    }
-
 }

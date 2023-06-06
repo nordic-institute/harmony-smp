@@ -5,7 +5,7 @@ import ddsl.enums.ApplicationRoles;
 import ddsl.enums.SMPThemes;
 import utils.Generator;
 
-public class CreateUserModel {
+public class UserModel {
 
     private String userId;
     private String username;
@@ -16,7 +16,7 @@ public class CreateUserModel {
     private String smpTheme;
     private String smpLocale;
 
-    public CreateUserModel(String username, boolean active, String role, String emailAddress, String fullName, String smpTheme, String smpLocale) {
+    public UserModel(String username, boolean active, String role, String emailAddress, String fullName, String smpTheme, String smpLocale) {
         this.username = username;
         this.active = active;
         this.role = role;
@@ -26,7 +26,7 @@ public class CreateUserModel {
         this.smpLocale = smpLocale;
     }
 
-    public CreateUserModel() {
+    public UserModel() {
     }
 
     public String getUserId() {
@@ -94,30 +94,38 @@ public class CreateUserModel {
         this.smpLocale = smpLocale;
     }
 
-    public static CreateUserModel createUserWithUSERrole() {
-        CreateUserModel userModel = new CreateUserModel();
-        userModel.username = ("AUT_username_ " + Generator.randomAlphaNumeric(4)).toLowerCase();
+    public static UserModel createUserWithUSERrole() {
+        UserModel userModel = new UserModel();
+        userModel.username = ("AUT_username_" + Generator.randomAlphaNumeric(4)).toLowerCase();
         userModel.active = true;
         userModel.role = ApplicationRoles.USER;
-        userModel.emailAddress = "AUT_email_ " + Generator.randomAlphaNumeric(4) + "@automation.com";
-        ;
-        userModel.fullName = "AUT_fullname_ " + Generator.randomAlphaNumeric(4);
-        userModel.smpTheme = SMPThemes.getRandomTheme().toString();
+        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumeric(4) + "@automation.com";
+        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumeric(4);
+        userModel.smpTheme = SMPThemes.getRandomTheme();
         userModel.smpLocale = "English";
         return userModel;
     }
 
-    public static CreateUserModel createUserWithADMINrole() {
-        CreateUserModel userModel = new CreateUserModel();
-        userModel.username = ("AUT_username_ " + Generator.randomAlphaNumeric(4)).toLowerCase();
+    public static UserModel createUserWithADMINrole() {
+        UserModel userModel = new UserModel();
+        userModel.username = ("AUT_username_" + Generator.randomAlphaNumeric(4)).toLowerCase();
         userModel.active = true;
         userModel.role = ApplicationRoles.SYSTEM_ADMIN;
-        userModel.emailAddress = "AUT_email_ " + Generator.randomAlphaNumeric(4) + "@automation.com";
-        ;
-        userModel.fullName = "AUT_fullname_ " + Generator.randomAlphaNumeric(4);
-        userModel.smpTheme = SMPThemes.getRandomTheme().toString();
+        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumeric(4) + "@automation.com";
+        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumeric(4);
+        userModel.smpTheme = SMPThemes.getRandomTheme();
         userModel.smpLocale = "English";
         return userModel;
     }
+
+    public static UserModel generateUserProfileData() {
+        UserModel userModel = new UserModel();
+        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumeric(4) + "@automation.com";
+        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumeric(4);
+        userModel.smpTheme = SMPThemes.getRandomTheme();
+        userModel.smpLocale = "Dutch";
+        return userModel;
+    }
+
 }
 

@@ -34,8 +34,8 @@ public class ProfilePage extends DomiSMPPage {
             if (!emailValue.isEmpty()) {
                 weToDInput(fullNameInput).fill(fullNameValue);
             }
-            if (!selectThemeValue.isEmpty()) {
-                weToDSelect(themeSel).selectValue(selectThemeValue);
+            if (!(selectThemeValue == null)) {
+                weToDSelect(themeSel).selectValue(selectThemeValue.toString());
             }
             if (!localeValue.isEmpty()) {
                 weToDSelect(localeSel).selectValue(localeValue);

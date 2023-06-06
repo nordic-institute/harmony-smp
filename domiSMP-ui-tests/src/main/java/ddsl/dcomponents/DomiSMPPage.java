@@ -49,6 +49,9 @@ public class DomiSMPPage extends DComponent {
         return new LoginPage(driver);
     }
 
+    public void refreshPage() {
+        driver.navigate().refresh();
+    }
 
     public AlertComponent getAlertArea() {
         return new AlertComponent(driver);

@@ -18,8 +18,8 @@ public class DWait {
     public final WebDriverWait longWait;
     public final WebDriverWait shortWait;
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    private TestRunData data = new TestRunData();
-    private WebDriver driver;
+    private final TestRunData data = new TestRunData();
+    private final WebDriver driver;
 
     public DWait(WebDriver driver) {
         this.defaultWait = new WebDriverWait(driver, data.getTIMEOUTinDuration());
