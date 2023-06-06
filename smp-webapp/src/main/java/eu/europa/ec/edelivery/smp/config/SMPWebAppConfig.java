@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -38,9 +39,9 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
  * This is the entry point of the DomiSMP application (beans)configuration/setup.
- *
+ * <p>
  * The SMPWebAppConfig is initiated from the web.xml.
- *
+ * <p>
  * The following configurations: ServicesBeansConfiguration, SMPDatabaseConfig, UISecurityConfigurerAdapter, WSSecurityConfigurerAdapter
  * are configured from the SMPWebAppConfig
  *
@@ -64,8 +65,8 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
  * <tr><td>utils</td><td>smp-server-library</td><td>SMPWebAppConfig</td></tr>
  * <tr><td>ui</td><td>smp-webapp</td><td>SMPWebAppConfig</td></tr>
  * </table>
- *
- *
+ * <p>
+ * <p>
  *  @author gutowpa
  *  @since 3.0.0
  */
@@ -82,7 +83,9 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
         "eu.europa.ec.edelivery.smp.utils",
         "eu.europa.ec.edelivery.smp.cron",
         // spi properties
-        "eu.europa.ec.smp.spi",})
+        "eu.europa.ec.smp.spi"},
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = SMPWebAppConfig.class)})
 public class SMPWebAppConfig implements WebMvcConfigurer {
     private static final Logger LOG = LoggerFactory.getLogger(SMPWebAppConfig.class);
 

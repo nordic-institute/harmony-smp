@@ -15,6 +15,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
@@ -28,8 +29,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateRevokedException;
 import java.security.cert.X509Certificate;
@@ -70,12 +71,12 @@ public class CredentialService {
         this.alertService = alertService;
     }
 
-    @Transactional(noRollbackForClassName = {"java.lang.RuntimeException"})
+    @Transactional(noRollbackFor = {AuthenticationException.class, SMPRuntimeException.class, RuntimeException.class})
     public Authentication authenticateByUsernamePassword(String username, String userCredentialToken)
             throws AuthenticationException {
 
         long startTime = Calendar.getInstance().getTimeInMillis();
-
+        LOG.debug("authenticateByUsernamePassword: start [{}]", username);
         DBCredential credential;
         try {
             Optional<DBCredential> dbCredential = mCredentialDao.findUsernamePasswordCredentialForUsernameAndUI(username);
@@ -92,38 +93,38 @@ public class CredentialService {
             throw BAD_CREDENTIALS_EXCEPTION;
 
         }
-
         validateIfCredentialIsSuspended(credential, startTime);
         DBUser user = credential.getUser();
 
-
         SMPAuthority authority = SMPAuthority.getAuthorityByApplicationRole(user.getApplicationRole());
         // the webservice authentication does not support session set the session secret is null!
+        LOG.debug("authenticateByUsernamePassword: create details [{}]", username);
         SMPUserDetails userDetails = new SMPUserDetails(user,
-                SecurityUtils.generatePrivateSymmetricKey(SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode()),
+                SecurityUtils.generatePrivateSymmetricKey(true),
                 Collections.singletonList(authority));
-
         UILoginAuthenticationToken smpAuthenticationToken = new UILoginAuthenticationToken(username, userCredentialToken,
                 userDetails);
         try {
+            LOG.debug("authenticateByUsernamePassword:validate security token [{}]", username);
             if (!BCrypt.checkpw(userCredentialToken, credential.getValue())) {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, username, credential.getName(), credential.getCredentialType(), credential.getCredentialTarget());
                 loginAttemptFailedAndThrowError(credential, true, startTime);
             }
+            LOG.debug("authenticateByUsernamePassword: reset failed attempts for user token [{}]", username);
             credential.setSequentialLoginFailureCount(0);
             credential.setLastFailedLoginAttempt(null);
-            mCredentialDao.update(credential);
         } catch (IllegalArgumentException ex) {
             // password is not hashed
             LOG.securityWarn(SMPMessageCode.SEC_INVALID_USER_CREDENTIALS, ex, username);
             loginAttemptFailedAndThrowError(credential, true, startTime);
         }
+        LOG.info("authenticateByUsernamePassword: done updating [{}]", username);
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, username, user.getApplicationRole());
         return smpAuthenticationToken;
     }
 
 
-    @Transactional(noRollbackForClassName = {"org.springframework.security.core.AuthenticationException","org.springframework.security.authentication.BadCredentialsException"})
+    @Transactional(noRollbackFor = {AuthenticationException.class, BadCredentialsException.class, SMPRuntimeException.class})
     public Authentication authenticateByAuthenticationToken(String authenticationTokenId, String authenticationTokenValue)
             throws AuthenticationException {
 
@@ -200,7 +201,7 @@ public class CredentialService {
         return false;
     }
 
-    @Transactional(noRollbackForClassName = {"org.springframework.security.core.AuthenticationException","org.springframework.security.authentication.BadCredentialsException"})
+    @Transactional(noRollbackFor = {AuthenticationException.class, BadCredentialsException.class, SMPRuntimeException.class})
     public Authentication authenticateByCertificateToken(PreAuthenticatedCertificatePrincipal principal) {
         LOG.info("authenticateByCertificateToken:" + principal.getName());
 
@@ -216,7 +217,7 @@ public class CredentialService {
             try {
                 truststoreService.validateCertificateWithTruststore(x509Certificate);
             } catch (CertificateException e) {
-                String message = "Certificate is not trusted!";
+                String message = "Certificate is not trusted! Error: " + ExceptionUtils.getRootCauseMessage(e);
                 LOG.securityWarn(SMPMessageCode.SEC_USER_CERT_INVALID, certificateIdentifier, message
                         + " The cert chain is not in truststore or either subject regexp or allowed cert policies does not match");
                 throw new BadCredentialsException(message);
