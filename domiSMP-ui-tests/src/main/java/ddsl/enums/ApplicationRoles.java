@@ -1,4 +1,4 @@
-package ddsl;
+package ddsl.enums;
 
 import java.util.Arrays;
 import java.util.List;

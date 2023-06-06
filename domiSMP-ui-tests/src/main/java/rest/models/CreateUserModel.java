@@ -1,5 +1,9 @@
-package models.rest;
+package rest.models;
 
+
+import ddsl.enums.ApplicationRoles;
+import ddsl.enums.SMPThemes;
+import utils.Generator;
 
 public class CreateUserModel {
 
@@ -20,6 +24,9 @@ public class CreateUserModel {
         this.fullName = fullName;
         this.smpTheme = smpTheme;
         this.smpLocale = smpLocale;
+    }
+
+    public CreateUserModel() {
     }
 
     public String getUserId() {
@@ -85,6 +92,32 @@ public class CreateUserModel {
 
     public void setSmpLocale(String smpLocale) {
         this.smpLocale = smpLocale;
+    }
+
+    public static CreateUserModel createUserWithUSERrole() {
+        CreateUserModel userModel = new CreateUserModel();
+        userModel.username = ("AUT_username_ " + Generator.randomAlphaNumeric(4)).toLowerCase();
+        userModel.active = true;
+        userModel.role = ApplicationRoles.USER;
+        userModel.emailAddress = "AUT_email_ " + Generator.randomAlphaNumeric(4) + "@automation.com";
+        ;
+        userModel.fullName = "AUT_fullname_ " + Generator.randomAlphaNumeric(4);
+        userModel.smpTheme = SMPThemes.getRandomTheme().toString();
+        userModel.smpLocale = "English";
+        return userModel;
+    }
+
+    public static CreateUserModel createUserWithADMINrole() {
+        CreateUserModel userModel = new CreateUserModel();
+        userModel.username = ("AUT_username_ " + Generator.randomAlphaNumeric(4)).toLowerCase();
+        userModel.active = true;
+        userModel.role = ApplicationRoles.SYSTEM_ADMIN;
+        userModel.emailAddress = "AUT_email_ " + Generator.randomAlphaNumeric(4) + "@automation.com";
+        ;
+        userModel.fullName = "AUT_fullname_ " + Generator.randomAlphaNumeric(4);
+        userModel.smpTheme = SMPThemes.getRandomTheme().toString();
+        userModel.smpLocale = "English";
+        return userModel;
     }
 }
 

@@ -5,8 +5,9 @@ public class DomiSMPRestClient extends BaseRestClient {
         super();
     }
 
-    public UsersClient users() {
-        return new UsersClient(username, password);
+    // -------------------------------------------- get clients -----------------------------------------------------------
+    public UserClient users() {
+        return new UserClient(username, password);
     }
 }
 
