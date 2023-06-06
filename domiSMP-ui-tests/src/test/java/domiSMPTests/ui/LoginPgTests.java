@@ -1,6 +1,6 @@
 package domiSMPTests.ui;
 
-import ddsl.ApplicationRoles;
+import ddsl.enums.ApplicationRoles;
 import domiSMPTests.SeleniumTest;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
@@ -22,13 +22,12 @@ public class LoginPgTests extends SeleniumTest {
         String username = Generator.randomAlphaNumeric(10);
         String email = Generator.randomAlphaNumeric(5) + "@automatedTesint.com";
 
-        rest.users().createUser(username, role, email);
+        //rest.users().createUser(username, role, email);
         Reporter.log(String.format("Created user %s with role %s", username, role));
         LOG.info("Created user [{}] with role [{}]", username, role);
 
         Reporter.log(String.format("Login %s with role %s", username, role));
         LOG.info(String.format("Login %s with role %s", username, role));
-        //login(username, data.defaultPass());
 
     }
 

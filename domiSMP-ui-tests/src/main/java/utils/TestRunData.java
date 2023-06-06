@@ -1,6 +1,6 @@
 package utils;
 
-import ddsl.ApplicationRoles;
+import ddsl.enums.ApplicationRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,6 @@ public class TestRunData {
     public static SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     public static SimpleDateFormat REST_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     public static SimpleDateFormat REST_JMS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    public static SimpleDateFormat DATEWIDGET_DATE_FORMAT = new SimpleDateFormat(" dd/MM/yyyy HH:mm");
     public String userId;
     static Properties prop = new Properties();
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -40,7 +39,7 @@ public class TestRunData {
     private void loadTestData() {
         try {
             String filename = System.getProperty("propertiesFile");
-            FileInputStream stream = new FileInputStream(new File(filename));
+            FileInputStream stream = new FileInputStream(filename);
             prop.load(stream);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -57,16 +56,13 @@ public class TestRunData {
         return toReturn;
     }
 
-    public String defaultPass() {
-        return prop.getProperty("default.password");
-    }
-
-    public String getNewTestPass() {
-        return prop.getProperty("new.password");
-    }
 
     public HashMap<String, String> getAdminUser() {
         return getUser(ApplicationRoles.SYSTEM_ADMIN);
+    }
+
+    public String getNewPassword() {
+        return prop.getProperty("new.password");
     }
 
     public String getUiBaseUrl() {

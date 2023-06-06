@@ -39,7 +39,7 @@
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                     <systemPropertyVariables>
-                        <runBrowser>firefox</runBrowser>
+                        <runBrowser>chrome</runBrowser>
                         <propertiesFile>./src/main/resources/myLocal.properties</propertiesFile>
                     </systemPropertyVariables>
                     <properties>
@@ -228,6 +228,12 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <version>3.0.0-M7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

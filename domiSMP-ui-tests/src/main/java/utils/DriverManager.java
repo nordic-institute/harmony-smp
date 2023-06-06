@@ -2,7 +2,6 @@ package utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -60,13 +59,6 @@ public class DriverManager {
         options.addPreference("browser.helperApps.neverAsk.openFile", "application/ms-excel text/xml application/zip");
         options.addPreference("browser.helperApps.neverAsk.saveToDisk", "application/ms-excel text/xml application/zip");
         return new FirefoxDriver(options);
-    }
-
-    private static Proxy getProxy() {
-        String proxyAddress = data.getProxyAddress();
-        Proxy proxy = new Proxy();
-        proxy.setHttpProxy(proxyAddress).setSslProxy(proxyAddress);
-        return proxy;
     }
 
 }
