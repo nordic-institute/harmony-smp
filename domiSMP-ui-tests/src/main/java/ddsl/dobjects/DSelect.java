@@ -18,7 +18,7 @@ public class DSelect extends DObject {
     }
 
     public String getCurrentValue() {
-        return element.getText();
+        return select.getAllSelectedOptions().get(0).getText();
     }
 
 

@@ -2,14 +2,14 @@ package rest;
 
 import com.sun.jersey.api.client.ClientResponse;
 import org.json.JSONObject;
-import rest.models.CreateUserModel;
+import rest.models.UserModel;
 
 public class UserClient extends BaseRestClient {
     public UserClient(String username, String password) {
         super(username, password);
     }
 
-    public JSONObject createUser(CreateUserModel user) {
+    public JSONObject createUser(UserModel user) {
 
         JSONObject usrObj = new JSONObject(user);
 
