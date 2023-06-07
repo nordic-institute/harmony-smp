@@ -10,6 +10,10 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import java.util.HashMap;
 
 public class LoginPage extends DomiSMPPage {
+
+    /**
+     * Page object for the Login page. This contains the locators of the page and the methods for the behaviour of the page
+     */
     @FindBy(id = "username_id")
     private WebElement username;
     @FindBy(id = "password_id")
@@ -38,7 +42,7 @@ public class LoginPage extends DomiSMPPage {
             log.info("Expired password dialog is present.");
             getExpiredDialoginbutton().click();
         }
-        ;
+
 
         return new DomiSMPPage(driver);
 

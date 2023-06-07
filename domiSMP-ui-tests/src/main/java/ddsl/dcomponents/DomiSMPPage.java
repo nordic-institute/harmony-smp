@@ -30,12 +30,12 @@ public class DomiSMPPage extends DComponent {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
-    public SideNavigation getSidebar() {
-        return new SideNavigation(driver);
+    public SideNavigationComponent getSidebar() {
+        return new SideNavigationComponent(driver);
     }
 
-    public Breadcrump getBreadcrump() {
-        return new Breadcrump(driver);
+    public BreadcrumpComponent getBreadcrump() {
+        return new BreadcrumpComponent(driver);
     }
 
     public LoginPage goToLoginPage() {

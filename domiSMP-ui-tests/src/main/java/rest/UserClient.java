@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import rest.models.UserModel;
 
 public class UserClient extends BaseRestClient {
+
     public UserClient(String username, String password) {
         super(username, password);
     }
@@ -54,9 +55,7 @@ public class UserClient extends BaseRestClient {
 
 
         ClientResponse response = jsonPUT(resource.path(changePasswordPath), passwordChangeBody);
-        JSONObject responseBody = new JSONObject(response.getEntity(String.class));
-        return responseBody;
-
+        return new JSONObject(response.getEntity(String.class));
     }
 
 

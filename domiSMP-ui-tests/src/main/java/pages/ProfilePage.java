@@ -8,7 +8,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 
 public class ProfilePage extends DomiSMPPage {
-
+    /**
+     * Page object for the Profile page. This contains the locators of the page and the methods for the behaviour of the page
+     */
     @FindBy(id = "smpTheme_id")
     private WebElement themeSel;
     @FindBy(id = "moment-locale")
@@ -35,7 +37,7 @@ public class ProfilePage extends DomiSMPPage {
                 weToDInput(fullNameInput).fill(fullNameValue);
             }
             if (!(selectThemeValue == null)) {
-                weToDSelect(themeSel).selectValue(selectThemeValue.toString());
+                weToDSelect(themeSel).selectValue(selectThemeValue);
             }
             if (!localeValue.isEmpty()) {
                 weToDSelect(localeSel).selectValue(localeValue);

@@ -11,6 +11,10 @@ import rest.models.UserModel;
 
 
 public class ProfilePgTests extends SeleniumTest {
+
+    /**
+     * This class has the tests against Profile Page
+     */
     @Test(description = "PROF-01")
     public void AllLoggedUsersAreAbleToSeeProfilePage() throws Exception {
         UserModel normalUser = UserModel.createUserWithUSERrole();

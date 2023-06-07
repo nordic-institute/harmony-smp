@@ -10,54 +10,56 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import pages.ProfilePage;
 
-public class SideNavigation extends DomiSMPPage {
+import java.util.Objects;
+
+public class SideNavigationComponent extends DomiSMPPage {
     @FindBy(id = "window-sidenav-panel")
     public WebElement sideBar;
 
     //	--------------------Search-------------------------
-    @FindBy(id = "")
+    @FindBy(id = "search-resourcesButton")
     private WebElement resourcesLnk;
 
-    @FindBy(css = "mat-nested-tree-node cdk-nested-tree-node cdk-tree-node ng-star-inserted")
+    @FindBy(id = "search-toolsButton")
     private WebElement resourcesExpandLnk;
     //	----------------------------------------------------
 
     //	--------------Administration---------------------------
-    @FindBy(id = "")
+    @FindBy(id = "edit-domainButton")
     private WebElement editDomainsLnk;
 
-    @FindBy(id = "")
+    @FindBy(id = "edit-groupButton")
     private WebElement editGroupsLnk;
 
-    @FindBy(id = "")
+    @FindBy(id = "edit-resourceButton")
     private WebElement editResourcesLnk;
 
-    @FindBy(id = "mat-expansion-panel-header-1")
+    @FindBy(id = "editButton")
     private WebElement administrationExpand;
     //	----------------------------------------------------
 
     //	--------------System Settings ---------------------------
-    @FindBy(id = "")
+    @FindBy(id = "system-admin-userButton")
     private WebElement usersLnk;
 
-    @FindBy(id = "")
+    @FindBy(id = "system-admin-domainButton")
     private WebElement domainsLnk;
 
-    @FindBy(id = "")
+    @FindBy(id = "system-admin-keystoreButton")
     private WebElement keystoreLnk;
-    @FindBy(id = "")
+    @FindBy(id = "system-admin-truststoreButton")
     private WebElement truststoreLnk;
 
-    @FindBy(id = "")
+    @FindBy(id = "system-admin-extensionButton")
     private WebElement extensionsLnk;
 
-    @FindBy(id = "")
+    @FindBy(id = "system-admin-propertiesButton")
     private WebElement propertiesLnk;
 
-    @FindBy(id = "")
+    @FindBy(id = "system-admin-alertButton")
     private WebElement alersLnk;
 
-    @FindBy(id = "mat-expansion-panel-header-1")
+    @FindBy(id = "system-settingsButton")
     private WebElement systemSettingsExpand;
     //	----------------------------------------------------
 
@@ -75,20 +77,16 @@ public class SideNavigation extends DomiSMPPage {
     private WebElement userSettingsExpand;
     //	----------------------------------------------------
 
-    public SideNavigation(WebDriver driver) {
+    public SideNavigationComponent(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, 1), this);
     }
 
     private MenuNavigation getNavigationLinks(Pages pages) {
-        switch (pages) {
-
-            case USER_SETTINGS_PROFILE:
-                return new MenuNavigation(userSettingsExpand, profileLnk);
-
-            default:
-                return null;
+        if (Objects.requireNonNull(pages) == Pages.USER_SETTINGS_PROFILE) {
+            return new MenuNavigation(userSettingsExpand, profileLnk);
         }
+        return null;
     }
 
     public DomiSMPPage navigateTo(Pages page) {
@@ -96,43 +94,42 @@ public class SideNavigation extends DomiSMPPage {
         wait.forElementToHaveText(sideBar);
 
         log.debug("Get link to " + page.name());
-        switch (page) {
-//            case SEARCH_RESOURCES:
-//                expandSection(resourcesExpandLnk);
-//                return new DLink(driver, resourcesLnk);
-//            case ADMINISTRATION_EDIT_DOMAINS:
-//                expandSection(administrationExpand);
-//                return new DLink(driver, editDomainsLnk);
-//            case ADMINISTRATION_EDIT_GROUPS:
-//                expandSection(administrationExpand);
-//                return new DLink(driver, editGroupsLnk);
-//            case ADMINISTRATION_EDIT_RESOURCES:
-//                expandSection(administrationExpand);
-//                return new DLink(driver, editResourcesLnk);
-//            case SYSTEM_SETTINGS_USERS:
-//                expandSection(systemSettingsExpand);
-//                return new DLink(driver, usersLnk);
-//            case SYSTEM_SETTINGS_DOMAINS:
-//                expandSection(systemSettingsExpand);
-//                return new DLink(driver, domainsLnk);
-//            case SYSTEM_SETTINGS_KEYSTORE:
-//                expandSection(systemSettingsExpand);
-//                return new DLink(driver, keystoreLnk);
-//            case SYSTEM_SETTINGS_TRUSTSTORE:
-//                expandSection(systemSettingsExpand);
-//                return new DLink(driver, truststoreLnk);
-//            case SYSTEM_SETTINGS_EXTENSIONS:
-//                expandSection(systemSettingsExpand);
-//                return new DLink(driver, extensionsLnk);
-//            case SYSTEM_SETTINGS_PROPERTIES:
-//                expandSection(systemSettingsExpand);
-//                return new DLink(driver, propertiesLnk);
-//            case SYSTEM_SETTINGS_ALERS:
-//                expandSection(systemSettingsExpand);
-//                return new DLink(driver, alersLnk);
-            case USER_SETTINGS_PROFILE:
-                openSubmenu(userSettingsExpand, profileLnk);
-                return new ProfilePage(driver);
+        //            case SEARCH_RESOURCES:
+        //                expandSection(resourcesExpandLnk);
+        //                return new DLink(driver, resourcesLnk);
+        //            case ADMINISTRATION_EDIT_DOMAINS:
+        //                expandSection(administrationExpand);
+        //                return new DLink(driver, editDomainsLnk);
+        //            case ADMINISTRATION_EDIT_GROUPS:
+        //                expandSection(administrationExpand);
+        //                return new DLink(driver, editGroupsLnk);
+        //            case ADMINISTRATION_EDIT_RESOURCES:
+        //                expandSection(administrationExpand);
+        //                return new DLink(driver, editResourcesLnk);
+        //            case SYSTEM_SETTINGS_USERS:
+        //                expandSection(systemSettingsExpand);
+        //                return new DLink(driver, usersLnk);
+        //            case SYSTEM_SETTINGS_DOMAINS:
+        //                expandSection(systemSettingsExpand);
+        //                return new DLink(driver, domainsLnk);
+        //            case SYSTEM_SETTINGS_KEYSTORE:
+        //                expandSection(systemSettingsExpand);
+        //                return new DLink(driver, keystoreLnk);
+        //            case SYSTEM_SETTINGS_TRUSTSTORE:
+        //                expandSection(systemSettingsExpand);
+        //                return new DLink(driver, truststoreLnk);
+        //            case SYSTEM_SETTINGS_EXTENSIONS:
+        //                expandSection(systemSettingsExpand);
+        //                return new DLink(driver, extensionsLnk);
+        //            case SYSTEM_SETTINGS_PROPERTIES:
+        //                expandSection(systemSettingsExpand);
+        //                return new DLink(driver, propertiesLnk);
+        //            case SYSTEM_SETTINGS_ALERS:
+        //                expandSection(systemSettingsExpand);
+        //                return new DLink(driver, alersLnk);
+        if (page == Pages.USER_SETTINGS_PROFILE) {
+            openSubmenu(userSettingsExpand, profileLnk);
+            return new ProfilePage(driver);
 //            case USER_SETTINGS_ACCESS_TOKEN:
 //                //expandSection(userSettingsExpand);
 //                //accessTokensLnk.click();
@@ -140,9 +137,8 @@ public class SideNavigation extends DomiSMPPage {
 //            case USER_SETTINGS_CERTIFICATES:
 //                expandSection(userSettingsExpand);
 //                return new DLink(driver, certificatesLnk);
-            default:
-                return null;
         }
+        return null;
     }
 
     public Boolean isMenuAvailable(Pages page) {
@@ -150,11 +146,7 @@ public class SideNavigation extends DomiSMPPage {
         try {
             if (navigationLinks.menuLink.isEnabled()) {
                 navigationLinks.menuLink.click();
-                if (navigationLinks.submenuLink.isEnabled()) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return navigationLinks.submenuLink.isEnabled();
             }
             return false;
         } catch (NoSuchElementException e) {
