@@ -1,7 +1,8 @@
-<div>
+<div class="search-table-row-limiter">
+
   <mat-select placeholder="Rows" [(ngModel)]="pageSize" name="pageSize" (selectionChange)="changePageSize($event)"
              id="pagesize_id">
-    <mat-option *ngFor="let rowLimit of pageSizes" [value]="rowLimit.value">
+    <mat-option class="row-limiter-item" *ngFor="let rowLimit of pageSizes" [value]="rowLimit.value">
       {{rowLimit.key}}
     </mat-option>
   </mat-select>
