@@ -20,23 +20,16 @@
   <ng-template #searchPanel>
     <div style="display: flex;flex-direction: row;width: 100%">
     <mat-form-field class="smp-data-panel-field">
-      <mat-label>Resource Identifier filter</mat-label>
+      <mat-label>Resource Identifier</mat-label>
       <input matInput name="ResourceIdentifier"
              [(ngModel)]="filter.participantIdentifier"
              #messageId="ngModel" id="ResourceIdentifier">
     </mat-form-field>
     <mat-form-field  class="smp-data-panel-field">
-      <mat-label>Resource scheme filter</mat-label>
+      <mat-label>Resource scheme</mat-label>
       <input matInput  name="ResourceScheme" [(ngModel)]="filter.participantScheme"
              #messageId="ngModel" id="ResourceScheme">
     </mat-form-field>
-    <mat-select placeholder="All Domains" [(ngModel)]="filter.domain" name="domain" *ngIf="false"
-                id="domain_id">
-      <mat-option [value]="''">All Domains</mat-option>
-      <mat-option *ngFor="let domain of lookups.cachedDomainList" [value]="domain.domainCode">
-        {{domain.domainCode}} ({{domain.smlSubdomain}})
-      </mat-option>
-    </mat-select>
     </div>
   </ng-template>
 

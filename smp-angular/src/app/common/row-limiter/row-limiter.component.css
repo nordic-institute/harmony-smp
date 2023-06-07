@@ -1,0 +1,7 @@
+.search-table-row-limiter {
+  width: 200px;
+}
+
+.row-limiter-item {
+  min-height: 2em !important;
+}
