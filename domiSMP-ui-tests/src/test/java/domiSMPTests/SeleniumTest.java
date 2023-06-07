@@ -1,17 +1,29 @@
 package domiSMPTests;
 
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.testng.annotations.*;
+import rest.DomiSMPRestClient;
 import utils.DriverManager;
+import utils.TestRunData;
 
 import java.lang.reflect.Method;
 
-public class SeleniumTest extends BaseTest {
+public class SeleniumTest {
+
+    /**
+     * This class is extending all the test classes to have access to the Base tests methods.
+     */
     protected static final Logger LOG = LoggerFactory.getLogger(SeleniumTest.class);
     static int methodCount = 1;
     public String logFilename;
+
+    public static TestRunData data = new TestRunData();
+    public static DomiSMPRestClient rest = new DomiSMPRestClient();
+    public WebDriver driver;
+
 
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite() {
@@ -30,13 +42,6 @@ public class SeleniumTest extends BaseTest {
         LOG.info("--------Initialize test class-------");
         driver = DriverManager.getDriver();
 
-//        if (!rest.isLoggedIn()) {
-//            try {
-//                rest.refreshCookies();
-//            } catch (Exception e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -54,9 +59,6 @@ public class SeleniumTest extends BaseTest {
             driver = DriverManager.getDriver();
             driver.get(data.getUiBaseUrl());
         }
-        // new DomiSMPPage(driver).waitForPageToLoad();
-
-        // login(data.getAdminUser());
     }
 
 

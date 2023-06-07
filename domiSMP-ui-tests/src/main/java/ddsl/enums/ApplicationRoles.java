@@ -8,6 +8,6 @@ public class ApplicationRoles {
     public static final String USER = "USER";
 
     public static List<String> userRoleValues() {
-        return Arrays.asList(new String[]{"SYSTEM_ADMIN", "ROLE_ADMIN", "ROLE_USER"});
+        return Arrays.asList("SYSTEM_ADMIN", "ROLE_ADMIN", "ROLE_USER");
     }
 }
