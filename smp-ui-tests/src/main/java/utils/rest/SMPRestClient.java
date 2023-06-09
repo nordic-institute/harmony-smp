@@ -180,6 +180,7 @@ public class SMPRestClient {
 		HashMap<String, String> map = getCookies(cookies);
 		String xsrf = map.get("XSRF-TOKEN");
 		String jsessionID = map.get("JSESSIONID");
+		log.info("Creating domain template whose xsrf :" + xsrf + " and session id: " + jsessionID);
 		log.info("Creating domain template whose value is :" + template);
 		log.info("Creating the doamainpoststring" + domainPostStr);
 		try {
