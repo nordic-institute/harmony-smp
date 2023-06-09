@@ -1,5 +1,6 @@
 package ddsl.dobjects;
 
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -16,7 +17,7 @@ public class DInput extends DObject {
             element.clear();
             element.sendKeys(value);
         } else {
-            throw new Exception("Cannot type disabled field");
+            throw new ElementNotInteractableException("Cannot type disabled field");
         }
     }
 

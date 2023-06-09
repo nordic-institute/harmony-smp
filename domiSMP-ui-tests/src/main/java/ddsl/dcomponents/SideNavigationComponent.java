@@ -8,11 +8,15 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pages.ProfilePage;
 
 import java.util.Objects;
 
 public class SideNavigationComponent extends DomiSMPPage {
+    private final static Logger LOG = LoggerFactory.getLogger(SideNavigationComponent.class);
+
     @FindBy(id = "window-sidenav-panel")
     public WebElement sideBar;
 
@@ -93,7 +97,7 @@ public class SideNavigationComponent extends DomiSMPPage {
 
         wait.forElementToHaveText(sideBar);
 
-        log.debug("Get link to " + page.name());
+        LOG.debug("Get link to " + page.name());
         //            case SEARCH_RESOURCES:
         //                expandSection(resourcesExpandLnk);
         //                return new DLink(driver, resourcesLnk);
@@ -154,14 +158,14 @@ public class SideNavigationComponent extends DomiSMPPage {
         }
     }
 
-    private void openSubmenu(WebElement menu, @org.jetbrains.annotations.NotNull WebElement submenu) {
+    private void openSubmenu(WebElement menu, WebElement submenu) {
         try {
             submenu.click();
             if (submenu.getText().contains(getBreadcrump().getCurrentPage())) {
-                log.info("Current page is " + getBreadcrump().getCurrentPage());
+                LOG.info("Current page is " + getBreadcrump().getCurrentPage());
 
             } else {
-                log.error("Current page is not as expected. EXPECTED: " + submenu.getText() + "but ACTUAL PAGE: " + getBreadcrump().getCurrentPage());
+                LOG.error("Current page is not as expected. EXPECTED: [{}] but ACTUAL PAGE [{}]", submenu.getText().toString(), getBreadcrump().getCurrentPage().toString());
                 throw new RuntimeException();
             }
 
@@ -169,10 +173,10 @@ public class SideNavigationComponent extends DomiSMPPage {
             menu.click();
             submenu.click();
             if (submenu.getText().contains(getBreadcrump().getCurrentPage())) {
-                log.info("Current page is " + getBreadcrump().getCurrentPage());
+                LOG.info("Current page is " + getBreadcrump().getCurrentPage());
 
             } else {
-                log.error("Current page is not as expected. EXPECTED: " + submenu.getText() + "but ACTUAL PAGE: " + getBreadcrump().getCurrentPage());
+                LOG.error("Current page is not as expected. EXPECTED: " + submenu.getText() + "but ACTUAL PAGE: " + getBreadcrump().getCurrentPage());
                 throw new RuntimeException();
             }
         }

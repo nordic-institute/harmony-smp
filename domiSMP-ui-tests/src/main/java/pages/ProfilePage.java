@@ -6,11 +6,16 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProfilePage extends DomiSMPPage {
     /**
      * Page object for the Profile page. This contains the locators of the page and the methods for the behaviour of the page
      */
+
+    private final static Logger LOG = LoggerFactory.getLogger(ProfilePage.class);
+
     @FindBy(id = "smpTheme_id")
     private WebElement themeSel;
     @FindBy(id = "moment-locale")
@@ -24,7 +29,7 @@ public class ProfilePage extends DomiSMPPage {
 
     public ProfilePage(WebDriver driver) {
         super(driver);
-        log.debug(".... init");
+        LOG.debug(".... init");
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
@@ -44,13 +49,13 @@ public class ProfilePage extends DomiSMPPage {
             }
 
         } catch (Exception e) {
-            log.error("Cannot change User Profile Data ", e);
+            LOG.error("Cannot change User Profile Data ", e);
         }
 
         if (saveBtn.isEnabled()) {
             saveBtn.click();
         } else {
-            log.debug("Save button enable is " + saveBtn.isEnabled());
+            LOG.debug("Save button enable is " + saveBtn.isEnabled());
         }
 
         try {

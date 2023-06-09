@@ -10,6 +10,11 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import pages.LoginPage;
 
 public class DomiSMPPage extends DComponent {
+
+    /**
+     * Page object for the common components from Domismp like navigation, right menu. This contains the locators of the page and the methods for the behaviour of the page
+     */
+
     @FindBy(css = "page-header > h1")
     protected WebElement pageTitle;
     @FindBy(id = "login_id")

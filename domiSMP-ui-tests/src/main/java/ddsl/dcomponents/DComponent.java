@@ -12,7 +12,7 @@ import utils.TestRunData;
 
 public class DComponent {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final static Logger LOG = LoggerFactory.getLogger(DComponent.class);
     public DWait wait;
     protected WebDriver driver;
     protected TestRunData data = new TestRunData();
