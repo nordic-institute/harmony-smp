@@ -6,34 +6,10 @@
       <mat-card-content>
         <div class="panel">
 
-          <!-- Document -->
-          <mat-form-field style="width:35%">
-            <input matInput placeholder="Document identifier scheme" name="documentIdentifierScheme"
-                   id="documentIdentifierScheme_id"
-                   [formControl]="dialogForm.controls['documentIdentifierScheme']"
-                   maxlength="255">
-          </mat-form-field>
-
-          <mat-form-field style="width:60%">
-            <input matInput placeholder="Document identifier" name="documentIdentifier" id="documentIdentifier_id"
-                    maxlength="255"
-                   [formControl]="dialogForm.controls['documentIdentifier']"
-                   required>
-            <div
-              *ngIf="dialogForm.controls['documentIdentifier'].touched &&  dialogForm.controls['documentIdentifier'].hasError('required')"
-              style="color:red; font-size: 70%">Document identifier is required!
-            </div>
-          </mat-form-field>
           <!-- Process -->
-          <mat-form-field style="width:35%">
-            <input matInput placeholder="Process scheme" name="processSchema" id="processSchema_id"
-                   maxlength="255"
-                   [formControl]="dialogForm.controls['processScheme']"
-                   >
-          </mat-form-field>
-
           <mat-form-field style="width:60%">
-            <input matInput placeholder="Process identifier" name="processidentifier" id="processidentifier_id"
+            <mat-label>Process identifier</mat-label>
+            <input matInput name="processidentifier" id="processidentifier_id" matTooltip = "The value part of the identifier of the process."
                    maxlength="255"
                    [formControl]="dialogForm.controls['processIdentifier']"
                    required>
@@ -42,9 +18,18 @@
               style="color:red; font-size: 70%">Process identifier is required!
             </div>
           </mat-form-field>
+          <mat-form-field style="width:35%">
+            <mat-label>Process scheme</mat-label>
+            <input matInput name="processSchema" id="processSchema_id" matTooltip = "The scheme part of the identifier of the process."
+                   maxlength="255"
+                   [formControl]="dialogForm.controls['processScheme']"
+                   >
+          </mat-form-field>
+
 <!-- transport -->
           <mat-form-field style="width:35%">
-            <input matInput placeholder="Transport profile" name="transportProfile" id="transportProfiler_id"
+            <mat-label>Transport profile</mat-label>
+            <input matInput name="transportProfile" id="transportProfiler_id" matTooltip="Indicates the type of transport method that is being used between access points."
                     maxlength="255"
                    [formControl]="dialogForm.controls['transportProfile']"
                    required>
@@ -55,7 +40,8 @@
           </mat-form-field>
 
           <mat-form-field style="width:60%">
-            <input matInput placeholder="Endpoint Url" name="endpointUrl" id="endpointUrl_id"
+            <mat-label>Access point URL</mat-label>
+            <input matInput name="endpointUrl" id="endpointUrl_id" matTooltip="The address of an endpoint, as a URL."
                    maxlength="255"
                    [formControl]="dialogForm.controls['endpointUrl']"
                    type="url"
@@ -83,9 +69,8 @@
             <textarea matInput style="width:100%;border: #03A9F4 1px solid" cols="2" rows="10"
                       resizeable="false"
                       id="metadatacertificate_id"
-                      placeholder="X509Certificate*" name="certificate"
-                      [formControl]="dialogForm.controls['endpointCertificate']"
-                      ></textarea>
+                      placeholder="Upload a certificate or paste the value inside the field" name="certificate"
+                      [formControl]="dialogForm.controls['endpointCertificate']" required></textarea>
             </div>
           <div
             *ngIf="dialogForm.controls['endpointCertificate'].touched &&  dialogForm.controls['endpointCertificate'].hasError('required')"
@@ -94,14 +79,15 @@
 
           </div>
 
-
 <!-- ServiceDescription -->
           <mat-form-field style="width:100%">
-            <input matInput placeholder="Service description" name="serviceDescription" id="serviceDescription_id"
+            <mat-label>Service description</mat-label>
+            <input matInput name="serviceDescription" id="serviceDescription_id" matTooltip="Service description"
                    [formControl]="dialogForm.controls['serviceDescription']" maxlength="255" >
           </mat-form-field>
           <mat-form-field style="width:100%">
-            <input matInput placeholder="Technical Contact Url" name="technicalContactUrl" id="technicalContactUrl_id"
+            <mat-label>Technical Contact Url</mat-label>
+            <input matInput name="technicalContactUrl" id="technicalContactUrl_id"  matTooltip="Technical contact for the service"
                    [formControl]="dialogForm.controls['technicalContactUrl']" maxlength="255" type="url" >
           </mat-form-field>
 
