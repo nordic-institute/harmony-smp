@@ -4,8 +4,12 @@ import ddsl.dobjects.DObject;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AlertComponent extends DComponent {
+    private final static Logger LOG = LoggerFactory.getLogger(AlertComponent.class);
+
     @FindBy(id = "alertmessage_id")
     public WebElement alertToaster;
     @FindBy(css = "#alertmessage_id > span.closebtn")
@@ -23,21 +27,21 @@ public class AlertComponent extends DComponent {
         try {
             wait.forElementToBeVisible(alertToaster, true);
 
-            log.error(closeButton.getText());
+            LOG.error(closeButton.getText());
         } catch (Exception e) {
         }
         DObject alertObject = new DObject(driver, alertToaster);
 
         if (!alertObject.isPresent()) {
-            log.debug("No messages displayed.");
+            LOG.debug("No messages displayed.");
             return null;
         }
 
         String messageTxt = alertToaster.getText().replace(closeButton.getText(), "").replaceAll("\n", "").trim();
 
-        log.debug("messageTxt = " + messageTxt);
+        LOG.debug("messageTxt = " + messageTxt);
 
-        log.debug("Getting alert message ...");
+        LOG.debug("Getting alert message ...");
         return messageTxt.trim();
     }
 

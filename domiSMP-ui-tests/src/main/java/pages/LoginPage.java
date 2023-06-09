@@ -6,6 +6,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
@@ -14,6 +16,9 @@ public class LoginPage extends DomiSMPPage {
     /**
      * Page object for the Login page. This contains the locators of the page and the methods for the behaviour of the page
      */
+
+    private final static Logger LOG = LoggerFactory.getLogger(LoginPage.class);
+
     @FindBy(id = "username_id")
     private WebElement username;
     @FindBy(id = "password_id")
@@ -23,7 +28,7 @@ public class LoginPage extends DomiSMPPage {
 
     public LoginPage(WebDriver driver) {
         super(driver);
-        log.debug(".... init");
+        LOG.debug(".... init");
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
@@ -31,7 +36,7 @@ public class LoginPage extends DomiSMPPage {
         HashMap<String, String> usr = new HashMap<>();
         usr.put("username", user);
         usr.put("pass", pass);
-        log.debug("Login started " + usr.get("username") + " / " + usr.get("pass"));
+        LOG.debug("Login started " + usr.get("username") + " / " + usr.get("pass"));
 
         goToLoginPage();
         weToDInput(username).fill(usr.get("username"));
@@ -39,7 +44,7 @@ public class LoginPage extends DomiSMPPage {
         weToDButton(loginBtn).click();
 
         if (getExpiredDialoginbutton().isPresent()) {
-            log.info("Expired password dialog is present.");
+            LOG.info("Expired password dialog is present.");
             getExpiredDialoginbutton().click();
         }
 
@@ -49,3 +54,4 @@ public class LoginPage extends DomiSMPPage {
     }
 
 }
+
