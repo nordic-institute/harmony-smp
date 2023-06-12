@@ -365,6 +365,10 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_PARAMS);
     }
 
+    public Map<String, String> getCustomNaptrServicesMap() {
+        return configurationDAO.getCachedPropertyValue(SML_CUSTOM_NAPTR_SERVICE_PARAMS);
+    }
+
     public List<String> getCasURLTokenValidationGroups() {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_GROUPS);
     }

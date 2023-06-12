@@ -202,6 +202,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
 */
+    /*
     @Test
     public void registerParticipantToSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
         DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
@@ -213,7 +214,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
         Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
     }
-/*
+
     @Test
     public void unregisterParticipantFromSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
         DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();

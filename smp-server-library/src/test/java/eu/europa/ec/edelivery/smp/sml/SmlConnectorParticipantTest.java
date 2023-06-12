@@ -76,7 +76,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     @Test
     public void testRegisterInDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
         //then
         assertTrue(result);
@@ -90,7 +90,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
         mockSml.setThrowException(ex);
-        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
         //then
         assertTrue(result);
@@ -108,14 +108,14 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         expectedException.expectMessage(message);
         expectedException.expect(SMPRuntimeException.class);
 
-        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
     }
 
     @Test
     public void testRegisterInDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
-        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN , null );
+        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN , null);
 
         //then
         assertEquals(2, mockSml.getParticipantManagmentClientMocks().size());

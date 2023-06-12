@@ -81,6 +81,8 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address", "0.0.0.0", "Physical SMP endpoint which will be registered on SML when registering new domain.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+    SML_CUSTOM_NAPTR_SERVICE_PARAMS("bdmsl.integration.naptr_service.map", "edelivery-oasis-cppa-3.0-cpp:meta:cppa3", "naptr service for resource type as key:value properties separated with '|'. Ex edelivery-oasis-cppa3-extension:meta:cppa3  ",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
     // keystore truststore
     KEYSTORE_PASSWORD("smp.keystore.password", "", "Encrypted keystore (and keys) password ",
             OPTIONAL, ENCRYPTED, NO_RESTART_NEEDED, STRING),
@@ -204,6 +206,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING),
     SSO_CAS_TOKEN_VALIDATION_PARAMS("smp.sso.cas.token.validation.params", "acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP", "The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'",
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, MAP_STRING),
+
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.",
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, LIST_STRING),
 
