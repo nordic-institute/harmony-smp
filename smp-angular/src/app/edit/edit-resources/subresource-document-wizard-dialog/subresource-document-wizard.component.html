@@ -2,12 +2,11 @@
 
 <mat-dialog-content class="flex-dialog-content">
   <form [formGroup]="dialogForm">
-    <mat-card>
-      <mat-card-content>
+
         <div class="panel">
 
           <!-- Process -->
-          <mat-form-field style="width:60%">
+          <mat-form-field style="width:58%">
             <mat-label>Process identifier</mat-label>
             <input matInput name="processidentifier" id="processidentifier_id" matTooltip = "The value part of the identifier of the process."
                    maxlength="255"
@@ -18,7 +17,7 @@
               style="color:red; font-size: 70%">Process identifier is required!
             </div>
           </mat-form-field>
-          <mat-form-field style="width:35%">
+          <mat-form-field style="width:38%">
             <mat-label>Process scheme</mat-label>
             <input matInput name="processSchema" id="processSchema_id" matTooltip = "The scheme part of the identifier of the process."
                    maxlength="255"
@@ -26,20 +25,7 @@
                    >
           </mat-form-field>
 
-<!-- transport -->
-          <mat-form-field style="width:35%">
-            <mat-label>Transport profile</mat-label>
-            <input matInput name="transportProfile" id="transportProfiler_id" matTooltip="Indicates the type of transport method that is being used between access points."
-                    maxlength="255"
-                   [formControl]="dialogForm.controls['transportProfile']"
-                   required>
-            <div
-              *ngIf="dialogForm.controls['transportProfile'].touched &&  dialogForm.controls['transportProfile'].hasError('required')"
-              style="color:red; font-size: 70%">Transport profile  (as example: bdxr-transport-ebms3-as4-v1p0) is required!
-            </div>
-          </mat-form-field>
-
-          <mat-form-field style="width:60%">
+          <mat-form-field style="width:58%">
             <mat-label>Access point URL</mat-label>
             <input matInput name="endpointUrl" id="endpointUrl_id" matTooltip="The address of an endpoint, as a URL."
                    maxlength="255"
@@ -49,6 +35,20 @@
             <div
               *ngIf="dialogForm.controls['endpointUrl'].touched &&  dialogForm.controls['endpointUrl'].hasError('required')"
               style="color:red; font-size: 70%">Access point URL is required!
+            </div>
+          </mat-form-field>
+
+<!-- transport -->
+          <mat-form-field style="width:38%">
+            <mat-label>Transport profile</mat-label>
+            <input matInput name="transportProfile" id="transportProfiler_id"
+                   matTooltip="Indicates the type of transport method that is being used between access points for message exchange. See the message exchange network technical specifications for correct values."
+                    maxlength="255"
+                   [formControl]="dialogForm.controls['transportProfile']"
+                   required>
+            <div
+              *ngIf="dialogForm.controls['transportProfile'].touched &&  dialogForm.controls['transportProfile'].hasError('required')"
+              style="color:red; font-size: 70%">Transport profile  (as example: bdxr-transport-ebms3-as4-v1p0) is required!
             </div>
           </mat-form-field>
 
@@ -77,8 +77,6 @@
             style="color:red; font-size: 70%">Valid x509 Certificate is required!
           </div>
 
-          </div>
-
 <!-- ServiceDescription -->
           <mat-form-field style="width:100%">
             <mat-label>Service description</mat-label>
@@ -90,9 +88,7 @@
             <input matInput name="technicalContactUrl" id="technicalContactUrl_id"  matTooltip="Technical contact for the service"
                    [formControl]="dialogForm.controls['technicalContactUrl']" maxlength="255" type="url" >
           </mat-form-field>
-
-      </mat-card-content>
-    </mat-card>
+        </div>
   </form>
 </mat-dialog-content>
 
