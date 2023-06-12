@@ -10,11 +10,12 @@ import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.Map;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.CONFIGURATION_ERROR;
 import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.*;
 
@@ -102,11 +103,32 @@ public class SMLIntegrationService {
         if (!resource.isSmlRegistered()) {
             // update value
             resource.setSmlRegistered(true);
-            smlConnector.registerInDns(normalizedParticipantId, domain);
+            String customNaptrService = getNaptrServiceForResource(resource);
+            smlConnector.registerInDns(normalizedParticipantId, domain, customNaptrService);
             LOG.businessDebug(BUS_SML_REGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
         } else {
             LOG.businessWarn(BUS_SML_REGISTER_SERVICE_GROUP_ALREADY_REGISTERED, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
         }
+    }
+
+    public String getNaptrServiceForResource(DBResource resource){
+        LOG.info("Get naptr service for resource: [{}]", resource );
+        if (resource == null
+                || resource.getDomainResourceDef() == null
+                || resource.getDomainResourceDef().getResourceDef() == null
+                || StringUtils.isBlank(resource.getDomainResourceDef().getResourceDef().getIdentifier())){
+            LOG.info("return null naptr service for resource: [{}]", resource );
+            return null;
+        }
+        String resDefIdentifier = resource.getDomainResourceDef().getResourceDef().getIdentifier();
+        LOG.info("return null naptr service for resource: [{}] and document type [{}]", resource, resDefIdentifier );
+        Map<String, String> map = configurationService.getCustomNaptrServicesMap();
+
+        if (map!=null &&  map.containsKey(resDefIdentifier) ) {
+            return map.get(resDefIdentifier);
+        }
+        LOG.info("return null because configuration does not have document type and document type [{}]", resource, resDefIdentifier );
+        return null;
 
     }
 
@@ -155,26 +177,6 @@ public class SMLIntegrationService {
         return smlConnector.unregisterFromDns(normalizedParticipantId, domain);
 
     }
-
-    /**
-     * Method registers participant to SML. It does not check if Participant is in database or of is already registered
-     *
-     * @param participantId     - Participant schema
-     * @param participantSchema - Participant schema
-     * @param domain            - register to domain
-     */
-
-    public boolean registerParticipantToSML(String participantId, String participantSchema, DBDomain domain) {
-        LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, participantId, participantSchema, domain.getDomainCode());
-
-        Identifier normalizedParticipantId = identifierService
-                .normalizeParticipant(participantSchema, participantId);
-
-        // unregister only  registered participants
-        return smlConnector.registerInDns(normalizedParticipantId, domain);
-
-    }
-
     public boolean isSMLIntegrationEnabled() {
         return configurationService.isSMLIntegrationEnabled();
     }

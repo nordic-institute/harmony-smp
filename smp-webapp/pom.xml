@@ -33,6 +33,13 @@
             <artifactId>oasis-smp-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- cppa3 document -->
+        <!-- dependency>
+            <groupId>eu.europa.ec.edelivery</groupId>
+            <artifactId>oasis-cppa3-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency -->
+
         <dependency>
             <groupId>eu.europa.ec.dynamic-discovery</groupId>
             <artifactId>dynamic-discovery-client</artifactId>

@@ -13,10 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
-import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
-import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
-import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
+import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
+import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -57,6 +55,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBDMSLAdvancedParticipantId;
 import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBusdoxParticipantId;
 import static eu.europa.ec.edelivery.smp.exceptions.SMLErrorMessages.*;
 
@@ -73,6 +72,8 @@ public class SmlConnector implements ApplicationContextAware {
 
     private static final String SERVICE_METADATA_CONTEXT = "manageservicemetadata";
     private static final String IDENTIFIER_VALUE_CONTEXT = "manageparticipantidentifier";
+
+    private static final String BDMSL_CUSTOM_SERVICES_CONTEXT = "bdmslservice";
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
@@ -91,7 +92,7 @@ public class SmlConnector implements ApplicationContextAware {
     private ApplicationContext ctx;
 
 
-    public boolean registerInDns(Identifier normalizedParticipantId, DBDomain domain) {
+    public boolean registerInDns(Identifier normalizedParticipantId, DBDomain domain, String customNaptrService) {
 
 
         if (!configurationService.isSMLIntegrationEnabled()) {
@@ -106,9 +107,13 @@ public class SmlConnector implements ApplicationContextAware {
 
         LOG.debug("Registering new Participant: {} to domain: {}.", normalizedParticipantString, domain.getDomainCode());
         try {
-            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
-            getParticipantWSClient(domain).create(smlRequest);
-            LOG.info("Participant: {} registered to domain: {}.", normalizedParticipantString, domain.getDomainCode());
+            if (StringUtils.isBlank(customNaptrService)) {
+                createRegularDNSRecord(normalizedParticipantId, domain);
+                LOG.info("Set regular DNS record for Participant: [{}] and domain: [{}].", normalizedParticipantId, domain.getDomainCode());
+            } else {
+                createCustomServiceNaptrDNSRecord(normalizedParticipantId, domain, customNaptrService);
+                LOG.info("Set custom naptr service [{}] DNS record for Participant: [{}] and domain: [{}].", customNaptrService,  normalizedParticipantId, domain.getDomainCode());
+            }
             return true;
         } catch (BadRequestFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
@@ -118,6 +123,17 @@ public class SmlConnector implements ApplicationContextAware {
             LOG.error(e.getClass().getName() + "" + e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
+    }
+
+    protected void createRegularDNSRecord(Identifier normalizedParticipantId, DBDomain domain) throws UnauthorizedFault, BadRequestFault, NotFoundFault, InternalErrorFault {
+        LOG.debug("Set regular DNS record for Participant: [{}] and domain: [{}].", normalizedParticipantId, domain.getDomainCode());
+        ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
+        getParticipantWSClient(domain).create(smlRequest);
+    }
+    protected void createCustomServiceNaptrDNSRecord(Identifier normalizedParticipantId, DBDomain domain, String customNaptrService) throws UnauthorizedFault, BadRequestFault, NotFoundFault, InternalErrorFault {
+        LOG.debug("Set custom naptr service [{}] DNS record for Participant: [{}] and domain: [{}].", customNaptrService, normalizedParticipantId, domain.getDomainCode());
+        SMPAdvancedServiceForParticipantType smlRequest = toBDMSLAdvancedParticipantId(normalizedParticipantId, domain.getSmlSmpId(), customNaptrService);
+        getBDMSLWSClient(domain).createParticipantIdentifier(smlRequest);
     }
 
     protected boolean processSMLErrorMessage(BadRequestFault e, Identifier participantIdentifierType) {
@@ -269,6 +285,15 @@ public class SmlConnector implements ApplicationContextAware {
         configureClient(IDENTIFIER_VALUE_CONTEXT, iManageServiceMetadataWS, domain);
 
         return iManageServiceMetadataWS;
+    }
+
+    private IBDMSLServiceWS getBDMSLWSClient(DBDomain domain) {
+
+        IBDMSLServiceWS bdmslServiceWS = ctx.getBean(IBDMSLServiceWS.class);
+        // configure connection
+        configureClient(BDMSL_CUSTOM_SERVICES_CONTEXT, bdmslServiceWS, domain);
+
+        return bdmslServiceWS;
     }
 
     private IManageServiceMetadataWS getSMPManagerWSClient(DBDomain domain) {

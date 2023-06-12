@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     Collaboration Protocol Profile and Agreement Version 3.0
+     Committee Specification 01
+     24 September 2020
+
+     Copyright (c) OASIS Open 2020. All Rights Reserved.
+     Source: https://docs.oasis-open.org/ebcore/cppa/v3.0/cs01/
+     Latest version of narrative specification: https://docs.oasis-open.org/ebcore/cppa/v3.0/cppa-v3.0.html
+     TC IPR Statement: https://www.oasis-open.org/committees/ebcore/ipr.php 
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    xmlns:h="http://www.w3.org/1999/xhtml" 
+    xmlns:cppa="http://docs.oasis-open.org/ebcore/ns/cppa/v3.0"
+    xmlns:dsig11="http://www.w3.org/2009/xmldsig11#"
+    xmlns:exc="http://docs.oasis-open.org/ebcore/ns/exception/v3.0"
+    targetNamespace="http://docs.oasis-open.org/ebcore/ns/exception/v3.0" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="1.0">
+    
+    <xs:import namespace="http://docs.oasis-open.org/ebcore/ns/cppa/v3.0" schemaLocation="cppa3.xsd">
+        <xs:annotation>
+            <xs:documentation>The CPPA3 Schema, from which this schema uses some sub-elements.</xs:documentation>
+        </xs:annotation>
+    </xs:import>
+    
+    <xs:annotation>
+        <xs:documentation>
+            <p>This XML schema is part of the  
+                <a href="http://docs.oasis-open.org/ebcore/cppa/v3.0/">OASIS CPPA3 specification</a>
+                developed by the <a href="https://www.oasis-open.org/committees/ebcore/">OASIS ebCore TC</a>.
+            </p>
+        </xs:documentation>
+    </xs:annotation>
+    
+    <xs:element name="Exception">
+        <xs:annotation>
+            <xs:documentation>
+                <p>A CPPA3 Exception document is used to communicate the rejection of a proposed CPPA3
+                    Agreement to the party that requested registration of the Agreement. </p>
+                <p>An Exception document MUST include an <em>AgreementIdentifier</em> 
+                    element. The value of this element MUST be set to the value of the presented proposed
+                    Agreement.</p>
+                <p>An Exception document MAY include a <em>ProfileIdentifier</em> 
+                    element. If it is present, the value of this element MUST identify a CPPA3 Profile against 
+                    which the presented CPPA3 Agreement is matched.</p>
+                <p>An Exception document MAY include any number of <a href="#Error">Error</a> elements.</p>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="cppa:AgreementIdentifier" />
+                <xs:element ref="cppa:ProfileIdentifier"   minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="exc:Error" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Error" >
+        <xs:annotation>
+            <xs:documentation>
+                <p>This element reports an error. The structure of the element is similar to the Error elements of
+                    ebMS3 and ebCore Agreement Update. 
+                </p>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType >
+            <xs:sequence>
+                <xs:element ref="exc:Description" minOccurs="0"/>
+                <xs:element ref="exc:ErrorDetail" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="errorCode" type="xs:token" use="required">
+                <xs:annotation>
+                    <xs:documentation>A code for the error.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="severity" type="xs:token" use="required">
+                <xs:annotation>
+                    <xs:documentation>The severity of the error. Values include <em>Failure</em> 
+                        and <em>Warning</em>.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="shortDescription" type="xs:token" use="optional">
+                <xs:annotation>
+                    <xs:documentation>A short description for the error.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Description">
+        <xs:annotation>
+            <xs:documentation>
+                <p>The <a href="#Description">Description</a> element provides a natural language description 
+                    for an <a href="#Error">Error</a>. Since its content is restricted to the
+                    <em>non-empty-string</em> type, it is not suited to contain 
+                    structured technical documentation. If deemed useful, the <em>href</em> attribute MAY be
+                    used to reference external descriptions.
+                </p>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="cppa:non-empty-string">
+                    <xs:attribute ref="xml:lang" use="required">
+                        <xs:annotation>
+                            <xs:documentation>The language in which the description is provided.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="href" type="xs:anyURI" use="optional">
+                        <xs:annotation>
+                            <xs:documentation>A optional reference to additional description material for the 
+                                structure.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ErrorDetail" >
+        <xs:annotation>
+            <xs:documentation>
+                <p>This element allows more detailed explanation of errors.</p>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="cppa:non-empty-string">
+                    <xs:attribute ref="xml:lang" use="required">
+                        <xs:annotation>
+                            <xs:documentation>The language in which the explanation is provided.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="href" type="xs:anyURI" use="optional">
+                        <xs:annotation>
+                            <xs:documentation>A optional reference to additional description material for the 
+                                structure.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

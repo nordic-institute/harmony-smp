@@ -31,7 +31,7 @@
 
         ></domain-member-panel>
       </mat-tab>
-      <mat-tab>
+      <mat-tab *ngIf="hasSubResources">
         <ng-template mat-tab-label>
           <smp-label icon="description" label="Subresources"></smp-label>
         </ng-template>
