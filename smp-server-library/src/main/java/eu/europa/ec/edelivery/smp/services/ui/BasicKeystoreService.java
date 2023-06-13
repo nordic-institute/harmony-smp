@@ -18,6 +18,7 @@ public class BasicKeystoreService {
     protected static final String CERT_ERROR_MSG_EXPIRED = "Certificate is expired!";
     protected static final String CERT_ERROR_MSG_NOT_YET_VALID = "Certificate is not yet valid!";
     protected static final String CERT_ERROR_MSG_NOT_VALIDATED = "Certificate not validated!";
+    protected static final String CERT_ERROR_MSG_ALREADY_IN_USE = "Certificate with the same Subject is already registered!";
 
 
     ICRLVerifierService crlVerifierService;

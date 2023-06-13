@@ -344,6 +344,10 @@ mat-card {
   background-color: #f44336;
 }
 
+.alert-message-warning {
+  background-color: #ff9800;;
+}
+
 .alert-message-success {
   background-color: #4CAF50;
 }

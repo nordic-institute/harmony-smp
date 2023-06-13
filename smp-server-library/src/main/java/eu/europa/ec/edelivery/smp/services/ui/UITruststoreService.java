@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
+import eu.europa.ec.edelivery.smp.exceptions.CertificateAlreadyRegisteredException;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
@@ -194,6 +195,7 @@ public class UITruststoreService extends BasicKeystoreService {
             LOG.debug("Error occurred while parsing the certificate ", e);
             LOG.warn("Can not parse the certificate with error:[{}]!", ExceptionUtils.getRootCauseMessage(e));
             cro = new CertificateRO();
+            cro.setError(true);
             cro.setInvalid(true);
             cro.setInvalidReason("Can not read the certificate!");
             return cro;
@@ -214,10 +216,10 @@ public class UITruststoreService extends BasicKeystoreService {
         cro.setInvalid(true);
         cro.setInvalidReason(CERT_ERROR_MSG_NOT_VALIDATED);
         try {
-            checkFullCertificateValidity(cert);
             if (validateDuplicate) {
                 validateCertificateNotUsed(cro);
             }
+            checkFullCertificateValidity(cert);
             cro.setInvalid(false);
             cro.setInvalidReason(null);
         } catch (CertificateExpiredException ex) {
@@ -232,7 +234,12 @@ public class UITruststoreService extends BasicKeystoreService {
         } catch (CertificateNotTrustedException ex) {
             LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
             cro.setInvalidReason(CERT_ERROR_MSG_NOT_TRUSTED);
-        } catch (CertificateException e) {
+        } catch (CertificateAlreadyRegisteredException ex) {
+            LOG.securityError(SEC_USER_CERT_INVALID, cro.getCertificateId(), ex.getMessage());
+            cro.setInvalidReason(CERT_ERROR_MSG_ALREADY_IN_USE);
+            // can not register it twice
+            cro.setError(true);
+        }  catch (CertificateException e) {
             LOG.securityError(SEC_USER_CERT_INVALID, e, cro.getCertificateId(), e.getMessage());
             if (ExceptionUtils.getRootCause(e) instanceof CertPathValidatorException) {
                 cro.setInvalidReason("Certificate is not trusted! Invalid certificate policy path!");
@@ -329,7 +336,7 @@ public class UITruststoreService extends BasicKeystoreService {
         if (user.isPresent()) {
             String msg = "Certificate: [" + cert.getCertificateId() + "] is already used!";
             LOG.debug("Certificate with id: [{}] is already used by user with username [{}]", cert.getCertificateId(), user.get().getUsername());
-            throw new CertificateException(msg);
+            throw new CertificateAlreadyRegisteredException(msg);
         }
     }
 

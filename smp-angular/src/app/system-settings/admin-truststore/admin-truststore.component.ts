@@ -82,7 +82,7 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewIn
       this.selected = null;
       this.trustedCertificateList = this.trustedCertificateList.filter(item => item.alias !== certificateRo.alias)
     } else if (certificateRo.status == EntityStatus.ERROR) {
-      this.alertService.error("ERROR: " + certificateRo.actionMessage);
+      this.alertService.error("Error: " + certificateRo.actionMessage);
     }
     this.dataSource.data = this.trustedCertificateList;
     // if new cert is added - go to last page
