@@ -99,6 +99,8 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit,
 
     this.selected = null;
     this.dataSource.data = this.keystoreCertificates;
+    // show the last page
+    this.paginator.lastPage();
 
   }
 

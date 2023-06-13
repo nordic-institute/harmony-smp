@@ -57,11 +57,11 @@ export class SidenavComponent implements OnInit {
     this.securityService.logout();
   }
 
-  get expandedSideNavSize(){
+  get expandedSideNavSize() {
     return SmpConstants.EXPANDED_MENU_WIDTH;
   }
 
-  get collapsedSideNavSize(){
+  get collapsedSideNavSize() {
     return SmpConstants.COLLAPSED_MENU_WIDTH;
   }
 }

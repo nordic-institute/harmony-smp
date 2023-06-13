@@ -1,17 +1,15 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {SmpConstants} from "../../../smp.constants";
+import {SmpConstants} from "../../smp.constants";
 import {Observable} from "rxjs";
-import {AccessTokenRo} from "../../../common/dialogs/access-token-generation-dialog/access-token-ro.model";
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
-import {UserRo} from "../user-ro.model";
+import {AccessTokenRo} from "../../common/model/access-token-ro.model";
+import {UserRo} from "./user-ro.model";
 
 @Injectable()
 export class UserDetailsService {
 
   constructor(
-    private http: HttpClient,
-    private alertService: AlertMessageService,
+    private http: HttpClient
   ) {
   }
 

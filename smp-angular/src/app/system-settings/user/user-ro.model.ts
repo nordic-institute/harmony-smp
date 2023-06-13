@@ -21,7 +21,6 @@ export interface UserRo extends SearchTableEntity {
   lastFailedLoginAttempt?:Date;
   suspendedUtil?:Date;
 
-
  // deprecated
   accessTokenId?: string;
   accessTokenExpireOn?:	Date;

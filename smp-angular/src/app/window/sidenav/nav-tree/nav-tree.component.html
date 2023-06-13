@@ -4,7 +4,7 @@
   <!-- Leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
     <li class="mat-tree-node nav-tree-leaf" [ngClass]="{ 'navigation-selected': navigationModel.selected === node}">
-      <button [id]="node.code+'Button'" mat-menu-item (click)="menuClickHandler(node)" >
+      <button [id]="node.code+'Button'" mat-menu-item (click)="menuClickHandler(node)">
         <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
         <span *ngIf="fullMenu">{{node.name}}</span>
       </button>
@@ -21,18 +21,19 @@
               {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
             </mat-icon>
           </a>
-          <button  [id]="node.code+'Button'" mat-menu-item (click)="menuClickHandler(node)" >
+          <button [id]="node.code+'Button'" mat-menu-item (click)="menuClickHandler(node)">
             <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
             <span *ngIf="fullMenu">{{node.name}}</span>
           </button>
         </ng-container>
         <ng-template #iconButton>
-          <button  [id]="node.code+'Button'" #iconItem mat-menu-item [matMenuTriggerFor]="itemMenu" >
+          <button [id]="node.code+'Button'" #iconItem mat-menu-item [matMenuTriggerFor]="itemMenu">
             <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
           </button>
           <mat-menu #itemMenu="matMenu" xPosition="before" yPosition="below">
             <ng-container *ngFor="let item of node.children; let i = index">
-              <nav-tree-menu (notifyClickMenu)="menuClickHandler(item)" [trigger]="item.code" [data]="item"></nav-tree-menu>
+              <nav-tree-menu (notifyClickMenu)="menuClickHandler(item)" [trigger]="item.code"
+                             [data]="item"></nav-tree-menu>
             </ng-container>
           </mat-menu>
         </ng-template>

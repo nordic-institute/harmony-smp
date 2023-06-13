@@ -1,4 +1,4 @@
-import {CredentialRo} from "../../../security/credential.model";
+import {CredentialRo} from "../../security/credential.model";
 
 export interface AccessTokenRo {
   identifier: string;

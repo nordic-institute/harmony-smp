@@ -6,7 +6,7 @@ import {AlertMessageService} from "../../common/alert-message/alert-message.serv
 import {SecurityService} from "../../security/security.service";
 import {Observable, Subject} from "rxjs";
 import {CredentialRo} from "../../security/credential.model";
-import {AccessTokenRo} from "../../common/dialogs/access-token-generation-dialog/access-token-ro.model";
+import {AccessTokenRo} from "../../common/model/access-token-ro.model";
 import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
 
 /**

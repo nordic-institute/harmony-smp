@@ -66,6 +66,8 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   selectedPath: NavigationNode[];
 
   private rootNode: NavigationNode = PUBLIC_NAVIGATION_TREE;
+  private userDetailsNode: NavigationNode = null;
+
 
   constructor(protected securityService: SecurityService,
               protected securityEventService: SecurityEventService,
@@ -188,9 +190,8 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     if (!parentNode.children) {
       return null;
     }
-    console.log("find " + nodeCode + "from parent2: " + parentNode.code)
+    console.log("find " + nodeCode + " from parent: " + parentNode.code)
     return parentNode.children.find(node => node.routerLink == nodeCode);
-
   }
 
   /**
@@ -221,6 +222,12 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   setNavigationTree(userRootNode: NavigationNode) {
     // find the node by the navigation
     let path: string[] = this.router.url.split('/');
+    this.setNavigationTreeByPath(path, userRootNode)
+  }
+
+  setNavigationTreeByPath(path: string[], userRootNode: NavigationNode) {
+    // find the node by the navigation
+
     let startNode = userRootNode;
 
     for (let index in path) {
@@ -325,5 +332,9 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   public navigateToHome(): void {
     this.select(this.rootNode);
+  }
+
+  public navigateToUserDetails(): void {
+    this.setNavigationTreeByPath(['user-settings', 'user-profile'], this.rootNode)
   }
 }

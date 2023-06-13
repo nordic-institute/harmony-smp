@@ -259,7 +259,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbCredential.setExpireOn(adminUpdate ? null :
                 currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
 
-        // if the credentials are not managed by the session , e.g. new  - the parsist it
+        // clear failed attempts
+        dbCredential.setLastFailedLoginAttempt(null);
+        dbCredential.setSequentialLoginFailureCount(null);
+        // if the credentials are not managed by the session , e.g. new  - the persist it
         if (dbCredential.getId()==null) {
             credentialDao.persist(dbCredential);
         }
@@ -318,7 +321,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-        LOG.debug("Update user [{}]: email [{}], fullname [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
+        LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user profile data on managed db entity. (For now Just email, name and theme)
         dbUser.setEmailAddress(user.getEmailAddress());
         dbUser.setFullName(user.getFullName());
@@ -333,7 +336,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-        LOG.debug("Update user [{}]: email [{}], fullname [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
+        LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user data by admin
         dbUser.setActive(user.isActive());
         dbUser.setApplicationRole(user.getRole());

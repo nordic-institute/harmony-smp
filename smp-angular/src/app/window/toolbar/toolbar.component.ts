@@ -1,15 +1,14 @@
-﻿import {Component, OnInit} from '@angular/core';
+﻿import {Component} from '@angular/core';
 
 import {SecurityService} from '../../security/security.service';
 import {Authority} from "../../security/authority.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {UserDetailsDialogMode} from "../../system-settings/user/user-details-dialog/user-details-dialog.component";
-import {EntityStatus} from "../../common/enums/entity-status.enum";
+import {MatDialog} from "@angular/material/dialog";
 import {UserService} from "../../system-settings/user/user.service";
 import {UserController} from "../../system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../common/global-lookups";
+import {NavigationService} from "../sidenav/navigation-model.service";
 
 /**
  * Expanded side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
@@ -33,6 +32,7 @@ export class ToolbarComponent {
   constructor(private alertService: AlertMessageService,
               private securityService: SecurityService,
               private userService: UserService,
+              private navigation: NavigationService,
               private http: HttpClient,
               private dialog: MatDialog,
               private lookups: GlobalLookups) {
@@ -64,27 +64,19 @@ export class ToolbarComponent {
 
   get currentUser(): string {
     let userDesc = this.userTitle;
-    return  (userDesc.length>25)?userDesc.slice(0,25) + "...":userDesc
+    return (userDesc.length > 25) ? userDesc.slice(0, 25) + "..." : userDesc
   }
 
-  get userTitle(){
+  get userTitle() {
     let user = this.securityService.getCurrentUser();
     if (!user) {
       return ""
     }
-    return !!user.fullName? user.fullName +" ["+user.username+"]":user.username;
+    return !!user.fullName ? user.fullName + " [" + user.username + "]" : user.username;
   }
 
   editCurrentUser() {
-    const formRef: MatDialogRef<any> = this.userController.newDialog({
-      data: {mode: UserDetailsDialogMode.PREFERENCES_MODE, row: this.securityService.getCurrentUser()}
-    });
-    formRef.afterClosed().subscribe(result => {
-      if (result) {
-        const user = {...formRef.componentInstance.getCurrent(), status: EntityStatus.UPDATED};
-        this.userService.updateUser(user);
-      }
-    });
+    this.navigation.navigateToUserDetails();
   }
 
   get currentUserRoleDescription(): string {
