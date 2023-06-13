@@ -260,6 +260,9 @@ export class SearchTableComponent implements OnInit {
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
       data: {edit: false}
     });
+    if (!formRef) {
+      return;
+    }
     formRef.afterClosed().subscribe(result => {
       if (result) {
         this.rows = [...this.rows, {...formRef.componentInstance.getCurrent()}];
@@ -387,6 +390,9 @@ export class SearchTableComponent implements OnInit {
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
       data: {edit: row?.status!=EntityStatus.NEW, row}
     });
+    if (!formRef) {
+      return;
+    }
     formRef.afterClosed().subscribe(result => {
       if (result) {
         const changed = this.searchTableController.isRecordChanged(row, formRef.componentInstance.getCurrent());
