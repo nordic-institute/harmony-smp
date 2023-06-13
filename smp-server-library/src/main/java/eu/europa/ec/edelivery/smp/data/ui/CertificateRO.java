@@ -22,6 +22,7 @@ public class CertificateRO extends BaseRO {
     private String encodedValue;
     private String clientCertHeader;
     private boolean isInvalid;
+    private boolean isError;
 
     private boolean isContainingKey;
 
@@ -132,6 +133,18 @@ public class CertificateRO extends BaseRO {
 
     public void setInvalid(boolean invalid) {
         isInvalid = invalid;
+    }
+
+    public boolean isError() {
+        return isError;
+    }
+
+    /**
+     * Set blocking error
+     * @param error
+     */
+    public void setError(boolean error) {
+        isError = error;
     }
 
     public String getInvalidReason() {
