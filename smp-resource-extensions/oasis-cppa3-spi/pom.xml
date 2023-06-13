@@ -25,7 +25,6 @@
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <org.glassfish.jaxb.jaxb-runtime.version>2.3.8</org.glassfish.jaxb.jaxb-runtime.version>
     </properties>
-
     <artifactId>oasis-cppa3-spi</artifactId>
     <name>oasis-cppa3-spi</name>
     <packaging>jar</packaging>

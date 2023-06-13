@@ -1,6 +1,7 @@
 <div
   [ngClass]="{ 'smp-warning-panel': label,
-     'alert-info': type === 'info',
+  'smp-warning-panel-padding': padding && label,
+   'alert-info': type === 'info',
   'alert-success': type === 'success',
   'alert-warning': type === 'warning',
   'alert-error':  type === 'error'}"
