@@ -14,9 +14,9 @@ import {SecurityService} from "../../security/security.service";
 import {
   PasswordChangeDialogComponent
 } from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
-import {UserDetailsDialogMode} from "../user/user-details-dialog/user-details-dialog.component";
 import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 
 
 @Component({
@@ -239,7 +239,7 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
         ...config,
         data: {
           ...config.data,
-          mode: config.data.mode || (config.data.edit ? UserDetailsDialogMode.EDIT_MODE : UserDetailsDialogMode.NEW_MODE)
+          mode: config.data.mode || (config.data.edit ? EntityStatus.PERSISTED : EntityStatus.NEW)
         }
       }
       : config;
