@@ -11,7 +11,6 @@ import {AlertComponent} from "./alert/alert.component";
 import {AlertMessageComponent} from './common/alert-message/alert-message.component';
 import {AlertMessageService} from './common/alert-message/alert-message.service';
 import {AppComponent} from './app.component';
-import {AuthorizedAdminGuard} from './guards/authorized-admin.guard';
 import {AuthorizedGuard} from './guards/authorized.guard';
 import {AutoFocusDirective} from "./common/directive/autofocus/auto-focus.directive";
 import {BreadcrumbComponent} from "./window/breadcrumb/breadcrumb.component";
@@ -284,7 +283,6 @@ import {HttpErrorHandlerService} from "./common/error/http-error-handler.service
     AdminTruststoreService,
     AdminUserService,
     AlertMessageService,
-    AuthorizedAdminGuard,
     AuthorizedGuard,
     CertificateService,
     DatePipe,

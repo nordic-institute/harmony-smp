@@ -16,12 +16,9 @@ import {AdminUserComponent} from "./system-settings/admin-users/admin-user.compo
 import {EditDomainComponent} from "./edit/edit-domain/edit-domain.component";
 import {EditGroupComponent} from "./edit/edit-group/edit-group.component";
 import {EditResourceComponent} from "./edit/edit-resources/edit-resource.component";
-import {
-  ResourceDocumentPanelComponent
-} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
-import {
-  SubresourceDocumentPanelComponent
-} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
+import {ResourceDocumentPanelComponent} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
+import {SubresourceDocumentPanelComponent} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
+import {authorizeChildSystemAdminGuard} from "./guards/authorize-child-system-admin.guard";
 
 
 const appRoutes: Routes = [
@@ -49,7 +46,7 @@ const appRoutes: Routes = [
   },
   {
     path: 'system-settings',
-    canActivateChild: [authenticationGuard],
+    canActivateChild: [authenticationGuard, authorizeChildSystemAdminGuard],
     children: [
       {path: 'domain', component: AdminDomainComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'user', component: AdminUserComponent, canDeactivate: [dirtyDeactivateGuard]},

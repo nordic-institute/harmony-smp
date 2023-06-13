@@ -322,4 +322,8 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     this.router.navigate(['/login'], {queryParams: {returnUrl: this.router.url}});
     this.router.parseUrl('/login');
   }
+
+  public navigateToHome(): void {
+    this.select(this.rootNode);
+  }
 }
