@@ -109,7 +109,7 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Update Certificate data",
-        description: "Action will update Certificate settings: " + credential.name + " data!<br /><br />Do you wish to continue?"
+        description: "Action will update Certificate data:<br />" + credential.name + "!<br /><br />Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
