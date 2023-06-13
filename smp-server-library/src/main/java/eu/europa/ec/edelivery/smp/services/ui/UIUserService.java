@@ -89,31 +89,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Override
     public ServiceResult<UserRO> getTableList(int page, int pageSize, String sortField, String sortOrder, Object filter) {
         ServiceResult<UserRO> resUsers = super.getTableList(page, pageSize, sortField, sortOrder, filter);
-        resUsers.getServiceEntities().forEach(this::updateUserStatus);
         return resUsers;
-    }
-
-    protected void updateUserStatus(UserRO user) {
-        /*
-        // never return password even if is hashed...
-        if (user.getCertificate() != null && !StringUtils.isBlank(user.getCertificate().getCertificateId())) {
-            // validate certificate
-            X509Certificate cert = getX509CertificateFromCertificateRO(user.getCertificate());
-            if (cert != null) {
-                truststoreService.validateCertificate(cert, user.getCertificate());
-            } else {
-                // validate just the database data
-                try {
-                    truststoreService.checkFullCertificateValidityLegacy(user.getCertificate());
-                } catch (CertificateException e) {
-                    LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
-                    user.getCertificate().setInvalid(true);
-                    user.getCertificate().setInvalidReason(e.getMessage());
-                }
-            }
-        }
-
-         */
     }
 
     public AccessTokenRO createAccessTokenForUser(Long userId, CredentialRO credInit) {
@@ -493,7 +469,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         credential.setActiveFrom(credentialDataRO.getActiveFrom());
         credential.setExpireOn(credentialDataRO.getExpireOn());
 
-        CredentialRO credentialResultRO = conversionService.convert(credential, CredentialRO.class);
+        CredentialRO credentialResultRO;
+        if (credentialType == CredentialType.CERTIFICATE) {
+            credentialResultRO = convertAndValidateCertificateCredential(credential);
+        } else {
+            credentialResultRO = conversionService.convert(credential, CredentialRO.class);
+        }
         credentialResultRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
 
         return credentialResultRO;
