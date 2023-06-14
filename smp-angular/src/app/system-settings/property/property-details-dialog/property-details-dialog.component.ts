@@ -9,6 +9,7 @@ import {SmpConstants} from "../../../smp.constants";
 import {ServiceGroupValidationErrorCodeModel} from "../../../service-group-edit/service-group-details-dialog/service-group-validation-error-code.model";
 import {PropertyValidationRo} from "../property-validate-ro.model";
 import {HttpClient} from "@angular/common/http";
+import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.service";
 
 @Component({
   selector: 'property-details-dialog',
@@ -31,6 +32,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
+    private httpErrorHandlerService: HttpErrorHandlerService,
     protected http: HttpClient,
     private dialogRef: MatDialogRef<PropertyDetailsDialogComponent>,
     private alertService: AlertMessageService,
@@ -90,9 +92,13 @@ export class PropertyDetailsDialogComponent implements OnInit {
       } else {
         this.propertyForm.controls['errorMessage'].setValue("");
         // we can close the dialog
-        this.dialogRef.close(true);
+        this.closeDialog();
       }
     }).catch((err) => {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+        this.closeDialog();
+        return;
+      }
       this.alertService.error("Error occurred on Validation the property", err)
       console.log("Error occurred on Validation the property: " + err);
     });
@@ -186,4 +192,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
     return this.current;
   }
 
+  closeDialog() {
+    this.dialogRef.close(true);
+  }
 }
