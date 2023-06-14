@@ -112,6 +112,7 @@ ngx-datatable span:before {
   text-align: left;
   font-size: 65%;
   margin: 0 3px;
+  padding: 0;
 }
 
 .mat-toolbar-multiple-rows {

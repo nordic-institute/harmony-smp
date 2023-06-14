@@ -56,6 +56,10 @@ export class ToolbarComponent {
     return this.securityService.isCurrentUserInRole([Authority.SERVICE_GROUP_ADMIN]);
   }
 
+  navigateToLogin(): void {
+    this.clearWarning();
+    this.navigation.navigateToLogin();
+  }
 
   logout(event: Event): void {
     event.preventDefault();

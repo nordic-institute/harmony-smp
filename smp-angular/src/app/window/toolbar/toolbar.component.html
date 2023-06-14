@@ -6,8 +6,8 @@
            [attr.width]="fullMenu ? '180px' : '50px'"/>
     </div>
     <span class="window-toolbar-spacer"></span>
-    <a id="login_id" class="window-toolbar-item" *ngIf="!currentUser" [routerLink]="['/login']"
-       (click)="clearWarning()"> Login </a>
+    <a id="login_id" class="window-toolbar-item" *ngIf="!currentUser"
+       (click)="navigateToLogin()"> Login </a>
     <span class="window-toolbar-item" *ngIf="currentUser">{{currentUserRoleDescription}}: {{currentUser}}  </span>
     <button class="window-toolbar-item" [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id"
             matTooltip="Menu">
