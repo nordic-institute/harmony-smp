@@ -88,11 +88,12 @@
             <input matInput name="technicalContactUrl" id="technicalContactUrl_id"  matTooltip="Technical contact for the service"
                    [formControl]="dialogForm.controls['technicalContactUrl']" maxlength="255" type="url" >
           </mat-form-field>
+          <div class="required-fields">* required fields</div>
         </div>
   </form>
 </mat-dialog-content>
 
-<div class="required-fields">* required fields</div>
+
 <mat-dialog-actions>
     <button id="generateSubresourceButton" mat-raised-button color="primary" [mat-dialog-close]="true"
             [disabled]="!dialogForm.valid">

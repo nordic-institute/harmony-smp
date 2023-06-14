@@ -48,8 +48,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
       };
   }
 
-  ngAfterViewInit() {
-
+  ngAfterViewInit():void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     // MatTab has only onTabChanged which is a bit to late. Register new listener to  internal

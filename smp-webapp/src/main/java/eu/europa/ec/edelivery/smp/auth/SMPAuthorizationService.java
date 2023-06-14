@@ -208,7 +208,7 @@ public class SMPAuthorizationService {
      * @param userRO
      * @return updated user data according to SMP configuration
      */
-    protected UserRO getUpdatedUserData(UserRO userRO) {
+    public UserRO getUpdatedUserData(UserRO userRO) {
         userRO.setShowPasswordExpirationWarning(userRO.getPasswordExpireOn() != null &&
                 OffsetDateTime.now().plusDays(configurationService.getPasswordPolicyUIWarningDaysBeforeExpire())
                         .isAfter(userRO.getPasswordExpireOn()));

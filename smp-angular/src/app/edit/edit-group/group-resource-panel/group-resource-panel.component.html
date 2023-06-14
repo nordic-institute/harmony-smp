@@ -29,7 +29,7 @@
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-  <h3>{{title}}</h3>
+  <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
   <div class="edit-resource-container mat-elevation-z2">
     <div class="edit-resource-loading-shade"
          *ngIf="isLoadingResults">
@@ -83,7 +83,7 @@
                    (page)="onPageChanged($event)"
                    [hidePageSize]="true"
                    [showFirstLastButtons]="true"
-                   [pageSize]="10"
+                   [pageSize]="5"
                    [disabled]="disabledForm"
                    aria-label="Select pages"></mat-paginator>
   </div>
