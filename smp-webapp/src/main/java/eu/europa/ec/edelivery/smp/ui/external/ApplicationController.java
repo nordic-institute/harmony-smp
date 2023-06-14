@@ -73,7 +73,7 @@ public class ApplicationController {
                 " Version [" +
                 artifactVersion +
                 "] Build-Time [" +
-                buildTime + "|" + TimeZone.getDefault().getDisplayName() +
+                buildTime +
                 "]";
     }
 
