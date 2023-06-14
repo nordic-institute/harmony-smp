@@ -79,9 +79,8 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
 
   @Input() set resource(value: ResourceRo) {
     this._resource = value;
-
     if (!this._resource) {
-      this.navigationService.reset();
+      this.navigationService.navigateToHome();
       return;
     }
 
