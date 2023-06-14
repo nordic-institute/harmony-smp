@@ -59,8 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 "update SMP_CONFIGURATION set PROPERTY_VALUE='true', LAST_UPDATED_ON=NOW() where PROPERTY_NAME='smp.automation.authentication.external.tls.clientCert.enabled';"
         },
         executionPhase = BEFORE_TEST_METHOD)
-@Ignore
-public class ServiceGroupControllerTest {
+public class ResourceControllerTest {
 
     private static final String IDENTIFIER_SCHEME = "ehealth-participantid-qns";
     private static final String PARTICIPANT_ID = "urn:poland:ncpb";
@@ -166,7 +165,7 @@ public class ServiceGroupControllerTest {
     public void existingServiceMetadataCanBeRetrievedByEverybody() throws Exception {
 
         String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
-        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, IDENTIFIER_SCHEME, "test");
+        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
         // crate service group
         mvc.perform(put(URL_PATH)
                 .with(ADMIN_CREDENTIALS)
@@ -421,7 +420,7 @@ public class ServiceGroupControllerTest {
 
     public void prepareForGet() throws Exception {
         String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
-        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, IDENTIFIER_SCHEME, "test");
+        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
         // crate service group
         mvc.perform(put(URL_PATH)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)

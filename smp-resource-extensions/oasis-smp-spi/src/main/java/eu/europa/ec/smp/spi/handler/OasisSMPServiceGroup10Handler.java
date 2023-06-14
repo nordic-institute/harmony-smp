@@ -107,7 +107,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         for (ResourceIdentifier subresId : subResourceIdentifier) {
             URI url = buildSMPURLForParticipantAndDocumentIdentifier(resourceIdentifier, subresId);
             ServiceMetadataReferenceType referenceType = new ServiceMetadataReferenceType();
-            referenceType.setHref(url.getPath());
+            referenceType.setHref(url.toString());
             referenceIds.add(referenceType);
         }
         return referenceIds;
@@ -116,19 +116,18 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
     public URI buildSMPURLForParticipantAndDocumentIdentifier(ResourceIdentifier resourceIdentifier, ResourceIdentifier subresourceIdentifier) throws ResourceException {
         LOG.debug("Build SMP url for participant identifier: [{}] and document identifier [{}].", resourceIdentifier, subresourceIdentifier);
 
-
         String pathSegment = smpDataApi.getURIPathSegmentForSubresource(OasisSMPServiceMetadata10.RESOURCE_IDENTIFIER);
         String baseUrl = smpDataApi.getResourceUrl();
-        String urlEncodedFormatParticipant = smpIdentifierApi.getURLEncodedResourceIdentifier(resourceIdentifier);
-        String urlEncodedFormatDocument = smpIdentifierApi.getURLEncodedSubresourceIdentifier(subresourceIdentifier);
+        String formattedParticipant = smpIdentifierApi.formatResourceIdentifier(resourceIdentifier);
+        String formattedDocument = smpIdentifierApi.formatSubresourceIdentifier(subresourceIdentifier);
 
         LOG.debug("Build SMP url from base path [{}], participant identifier: [{}] and document identifier [{}].",
-                baseUrl, urlEncodedFormatParticipant, urlEncodedFormatDocument);
+                baseUrl, formattedParticipant, formattedDocument);
         try {
             return new URIBuilder(baseUrl)
-                    .appendPathSegments(urlEncodedFormatParticipant)
+                    .appendPathSegments(formattedParticipant)
                     .appendPathSegments(pathSegment)
-                    .appendPathSegments(urlEncodedFormatDocument).build();
+                    .appendPathSegments(formattedDocument).build();
         } catch (URISyntaxException e) {
             throw new ResourceException(INTERNAL_ERROR, "Can not build SMP document URL path! " + ExceptionUtils.getMessage(e), e);
         }
