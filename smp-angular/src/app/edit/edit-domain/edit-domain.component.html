@@ -37,14 +37,12 @@
 </div>
 
 <ng-template #searchDomainPanel>
-  <div *ngIf="!!domainList && domainList.length>0">
 
     <mat-form-field id="domain-filter">
       <mat-label>Filter Domain by domain code</mat-label>
       <input matInput (keyup)="applyDomainFilter($event)" placeholder="Domain code" #inputDomainFilter>
     </mat-form-field>
-    <table class="mat-elevation-z2" id="admin-domain-table"
-           mat-table [dataSource]="dataSource">
+    <table class="mat-elevation-z2" id="edit-domain-table" mat-table [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="domainCode">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Domain code</th>
         <td mat-cell *matCellDef="let row" [matTooltip]="row.domainCode">{{row.domainCode}}</td>
@@ -59,14 +57,15 @@
           "{{inputDomainFilter.value}}"
         </td>
         <ng-template #noDataFound>
-          <td class="mat-cell" colspan="2">No data</td>
+          <td class="mat-cell" colspan="2">User is not administrator of any of the domains</td>
         </ng-template>
       </tr>
     </table>
 
-    <mat-paginator class="mat-elevation-z2" id="domain-paginator"
-                   [hidePageSize]="true"
-                   [showFirstLastButtons]="true"
-                   [pageSize]="5" aria-label="Select page"></mat-paginator>
-  </div>
+
+  <mat-paginator class="mat-elevation-z2" id="edit-domain-paginator" #editDomainPaginator
+                 [hidePageSize]="true"
+                 [showFirstLastButtons]="true"
+                 [pageSize]="5"
+                 aria-label="Select page"></mat-paginator>
 </ng-template>

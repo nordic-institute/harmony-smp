@@ -174,6 +174,10 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       this.alertService.error("ERROR: " + domain.actionMessage);
     }
     this.dataSource.data = this.domainList;
+
+    if (domain.status == EntityStatus.NEW) {
+      this.paginator.lastPage();
+    }
   }
 
   applyDomainFilter(event: Event) {

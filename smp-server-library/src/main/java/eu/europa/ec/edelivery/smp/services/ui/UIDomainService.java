@@ -13,6 +13,8 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -96,6 +98,10 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
     @Transactional
     public void createDomainData(DomainRO data) {
+
+        if (domainDao.getDomainByCode(data.getDomainCode()).isPresent()){
+            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain with code ["+data.getDomainCode()+"] already exists!");
+        };
         DBDomain domain = new DBDomain();
         domain.setDomainCode(data.getDomainCode());
         domain.setDefaultResourceTypeIdentifier(data.getDefaultResourceTypeIdentifier());
