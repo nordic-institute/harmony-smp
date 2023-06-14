@@ -65,6 +65,12 @@ export class PasswordChangeDialogComponent {
     this.dialogForm.controls['current-password'].setValue('');
     this.dialogForm.controls['new-password'].setValue('');
     this.dialogForm.controls['confirm-new-password'].setValue('');
+
+    this.dialogForm.controls['new-password'].valueChanges.subscribe({
+      next: (value) => {
+        this.dialogForm.controls['confirm-new-password'].updateValueAndValidity();
+      }
+    });
   }
 
   get showCurrentPasswordField():boolean {
