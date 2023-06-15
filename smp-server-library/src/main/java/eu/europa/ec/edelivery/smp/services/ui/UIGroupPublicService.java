@@ -82,14 +82,6 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     }
 
     @Transactional
-    public List<GroupRO> getAllGroupsForDomainAndUser(Long userId, MembershipRoleType role) {
-        List<DBGroup> domainGroups = groupDao.getGroupsByUserIdAndRoles(userId, role);
-
-        return domainGroups.stream().map(domain -> conversionService.convert(domain, GroupRO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
     public List<GroupRO> getAllGroupsForDomainAndUserAndGroupRole(Long domainId, Long userId, MembershipRoleType role) {
         List<DBGroup> domainGroups = groupDao.getGroupsByDomainUserIdAndGroupRoles(domainId, userId, role);
 
@@ -150,11 +142,6 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
 
         if (resCount > 0) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group has resources [" + resCount + "] and can not be deleted");
-        }
-
-        Long userCount = groupMemberDao.getGroupMemberCount(groupId, null);
-        if (userCount > 0) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group has members [" + userCount + "] and can not be deleted");
         }
 
         groupDao.remove(group);

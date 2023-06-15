@@ -182,6 +182,8 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
     this.editDomainService.deleteDomainGroupObservable(domain.domainId, group.groupId).subscribe((result: GroupRo) => {
         if (result) {
           this.alertService.success("Domain group [" + result.groupName + "] deleted");
+          this.onGroupSelected(null);
+          this.refresh()
         }
       }, (error) => {
         this.alertService.error(error.error?.errorDescription)
