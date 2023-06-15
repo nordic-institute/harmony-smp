@@ -143,6 +143,7 @@ import {SubresourceDocumentWizardComponent} from "./edit/edit-resources/subresou
 import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/smp-warning-panel.component";
 import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dialog/manage-members-dialog.component";
 import {HttpErrorHandlerService} from "./common/error/http-error-handler.service";
+import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-titled-label.component";
 
 
 @NgModule({
@@ -217,6 +218,7 @@ import {HttpErrorHandlerService} from "./common/error/http-error-handler.service
     SidenavComponent,
     SmpFieldErrorComponent,
     SmpLabelComponent,
+    SmpTitledLabelComponent,
     SmpWarningPanelComponent,
     SpacerComponent,
     SpinnerComponent,

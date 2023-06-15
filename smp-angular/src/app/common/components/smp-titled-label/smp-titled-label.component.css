@@ -1,0 +1,24 @@
+.smp-titled-label {
+  display:flex;
+  flex-direction: row;
+  margin: 0.2em  0.5em;
+  align-items: center;
+}
+
+.smp-tl-title {
+  display:flex;
+  flex-direction: row;
+  font-size: 0.75em;
+  gap:0.5em;
+  align-items: center;
+  min-width: 160px;
+}
+
+.smp-tl-value {
+  border-bottom: gray solid 1px;
+  padding: 0.1em 0.5em;
+  margin: 0  0.3em;
+  color:darkgray;
+  flex-grow: 1;
+  min-height: 1.5em;
+}

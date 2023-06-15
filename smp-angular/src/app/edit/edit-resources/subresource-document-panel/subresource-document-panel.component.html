@@ -1,7 +1,7 @@
 <div id="resource-document-panel">
 
-  <mat-toolbar class="mat-elevation-z2" style="flex-grow: 0">
-    <mat-toolbar-row class="smp-toolbar-row">
+  <mat-toolbar class="mat-elevation-z2" style="min-height: 50px !important;">
+    <mat-toolbar-row class="smp-toolbar-row" style="justify-content: space-between;min-height: 50px !important;">
       <button id="validateResource_id" mat-raised-button
               color="primary"
               [disabled]="emptyDocument"
@@ -28,64 +28,18 @@
         <mat-icon>code_block</mat-icon>
         <span>Document wizard</span>
       </button>
-    </mat-toolbar-row>
-  </mat-toolbar>
-  <div [formGroup]="resourceForm" style="width: 100%; display: flex; flex-direction: row; ">
-    <mat-form-field style="width: 100%">
-      <mat-label>Resource scheme</mat-label>
-      <input id="identifierScheme_id" type="text" matInput
-             formControlName="identifierScheme"
-      >
-    </mat-form-field>
-    <mat-form-field style="width: 100%">
-      <mat-label>Resource identifier</mat-label>
-      <input id="identifierValue_id" type="text" matInput
-             formControlName="identifierValue"
-             required auto-focus-directive>
-    </mat-form-field>
-  </div>
-  <div [formGroup]="subresourceForm" style="width: 100%; display: flex; flex-direction: row; ">
-    <mat-form-field style="width: 100%">
-      <mat-label>Subresource scheme</mat-label>
-      <input id="subresourceidentifierScheme_id" type="text" matInput
-             formControlName="identifierScheme"
-      >
-    </mat-form-field>
-    <mat-form-field style="width: 100%">
-      <mat-label>Subresource identifier</mat-label>
-      <input id="SubresourcedentifierValue_id" type="text" matInput
-             formControlName="identifierValue"
-             required auto-focus-directive>
-    </mat-form-field>
-  </div>
-  <div [formGroup]="documentForm" style="width: 100%; display: flex; flex-direction: column; flex:1; gap:0.5em ">
-    <div style="width: 100%; display: flex; flex-direction: row; flex:0; gap:0.5em">
-      <mat-form-field style="flex:2">
-        <mat-label>Document name</mat-label>
-        <input id="documentName_id" type="text" matInput
-               formControlName="name"
-        >
-      </mat-form-field>
-      <mat-form-field style="flex:1">
-        <mat-label>Document mimeType</mat-label>
-        <input id="documentMimeType_id" type="text" matInput
-               formControlName="mimeType"
-        >
-      </mat-form-field>
-      <mat-form-field style="width:200px">
-        <mat-label>Current document version</mat-label>
-        <input id="current_version_id" type="text" matInput
-               formControlName="currentResourceVersion"
-               required auto-focus-directive>
-      </mat-form-field>
-      <mat-form-field style="width:200px">
-        <mat-label>Document versions</mat-label>
-        <mat-select placeholder="All document version"
+      <span style="flex: 1 1 auto;"></span>
+
+      <div [formGroup]="documentForm"
+           style="float: right;  vertical-align:middle;display: flex;align-items: center;justify-content: center; gap:0.4em;padding-right: 10px">
+        <span style="font-size: 0.8em">Show version:</span>
+        <mat-select style="width: 100px; border-bottom: gray solid 1px"
+                    placeholder="All document version"
                     matTooltip="Select version to display."
                     formControlName="payloadVersion"
                     id="document version_id"
                     (selectionChange)="onSelectionDocumentVersionChanged()"
-                    >
+        >
           <mat-option *ngFor="let version of getDocumentVersions"
                       [value]="version"
           >
@@ -93,9 +47,35 @@
           </mat-option>
 
         </mat-select>
-      </mat-form-field>
+      </div>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <div class="panel">
+
+    <div style="display: flex;flex-direction: row;width: 100%">
+      <smp-titled-label style="flex-grow: 1" title="Resource identifier:"
+                        value="{{resource?.identifierValue}}"></smp-titled-label>
+      <smp-titled-label style="flex-grow: 1" title="Resource scheme:"
+                        value="{{resource?.identifierScheme}}"></smp-titled-label>
     </div>
-    <div style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;background-color: #FCFCFCBB; border: ridge 3px #b0bec5"
+    <div style="display: flex;flex-direction: row;width: 100%">
+      <smp-titled-label style="flex-grow: 1" title="Subresource identifier:"
+                        value="{{subresource?.identifierValue}}"></smp-titled-label>
+      <smp-titled-label style="flex-grow: 1" title="Subresource scheme:"
+                        value="{{subresource?.identifierScheme}}"></smp-titled-label>
+    </div>
+    <div style="display: flex;flex-direction: row;width: 100%">
+      <smp-titled-label style="flex-grow: 1" title="Document name:" value="{{_document?.name}}"></smp-titled-label>
+      <smp-titled-label style="flex-grow: 1" title="Document mimeType:"
+                        value="{{_document?.mimeType}}"></smp-titled-label>
+      <smp-titled-label style="flex-grow: 1" title="Current document version:"
+                        value="{{_document?.currentResourceVersion}}"></smp-titled-label>
+    </div>
+  </div>
+
+  <div [formGroup]="documentForm" style="width: 100%; display: flex; flex-direction: column; flex:1; gap:0.5em ">
+    <div
+      style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;background-color: #FCFCFCBB; border: ridge 3px #b0bec5"
       (click)="onEditPanelClick()"
     >
       <ngx-codemirror #codemirror

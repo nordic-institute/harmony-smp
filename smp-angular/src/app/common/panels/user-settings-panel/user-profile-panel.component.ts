@@ -146,13 +146,13 @@ export class UserProfilePanelComponent {
     if (!value) {
       this.userCredentialForm.controls['passwordUpdatedOn'].setValue(null);
       this.userCredentialForm.controls['passwordExpireOn'].setValue(null);
-      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(null);
+      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(0);
       this.userCredentialForm.controls['lastFailedLoginAttempt'].setValue(null);
       this.userCredentialForm.controls['suspendedUtil'].setValue(null);
     } else {
       this.userCredentialForm.controls['passwordUpdatedOn'].setValue(value.passwordUpdatedOn);
       this.userCredentialForm.controls['passwordExpireOn'].setValue(value.passwordExpireOn);
-      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(value.sequentialLoginFailureCount);
+      this.userCredentialForm.controls['sequentialLoginFailureCount'].setValue(!(value.sequentialLoginFailureCount)?"---":value.sequentialLoginFailureCount);
       this.userCredentialForm.controls['lastFailedLoginAttempt'].setValue(value.lastFailedLoginAttempt);
       this.userCredentialForm.controls['suspendedUtil'].setValue(value.suspendedUtil);
     }
@@ -166,9 +166,9 @@ export class UserProfilePanelComponent {
   }
 
   onResetButtonClicked() {
-    if (this.isNewUser) {
+    /*if (this.isNewUser) {
       this.onDiscardNew.emit();
-    }
+    }*/
     this.userForm.reset(this._managedUserData);
     if (this.isUserDataLoggedInUserData) {
       this.themeService.persistTheme(this._managedUserData.smpTheme);
