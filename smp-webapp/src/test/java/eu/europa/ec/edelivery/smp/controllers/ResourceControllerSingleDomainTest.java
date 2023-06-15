@@ -16,7 +16,6 @@ package eu.europa.ec.edelivery.smp.controllers;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = {"classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-@Ignore
-public class ServiceGroupControllerSingleDomainTest {
+public class ResourceControllerSingleDomainTest {
 
     private static final String IDENTIFIER_SCHEME = "ehealth-participantid-qns";
     private static final String PARTICIPANT_ID = "urn:poland:ncpb";
@@ -74,8 +72,7 @@ public class ServiceGroupControllerSingleDomainTest {
     private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
 
     private static final String OTHER_OWNER_NAME = "CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08";
-
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "123456");
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -130,7 +127,7 @@ public class ServiceGroupControllerSingleDomainTest {
     public void existingServiceMetadataCanBeRetrievedByEverybodyNoDomain() throws Exception {
 
         String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
-        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, IDENTIFIER_SCHEME, "test");
+        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
         // crate service group
         mvc.perform(put(URL_PATH)
                 .with(ADMIN_CREDENTIALS)
