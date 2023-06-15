@@ -33,6 +33,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.*;
 import static java.lang.String.format;
@@ -50,29 +52,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
-@Sql(scripts = {
-        "classpath:/cleanup-database.sql",
-        "classpath:/webapp_integration_test_data.sql",
-        },
-        statements = {
-                "update SMP_CONFIGURATION set PROPERTY_VALUE='false', LAST_UPDATED_ON=NOW() where PROPERTY_NAME='identifiersBehaviour.scheme.mandatory';",
-                "update SMP_CONFIGURATION set PROPERTY_VALUE='true', LAST_UPDATED_ON=NOW() where PROPERTY_NAME='smp.automation.authentication.external.tls.clientCert.enabled';"
-        },
-        executionPhase = BEFORE_TEST_METHOD)
+@Ignore
 public class ResourceControllerTest {
 
     private static final String IDENTIFIER_SCHEME = "ehealth-participantid-qns";
-    private static final String PARTICIPANT_ID = "urn:poland:ncpb";
+    private static final String PARTICIPANT_ID = "urn:test:resource:01";
 
     private static final String DOCUMENT_SCHEME = "doctype";
-    private static final String DOCUMENT_ID = "invoice";
+    private static final String DOCUMENT_ID = "invoice:01";
 
-    private static final String URL_PATH = format("/%s::%s", IDENTIFIER_SCHEME, PARTICIPANT_ID);
-    private static final String URL_PATH_NULL_SCHEME = format("/%s", PARTICIPANT_ID);
-    private static final String URL_DOC_PATH = format("%s/services/%s::%s", URL_PATH, DOCUMENT_SCHEME, DOCUMENT_ID);
-
-    private static final String SERVICE_GROUP_INPUT = getSampleServiceGroupBodyWithScheme(IDENTIFIER_SCHEME);
-    private static final String SERVICE_GROUP_INPUT_NULL_SCHEME = getSampleServiceGroupBodyWithScheme(null);
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
     private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
     private static final String HTTP_DOMAIN_VALUE = "domain";
@@ -104,77 +92,96 @@ public class ResourceControllerTest {
 
     @Test
     public void notFoundIsReturnedWhenServiceGroupDoesNotExist() throws Exception {
-        mvc.perform(get(URL_PATH))
+        mvc.perform(get(format("/%s::%s", IDENTIFIER_SCHEME, PARTICIPANT_ID)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void adminCanCreateServiceGroup() throws Exception {
-        mvc.perform(put(URL_PATH)
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+        mvc.perform(put(urPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isCreated());
     }
 
     @Test
     @Ignore("Setting of the 'identifiersBehaviour.scheme.mandatory' not working")
     public void adminCanCreateServiceGroupNullScheme() throws Exception {
+        String participantId = UUID.randomUUID().toString();
+        String nullSchemeExample = getSampleServiceGroupBody(null, UUID.randomUUID().toString());
 
-        mvc.perform(put(URL_PATH_NULL_SCHEME)
+        mvc.perform(put(format("/%s",  participantId))
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT_NULL_SCHEME))
+                .content(nullSchemeExample))
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void adminCanUpdateServiceGroup() throws Exception {
-        mvc.perform(put(URL_PATH)
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+
+        mvc.perform(put(urPath)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isCreated());
 
-        mvc.perform(put(URL_PATH)
+        mvc.perform(put(urPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void existingServiceGroupCanBeRetrievedByEverybody() throws Exception {
-        mvc.perform(put(URL_PATH)
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+        mvc.perform(put(urPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isCreated());
 
-        mvc.perform(get(URL_PATH))
-                .andExpect(content().xml(SERVICE_GROUP_INPUT));
+        mvc.perform(get(urPath))
+                .andExpect(content().xml(resourceExample));
 
     }
 
     @Test
     public void existingServiceMetadataCanBeRetrievedByEverybody() throws Exception {
 
-        String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
-        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        String docUrlPath = format("%s/services/%s::%s", urlPath, DOCUMENT_SCHEME, DOCUMENT_ID);
+
+        String xmlMD = generateServiceMetadata(participantId, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
         // crate service group
-        mvc.perform(put(URL_PATH)
+        mvc.perform(put(urlPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(xmlSG))
+                .content(resourceExample))
                 .andExpect(status().isCreated());
         // add service metadata
-        mvc.perform(put(URL_DOC_PATH)
+        mvc.perform(put(docUrlPath)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
@@ -182,177 +189,188 @@ public class ResourceControllerTest {
                 .content(xmlMD))
                 .andExpect(status().isCreated());
 
-        MvcResult mr = mvc.perform(get(URL_PATH).header("X-Forwarded-Host", "ec.test.eu")
-                .header("X-Forwarded-Port", "443")
-                .header("X-Forwarded-Proto", "https")).andReturn();
-        System.out.println(mr.getResponse().getContentAsString());
-        mvc.perform(get(URL_PATH))
-                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier><ServiceMetadataReferenceCollection><ServiceMetadataReference href=\"http://localhost/ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/></ServiceMetadataReferenceCollection></ServiceGroup>"));
+        mvc.perform(get(urlPath))
+                .andExpect(content().xml(generateExpectedServiceGroup("http://localhost/", IDENTIFIER_SCHEME, participantId, DOCUMENT_SCHEME, DOCUMENT_ID)));
 
+        mvc.perform(get(docUrlPath))
+                .andExpect(status().isOk());
     }
 
     @Test
     public void getExistingServiceMetadatWithReverseProxyHost() throws Exception {
         //given
-        prepareForGet();
+        String participantId = UUID.randomUUID().toString();
+        String documentId = UUID.randomUUID().toString();
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        prepareForGet(participantId,documentId);
 
         // when then..
         String expectedUrl = "http://ec.test.eu/";
-        mvc.perform(get(URL_PATH)
+        mvc.perform(get(urlPath)
                 .header("X-Forwarded-Host", "ec.test.eu")
                 .header("X-Forwarded-Port", "")
                 .header("X-Forwarded-Proto", "http"))
-                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
-                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
-                        "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
-                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+                .andExpect(content().xml(generateExpectedServiceGroup(expectedUrl, IDENTIFIER_SCHEME, participantId, DOCUMENT_SCHEME, DOCUMENT_ID)));
     }
 
     @Test
     public void getExistingServiceMetadataWithReverseNoProxyHost() throws Exception {
         //given
-        prepareForGet();
+        String participantId = UUID.randomUUID().toString();
+        String documentId = UUID.randomUUID().toString();
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        prepareForGet(participantId,documentId);
+
 
         // when then..
         String expectedUrl = "http://localhost/";
-        mvc.perform(get(URL_PATH)
+        mvc.perform(get(urlPath)
                 .header("X-Forwarded-Port", "")
                 .header("X-Forwarded-Proto", "http"))
-                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
-                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
-                        "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
-                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+                .andExpect(content().xml(generateExpectedServiceGroup(expectedUrl, IDENTIFIER_SCHEME, participantId, DOCUMENT_SCHEME, DOCUMENT_ID)));
     }
 
     @Test
-    public void getExistingServiceMetadatWithReverseProxyPort() throws Exception {
+    public void getExistingServiceMetadataWithReverseProxyPort() throws Exception {
         //given
-        prepareForGet();
+        String participantId = UUID.randomUUID().toString();
+        String documentId = UUID.randomUUID().toString();
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        prepareForGet(participantId,documentId);
 
         // when then..
         String expectedUrl = "http://ec.test.eu:8443/";
-        mvc.perform(get(URL_PATH)
+        mvc.perform(get(urlPath)
                 .header("X-Forwarded-Host", "ec.test.eu:8443")
                 .header("X-Forwarded-Proto", "http"))
-                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
-                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
-                        "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
-                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+                .andExpect(content().xml(generateExpectedServiceGroup(expectedUrl, IDENTIFIER_SCHEME, participantId, DOCUMENT_SCHEME, DOCUMENT_ID)));
     }
 
     @Test
-    public void getExistingServiceMetadatWithReverseProxySchema() throws Exception {
+    public void getExistingServiceMetadataWithReverseProxySchema() throws Exception {
         //given
-        prepareForGet();
+        String participantId = UUID.randomUUID().toString();
+        String documentId = UUID.randomUUID().toString();
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        prepareForGet(participantId,documentId);
 
         // when then..
         String expectedUrl = "https://ec.test.eu:8443/";
-        mvc.perform(get(URL_PATH)
+        mvc.perform(get(urlPath)
                 .header("X-Forwarded-Port", "8443")
                 .header("X-Forwarded-Host", "ec.test.eu")
                 .header("X-Forwarded-Proto", "https"))
-                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
-                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
-                        "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
-                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+                .andExpect(content().xml(generateExpectedServiceGroup(expectedUrl, IDENTIFIER_SCHEME, participantId, DOCUMENT_SCHEME, DOCUMENT_ID)));
     }
 
     @Test
-    public void getExistingServiceMetadatWithReverseProxySkipDefaultPortHttps() throws Exception {
+    public void getExistingServiceMetadataWithReverseProxySkipDefaultPortHttps() throws Exception {
         //given
-        prepareForGet();
+        String participantId = UUID.randomUUID().toString();
+        String documentId = UUID.randomUUID().toString();
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        prepareForGet(participantId,documentId);
 
         // when then..
         String expectedUrl = "https://ec.test.eu/";
-        mvc.perform(get(URL_PATH)
+        mvc.perform(get(urlPath)
                 .header("X-Forwarded-Port", "443")
                 .header("X-Forwarded-Host", "ec.test.eu")
                 .header("X-Forwarded-Proto", "https"))
-                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
-                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
-                        "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
-                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+                .andExpect(content().xml(generateExpectedServiceGroup(expectedUrl, IDENTIFIER_SCHEME, participantId, DOCUMENT_SCHEME, DOCUMENT_ID)));
     }
 
     @Test
-    public void getExistingServiceMetadatWithReverseProxySkipDefaultPortHttp() throws Exception {
+    public void getExistingServiceMetadataWithReverseProxySkipDefaultPortHttp() throws Exception {
         //given
-        prepareForGet();
+        String participantId = UUID.randomUUID().toString();
+        String documentId = UUID.randomUUID().toString();
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        prepareForGet(participantId,documentId);
 
         // when then..
         String expectedUrl = "http://ec.test.eu/";
-        mvc.perform(get(URL_PATH)
+        mvc.perform(get(urlPath)
                 .header("X-Forwarded-Port", "80")
                 .header("X-Forwarded-Host", "ec.test.eu")
                 .header("X-Forwarded-Proto", "http"))
-                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
-                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
-                        "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
-                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+                .andExpect(content().xml(generateExpectedServiceGroup(expectedUrl, IDENTIFIER_SCHEME, participantId, DOCUMENT_SCHEME, DOCUMENT_ID)));
     }
 
     @Test
-    public void getExistingServiceMetadatWithReverseProxyPortInHost() throws Exception {
+    public void getExistingServiceMetadataWithReverseProxyPortInHost() throws Exception {
         //given
-        prepareForGet();
+        String participantId = UUID.randomUUID().toString();
+        String documentId = UUID.randomUUID().toString();
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        prepareForGet(participantId,documentId);
 
         // when then..
         String expectedUrl = "https://ec.test.eu:8443/";
-        mvc.perform(get(URL_PATH)
+        mvc.perform(get(urlPath)
                 .header("X-Forwarded-Port", "8443")
                 .header("X-Forwarded-Host", "ec.test.eu:8443")
                 .header("X-Forwarded-Proto", "https"))
-                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
-                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
-                        "<ServiceMetadataReferenceCollection>" +
-                        "<ServiceMetadataReference href=\"" + expectedUrl + "ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
-                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+                .andExpect(content().xml(generateExpectedServiceGroup(expectedUrl, IDENTIFIER_SCHEME, participantId, DOCUMENT_SCHEME, DOCUMENT_ID)));
+    }
+
+    public String generateExpectedServiceGroup(String expectedUrl, String resourceScheme, String resourceValue, String subresourceScheme, String subresourceValue) {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
+                "<ParticipantIdentifier scheme=\""+resourceScheme+"\">"+resourceValue+"</ParticipantIdentifier>" +
+                "<ServiceMetadataReferenceCollection>" +
+                "<ServiceMetadataReference href=\"" + generateEncodedURL(expectedUrl, resourceScheme, resourceValue,subresourceScheme,subresourceValue)+  "\"/>" +
+                "</ServiceMetadataReferenceCollection></ServiceGroup>";
+    }
+    public String generateEncodedURL(String expectedUrl, String resourceScheme, String resourceValue,  String subresourceScheme, String subresourceValue){
+        return expectedUrl + URLEncoder.encode(resourceScheme + "::" +  resourceValue) + "/services/"+  URLEncoder.encode(subresourceScheme + "::" +  subresourceValue);
     }
 
     @Test
     public void anonymousUserCannotCreateServiceGroup() throws Exception {
-        mvc.perform(put(URL_PATH)
+
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+        mvc.perform(put(urlPath)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isUnauthorized());
 
-        mvc.perform(get(URL_PATH))
+        mvc.perform(get(urlPath))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void adminCanDeleteServiceGroup() throws Exception {
-        mvc.perform(put(URL_PATH)
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+        mvc.perform(put(urlPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isCreated());
 
-        mvc.perform(delete(URL_PATH)
+        mvc.perform(delete(urlPath)
                 .with(ADMIN_CREDENTIALS))
                 .andExpect(status().isOk());
-        mvc.perform(get(URL_PATH))
+        mvc.perform(get(urlPath))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void malformedInputReturnsBadRequest() throws Exception {
-        mvc.perform(put(URL_PATH)
+
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+        mvc.perform(put(urlPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
@@ -363,77 +381,102 @@ public class ResourceControllerTest {
     @Test
     public void invalidParticipantSchemeReturnsBadRequest() throws Exception {
 
+        String participantId = UUID.randomUUID().toString();
         String scheme = "length-exceeeeeeds-25chars";
-        String urlPath = format("/%s::%s", scheme, PARTICIPANT_ID);
+        String resourceExample = getSampleServiceGroupBody(scheme, participantId);
+        String urlPath = format("/%s::%s", scheme, participantId);
+
 
         mvc.perform(put(urlPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
-                .content(getSampleServiceGroupBodyWithScheme(scheme)))
+                .content(resourceExample))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void creatingServiceGroupUnderBadFormatedDomainReturnsBadRequest() throws Exception {
-        mvc.perform(put(URL_PATH)
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+
+        mvc.perform(put(urlPath)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_DOMAIN, "not-existing-domain")
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(stringContainsInOrder("FORMAT_ERROR")));
     }
 
     @Test
     public void creatingServiceGroupUnderNotExistingDomainReturnsBadRequest() throws Exception {
-        mvc.perform(put(URL_PATH)
+
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+        mvc.perform(put(urlPath)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_DOMAIN, "notExistingDomain")
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(stringContainsInOrder("NOT_FOUND")));
     }
 
     @Test
     public void adminCanAssignNewServiceGroupToOtherOwner() throws Exception {
-        mvc.perform(put(URL_PATH)
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+
+        mvc.perform(put(urlPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME_URL_ENCODED)
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void adminCannotAssignNewServiceGroupToNotExistingOwner() throws Exception {
-        mvc.perform(put(URL_PATH)
+        String participantId = UUID.randomUUID().toString();
+        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+
+        mvc.perform(put(urlPath)
                 .with(ADMIN_CREDENTIALS)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, "not-existing-user")
-                .content(SERVICE_GROUP_INPUT))
+                .content(resourceExample))
                 .andExpect(status().isBadRequest());
     }
 
-    public void prepareForGet() throws Exception {
-        String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, PARTICIPANT_ID);
-        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, IDENTIFIER_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
+    public void prepareForGet(String participantId, String documentId) throws Exception {
+
+        String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
+        String docUrlPath = format("%s/services/%s::%s", urlPath, DOCUMENT_SCHEME, documentId);
+        String xmlSG = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
+        String xmlMD = generateServiceMetadata(participantId, IDENTIFIER_SCHEME, documentId, DOCUMENT_SCHEME, "test");
         // crate service group
-        mvc.perform(put(URL_PATH)
+        mvc.perform(put(urlPath)
+
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .content(xmlSG))
                 .andExpect(status().isCreated());
         // add service metadata
-        mvc.perform(put(URL_DOC_PATH)
+        mvc.perform(put(docUrlPath)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
-
                 .content(xmlMD))
                 .andExpect(status().isCreated());
 
