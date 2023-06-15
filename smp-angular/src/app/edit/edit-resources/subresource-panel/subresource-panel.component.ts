@@ -116,7 +116,7 @@ export class SubresourcePanelComponent implements AfterViewInit, OnInit, BeforeL
         subresourceDefs: subResDef,
         subresource: this.createSubresource(subResDef),
 
-        formTitle: "Create Subresourcedialog"
+        formTitle: "Create Subresource Dialog"
       }
     }).afterClosed().subscribe(value => {
       this.refresh();
@@ -204,6 +204,7 @@ export class SubresourcePanelComponent implements AfterViewInit, OnInit, BeforeL
       .subscribe((result: SubresourceRo) => {
           if (result) {
             this.alertService.success("Subresource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "] deleted.");
+            this.selected = null;
           }
         }, (error) => {
           this.alertService.error(error.error?.errorDescription);

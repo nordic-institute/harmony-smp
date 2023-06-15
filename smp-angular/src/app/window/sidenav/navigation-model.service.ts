@@ -95,10 +95,6 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
         this.refreshNavigationTree();
       }
     );
-    securityEventService.onLoginErrorEvent().subscribe(value => {
-        this.refreshNavigationTree();
-      }
-    );
     securityEventService.onLogoutSuccessEvent().subscribe(value => {
         this.refreshNavigationTree();
       }

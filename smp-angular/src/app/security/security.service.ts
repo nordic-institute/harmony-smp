@@ -117,9 +117,6 @@ export class SecurityService {
     return this.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
   }
 
-
-
-
   isCurrentUserSMPAdmin(): boolean {
     return this.isCurrentUserInRole([Authority.SMP_ADMIN]);
   }

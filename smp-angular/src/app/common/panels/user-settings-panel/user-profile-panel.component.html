@@ -191,7 +191,7 @@
       </div>
       <mat-toolbar class ="mat-elevation-z2">
         <mat-toolbar-row  class="smp-toolbar-row">
-          <button mat-flat-button color="primary" id="changePassword_id"
+          <button mat-flat-button color="primary" id="changePassword_id" [disabled]="isNewUser"
                   (click)="changeCurrentUserPassword()">
             <span>Set/change password</span>
           </button>

@@ -24,7 +24,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   title: string = "Resources";
   private _resource: ResourceRo;
 
-  private _document: DocumentRo;
+  _document: DocumentRo;
   @Input() private group: GroupRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
