@@ -44,7 +44,6 @@ public class SMPAuthenticationProviderTest {
 
     // response time for existing and non existing user should be "approx. equal"
     @Test
-    @Ignore
     public void authenticateByAccessTokenResponseTime() {
         /*
         UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken("User", "User");

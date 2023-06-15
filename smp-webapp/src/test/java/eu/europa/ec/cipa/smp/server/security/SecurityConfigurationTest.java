@@ -31,8 +31,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -47,7 +47,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by gutowpa on 20/02/2017.
  */
-@Ignore
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
@@ -65,7 +64,7 @@ public class SecurityConfigurationTest {
     public static final String CLIENT_CERT_VALID_HEADER_UPPER_SN = "sno=BB66&subject=C=BE,O=org,CN=common name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
     public static final String TEST_USERNAME_CLIENT_CERT = "CN=common name,O=org,C=BE:000000000000bb66";
     public static final String CLIENT_CERT_VALID_HEADER_DB_UPPER_SN = "sno=BB66&subject=CN=common name UPPER database SN,O=org,C=BE&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
-    public static final String TEST_USERNAME_CLIENT_CERT__DB_UPPER_SN = "CN=common name UPPER database SN,O=org,C=BE:000000000000bb66";
+    public static final String TEST_USERNAME_CLIENT_CERT_DB_UPPER_SN = "CN=common name UPPER database SN,O=org,C=BE:000000000000bb66";
     public static final String CLIENT_CERT_NOT_AUTHORIZED_HEADER = "sno=bb61&subject=C=BE,O=org,CN=common name not exists&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
 
     @Autowired
@@ -167,6 +166,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
+    @Ignore
     public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER);
@@ -179,6 +179,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
+    @Ignore
     public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpper() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_UPPER_SN);
@@ -192,6 +193,7 @@ public class SecurityConfigurationTest {
 
 
     @Test
+    @Ignore
     public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestDBUpperSN() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_DB_UPPER_SN);
@@ -200,10 +202,11 @@ public class SecurityConfigurationTest {
                 .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT__DB_UPPER_SN))).toString();
+                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT_DB_UPPER_SN))).toString();
     }
 
     @Test
+    @Ignore
     public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpperDBUpperSN() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_DB_UPPER_SN);
@@ -212,7 +215,7 @@ public class SecurityConfigurationTest {
                 .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT__DB_UPPER_SN)));
+                .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT_DB_UPPER_SN)));
     }
 
 

@@ -250,7 +250,6 @@ public class ResourceControllerTest {
     }
 
     @Test
-    @Ignore
     public void getExistingServiceMetadataWithReverseProxyPort() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
@@ -320,7 +319,6 @@ public class ResourceControllerTest {
     }
 
     @Test
-    @Ignore
     public void getExistingServiceMetadataWithReverseProxyPortInHost() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
