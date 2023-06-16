@@ -2,11 +2,13 @@ package eu.europa.ec.smp.spi.handler;
 
 import eu.europa.ec.smp.spi.api.SmpDataServiceApi;
 import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
+import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.CPPARuntimeException;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
+import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.utils.CPPUtils;
 import gen.eu.europa.ec.ddc.api.cppa.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -14,15 +16,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
@@ -36,12 +44,15 @@ public class OasisCppa3CppHandler extends AbstractHandler {
     final SmpDataServiceApi smpDataApi;
     final SmpIdentifierServiceApi smpIdentifierApi;
 
+    final SmpXmlSignatureApi signatureApi;
+
 
     public OasisCppa3CppHandler(SmpDataServiceApi smpDataApi,
-                                SmpIdentifierServiceApi smpIdentifierApi) {
+                                SmpIdentifierServiceApi smpIdentifierApi,
+                                SmpXmlSignatureApi signatureApi) {
         this.smpDataApi = smpDataApi;
         this.smpIdentifierApi = smpIdentifierApi;
-
+        this.signatureApi = signatureApi;
     }
 
     public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
@@ -119,10 +130,14 @@ public class OasisCppa3CppHandler extends AbstractHandler {
         }
 
         try {
-            StreamUtils.copy(inputStream, responseData.getOutputStream());
-        } catch (IOException e) {
-            throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
+            Document doc = parse(inputStream);
+            signatureApi.createEnvelopedSignature(resourceData, doc.getDocumentElement(), Collections.emptyList());
+            serialize(doc, responseData.getOutputStream());
+        } catch (SignatureException | SAXException | TransformerException | IOException e) {
+            throw new ResourceException(PROCESS_ERROR, "Error occurred while signing the cpp documen!: ["
+                    + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
+
 
     }
 
@@ -156,6 +171,17 @@ public class OasisCppa3CppHandler extends AbstractHandler {
     @Override
     public void validateResource(RequestData resourceData) throws ResourceException {
         validateAndParse(resourceData);
+    }
+
+    private static Transformer createNewSecureTransformer() throws TransformerConfigurationException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        return factory.newTransformer();
+    }
+
+    public static void serialize(Document doc, OutputStream outputStream) throws TransformerException {
+        Transformer transformer = createNewSecureTransformer();
+        transformer.transform(new DOMSource(doc), new StreamResult(outputStream));
     }
 
     public CPP validateAndParse(RequestData resourceData) throws ResourceException {
