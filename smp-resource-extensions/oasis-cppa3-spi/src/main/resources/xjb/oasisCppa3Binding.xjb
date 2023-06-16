@@ -9,15 +9,6 @@
         </jaxb:schemaBindings>
     </jaxb:bindings>
 
-    <!-- rename the value element -->
-    <!-- jaxb:bindings schemaLocation="../xsd/cppa3.xsd"
-            node="//xs:complexType[@name='EDIINTChannelType']/xs:complexContent/xs:extension[@base='cppa:ChannelType']/xs:sequence/xs:element[@ref='cppa:ErrorHandling']">
-        <jaxb:property name="ErrorHandling01"/>
-    </jaxb:bindings -->
-
-
-
-
     <jaxb:bindings schemaLocation="../xsd/cppa3.xsd" node="//xs:complexType[@name='EDIINTChannelType']/xs:complexContent/xs:extension[@base='cppa:ChannelType']">
         <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ErrorHandling']">
             <jaxb:property name="EdiIntErrorHandling"/>
@@ -71,22 +62,10 @@
         </jaxb:bindings>
     </jaxb:bindings>
 
-
     <jaxb:bindings schemaLocation="../xsd/cppa3.xsd" node="//xs:element[@name='WSReliableMessagingBinding']/xs:complexType/xs:complexContent/xs:extension[@base='cppa:ReliableMessagingBindingType']">
         <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ReceiptHandling']">
             <jaxb:property name="RMReceiptHandling"/>
         </jaxb:bindings>
     </jaxb:bindings>
-
-    <!-- jaxb:bindings schemaLocation="../xsd/cppa3.xsd"
-                   node="//xs:complexType[@name='EDIINTChannelType']/xs:complexContent/xs:extension[@base='cppa:ChannelType']/xs:sequence/xs:element[@ref='cppa:ErrorHandling']">
-        <jaxb:property name="ErrorHandling01"/>
-    </jaxb:bindings -->
-
-    <!-- bindings >
-        <bindings node="//xs:attributeGroup[@name='headerExtension']/xs:attribute[@ref='S11:mustUnderstand']">
-            <property name="S11MustUnderstand"/>
-        </bindings>
-    </bindings -->
 
 </jaxb:bindings>
