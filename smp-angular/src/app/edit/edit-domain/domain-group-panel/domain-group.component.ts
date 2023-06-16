@@ -168,7 +168,7 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete Group " + this.selectedGroup.groupName + " from DomiSMP",
-        description: "Action will permanently delete group! Do you wish to continue?"
+        description: "Action will permanently delete group! <br/><br/> Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

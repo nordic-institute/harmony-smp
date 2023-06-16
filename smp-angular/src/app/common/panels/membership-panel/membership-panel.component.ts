@@ -187,7 +187,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
       data: {
         title: "Remove member",
         description: "Action will remove member  [" + this.selectedMember.username + "]! " +
-          "Do you wish to continue?"
+          "<br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

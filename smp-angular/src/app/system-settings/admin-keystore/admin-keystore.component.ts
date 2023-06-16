@@ -132,7 +132,7 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit,
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete key [" + this.selected.alias + "] from keystore",
-        description: "Action will permanently delete key from keystore! Do you wish to continue?"
+        description: "Action will permanently delete key from keystore! <br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

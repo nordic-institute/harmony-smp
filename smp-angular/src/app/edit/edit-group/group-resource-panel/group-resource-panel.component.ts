@@ -161,7 +161,7 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
       data: {
         title: "Delete Resource with scheme from DomiSMP",
         description: "Action will permanently delete resource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "]! " +
-          "Do you wish to continue?"
+          "<br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

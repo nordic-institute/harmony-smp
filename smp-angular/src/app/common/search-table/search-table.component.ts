@@ -181,7 +181,7 @@ export class SearchTableComponent implements OnInit {
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
           title: "Not persisted data",
-          description: "Action will refresh all data and not saved data will be lost. Do you wish to continue?"
+          description: "Action will refresh all data and not saved data will be lost. <br/><br/>Do you wish to continue?"
         }
       }).afterClosed().subscribe(result => {
         if (result) {
