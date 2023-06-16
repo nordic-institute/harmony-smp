@@ -255,7 +255,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete domain [" + this.selected.domainCode + "] from DomiSMP",
-        description: "Action will permanently delete domain! Do you wish to continue?"
+        description: "Action will permanently delete domain! <br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

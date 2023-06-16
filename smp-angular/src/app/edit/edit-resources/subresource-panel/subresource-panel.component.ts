@@ -183,7 +183,7 @@ export class SubresourcePanelComponent implements AfterViewInit, OnInit, BeforeL
       data: {
         title: "Delete Resource with scheme from DomiSMP",
         description: "Action will permanently delete subresource  [" + this.selected.identifierScheme + "] and identifier: [" + this.selected.identifierValue + "]! " +
-          "Do you wish to continue?"
+          "<br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

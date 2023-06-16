@@ -190,7 +190,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Unregister domain to SML",
-        description: "Action will unregister domain: [" + this._domain?.domainCode + "] and all its resources from SML. Do you wish to continue?"
+        description: "Action will unregister domain: [" + this._domain?.domainCode + "] and all its resources from SML.<br/><br/> Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -207,7 +207,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Register domain to SML",
-        description: "Action will register domain: [" + this._domain?.domainCode + "] and all its service groups to SML. Do you wish to continue?"
+        description: "Action will register domain: [" + this._domain?.domainCode + "] and all its service groups to SML. <br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

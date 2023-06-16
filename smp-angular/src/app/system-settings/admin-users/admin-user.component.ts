@@ -187,7 +187,7 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete user " + this.managedUserData?.username + " from DomiSMP",
-        description: "Action will permanently delete user! Do you wish to continue?"
+        description: "Action will permanently delete user!<br/><br/> Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
