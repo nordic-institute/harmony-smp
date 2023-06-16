@@ -130,8 +130,9 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
       .subscribe((result: TableResult<ResourceRo>) => {
         console.log("got resources: " + JSON.stringify(result))
         this.updateResourceList(result.serviceEntities)
-        this.data = [...result.serviceEntities];
         this.resultsLength = result.count;
+        this.data = [...result.serviceEntities];
+
         this.isLoadingResults = false;
       }, (error: any) => {
         this.isLoadingResults = false;
