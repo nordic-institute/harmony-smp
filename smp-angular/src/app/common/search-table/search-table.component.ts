@@ -93,7 +93,7 @@ export class SearchTableComponent implements OnInit {
     this.columnIndex = {
       cellTemplate: this.rowIndex,
       name: 'Index',
-      width: 30,
+      width: 80,
       maxWidth: 80,
       sortable: false,
       showInitially: false
@@ -110,7 +110,7 @@ export class SearchTableComponent implements OnInit {
     this.columnExpandDetails = {
       cellTemplate: this.rowExpand,
       name: 'Upd.',
-      width: 40,
+      width: 50,
       maxWidth: 50,
       sortable: false,
       showInitially: false

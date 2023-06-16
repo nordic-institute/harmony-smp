@@ -70,12 +70,12 @@
         ></tr>
 
         <tr class="mat-row" *matNoDataRow>
-          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No direct members
+          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No groups
             matching the filter
             "{{inputDomainMemberFilter.value}}"
           </td>
           <ng-template #noDataFound>
-            <td class="mat-cell" colspan="2">No direct members for the domain</td>
+            <td class="mat-cell" colspan="2">The domain has no groups</td>
           </ng-template>
         </tr>
       </table>
