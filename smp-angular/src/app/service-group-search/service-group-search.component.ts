@@ -57,41 +57,43 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
   initColumns(): void {
     this.columnPicker.allColumns = [
       {
-        name: 'Subres. size',
+        name: 'Sr. Cnt.',
         prop: 'serviceMetadata.length',
+        width: 90,
+        maxWidth: 90,
+        resizable: 'false',
         showInitially: true,
-        width: 120,
-        maxWidth: 120,
-        resizable: "false",
       },
       {
         name: 'Domain',
-        width: 120,
-        maxWidth: 200,
         prop: 'domainCode',
+        width: 200,
+        maxWidth: 200,
+        resizable: 'false',
         showInitially: true,
       },
       {
         name: 'Resource scheme',
         prop: 'participantScheme',
+        width: 250,
+        maxWidth: 250,
+        resizable: 'true',
         showInitially: true,
-        width: 300,
-        maxWidth: 300,
-        resizable: "false"
       },
       {
         name: 'Resource identifier',
         prop: 'participantIdentifier',
+        width: 500,
+        resizable: 'true',
         showInitially: true,
       },
       {
         cellTemplate: this.rowSMPUrlLinkAction,
         name: 'Resource URL',
+        width: 150,
+        maxWidth: 150,
+        resizable: 'false',
         showInitially: true,
-        width: 250,
-        maxWidth: 250,
-        resizable: "false",
-        sortable: false
       },
     ];
     this.searchTable.tableColumnInit();
