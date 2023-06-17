@@ -22,8 +22,8 @@
     </parent>
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <jaxb-api.version>2.3.1</jaxb-api.version>
         <org.glassfish.jaxb.jaxb-runtime.version>2.3.8</org.glassfish.jaxb.jaxb-runtime.version>
+        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
     </properties>
     <artifactId>oasis-cppa3-spi</artifactId>
     <name>oasis-cppa3-spi</name>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>2.3.3</version>
+            <version>${jakarta.xml.bind-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>

@@ -5,7 +5,6 @@ import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.exceptions.CPPARuntimeException;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
-
 import gen.eu.europa.ec.ddc.api.cppa.CPP;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -67,7 +66,7 @@ public abstract class AbstractHandler implements ResourceHandlerSpi {
             JAXBContext jaxbContext = JAXBContext.newInstance(CPP.class);
             return jaxbContext.createUnmarshaller();
         } catch (JAXBException ex) {
-            LOG.error("Error occurred while initializing JAXBContext for ServiceGroup. Cause message:" +  ex, ex);
+            LOG.error("Error occurred while initializing JAXBContext for ServiceGroup. Cause message:" + ex, ex);
         }
         return null;
     });
@@ -78,7 +77,7 @@ public abstract class AbstractHandler implements ResourceHandlerSpi {
             JAXBContext jaxbContext = JAXBContext.newInstance(CPP.class);
             return jaxbContext.createMarshaller();
         } catch (JAXBException ex) {
-            LOG.error("Error occurred while initializing JAXBContext for ServiceGroup. Cause message:" +  ex, ex);
+            LOG.error("Error occurred while initializing JAXBContext for ServiceGroup. Cause message:" + ex, ex);
         }
         return null;
     });
@@ -99,6 +98,7 @@ public abstract class AbstractHandler implements ResourceHandlerSpi {
     public Marshaller getMarshaller() {
         return jaxbMarshaller.get();
     }
+
     /**
      * Removes the current thread's ServiceGroup Unmarshaller for this thread-local variable. If this thread-local variable
      * is subsequently read by the current thread, its value will be reinitialized by invoking its initialValue method.
@@ -147,14 +147,14 @@ public abstract class AbstractHandler implements ResourceHandlerSpi {
 
     public CPP parseNative(Document document) {
         try {
-            return  (CPP)jaxbUnmarshaller.get().unmarshal(document);
+            return (CPP) jaxbUnmarshaller.get().unmarshal(document);
         } catch (JAXBException ex) {
             throw new CPPARuntimeException(CPPARuntimeException.ErrorCode.PARSE_ERROR, "Can not parse XML Document ! Error: [" + ExceptionUtils.getRootCauseMessage(ex) + "]", ex);
         }
     }
 
 
-    public CPP parseNative(InputStream inputStream)  {
+    public CPP parseNative(InputStream inputStream) {
         try {
             DocumentBuilder db = createDocumentBuilder();
             // just to validate DISALLOW_DOCTYPE_FEATURE parse to Document
@@ -171,11 +171,12 @@ public abstract class AbstractHandler implements ResourceHandlerSpi {
             return;
         }
         Marshaller jaxbMarshaller = getMarshaller();
+
         // Pretty Print XML
         try {
-            if (prettyPrint) {
-                jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, prettyPrint);
-            }
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, prettyPrint ? Boolean.TRUE : Boolean.FALSE);
+
             // to remove xmlDeclaration
             jaxbMarshaller.marshal(jaxbObject, outputStream);
         } catch (JAXBException ex) {
@@ -188,14 +189,11 @@ public abstract class AbstractHandler implements ResourceHandlerSpi {
     }
 
 
-
-
     public QName getRootElementQName(Document document) {
         Element element = document.getDocumentElement();
         String namespace = element.getNamespaceURI();
         return new QName(namespace, element.getTagName());
     }
-
 
 
     public ResourceIdentifier getResourceIdentifier(RequestData resourceData) throws ResourceException {

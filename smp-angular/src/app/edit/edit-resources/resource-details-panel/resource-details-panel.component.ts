@@ -74,16 +74,16 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
     this.resourceForm.markAsPristine();
   }
 
-  onShowButtonDocumentClicked(){
+  onShowButtonDocumentClicked() {
     // set selected resource
     this.editResourceService.selectedResource = this.resource;
 
-    let node:NavigationNode = this.createNew();
+    let node: NavigationNode = this.createNew();
     this.navigationService.selected.children = [node]
     this.navigationService.select(node);
   }
 
-  public createNew():NavigationNode{
+  public createNew(): NavigationNode {
     return {
       code: "resource-document",
       icon: "note",
@@ -104,17 +104,11 @@ export class ResourceDetailsPanelComponent implements BeforeLeaveGuard {
       return "The private resource is accessible only to the resource members!"
     }
     if (this.group.visibility == VisibilityEnum.Private) {
-      return "The resource belongs to the private group. The resource is accessible only to the members of the group (direct and indirect group members)!"
+      return "The resource belongs to the private group. Only the group members and group resource members can access the resource!"
     }
     if (this.domain.visibility == VisibilityEnum.Private) {
-      return "The resource belongs to the private domain. The resource is accessible only to the members of the domain (direct and indirect domain members)!"
+      return "The resource belongs to the private domain. Only the domain members, domain group members and its resource members can access the resource!"
     }
     return "The resource is public on the public group and the public domain. The resource data is accessible to all users."
   }
 }
-
-
-
-
-
-
