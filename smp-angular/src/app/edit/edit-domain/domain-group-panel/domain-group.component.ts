@@ -88,6 +88,7 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
   }
 
   loadTableData() {
+    this.selectedGroup = null;
     if (!this._domain) {
       this.dataSource.data = null;
       return;
