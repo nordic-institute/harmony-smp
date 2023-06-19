@@ -274,13 +274,10 @@ public abstract class BaseDao<E extends BaseEntity> {
                                 searchValue, fieldName);
                     }
                 }
-
             }
         }
         return lstPredicate;
     }
-
-
     public Path getPath(Root<E> om, String fieldName) {
         return getPath(om, fieldName, null);
     }

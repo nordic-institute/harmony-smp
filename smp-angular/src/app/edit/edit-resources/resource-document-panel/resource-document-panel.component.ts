@@ -104,6 +104,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     this._document = value;
     this.documentForm.disable();
     if (!!value) {
+      this.codemirror.setOptionIfChanged("mode",value.mimeType);
       this.documentForm.controls['mimeType'].setValue(value.mimeType);
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
