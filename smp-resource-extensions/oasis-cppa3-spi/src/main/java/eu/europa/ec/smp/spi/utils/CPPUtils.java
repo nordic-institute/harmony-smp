@@ -26,6 +26,7 @@ public class CPPUtils {
 
     public static Certificate createCertificate(String certId, String keyInfoID) {
         Certificate certificate = new Certificate();
+
         certificate.setId(certId);
         certificate.setKeyInfo(createCertificateKeyInfo(keyInfoID));
         return certificate;
@@ -47,6 +48,7 @@ public class CPPUtils {
     public static KeyInfo createCertificateKeyInfo(String keyInfoId) {
         KeyInfo keyInfo = new KeyInfo();
         keyInfo.setId(keyInfoId);
+
         ObjectFactory xmldSigObjectFactory = new ObjectFactory();
         keyInfo.getContent().add(xmldSigObjectFactory.createKeyName("cn=" + keyInfoId));
         X509Data data = new X509Data();

@@ -69,8 +69,8 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
   public onDeleteItemClicked(credential: CredentialRo) {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Delete Access token",
-        description: "Action will delete access token: " + credential.name + "!<br /><br />Do you wish to continue?"
+        title: "Delete Certificate",
+        description: "Action will delete certificate: \"" + credential.name + "\"!<br /><br />Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
