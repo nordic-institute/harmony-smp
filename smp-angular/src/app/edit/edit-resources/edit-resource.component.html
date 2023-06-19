@@ -5,7 +5,7 @@
               [labelColumnContent]="searchGroupPanel">
 
     <mat-tab-group #domainTabs
-                   *ngIf="!!resourceList &&  resourceList.length>0;else noUserAdminGroupsDataFound"
+                   *ngIf="!!resourceList && resourceList.length>0;else noUserAdminGroupsDataFound"
                    style="height: 100%">
       <mat-tab>
         <ng-template mat-tab-label>
@@ -49,13 +49,13 @@
                       class="smp-no-data-panel"
                        icon="warning"
                        type="warning"
-                       label="User is not administrator of any of the resources"></smp-warning-panel>
+                       [label]="filterResourceResults?'No resources for give filter':'User is not administrator of any of the resources'"></smp-warning-panel>
   </ng-template>
 </div>
 
 <ng-template #searchGroupPanel>
   <div
-    *ngIf="!!resourceList &&  resourceList.length>0"
+    *ngIf="!!resourceList &&  resourceList.length>0 || filterResourceResults "
   >
     <mat-form-field style="width:100%">
       <mat-label>Selected domain</mat-label>

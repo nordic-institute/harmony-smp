@@ -180,6 +180,10 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     this.refreshResources();
   }
 
+  get filterResourceResults():boolean {
+  return !!this.filter["filter"]
+  }
+
   get disabledResourceFilter(): boolean {
     return !this._selectedGroup;
   }
