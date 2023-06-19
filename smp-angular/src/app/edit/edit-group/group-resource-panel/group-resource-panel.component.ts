@@ -66,6 +66,8 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
   }
 
   loadGroupResources() {
+
+    this.onResourceSelected(null);
     if (!this._group) {
       return;
     }
@@ -105,7 +107,6 @@ export class GroupResourcePanelComponent implements BeforeLeaveGuard {
       identifierValue: "",
       smlRegistered: false,
       visibility: VisibilityEnum.Public
-
     }
   }
 

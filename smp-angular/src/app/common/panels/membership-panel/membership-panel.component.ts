@@ -46,10 +46,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
               private membershipService: MembershipService,
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
-
-
   }
-
   ngAfterViewInit() {
     this.loadMembershipData();
   }
@@ -111,7 +108,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
   }
 
   public loadMembershipData() {
-
+    this.memberSelected(null)
     let membershipService: Observable<SearchTableResult> = this.getMembershipListService();
     if (!membershipService) {
       return;
@@ -176,6 +173,7 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
         member: member,
       }
     }).afterClosed().subscribe(value => {
+
       this.refresh();
     });
   }
