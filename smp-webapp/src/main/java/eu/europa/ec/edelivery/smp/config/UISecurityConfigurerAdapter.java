@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -103,16 +102,16 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        SMPAuthority.S_AUTHORITY_USER.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.PUT).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        SMPAuthority.S_AUTHORITY_USER.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.GET).permitAll().and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/ui/**").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_USER.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        SMPAuthority.S_AUTHORITY_USER.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
         ;
     }
 

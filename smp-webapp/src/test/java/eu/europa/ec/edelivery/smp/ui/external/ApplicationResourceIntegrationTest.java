@@ -160,6 +160,5 @@ public class ApplicationResourceIntegrationTest {
         assertEquals("^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$", res.getParticipantSchemaRegExp());
         assertEquals(SMPPropertyEnum.PARTC_EBCOREPARTYID_CONCATENATE.getDefValue(), res.isConcatEBCorePartyId() + "");
         assertFalse(res.isSmlIntegrationOn());
-        assertFalse(res.isSmlParticipantMultiDomainOn());
     }
 }

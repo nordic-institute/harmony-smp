@@ -67,8 +67,7 @@ public enum SMPPropertyEnum {
     // SML integration!
     SML_ENABLED("bdmsl.integration.enabled", "false", "BDMSL (SML) integration ON/OFF switch",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-    SML_PARTICIPANT_MULTIDOMAIN("bdmsl.participant.multidomain.enabled", "false", "Set to true if SML support participant on multidomain",
-            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, BOOLEAN),
+
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),
     SML_TLS_DISABLE_CN_CHECK("bdmsl.integration.tls.disableCNCheck", "false", "If SML Url is HTTPs - Disable CN check if needed.",

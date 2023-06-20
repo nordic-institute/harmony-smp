@@ -115,8 +115,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
           value: [],
           disabled: !securityService.isCurrentUserSMPAdmin()
         },
-        [this.minSelectedListCount(1),
-          this.multiDomainOn(this.lookups.cachedApplicationConfig.smlParticipantMultiDomainOn)]),
+        [this.minSelectedListCount(1)]),
       'users': new UntypedFormControl({
         value: [],
         disabled: !securityService.isCurrentUserSMPAdmin()

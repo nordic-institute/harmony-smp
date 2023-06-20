@@ -66,7 +66,6 @@ public class PropertyUtilsTest {
                 {CS_PARTICIPANTS, "casesensitive-participant-scheme1|casesensitive-participant-scheme2", List.class},
                 {CS_DOCUMENTS, "casesensitive-doc-scheme1|casesensitive-doc-scheme2", List.class},
                 {SML_ENABLED, "true", Boolean.class},
-                {SML_PARTICIPANT_MULTIDOMAIN, "true", Boolean.class},
                 {SML_URL, "http://localhost:8080/sml", java.net.URL.class},
                 {SML_LOGICAL_ADDRESS, "http://localhost:8080/smp", java.net.URL.class},
                 {SML_PHYSICAL_ADDRESS, "0.0.0.0", String.class},

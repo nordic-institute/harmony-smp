@@ -172,11 +172,6 @@ public class ConfigurationService {
         return value != null && value;
     }
 
-    public boolean isSMLMultiDomainEnabled() {
-        Boolean value = configurationDAO.getCachedPropertyValue(SML_PARTICIPANT_MULTIDOMAIN);
-        return value != null && value;
-    }
-
     public boolean isUrlContextEnabled() {
         Boolean value = configurationDAO.getCachedPropertyValue(OUTPUT_CONTEXT_PATH);
         // by default is true - return false only in case is declared in configuration
