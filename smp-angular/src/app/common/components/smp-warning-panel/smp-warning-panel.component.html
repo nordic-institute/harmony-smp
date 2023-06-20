@@ -1,6 +1,6 @@
-<div
+<div [innerHTML]="innerHtml"
   [ngClass]="{ 'smp-warning-panel': label,
-  'smp-warning-panel-padding': padding && label,
+  'smp-warning-panel-padding': padding && (!!label || !!innerHtml),
    'alert-info': type === 'info',
   'alert-success': type === 'success',
   'alert-warning': type === 'warning',

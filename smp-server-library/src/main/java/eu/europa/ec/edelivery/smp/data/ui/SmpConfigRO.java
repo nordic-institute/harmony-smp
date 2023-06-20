@@ -13,7 +13,6 @@ public class SmpConfigRO implements Serializable {
     private static final long serialVersionUID = 9008583888835630021L;
 
     private boolean smlIntegrationOn;
-    private boolean smlParticipantMultiDomainOn;
     private boolean concatEBCorePartyId;
     private boolean partyIDSchemeMandatory;
     private String participantSchemaRegExp;
@@ -31,14 +30,6 @@ public class SmpConfigRO implements Serializable {
 
     public void setSmlIntegrationOn(boolean smlIntegrationOn) {
         this.smlIntegrationOn = smlIntegrationOn;
-    }
-
-    public boolean isSmlParticipantMultiDomainOn() {
-        return smlParticipantMultiDomainOn;
-    }
-
-    public void setSmlParticipantMultiDomainOn(boolean smlParticipantMultidomainOn) {
-        this.smlParticipantMultiDomainOn = smlParticipantMultidomainOn;
     }
 
     public boolean isConcatEBCorePartyId() {

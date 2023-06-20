@@ -24,7 +24,7 @@ public class CommonColumnsLengths {
     public static final int MAX_IDENTIFIER_VALUE_VALUE_LENGTH = 256;
     public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH = 500;
     public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_SCHEME_LENGTH = 500;
-    public static final int MAX_USERNAME_LENGTH = 256;
+    public static final int MAX_USERNAME_LENGTH = 64;
     public static final int MAX_PASSWORD_LENGTH = 256;
     public static final int MAX_CERT_ALIAS_LENGTH = 256;
     public static final int MAX_SML_SUBDOMAIN_LENGTH = 256;

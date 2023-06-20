@@ -33,7 +33,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         MAIL_TO varchar2(1024 char),
         PROCESSED_TIME timestamp,
         REPORTING_TIME timestamp,
-        FOR_USERNAME varchar2(256 char),
+        FOR_USERNAME varchar2(64 char),
         primary key (ID)
     );
 
@@ -57,7 +57,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         MAIL_TO varchar2(1024 char),
         PROCESSED_TIME timestamp,
         REPORTING_TIME timestamp,
-        FOR_USERNAME varchar2(256 char),
+        FOR_USERNAME varchar2(64 char),
         primary key (ID, REV)
     );
 
@@ -718,7 +718,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         FULL_NAME varchar2(128 char),
         SMP_LOCALE varchar2(64 char),
         SMP_THEME varchar2(64 char),
-        USERNAME varchar2(256 char) not null,
+        USERNAME varchar2(64 char) not null,
         primary key (ID)
     );
 
@@ -761,7 +761,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         FULL_NAME varchar2(128 char),
         SMP_LOCALE varchar2(64 char),
         SMP_THEME varchar2(64 char),
-        USERNAME varchar2(256 char),
+        USERNAME varchar2(64 char),
         primary key (ID, REV)
     );
 

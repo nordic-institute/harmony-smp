@@ -5,7 +5,6 @@ import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
-import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
@@ -415,7 +414,7 @@ public class CredentialService {
                 && ChronoUnit.SECONDS.between(credential.getLastFailedLoginAttempt(), OffsetDateTime.now()) > logSuspension) {
             LOG.warn("User [{}] for credential [{}:{}] suspension is expired! Clear failed login attempts and last failed login attempt", credential.getName(), credentialType, credential.getName());
             credential.setLastFailedLoginAttempt(null);
-            credential.setSequentialLoginFailureCount(-1);
+            credential.setSequentialLoginFailureCount(0);
             mCredentialDao.update(credential);
             return;
         }

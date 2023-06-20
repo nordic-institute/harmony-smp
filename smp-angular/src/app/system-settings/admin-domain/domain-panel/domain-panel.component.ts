@@ -137,6 +137,14 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     return this.domiSMPResourceDefinitions.filter(resType => this._domain.resourceDefinitions.includes(resType.identifier))
   }
 
+  get showWarning(){
+    return !!this._domain?.domainId && !this.domainResourceTypes?.length
+  }
+
+  get showWarningMessage(){
+    return "To complete domain configuration, please select at least one resource type from the Resource Types tab";
+  }
+
   get submitButtonEnabled(): boolean {
     return this.domainForm.valid && this.domainForm.dirty;
   }

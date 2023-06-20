@@ -557,7 +557,7 @@ create table SMP_USER (
     FULL_NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User full name (name and lastname)',
     SMP_LOCALE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'DomiSMP settings: locale for the user',
     SMP_THEME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'DomiSMP settings: theme for the user',
-    USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
+    USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
     primary key (ID)
 ) comment='SMP can handle multiple domains. This table contains domain specific data' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -573,7 +573,7 @@ create table SMP_USER_AUD (
     FULL_NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
     SMP_LOCALE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
     SMP_THEME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
-    USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+    USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
     primary key (ID, REV)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
