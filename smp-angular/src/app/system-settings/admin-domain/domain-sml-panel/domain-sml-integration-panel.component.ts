@@ -10,6 +10,7 @@ import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-
 import {SMLResult} from "../../domain/sml-result.model";
 import {SmlIntegrationService} from "../../domain/sml-integration.service";
 import {GlobalLookups} from "../../../common/global-lookups";
+import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.service";
 
 
 @Component({
@@ -65,6 +66,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
 
   constructor(private domainService: AdminDomainService,
               private alertService: AlertMessageService,
+              private httpErrorHandlerService: HttpErrorHandlerService,
               protected smlIntegrationService: SmlIntegrationService,
               protected lookups: GlobalLookups,
               private dialog: MatDialog,
@@ -235,6 +237,9 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         }
       },
       err => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
+          return;
+        }
         //  this.searchTable.showSpinner = false;
         this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, err);
       }
@@ -260,6 +265,9 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       }
       ,
       err => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
+          return;
+        }
         // this.searchTable.showSpinner = false;
         this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, err);
       }
