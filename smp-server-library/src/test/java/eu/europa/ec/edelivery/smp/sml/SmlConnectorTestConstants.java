@@ -6,8 +6,8 @@ import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 
 
 public class SmlConnectorTestConstants {
-    //protected static final Identifier PARTICIPANT_ID = new Identifier("sample:value", "sample:scheme");
-    protected static final Identifier PARTICIPANT_ID = null;
+
+    protected static final Identifier PARTICIPANT_ID =  new Identifier("sample:value", "sample:scheme");
     protected static final DBDomain DEFAULT_DOMAIN;
 
     static {

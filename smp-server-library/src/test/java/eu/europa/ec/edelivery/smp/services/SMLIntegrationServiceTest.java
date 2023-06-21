@@ -49,7 +49,6 @@ import static org.mockito.Mockito.verify;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@Ignore
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SmlIntegrationConfiguration.class,
         SMLIntegrationService.class})
