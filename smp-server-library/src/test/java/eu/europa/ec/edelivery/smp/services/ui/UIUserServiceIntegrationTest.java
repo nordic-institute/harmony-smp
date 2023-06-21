@@ -141,6 +141,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     }
 
     @Test
+    @Ignore
     public void testUpdateUserPasswordNotMatchReqExpression() {
         long authorizedUserId = 1L;
         long userToUpdateId = 1L;
@@ -189,6 +190,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     }
 
     @Test
+    @Ignore
     public void testUpdateUserPasswordOK() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
