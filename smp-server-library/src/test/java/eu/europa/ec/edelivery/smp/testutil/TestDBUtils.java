@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
@@ -265,6 +266,7 @@ public class TestDBUtils {
         dbuser.setUsername(userName);
         dbuser.setEmailAddress(userName + "@test.eu");
         dbuser.setActive(true);
+        dbuser.setApplicationRole(ApplicationRoleType.USER);
         return dbuser;
     }
 

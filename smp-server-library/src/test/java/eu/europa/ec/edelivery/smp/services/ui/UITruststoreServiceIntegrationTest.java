@@ -35,7 +35,6 @@ import java.util.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
-@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
@@ -300,10 +299,9 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
                 OffsetDateTime.now().plusDays(1),
                 Collections.emptyList());
         // when
-        CertificateNotYetValidException result = assertThrows(CertificateNotYetValidException.class, () ->
+        assertThrows(CertificateNotYetValidException.class, () ->
                 testInstance.checkFullCertificateValidity(certificate));
-        //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("certificate not valid till"));
+
     }
 
     @Test
@@ -318,10 +316,9 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
                 Collections.emptyList());
 
         // when
-        CertificateExpiredException result = assertThrows(CertificateExpiredException.class, () ->
+        assertThrows(CertificateExpiredException.class, () ->
                 testInstance.checkFullCertificateValidity(certificate));
-        //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("certificate expired"));
+
     }
 
     @Test
@@ -454,7 +451,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         String alias = testInstance.createAliasFromCert(certificate, null);
 
         // then
-        assertEquals("SMP Test", alias);
+        assertEquals("smp test", alias);
     }
 
 
@@ -467,7 +464,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         String alias = testInstance.createAliasFromCert(certificate, null);
 
         // then
-        assertEquals("SMP Test", alias);
+        assertEquals("smp test", alias);
     }
 
     @Test

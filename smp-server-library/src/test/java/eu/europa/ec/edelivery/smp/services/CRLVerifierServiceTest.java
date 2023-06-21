@@ -18,7 +18,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
 
-@Ignore
 public class CRLVerifierServiceTest extends AbstractServiceIntegrationTest {
 
     @Rule
@@ -41,7 +40,7 @@ public class CRLVerifierServiceTest extends AbstractServiceIntegrationTest {
         crlVerifierServiceInstance = Mockito.spy(crlVerifierServiceInstance);
         configurationService = Mockito.spy(configurationService);
         ReflectionTestUtils.setField(crlVerifierServiceInstance, "configurationService", configurationService);
-        // force veifiction
+        // force verification
         Mockito.doReturn(true).when(configurationService).forceCRLValidation();
     }
 

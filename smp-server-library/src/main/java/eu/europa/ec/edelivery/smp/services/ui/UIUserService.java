@@ -192,7 +192,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         Optional<DBCredential> dbCredential = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(authorizedUserId);
         DBCredential dbAuthorizedCredentials = dbCredential.orElseThrow(() ->
-                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!"));
+                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id"));
 
         DBUser authorizedUser = dbAuthorizedCredentials.getUser();
 
@@ -202,7 +202,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
 
         boolean adminUpdate = userToUpdateId != null
-                && authorizedUserId != userToUpdateId;
+                && !Objects.equals(authorizedUserId, userToUpdateId);
 
         // check if authorized user has the permission to change other user credentials
         if (adminUpdate && authorizedUser.getApplicationRole() != ApplicationRoleType.SYSTEM_ADMIN) {

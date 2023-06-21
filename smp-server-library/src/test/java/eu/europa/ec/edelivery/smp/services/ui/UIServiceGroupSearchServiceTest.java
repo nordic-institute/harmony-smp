@@ -17,8 +17,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 
-@Ignore
 @ContextConfiguration(classes = {UIServiceGroupSearchService.class, UIServiceMetadataService.class})
+@Ignore
 public class UIServiceGroupSearchServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired
