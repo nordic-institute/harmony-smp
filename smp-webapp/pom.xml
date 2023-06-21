@@ -116,18 +116,7 @@
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.jks</exclude>
-                </excludes>
-            </testResource>
-            <testResource>
-                <directory>src/test/resources</directory>
                 <filtering>false</filtering>
-                <!-- With filtering=true Maven was introducing changes in keystore binary files [sic!] -->
-                <includes>
-                    <include>**/*.jks</include>
-                </includes>
             </testResource>
         </testResources>
         <resources>

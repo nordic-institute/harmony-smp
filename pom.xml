@@ -46,10 +46,10 @@
         <build.helper.maven.version>1.9.1</build.helper.maven.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <commons-io.version>2.11.0</commons-io.version>
+        <commons-io.version>2.13.0</commons-io.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
-        <commons-net.version>3.8.0</commons-net.version>
+        <commons-net.version>3.9.0</commons-net.version>
         <commons-validator.version>1.7</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
         <cxf.version>3.5.6</cxf.version>
@@ -86,8 +86,8 @@
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.12</spring-boot.version>
         <spring-boot.tomcat.version>9.0.75</spring-boot.tomcat.version>
-        <spring.security.version>5.8.3</spring.security.version>
-        <spring.version>5.3.27</spring.version>
+        <spring.security.version>5.8.4</spring.security.version>
+        <spring.version>5.3.28</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
         <!-- plugins -->
@@ -771,8 +771,9 @@
                 <artifactId>sonar-maven-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>3.0.1</version>
                 <configuration>
                     <arguments>-DusePreInstallNpm -Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true
                         -Dmaven.test.skip=true
