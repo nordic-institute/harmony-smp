@@ -8,8 +8,6 @@ import {EditGroupService} from "./edit-group.service";
 import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
-
-
 @Component({
   moduleId: module.id,
   templateUrl: './edit-group.component.html',
@@ -18,8 +16,6 @@ import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resour
 export class EditGroupComponent implements OnInit, BeforeLeaveGuard {
 
   @Output() onSelectedGroup: EventEmitter<GroupRo> = new EventEmitter<GroupRo>();
-
-
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.GROUP;
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];
