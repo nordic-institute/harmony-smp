@@ -845,9 +845,6 @@ alter table SMP_DOCUMENT_VERSION
 alter table SMP_DOMAIN
    add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
 
-alter table SMP_DOMAIN
-   add constraint UK_likb3jn0nlxlekaws0xx10uqc unique (SML_SUBDOMAIN);
-
 alter table SMP_DOMAIN_MEMBER
    add constraint SMP_DOM_MEM_IDX unique (FK_DOMAIN_ID, FK_USER_ID);
 

@@ -86,7 +86,7 @@ public class DBDomain extends BaseEntity {
     @ColumnDescription(comment = "Domain code used as http parameter in rest webservices")
     String domainCode;
 
-    @Column(name = "SML_SUBDOMAIN", length = CommonColumnsLengths.MAX_SML_SUBDOMAIN_LENGTH, unique = true)
+    @Column(name = "SML_SUBDOMAIN", length = CommonColumnsLengths.MAX_SML_SUBDOMAIN_LENGTH)
     @ColumnDescription(comment = "SML subdomain")
     String smlSubdomain;
     @Column(name = "SML_SMP_ID", length = CommonColumnsLengths.MAX_SML_SMP_ID_LENGTH)

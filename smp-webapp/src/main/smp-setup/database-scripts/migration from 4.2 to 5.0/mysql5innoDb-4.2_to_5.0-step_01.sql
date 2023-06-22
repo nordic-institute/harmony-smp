@@ -67,7 +67,7 @@ create table SMP_ALERT (
     MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
     PROCESSED_TIME datetime,
     REPORTING_TIME datetime,
-    FOR_USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+    FOR_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
     primary key (ID)
 ) comment='SMP alerts' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -85,7 +85,7 @@ create table SMP_ALERT_AUD (
     MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
     PROCESSED_TIME datetime,
     REPORTING_TIME datetime,
-    FOR_USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+    FOR_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
     primary key (ID, REV)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -590,9 +590,6 @@ alter table SMP_DOCUMENT_VERSION
 alter table SMP_DOMAIN
    add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
 
-alter table SMP_DOMAIN
-   add constraint UK_likb3jn0nlxlekaws0xx10uqc unique (SML_SUBDOMAIN);
-
 alter table SMP_DOMAIN_MEMBER
    add constraint SMP_DOM_MEM_IDX unique (FK_DOMAIN_ID, FK_USER_ID);
 
@@ -841,7 +838,3 @@ alter table SMP_USER_AUD
    add constraint FK2786r5minnkai3d22b191iiiq
    foreign key (REV)
    references SMP_REV_INFO (id);
-
--- --------------------------------------------------------------------
--- COPY DATA
--- --------------------------------------------------------------------
