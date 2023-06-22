@@ -226,7 +226,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         if (res) {
           if (res.success) {
             this.alertService.success("Domain [" + domain.domainCode + "] registered to sml!");
-            this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = true;
             this.domain = domain;
           } else {
@@ -253,7 +252,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         if (res) {
           if (res.success) {
             this.alertService.success("Domain [" + domain.domainCode + "] unregistered from sml!");
-            this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = false;
             this.domain = domain;
           } else {

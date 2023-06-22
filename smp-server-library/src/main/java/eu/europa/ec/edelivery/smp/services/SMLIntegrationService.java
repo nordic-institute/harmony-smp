@@ -96,6 +96,7 @@ public class SMLIntegrationService {
         if (!isSMLIntegrationEnabled()) {
             String msg = "SML integration is not enabled!";
             LOG.businessWarn(BUS_SML_REGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode(), msg);
+            return;
         }
         Identifier normalizedParticipantId = identifierService
                 .normalizeParticipant(resource.getIdentifierScheme(), resource.getIdentifierValue());
@@ -111,23 +112,23 @@ public class SMLIntegrationService {
         }
     }
 
-    public String getNaptrServiceForResource(DBResource resource){
-        LOG.info("Get naptr service for resource: [{}]", resource );
+    public String getNaptrServiceForResource(DBResource resource) {
+        LOG.info("Get naptr service for resource: [{}]", resource);
         if (resource == null
                 || resource.getDomainResourceDef() == null
                 || resource.getDomainResourceDef().getResourceDef() == null
-                || StringUtils.isBlank(resource.getDomainResourceDef().getResourceDef().getIdentifier())){
-            LOG.info("return null naptr service for resource: [{}]", resource );
+                || StringUtils.isBlank(resource.getDomainResourceDef().getResourceDef().getIdentifier())) {
+            LOG.info("return null naptr service for resource: [{}]", resource);
             return null;
         }
         String resDefIdentifier = resource.getDomainResourceDef().getResourceDef().getIdentifier();
-        LOG.info("return null naptr service for resource: [{}] and document type [{}]", resource, resDefIdentifier );
+        LOG.info("return null naptr service for resource: [{}] and document type [{}]", resource, resDefIdentifier);
         Map<String, String> map = configurationService.getCustomNaptrServicesMap();
 
-        if (map!=null &&  map.containsKey(resDefIdentifier) ) {
+        if (map != null && map.containsKey(resDefIdentifier)) {
             return map.get(resDefIdentifier);
         }
-        LOG.info("return null because configuration does not have document type and document type [{}]", resource, resDefIdentifier );
+        LOG.info("return null because configuration does not have document type and document type [{}]", resource, resDefIdentifier);
         return null;
 
     }
@@ -147,6 +148,7 @@ public class SMLIntegrationService {
         if (!isSMLIntegrationEnabled()) {
             String msg = "SML integration is not enabled!";
             LOG.businessWarn(BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode(), msg);
+            return;
         }
 
         // unregister only  registered participants
