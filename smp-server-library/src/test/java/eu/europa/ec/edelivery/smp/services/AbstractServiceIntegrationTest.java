@@ -10,6 +10,7 @@ import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.services.mail.MailService;
 import eu.europa.ec.edelivery.smp.services.spi.SmpXmlSignatureService;
@@ -23,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -83,6 +85,7 @@ public abstract class AbstractServiceIntegrationTest extends AbstractBaseDao {
     @Autowired
     DBAssertion dbAssertion;
 
+
     @Before
     public void before() throws IOException {
         resetKeystore();
@@ -113,11 +116,14 @@ public abstract class AbstractServiceIntegrationTest extends AbstractBaseDao {
         domainDao.persistFlushDetach(testDomain01);
 
         DBUser u1 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
+        DBCredential c1 = TestDBUtils.createDBCredentialForUser(u1, null, null, null);
+        c1.setValue(BCrypt.hashpw(USERNAME_1_PASSWORD, BCrypt.gensalt()));
         DBUser u2 = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_2);
         DBUser u3 = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_2);
         userDao.persistFlushDetach(u1);
         userDao.persistFlushDetach(u2);
         userDao.persistFlushDetach(u3);
+        credentialDao.persistFlushDetach(c1);
 
         DBResource sg1d1 = TestDBUtils.createDBResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         DBSubresource sg1md1 = TestDBUtils.createDBSubresource(TEST_SG_ID_1, TEST_SG_SCHEMA_1,

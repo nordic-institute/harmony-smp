@@ -16,7 +16,6 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.identifiers.IdentifierFormatter;
 import eu.europa.ec.edelivery.smp.identifiers.types.EBCorePartyIdFormatterType;
-import eu.europa.ec.edelivery.smp.identifiers.types.OasisSMPFormatterType;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -51,8 +50,8 @@ public class IdentifierService {
     /**
      * Update ParticipantIdentifierFormatter for non null values. Null values are ignored
      *
-     * @param caseInsensitiveSchemas
-     * @param mandatoryScheme
+     * @param caseInsensitiveSchemas list of schemas for which case insensitivity is required
+     * @param mandatoryScheme       if true, scheme is mandatory
      */
     public void configureParticipantIdentifierFormatter(List<String> caseInsensitiveSchemas, Boolean mandatoryScheme, Pattern allowedSchemeRegExp) {
         if (caseInsensitiveSchemas != null) {
@@ -62,7 +61,7 @@ public class IdentifierService {
         }
 
         if (mandatoryScheme != null) {
-            participantIdentifierFormatter.setSchemeMandatory(mandatoryScheme.booleanValue());
+            participantIdentifierFormatter.setSchemeMandatory(mandatoryScheme);
         } else {
             LOG.debug("Skip configure ParticipantIdentifierFormatter.mandatoryScheme for null value");
         }
@@ -74,6 +73,11 @@ public class IdentifierService {
         }
     }
 
+    /**
+     * Update DocumentIdentifierFormatter for non null values. Null values are ignored
+     *
+     * @param caseInsensitiveSchemas list of schemas for which case insensitivity is required
+     */
     public void configureDocumentIdentifierFormatter(List<String> caseInsensitiveSchemas) {
         if (caseInsensitiveSchemas != null) {
             documentIdentifierFormatter.setCaseSensitiveSchemas(caseInsensitiveSchemas);

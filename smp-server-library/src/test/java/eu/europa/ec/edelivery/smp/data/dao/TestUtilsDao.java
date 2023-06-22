@@ -11,13 +11,12 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
-import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -37,6 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @Repository
 public class TestUtilsDao {
+
+    @Autowired
+    UserDao userDao;
     @PersistenceContext
     protected EntityManager memEManager;
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(TestUtilsDao.class);
@@ -211,8 +213,16 @@ public class TestUtilsDao {
             return;
         }
         user1 = createDBUserByUsername(USERNAME_1);
+        DBCredential c1 = TestDBUtils.createDBCredentialForUser(user1, null, null, null);
+        c1.setValue(BCrypt.hashpw(USERNAME_1_PASSWORD, BCrypt.gensalt()));
+        user1.getUserCredentials().add(c1);
         user2 = createDBUserByCertificate(USER_CERT_2);
         user3 = createDBUserByUsername(USERNAME_3);
+        DBCredential c3 = TestDBUtils.createDBCredentialForUserAccessToken(user3, null, null, null);
+        c3.setValue(BCrypt.hashpw(USERNAME_3_AT_PASSWORD, BCrypt.gensalt()));
+        c3.setName(USERNAME_3_AT);
+        user3.getUserCredentials().add(c3);
+
         user4 = createDBUserByUsername(USERNAME_4);
         user5 = createDBUserByUsername(USERNAME_5);
 
@@ -227,6 +237,18 @@ public class TestUtilsDao {
         assertNotNull(user3.getId());
         assertNotNull(user4.getId());
         assertNotNull(user5.getId());
+    }
+
+    @Transactional
+    public void deactivateUser(String username) {
+        DBUser user = userDao.findUserByUsername(username).get();
+        user.setActive(false);
+        persistFlushDetach(user);
+    }
+
+    @Transactional
+    public void updateCredentials(DBCredential credential) {
+        merge(credential);
     }
 
     /**
