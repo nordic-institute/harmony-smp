@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -139,6 +141,12 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         }
         if (domain.isSmlRegistered() && !StringUtils.equals(data.getSmlSmpId(), domain.getSmlSmpId())) {
             String msg = "SMP-SML identifier must not change for registered domain [" + domain.getDomainCode() + "]!";
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
+        }
+
+        Optional<DBDomain> domainBySmlSmpId = domainDao.getDomainBySmlSmpId(data.getSmlSmpId());
+        if (domainBySmlSmpId.isPresent() && !Objects.equals(domainBySmlSmpId.get().getId(), domain.getId())) {
+            String msg = "SMP-SML identifier must unique. The SmlSmpId [" + data.getSmlSmpId() + "] is already used by other domains!";
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
         }
 

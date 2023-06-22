@@ -105,6 +105,22 @@ public class DomainDao extends BaseDao<DBDomain> {
         }
     }
 
+
+    public Optional<DBDomain> getDomainBySmlSmpId(String smlSmpId) {
+        if (StringUtils.isEmpty(smlSmpId)) {
+            return Optional.empty();
+        }
+        try {
+            TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_SMP_SML_ID, DBDomain.class);
+            query.setParameter(PARAM_DOMAIN_SML_SMP_ID, smlSmpId);
+            return Optional.of(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(smlSmpId));
+        }
+    }
+
     public Long getResourceCountForDomain(Long domainId) {
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCES_BY_DOMAIN_ID_COUNT, Long.class);
 

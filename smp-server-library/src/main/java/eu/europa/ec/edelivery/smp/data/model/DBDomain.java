@@ -36,6 +36,8 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         })
 @NamedQuery(name = QUERY_DOMAIN_ALL, query = "SELECT d FROM DBDomain d order by d.id asc")
 @NamedQuery(name = QUERY_DOMAIN_CODE, query = "SELECT d FROM DBDomain d WHERE d.domainCode = :domain_code")
+@NamedQuery(name = QUERY_DOMAIN_SMP_SML_ID, query = "SELECT d FROM DBDomain d WHERE lower(d.smlSmpId) = lower(:sml_smp_id)")
+
 @NamedNativeQuery(name = "DBDomain.updateNullSignAlias",
         query = "update SMP_DOMAIN set SIGNATURE_KEY_ALIAS=:alias WHERE SIGNATURE_KEY_ALIAS IS null")
 @NamedNativeQuery(name = "DBDomain.updateNullSMLAlias",
