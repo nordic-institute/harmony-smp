@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 
 import static org.junit.Assert.*;
@@ -27,9 +28,10 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     CredentialService testInstance;
 
     @Before
-    public void beforeMethods() {
+    public void beforeMethods() throws IOException {
         testUtilsDao.clearData();
         testUtilsDao.createUsers();
+        resetKeystore();
         configurationDao.refreshProperties();
     }
 
@@ -100,6 +102,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         credential.setSequentialLoginFailureCount(100);
         testUtilsDao.merge(credential);
+        testUtilsDao.clear();
 
         // given
         String username = TestConstants.USERNAME_1;
@@ -115,6 +118,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         credential.setLastFailedLoginAttempt(OffsetDateTime.now().minusDays(100));
         credential.setSequentialLoginFailureCount(100);
         testUtilsDao.merge(credential);
+        testUtilsDao.clear();
 
         // given
         String username = TestConstants.USERNAME_1;

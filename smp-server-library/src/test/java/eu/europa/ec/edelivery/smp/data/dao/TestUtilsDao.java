@@ -595,6 +595,12 @@ public class TestUtilsDao {
         return memEManager.merge(entity);
     }
 
+
+    public void clear() {
+        memEManager.clear();
+    }
+
+
     public DBDomain getD1() {
         return d1;
     }
