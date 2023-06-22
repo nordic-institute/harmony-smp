@@ -1,7 +1,9 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
+import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
+import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
@@ -10,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.OffsetDateTime;
@@ -18,6 +21,7 @@ import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {CredentialService.class})
 public class CredentialServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired
