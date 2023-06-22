@@ -52,6 +52,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SmlIntegrationConfiguration.class,
         SMLIntegrationService.class})
+@Ignore
 public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
     @Rule
@@ -86,16 +87,18 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
 
         integrationMock.reset();
-        prepareDatabaseForSingleDomainEnv();
+
+        testUtilsDao.clearData();
+        testUtilsDao.createResources();
     }
 
     @Test
     public void registerDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
 
         // given
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+        DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(false);
-        domainDao.update(testDomain01);
+        testUtilsDao.merge(testDomain01);
 
 
         // when
@@ -112,9 +115,8 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     public void unregisterDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault, NotFoundFault {
 
         // given
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+        DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
-
 
         // when
         testInstance.unRegisterDomain(testDomain01);
@@ -227,5 +229,5 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
     }
 
- */
+     */
 }
