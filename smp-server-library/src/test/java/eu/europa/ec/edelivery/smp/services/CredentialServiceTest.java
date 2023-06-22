@@ -21,17 +21,16 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {CredentialService.class})
-@Ignore
 public class CredentialServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     CredentialService testInstance;
 
-
     @Before
     public void beforeMethods() {
         testUtilsDao.clearData();
         testUtilsDao.createUsers();
+        configurationDao.refreshProperties();
     }
 
     @Test
@@ -85,7 +84,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     public void authenticateByUsernameCredentialsInactive() {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setActive(false);
-        testUtilsDao.updateCredentials(credential);
+        testUtilsDao.merge(credential);
 
         // given
         String username = TestConstants.USERNAME_1;
@@ -100,7 +99,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         credential.setSequentialLoginFailureCount(100);
-        testUtilsDao.updateCredentials(credential);
+        testUtilsDao.merge(credential);
 
         // given
         String username = TestConstants.USERNAME_1;
@@ -115,7 +114,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now().minusDays(100));
         credential.setSequentialLoginFailureCount(100);
-        testUtilsDao.updateCredentials(credential);
+        testUtilsDao.merge(credential);
 
         // given
         String username = TestConstants.USERNAME_1;
@@ -179,7 +178,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     public void authenticateByAccessTokenCredentialsInactive() {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setActive(false);
-        testUtilsDao.updateCredentials(credential);
+        testUtilsDao.merge(credential);
 
         // given
         String accessTokenName = TestConstants.USERNAME_3_AT;
@@ -196,7 +195,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         credential.setSequentialLoginFailureCount(100);
-        testUtilsDao.updateCredentials(credential);
+        testUtilsDao.merge(credential);
 
         // given
         String accessTokenName = TestConstants.USERNAME_3_AT;
@@ -212,7 +211,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now().minusDays(100));
         credential.setSequentialLoginFailureCount(100);
-        testUtilsDao.updateCredentials(credential);
+        testUtilsDao.merge(credential);
 
         // given
         String accessTokenName = TestConstants.USERNAME_3_AT;
