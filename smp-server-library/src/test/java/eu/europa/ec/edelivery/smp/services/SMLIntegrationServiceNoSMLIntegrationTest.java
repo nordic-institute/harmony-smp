@@ -14,11 +14,9 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -32,12 +30,8 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@Ignore
 @ContextConfiguration(classes = {SMLIntegrationService.class})
 public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest {
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     protected SMLIntegrationService testInstance;
@@ -45,48 +39,51 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
     @Before
     @Transactional
     public void prepareDatabase() {
-        prepareDatabaseForSingleDomainEnv();
-        configurationDao.reloadPropertiesFromDatabase();
+        testUtilsDao.clearData();;
+        testUtilsDao.createResources();
     }
 
     @Test
     public void registerOnlyDomainToSml() {
 
-        expectedException.expect(SMPRuntimeException.class);
-        expectedException.expectMessage("Configuration error: SML integration is not enabled!");
         // given
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+        DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(false);
-        domainDao.update(testDomain01);
 
         // when
-        testInstance.registerDomain(testDomain01);
+        SMPRuntimeException result = Assert.assertThrows(SMPRuntimeException.class, () -> testInstance.registerDomain(testDomain01));
+        Assert.assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
     }
 
     @Test
     public void unregisterOnlyDomainToSml() {
 
-        expectedException.expect(SMPRuntimeException.class);
-        expectedException.expectMessage("Configuration error: SML integration is not enabled!");
         // given
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+        DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
 
         // when
-        testInstance.unRegisterDomain(testDomain01);
+        SMPRuntimeException result = Assert.assertThrows(SMPRuntimeException.class, () -> testInstance.unRegisterDomain(testDomain01));
+        Assert.assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
     }
 
-/*
     @Test
-    public void registerOnlyParticipantDomainToSml() {
+    public void registerParticipant() {
 
-        expectedException.expect(SMPRuntimeException.class);
-        expectedException.expectMessage("Configuration error: SML integration is not enabled!");
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
-        domainDao.gety
-        // when
-        testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testDomain01);
+        DBDomain testDomain01 = testUtilsDao.getD1();
+        DBResource resource =   testUtilsDao.getResourceD1G1RD1();
+        // nothing is expected to be thrown
+        testInstance.registerParticipant(resource, testDomain01);
     }
-*/
+
+    @Test
+    public void unregisterParticipant() {
+
+        DBDomain testDomain01 = testUtilsDao.getD1();
+        DBResource resource =   testUtilsDao.getResourceD1G1RD1();
+        // nothing is expected to be thrown
+        testInstance.unregisterParticipant(resource, testDomain01);
+    }
+
 
 }
