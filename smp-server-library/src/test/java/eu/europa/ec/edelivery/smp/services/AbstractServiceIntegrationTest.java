@@ -59,7 +59,7 @@ public abstract class AbstractServiceIntegrationTest extends AbstractBaseDao {
 
 
     protected Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
-    protected Path targetDirectory = Paths.get("target", "keystores");
+    protected Path targetDirectory = Paths.get("target", "smp");
 
     @Autowired
     protected ResourceDao serviceGroupDao;
@@ -245,4 +245,5 @@ public abstract class AbstractServiceIntegrationTest extends AbstractBaseDao {
         FileUtils.deleteDirectory(targetDirectory.toFile());
         FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
     }
+
 }

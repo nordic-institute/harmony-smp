@@ -262,7 +262,6 @@ public class TestDBUtils {
 
     public static DBUser createDBUserByUsername(String userName) {
         DBUser dbuser = new DBUser();
-
         dbuser.setUsername(userName);
         dbuser.setEmailAddress(userName + "@test.eu");
         dbuser.setActive(true);

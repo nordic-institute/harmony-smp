@@ -216,7 +216,9 @@ public class TestUtilsDao {
         DBCredential c1 = TestDBUtils.createDBCredentialForUser(user1, null, null, null);
         c1.setValue(BCrypt.hashpw(USERNAME_1_PASSWORD, BCrypt.gensalt()));
         user1.getUserCredentials().add(c1);
+
         user2 = createDBUserByCertificate(USER_CERT_2);
+
         user3 = createDBUserByUsername(USERNAME_3);
         DBCredential c3 = TestDBUtils.createDBCredentialForUserAccessToken(user3, null, null, null);
         c3.setValue(BCrypt.hashpw(USERNAME_3_AT_PASSWORD, BCrypt.gensalt()));
