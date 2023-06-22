@@ -144,14 +144,14 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
         }
 
-        Optional<DBDomain> domainBySmlSmpId = domainDao.getDomainBySmlSmpId(data.getSmlSmpId());
+        Optional<DBDomain> domainBySmlSmpId = domainDao.getDomainBySmlSmpId(StringUtils.trim(data.getSmlSmpId()));
         if (domainBySmlSmpId.isPresent() && !Objects.equals(domainBySmlSmpId.get().getId(), domain.getId())) {
             String msg = "SMP-SML identifier must unique. The SmlSmpId [" + data.getSmlSmpId() + "] is already used by other domains!";
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
         }
 
         domain.setSmlSubdomain(data.getSmlSubdomain());
-        domain.setSmlSmpId(data.getSmlSmpId());
+        domain.setSmlSmpId(StringUtils.trim(data.getSmlSmpId()));
         domain.setSmlClientKeyAlias(data.getSmlClientKeyAlias());
         domain.setSmlClientCertAuth(data.isSmlClientCertAuth());
     }
