@@ -34,8 +34,6 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         testUtilsDao.clearData();
     }
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
     public void persistDomain() {
@@ -67,11 +65,10 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
 
     @Test
     public void getTheOnlyDomainNoDomain() {
-        // set
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage(ErrorCode.NO_DOMAIN.getMessage());
+
         // execute
-        testInstance.getTheOnlyDomain();
+        IllegalStateException exception = assertThrows(IllegalStateException.class, ()->testInstance.getTheOnlyDomain());
+        assertEquals(ErrorCode.NO_DOMAIN.getMessage(), exception.getMessage());
     }
 
     @Test

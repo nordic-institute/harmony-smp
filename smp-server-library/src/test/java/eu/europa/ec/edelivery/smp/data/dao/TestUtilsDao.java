@@ -246,10 +246,6 @@ public class TestUtilsDao {
         persistFlushDetach(user);
     }
 
-    @Transactional
-    public void updateCredentials(DBCredential credential) {
-        merge(credential);
-    }
 
     /**
      * Create domain members for
@@ -593,6 +589,7 @@ public class TestUtilsDao {
         memEManager.detach(entity);
     }
 
+    @Transactional
     public <E> E merge(E entity) {
         LOG.debug("merge entity: [{}]", entity);
         return memEManager.merge(entity);
