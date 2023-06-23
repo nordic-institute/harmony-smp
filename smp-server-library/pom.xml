@@ -16,7 +16,7 @@
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-modules</artifactId>
-        <version>5.0</version>
+        <version>5.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>smp-server-library</artifactId>
