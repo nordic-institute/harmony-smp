@@ -36,7 +36,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <edelivery.ssl-auth.version>1.13-SNAPSHOT</edelivery.ssl-auth.version>
+        <edelivery.ssl-auth.version>1.13</edelivery.ssl-auth.version>
         <edelivery.dynamic-discovery-client.version>2.0</edelivery.dynamic-discovery-client.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
