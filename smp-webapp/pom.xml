@@ -33,6 +33,20 @@
             <artifactId>oasis-smp-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- cppa3 document -->
+        <dependency>
+            <groupId>eu.europa.ec.edelivery</groupId>
+            <artifactId>oasis-cppa3-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
         <dependency>
             <groupId>eu.europa.ec.dynamic-discovery</groupId>
             <artifactId>dynamic-discovery-client</artifactId>
@@ -102,18 +116,7 @@
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.jks</exclude>
-                </excludes>
-            </testResource>
-            <testResource>
-                <directory>src/test/resources</directory>
                 <filtering>false</filtering>
-                <!-- With filtering=true Maven was introducing changes in keystore binary files [sic!] -->
-                <includes>
-                    <include>**/*.jks</include>
-                </includes>
             </testResource>
         </testResources>
         <resources>

@@ -11,8 +11,8 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 /**
@@ -28,19 +28,22 @@ public class ResourceStorage {
     final ResourceDao resourceDao;
     final SubresourceDao subresourceDao;
 
-    public ResourceStorage(DocumentDao documentDao, ResourceDao resourceDao,SubresourceDao subresourceDao) {
+    public ResourceStorage(DocumentDao documentDao, ResourceDao resourceDao, SubresourceDao subresourceDao) {
         this.documentDao = documentDao;
         this.resourceDao = resourceDao;
         this.subresourceDao = subresourceDao;
     }
 
-    byte[] getDocumentContentForResource(DBResource dbResource) {
-        Optional<DBDocumentVersion> documentVersion = documentDao.getCurrentDocumentVersionForResource(dbResource);
+    public byte[] getDocumentContentForResource(DBResource dbResource) {
+        LOG.debug("getDocumentContentForResource: [{}]", dbResource);
+
+        Optional<DBDocumentVersion> documentVersion = this.documentDao.getCurrentDocumentVersionForResource(dbResource);
 
         return documentVersion.isPresent() ? documentVersion.get().getContent() : null;
     }
 
-    byte[] getDocumentContentForSubresource(DBSubresource subresource) {
+    public byte[] getDocumentContentForSubresource(DBSubresource subresource) {
+        LOG.debug("getDocumentContentForSubresource: [{}]", subresource);
         Optional<DBDocumentVersion> documentVersion = documentDao.getCurrentDocumentVersionForSubresource(subresource);
 
         return documentVersion.isPresent() ? documentVersion.get().getContent() : null;

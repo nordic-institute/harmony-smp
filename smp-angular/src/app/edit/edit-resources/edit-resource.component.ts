@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
@@ -130,8 +130,9 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
       .subscribe((result: TableResult<ResourceRo>) => {
         console.log("got resources: " + JSON.stringify(result))
         this.updateResourceList(result.serviceEntities)
-        this.data = [...result.serviceEntities];
         this.resultsLength = result.count;
+        this.data = [...result.serviceEntities];
+
         this.isLoadingResults = false;
       }, (error: any) => {
         this.isLoadingResults = false;
@@ -179,6 +180,10 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     this.refreshResources();
   }
 
+  get filterResourceResults():boolean {
+  return !!this.filter["filter"]
+  }
+
   get disabledResourceFilter(): boolean {
     return !this._selectedGroup;
   }
@@ -193,6 +198,23 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
 
   get disabledResourcePagination(): boolean {
     return !this._selectedGroup;
+  }
+
+  get hasSubResources() {
+    return this.getResourceDefinition?.subresourceDefinitions?.length > 0
+  }
+
+  get getResourceDefinition(): ResourceDefinitionRo {
+
+    if (!this._selectedResource) {
+      return null;
+    }
+    if (!this._selectedDomainResourceDef) {
+      return null;
+    }
+
+    let result: ResourceDefinitionRo = this._selectedDomainResourceDef.find(def => def.identifier == this._selectedResource.resourceTypeIdentifier);
+    return result
   }
 
 }

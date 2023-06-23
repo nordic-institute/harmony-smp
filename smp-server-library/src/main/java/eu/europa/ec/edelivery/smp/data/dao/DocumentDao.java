@@ -26,7 +26,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @Repository
 public class DocumentDao extends BaseDao<DBDocument> {
 
-
     /**
      * Method returns the document for the resource
      *
@@ -85,7 +84,6 @@ public class DocumentDao extends BaseDao<DBDocument> {
         TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_LIST_FOR_RESOURCE, DBDocumentVersion.class);
         query.setParameter(PARAM_RESOURCE_ID, dbResource.getId());
         return query.getResultList();
-
     }
 
     /**
@@ -98,6 +96,5 @@ public class DocumentDao extends BaseDao<DBDocument> {
         TypedQuery<DBDocumentVersion> query = memEManager.createNamedQuery(QUERY_DOCUMENT_VERSION_LIST_FOR_SUBRESOURCE, DBDocumentVersion.class);
         query.setParameter(PARAM_SUBRESOURCE_ID, subresource.getId());
         return query.getResultList();
-
     }
 }

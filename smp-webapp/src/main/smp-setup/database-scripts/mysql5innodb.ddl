@@ -15,7 +15,7 @@
         MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROCESSED_TIME datetime,
         REPORTING_TIME datetime,
-        FOR_USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FOR_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID)
     ) comment='SMP alerts' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -33,7 +33,7 @@
         MAIL_TO varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         PROCESSED_TIME datetime,
         REPORTING_TIME datetime,
-        FOR_USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FOR_USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -505,7 +505,7 @@
         FULL_NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin comment 'User full name (name and lastname)',
         SMP_LOCALE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'DomiSMP settings: locale for the user',
         SMP_THEME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin comment 'DomiSMP settings: theme for the user',
-        USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
+        USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Unique username identifier. The Username must not be null',
         primary key (ID)
     ) comment='SMP can handle multiple domains. This table contains domain specific data' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -521,7 +521,7 @@
         FULL_NAME varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
         SMP_LOCALE varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         SMP_THEME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
-        USERNAME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        USERNAME varchar(64)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -537,9 +537,6 @@ create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_DOMAIN 
        add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
-
-    alter table SMP_DOMAIN 
-       add constraint UK_likb3jn0nlxlekaws0xx10uqc unique (SML_SUBDOMAIN);
 
     alter table SMP_DOMAIN_MEMBER 
        add constraint SMP_DOM_MEM_IDX unique (FK_DOMAIN_ID, FK_USER_ID);

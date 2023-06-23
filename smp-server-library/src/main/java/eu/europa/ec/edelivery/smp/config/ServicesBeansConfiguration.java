@@ -9,6 +9,7 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 @Configuration
 @ComponentScan(basePackages = {
+        "eu.europa.ec.edelivery.smp.data.dao",
         "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.edelivery.smp.security",
         "eu.europa.ec.edelivery.smp.services",

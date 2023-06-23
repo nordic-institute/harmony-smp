@@ -67,8 +67,7 @@ public enum SMPPropertyEnum {
     // SML integration!
     SML_ENABLED("bdmsl.integration.enabled", "false", "BDMSL (SML) integration ON/OFF switch",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-    SML_PARTICIPANT_MULTIDOMAIN("bdmsl.participant.multidomain.enabled", "false", "Set to true if SML support participant on multidomain",
-            OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, BOOLEAN),
+
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),
     SML_TLS_DISABLE_CN_CHECK("bdmsl.integration.tls.disableCNCheck", "false", "If SML Url is HTTPs - Disable CN check if needed.",
@@ -81,6 +80,8 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address", "0.0.0.0", "Physical SMP endpoint which will be registered on SML when registering new domain.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+    SML_CUSTOM_NAPTR_SERVICE_PARAMS("bdmsl.integration.naptr_service.map", "edelivery-oasis-cppa-3.0-cpp:meta:cppa3", "naptr service for resource type as key:value properties separated with '|'. Ex edelivery-oasis-cppa3-extension:meta:cppa3  ",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
     // keystore truststore
     KEYSTORE_PASSWORD("smp.keystore.password", "", "Encrypted keystore (and keys) password ",
             OPTIONAL, ENCRYPTED, NO_RESTART_NEEDED, STRING),
@@ -204,6 +205,7 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, STRING),
     SSO_CAS_TOKEN_VALIDATION_PARAMS("smp.sso.cas.token.validation.params", "acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP", "The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'",
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, MAP_STRING),
+
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.",
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, LIST_STRING),
 

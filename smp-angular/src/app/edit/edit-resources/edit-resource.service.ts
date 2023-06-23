@@ -41,7 +41,7 @@ export class EditResourceService {
     let params: HttpParams = new HttpParams()
       .set(SmpConstants.PATH_QUERY_FILTER_TYPE, userType)
       .set('page', !page?"0":page.toString())
-      .set('pageSize', !pageSize?"10":pageSize.toString());
+      .set('pageSize', !pageSize?"5":pageSize.toString());
 
     if (!!filter) {
       for (let filterProperty in filter) {

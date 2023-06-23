@@ -33,7 +33,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         MAIL_TO varchar2(1024 char),
         PROCESSED_TIME timestamp,
         REPORTING_TIME timestamp,
-        FOR_USERNAME varchar2(256 char),
+        FOR_USERNAME varchar2(64 char),
         primary key (ID)
     );
 
@@ -57,7 +57,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         MAIL_TO varchar2(1024 char),
         PROCESSED_TIME timestamp,
         REPORTING_TIME timestamp,
-        FOR_USERNAME varchar2(256 char),
+        FOR_USERNAME varchar2(64 char),
         primary key (ID, REV)
     );
 
@@ -718,7 +718,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         FULL_NAME varchar2(128 char),
         SMP_LOCALE varchar2(64 char),
         SMP_THEME varchar2(64 char),
-        USERNAME varchar2(256 char) not null,
+        USERNAME varchar2(64 char) not null,
         primary key (ID)
     );
 
@@ -761,7 +761,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         FULL_NAME varchar2(128 char),
         SMP_LOCALE varchar2(64 char),
         SMP_THEME varchar2(64 char),
-        USERNAME varchar2(256 char),
+        USERNAME varchar2(64 char),
         primary key (ID, REV)
     );
 
@@ -777,9 +777,6 @@ create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
 
     alter table SMP_DOMAIN 
        add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
-
-    alter table SMP_DOMAIN 
-       add constraint UK_likb3jn0nlxlekaws0xx10uqc unique (SML_SUBDOMAIN);
 
     alter table SMP_DOMAIN_MEMBER 
        add constraint SMP_DOM_MEM_IDX unique (FK_DOMAIN_ID, FK_USER_ID);

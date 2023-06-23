@@ -8,13 +8,19 @@
     background-color: smp.get-theme-color($theme, primary, 800, 0.1) !important;
   }
 
-  .ngx-datatable .datatable-row-selected {
-    background-color: red;
+  .ngx-datatable .datatable-body-row.active {
+    background-color: smp.get-theme-color($theme, primary, 200) !important;
   }
 
   .ngx-datatable .datatable-body-row:hover,.ngx-datatable .datatable-row-odd:hover  {
     background-color: smp.get-theme-color($theme, primary, 300) !important;
   }
+}
+
+.datatable-body-cell-label {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 
@@ -34,3 +40,36 @@
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
 }
 
+.datatable-pager li.disabled a {
+  color: rgba(0, 0, 0, 0.26) !important;
+  background-color: transparent !important;
+}
+
+.datatable-pager .pager li a {
+  margin: 0 5px;
+}
+
+.datatable-icon-right:before {
+  content: '\e5cc';
+  font-family: 'Material Icons';
+  font-style: normal;
+}
+
+.datatable-icon-left:before {
+  content: '\e5cb';
+  font-family: 'Material Icons';
+  font-style: normal;
+}
+
+.datatable-icon-prev::before {
+  content: '\e5dc';
+  font-family: 'Material Icons';
+  font-style: normal;
+}
+
+
+.datatable-icon-skip::before {
+  content: '\e5dd';
+  font-family: 'Material Icons';
+  font-style: normal;
+}

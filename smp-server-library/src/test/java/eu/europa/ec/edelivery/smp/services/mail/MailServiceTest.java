@@ -14,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.mail.internet.MimeMessage;
 
-@Ignore
 @ContextConfiguration(classes = {MockAlertBeans.class, MailService.class})
 public class MailServiceTest extends AbstractServiceIntegrationTest {
 

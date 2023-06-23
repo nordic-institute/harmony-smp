@@ -97,6 +97,12 @@ public class CredentialsAlertService {
         alertCredentialExpiration(userCredential, alert, credentialType, credentialId, expiredOn);
     }
 
+    /**
+     * Method generates "expired" alert for credentials
+     *
+     * @param userCredential
+     */
+
     public void alertCredentialExpired(DBCredential userCredential) {
         DBUser user = userCredential.getUser();
         LOG.info("Alert access token [{}:{}] for user [{}] expired on [{}]",
@@ -132,8 +138,6 @@ public class CredentialsAlertService {
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
         DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
         alertCredentialExpiration(userCredential, alert, credentialType, credentialId, expiredOn);
-
-
     }
 
     public void alertCredentialVerificationFailed(DBCredential credential) {

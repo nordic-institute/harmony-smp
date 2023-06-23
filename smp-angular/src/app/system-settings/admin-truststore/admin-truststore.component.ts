@@ -82,9 +82,13 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewIn
       this.selected = null;
       this.trustedCertificateList = this.trustedCertificateList.filter(item => item.alias !== certificateRo.alias)
     } else if (certificateRo.status == EntityStatus.ERROR) {
-      this.alertService.error("ERROR: " + certificateRo.actionMessage);
+      this.alertService.error("Error: " + certificateRo.actionMessage);
     }
     this.dataSource.data = this.trustedCertificateList;
+    // if new cert is added - go to last page
+    if (certificateRo.status == EntityStatus.NEW) {
+      this.paginator.lastPage();
+    }
   }
 
   applyFilter(event: Event) {
@@ -110,7 +114,7 @@ export class AdminTruststoreComponent implements OnInit,  OnDestroy, AfterViewIn
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete certificate " + this.selected.alias + " from truststore",
-        description: "Action will permanently delete certificate from truststore! Do you wish to continue?"
+        description: "Action will permanently delete certificate from truststore! <br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

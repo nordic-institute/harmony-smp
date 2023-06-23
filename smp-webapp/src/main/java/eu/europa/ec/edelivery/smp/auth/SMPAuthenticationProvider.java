@@ -31,11 +31,9 @@ import java.util.Collections;
 @Component
 public class SMPAuthenticationProvider implements AuthenticationProvider {
 
-
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationProvider.class);
 
     final CredentialService credentialService;
-
 
     @Autowired
     public SMPAuthenticationProvider(CredentialService credentialService) {

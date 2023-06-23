@@ -19,7 +19,7 @@ export class FooterComponent implements OnInit {
 
     console.log("FooterComponent onInit");
     this.smpInfoService.getSmpInfo().subscribe((smpInfo: SmpInfo) => {
-      this.smpVersion = smpInfo.version;
+        this.smpVersion = smpInfo.version;
       }
     );
   }

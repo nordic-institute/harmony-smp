@@ -117,7 +117,7 @@ public class DomainAdminController {
         return domainRO;
     }
 
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.systemAdministrator")
     @PutMapping(value = "/{user-id}/sml-register/{domain-code}")
     public SMLIntegrationResult registerDomainAndParticipants(@PathVariable("user-id") String userId,
                                                               @PathVariable("domain-code") String domainCode
@@ -136,7 +136,7 @@ public class DomainAdminController {
     }
 
 
-    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.systemAdministrator")
     @PutMapping(value = "/{user-id}/sml-unregister/{domain-code}")
     public SMLIntegrationResult unregisterDomainAndParticipants(@PathVariable("user-id") String userId,
                                                                 @PathVariable("domain-code") String domainCode) {

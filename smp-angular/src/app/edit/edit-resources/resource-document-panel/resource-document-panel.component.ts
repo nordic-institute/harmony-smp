@@ -24,7 +24,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   title: string = "Resources";
   private _resource: ResourceRo;
 
-  private _document: DocumentRo;
+  _document: DocumentRo;
   @Input() private group: GroupRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
@@ -79,9 +79,8 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
 
   @Input() set resource(value: ResourceRo) {
     this._resource = value;
-
     if (!this._resource) {
-      this.navigationService.reset();
+      this.navigationService.navigateToHome();
       return;
     }
 
@@ -105,6 +104,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     this._document = value;
     this.documentForm.disable();
     if (!!value) {
+      this.codemirror.setOptionIfChanged("mode",value.mimeType);
       this.documentForm.controls['mimeType'].setValue(value.mimeType);
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);

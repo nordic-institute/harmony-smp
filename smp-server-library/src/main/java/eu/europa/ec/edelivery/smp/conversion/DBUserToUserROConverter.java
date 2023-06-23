@@ -48,6 +48,9 @@ public class DBUserToUserROConverter implements Converter<DBUser, UserRO> {
         if (!credentials.isEmpty()) {
             // expected only one username/password
             DBCredential credential = credentials.get(0);
+            target.setPasswordExpired(credential.getExpireOn() == null || OffsetDateTime.now().isAfter(credential.getExpireOn()));
+
+
             target.setPasswordUpdatedOn(credential.getChangedOn());
             target.setPasswordExpireOn(credential.getExpireOn());
             target.setPasswordExpired(isCredentialExpired(credential));

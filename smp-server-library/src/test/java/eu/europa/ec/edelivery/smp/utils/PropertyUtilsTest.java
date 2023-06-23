@@ -13,6 +13,7 @@ import org.springframework.scheduling.support.CronExpression;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -65,7 +66,6 @@ public class PropertyUtilsTest {
                 {CS_PARTICIPANTS, "casesensitive-participant-scheme1|casesensitive-participant-scheme2", List.class},
                 {CS_DOCUMENTS, "casesensitive-doc-scheme1|casesensitive-doc-scheme2", List.class},
                 {SML_ENABLED, "true", Boolean.class},
-                {SML_PARTICIPANT_MULTIDOMAIN, "true", Boolean.class},
                 {SML_URL, "http://localhost:8080/sml", java.net.URL.class},
                 {SML_LOGICAL_ADDRESS, "http://localhost:8080/smp", java.net.URL.class},
                 {SML_PHYSICAL_ADDRESS, "0.0.0.0", String.class},
@@ -139,6 +139,26 @@ public class PropertyUtilsTest {
                         "value", ROOT_FOLDER));
 
         assertEquals("Configuration error: [Allowed values are: LOW, MEDIUM, HIGH]!", result.getMessage());
+    }
+
+
+    @Test
+    public void testParseMapPropertiesToType() {
+        //when then
+        String value= "test1:val1|test2:val2|test3:val:with:colon|test4: val-no-spaces";
+
+        Object obj = PropertyUtils.parseProperty(SML_CUSTOM_NAPTR_SERVICE_PARAMS, value, ROOT_FOLDER);
+        assertEquals(HashMap.class, obj.getClass());
+        Map<String, String> maRes= (Map<String, String>)obj;
+
+        assertTrue(maRes.containsKey("test1"));
+        assertEquals("val1", maRes.get("test1"));
+        assertTrue(maRes.containsKey("test2"));
+        assertEquals("val2", maRes.get("test2"));
+        assertTrue(maRes.containsKey("test3"));
+        assertEquals("val:with:colon", maRes.get("test3"));
+        assertTrue(maRes.containsKey("test4"));
+        assertEquals("val-no-spaces", maRes.get("test4"));
     }
 
 

@@ -18,18 +18,18 @@ import static org.junit.Assert.assertTrue;
 public class CredentialDaoAlertsTest extends AbstractBaseDao {
 
     DBUser okUser = TestDBUtils.createDBUserByUsername("okUser-" + UUID.randomUUID());
-    DBUser beforePasswordExpireNoAlertSend = TestDBUtils.createDBUserByUsername("beforePasswordExpireNoAlertSend-" + UUID.randomUUID());
-    DBUser beforePasswordExpireRecentAlertSend = TestDBUtils.createDBUserByUsername("beforePasswordExpireRecentAlertSend-" + UUID.randomUUID());
-    DBUser beforePasswordExpireAlertSend = TestDBUtils.createDBUserByUsername("beforePasswordExpireAlertSend-" + UUID.randomUUID());
+    DBUser beforePasswordExpireNoAlertSend = TestDBUtils.createDBUserByUsername("befPassExpNoAlertSend-" + UUID.randomUUID());
+    DBUser beforePasswordExpireRecentAlertSend = TestDBUtils.createDBUserByUsername("befPassExpRecentAlertSend-" + UUID.randomUUID());
+    DBUser beforePasswordExpireAlertSend = TestDBUtils.createDBUserByUsername("befPassExpAlertSend-" + UUID.randomUUID());
     // set expired test cases
     DBUser passwordExpiredNoAlertSend = TestDBUtils.createDBUserByUsername("passwordExpiredNoAlertSend-" + UUID.randomUUID());
-    DBUser passwordExpiredRecentAlertSend = TestDBUtils.createDBUserByUsername("passwordExpiredRecentAlertSend-" + UUID.randomUUID());
+    DBUser passwordExpiredRecentAlertSend = TestDBUtils.createDBUserByUsername("passwordExpRecentAlertSend-" + UUID.randomUUID());
     DBUser passwordExpiredAlertSend = TestDBUtils.createDBUserByUsername("passwordExpiredAlertSend-" + UUID.randomUUID());
     // ------------
     // access token users  setup
-    DBUser beforeATExpireNoAlertSend = TestDBUtils.createDBUserByUsername("beforeATExpireNoAlertSend-" + UUID.randomUUID());
-    DBUser beforeATExpireRecentAlertSend = TestDBUtils.createDBUserByUsername("beforeATExpireRecentAlertSend-" + UUID.randomUUID());
-    DBUser beforeATExpireAlertSend = TestDBUtils.createDBUserByUsername("beforeATExpireAlertSend-" + UUID.randomUUID());
+    DBUser beforeATExpireNoAlertSend = TestDBUtils.createDBUserByUsername("befATExpireNoAlertSend-" + UUID.randomUUID());
+    DBUser beforeATExpireRecentAlertSend = TestDBUtils.createDBUserByUsername("befATExpireRecentAlertSend-" + UUID.randomUUID());
+    DBUser beforeATExpireAlertSend = TestDBUtils.createDBUserByUsername("befATExpireAlertSend-" + UUID.randomUUID());
     // set expired test cases
     DBUser aTExpiredNoAlertSend = TestDBUtils.createDBUserByUsername("ATExpiredNoAlertSend-" + UUID.randomUUID());
     DBUser aTExpiredRecentAlertSend = TestDBUtils.createDBUserByUsername("ATExpiredRecentAlertSend-" + UUID.randomUUID());
@@ -37,12 +37,12 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
 
     // ------------
     // access token users  setup
-    DBUser beforeCertExpireNoAlertSend = TestDBUtils.createDBUserByCertificate("beforecertxpireNoAlertSend-" + UUID.randomUUID());
-    DBUser beforeCertExpireRecentAlertSend = TestDBUtils.createDBUserByCertificate("beforeATExpireRecentAlertSend-" + UUID.randomUUID());
-    DBUser beforeCertExpireAlertSend = TestDBUtils.createDBUserByCertificate("beforeATExpireAlertSend-" + UUID.randomUUID());
+    DBUser beforeCertExpireNoAlertSend = TestDBUtils.createDBUserByCertificate("befCertExpNoAlertSend-" + UUID.randomUUID());
+    DBUser beforeCertExpireRecentAlertSend = TestDBUtils.createDBUserByCertificate("befATExpRecAlertSend-" + UUID.randomUUID());
+    DBUser beforeCertExpireAlertSend = TestDBUtils.createDBUserByCertificate("befATExpireAlertSend-" + UUID.randomUUID());
     // set expired test cases
     DBUser certExpiredNoAlertSend = TestDBUtils.createDBUserByCertificate("ATExpiredNoAlertSend-" + UUID.randomUUID());
-    DBUser certExpiredRecentAlertSend = TestDBUtils.createDBUserByCertificate("ATExpiredRecentAlertSend-" + UUID.randomUUID());
+    DBUser certExpiredRecentAlertSend = TestDBUtils.createDBUserByCertificate("ATExpRecAlertSend-" + UUID.randomUUID());
     DBUser certExpiredAlertSend = TestDBUtils.createDBUserByCertificate("ATExpiredAlertSend-" + UUID.randomUUID());
 
     @Autowired

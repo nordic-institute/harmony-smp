@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.monitor;
 
 
-import eu.europa.ec.edelivery.smp.data.dao.DocumentDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
@@ -35,13 +34,9 @@ public class MonitorResource {
     private static final String TEST_NAME = "urn:test:document:is-alive";
     private static final String TEST_EXTENSION_XML = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension</ex:dummynode></Extension>";
     private static final String TEST_DB_SUCCESSFUL_ROLLBACK = "TEST_DB_SUCCESSFUL_ROLLBACK MESSAGE";
-
-
-    private final DocumentDao documentDao;
     private final DomainDao domainDao;
 
-    public MonitorResource(DocumentDao documentDao, DomainDao domainDao) {
-        this.documentDao = documentDao;
+    public MonitorResource(DomainDao domainDao) {
         this.domainDao = domainDao;
     }
 

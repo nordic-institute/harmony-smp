@@ -1,6 +1,5 @@
 import {SearchTableController} from '../../common/search-table/search-table-controller';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
-import {UserDetailsDialogComponent, UserDetailsDialogMode} from './user-details-dialog/user-details-dialog.component';
 import {UserRo} from './user-ro.model';
 import {EntityStatus} from '../../common/enums/entity-status.enum';
 import {GlobalLookups} from "../../common/global-lookups";
@@ -10,7 +9,6 @@ import {SmpConstants} from "../../smp.constants";
 import {HttpClient} from "@angular/common/http";
 import {CertificateRo} from "./certificate-ro.model";
 import {PasswordChangeDialogComponent} from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
-import {AccessTokenGenerationDialogComponent} from "../../common/dialogs/access-token-generation-dialog/access-token-generation-dialog.component";
 import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 
 
@@ -26,10 +24,11 @@ export class UserController implements SearchTableController {
   }
 
   public showDetails(row: any) {
-    let dialogRef: MatDialogRef<UserDetailsDialogComponent> = this.dialog.open(UserDetailsDialogComponent);
+    /*let dialogRef: MatDialogRef<UserDetailsDialogComponent> = this.dialog.open(UserDetailsDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
+     */
   }
 
   public edit(row: any) {
@@ -38,16 +37,13 @@ export class UserController implements SearchTableController {
   public delete(row: any) {
   }
 
-  public newDialog(config?: MatDialogConfig): MatDialogRef<UserDetailsDialogComponent> {
-    return this.dialog.open(UserDetailsDialogComponent, this.convertWithMode(config));
+  public newDialog(config?: MatDialogConfig): MatDialogRef<any> {
+    //return this.dialog.open(UserDetailsDialogComponent, this.convertWithMode(config));
+    return null;
   }
 
   public changePasswordDialog(config?: MatDialogConfig): MatDialogRef<PasswordChangeDialogComponent> {
     return this.dialog.open(PasswordChangeDialogComponent, this.convertWithMode(config));
-  }
-
-  public generateAccessTokenDialog(config?: MatDialogConfig): MatDialogRef<AccessTokenGenerationDialogComponent> {
-    return this.dialog.open(AccessTokenGenerationDialogComponent, this.convertWithMode(config));
   }
 
   private convertWithMode(config) {
@@ -56,7 +52,6 @@ export class UserController implements SearchTableController {
         ...config,
         data: {
           ...config.data,
-          mode: config.data.mode || (config.data.edit ? UserDetailsDialogMode.EDIT_MODE : UserDetailsDialogMode.NEW_MODE)
         }
       }
       : config;

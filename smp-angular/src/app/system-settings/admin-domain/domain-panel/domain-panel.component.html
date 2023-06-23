@@ -2,10 +2,10 @@
   <form [formGroup]="domainForm" >
     <h3>Domain details</h3>
     <div class="panel" *ngIf="_domain!=null &&  !_domain.domainId"><p style="font-weight: bold">Enter data and click 'Save' to create new domain</div>
-    <smp-warning-panel *ngIf=" !!_domain?.domainId && !domainResourceTypes?.length"
+    <smp-warning-panel *ngIf="showWarning"
                        icon="warning"
                        type="warning"
-                       label="To complete domain configuration, please select at least one resource type from the Resource Types tab"></smp-warning-panel>
+                       [label]="showWarningMessage"></smp-warning-panel>
     <mat-form-field style="width:100%">
       <mat-label>Domain Code</mat-label>
       <input matInput

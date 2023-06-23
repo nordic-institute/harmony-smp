@@ -34,6 +34,7 @@ export class ResourceDialogComponent {
 
   participantSchemePattern = '^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$';
   participantSchemeMessage:string;
+  submitInProgress:boolean = false;
 
   @ViewChild('identifierValue', {static: false}) identifierValue: ElementRef;
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
@@ -129,7 +130,7 @@ export class ResourceDialogComponent {
   }
 
   get submitButtonEnabled(): boolean {
-    return this.resourceForm.valid && this.resourceForm.dirty;
+    return this.resourceForm.valid && this.resourceForm.dirty && !this.submitInProgress;
   }
 
   public onSaveButtonClicked() {
@@ -144,23 +145,29 @@ export class ResourceDialogComponent {
 
   public createResource(resource: ResourceRo) {
 
+        this.submitInProgress = true;
         this.editGroupService.createResourceForGroup(this.resource, this.group, this.domain).subscribe((result: ResourceRo) => {
           if (!!result) {
             this.closeDialog();
           }
+          this.submitInProgress = false;
         }, (error) => {
           this.alertService.error(error.error?.errorDescription)
+          this.submitInProgress = false;
         });
 
   }
 
   public saveResource(resource: ResourceRo) {
+    this.submitInProgress = true;
     this.editGroupService.updateResourceForGroup(this.resource, this.group, this.domain).subscribe((result: ResourceRo) => {
       if (!!result) {
         this.closeDialog();
       }
+      this.submitInProgress = false;
     }, (error) => {
       this.alertService.error(error.error?.errorDescription)
+      this.submitInProgress = false;
     });
   }
 

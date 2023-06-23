@@ -15,10 +15,7 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
-import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
-import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
-import eu.europa.ec.bdmsl.ws.soap.ManageServiceMetadataService;
+import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -50,8 +47,6 @@ public class SmlClientFactory {
     @Scope("prototype")
     public IManageParticipantIdentifierWS create() {
         LOG.info("create IManageParticipantIdentifierWS");
-
-
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.getClientFactoryBean().getServiceFactory()
                 .setWsdlURL(ManageBusinessIdentifierService.class.getResource("/ManageBusinessIdentifierService-1.0.wsdl"));
@@ -71,5 +66,18 @@ public class SmlClientFactory {
         factory.setServiceName(ManageServiceMetadataService.SERVICE);
         factory.setEndpointName(ManageServiceMetadataService.ManageServiceMetadataServicePort);
         return factory.create(IManageServiceMetadataWS.class);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public IBDMSLServiceWS createBDMSLCustomServices() {
+        LOG.info("create IBDMSLServiceWS");
+
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.getClientFactoryBean().getServiceFactory()
+                .setWsdlURL(BDMSLService.class.getResource("/BDMSLService-1.0.wsdl"));
+        factory.setServiceName(BDMSLService.SERVICE);
+        factory.setEndpointName(BDMSLService.BDMSLServicePort);
+        return factory.create(IBDMSLServiceWS.class);
     }
 }

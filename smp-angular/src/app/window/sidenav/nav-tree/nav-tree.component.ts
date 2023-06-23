@@ -1,5 +1,5 @@
 import {Component} from "@angular/core";
-import {NavigationService, NavigationNode} from "../navigation-model.service";
+import {NavigationNode, NavigationService} from "../navigation-model.service";
 import {NestedTreeControl} from "@angular/cdk/tree";
 
 
@@ -18,7 +18,7 @@ export class NavTree {
   constructor(public navigationModel: NavigationService) {
 
     navigationModel.getSelectedPathObservable()
-      .subscribe( selectedPath => {
+      .subscribe(selectedPath => {
         if (!selectedPath || selectedPath.length == 0) {
           return;
         }
@@ -42,6 +42,7 @@ export class NavTree {
     this.navigationModel.select(node);
 
   }
+
   isExpanded(node: NavigationNode) {
     this.treeControl.isExpanded(node)
   }

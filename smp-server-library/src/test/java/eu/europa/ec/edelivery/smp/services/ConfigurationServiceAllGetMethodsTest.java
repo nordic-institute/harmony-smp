@@ -60,7 +60,6 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {CS_PARTICIPANTS, TEST_STRING_LIST, "getCaseSensitiveParticipantScheme", true},
                 {CS_DOCUMENTS, TEST_STRING_LIST, "getCaseSensitiveDocumentScheme", true},
                 {SML_ENABLED, Boolean.FALSE, "isSMLIntegrationEnabled", true},
-                {SML_PARTICIPANT_MULTIDOMAIN, Boolean.FALSE, "isSMLMultiDomainEnabled", true},
                 {SML_URL,TEST_URL, "getSMLIntegrationUrl", true},
                 {SML_TLS_DISABLE_CN_CHECK, Boolean.FALSE, "smlDisableCNCheck", true},
                 {SML_TLS_SERVER_CERT_SUBJECT_REGEXP, TEST_REXEXP, "getSMLIntegrationServerCertSubjectRegExp", true},

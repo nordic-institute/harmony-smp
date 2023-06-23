@@ -39,9 +39,9 @@ public class URLCsrfIgnoreMatcher implements RequestMatcher {
     public boolean matches(HttpServletRequest request) {
         // ignore non ui sites!
         String uri = request.getRequestURI();
-        LOG.info("Test CSRF for uri [{}]", uri);
+        LOG.debug("Test CSRF for uri [{}]", uri);
         if(!StringUtils.startsWithAny(uri,"/ui/","/smp/ui/")) {
-            LOG.info("URL is not part of the UI  [{}]", uri);
+            LOG.debug("URL is not part of the UI  [{}]", uri);
             return false;
         }
         Optional<RegexRequestMatcher> unprotectedMatcher = unprotectedMatcherList.stream().filter(requestMatcher -> requestMatcher.matches(request)).findFirst();

@@ -117,9 +117,6 @@ export class SecurityService {
     return this.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
   }
 
-
-
-
   isCurrentUserSMPAdmin(): boolean {
     return this.isCurrentUserInRole([Authority.SMP_ADMIN]);
   }
@@ -166,7 +163,7 @@ export class SecurityService {
     return localStorage.getItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
   }
 
-  private clearLocalStorage() {
+  public clearLocalStorage() {
     localStorage.removeItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
   }
 

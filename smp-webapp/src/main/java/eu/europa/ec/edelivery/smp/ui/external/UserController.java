@@ -86,7 +86,7 @@ public class UserController {
         // refresh user from DB
         UserRO userRO = uiUserService.getUserById(entityId);
         // return clean user to UI
-        return authorizationService.sanitize(userRO);
+        return authorizationService.getUpdatedUserData(userRO);
     }
 
     /**

@@ -32,7 +32,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
   private _resource: ResourceRo;
   private _subresource: SubresourceRo;
 
-  private _document: DocumentRo;
+  _document: DocumentRo;
   @Input() private group: GroupRo;
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];

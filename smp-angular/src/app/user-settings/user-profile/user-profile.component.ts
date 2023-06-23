@@ -9,9 +9,9 @@ import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog
 import {
   PasswordChangeDialogComponent
 } from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
-import {UserDetailsDialogMode} from "../../system-settings/user/user-details-dialog/user-details-dialog.component";
 import {SecurityEventService} from "../../security/security-event.service";
 import {Subscription} from "rxjs";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 
 
 @Component({
@@ -101,7 +101,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, BeforeLeaveGuard
         ...config,
         data: {
           ...config.data,
-          mode: config.data.mode || (config.data.edit ? UserDetailsDialogMode.EDIT_MODE : UserDetailsDialogMode.NEW_MODE)
+          mode: config.data.mode || (config.data.edit ? EntityStatus.PERSISTED : EntityStatus.NEW)
         }
       }
       : config;

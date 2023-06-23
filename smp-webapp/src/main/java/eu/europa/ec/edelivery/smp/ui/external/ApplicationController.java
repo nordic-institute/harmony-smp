@@ -73,7 +73,7 @@ public class ApplicationController {
                 " Version [" +
                 artifactVersion +
                 "] Build-Time [" +
-                buildTime + "|" + TimeZone.getDefault().getDisplayName() +
+                buildTime +
                 "]";
     }
 
@@ -82,7 +82,6 @@ public class ApplicationController {
     public SmpConfigRO getApplicationConfig() {
         SmpConfigRO info = new SmpConfigRO();
         info.setSmlIntegrationOn(configurationService.isSMLIntegrationEnabled());
-        info.setSmlParticipantMultiDomainOn(configurationService.isSMLMultiDomainEnabled());
         info.setParticipantSchemaRegExp(configurationService.getParticipantIdentifierSchemeRexExpPattern());
         info.setParticipantSchemaRegExpMessage(configurationService.getParticipantIdentifierSchemeRexExpMessage());
         info.setConcatEBCorePartyId(false);

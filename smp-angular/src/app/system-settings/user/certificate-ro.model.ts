@@ -16,6 +16,7 @@ export interface CertificateRo {
   certificatePolicies?: string[];
   isContainingKey?:boolean;
   invalid?:boolean;
+  error?:boolean;
   invalidReason?:string;
 
   status?: EntityStatus;

@@ -2,7 +2,7 @@ import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {SmpConstants} from "../../../smp.constants";
-import {AccessTokenRo} from "../access-token-generation-dialog/access-token-ro.model";
+import {AccessTokenRo} from "../../model/access-token-ro.model";
 import {UserService} from "../../../system-settings/user/user.service";
 import {CredentialRo} from "../../../security/credential.model";
 import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
@@ -30,7 +30,7 @@ export class CredentialDialogComponent {
   isReadOnly: boolean = false;
   // certificate specific data
   newCertFile: File = null;
-  isCertificateInvalid: boolean = true;
+  enableCertificateImport: boolean = true;
 
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
@@ -81,7 +81,7 @@ export class CredentialDialogComponent {
     this.certificateForm.controls['crlUrl'].setValue('');
     this.certificateForm.controls['certificateId'].setValue('');
     this.certificateForm.controls['encodedValue'].setValue('');
-    this.isCertificateInvalid = true;
+    this.enableCertificateImport = false;
   }
 
   get isAccessTokenType(): boolean {
@@ -138,8 +138,9 @@ export class CredentialDialogComponent {
             'encodedValue': res.encodedValue,
             'isCertificateValid': !res.invalid
           });
+          this.enableCertificateImport = !res.error;
           if (res.invalid) {
-            this.showErrorMessage(res.invalidReason);
+            this.showErrorMessage(res.invalidReason, res.error);
 
           } else {
             this.clearAlert()
@@ -148,11 +149,10 @@ export class CredentialDialogComponent {
           this.credentialForm.controls['activeFrom'].setValue(res.validFrom);
           this.credentialForm.controls['expireOn'].setValue(res.validTo);
 
-          this.isCertificateInvalid = res.invalid;
           this.newCertFile = file;
         } else {
           this.clearCertificateData()
-          this.showErrorMessage("Error occurred while reading certificate. Check if uploaded file has valid certificate type")
+          this.showErrorMessage("Error occurred while reading certificate. Check if uploaded file has valid certificate type", true)
         }
       },
       err => {
@@ -161,7 +161,7 @@ export class CredentialDialogComponent {
           this.closeDialog();
           return;
         }
-        this.showErrorMessage("Error uploading certificate file [" + file.name + "]." + err.error?.errorDescription)
+        this.showErrorMessage("Error uploading certificate file [" + file.name + "]." + err.error?.errorDescription, true)
       }
     );
   }
@@ -186,7 +186,7 @@ export class CredentialDialogComponent {
         this.closeDialog();
         return;
       }
-      this.showErrorMessage(err.error.errorDescription);
+      this.showErrorMessage(err.error.errorDescription, true);
     });
   }
 
@@ -229,9 +229,9 @@ export class CredentialDialogComponent {
     this.messageType = "success";
   }
 
-  showErrorMessage(value: string) {
+  showErrorMessage(value: string, errorLevel:boolean) {
     this.message = value;
-    this.messageType = "error";
+    this.messageType =errorLevel?"error":"warning";
   }
 
   clearAlert() {

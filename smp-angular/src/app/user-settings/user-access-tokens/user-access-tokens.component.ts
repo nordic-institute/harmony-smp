@@ -67,7 +67,7 @@ export class UserAccessTokensComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete Access token",
-        description: "Action will delete access token: " + credential.name + "!<br /><br />Do you wish to continue?"
+        description: "Action will delete access token: \"" + credential.name + "\"!<br /><br />Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -90,7 +90,7 @@ export class UserAccessTokensComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Update Access token",
-        description: "Action will update access token: " + credential.name + " data!<br /><br />Do you wish to continue?"
+        description: "Action will update access token: \"" + credential.name + "\"!<br /><br />Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

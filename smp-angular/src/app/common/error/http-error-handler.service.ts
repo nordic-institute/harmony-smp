@@ -17,7 +17,7 @@ export class HttpErrorHandlerService {
     if (err instanceof HttpErrorResponse) {
       if (err.status === 401) {
         this.navigationService.navigateToLogin();
-        this.alertMessageService.error(err.error?.errorDescription)
+        this.alertMessageService.error("You have been logged out because of inactivity or missing access permissions.")
         return true;
       }
     }

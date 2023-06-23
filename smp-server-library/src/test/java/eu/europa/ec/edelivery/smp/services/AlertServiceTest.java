@@ -4,18 +4,33 @@ import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
+import eu.europa.ec.edelivery.smp.services.mail.MailModel;
 import eu.europa.ec.edelivery.smp.services.mail.MailService;
+import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialSuspendedProperties;
+import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialVerificationFailedProperties;
+import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProperties;
+import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.*;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
-@Ignore
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
 public class AlertServiceTest {
 
     AlertDao alertDao = Mockito.mock(AlertDao.class);
@@ -49,7 +64,7 @@ public class AlertServiceTest {
         assertNotNull(alert.getReportingTime());
 
     }
-/*
+
     @Test
     public void testSubmitAlertMailNoMail() {
 
@@ -64,10 +79,11 @@ public class AlertServiceTest {
     public void alertBeforeUsernamePasswordExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertBeforeUsernamePasswordExpire");
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
+
         doReturn(mailSubject).when(configurationService).getAlertBeforeExpirePasswordMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertBeforeExpirePasswordLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
@@ -76,7 +92,7 @@ public class AlertServiceTest {
         List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
-        testInstance.alertBeforeUsernamePasswordExpire(user);
+        testInstance.alertBeforeCredentialExpire(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -93,7 +109,9 @@ public class AlertServiceTest {
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(-1), null);
+
+
         doReturn(mailSubject).when(configurationService).getAlertExpiredPasswordMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertExpiredPasswordLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
@@ -101,7 +119,7 @@ public class AlertServiceTest {
         List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
-        testInstance.alertUsernamePasswordExpired(user);
+        testInstance.alertCredentialExpired(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -115,10 +133,11 @@ public class AlertServiceTest {
     public void alertBeforeAccessTokenExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertBeforeAccessTokenExpire");
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
+
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        user.setAccessTokenExpireOn(OffsetDateTime.now().plusDays(1));
         doReturn(mailSubject).when(configurationService).getAlertBeforeExpireAccessTokenMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertBeforeExpireAccessTokenLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
@@ -127,7 +146,7 @@ public class AlertServiceTest {
         List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
-        testInstance.alertBeforeAccessTokenExpire(user);
+        testInstance.alertBeforeCredentialExpire(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -137,14 +156,15 @@ public class AlertServiceTest {
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
 
+
     @Test
     public void alertAccessTokenExpired() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertAccessTokenExpired");
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(-1), null);
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
-        user.setAccessTokenExpireOn(OffsetDateTime.now().plusDays(1));
         doReturn(mailSubject).when(configurationService).getAlertExpiredAccessTokenMailSubject();
         doReturn(alertLevel).when(configurationService).getAlertExpiredAccessTokenLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
@@ -152,7 +172,7 @@ public class AlertServiceTest {
         List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
-        testInstance.alertAccessTokenExpired(user);
+        testInstance.alertCredentialExpired(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -166,6 +186,7 @@ public class AlertServiceTest {
     public void alertBeforeCertificateExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("user", "alertBeforeCertificateExpire");
+        DBCredential credential = TestDBUtils.createDBCredentialForUserCertificate(user, null, OffsetDateTime.now().plusDays(1), null);
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
@@ -176,7 +197,7 @@ public class AlertServiceTest {
         List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
-        testInstance.alertBeforeCertificateExpire(user);
+        testInstance.alertBeforeCredentialExpire(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -190,6 +211,7 @@ public class AlertServiceTest {
     public void alertCertificateExpired() {
         // given
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
+        DBCredential credential = TestDBUtils.createDBCredentialForUserCertificate(user, null, OffsetDateTime.now().plusDays(1), null);
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
@@ -201,7 +223,7 @@ public class AlertServiceTest {
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
 
         // when
-        testInstance.alertCertificateExpired(user);
+        testInstance.alertCredentialExpired(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -244,10 +266,13 @@ public class AlertServiceTest {
     @Test
     public void alertUsernameCredentialVerificationFailed() {
         DBUser user = TestDBUtils.createDBUser("user");
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
+        credential.setSequentialLoginFailureCount(5);
+        credential.setLastFailedLoginAttempt(OffsetDateTime.now());
+
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
-        user.setSequentialLoginFailureCount(5);
-        user.setLastFailedLoginAttempt(OffsetDateTime.now());
+
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserLoginFailureEnabled();
@@ -260,7 +285,7 @@ public class AlertServiceTest {
                 .map(CredentialVerificationFailedProperties::name).collect(Collectors.toList());
 
         // when
-        testInstance.alertCredentialVerificationFailed(user, CredentialTypeEnum.USERNAME_PASSWORD);
+        testInstance.alertCredentialVerificationFailed(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -274,10 +299,12 @@ public class AlertServiceTest {
     @Test
     public void alertTokenCredentialVerificationFailed() {
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
+        credential.setSequentialLoginFailureCount(5);
+        credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
-        user.setSequentialTokenLoginFailureCount(5);
-        user.setLastTokenFailedLoginAttempt(OffsetDateTime.now());
+
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserLoginFailureEnabled();
@@ -290,7 +317,7 @@ public class AlertServiceTest {
                 .map(CredentialVerificationFailedProperties::name).collect(Collectors.toList());
 
         // when
-        testInstance.alertCredentialVerificationFailed(user, CredentialTypeEnum.ACCESS_TOKEN);
+        testInstance.alertCredentialVerificationFailed(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -303,11 +330,13 @@ public class AlertServiceTest {
 
     @Test
     public void alertUsernameCredentialsSuspended() {
-        DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
+        DBUser user = TestDBUtils.createDBUser("user", "alertUsernameCredentialsSuspended");
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
+        credential.setSequentialLoginFailureCount(5);
+        credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
-        user.setSequentialLoginFailureCount(5);
-        user.setLastFailedLoginAttempt(OffsetDateTime.now());
+
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserSuspendedEnabled();
@@ -320,7 +349,7 @@ public class AlertServiceTest {
                 .map(CredentialSuspendedProperties::name).collect(Collectors.toList());
 
         // when
-        testInstance.alertCredentialsSuspended(user, CredentialTypeEnum.USERNAME_PASSWORD);
+        testInstance.alertCredentialsSuspended(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -334,10 +363,13 @@ public class AlertServiceTest {
     @Test
     public void alertTokenCredentialsSuspended() {
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
+        DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
+        credential.setSequentialLoginFailureCount(5);
+        credential.setLastFailedLoginAttempt(OffsetDateTime.now());
+
         String mailSubject = "mail subject";
         String mailFrom = "mail.from@test.eu";
-        user.setSequentialTokenLoginFailureCount(5);
-        user.setLastTokenFailedLoginAttempt(OffsetDateTime.now());
+
         AlertLevelEnum alertLevel = AlertLevelEnum.MEDIUM;
 
         doReturn(true).when(configurationService).getAlertUserSuspendedEnabled();
@@ -350,7 +382,7 @@ public class AlertServiceTest {
                 .map(CredentialSuspendedProperties::name).collect(Collectors.toList());
 
         // when
-        testInstance.alertCredentialsSuspended(user, CredentialTypeEnum.ACCESS_TOKEN);
+        testInstance.alertCredentialsSuspended(credential);
         // then
         assertAlertSend(alertType, user.getEmailAddress(), mailFrom, mailSubject,
                 expectedTemplateProperties);
@@ -360,7 +392,6 @@ public class AlertServiceTest {
         verify(configurationService, times(1)).getAlertUserSuspendedLevel();
         verify(configurationService, times(1)).getAlertEmailFrom();
     }
-
 
     public void assertAlertSend(AlertTypeEnum alertType, String mailTo, String mailFrom, String mailSubject,
                                 List<String> templateProperties) {
@@ -394,5 +425,5 @@ public class AlertServiceTest {
         assertEquals(templateProperties.size(), model.getModel().size());
     }
 
- */
+
 }
