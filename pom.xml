@@ -18,7 +18,7 @@
     <artifactId>smp-modules</artifactId>
     <packaging>pom</packaging>
     <name>SMP</name>
-    <version>5.0-RC2-SNAPSHOT</version>
+    <version>5.0</version>
 
     <modules>
         <module>smp-angular</module>
@@ -129,7 +129,7 @@
     <scm>
         <developerConnection>scm:git:https://ec.europa.eu/digital-building-blocks/code/scm/edelivery/smp.git
         </developerConnection>
-        <tag>HEAD</tag>
+        <tag>5.0</tag>
     </scm>
 
     <repositories>
