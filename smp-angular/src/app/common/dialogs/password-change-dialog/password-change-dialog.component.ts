@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog
 import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {User} from "../../../security/user.model";
 import {GlobalLookups} from "../../global-lookups";
-import {UserDetailsService} from "../../../system-settings/user/user-details-dialog/user-details.service";
+import {UserDetailsService} from "../../../system-settings/user/user-details.service";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {SecurityService} from "../../../security/security.service";
 import {InformationDialogComponent} from "../information-dialog/information-dialog.component";
@@ -65,6 +65,12 @@ export class PasswordChangeDialogComponent {
     this.dialogForm.controls['current-password'].setValue('');
     this.dialogForm.controls['new-password'].setValue('');
     this.dialogForm.controls['confirm-new-password'].setValue('');
+
+    this.dialogForm.controls['new-password'].valueChanges.subscribe({
+      next: (value) => {
+        this.dialogForm.controls['confirm-new-password'].updateValueAndValidity();
+      }
+    });
   }
 
   get showCurrentPasswordField():boolean {

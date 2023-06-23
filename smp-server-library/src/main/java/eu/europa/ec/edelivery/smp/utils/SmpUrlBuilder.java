@@ -13,7 +13,6 @@
 
 package eu.europa.ec.edelivery.smp.utils;
 
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -57,12 +56,7 @@ public class SmpUrlBuilder {
         this.configurationService = configurationService;
     }
 
-    public URI getCurrentUri() {
-        return ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
-    }
-
     public String buildSMPUrlForApplication() {
-        LOG.debug("Build SMP url for Application.");
         HttpServletRequest req = getCurrentRequest();
         HttpForwardedHeaders fh = new HttpForwardedHeaders(req);
         LOG.debug("Generate response uri with headers data: [{}]", fh);
@@ -79,47 +73,10 @@ public class SmpUrlBuilder {
             }
             uriBuilder = uriBuilder.scheme(fh.getProto());
         } else {
-            LOG.debug("Ignore settings header because host is null!");
+            LOG.info("Ignore settings header because host is null!");
         }
+        return uriBuilder.build().toUriString();
 
-        return uriBuilder
-                .toUriString();
-    }
-/*
-    public String buildSMPUrlForParticipantAndDocumentIdentifier(ParticipantIdentifierType participantId, DocumentIdentifier docId) {
-        LOG.debug("Build SMP url for participant identifier: [{}] and document identifier [{}].", participantId, docId);
-        HttpServletRequest req = getCurrentRequest();
-        HttpForwardedHeaders fh = new HttpForwardedHeaders(req);
-        LOG.debug("Generate response uri with headers data: [{}]", fh);
-        UriComponentsBuilder uriBuilder = getSMPUrlBuilder();//
-        if (fh.getHost() != null) {
-            LOG.debug("Set response uri for forwarded headers: [{}]", fh);
-            uriBuilder = uriBuilder.host(fh.getHost());
-            String port = fh.getNonDefaultPort();
-            if (!StringUtils.isBlank(port)) {
-                uriBuilder = uriBuilder.port(port);
-            } else if (!StringUtils.isBlank(fh.getPort())) {
-                LOG.debug("Set port to null because it is default port: [{}]", fh);
-                uriBuilder = uriBuilder.port(null);
-            }
-            uriBuilder = uriBuilder.scheme(fh.getProto());
-        } else {
-            LOG.debug("Ignore settings header because host is null!");
-        }
-        String urlEncodedFormatParticipant = identifierService.urlEncodedFormatParticipant(participantId);
-        String urlEncodedFormatDocument = identifierService.urlEncodedFormatDocument(docId);
-
-        return uriBuilder
-                .path(SMP_DOCUMENT_RESOURCE_TEMPLATE)
-                .buildAndExpand(urlEncodedFormatParticipant, urlEncodedFormatDocument)
-                .toUriString();
-    }
-*/
-    public String buildSMPUrlForPath(String path) {
-        LOG.debug("Build SMP url for path: [{}].", path);
-
-        UriComponentsBuilder uriBuilder = getSMPUrlBuilder();
-        return uriBuilder.path(path).build().toUriString();
     }
 
     /**
@@ -131,7 +88,7 @@ public class SmpUrlBuilder {
     public UriComponentsBuilder getSMPUrlBuilder() {
 
         UriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequestUri();
-       // uriBuilder = uriBuilder.replacePath(getUrlContext());
+        uriBuilder = uriBuilder.replacePath(getUrlContext());
         return uriBuilder;
     }
 

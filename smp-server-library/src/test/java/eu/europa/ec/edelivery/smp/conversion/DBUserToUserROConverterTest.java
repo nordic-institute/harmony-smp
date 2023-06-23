@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
@@ -18,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.ConversionService;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 
 @RunWith(MockitoJUnitRunner.class)
-@Ignore
 public class DBUserToUserROConverterTest {
 
     private DBUser source;
@@ -53,6 +54,10 @@ public class DBUserToUserROConverterTest {
     @Test
     public void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordThatHasBeenRecentlyReset() {
         givenAnExistingUserHavingAPasswordThatHasJustBeenReset();
+        List<DBCredential> credentialList = source.getUserCredentials();
+        Mockito.doReturn(credentialList).when(credentialDao).findUserCredentialForByUserIdTypeAndTarget(Mockito.any(),
+                        Mockito.any(CredentialType.class),
+                        Mockito.any(CredentialTargetType.class));
 
         whenConvertingTheExistingUser();
 
@@ -72,7 +77,10 @@ public class DBUserToUserROConverterTest {
     @Test
     public void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedMoreThanThreeMonthsAgo() {
         givenAnExistingUserHavingAPasswordThatChangedMoreThanThreeMonthsAgo();
-
+        List<DBCredential> credentialList = source.getUserCredentials();
+        Mockito.doReturn(credentialList).when(credentialDao).findUserCredentialForByUserIdTypeAndTarget(Mockito.any(),
+                Mockito.any(CredentialType.class),
+                Mockito.any(CredentialTargetType.class));
         whenConvertingTheExistingUser();
 
         thenThePasswordIsMarkedAsExpired("The passwords should be marked as expired when converting users having password they have changed more than 3 months ago");
@@ -97,22 +105,22 @@ public class DBUserToUserROConverterTest {
 
     private void givenAnExistingUser(String password, OffsetDateTime passwordChange, DBCertificate certificate) {
         source = new DBUser();
-        /*
-        Optional<DBCredential> optUserPassCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.USERNAME_PASSWORD).findFirst();
-        Optional<DBCredential> optCertCred = source.getCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.CERTIFICATE).findFirst();
+
+        Optional<DBCredential> optUserPassCred = source.getUserCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.USERNAME_PASSWORD).findFirst();
+        Optional<DBCredential> optCertCred = source.getUserCredentials().stream().filter(credential -> credential.getCredentialType() == CredentialType.CERTIFICATE).findFirst();
 
         if (StringUtils.isNotBlank(password)) {
             DBCredential credential =optUserPassCred.orElse(new DBCredential());
             if (credential.getUser()==null){
                 credential.setUser(source);
                 credential.setCredentialType(CredentialType.USERNAME_PASSWORD);
-                source.addCredentials(credential);
+                source.getUserCredentials().add(credential);
             }
             credential.setValue(password);
             credential.setChangedOn(passwordChange);
             credential.setExpireOn(passwordChange != null ? passwordChange.plusMonths(3) : null);
         } else if (optUserPassCred.isPresent()) {
-            source.removeCredentials(optUserPassCred.get());
+            source.getUserCredentials().remove(optUserPassCred.get());
         }
 
         if (certificate!=null) {
@@ -120,7 +128,7 @@ public class DBUserToUserROConverterTest {
             if (credential.getUser()==null){
                 credential.setUser(source);
                 credential.setCredentialType(CredentialType.CERTIFICATE);
-                source.addCredentials(credential);
+                source.getUserCredentials().add(credential);
             }
             credential.setCertificate(certificate);
             credential.setValue(certificate.getCertificateId());
@@ -128,10 +136,10 @@ public class DBUserToUserROConverterTest {
             credential.setExpireOn(certificate.getValidTo());
             credential.setExpireOn(certificate.getValidFrom());
         } else if (optCertCred.isPresent()) {
-            source.removeCredentials(optCertCred.get());
+            source.getUserCredentials().remove(optCertCred.get());
         }
 
-         */
+
     }
 
     private void whenConvertingTheExistingUser() {

@@ -185,13 +185,14 @@ public class UIResourceService {
         if (!optDoredef.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [" + resourceRO.getResourceTypeIdentifier() + "] is not registered for domain!");
         }
+        Identifier resourceIdentifier = identifierService.normalizeParticipant(resourceRO.getIdentifierScheme(),
+                resourceRO.getIdentifierValue());
 
-        Optional<DBResource> existResource = resourceDao.getResource(resourceRO.getIdentifierValue(), resourceRO.getIdentifierScheme(), optRedef.get(), group.getDomain());
+        Optional<DBResource> existResource = resourceDao.getResource(resourceIdentifier.getValue(),resourceIdentifier.getScheme(), optRedef.get(), group.getDomain());
         if (existResource.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
         }
-        Identifier resourceIdentifier = identifierService.normalizeParticipant(resourceRO.getIdentifierScheme(),
-                resourceRO.getIdentifierValue());
+
 
         DBResource resource = new DBResource();
         resource.setIdentifierScheme(resourceIdentifier.getScheme());

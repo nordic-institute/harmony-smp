@@ -1,4 +1,4 @@
-import {Component, Input, ViewChild,} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild,} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -23,7 +23,7 @@ import {MemberTypeEnum} from "../../../common/enums/member-type.enum";
   templateUrl: './domain-group.component.html',
   styleUrls: ['./domain-group.component.scss']
 })
-export class DomainGroupComponent implements BeforeLeaveGuard {
+export class DomainGroupComponent implements OnInit, AfterViewInit, BeforeLeaveGuard {
 
 
   private _domain: DomainRo;
@@ -53,6 +53,10 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
       (data: GroupRo, filter: string) => {
         return !filter || -1 != data.groupName.toLowerCase().indexOf(filter.trim().toLowerCase())
       };
+  }
+
+  ngAfterViewInit():void {
+    this.dataSource.paginator = this.paginator;
   }
 
   get domain(): DomainRo {
@@ -88,6 +92,7 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
   }
 
   loadTableData() {
+    this.selectedGroup = null;
     if (!this._domain) {
       this.dataSource.data = null;
       return;
@@ -99,7 +104,9 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
           this.isLoadingResults = false;
         }))
       .subscribe((result: GroupRo[]) => {
+
           this.dataSource.data = result;
+          this.resultsLength = result.length;
           this.isLoadingResults = false;
         }, (error) => {
           this.alertService.error(error.error?.errorDescription)
@@ -168,7 +175,7 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Delete Group " + this.selectedGroup.groupName + " from DomiSMP",
-        description: "Action will permanently delete group! Do you wish to continue?"
+        description: "Action will permanently delete group! <br/><br/> Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -182,6 +189,8 @@ export class DomainGroupComponent implements BeforeLeaveGuard {
     this.editDomainService.deleteDomainGroupObservable(domain.domainId, group.groupId).subscribe((result: GroupRo) => {
         if (result) {
           this.alertService.success("Domain group [" + result.groupName + "] deleted");
+          this.onGroupSelected(null);
+          this.refresh()
         }
       }, (error) => {
         this.alertService.error(error.error?.errorDescription)

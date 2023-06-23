@@ -14,6 +14,8 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_ALL = "DBDomain.getAll";
     public static final String QUERY_DOMAIN_CODE = "DBDomain.getDomainByCode";
 
+    public static final String QUERY_DOMAIN_SMP_SML_ID = "DBDomain.getDomainBySmlSmpId";
+
     public static final String QUERY_DOMAIN_BY_USER_ROLES_COUNT = "DBDomain.getByUserAndRolesCount";
     public static final String QUERY_DOMAIN_BY_USER_ROLES = "DBDomain.getByUserAndRoles";
 
@@ -164,6 +166,8 @@ public class QueryNames {
     public static final String PARAM_SUBRESOURCE_DEF_IDENTIFIER = "subresource_def_identifier";
     public static final String PARAM_DOMAIN_ID = "domain_id";
     public static final String PARAM_DOMAIN_CODE = "domain_code";
+    public static final String PARAM_DOMAIN_SML_SMP_ID = "sml_smp_id";
+
     public static final String PARAM_DOMAIN_IDS = "domain_ids";
 
     public static final String PARAM_DOCUMENT_ID = "document_id";

@@ -5,8 +5,9 @@ import {SecurityEventService} from "../../security/security-event.service";
 import {SmpConstants} from "../../smp.constants";
 import {HttpClient} from "@angular/common/http";
 import {User} from "../../security/user.model";
-import {Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {Observable, Subject} from "rxjs";
+import {filter, map} from "rxjs/operators";
 
 /**
  * The smp navigation tree
@@ -50,13 +51,26 @@ export interface NavigationNode {
   tooltip?: string;
   routerLink?: string;
   children?: NavigationNode[];
-
   selected?: boolean;
   transient?: boolean; // if true then node must be ignored
 }
 
 @Injectable()
 export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
+
+  private sub = this.router.events
+    .pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(event => event as NavigationEnd),  // appease typescript
+    )
+    .subscribe(
+      event => {
+        console.log('NavigationService: ' + event.url)
+        let path: string[] = event.url.split('/');
+        this.setNavigationTreeByPath(path, this.rootNode);
+      }
+    );
+
 
   private selectedPathSubject = new Subject<NavigationNode[]>();
   selected: NavigationNode;
@@ -66,6 +80,8 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   selectedPath: NavigationNode[];
 
   private rootNode: NavigationNode = PUBLIC_NAVIGATION_TREE;
+  private userDetailsNode: NavigationNode = null;
+
 
   constructor(protected securityService: SecurityService,
               protected securityEventService: SecurityEventService,
@@ -79,10 +95,6 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
         this.refreshNavigationTree();
       }
     );
-    securityEventService.onLoginErrorEvent().subscribe(value => {
-        this.refreshNavigationTree();
-      }
-    );
     securityEventService.onLogoutSuccessEvent().subscribe(value => {
         this.refreshNavigationTree();
       }
@@ -91,8 +103,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
         this.refreshNavigationTree();
       }
     );
+  }
 
-
+  ngOnDestroy() {
+    console.log('>> STOP listening to route events ');
+    this.sub.unsubscribe();
   }
 
   select(node: NavigationNode) {
@@ -188,9 +203,8 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     if (!parentNode.children) {
       return null;
     }
-    console.log("find " + nodeCode + "from parent2: " + parentNode.code)
+    console.log("find " + nodeCode + " from parent: " + parentNode.code)
     return parentNode.children.find(node => node.routerLink == nodeCode);
-
   }
 
   /**
@@ -221,6 +235,12 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   setNavigationTree(userRootNode: NavigationNode) {
     // find the node by the navigation
     let path: string[] = this.router.url.split('/');
+    this.setNavigationTreeByPath(path, userRootNode)
+  }
+
+  setNavigationTreeByPath(path: string[], userRootNode: NavigationNode) {
+    // find the node by the navigation
+
     let startNode = userRootNode;
 
     for (let index in path) {
@@ -318,8 +338,45 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
   }
 
   public navigateToLogin(): void {
+    this.securityService.clearLocalStorage()
     this.reset();
-    this.router.navigate(['/login'], {queryParams: {returnUrl: this.router.url}});
-    this.router.parseUrl('/login');
+    let node: NavigationNode = this.createNew();
+    this.rootNode.children.push(node);
+    this.select(node);
+
+    //this.reset();
+    //this.router.navigate(['/login'], {queryParams: {returnUrl: this.router.url}});
+    //this.router.parseUrl('/login');
   }
+
+  public navigateToHome(): void {
+    this.select(this.rootNode);
+  }
+
+  public navigateUp(): void {
+    this.selectedPath?.pop();
+    if (this.selectedPath?.length > 0) {
+      this.select(this.selectedPath[this.selectedPath.length - 1]);
+    }
+
+
+  }
+
+  public navigateToUserDetails(): void {
+    this.setNavigationTreeByPath(['user-settings', 'user-profile'], this.rootNode)
+  }
+
+
+  public createNew(): NavigationNode {
+    return {
+      code: "login",
+      icon: "login",
+      name: "Login",
+      routerLink: "login",
+      selected: true,
+      tooltip: "",
+      transient: true,
+    }
+  }
+
 }

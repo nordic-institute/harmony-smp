@@ -234,7 +234,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Unregister domain to SML",
-        description: "Action will unregister domain: " + domainRo.domainCode + " and all its service groups from SML. Do you wish to continue?"
+        description: "Action will unregister domain: " + domainRo.domainCode + " and all its service groups from SML.<br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -253,7 +253,7 @@ export class DomainComponent implements OnInit, AfterViewInit, AfterViewChecked 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Register domain to SML",
-        description: "Action will register domain: " + domainRo.domainCode + " and all its service groups to SML. Do you wish to continue?"
+        description: "Action will register domain: " + domainRo.domainCode + " and all its service groups to SML. <br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {

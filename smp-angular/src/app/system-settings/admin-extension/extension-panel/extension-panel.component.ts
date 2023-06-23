@@ -36,6 +36,7 @@ export class ExtensionPanelComponent implements AfterViewInit {
 
   @Input() set extension(value: ExtensionRo) {
     this._extension = value;
+    this.resourceDefinitionSelected(null);
     this.resourceDefDataSource.data = value?.resourceDefinitions;
   }
 

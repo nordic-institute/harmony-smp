@@ -93,7 +93,7 @@ public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
         endpoint.setAddressURI(new AddressURI());
         endpoint.getAddressURI().setValue("http://test.ap.local/msh");
         endpoint.setTransportProfileID(new TransportProfileID());
-        endpoint.getTransportProfileID().setValue("bdxr-transport-ebms3-as4-v1p0");
+        endpoint.getTransportProfileID().setValue("bdxr-transport-ebms3-as4-v2p0");
         Certificate certEnc = new Certificate();
         certEnc.setExpirationDate(new ExpirationDate());
         certEnc.setActivationDate(new ActivationDate());
@@ -105,7 +105,7 @@ public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
         certEnc.setContentBinaryObject(new ContentBinaryObject());
         certEnc.getSubject().setValue("CN=test-ap-enc,OU=edelivery,O=digit,C=EU");
         certEnc.getIssuer().setValue("CN=test-ap-enc,OU=edelivery,O=digit,C=EU");
-        certEnc.getTypeCode().setValue("encryption");
+        certEnc.getTypeCode().setValue("http://www.w3.org/2002/03/xkms#Exchange");
         certEnc.getContentBinaryObject().setValue("Put the real certificate data here".getBytes());
         certEnc.getContentBinaryObject().setMimeCode("application/base64");
 
@@ -120,7 +120,7 @@ public class OasisSMPServiceMetadata20Handler extends AbstractOasisSMPHandler {
         certSig.setIssuer(new Issuer());
         certSig.getSubject().setValue("CN=test-ap-signature,OU=edelivery,O=digit,C=EU");
         certSig.getIssuer().setValue("CN=test-ap-signature,OU=edelivery,O=digit,C=EU");
-        certSig.getTypeCode().setValue("signature");
+        certSig.getTypeCode().setValue("http://www.w3.org/2002/03/xkms#Signature");
         certSig.getContentBinaryObject().setValue("Put the real certificate data here".getBytes());
         certSig.getContentBinaryObject().setMimeCode("application/base64");
         endpoint.getCertificates().add(certEnc);

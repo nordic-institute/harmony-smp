@@ -112,6 +112,7 @@ ngx-datatable span:before {
   text-align: left;
   font-size: 65%;
   margin: 0 3px;
+  padding: 0;
 }
 
 .mat-toolbar-multiple-rows {
@@ -220,9 +221,16 @@ a:hover {
 .panel {
   margin-bottom: 10px;
   padding: 10px;
-
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
 }
+
+.title-panel {
+  margin-bottom: 5px;
+  padding: 5px;
+  text-align: center;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+}
+
 .empty-data-panel {
   margin-bottom: 10px;
   padding: 10px;
@@ -245,6 +253,9 @@ a:hover {
   gap:0.7em;
   align-items: center;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+}
+
+.smp-warning-panel-padding {
   padding: 0.5em;
 }
 
@@ -342,6 +353,10 @@ mat-card {
 
 .alert-message-error {
   background-color: #f44336;
+}
+
+.alert-message-warning {
+  background-color: #ff9800;;
 }
 
 .alert-message-success {

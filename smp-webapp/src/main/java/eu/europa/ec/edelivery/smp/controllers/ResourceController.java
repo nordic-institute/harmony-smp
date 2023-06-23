@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_REQUEST;
 import static eu.europa.ec.edelivery.smp.servlet.WebConstants.*;
-import static java.net.URLDecoder.decode;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 
 /**
@@ -163,11 +162,11 @@ public class ResourceController {
         return new ResourceRequest(resourceAction, headersMap, pathParameters, inputStream);
     }
 
-    public static String  urlDecode(String header){
+    public static String urlDecode(String header) {
         try {
-            return header==null?null: URLDecoder.decode(header, UTF_8);
+            return header == null ? null : URLDecoder.decode(header, UTF_8);
         } catch (UnsupportedEncodingException e) {
-            throw new SMPRuntimeException(INTERNAL_ERROR,"DecodeHeader", ExceptionUtils.getRootCauseMessage( e));
+            throw new SMPRuntimeException(INTERNAL_ERROR, "DecodeHeader", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

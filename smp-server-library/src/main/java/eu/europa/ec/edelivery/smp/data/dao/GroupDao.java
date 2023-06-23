@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
@@ -29,6 +30,8 @@ import java.util.Optional;
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.lowerCase;
 
 /**
  * The group of resources with shared resource management rights. The user with group admin has rights to create/delete
@@ -93,7 +96,7 @@ public class GroupDao extends BaseDao<DBGroup> {
     public Optional<DBGroup> getGroupByNameAndDomain(String name, Long domainId) {
         try {
             TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_NAME_DOMAIN, DBGroup.class);
-            query.setParameter(PARAM_NAME, name);
+            query.setParameter(PARAM_NAME, lowerCase(trim(name)));
             query.setParameter(PARAM_DOMAIN_ID, domainId);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
@@ -116,7 +119,7 @@ public class GroupDao extends BaseDao<DBGroup> {
     public Optional<DBGroup> getGroupByNameAndDomainCode(String name, String domainCode) {
         try {
             TypedQuery<DBGroup> query = memEManager.createNamedQuery(QUERY_GROUP_BY_NAME_DOMAIN_CODE, DBGroup.class);
-            query.setParameter(PARAM_NAME, name);
+            query.setParameter(PARAM_NAME, lowerCase(trim(name)));
             query.setParameter(PARAM_DOMAIN_CODE, domainCode);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {

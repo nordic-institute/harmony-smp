@@ -93,7 +93,7 @@ export class SearchTableComponent implements OnInit {
     this.columnIndex = {
       cellTemplate: this.rowIndex,
       name: 'Index',
-      width: 30,
+      width: 80,
       maxWidth: 80,
       sortable: false,
       showInitially: false
@@ -110,7 +110,7 @@ export class SearchTableComponent implements OnInit {
     this.columnExpandDetails = {
       cellTemplate: this.rowExpand,
       name: 'Upd.',
-      width: 40,
+      width: 50,
       maxWidth: 50,
       sortable: false,
       showInitially: false
@@ -181,7 +181,7 @@ export class SearchTableComponent implements OnInit {
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
           title: "Not persisted data",
-          description: "Action will refresh all data and not saved data will be lost. Do you wish to continue?"
+          description: "Action will refresh all data and not saved data will be lost. <br/><br/>Do you wish to continue?"
         }
       }).afterClosed().subscribe(result => {
         if (result) {
@@ -260,6 +260,9 @@ export class SearchTableComponent implements OnInit {
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
       data: {edit: false}
     });
+    if (!formRef) {
+      return;
+    }
     formRef.afterClosed().subscribe(result => {
       if (result) {
         this.rows = [...this.rows, {...formRef.componentInstance.getCurrent()}];
@@ -387,6 +390,9 @@ export class SearchTableComponent implements OnInit {
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
       data: {edit: row?.status!=EntityStatus.NEW, row}
     });
+    if (!formRef) {
+      return;
+    }
     formRef.afterClosed().subscribe(result => {
       if (result) {
         const changed = this.searchTableController.isRecordChanged(row, formRef.componentInstance.getCurrent());

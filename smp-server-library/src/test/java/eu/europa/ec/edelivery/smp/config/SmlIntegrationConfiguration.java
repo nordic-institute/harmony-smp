@@ -76,6 +76,7 @@ public class SmlIntegrationConfiguration {
 
     @Bean("MockIManageParticipantIdentifierWS")
     @Scope(SCOPE_PROTOTYPE)
+    @Primary
     public IManageParticipantIdentifierWS smpParticipantClient() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
 
 

@@ -89,31 +89,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Override
     public ServiceResult<UserRO> getTableList(int page, int pageSize, String sortField, String sortOrder, Object filter) {
         ServiceResult<UserRO> resUsers = super.getTableList(page, pageSize, sortField, sortOrder, filter);
-        resUsers.getServiceEntities().forEach(this::updateUserStatus);
         return resUsers;
-    }
-
-    protected void updateUserStatus(UserRO user) {
-        /*
-        // never return password even if is hashed...
-        if (user.getCertificate() != null && !StringUtils.isBlank(user.getCertificate().getCertificateId())) {
-            // validate certificate
-            X509Certificate cert = getX509CertificateFromCertificateRO(user.getCertificate());
-            if (cert != null) {
-                truststoreService.validateCertificate(cert, user.getCertificate());
-            } else {
-                // validate just the database data
-                try {
-                    truststoreService.checkFullCertificateValidityLegacy(user.getCertificate());
-                } catch (CertificateException e) {
-                    LOG.warn("Set invalid cert status: " + user.getCertificate().getCertificateId() + " reason: " + e.getMessage());
-                    user.getCertificate().setInvalid(true);
-                    user.getCertificate().setInvalidReason(e.getMessage());
-                }
-            }
-        }
-
-         */
     }
 
     public AccessTokenRO createAccessTokenForUser(Long userId, CredentialRO credInit) {
@@ -216,7 +192,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         Optional<DBCredential> dbCredential = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(authorizedUserId);
         DBCredential dbAuthorizedCredentials = dbCredential.orElseThrow(() ->
-                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!"));
+                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id"));
 
         DBUser authorizedUser = dbAuthorizedCredentials.getUser();
 
@@ -226,7 +202,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
 
         boolean adminUpdate = userToUpdateId != null
-                && authorizedUserId != userToUpdateId;
+                && !Objects.equals(authorizedUserId, userToUpdateId);
 
         // check if authorized user has the permission to change other user credentials
         if (adminUpdate && authorizedUser.getApplicationRole() != ApplicationRoleType.SYSTEM_ADMIN) {
@@ -259,7 +235,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbCredential.setExpireOn(adminUpdate ? null :
                 currentTime.plusDays(configurationService.getPasswordPolicyValidDays()));
 
-        // if the credentials are not managed by the session , e.g. new  - the parsist it
+        // clear failed attempts
+        dbCredential.setLastFailedLoginAttempt(null);
+        dbCredential.setSequentialLoginFailureCount(null);
+        // if the credentials are not managed by the session , e.g. new  - the persist it
         if (dbCredential.getId()==null) {
             credentialDao.persist(dbCredential);
         }
@@ -318,7 +297,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-        LOG.debug("Update user [{}]: email [{}], fullname [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
+        LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user profile data on managed db entity. (For now Just email, name and theme)
         dbUser.setEmailAddress(user.getEmailAddress());
         dbUser.setFullName(user.getFullName());
@@ -333,7 +312,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
         }
-        LOG.debug("Update user [{}]: email [{}], fullname [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
+        LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user data by admin
         dbUser.setActive(user.isActive());
         dbUser.setApplicationRole(user.getRole());
@@ -490,7 +469,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         credential.setActiveFrom(credentialDataRO.getActiveFrom());
         credential.setExpireOn(credentialDataRO.getExpireOn());
 
-        CredentialRO credentialResultRO = conversionService.convert(credential, CredentialRO.class);
+        CredentialRO credentialResultRO;
+        if (credentialType == CredentialType.CERTIFICATE) {
+            credentialResultRO = convertAndValidateCertificateCredential(credential);
+        } else {
+            credentialResultRO = conversionService.convert(credential, CredentialRO.class);
+        }
         credentialResultRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
 
         return credentialResultRO;

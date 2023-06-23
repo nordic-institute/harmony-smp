@@ -28,12 +28,13 @@
 
             <!-- used to switch off bean validation which resulted in failing Spring context to load -->
             <package-name>javax.validation.*</package-name>
-            <!-- use smp fasterxml because weblogic version is to old -->
+            <!-- use smp fasterxml because weblogic version is too old -->
             <package-name>com.fasterxml.*</package-name>
 
         </prefer-application-packages>
         <prefer-application-resources>
             <resource-name>org/slf4j/impl/StaticLoggerBinder.class</resource-name>
+            <resource-name>META-INF/services/javax.xml.bind.JAXBContext</resource-name>
         </prefer-application-resources>
     </container-descriptor>
 </weblogic-web-app>

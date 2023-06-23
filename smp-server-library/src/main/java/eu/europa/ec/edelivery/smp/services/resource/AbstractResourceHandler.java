@@ -32,7 +32,7 @@ public class AbstractResourceHandler {
     final List<ResourceDefinitionSpi> resourceDefinitionSpiList;
     final ResourceStorage resourceStorage;
 
-    public AbstractResourceHandler(List<ResourceDefinitionSpi> resourceDefinitionSpiList, ResourceStorage resourceStorage) {
+    protected AbstractResourceHandler(List<ResourceDefinitionSpi> resourceDefinitionSpiList, ResourceStorage resourceStorage) {
         this.resourceDefinitionSpiList = resourceDefinitionSpiList;
         this.resourceStorage = resourceStorage;
     }

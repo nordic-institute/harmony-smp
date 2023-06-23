@@ -100,7 +100,7 @@ insert into SMP_DOMAIN (ID, DOMAIN_CODE, VISIBILITY, SML_SUBDOMAIN, SML_SMP_ID, 
 (1, 'testdomain','PUBLIC', 'test-domain', 'CEF-SMP-002','sample_key','sample_key',1,0, sysdate,  sysdate);
 
 insert into SMP_GROUP (ID, FK_DOMAIN_ID, NAME, VISIBILITY, CREATED_ON, LAST_UPDATED_ON) values
-(1, 1, 'Test group', 'PUBLIC', sysdate,  sysdate);
+(1, 1, 'test group', 'PUBLIC', sysdate,  sysdate);
 
 
 insert into SMP_EXTENSION ( ID, IDENTIFIER,  IMPLEMENTATION_NAME, NAME, VERSION, DESCRIPTION, CREATED_ON, LAST_UPDATED_ON) values

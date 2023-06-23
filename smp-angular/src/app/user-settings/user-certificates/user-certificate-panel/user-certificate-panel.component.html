@@ -1,16 +1,17 @@
 <div class="panel smp-data-panel"  [formGroup]="credentialForm" (ngSubmit)="onSaveButtonClicked()">
-  <smp-warning-panel *ngIf="_credential.certificate?.invalid;"
+  <smp-warning-panel *ngIf="_credential.certificate?.invalid;" class="smp-certificate-warning-panel"
+                     [padding]="false"
                      icon="error"
                      label="Invalid certificate: {{_credential.certificate.invalidReason}}">
   </smp-warning-panel>
   <div style="display: flex;flex-flow: row wrap;">
     <mat-form-field style="flex-grow: 2">
       <mat-label>Certificate ID</mat-label>
-      <input matInput placeholder="Access token ID"
+      <input matInput [matTooltip]="credential?.name"
              [value]="credential?.name"
              maxlength="255" readonly>
     </mat-form-field>
-    <div style="display: inline">
+    <div style="display: inline;display: flex; flex-direction: row; justify-content: space-between; gap: 3px;">
       <button id="deleteButton" mat-raised-button
               (click)="onDeleteButtonClicked()"
               color="primary" >

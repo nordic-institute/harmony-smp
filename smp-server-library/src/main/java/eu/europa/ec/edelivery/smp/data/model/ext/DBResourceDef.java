@@ -4,7 +4,6 @@ import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
-import eu.europa.ec.edelivery.smp.data.model.DBResourceDefDeleteValidation;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -34,18 +33,6 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_RESOURCE_DEF_BY_DOMAIN, query = "SELECT d FROM DBResourceDef d JOIN d.domainResourceDefs dr where dr.domain.id = :domain_id order by d.id asc")
 @NamedQuery(name = QUERY_RESOURCE_DEF_URL_SEGMENT, query = "SELECT d FROM DBResourceDef d WHERE d.urlSegment = :url_segment")
 @NamedQuery(name = QUERY_RESOURCE_DEF_BY_IDENTIFIER, query = "SELECT d FROM DBResourceDef d WHERE d.identifier = :identifier")
-@NamedNativeQuery(name = "DBResourceDefDeleteValidation.validateDefinitionUsage",
-        resultSetMapping = "DBResourceDefDeleteValidationMapping",
-        query = "select D.ID as id, D.NAME as name, COUNT(RS.ID) as useCount " +
-                "   from SMP_RESOURCE_DEF D INNER JOIN SMP_RESOURCE RS ON (D.ID =RS.FK_RESOURCE_DEF_ID) " +
-                "   WHERE D.ID IN (:idList)" +
-                "      GROUP BY D.ID, D.NAME")
-@SqlResultSetMapping(name = "DBResourceDefDeleteValidationMapping", classes = {
-        @ConstructorResult(targetClass = DBResourceDefDeleteValidation.class,
-                columns = {@ColumnResult(name = "id", type = Long.class),
-                        @ColumnResult(name = "name", type = String.class),
-                        @ColumnResult(name = "useCount", type = Integer.class)})
-})
 public class DBResourceDef extends BaseEntity {
     private static final long serialVersionUID = 1008583888835630001L;
 

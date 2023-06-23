@@ -13,7 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -85,23 +87,45 @@ public class DomainService {
      * @param domain
      */
 
+    @Transactional
     public void registerDomainAndParticipants(DBDomain domain) {
         LOG.info("Start registerDomainAndParticipants for domain:" + domain.getDomainCode());
         smlIntegrationService.registerDomain(domain);
 
         DBResourceFilter filter = DBResourceFilter.createBuilder().domain(domain).build();
         List<DBResource> resources = resourceDao.getResourcesForFilter(-1, -1, filter);
-        for (DBResource resource : resources) {
-            smlIntegrationService.registerParticipant(resource, domain);
+        List<DBResource> processed = new ArrayList<>();
+        try {
+            for (DBResource resource : resources) {
+                smlIntegrationService.registerParticipant(resource, domain);
+                processed.add(resource);
+            }
+        } catch (SMPRuntimeException exc) {
+            // rollback dns records
+            for (DBResource resource : processed) {
+                smlIntegrationService.unregisterParticipant(resource, domain);
+            }
+            throw exc;
         }
     }
 
+    @Transactional
     public void unregisterDomainAndParticipantsFromSml(DBDomain domain) {
 
         DBResourceFilter filter = DBResourceFilter.createBuilder().domain(domain).build();
         List<DBResource> resources = resourceDao.getResourcesForFilter(-1, -1, filter);
-        for (DBResource resource : resources) {
-            smlIntegrationService.unregisterParticipant(resource, domain);
+        List<DBResource> processed = new ArrayList<>();
+        try {
+            for (DBResource resource : resources) {
+                smlIntegrationService.unregisterParticipant(resource, domain);
+                processed.add(resource);
+            }
+        } catch (SMPRuntimeException exc) {
+            // rollback dns records
+            for (DBResource resource : processed) {
+                smlIntegrationService.registerParticipant(resource, domain);
+            }
+            throw exc;
         }
         smlIntegrationService.unRegisterDomain(domain);
     }

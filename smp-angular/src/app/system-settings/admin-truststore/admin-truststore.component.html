@@ -17,6 +17,10 @@
 
 
 <ng-template #searchCertificatePanel>
+  <smp-warning-panel  *ngIf="dataSource.data?.length ==0"
+                      icon="warn"
+                     label="When truststore is empty, the trustiness of the certificate is not validated!">
+  </smp-warning-panel>
   <mat-form-field id="truststore-filter">
     <mat-label>Filter certificate by alias</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Alias name" #input>

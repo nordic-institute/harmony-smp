@@ -7,7 +7,7 @@
       <mat-form-field class="user-profile-pane-field">
         <mat-label>Username</mat-label>
         <input id="username_id" matInput formControlName="username" #username
-               maxlength="255" required
+               maxlength="64" required
                auto-focus-directive>
       </mat-form-field>
       <div style="display:flex; flex-direction: row;align-items: center">
@@ -108,12 +108,12 @@
       <!-- buttons  -->
       <mat-toolbar class ="mat-elevation-z2">
         <mat-toolbar-row  class="smp-toolbar-row">
-          <button id="cancelButton_id" mat-raised-button (click)="onResetButtonClicked()" color="primary"
+          <button id="resetButton" mat-raised-button (click)="onResetButtonClicked()" color="primary"
                   [disabled]="!resetButtonEnabled">
             <mat-icon>refresh</mat-icon>
             <span>Reset</span>
           </button>
-          <button id="saveButton_id" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
+          <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()" color="primary"
                   [disabled]="!submitButtonEnabled">
             <mat-icon>save</mat-icon>
             <span>Save</span>
@@ -191,7 +191,7 @@
       </div>
       <mat-toolbar class ="mat-elevation-z2">
         <mat-toolbar-row  class="smp-toolbar-row">
-          <button mat-flat-button color="primary" id="changePassword_id"
+          <button mat-flat-button color="primary" id="changePassword_id" [disabled]="isNewUser"
                   (click)="changeCurrentUserPassword()">
             <span>Set/change password</span>
           </button>

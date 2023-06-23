@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.net.ssl.KeyManager;
+import javax.security.auth.x500.X500Principal;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,15 +30,15 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-;
-
-@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {UIKeystoreService.class, ConversionTestConfig.class,
         ConfigurationService.class})
 public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
 
     public static final String S_ALIAS = "single_domain_key";
+
+
+    public static final X500Principal CERT_SUBJECT_X500PRINCIPAL = new X500Principal("CN=SMP Mock Services, OU=DIGIT, O=European Commision, C=BE");
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
@@ -88,7 +89,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         X509Certificate certificate = testInstance.getCert(S_ALIAS);
         // then
         assertNotNull(certificate);
-        assertEquals("C=BE,O=European Commision,OU=DIGIT,CN=SMP Mock Services", certificate.getSubjectDN().getName());
+        assertEquals(CERT_SUBJECT_X500PRINCIPAL, certificate.getSubjectX500Principal());
     }
 
     @Test
@@ -108,7 +109,8 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         X509Certificate certificate = testInstance.getCert(null);
         // then
         assertNotNull(certificate);
-        assertEquals("C=BE,O=European Commision,OU=DIGIT,CN=SMP Mock Services", certificate.getSubjectDN().getName());
+
+        assertEquals(CERT_SUBJECT_X500PRINCIPAL, certificate.getSubjectX500Principal());
     }
 
     @Test
@@ -130,7 +132,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         X509Certificate certificate = testInstance.getCert(S_ALIAS);
         // then
         assertNotNull(certificate);
-        assertEquals("C=BE,O=European Commision,OU=DIGIT,CN=SMP Mock Services", certificate.getSubjectDN().getName());
+        assertEquals(CERT_SUBJECT_X500PRINCIPAL, certificate.getSubjectX500Principal());
     }
 
     @Test

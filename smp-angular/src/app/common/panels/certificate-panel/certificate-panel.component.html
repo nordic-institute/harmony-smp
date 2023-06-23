@@ -36,25 +36,6 @@
            [value]="certificate?.subject"
            readonly>
   </mat-form-field>
-  <mat-form-field>
-    <mat-label>Issuer</mat-label>
-    <input matInput placeholder="Issuer"
-           id="issuer_id"
-           [value]="certificate?.issuer"
-           readonly>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Serial Number</mat-label>
-    <input matInput placeholder="Serial Number" id="servialNumber_id"
-           [value]="certificate?.serialNumber"
-           readonly>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Certificate revocation list URL</mat-label>
-    <input matInput placeholder="Certificate revocation list URL" id="clrUrl_id"
-           [value]="certificate?.crlUrl"
-           readonly>
-  </mat-form-field>
   <div style="display: flex;flex-direction: row;flex-grow: 1">
     <mat-form-field style="flex-grow: 1">
       <mat-label>Valid from date</mat-label>
@@ -82,5 +63,25 @@
       </ngx-mat-datetime-picker>
     </mat-form-field>
   </div>
+  <mat-form-field>
+    <mat-label>Issuer</mat-label>
+    <input matInput placeholder="Issuer"
+           id="issuer_id"
+           [value]="certificate?.issuer"
+           readonly>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Serial Number</mat-label>
+    <input matInput placeholder="Serial Number" id="servialNumber_id"
+           [value]="certificate?.serialNumber"
+           readonly>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Certificate revocation list URL</mat-label>
+    <input matInput placeholder="Certificate revocation list URL" id="clrUrl_id"
+           [value]="certificate?.crlUrl"
+           readonly>
+  </mat-form-field>
+
 
 </div>
