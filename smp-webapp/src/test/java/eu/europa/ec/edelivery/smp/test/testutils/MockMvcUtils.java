@@ -127,7 +127,8 @@ public class MockMvcUtils {
                         .session(session)
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
-        return mapper.readValue(result.getResponse().getContentAsString(), UserRO.class);
+        byte[] asByteArray = result.getResponse().getContentAsByteArray();
+        return mapper.readValue(asByteArray, UserRO.class);
     }
 
     public static MockMvc initializeMockMvc(WebApplicationContext webAppContext) {
