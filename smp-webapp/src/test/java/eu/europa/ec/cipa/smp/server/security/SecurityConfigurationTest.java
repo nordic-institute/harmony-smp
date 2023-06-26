@@ -79,6 +79,7 @@ public class SecurityConfigurationTest {
     public void setup() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED,"true", null);
+        configurationDao.reloadPropertiesFromDatabase();
         mvc = MockMvcUtils.initializeMockMvc(context);
         configurationDao.contextRefreshedEvent();
     }
