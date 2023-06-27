@@ -18,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -129,6 +130,11 @@ public class MockMvcUtils {
                 .andExpect(status().isOk()).andReturn();
         byte[] asByteArray = result.getResponse().getContentAsByteArray();
         return mapper.readValue(asByteArray, UserRO.class);
+    }
+
+    public static <T> T getObjectFromResponse(MvcResult result, Class<T> clazz)
+            throws IOException {
+        return mapper.readValue(result.getResponse().getContentAsByteArray(), clazz);
     }
 
     public static MockMvc initializeMockMvc(WebApplicationContext webAppContext) {

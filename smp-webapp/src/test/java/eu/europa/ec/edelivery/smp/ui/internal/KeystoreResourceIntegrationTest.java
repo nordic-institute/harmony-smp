@@ -33,8 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.getLoggedUserData;
-import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithSystemAdmin;
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_KEYSTORE;
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -97,7 +96,6 @@ public class KeystoreResourceIntegrationTest {
     }
 
     @Test
-    @Ignore("Fix on gitlab!")
     public void uploadKeystoreFailed() throws Exception {
         // given when
         // login
@@ -105,20 +103,17 @@ public class KeystoreResourceIntegrationTest {
         UserRO userRO = getLoggedUserData(mvc, session);
         MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/test123")
                         .session(session)
-                        .with(csrf())
-                        .content("invalid keystore")).
+                        .with(csrf())).
                 andExpect(status().isOk()).andReturn();
 
         //then
-        ObjectMapper mapper = getObjectMapper();
-        KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
+        KeystoreImportResult res = getObjectFromResponse(result, KeystoreImportResult.class);
 
         assertNotNull(res);
         assertEquals("java.io.IOException occurred while reading the keystore: Invalid keystore format", res.getErrorMessage());
     }
 
     @Test
-    @Ignore("Fix on gitlab!")
     public void uploadKeystoreInvalidPassword() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -131,9 +126,7 @@ public class KeystoreResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        ObjectMapper mapper = getObjectMapper();
-        KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
-
+        KeystoreImportResult res = getObjectFromResponse(result, KeystoreImportResult.class);
         assertNotNull(res);
         assertEquals("java.io.IOException occurred while reading the keystore: Keystore was tampered with, or password was incorrect", res.getErrorMessage());
     }
@@ -152,8 +145,7 @@ public class KeystoreResourceIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        ObjectMapper mapper = getObjectMapper();
-        KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
+        KeystoreImportResult res = getObjectFromResponse(result, KeystoreImportResult.class);
 
         assertNotNull(res);
         assertNull(res.getErrorMessage());
@@ -173,9 +165,8 @@ public class KeystoreResourceIntegrationTest {
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
-        //them
-        ObjectMapper mapper = getObjectMapper();
-        CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
+        //then
+        CertificateRO res = getObjectFromResponse(result, CertificateRO.class);
 
         assertNotNull(res);
         assertNull(res.getActionMessage());
