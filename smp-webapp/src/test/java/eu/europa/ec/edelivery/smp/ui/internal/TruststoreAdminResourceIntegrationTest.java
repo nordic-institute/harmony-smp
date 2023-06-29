@@ -48,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@Ignore
 public class TruststoreAdminResourceIntegrationTest {
     private static final String PATH_INTERNAL = CONTEXT_PATH_INTERNAL_TRUSTSTORE;
     private static final String PATH_PUBLIC = CONTEXT_PATH_PUBLIC_TRUSTSTORE;

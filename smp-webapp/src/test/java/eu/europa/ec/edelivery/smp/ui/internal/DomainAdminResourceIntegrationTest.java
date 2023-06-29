@@ -44,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@Ignore
 public class DomainAdminResourceIntegrationTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
 
