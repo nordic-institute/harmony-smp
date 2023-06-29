@@ -118,11 +118,13 @@ public class DomainAdminResourceIntegrationTest {
         assertEquals(domainToUpdate.getDomainCode(), resultObject.getDomainCode());
         assertEquals(EntityROStatus.UPDATED.getStatusNumber(), resultObject.getStatus());
     }
+
     @Test
     public void updateDomainSmlIntegrationData() throws Exception {
         String domainCode = "domainTwo";
         MockHttpSession session = loginWithSystemAdmin(mvc);
-        UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
+        UserRO userRO = (UserRO)session.getAttribute(MOCK_LOGGED_USER);
+
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
         domainToUpdate.setSmlSubdomain("NewCode");
         domainToUpdate.setSmlClientKeyAlias("New alias");
