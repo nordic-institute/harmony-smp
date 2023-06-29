@@ -112,10 +112,11 @@ public class MockMvcUtils {
         MvcResult result = mvc.perform(post(CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION)
                         .header(HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk())
+                .andReturn();
         // assert successful login
         byte[] asByteArray = result.getResponse().getContentAsByteArray();
-        LOG.info("User logged with data: []", new String(asByteArray));
+        System.out.println("User logged with data: "+ new String(asByteArray));
 
         UserRO userRO = mapper.readValue(asByteArray, UserRO.class);
         assertNotNull(userRO);
