@@ -63,6 +63,5 @@ public class PropertiesTestConfig {
         System.setProperty(SMP_MODE_DEVELOPMENT.getProperty(), "true");
         System.setProperty(DATABASE_CREATE_DDL.getProperty(), "true");
         System.setProperty(SECURITY_FOLDER.getProperty(), SECURITY_PATH.toFile().getPath());
-
     }
 }

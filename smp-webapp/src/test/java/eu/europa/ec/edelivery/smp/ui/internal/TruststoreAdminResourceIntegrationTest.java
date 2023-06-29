@@ -62,9 +62,9 @@ public class TruststoreAdminResourceIntegrationTest {
 
     @Before
     public void setup() throws IOException {
-        mvc = initializeMockMvc(webAppContext);
         uiTruststoreService.refreshData();
         X509CertificateTestUtils.reloadKeystores();
+        mvc = initializeMockMvc(webAppContext);
     }
 
 

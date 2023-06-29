@@ -47,7 +47,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"})
-@Ignore("Fail on gitlab")
 public class KeystoreResourceIntegrationTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
     Path keystore = Paths.get("src", "test", "resources", "keystores", "smp-keystore.jks");
@@ -104,7 +103,8 @@ public class KeystoreResourceIntegrationTest {
         UserRO userRO = getLoggedUserData(mvc, session);
         MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/test123")
                         .session(session)
-                        .with(csrf())).
+                        .with(csrf())
+                        .content("Not keystore")).
                 andExpect(status().isOk()).andReturn();
 
         //then
