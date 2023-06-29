@@ -116,7 +116,7 @@ public class TruststoreAdminResourceIntegrationTest {
     @Test
     public void validateCertificateIdWithEmailSerialNumberInSubjectCertIdTest() throws Exception {
         // login
-        MockHttpSession session = loginWithUserGroupAdmin(mvc);
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
 
