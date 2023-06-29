@@ -118,7 +118,7 @@ public class KeystoreResourceIntegrationTest {
     public void uploadKeystoreInvalidPassword() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
-        UserRO userRO = getLoggedUserData(mvc, session);
+        UserRO userRO = (UserRO)session.getAttribute(MOCK_LOGGED_USER);
         // given when
         MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/NewPassword1234")
                         .session(session)
