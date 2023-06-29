@@ -70,10 +70,10 @@ public class TruststoreAdminResourceIntegrationTest {
 
     @Test
     public void validateInvalidCertificate() throws Exception {
-        byte[] buff = (new String("Not a certificate :) ")).getBytes();
+        byte[] buff = "Not a certificate :) ".getBytes();
 
         // login
-        MockHttpSession session = loginWithUserGroupAdmin(mvc);
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
 
@@ -90,7 +90,7 @@ public class TruststoreAdminResourceIntegrationTest {
     public void validateCertificateSystemAdmin() throws Exception {
         byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
         // login
-        MockHttpSession session = loginWithUserGroupAdmin(mvc);
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
         // given when
