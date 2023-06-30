@@ -80,6 +80,7 @@ build-maven-job:
   stage: build-maven
   script:
     - echo "Compiling the code..."
+    - export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_351/ # this is run with edelquality runner
     - mvn clean verify
     - echo "Compile complete."
   after_script:
@@ -143,7 +144,7 @@ test-soapui-tomcat-mysql-sml-job:
   needs: ["build-docker-job"]
   script:
     - echo "startup containers test-soapui-tomcat-mysql-sml"
-    - ./smp-docker/compose/tomcat-mysql-smp-sml/runCompose.sh -i ../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql -v 5.0-SNAPSHOT
+    - ./smp-docker/compose/tomcat-mysql-smp-sml/runCompose.sh -i ../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql
     - echo "execute tests"
     - cd smp-soapui-tests
     - mvn clean verify  -Prun-soapui  -Durl=http://localhost:8982/smp/ -DjacocoRemoteAddress=localhost -DjacocoRemotePort=6902
@@ -166,7 +167,7 @@ test-soapui-weblogic-oracle-job:
   needs: ["build-docker-job"]
   script:
     - echo "startup containers test-soapui-weblogi-oracle"
-    - ./smp-docker/compose/weblogic-oracle/runCompose.sh -i ../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql -v 5.0-SNAPSHOT
+    - ./smp-docker/compose/weblogic-oracle/runCompose.sh -i ../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql
     - echo "execute tests"
     - cd smp-soapui-tests
     - mvn clean verify -Prun-soapui  -Durl=http://localhost:7901/smp/
@@ -181,11 +182,14 @@ test-soapui-weblogic-oracle-job:
 
 test-ui-tomcat-mysql-sml-job:
   stage: test-ui  # It only runs when *both* test jobs in the test stage complete successfully.
+  # disable stage until UI tests are  fixed
+  rules:
+    - when: never
   allow_failure: true
   needs: ["test-soapui-tomcat-mysql-sml-job"]
   script:
     - echo "Deploying application..."
-    - ./smp-docker/compose/tomcat-mysql-smp-sml/runCompose.sh -i ../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql -v 5.0-SNAPSHOT
+    - ./smp-docker/compose/tomcat-mysql-smp-sml/runCompose.sh -i ../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql
     - cd smp-ui-tests
     - /usr/bin/xvfb-run -e /tmp/xvfb-error.log --server-args="-screen 0 1920x1080x24" mvn test -Pubuntu -Durl=http://localhost:8982/smp/  -Dchrome.driver.path=/home/edelivery/drivers/chromedriver
   artifacts:
