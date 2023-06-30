@@ -11,22 +11,23 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.security;
+package eu.europa.ec.edelivery.smp.server.security;
 
 
-import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
@@ -56,11 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
-
         executionPhase = BEFORE_TEST_METHOD)
-@TestPropertySource(properties = {
-        "smp.automation.authentication.external.tls.clientCert.enabled=true",
-})
 public class SecurityConfigurationClientCertTest {
 
     //Jul++9+23:59:00+2019+GMT"
@@ -158,10 +155,13 @@ public class SecurityConfigurationClientCertTest {
 
     @Before
     public void setup() throws IOException {
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", "");
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED_DEPRECATED, "true", "");
+        configurationDao.reloadPropertiesFromDatabase();
 
         X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcUtils.initializeMockMvc(context);
-        configurationDao.contextRefreshedEvent();
+
     }
 
     @Parameterized.Parameter()
@@ -181,7 +181,6 @@ public class SecurityConfigurationClientCertTest {
         System.out.println("Test: " + testName);
         String clientCert = buildClientCert(serialNumber, certificateDn);
         System.out.println("Client-Cert: " + clientCert);
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", clientCert);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)

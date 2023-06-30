@@ -71,6 +71,8 @@ public abstract class AbstractServiceIntegrationTest extends AbstractBaseDao {
     protected DomainDao domainDao;
 
     @Autowired
+    protected ConfigurationService configurationService;
+    @Autowired
     protected ConfigurationDao configurationDao;
 
     @Autowired

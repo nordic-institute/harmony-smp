@@ -13,6 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -33,12 +35,17 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 @ContextConfiguration(classes = {SMLIntegrationService.class})
 public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIntegrationTest {
 
+
     @Autowired
     protected SMLIntegrationService testInstance;
 
     @Before
     @Transactional
     public void prepareDatabase() {
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.SML_ENABLED, "false", "");
+        configurationDao.refreshProperties();
+
+
         testUtilsDao.clearData();;
         testUtilsDao.createResources();
     }

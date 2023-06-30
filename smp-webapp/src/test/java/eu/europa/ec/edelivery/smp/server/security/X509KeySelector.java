@@ -11,7 +11,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.security;
+package eu.europa.ec.edelivery.smp.server.security;
 
 import javax.xml.crypto.*;
 import javax.xml.crypto.dsig.SignatureMethod;

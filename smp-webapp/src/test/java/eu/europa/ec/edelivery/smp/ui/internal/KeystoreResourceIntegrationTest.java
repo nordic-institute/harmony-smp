@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -42,12 +43,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @RunWith(SpringRunner.class)
+@DirtiesContext
 @WebAppConfiguration
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"})
-@Ignore
 public class KeystoreResourceIntegrationTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
     Path keystore = Paths.get("src", "test", "resources", "keystores", "smp-keystore.jks");

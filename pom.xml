@@ -736,14 +736,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <!-- configuration>
-                    <useUnlimitedThreads>fakse</useUnlimitedThreads>
-                    <runOrder>random</runOrder>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <rerunFailingTestsCount>1</rerunFailingTestsCount>
-                    <parallel>methods</parallel>
-                    <forkedProcessExitTimeoutInSeconds>2</forkedProcessExitTimeoutInSeconds>
-                </configuration -->
+                <configuration>
+                    <runOrder>alphabetical</runOrder>
+                </configuration>
                 <dependencies>
                     <!-- Force using the latest JUnit 47 provider -->
                     <dependency>

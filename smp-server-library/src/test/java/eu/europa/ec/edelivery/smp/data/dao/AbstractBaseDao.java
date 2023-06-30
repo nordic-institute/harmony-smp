@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -35,6 +36,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SML_SUBDOMA
         CredentialDao.class,
         ConfigurationDao.class}
 )
+@DirtiesContext
 @Sql(scripts = {"classpath:cleanup-database.sql",
         "classpath:basic_conf_data-h2.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
