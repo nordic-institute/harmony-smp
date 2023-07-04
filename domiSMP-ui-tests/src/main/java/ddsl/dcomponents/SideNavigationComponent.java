@@ -11,6 +11,7 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pages.ProfilePage;
+import pages.PropertiesPage.PropertiesPage;
 
 import java.util.Objects;
 
@@ -125,9 +126,11 @@ public class SideNavigationComponent extends DomiSMPPage {
         //            case SYSTEM_SETTINGS_EXTENSIONS:
         //                expandSection(systemSettingsExpand);
         //                return new DLink(driver, extensionsLnk);
-        //            case SYSTEM_SETTINGS_PROPERTIES:
-        //                expandSection(systemSettingsExpand);
-        //                return new DLink(driver, propertiesLnk);
+        if (page == Pages.SYSTEM_SETTINGS_PROPERTIES) {
+            openSubmenu(systemSettingsExpand, propertiesLnk);
+            return new PropertiesPage(driver);
+        }
+
         //            case SYSTEM_SETTINGS_ALERS:
         //                expandSection(systemSettingsExpand);
         //                return new DLink(driver, alersLnk);
