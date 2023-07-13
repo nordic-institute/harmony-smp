@@ -1,6 +1,7 @@
 package pages;
 
 import ddsl.dcomponents.DomiSMPPage;
+import ddsl.dcomponents.SetChangePasswordDialog;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -26,6 +27,8 @@ public class ProfilePage extends DomiSMPPage {
     private WebElement emailAddressInput;
     @FindBy(id = "fullName_id")
     private WebElement fullNameInput;
+    @FindBy(id = "changePassword_id")
+    private WebElement setChangePasswordBtn;
 
     public ProfilePage(WebDriver driver) {
         super(driver);
@@ -66,6 +69,11 @@ public class ProfilePage extends DomiSMPPage {
 
     }
 
+    public Boolean tryChangePassword(String currentPasssword, String newPassword) throws Exception {
+        weToDButton(setChangePasswordBtn).click();
+        SetChangePasswordDialog dialog = new SetChangePasswordDialog(driver);
+        return dialog.trySetPassword(currentPasssword, newPassword);
+    }
 
     public String getSelectedTheme() {
         return weToDSelect(themeSel).getCurrentValue();
