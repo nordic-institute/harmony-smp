@@ -21,8 +21,6 @@ import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,7 +60,6 @@ public class UIDocumentService {
     public void validateDocumentForSubresource(Long subresourceId, Long resourceId, DocumentRo documentRo) {
         DBSubresource entity = subresourceDao.find(subresourceId);
         DBResource parentEntity = resourceDao.find(resourceId);
-        DBSubresourceDef domainResourceDef = entity.getSubresourceDef();
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(entity.getSubresourceDef(), entity.getSubresourceDef().getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(parentEntity.getDomainResourceDef().getDomain(), parentEntity, entity, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
         try {
@@ -88,7 +85,7 @@ public class UIDocumentService {
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
-        String genDoc =  new String(bos.toByteArray());
+        String genDoc = new String(bos.toByteArray());
         LOG.info("Generate document [{}]", genDoc);
         DocumentRo result = new DocumentRo();
         result.setPayload(genDoc);
@@ -102,7 +99,7 @@ public class UIDocumentService {
         DBSubresource enitity = subresourceDao.find(subresourceId);
         DBSubresourceDef subresourceDef = enitity.getSubresourceDef();
 
-        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef,subresourceDef.getResourceDef());
+        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
 
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(parentEntity.getDomainResourceDef().getDomain(),
                 parentEntity, enitity);
@@ -114,7 +111,7 @@ public class UIDocumentService {
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
-        String genDoc =  new String(bos.toByteArray());
+        String genDoc = new String(bos.toByteArray());
         LOG.info("Generate document [{}]", genDoc);
         DocumentRo result = new DocumentRo();
         result.setPayload(genDoc);
@@ -155,9 +152,9 @@ public class UIDocumentService {
         DBResource parentResource = resourceDao.find(resourceId);
         DBSubresource enitity = subresourceDao.find(subresource);
         DBSubresourceDef subresourceDef = enitity.getSubresourceDef();
-        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef,subresourceDef.getResourceDef());
+        ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(
-                parentResource.getDomainResourceDef().getDomain(),  parentResource,
+                parentResource.getDomainResourceDef().getDomain(), parentResource,
                 enitity, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ResponseData responseData = new SpiResponseData(bos);
@@ -167,7 +164,8 @@ public class UIDocumentService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreSubresourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
 
-        DBDocument document = enitity.getDocument();;
+        DBDocument document = enitity.getDocument();
+        ;
         int version = document.getDocumentVersions().stream().mapToInt(dv -> dv.getVersion())
                 .max().orElse(0);
 
@@ -236,7 +234,6 @@ public class UIDocumentService {
 
     public DocumentRo convert(DBDocument document, DBDocumentVersion version) {
         DocumentRo documentRo = new DocumentRo();
-        //documentRo.setDocumentId(SessionSecurityUtils.encryptedEntityId(document.getId()));
         document.getDocumentVersions().forEach(dv ->
                 documentRo.getAllVersions().add(dv.getVersion()));
 

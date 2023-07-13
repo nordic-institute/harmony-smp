@@ -47,7 +47,7 @@ public class TestUtilsDao {
     DBDomain d1;
     DBDomain d2;
     DBResourceDef resourceDefSmp;
-    DBSubresourceDef resourceDefSmpMetadata;
+    DBSubresourceDef subresourceDefSmp;
     DBResourceDef resourceDefCpp;
 
     DBDomainResourceDef domainResourceDefD1R1;
@@ -97,7 +97,7 @@ public class TestUtilsDao {
         d1 = null;
         d2 = null;
         resourceDefSmp = null;
-        resourceDefSmpMetadata = null;
+        subresourceDefSmp = null;
         resourceDefCpp = null;
         domainResourceDefD1R1 = null;
         domainResourceDefD1R2 = null;
@@ -177,10 +177,10 @@ public class TestUtilsDao {
             LOG.trace("ResourceDefinitions are already initialized!");
             return;
         }
-        resourceDefSmp = createResourceDefinition(TEST_RESOURCE_DEF_SMP10);
-        resourceDefSmpMetadata =  createSubresourceDefinition(TEST_SUBRESOURCE_DEF_SMP10, resourceDefSmp);
+        resourceDefSmp = createResourceDefinition(TEST_RESOURCE_DEF_SMP10_ID, TEST_RESOURCE_DEF_SMP10_URL);
+        subresourceDefSmp =  createSubresourceDefinition(TEST_SUBRESOURCE_DEF_SMP10_ID, TEST_SUBRESOURCE_DEF_SMP10_URL, resourceDefSmp);
 
-        resourceDefCpp = createResourceDefinition(TEST_RESOURCE_DEF_CPP);
+        resourceDefCpp = createResourceDefinition(TEST_RESOURCE_DEF_CPP, TEST_RESOURCE_DEF_CPP);
 
         assertNotNull(resourceDefSmp.getId());
         assertNotNull(resourceDefCpp.getId());
@@ -463,8 +463,8 @@ public class TestUtilsDao {
         subresourceD1G1RD1_S1.setResource(resourceD1G1RD1);
         subresourceD2G1RD1_S1.setResource(resourceD2G1RD1);
 
-        subresourceD1G1RD1_S1.setSubresourceDef(resourceDefSmpMetadata);
-        subresourceD2G1RD1_S1.setSubresourceDef(resourceDefSmpMetadata);
+        subresourceD1G1RD1_S1.setSubresourceDef(subresourceDefSmp);
+        subresourceD2G1RD1_S1.setSubresourceDef(subresourceDefSmp);
 
 
         persistFlushDetach(subresourceD1G1RD1_S1);
@@ -559,15 +559,15 @@ public class TestUtilsDao {
     }
 
     @Transactional
-    public DBResourceDef createResourceDefinition(String urlContextDef) {
-        DBResourceDef d = TestDBUtils.createDBResourceDef(urlContextDef, urlContextDef);
+    public DBResourceDef createResourceDefinition(String identifier, String urlContextDef) {
+        DBResourceDef d = TestDBUtils.createDBResourceDef(identifier, urlContextDef);
         persistFlushDetach(d);
         return d;
     }
 
     @Transactional
-    public DBSubresourceDef createSubresourceDefinition(String urlContextDef, DBResourceDef resourceDef) {
-        DBSubresourceDef d = TestDBUtils.createDBSubresourceDef(urlContextDef, urlContextDef);
+    public DBSubresourceDef createSubresourceDefinition(String identifier, String urlContextDef, DBResourceDef resourceDef) {
+        DBSubresourceDef d = TestDBUtils.createDBSubresourceDef(identifier, urlContextDef);
         d.setResourceDef(resourceDef);
         persistFlushDetach(d);
         return d;
@@ -619,9 +619,7 @@ public class TestUtilsDao {
         return resourceDefCpp;
     }
 
-    public DBDomainResourceDef getDomainResourceDefD1R1() {
-        return domainResourceDefD1R1;
-    }
+    public DBDomainResourceDef getDomainResourceDefD1R1() {return domainResourceDefD1R1;}
 
     public DBDomainResourceDef getDomainResourceDefD1R2() {
         return domainResourceDefD1R2;
@@ -667,8 +665,8 @@ public class TestUtilsDao {
         return resourceD1G1RD1;
     }
 
-    public DBSubresourceDef getResourceDefSmpMetadata() {
-        return resourceDefSmpMetadata;
+    public DBSubresourceDef getSubresourceDefSmpMetadata() {
+        return subresourceDefSmp;
     }
 
     public DBDocument getDocumentD1G1RD1_S1() {

@@ -9,8 +9,10 @@ public class TestConstants {
     public static final String TEST_GROUP_B = "group-b";
 
     public static final String TEST_EXTENSION_IDENTIFIER = "oasis-smp-extension";
-    public static final String TEST_RESOURCE_DEF_SMP10 = "oasis-smp-1";
-    public static final String TEST_SUBRESOURCE_DEF_SMP10 = "services";
+    public static final String TEST_RESOURCE_DEF_SMP10_URL = "oasis-smp-1";
+    public static final String TEST_RESOURCE_DEF_SMP10_ID = "edelivery-oasis-smp-1.0-servicegroup";
+    public static final String TEST_SUBRESOURCE_DEF_SMP10_URL = "services";
+    public static final String TEST_SUBRESOURCE_DEF_SMP10_ID = "edelivery-oasis-smp-1.0-servicemetadata";
     public static final String TEST_RESOURCE_DEF_CPP = "oasis-cpp";
 
 

@@ -2,17 +2,18 @@ package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
-import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
+import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
+import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,9 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOC_SCHEMA_2;
 import static org.junit.Assert.*;
 
 
@@ -31,9 +34,6 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
 
     @Autowired
     protected ResourceResolverService testInstance;
-
-    @Autowired
-    protected SubresourceDao subresourceDao;
 
     @Before
     public void prepareDatabase() {
@@ -78,21 +78,38 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    @Ignore
     public void testResolveAndAuthorizeRequestForSubresource() {
         // given
         SMPUserDetails user = new SMPUserDetails(null, null, null);
+        DBResource resource = testUtilsDao.getResourceD1G1RD1();
+        DBSubresource subresource = createSubresource(resource, testUtilsDao.getSubresourceDefSmpMetadata());
 
-        DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
+        // create request for subresource
         ResourceRequest req = createResourceRequest(subresource);
         req.setAuthorizedDomain(subresource.getResource().getDomainResourceDef().getDomain());
+
         // when
         ResolvedData result = testInstance.resolveAndAuthorizeRequest(user, req);
+
         // then
         assertNotNull(result);
         assertEquals(subresource.getResource(), result.getResource());
         assertEquals(subresource, result.getSubresource());
     }
+
+    public DBSubresource createSubresource(DBResource resource, DBSubresourceDef subresourceDef) {
+        DBDocument doc = testUtilsDao.createDocument(1);
+        DBSubresource subresource = TestDBUtils.createDBSubresource(
+                resource.getIdentifierValue(), resource.getIdentifierScheme(),
+                UUID.randomUUID().toString(), TEST_DOC_SCHEMA_2);
+        subresource.setDocument(doc);
+        subresource.setSubresourceDef(subresourceDef);
+        subresource.setResource(resource);
+        testUtilsDao.persistFlushDetach(subresource);
+
+        return subresource;
+    }
+
 
     public static ResourceRequest createResourceRequest(DBResource resource) {
         return new ResourceRequest(ResourceAction.READ, null, Arrays.asList(resource.getIdentifierScheme() + "::" + resource.getIdentifierValue()), null);
@@ -102,9 +119,9 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
         DBResource res = subresource.getResource();
         return new ResourceRequest(ResourceAction.READ, null,
 
-                Arrays.asList((StringUtils.isNotBlank(res.getIdentifierScheme())? res.getIdentifierScheme()+ "::":"") + subresource.getResource().getIdentifierValue(),
+                Arrays.asList((StringUtils.isNotBlank(res.getIdentifierScheme()) ? res.getIdentifierScheme() + "::" : "") + subresource.getResource().getIdentifierValue(),
                         subresource.getSubresourceDef().getUrlSegment(),
-                        (StringUtils.isNotBlank(subresource.getIdentifierScheme())? subresource.getIdentifierScheme()+ "::":"") + subresource.getIdentifierValue()),
+                        (StringUtils.isNotBlank(subresource.getIdentifierScheme()) ? subresource.getIdentifierScheme() + "::" : "") + subresource.getIdentifierValue()),
                 null);
     }
 }
