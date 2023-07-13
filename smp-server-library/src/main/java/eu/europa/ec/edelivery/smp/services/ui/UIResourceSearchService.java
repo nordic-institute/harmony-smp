@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UIServiceGroupSearchService extends UIServiceBase<DBResource, ServiceGroupSearchRO> {
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceGroupSearchService.class);
+public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGroupSearchRO> {
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIResourceSearchService.class);
 
     @Autowired
     DomainDao domainDao;
