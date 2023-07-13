@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
-import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
@@ -32,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.StringWriter;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,6 +39,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
+ * Service for user management in UI. It provides methods for user CRUD operations and user credential management.
+ *
  * @author Joze Rihtarsic
  * @since 4.1
  */
@@ -78,11 +76,11 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     /**
      * Method returns user resource object list for  UI list page.
      *
-     * @param page
-     * @param pageSize
-     * @param sortField
-     * @param sortOrder
-     * @param filter
+     * @param page      - page number
+     * @param pageSize  - page size
+     * @param sortField - sort field
+     * @param sortOrder - sort order
+     * @param filter    - filter object
      * @return ServiceResult with list
      */
     @Transactional
@@ -239,7 +237,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbCredential.setLastFailedLoginAttempt(null);
         dbCredential.setSequentialLoginFailureCount(null);
         // if the credentials are not managed by the session , e.g. new  - the persist it
-        if (dbCredential.getId()==null) {
+        if (dbCredential.getId() == null) {
             credentialDao.persist(dbCredential);
         }
         return dbCredential.getUser();
@@ -327,7 +325,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         Optional<DBUser> testUser = userDao.findUserByUsername(user.getUsername());
         if (testUser.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CreateUser", "User with username ["+user.getUsername()+"] already exists!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "CreateUser", "User with username [" + user.getUsername() + "] already exists!");
         }
         DBUser dbUser = new DBUser();
         // update user data by admin
@@ -367,7 +365,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Transactional(readOnly = true)
     public UserRO getUserById(Long userId) {
         DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
-        UserRO result =  convertToRo(user);
+        UserRO result = convertToRo(user);
 
         return result;
 
@@ -386,7 +384,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return credentialROList;
     }
 
-    public CredentialRO convertAndValidateCertificateCredential(DBCredential credential){
+    public CredentialRO convertAndValidateCertificateCredential(DBCredential credential) {
         CredentialRO credentialRO = conversionService.convert(credential, CredentialRO.class);
         if (credential.getCertificate() != null) {
             DBCertificate dbCert = credential.getCertificate();
@@ -396,7 +394,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 certificateRO = truststoreService.getCertificateData(dbCert.getPemEncoding(), true, false);
 
             } else {
-                 certificateRO = conversionService.convert(credential.getCertificate(), CertificateRO.class);
+                certificateRO = conversionService.convert(credential.getCertificate(), CertificateRO.class);
             }
             credentialRO.setCertificate(certificateRO);
         }

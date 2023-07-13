@@ -1,11 +1,11 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
 import eu.europa.ec.edelivery.smp.conversion.X509CertificateToCertificateROConverter;
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -39,42 +39,24 @@ public class TestROUtils {
         return sgd;
     }
 
-    public static ServiceGroupRO createROServiceGroup() {
-        return createROServiceGroup(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
+    public static ResourceRO createResource() {
+        return createResource(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
     }
 
-    public static ServiceGroupRO createROServiceGroupForDomains(DBDomain... domains) {
-        ServiceGroupRO sgo = createROServiceGroup(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
-        Arrays.asList(domains).forEach(domain -> {
-            ServiceGroupDomainRO sgd = createServiceGroupDomain(domain);
-            sgo.getServiceGroupDomains().add(sgd);
-        });
-        return sgo;
+
+
+    public static ResourceRO createResource(String id, String sch) {
+        return createResource(id, sch, null);
     }
 
-    public static ServiceGroupRO createROServiceGroupForDomains(String id, String sch, DBDomain... domains) {
-        ServiceGroupRO sgo = createROServiceGroup(id, sch);
-        Arrays.asList(domains).forEach(domain -> {
-            ServiceGroupDomainRO sgd = createServiceGroupDomain(domain);
-            sgo.getServiceGroupDomains().add(sgd);
-        });
-        return sgo;
-    }
-
-    public static ServiceGroupRO createROServiceGroup(String id, String sch) {
-        return createROServiceGroup(id, sch, true);
-    }
-
-    public static ServiceGroupRO createROServiceGroup(String id, String sch, boolean withExtension) {
-        ServiceGroupRO grp = new ServiceGroupRO();
-        grp.setStatus(EntityROStatus.NEW.getStatusNumber());
-        grp.setParticipantIdentifier(id);
-        grp.setParticipantScheme(sch);
-        if (withExtension) {
-            grp.setExtensionStatus(EntityROStatus.NEW.getStatusNumber());
-            grp.setExtension(generateExtension());
-        }
-        return grp;
+    public static ResourceRO createResource(String id, String sch, String resourceType) {
+        ResourceRO resourceRO = new ResourceRO();
+        resourceRO.setStatus(EntityROStatus.NEW.getStatusNumber());
+        resourceRO.setIdentifierValue(id);
+        resourceRO.setIdentifierScheme(sch);
+        resourceRO.setVisibility(VisibilityType.PUBLIC);
+        resourceRO.setResourceTypeIdentifier(resourceType);
+        return resourceRO;
     }
 
     public static String generateExtension() {

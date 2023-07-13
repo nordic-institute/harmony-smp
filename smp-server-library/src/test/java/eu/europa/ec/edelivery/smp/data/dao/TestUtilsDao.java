@@ -710,4 +710,14 @@ public class TestUtilsDao {
     public DBDomainMember getDomainMemberU1D2Viewer() {
         return domainMemberU1D2Viewer;
     }
+
+    public DBResourceMember getResourceMemberU1R1_D2G1RD1_Admin() {
+        return resourceMemberU1R1_D2G1RD1_Admin;
+    }
+
+    public DBResourceMember getResourceMemberU1R2_D2G1RD1_Viewer(){
+        return resourceMemberU1R2_D2G1RD1_Viewer;
+    }
+
+
 }

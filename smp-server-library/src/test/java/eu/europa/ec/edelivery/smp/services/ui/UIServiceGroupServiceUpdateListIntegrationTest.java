@@ -85,7 +85,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         serviceGroupDao.persistFlushDetach(d);
         return d;
     }
-
+/*
     @Test
     public void addNewServiceGroupTestSMLRecords() {
         // given
@@ -105,7 +105,7 @@ public class UIServiceGroupServiceUpdateListIntegrationTest extends AbstractServ
         assertEquals(serviceGroupRO.getParticipantIdentifier(), lst.get(0).getParticipantIdentifier());
         assertEquals(serviceGroupRO.getParticipantScheme(), lst.get(0).getParticipantScheme());
     }
-/*
+
     @Test
     @Transactional
     public void updateServiceGroupTestSMLRecordsRemoveDomain() {

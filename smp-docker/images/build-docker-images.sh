@@ -145,8 +145,6 @@ validateAndPrepareArtefacts() {
       cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_14_FILE}" ./oracle/weblogic-14.1.1.0/
     fi
 
-
-
   if [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]; then
     mkdir -p "./tomcat-mysql-smp-sml/artefacts"
   fi

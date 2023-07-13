@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ *
  * @author Joze Rihtarsic
  * @since 5.0
  */
@@ -269,8 +270,17 @@ public class UIResourceService {
         return result;
     }
 
+    /**
+     * Add or update a member to a resource
+     *
+     * @param resourceId resource id to add member to
+     * @param groupId   group id to add member to
+     * @param memberRO member data
+     * @param memberId member id (optional) if null then add member, if not null then update member
+     * @return added member RO
+     */
     @Transactional
-    public MemberRO addMemberToResource(Long resourceId, Long groupId, MemberRO memberRO, Long memberId) {
+    public MemberRO addUpdateMemberToResource(Long resourceId, Long groupId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to resource [{}]", memberRO.getUsername(), resourceId);
         validateGroupAndResource(resourceId, groupId, "AddMemberToResource");
 
