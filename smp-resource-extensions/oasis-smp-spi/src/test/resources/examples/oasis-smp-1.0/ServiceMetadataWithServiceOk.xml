@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
     <ServiceInformation>
-        <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:poland:ncpb</ParticipantIdentifier>
+        <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:eu:ncpb:utest</ParticipantIdentifier>
         <DocumentIdentifier scheme="ehealth-resid-qns">urn::epsos##services:extended:epsos::107</DocumentIdentifier>
         <ProcessList>
             <Process>
@@ -17,7 +17,7 @@
                         <TechnicalContactUrl>http://poland.pl/contact</TechnicalContactUrl>
                         <TechnicalInformationUrl>http://poland.pl/contact</TechnicalInformationUrl>
                     </Endpoint>
-                    <Endpoint transportProfile="urn:ihe:iti:2013:xcpd">
+                    <Endpoint transportProfile="urn:ihe:iti:2013:xcpd2">
                         <EndpointURI>http://poland.pl/ncp/patient/list</EndpointURI>
                         <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
                         <MinimumAuthenticationLevel>urn:epSOS:loa:1</MinimumAuthenticationLevel>

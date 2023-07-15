@@ -43,7 +43,7 @@ public class OasisCppa3CppHandlerTest {
         Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
         Mockito.doReturn(baos).when(responseData).getOutputStream();
         assertTrue(baos.size()>0);
-        System.out.println(baos.toString());
+
         // validate
         ByteArrayInputStream bios = new ByteArrayInputStream(baos.toByteArray());
         Mockito.doReturn(bios).when(requestData).getResourceInputStream();

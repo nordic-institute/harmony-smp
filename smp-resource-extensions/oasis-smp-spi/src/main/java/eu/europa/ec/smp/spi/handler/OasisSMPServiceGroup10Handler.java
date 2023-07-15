@@ -79,7 +79,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
             return;
         }
 
-        ServiceGroup serviceGroup = null;
+        ServiceGroup serviceGroup;
         try {
             serviceGroup = reader.parseNative(resourceData.getResourceInputStream());
         } catch (TechnicalException e) {

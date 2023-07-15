@@ -13,7 +13,7 @@ import java.util.List;
  * @author Joze Rihtarsic
  * @since 5.0
  * <p>
- * Extension implementation for halding the Oasis SMP resources.
+ * Extension implementation for handling the Oasis SMP resources.
  */
 @Service
 public class OasisSMPExtension implements ExtensionInfo {

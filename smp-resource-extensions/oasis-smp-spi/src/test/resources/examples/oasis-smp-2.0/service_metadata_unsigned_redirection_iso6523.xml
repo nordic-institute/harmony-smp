@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceMetadata xmlns:smb="http://docs.oasis-open.org/bdxr/ns/SMP/2/BasicComponents"
+                 xmlns:sma="http://docs.oasis-open.org/bdxr/ns/SMP/2/AggregateComponents"
+                 xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2/ServiceMetadata">
+    <smb:SMPVersionID>2.0</smb:SMPVersionID>
+    <smb:ParticipantID schemeID="iso6523-actorid-upis">9915:123456789</smb:ParticipantID>
+    <smb:ServiceID schemeID="bdx-docid-qns">Invoice:ver2.0</smb:ServiceID>
+    <sma:ProcessMetadata>
+        <sma:Process>
+            <smb:ID schemeID="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii05:ver2.0</smb:ID>
+        </sma:Process>
+        <sma:Redirect>
+            <smb:PublisherURI>https://ap.example.com/iso6523-actorid-upis::9915:123456789/services/bdx-docid-qns::Invoice:ver2.0</smb:PublisherURI>
+        </sma:Redirect>
+    </sma:ProcessMetadata>
+</ServiceMetadata>

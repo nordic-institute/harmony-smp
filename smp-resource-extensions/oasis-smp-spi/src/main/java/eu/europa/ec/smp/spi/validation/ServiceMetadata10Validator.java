@@ -86,17 +86,17 @@ public class ServiceMetadata10Validator {
         ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getScheme());
         ResourceIdentifier xmlSubresourceIdentifier = smpIdentifierApi.normalizeSubresourceIdentifier(documentId.getValue(), documentId.getScheme());
 
-        ResourceIdentifier nrmResIdentifierFromUrl =  smpIdentifierApi.normalizeSubresourceIdentifier(participantIdentifierFromUrl.getValue(), participantIdentifierFromUrl.getScheme());
+        ResourceIdentifier nrmResIdentifierFromUrl =  smpIdentifierApi.normalizeResourceIdentifier(participantIdentifierFromUrl.getValue(), participantIdentifierFromUrl.getScheme());
         ResourceIdentifier nrmDocIdentifierFromUrl =  smpIdentifierApi.normalizeSubresourceIdentifier(documentIdentifierFromUrl.getValue(), documentIdentifierFromUrl.getScheme());
 
         if (!xmlResourceIdentifier.equals(nrmResIdentifierFromUrl)) {
             // Business identifier must equal path
-            throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + participantIdentifierFromUrl + "] and XML body: [" + xmlResourceIdentifier + "]");
+            throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + nrmResIdentifierFromUrl + "] and XML body: [" + xmlResourceIdentifier + "]");
         }
 
         if (!xmlSubresourceIdentifier.equals(nrmDocIdentifierFromUrl)) {
             // Business identifier must equal path
-            throw new ResourceException(INVALID_PARAMETERS, "Document identifiers don't match between URL parameter [" + documentIdentifierFromUrl + "] and XML body: [" + xmlSubresourceIdentifier + "]");
+            throw new ResourceException(INVALID_PARAMETERS, "Document identifiers don't match between URL parameter [" + xmlSubresourceIdentifier + "] and XML body: [" + xmlSubresourceIdentifier + "]");
         }
         validateProcesses(serviceInformation);
         return serviceInformation;
