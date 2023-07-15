@@ -739,15 +739,6 @@
                 <configuration>
                     <runOrder>alphabetical</runOrder>
                 </configuration>
-                <dependencies>
-                    <!-- Force using the latest JUnit 47 provider -->
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>${maven-surefire-plugin.version}</version>
-                    </dependency>
-                </dependencies>
-
             </plugin>
             <!-- jacoco start -->
             <plugin>
