@@ -6,8 +6,10 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
+import eu.europa.ec.smp.spi.exceptions.CPPARuntimeException;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.xml.sax.SAXParseException;
@@ -18,48 +20,70 @@ import java.util.Collections;
 
 import static org.junit.Assert.*;
 
-public class OasisCppa3CppHandlerTest {
+public class OasisCppa3CppHandlerTest extends AbstractHandlerTest{
 
 
-    SmpDataServiceApi smpDataApi = Mockito.mock(SmpDataServiceApi.class);
-    SmpIdentifierServiceApi smpIdentifierServiceApi = Mockito.mock(SmpIdentifierServiceApi.class);
-    SmpXmlSignatureApi smpXmlSignatureApi = Mockito.mock(SmpXmlSignatureApi.class);
-    OasisCppa3CppHandler testInstance = new OasisCppa3CppHandler(smpDataApi, smpIdentifierServiceApi, smpXmlSignatureApi);
-
-
-    RequestData requestData =  Mockito.mock(RequestData.class);
-    ResponseData responseData =  Mockito.mock(ResponseData.class);
-
+    @Override
+    AbstractHandler getTestInstance() {
+        return  new OasisCppa3CppHandler(mockSmpDataApi, mockSmpIdentifierServiceApi, mockSignatureApi);
+    }
 
     @Test
-    public void generateAndValidateResource() throws ResourceException {
+    void testGenerateResource() throws ResourceException {
+
         ResourceIdentifier resourceIdentifier = new ResourceIdentifier("test-identifier", "test-test-test");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
-        Mockito.doReturn(baos).when(responseData).getOutputStream();
 
-        testInstance.generateResource(requestData, responseData, Collections.emptyList());
+        generateResourceAction(resourceIdentifier);
+    }
 
-        Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
-        Mockito.doReturn(baos).when(responseData).getOutputStream();
-        assertTrue(baos.size()>0);
-
+    @Test
+    void validateResourceOK() throws ResourceException {
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("cppa", "aa-aa-aa");
         // validate
-        ByteArrayInputStream bios = new ByteArrayInputStream(baos.toByteArray());
-        Mockito.doReturn(bios).when(requestData).getResourceInputStream();
-        Mockito.doReturn(resourceIdentifier).when(smpIdentifierServiceApi).normalizeResourceIdentifier(Mockito.anyString(),Mockito.anyString());
-
-        testInstance.validateResource(requestData);
+        validateResourceAction("/examples/signed-cpp.xml", resourceIdentifier);
     }
 
     @Test
-    public void validateOasisCPPASchema() throws ResourceException {
-        OasisCppa3CppHandler.validateOasisCPPASchema(OasisCppa3CppHandlerTest.class.getResourceAsStream("/examples/signed-cpp.xml"));
+    void validateResourceDisallowedDocType() {
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("cppa", "aa-aa-aa");
+        // validate
+        CPPARuntimeException result = assertThrows(CPPARuntimeException.class,
+                () -> validateResourceAction("/examples/signed-cpp-With-DOCTYPE.xml", resourceIdentifier));
+        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("DOCTYPE is disallowed"));
     }
-    @Test
-    public void validateOasisCPPASchemaInvalid()  {
 
-        ResourceException exception  = assertThrows(ResourceException.class, ()-> OasisCppa3CppHandler.validateOasisCPPASchema(OasisCppa3CppHandlerTest.class.getResourceAsStream("/examples/signed-cpp-invalid.xml")));
-        assertEquals(SAXParseException.class, exception.getCause().getClass());
+    @Test
+    void validateResourceInvalidIdentifier() {
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:poland:ncpb:utestt", "ehealth-actorid-qns");
+        // validate
+        ResourceException result = assertThrows(ResourceException.class,
+                () -> validateResourceAction("/examples/signed-cpp.xml", resourceIdentifier));
+        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("Non of participant identifiers match to URL parameter "));
+    }
+
+    @Test
+    void validateResourceInvalidScheme() {
+
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("cppa", "aa-aa-aa");
+        // validate
+        ResourceException result = assertThrows(ResourceException.class,
+                () -> validateResourceAction("/examples/signed-cpp-invalid.xml", resourceIdentifier));
+        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("SAXParseException"));
+    }
+
+    @Test
+    void readResourceOK() throws ResourceException {
+        String resourceName = "/examples/signed-cpp.xml";
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("cppa", "aa-aa-aa");
+
+        readResourceAction(resourceName, resourceIdentifier);
+    }
+
+    @Test
+    void storeResourceOK() throws ResourceException {
+        String resourceName = "/examples/signed-cpp.xml";
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("cppa", "aa-aa-aa");
+
+        storeResourceAction(resourceName, resourceIdentifier);
     }
 }

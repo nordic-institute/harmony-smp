@@ -35,7 +35,7 @@ public class OasisSMPServiceMetadata20 implements SubresourceDefinitionSpi {
 
     @Override
     public String name() {
-        return "Oasis SMP 2.0 ServiceGroup";
+        return "Oasis SMP 2.0 ServiceMetadata";
     }
 
     @Override

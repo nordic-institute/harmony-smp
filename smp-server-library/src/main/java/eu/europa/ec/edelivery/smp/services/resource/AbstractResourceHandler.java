@@ -62,13 +62,13 @@ public class AbstractResourceHandler {
         ResourceDefinitionSpi resourceDefinitionSpi = getResourceDefinition(resourceDef);
         String subResourceId = subresourceDef.getIdentifier();
         // get subresource implementation by identifier
-        Optional<SubresourceDefinitionSpi> optSubresourceDefinitionSpi = resourceDefinitionSpi.getSuresourceSpiList().stream()
+        Optional<SubresourceDefinitionSpi> optSubresourceDefinitionSpi = resourceDefinitionSpi.getSubresourceSpiList().stream()
                 .filter(def -> StringUtils.equals(def.identifier(), subResourceId)).findFirst();
 
         return optSubresourceDefinitionSpi.orElseThrow(
                 () -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, subResourceId,
                         "Can not find subresource definition: [" + subResourceId + "]. Registered subresource IDs ["
-                                + resourceDefinitionSpi.getSuresourceSpiList().stream()
+                                + resourceDefinitionSpi.getSubresourceSpiList().stream()
                                 .map(rd -> rd.identifier())
                                 .collect(Collectors.joining(","))
                                 + "]"));

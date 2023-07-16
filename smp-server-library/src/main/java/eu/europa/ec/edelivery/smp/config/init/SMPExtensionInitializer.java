@@ -164,7 +164,7 @@ public class SMPExtensionInitializer implements InitializingBean {
         resourceDef.setMimeType(resourceDefinitionSpi.mimeType());
         resourceDef.setUrlSegment(resourceDefinitionSpi.defaultUrlSegment());
         resourceDef.setHandlerImplementationName(getHandlerSPIName(resourceDefinitionSpi.getResourceHandler()));
-        resourceDefinitionSpi.getSuresourceSpiList().forEach(
+        resourceDefinitionSpi.getSubresourceSpiList().forEach(
                 subresourceDefinitionSpi -> validateSubresourceDefinition(subresourceDefinitionSpi, resourceDef)
         );
     }

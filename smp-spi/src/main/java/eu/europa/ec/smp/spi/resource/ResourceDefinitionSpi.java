@@ -42,7 +42,7 @@ public interface ResourceDefinitionSpi {
      * @return
      */
 
-    List<SubresourceDefinitionSpi> getSuresourceSpiList();
+    List<SubresourceDefinitionSpi> getSubresourceSpiList();
 
     // resource handle for validating, reading and storing the resource
     ResourceHandlerSpi getResourceHandler();
