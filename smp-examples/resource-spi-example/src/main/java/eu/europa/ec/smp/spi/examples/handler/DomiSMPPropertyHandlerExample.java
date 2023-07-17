@@ -65,9 +65,7 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
     }
 
     public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
-
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
-
 
         try {
             String identifierString = smpIdentifierApi.formatResourceIdentifier(identifier);
@@ -142,14 +140,12 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
             inputStream = new BufferedInputStream(inputStream);
         }
         inputStream.mark(Integer.MAX_VALUE - 2);
-        Properties properties = validateAndParse(resourceData);
+        validateAndParse(resourceData);
         try {
             inputStream.reset();
             StreamUtils.copy(inputStream, responseData.getOutputStream());
-            // need to save serviceGroup because of the update on the resource identifier values
-            //reader.serializeNative(cppDocument, responseData.getOutputStream(), true);
         } catch (IOException e) {
-            throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
+            throw new ResourceException(PARSE_ERROR, "Error occurred while storing the resource", e);
         }
     }
 

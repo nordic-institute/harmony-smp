@@ -64,10 +64,10 @@ public class DomiSMPJsonResourceExample implements ResourceDefinitionSpi {
     @Override
     public String toString() {
         return "DomiSMPJsonResourceExample {" +
-                "identifier=" + identifier() +
-                "defaultUrlSegment=" + defaultUrlSegment() +
-                "name=" + name() +
-                "mimeType=" + mimeType() +
+                " identifier=" + identifier() +
+                ", defaultUrlSegment=" + defaultUrlSegment() +
+                ", name=" + name() +
+                ", mimeType=" + mimeType() +
                 '}';
     }
 }

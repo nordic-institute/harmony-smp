@@ -1,5 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -223,9 +225,12 @@ public class TestUtilsDao {
         DBCredential c3 = TestDBUtils.createDBCredentialForUserAccessToken(user3, null, null, null);
         c3.setValue(BCrypt.hashpw(USERNAME_3_AT_PASSWORD, BCrypt.gensalt()));
         c3.setName(USERNAME_3_AT);
-        user3.getUserCredentials().add(c3);
+        DBCredential cCert3 = TestDBUtils.createDBCredential(user3, USER_CERT_3, "", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
 
-        user4 = createDBUserByUsername(USERNAME_4);
+        user3.getUserCredentials().add(c3);
+        user3.getUserCredentials().add(cCert3);
+
+        user4 = createDBUserByUsername(USER_CERT_2);
         user5 = createDBUserByUsername(USERNAME_5);
 
         persistFlushDetach(user1);

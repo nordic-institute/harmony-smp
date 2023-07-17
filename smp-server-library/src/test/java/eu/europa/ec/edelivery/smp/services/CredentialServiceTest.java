@@ -1,8 +1,11 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
+import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
+import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -15,7 +18,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -225,4 +231,37 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         assertEquals(TestConstants.USERNAME_3_AT, authentication.getName());
     }
 
+
+    @Test
+    public void authenticateByCertificateTokenOkWithRole() throws Exception {
+        // given
+
+        // must match the TestConstants.USER_CERT_3
+        X509Certificate cert = X509CertificateTestUtils.createX509CertificateForTest("CN=test example,O=European Commission,C=BE",
+                new BigInteger("0dd0d2f98cc25205bc6c854d1cd88411", 16), Collections.emptyList());
+
+        PreAuthenticatedCertificatePrincipal principal = X509CertificateUtils.extractPrincipalFromCertificate(cert);
+
+        // when
+        Authentication authentication = testInstance.authenticateByCertificateToken(principal);
+        // then
+        assertEquals(TestConstants.USER_CERT_3, authentication.getName());
+        assertTrue(authentication.isAuthenticated());
+        assertEquals(1, authentication.getAuthorities().size());
+        assertEquals("ROLE_WS_USER", authentication.getAuthorities().iterator().next().getAuthority());
+    }
+
+    @Test
+    public void authenticateByCertificateTokenNotTrusted() throws Exception {
+        // given
+        X509Certificate cert = X509CertificateTestUtils.createX509CertificateForTest("CN=NotRegistered,O=European Commission,C=BE",
+                new BigInteger("111111", 16), Collections.emptyList());
+
+        PreAuthenticatedCertificatePrincipal principal = X509CertificateUtils.extractPrincipalFromCertificate(cert);
+
+        // when
+        BadCredentialsException result = assertThrows(BadCredentialsException.class, () -> testInstance.authenticateByCertificateToken(principal));
+        // then
+        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.startsWith("Login failed"));
+    }
 }

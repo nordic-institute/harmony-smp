@@ -65,9 +65,9 @@ public class DomiSMPPropertyResourceExample implements ResourceDefinitionSpi {
     public String toString() {
         return "DomiSMPPropertyResourceExample {" +
                 "identifier=" + identifier() +
-                "defaultUrlSegment=" + defaultUrlSegment() +
-                "name=" + name() +
-                "mimeType=" + mimeType() +
+                ", defaultUrlSegment=" + defaultUrlSegment() +
+                ", name=" + name() +
+                ", mimeType=" + mimeType() +
                 '}';
     }
 }

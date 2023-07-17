@@ -1,31 +1,19 @@
 package eu.europa.ec.smp.spi.handler;
 
-import eu.europa.ec.smp.spi.api.SmpDataServiceApi;
-import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
-import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
-import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
-import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.CPPARuntimeException;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.xml.sax.SAXParseException;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Collections;
+import static org.junit.Assert.assertThrows;
 
-import static org.junit.Assert.*;
-
-public class OasisCppa3CppHandlerTest extends AbstractHandlerTest{
+public class OasisCppa3CppHandlerTest extends AbstractHandlerTest {
 
 
     @Override
     AbstractHandler getTestInstance() {
-        return  new OasisCppa3CppHandler(mockSmpDataApi, mockSmpIdentifierServiceApi, mockSignatureApi);
+        return new OasisCppa3CppHandler(mockSmpDataApi, mockSmpIdentifierServiceApi, mockSignatureApi);
     }
 
     @Test

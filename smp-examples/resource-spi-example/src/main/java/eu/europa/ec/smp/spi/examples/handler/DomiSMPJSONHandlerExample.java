@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -137,18 +138,21 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
     public void storeResource(RequestData resourceData, ResponseData responseData) throws ResourceException {
         InputStream inputStream = resourceData.getResourceInputStream();
         // reading resource multiple time make sure it can be rest
-        if (!inputStream.markSupported()) {
-            inputStream = new BufferedInputStream(inputStream);
+        ByteArrayInputStream bios;
+        try {
+            bios = new ByteArrayInputStream(StreamUtils.copyToByteArray(inputStream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         inputStream.mark(Integer.MAX_VALUE - 2);
-        ExampleEntityRo properties = validateAndParse(resourceData);
+
+
+        validateAndParse(bios, getResourceIdentifier(resourceData));
         try {
-            inputStream.reset();
-            StreamUtils.copy(inputStream, responseData.getOutputStream());
-            // need to save serviceGroup because of the update on the resource identifier values
-            //reader.serializeNative(cppDocument, responseData.getOutputStream(), true);
+            bios.reset();
+            StreamUtils.copy(bios, responseData.getOutputStream());
         } catch (IOException e) {
-            throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
+            throw new ResourceException(PARSE_ERROR, "Error occurred while storing the resource", e);
         }
     }
 
@@ -165,13 +169,19 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
     public ExampleEntityRo validateAndParse(RequestData resourceData) throws ResourceException {
         // get service group identifier
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
+       return  validateAndParse(resourceData.getResourceInputStream(), identifier);
+    }
+
+    public ExampleEntityRo validateAndParse(InputStream inputStream,  ResourceIdentifier identifier ) throws ResourceException {
+        // get service group identifier
+
         Properties properties = new Properties();
         // validate by schema
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         ExampleEntityRo entityRo;
         try {
-            entityRo = mapper.readValue(resourceData.getResourceInputStream(), ExampleEntityRo.class);
+            entityRo = mapper.readValue(inputStream, ExampleEntityRo.class);
         } catch (IOException ex) {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while reading example property document: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(ex), ex);
         }
@@ -202,8 +212,6 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
         } catch (MalformedURLException e) {
             throw new ResourceException(INVALID_RESOURCE, "Bad property value: [url]!. Value ["+entityRo.getUrl()+"]  is not URL" );
         }
-
-
         return entityRo;
     }
 
