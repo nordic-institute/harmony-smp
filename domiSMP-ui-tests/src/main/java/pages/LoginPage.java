@@ -43,12 +43,10 @@ public class LoginPage extends DomiSMPPage {
         weToDInput(password).fill(usr.get("pass"));
         weToDButton(loginBtn).click();
 
-        if (getExpiredDialoginbutton().isPresent()) {
+        if (isExpiredPopupEnabled()) {
             LOG.info("Expired password dialog is present.");
             getExpiredDialoginbutton().click();
         }
-
-
         return new DomiSMPPage(driver);
 
     }

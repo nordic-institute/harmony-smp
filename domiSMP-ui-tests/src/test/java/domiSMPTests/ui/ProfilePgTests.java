@@ -6,9 +6,10 @@ import domiSMPTests.SeleniumTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
-import pages.ProfilePage;
+import pages.ProfilePage.ProfilePage;
 import pages.PropertiesPage.PropertiesPage;
 import rest.models.UserModel;
+import utils.Generator;
 
 
 public class ProfilePgTests extends SeleniumTest {
@@ -105,6 +106,9 @@ public class ProfilePgTests extends SeleniumTest {
 
     @Test(description = "PROF-03")
     public void PasswordValidationsShouldBeAccordingToPropertiesValue() throws Exception {
+        String propertyValue = "smp.passwordPolicy.validationRegex";
+        String newPropertyValue = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,35}$";
+
         UserModel adminUser = UserModel.createUserWithADMINrole();
 
         rest.users().createUser(adminUser);
@@ -114,12 +118,41 @@ public class ProfilePgTests extends SeleniumTest {
         loginPage.login(adminUser.getUsername(), data.getNewPassword());
 
         PropertiesPage propertiesPage = (PropertiesPage) homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_PROPERTIES);
-        propertiesPage.propertySearch("smp.passwordPolicy.validationRegex");
-        propertiesPage.setPropertyValue("smp.passwordPolicy.validationRegex", "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,35}$");
-        propertiesPage.save();
+        propertiesPage.propertySearch(propertyValue);
+        if (!propertiesPage.getPropertyValue(propertyValue).equals(newPropertyValue)) {
+            propertiesPage.setPropertyValue("smp.passwordPolicy.validationRegex", "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,35}$");
+            propertiesPage.save();
+        }
 
         ProfilePage profilePage = (ProfilePage) propertiesPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
-        Boolean isPasswordChanged = profilePage.tryChangePassword(data.getNewPassword(), "Edeltest!23456789Edeltest!234567890");
-        Assert.assertTrue(isPasswordChanged);
+        profilePage.setChangePasswordBtn.click();
+        Assert.assertEquals(0, profilePage.setChangePasswordDialog().setNewPassword(data.getNewPassword(), "Edeltest!23456789Edeltest!234567890").size(), "Could not change the password of the user");
+
+    }
+
+
+    @Test(description = "PROF-04")
+    public void UserShouldBeAbleToChangeHisPassword() throws Exception {
+        UserModel adminUser = UserModel.createUserWithADMINrole();
+        rest.users().createUser(adminUser);
+        DomiSMPPage homePage = new DomiSMPPage(driver);
+        LoginPage loginPage = homePage.goToLoginPage();
+        loginPage.login(adminUser.getUsername(), data.getNewPassword());
+        ProfilePage profilePage = (ProfilePage) loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        String oldLastSet = profilePage.getLastSetValue();
+        String oldPasswordExpiresOn = profilePage.getPasswordExpiresOnValue();
+
+        profilePage.setChangePasswordBtn.click();
+        String newPass = "Edeltest!23456789Edelt" + Generator.randomAlphaNumeric(4);
+
+        Assert.assertEquals(profilePage.setChangePasswordDialog().setNewPassword(data.getNewPassword(), newPass).size(), 0, "Could not change the password of the user");
+
+        loginPage.login(adminUser.getUsername(), newPass);
+        ProfilePage profilePage2 = (ProfilePage) loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+
+        Assert.assertNotSame(profilePage2.getLastSetValue(), oldLastSet, "Last set value is not reseted");
+        Assert.assertNotSame(profilePage2.getPasswordExpiresOnValue(), oldPasswordExpiresOn, "Password expires on value is not reseted");
+
+
     }
 }

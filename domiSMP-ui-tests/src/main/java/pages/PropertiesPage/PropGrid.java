@@ -15,6 +15,7 @@ public class PropGrid extends BasicGrid {
         return new PropertyPopup(driver);
     }
 
-    ;
-
+    public String getPropertyValue(String propertyName) {
+        return getValue(propertyName);
+    }
 }

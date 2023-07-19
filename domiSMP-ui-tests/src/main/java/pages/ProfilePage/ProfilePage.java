@@ -1,4 +1,4 @@
-package pages;
+package pages.ProfilePage;
 
 import ddsl.dcomponents.DomiSMPPage;
 import ddsl.dcomponents.SetChangePasswordDialog;
@@ -28,13 +28,47 @@ public class ProfilePage extends DomiSMPPage {
     @FindBy(id = "fullName_id")
     private WebElement fullNameInput;
     @FindBy(id = "changePassword_id")
-    private WebElement setChangePasswordBtn;
+    public WebElement setChangePasswordBtn;
+    @FindBy(id = "passwordUpdatedOn_id")
+    private WebElement lastSetLbl;
+    @FindBy(id = "passwordExpireOnMessage_id")
+    private WebElement passwordExpiresOnLbl;
+
 
     public ProfilePage(WebDriver driver) {
         super(driver);
         LOG.debug(".... init");
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
+
+    public SetChangePasswordDialog setChangePasswordDialog() {
+        return new SetChangePasswordDialog(driver);
+    }
+
+    public String getSelectedTheme() {
+        return weToDSelect(themeSel).getCurrentValue();
+    }
+
+    public String getSelectedLocale() {
+        return weToDSelect(localeSel).getCurrentValue();
+    }
+
+    public String getEmailAddress() {
+        return weToDInput(emailAddressInput).getText();
+    }
+
+    public String getFullName() {
+        return weToDInput(fullNameInput).getText();
+    }
+
+    public String getLastSetValue() {
+        return lastSetLbl.getText();
+    }
+
+    public String getPasswordExpiresOnValue() {
+        return passwordExpiresOnLbl.getText();
+    }
+
 
     public void changeUserProfileData(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) throws Exception {
         try {
@@ -69,27 +103,11 @@ public class ProfilePage extends DomiSMPPage {
 
     }
 
-    public Boolean tryChangePassword(String currentPasssword, String newPassword) throws Exception {
-        weToDButton(setChangePasswordBtn).click();
+    public void ChangePassword(String currentPasssword, String newPassword) throws Exception {
         SetChangePasswordDialog dialog = new SetChangePasswordDialog(driver);
-        return dialog.trySetPassword(currentPasssword, newPassword);
+        dialog.setNewPassword(currentPasssword, newPassword);
     }
 
-    public String getSelectedTheme() {
-        return weToDSelect(themeSel).getCurrentValue();
-    }
-
-    public String getSelectedLocale() {
-        return weToDSelect(localeSel).getCurrentValue();
-    }
-
-    public String getEmailAddress() {
-        return weToDInput(emailAddressInput).getText();
-    }
-
-    public String getFullName() {
-        return weToDInput(fullNameInput).getText();
-    }
 
 
 }

@@ -8,8 +8,6 @@ public class DButton extends DObject {
     public DButton(WebDriver driver, WebElement element) {
         super(driver, element);
     }
-
-
     @Override
     public String getText() {
         return element.findElement(By.cssSelector("span > span")).getText().trim();

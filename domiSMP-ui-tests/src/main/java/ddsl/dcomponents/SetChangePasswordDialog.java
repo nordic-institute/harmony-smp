@@ -7,6 +7,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.ProfilePage.SuccesfullPasswordChangedPopup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,9 @@ public class SetChangePasswordDialog extends DComponent {
     private WebElement newPasswordInput;
     @FindBy(id = "cnp_id")
     private WebElement confirmationPasswordInput;
-    @FindBy(id = "cnp_id")
+    @FindBy(id = "changeCurrentUserPasswordButton")
     private WebElement setPasswordBtn;
-    @FindBy(id = "cnp_id")
+    @FindBy(id = "closeDialogButton")
     private WebElement closeBtn;
 
 
@@ -33,22 +34,17 @@ public class SetChangePasswordDialog extends DComponent {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
-    public boolean trySetPassword(String currentPassword, String newPassword) throws Exception {
+    public List<WebElement> setNewPassword(String currentPassword, String newPassword) throws Exception {
 
         LOG.info("Set new password");
         weToDInput(currentPasswordInput).fill(currentPassword);
         weToDInput(newPasswordInput).fill(newPassword);
         weToDInput(confirmationPasswordInput).fill(newPassword);
-        Integer hasError;
-        if (weToDButton(setPasswordBtn).isEnabled() && fieldsError.size() < 1) {
-            weToDButton(setPasswordBtn).click();
-            return true;
-        }
-        {
-            getFieldErrorMessage().forEach(LOG::error);
-            return false;
-        }
+        weToDButton(setPasswordBtn).click();
+        SuccesfullPasswordChangedPopup popup = new SuccesfullPasswordChangedPopup(driver);
+        popup.closePopup();
 
+        return fieldsError;
     }
 
     public List<String> getFieldErrorMessage() {

@@ -50,6 +50,10 @@ public class PropertiesPage extends DomiSMPPage {
         } catch (Exception e) {
             LOG.error("Cannot set value for property {1}", propertyName);
         }
+    }
+
+    public String getPropertyValue(String propertyName) {
+        return grid().getPropertyValue(propertyName);
 
     }
 

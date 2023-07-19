@@ -33,4 +33,5 @@ public class DComponent {
     protected DSelect weToDSelect(WebElement element) {
         return new DSelect(driver, element);
     }
+
 }

@@ -7,6 +7,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pages.LoginPage;
 
 public class DomiSMPPage extends DComponent {
@@ -14,6 +16,7 @@ public class DomiSMPPage extends DComponent {
     /**
      * Page object for the common components from Domismp like navigation, right menu. This contains the locators of the page and the methods for the behaviour of the page
      */
+    private final static Logger LOG = LoggerFactory.getLogger(DomiSMPPage.class);
 
     @FindBy(css = "page-header > h1")
     protected WebElement pageTitle;
@@ -65,4 +68,17 @@ public class DomiSMPPage extends DComponent {
     public DButton getExpiredDialoginbutton() {
         return weToDButton(dialogOKbutton);
     }
+
+    public boolean isExpiredPopupEnabled() {
+        try {
+            if (dialogOKbutton.isDisplayed()) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            LOG.info("Expiration poup not found", e);
+            return false;
+        }
+    }
+
 }
