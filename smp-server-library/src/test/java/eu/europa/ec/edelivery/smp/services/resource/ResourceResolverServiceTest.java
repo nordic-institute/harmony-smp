@@ -98,7 +98,7 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
     }
 
     public DBSubresource createSubresource(DBResource resource, DBSubresourceDef subresourceDef) {
-        DBDocument doc = testUtilsDao.createDocument(1);
+        DBDocument doc = testUtilsDao.createDocument(1, resource.getIdentifierValue(), resource.getIdentifierScheme());
         DBSubresource subresource = TestDBUtils.createDBSubresource(
                 resource.getIdentifierValue(), resource.getIdentifierScheme(),
                 UUID.randomUUID().toString(), TEST_DOC_SCHEMA_2);

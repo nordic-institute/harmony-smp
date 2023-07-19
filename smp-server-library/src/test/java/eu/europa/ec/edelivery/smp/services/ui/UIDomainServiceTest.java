@@ -1,9 +1,13 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,6 +109,5 @@ public class UIDomainServiceTest extends AbstractServiceTest {
         DBDomain result = domainDao.find(domain.getId());
         assertNull(result);
     }
-
 
 }

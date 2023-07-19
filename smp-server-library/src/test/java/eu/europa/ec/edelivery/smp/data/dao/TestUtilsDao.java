@@ -286,7 +286,7 @@ public class TestUtilsDao {
     @Transactional
     public void createResourceMemberships() {
         if (resourceMemberU1R1_D2G1RD1_Admin != null) {
-            LOG.trace("GroupMemberships are already initialized!");
+            LOG.trace("ResourceMemberships are already initialized!");
             return;
         }
         createUsers();
@@ -403,14 +403,14 @@ public class TestUtilsDao {
         }
         createGroups();
         createResourceDefinitionsForDomains();
-        documentD1G1RD1 = createDocument(2);
-        documentD2G1RD1 = createDocument(2);
+        documentD1G1RD1 = createDocument(2,TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         resourceD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         resourceD1G1RD1.setDocument(documentD1G1RD1);
 
         resourceD1G1RD1.setGroup(groupD1G1);
         resourceD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
 
+        documentD2G1RD1 = createDocument(2, TEST_SG_ID_2, "");
         resourceD2G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_2, null);
         resourceD2G1RD1.setDocument(documentD2G1RD1);
 
@@ -453,11 +453,15 @@ public class TestUtilsDao {
         }
         createResources();
 
-        documentD1G1RD1_S1 = createDocument(2);
-        documentD2G1RD1_S1 = createDocument(2);
+        documentD1G1RD1_S1 = createDocument(2, resourceD1G1RD1.getIdentifierValue(), resourceD1G1RD1.getIdentifierScheme(),
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
         subresourceD1G1RD1_S1 = TestDBUtils.createDBSubresource(
                 resourceD1G1RD1.getIdentifierValue(),resourceD1G1RD1.getIdentifierScheme(),
                 TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
+
+
+        documentD2G1RD1_S1 = createDocument(2, resourceD2G1RD1.getIdentifierValue(),resourceD2G1RD1.getIdentifierScheme(),
+                TEST_DOC_ID_2, TEST_DOC_SCHEMA_2);
         subresourceD2G1RD1_S1 = TestDBUtils.createDBSubresource(
                 resourceD2G1RD1.getIdentifierValue(),resourceD2G1RD1.getIdentifierScheme(),
                 TEST_DOC_ID_2, TEST_DOC_SCHEMA_2);
@@ -471,7 +475,6 @@ public class TestUtilsDao {
         subresourceD1G1RD1_S1.setSubresourceDef(subresourceDefSmp);
         subresourceD2G1RD1_S1.setSubresourceDef(subresourceDefSmp);
 
-
         persistFlushDetach(subresourceD1G1RD1_S1);
         persistFlushDetach(subresourceD2G1RD1_S1);
 
@@ -480,13 +483,8 @@ public class TestUtilsDao {
     }
 
     @Transactional
-    public DBDocument createAndPersistDocument() {
-        return createAndPersistDocument(3);
-    }
-
-    @Transactional
-    public DBDocument createAndPersistDocument(int versions) {
-        DBDocument document = createDocument(versions);
+    public DBDocument createAndPersistDocument(int versions, String identifier, String schema) {
+        DBDocument document = createDocument(versions, identifier, schema);
         persistFlushDetach(document);
         for (int i= 0; i< versions; i++ ) {
             assertNotNull(document.getDocumentVersions().get(i).getId());
@@ -497,13 +495,21 @@ public class TestUtilsDao {
         return document;
     }
 
-    public DBDocument createDocument(int versions) {
+    public DBDocument createDocument(int versions, String identifier, String schema) {
         DBDocument document = createDBDocument();
         // add document versions to the document
         for (int i= 0; i< versions; i++ ) {
-            document.addNewDocumentVersion(createDBDocumentVersion());
+            document.addNewDocumentVersion(createDBDocumentVersion(identifier, schema));
         }
+        return document;
+    }
 
+    public DBDocument createDocument(int versions, String identifier, String schema, String docIdentifier, String docSchema) {
+        DBDocument document = createDBDocument();
+        // add document versions to the document
+        for (int i= 0; i< versions; i++ ) {
+            document.addNewDocumentVersion(createDBDocumentVersion(identifier, schema, docIdentifier, docSchema));
+        }
         return document;
     }
 
@@ -722,5 +728,11 @@ public class TestUtilsDao {
         return resourceMemberU1R2_D2G1RD1_Viewer;
     }
 
+    public DBGroupMember getGroupMemberU1D1G1Admin() {
+        return groupMemberU1D1G1Admin;
+    }
 
+    public DBGroupMember getGroupMemberU1D2G1Viewer() {
+        return groupMemberU1D2G1Viewer;
+    }
 }

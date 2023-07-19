@@ -159,8 +159,8 @@ public class TestDBUtils {
         resource.setVisibility(VisibilityType.PUBLIC);
         if (withExtension) {
             DBDocument document = createDBDocument();
-            DBDocumentVersion documentVersion = createDBDocumentVersion();
-            createDBDocumentVersion().setContent(generateExtension());
+            DBDocumentVersion documentVersion = createDBDocumentVersion(id, sch);
+            createDBDocumentVersion(id, sch).setContent(generateExtension());
             document.addNewDocumentVersion(documentVersion);
             resource.setDocument(document);
         }
@@ -174,9 +174,31 @@ public class TestDBUtils {
         return doc;
     }
 
-    public static DBDocumentVersion createDBDocumentVersion() {
+    public static DBDocumentVersion createDBDocumentVersion(String id, String sch) {
         DBDocumentVersion docuVersion = new DBDocumentVersion();
-        docuVersion.setContent(anyString().getBytes());
+        docuVersion.setContent(("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
+                "<ParticipantIdentifier scheme=\""+sch+"\">"+id+"</ParticipantIdentifier>" +
+                "<ServiceMetadataReferenceCollection />" +
+                "</ServiceGroup>").getBytes());
+        return docuVersion;
+    }
+
+    public static DBDocumentVersion createDBDocumentVersion(String id, String sch, String docId, String docSch) {
+        DBDocumentVersion docuVersion = new DBDocumentVersion();
+        docuVersion.setContent(("<ServiceMetadata xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ServiceInformation>" +
+                "<ParticipantIdentifier scheme=\""+sch+"\">"+id+"</ParticipantIdentifier>" +
+                "<DocumentIdentifier scheme=\""+docSch+"\">"+docId+"</DocumentIdentifier>" +
+                "<ProcessList><Process>" +
+                "<ProcessIdentifier scheme=\"[test-schema]\">[test-value]</ProcessIdentifier>" +
+                "<ServiceEndpointList>" +
+                "<Endpoint transportProfile=\"bdxr-transport-ebms3-as4-v1p0\">" +
+                "<EndpointURI>https://mypage.eu</EndpointURI>" +
+                "<Certificate>Q2VydGlmaWNhdGUgZGF0YSA=</Certificate>" +
+                "<ServiceDescription>Service description for partners </ServiceDescription>" +
+                "<TechnicalContactUrl>www.best-page.eu</TechnicalContactUrl>" +
+                "</Endpoint>" +
+                "</ServiceEndpointList>" +
+                "</Process></ProcessList></ServiceInformation></ServiceMetadata>").getBytes());
         return docuVersion;
     }
 

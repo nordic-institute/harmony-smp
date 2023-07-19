@@ -38,7 +38,7 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         testUtilsDao.clearData();
         testUtilsDao.createUsers();
         resetKeystore();
-        configurationDao.refreshProperties();
+        configurationDao.reloadPropertiesFromDatabase();
     }
 
     @Test

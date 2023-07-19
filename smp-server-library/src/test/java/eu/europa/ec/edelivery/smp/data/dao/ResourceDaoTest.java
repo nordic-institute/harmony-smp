@@ -53,7 +53,7 @@ public class ResourceDaoTest extends AbstractBaseDao {
         testData.setDomainResourceDef(testUtilsDao.getDomainResourceDefD1R1());
 
         DBDocument document = TestDBUtils.createDBDocument();
-        document.addNewDocumentVersion(TestDBUtils.createDBDocumentVersion());
+        document.addNewDocumentVersion(TestDBUtils.createDBDocumentVersion(testIdValue, testIdSchema));
         testData.setDocument(document);
 
         testInstance.persistFlushDetach(testData);
@@ -78,7 +78,7 @@ public class ResourceDaoTest extends AbstractBaseDao {
         int docCount = resource.getDocument().getDocumentVersions().size();
         int docVersion = resource.getDocument().getCurrentVersion();
 
-        resource.getDocument().addNewDocumentVersion(TestDBUtils.createDBDocumentVersion());
+        resource.getDocument().addNewDocumentVersion(TestDBUtils.createDBDocumentVersion(TEST_SG_ID_1, TEST_SG_SCHEMA_1));
 
         testInstance.persistFlushDetach(resource);
         testInstance.clearPersistenceContext();

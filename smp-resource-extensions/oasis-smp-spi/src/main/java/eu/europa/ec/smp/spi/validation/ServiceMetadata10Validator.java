@@ -96,7 +96,7 @@ public class ServiceMetadata10Validator {
 
         if (!xmlSubresourceIdentifier.equals(nrmDocIdentifierFromUrl)) {
             // Business identifier must equal path
-            throw new ResourceException(INVALID_PARAMETERS, "Document identifiers don't match between URL parameter [" + xmlSubresourceIdentifier + "] and XML body: [" + xmlSubresourceIdentifier + "]");
+            throw new ResourceException(INVALID_PARAMETERS, "Document identifiers don't match between URL parameter [" + nrmDocIdentifierFromUrl + "] and XML body: [" + xmlSubresourceIdentifier + "]");
         }
         validateProcesses(serviceInformation);
         return serviceInformation;
