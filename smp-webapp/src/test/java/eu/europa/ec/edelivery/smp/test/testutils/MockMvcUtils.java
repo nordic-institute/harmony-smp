@@ -148,6 +148,12 @@ public class MockMvcUtils {
         return mapper.readValue(result.getResponse().getContentAsByteArray(), clazz);
     }
 
+    public static <T> List<T> getArrayFromResponse(MvcResult result, Class<T> clazz)
+            throws IOException {
+        return mapper.readValue(result.getResponse().getContentAsByteArray(),
+                mapper.getTypeFactory().constructCollectionType(List.class, clazz));
+    }
+
     public static MockMvc initializeMockMvc(WebApplicationContext webAppContext) {
         MockMvc mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())

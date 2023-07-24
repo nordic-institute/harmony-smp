@@ -121,6 +121,7 @@ public class TruststoreAdminController {
 
     public CertificateRO creatEmptyResponse(String alias, EntityROStatus status, String message) {
         CertificateRO certificateRO = new CertificateRO();
+        certificateRO.setError(true);
         certificateRO.setAlias(alias);
         certificateRO.setActionMessage(message);
         certificateRO.setStatus(status.getStatusNumber());

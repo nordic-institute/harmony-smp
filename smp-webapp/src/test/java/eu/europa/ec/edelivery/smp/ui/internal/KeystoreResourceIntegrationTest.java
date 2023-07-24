@@ -4,29 +4,16 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
-import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
-import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
+import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,35 +26,18 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTER
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-@RunWith(SpringRunner.class)
-@DirtiesContext
-@WebAppConfiguration
-@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
-@Sql(scripts = {
-        "classpath:/cleanup-database.sql",
-        "classpath:/webapp_integration_test_data.sql"})
-public class KeystoreResourceIntegrationTest {
+public class KeystoreResourceIntegrationTest extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
     Path keystore = Paths.get("src", "test", "resources", "keystores", "smp-keystore.jks");
 
     @Autowired
-    private WebApplicationContext webAppContext;
-
-    @Autowired
     private UIKeystoreService uiKeystoreService;
-    @Autowired
-    private ConfigurationDao configurationDao;
-
-    private MockMvc mvc;
 
     @Before
     public void setup() throws IOException {
-        X509CertificateTestUtils.reloadKeystores();
-        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
-        configurationDao.reloadPropertiesFromDatabase();
+        super.setup();
         uiKeystoreService.refreshData();
     }
 
@@ -177,10 +147,5 @@ public class KeystoreResourceIntegrationTest {
         assertEquals(countStart - 1, uiKeystoreService.getKeystoreEntriesList().size());
     }
 
-    protected ObjectMapper getObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        return mapper;
-    }
 
 }
