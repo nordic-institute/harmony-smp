@@ -9,14 +9,14 @@
           <legend>Description:</legend>
           <label>{{ propertyForm.controls['desc'].value}}</label>
         </fieldset>
-        <mat-form-field *ngIf="propertyForm.controls['type'].value !== 'BOOLEAN'" appearance="fill">
+        <mat-form-field *ngIf="propertyForm.controls['type'].value !== 'BOOLEAN'" appearance="fill" style="width: 100%">
           <mat-label>Property value:</mat-label>
           <input
             matInput type="{{ getInputType(propertyForm.controls['type'].value) }}" style="width: 100%;padding: 5px"
             formControlName="value" [pattern]="propertyForm.controls['valuePattern'].value"/>
         </mat-form-field>
         <mat-checkbox *ngIf="propertyForm.controls['type'].value === 'BOOLEAN'"
-                      formControlName="value">
+                      formControlName="value" style="width: 100%">
           {{ propertyForm.controls['property'].value }}
         </mat-checkbox>
         <div *ngIf="propertyForm.controls['errorMessage'].value" class="alert-message-error">

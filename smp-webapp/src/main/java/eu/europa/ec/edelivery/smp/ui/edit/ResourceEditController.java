@@ -152,7 +152,7 @@ public class ResourceEditController {
             memberRO.setRoleType(MembershipRoleType.VIEWER);
         }
         // is user domain admin or system admin
-        return uiResourceService.addMemberToResource(resourceId, groupId, memberRO, memberId);
+        return uiResourceService.addUpdateMemberToResource(resourceId, groupId, memberRO, memberId);
     }
 
     @DeleteMapping(value = SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_DELETE)

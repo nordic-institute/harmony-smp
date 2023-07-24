@@ -54,7 +54,7 @@ public class OasisSMPServiceGroup10 implements ResourceDefinitionSpi {
     }
 
     @Override
-    public List<SubresourceDefinitionSpi> getSuresourceSpiList() {
+    public List<SubresourceDefinitionSpi> getSubresourceSpiList() {
         return Collections.singletonList(oasisSMPServiceMetadata10);
     }
 

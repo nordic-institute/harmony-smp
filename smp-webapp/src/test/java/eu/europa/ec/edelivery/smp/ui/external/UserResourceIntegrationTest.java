@@ -66,7 +66,7 @@ public class UserResourceIntegrationTest {
     @Test
     public void testUpdateCurrentUserOK() throws Exception {
         // login
-        MockHttpSession session = loginWithUserGroupAdmin(mvc);
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
         UserRO userRO = getLoggedUserData(mvc, session);
         userRO.setActive(!userRO.isActive());
@@ -85,7 +85,7 @@ public class UserResourceIntegrationTest {
 
         // given when - log as SMP admin
         // then change values and list uses for changed value
-        MockHttpSession session = loginWithUserGroupAdmin(mvc);
+        MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         assertNotNull(userRO);
         // when

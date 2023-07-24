@@ -56,7 +56,6 @@ import static org.mockito.Mockito.verify;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@Ignore
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SmlIntegrationConfiguration.class,
         SmlConnector.class, DomainService.class})
@@ -186,7 +185,7 @@ public class DomainServiceSMLTest extends AbstractServiceIntegrationTest {
         verify(integrationMock.getParticipantManagmentClientMocks().get(2)).create(any());
         Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
 
-         */
+
     }
 
     @Test

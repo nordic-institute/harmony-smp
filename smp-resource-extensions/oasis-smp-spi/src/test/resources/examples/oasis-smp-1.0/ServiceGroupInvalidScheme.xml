@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:eu:ncpb:utest</ParticipantIdentifier>
+    <ServiceMetadataReferenceCollectionNotValid/>
+    This is not valid ServiceGroup XML
+</ServiceGroup>

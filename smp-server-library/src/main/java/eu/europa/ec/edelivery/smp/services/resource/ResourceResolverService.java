@@ -139,7 +139,7 @@ public class ResourceResolverService {
             LOG.debug("Got subresource [{}]", subresource);
             if (subresource == null) {
                 if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
-                    throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS, resource.getIdentifierValue(), resource.getIdentifierScheme(), resourceId.getValue(), resourceId.getScheme());
+                    throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS, resource.getIdentifierValue(), resource.getIdentifierScheme(), subResourceId.getValue(), subResourceId.getScheme());
                 }
                 subresource = createNewSubResource(subResourceId, resource, subresourceDef);
             }

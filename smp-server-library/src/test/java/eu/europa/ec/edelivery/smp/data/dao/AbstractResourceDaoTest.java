@@ -56,7 +56,7 @@ public abstract class AbstractResourceDaoTest extends AbstractBaseDao {
     }
 
     public DBResource createAndSaveNewResource() {
-        return createAndSaveNewResource(TEST_DOMAIN_CODE_1, TEST_GROUP_A, TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1, TEST_RESOURCE_DEF_SMP10);
+        return createAndSaveNewResource(TEST_DOMAIN_CODE_1, TEST_GROUP_A, TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1, TEST_RESOURCE_DEF_SMP10_URL);
     }
 
     private DBResource createAndSaveNewResource(String domain, String group, String participantId, String participantSchema, String resourceDefSeg) {

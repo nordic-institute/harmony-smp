@@ -172,11 +172,6 @@ public class ConfigurationService {
         return value != null && value;
     }
 
-    public boolean isSMLMultiDomainEnabled() {
-        Boolean value = configurationDAO.getCachedPropertyValue(SML_PARTICIPANT_MULTIDOMAIN);
-        return value != null && value;
-    }
-
     public boolean isUrlContextEnabled() {
         Boolean value = configurationDAO.getCachedPropertyValue(OUTPUT_CONTEXT_PATH);
         // by default is true - return false only in case is declared in configuration
@@ -363,6 +358,10 @@ public class ConfigurationService {
 
     public Map<String, String> getCasTokenValidationParams() {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_PARAMS);
+    }
+
+    public Map<String, String> getCustomNaptrServicesMap() {
+        return configurationDAO.getCachedPropertyValue(SML_CUSTOM_NAPTR_SERVICE_PARAMS);
     }
 
     public List<String> getCasURLTokenValidationGroups() {

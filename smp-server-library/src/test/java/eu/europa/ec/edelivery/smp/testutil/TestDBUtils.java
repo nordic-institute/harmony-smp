@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
@@ -19,6 +20,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -140,18 +142,10 @@ public class TestDBUtils {
         return grp;
     }
 
-    public static byte[] generateDocumentSample(String partcId, String partcSch, String docId, String docSch, String desc) {
-        return String.format(SIMPLE_DOCUMENT_XML, partcSch, partcId, docSch, docId, desc).getBytes();
-    }
-
     public static byte[] generateExtension() {
         return String.format(SIMPLE_EXTENSION_XML, anyString()).getBytes();
     }
 
-    public static byte[] generateRedirectDocumentSample(String url) {
-        return String.format(SIMPLE_REDIRECT_DOCUMENT_XML, url).getBytes();
-
-    }
 
     public static DBResource createDBResource(String id, String sch) {
         return createDBResource(id, sch, true);
@@ -165,8 +159,8 @@ public class TestDBUtils {
         resource.setVisibility(VisibilityType.PUBLIC);
         if (withExtension) {
             DBDocument document = createDBDocument();
-            DBDocumentVersion documentVersion = createDBDocumentVersion();
-            createDBDocumentVersion().setContent(generateExtension());
+            DBDocumentVersion documentVersion = createDBDocumentVersion(id, sch);
+            createDBDocumentVersion(id, sch).setContent(generateExtension());
             document.addNewDocumentVersion(documentVersion);
             resource.setDocument(document);
         }
@@ -180,9 +174,31 @@ public class TestDBUtils {
         return doc;
     }
 
-    public static DBDocumentVersion createDBDocumentVersion() {
+    public static DBDocumentVersion createDBDocumentVersion(String id, String sch) {
         DBDocumentVersion docuVersion = new DBDocumentVersion();
-        docuVersion.setContent(anyString().getBytes());
+        docuVersion.setContent(("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
+                "<ParticipantIdentifier scheme=\""+sch+"\">"+id+"</ParticipantIdentifier>" +
+                "<ServiceMetadataReferenceCollection />" +
+                "</ServiceGroup>").getBytes());
+        return docuVersion;
+    }
+
+    public static DBDocumentVersion createDBDocumentVersion(String id, String sch, String docId, String docSch) {
+        DBDocumentVersion docuVersion = new DBDocumentVersion();
+        docuVersion.setContent(("<ServiceMetadata xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ServiceInformation>" +
+                "<ParticipantIdentifier scheme=\""+sch+"\">"+id+"</ParticipantIdentifier>" +
+                "<DocumentIdentifier scheme=\""+docSch+"\">"+docId+"</DocumentIdentifier>" +
+                "<ProcessList><Process>" +
+                "<ProcessIdentifier scheme=\"[test-schema]\">[test-value]</ProcessIdentifier>" +
+                "<ServiceEndpointList>" +
+                "<Endpoint transportProfile=\"bdxr-transport-ebms3-as4-v1p0\">" +
+                "<EndpointURI>https://mypage.eu</EndpointURI>" +
+                "<Certificate>Q2VydGlmaWNhdGUgZGF0YSA=</Certificate>" +
+                "<ServiceDescription>Service description for partners </ServiceDescription>" +
+                "<TechnicalContactUrl>www.best-page.eu</TechnicalContactUrl>" +
+                "</Endpoint>" +
+                "</ServiceEndpointList>" +
+                "</Process></ProcessList></ServiceInformation></ServiceMetadata>").getBytes());
         return docuVersion;
     }
 
@@ -213,15 +229,21 @@ public class TestDBUtils {
 
     public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
         DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
-        credential.setExpireOn(to);
-        credential.setActiveFrom(from);
         credential.setExpireAlertOn(lastAlertSent);
+        if (to != null) {
+            credential.setExpireOn(to);
+        }
+        if (from != null) {
+            credential.setActiveFrom(from);
+        }
+
         return credential;
     }
 
 
     public static DBCredential createDBCredential(DBUser dbUser, String name, String value, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         DBCredential dbCredential = new DBCredential();
+        dbCredential.setActive(true);
         dbCredential.setValue(value);
         dbCredential.setName(name);
         dbCredential.setCredentialType(credentialType);
@@ -232,11 +254,34 @@ public class TestDBUtils {
         dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
         dbCredential.setUser(dbUser);
+
+        if (CredentialType.CERTIFICATE.equals(credentialType)) {
+
+            DBCertificate certificate = new DBCertificate();
+            certificate.setCertificateId(name);
+            certificate.setValidFrom(dbCredential.getActiveFrom());
+            certificate.setValidTo(dbCredential.getExpireOn());
+
+            int iSplit = name.lastIndexOf(':');
+            if (iSplit>0) {
+                String subject = name.substring(0, iSplit);
+                certificate.setSubject(subject);
+                certificate.setIssuer(subject);
+                certificate.setSerialNumber(name.substring(iSplit+1));
+            } else {
+                certificate.setSubject(name);
+                certificate.setIssuer(name);
+                certificate.setSerialNumber("1234567890");
+            }
+            dbCredential.setCertificate(certificate);
+        }
+
         return dbCredential;
     }
 
     public static DBCredential createDBCredential(String name, String value, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         DBCredential dbCredential = new DBCredential();
+        dbCredential.setActive(true);
         dbCredential.setValue(value);
         dbCredential.setName(name);
         dbCredential.setCredentialType(credentialType);
@@ -261,10 +306,10 @@ public class TestDBUtils {
 
     public static DBUser createDBUserByUsername(String userName) {
         DBUser dbuser = new DBUser();
-
         dbuser.setUsername(userName);
         dbuser.setEmailAddress(userName + "@test.eu");
         dbuser.setActive(true);
+        dbuser.setApplicationRole(ApplicationRoleType.USER);
         return dbuser;
     }
 
@@ -305,7 +350,7 @@ public class TestDBUtils {
         dbuser.getUserCredentials().add(credential);
         return dbuser;
     }
-    
+
     public static String anyString(){
         return UUID.randomUUID().toString();
     }

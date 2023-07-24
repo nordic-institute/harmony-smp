@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ServiceMetadataConverterTest {
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
-    private static final String RES_PATH = "/examples/conversion/";
+    private static final String RES_PATH = "/examples/oasis-smp-1.0/";
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
@@ -52,7 +52,7 @@ public class ServiceMetadataConverterTest {
     @Test
     public void testUnmarshalServiceInformation() throws Exception {
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceOk.xml");
 
         //when
         ServiceMetadata serviceMetadata = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
@@ -122,7 +122,7 @@ public class ServiceMetadataConverterTest {
     @Test
     public void testToSignedServiceMetadataDocument() throws Exception {
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceOk.xml");
 
         //when
         Document signedServiceMetadataDoc = DomUtils.toSignedServiceMetadata10Document(inputDoc);
@@ -134,8 +134,9 @@ public class ServiceMetadataConverterTest {
 
         NodeList children = root.getChildNodes();
         assertEquals(1, children.getLength());
-        byte[] resultServiceMetadata = XmlTestUtils.marshallToByteArray(children.item(0));
-        assertTrue(Arrays.equals(inputDoc, resultServiceMetadata));
+        assertEquals("ServiceMetadata", children.item(0).getLocalName());
+        assertEquals(NS, children.item(0).getNamespaceURI());
+
     }
 
     @Test

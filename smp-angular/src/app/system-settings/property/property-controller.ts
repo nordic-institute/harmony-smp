@@ -21,7 +21,7 @@ export class PropertyController implements SearchTableController {
   }
 
   dataSaved() {
-
+    this.lookups.refreshApplicationConfiguration();
   }
 
   isRecordChanged(oldEntity: PropertyRo, newEntity: PropertyRo): boolean {

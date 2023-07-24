@@ -163,48 +163,6 @@ public class ResourceDao extends BaseDao<DBResource> {
     }
 
 
-    /**
-     * Method returns ServiceGroupDomain for participant identifie and domain code. If there is no service group
-     * or service group registred to domain it returns empty Option.
-     * If more than one result returns IllegalStateException caused by database data inconsistency. Only one combination of
-     * participant identifier must be in the database.
-     *
-     * @param participantId participant identifier
-     * @param schema        participant identifier schema
-     * @param domainCode    domainCode
-     * @return DBResource
-     */
-    public Optional<DBDomainResourceDef> findServiceGroupDomain(String participantId, String schema, String domainCode) {
-
-        try {
-            TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery("DBServiceGroupDomain.getServiceGroupDomain", DBDomainResourceDef.class);
-            query.setParameter("participantIdentifier", participantId);
-            query.setParameter("participantScheme", schema);
-            query.setParameter("domainCode", domainCode);
-            DBDomainResourceDef res = query.getSingleResult();
-            return Optional.of(res);
-        } catch (NoResultException e) {
-            return Optional.empty();
-        } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(participantId, schema));
-        }
-    }
-
-    public Optional<DBDomainResourceDef> findServiceGroupDomainForUserIdAndMetadataId(Long userId, Long serviceMetadataId) {
-
-        try {
-            TypedQuery<DBDomainResourceDef> query = memEManager.createNamedQuery("DBServiceGroupDomain.getOwnedServiceGroupDomainForUserIdAndServiceMetadataId", DBDomainResourceDef.class);
-            query.setParameter("userId", userId);
-            query.setParameter("serviceMetadataId", serviceMetadataId);
-            DBDomainResourceDef res = query.getSingleResult();
-            return Optional.of(res);
-        } catch (NoResultException e) {
-            return Optional.empty();
-        } catch (NonUniqueResultException e) {
-            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SMD_ON_MULTIPLE_SGD.getMessage(serviceMetadataId, userId));
-        }
-    }
-
     public Long getResourceCountForDomainIdAndResourceDefId(Long domainId, Long resourceDefId) {
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT, Long.class);
         query.setParameter(PARAM_DOMAIN_ID, domainId);
@@ -305,9 +263,5 @@ public class ResourceDao extends BaseDao<DBResource> {
             }
         }
         return cq;
-    }
-
-    public void updateServiceGroupDomain(DBDomainResourceDef serviceGroupDomain) {
-        memEManager.merge(serviceGroupDomain);
     }
 }

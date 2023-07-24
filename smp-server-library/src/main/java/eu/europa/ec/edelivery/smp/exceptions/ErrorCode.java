@@ -25,7 +25,7 @@ public enum ErrorCode {
     ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY(500,"SMP:113",ErrorBusinessCode.TECHNICAL,"More than one domain entry  (domain: '%s') is defined in database!"),
     MISSING_DOMAIN(400,"SMP:114",ErrorBusinessCode.MISSING_FIELD,"More than one domain registered on SMP. The domain must be defined!"),
     ILLEGAL_STATE_DOMAIN_GROUP_MULTIPLE_ENTRY(500,"SMP:115",ErrorBusinessCode.TECHNICAL,"More than one group for domain entry  (group: '%s',  domain: '%s') is defined in database!"),
-
+    INVALID_DOMAIN_DATA (400,"SMP:116",ErrorBusinessCode.INVALID_INPUT_DATA,"Invalid domain data! %s"),
 
     // user error messages
     INVALID_USER_NO_IDENTIFIERS (400,"SMP:120",ErrorBusinessCode.MISSING_FIELD,"Invalid user - no identifiers!"),

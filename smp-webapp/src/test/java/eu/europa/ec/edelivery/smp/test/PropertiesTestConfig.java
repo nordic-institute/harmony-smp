@@ -56,7 +56,6 @@ public class PropertiesTestConfig {
         //System.setProperty("spring.jpa.properties.hibernate.format_sql", "true");
         System.setProperty("logging.level.org.hibernate.type", "trace");
 
-
         System.setProperty(KEYSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
         System.setProperty(TRUSTSTORE_PASSWORD.getProperty(), "{DEC}{test123}");
         System.setProperty(PARTC_SCH_MANDATORY.getProperty(), "false");
@@ -64,6 +63,5 @@ public class PropertiesTestConfig {
         System.setProperty(SMP_MODE_DEVELOPMENT.getProperty(), "true");
         System.setProperty(DATABASE_CREATE_DDL.getProperty(), "true");
         System.setProperty(SECURITY_FOLDER.getProperty(), SECURITY_PATH.toFile().getPath());
-
     }
 }

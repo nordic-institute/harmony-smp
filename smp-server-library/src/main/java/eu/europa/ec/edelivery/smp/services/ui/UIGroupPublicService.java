@@ -25,6 +25,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.trim;
+
 /**
  * Service bean provides only public group management methods.
  *
@@ -82,14 +85,6 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
     }
 
     @Transactional
-    public List<GroupRO> getAllGroupsForDomainAndUser(Long userId, MembershipRoleType role) {
-        List<DBGroup> domainGroups = groupDao.getGroupsByUserIdAndRoles(userId, role);
-
-        return domainGroups.stream().map(domain -> conversionService.convert(domain, GroupRO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
     public List<GroupRO> getAllGroupsForDomainAndUserAndGroupRole(Long domainId, Long userId, MembershipRoleType role) {
         List<DBGroup> domainGroups = groupDao.getGroupsByDomainUserIdAndGroupRoles(domainId, userId, role);
 
@@ -115,7 +110,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
         DBDomain domain = domainDao.find(domainId);
 
         DBGroup group = new DBGroup();
-        group.setGroupName(groupRO.getGroupName());
+        group.setGroupName(lowerCase(trim(groupRO.getGroupName())));
         group.setGroupDescription(groupRO.getGroupDescription());
         group.setVisibility(groupRO.getVisibility());
         group.setDomain(domain);
@@ -152,11 +147,6 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group has resources [" + resCount + "] and can not be deleted");
         }
 
-        Long userCount = groupMemberDao.getGroupMemberCount(groupId, null);
-        if (userCount > 0) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "DeleteGroup", "Group has members [" + userCount + "] and can not be deleted");
-        }
-
         groupDao.remove(group);
         return conversionService.convert(group, GroupRO.class);
     }
@@ -174,7 +164,7 @@ public class UIGroupPublicService extends UIServiceBase<DBGroup, GroupRO> {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UpdateGroup", "Group with does not exists!");
         }
 
-        group.setGroupName(groupRO.getGroupName());
+        group.setGroupName(lowerCase(trim(groupRO.getGroupName())));
         group.setGroupDescription(groupRO.getGroupDescription());
         group.setVisibility(groupRO.getVisibility());
         // to get ID for conversion

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceGroup xmlns:smb="http://docs.oasis-open.org/bdxr/ns/SMP/2/BasicComponents"
+              xmlns:sma="http://docs.oasis-open.org/bdxr/ns/SMP/2/AggregateComponents"
+              xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2/ServiceGroup">
+    <smb:SMPVersionID>2.0</smb:SMPVersionID>
+    <smb:ParticipantID schemeID="iso6523-actorid-upis">9925:0367302178</smb:ParticipantID>
+
+</ServiceGroup>
+

@@ -65,7 +65,7 @@
             "{{inputDomainMemberFilter.value}}"
           </td>
           <ng-template #noDataFound>
-            <td class="mat-cell" colspan="2">No direct members for the domain</td>
+            <td class="mat-cell" colspan="2">The resource has no subresources</td>
           </ng-template>
         </tr>
       </table>
@@ -74,7 +74,7 @@
     <mat-paginator class="mat-elevation-z2"
                    [hidePageSize]="true"
                    [showFirstLastButtons]="true"
-                   [pageSize]="3"
+                   [pageSize]="5"
                    [disabled]="disabledForm"
                    aria-label="Select pages"></mat-paginator>
   </div>

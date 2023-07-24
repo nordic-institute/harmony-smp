@@ -42,14 +42,12 @@ public class DomainEditController {
     }
 
     /**
-     * Method returns all domains where user is domain administrator
+     * Method returns all domains where user is domain administrator.
      * @param userEncId encrypted user identifier
      * @return Domain list where user has role domain administrator
      */
     @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.isAnyGroupAdministrator " +
-            " or @smpAuthorizationService.isAnyDomainAdministrator" +
-            " or @smpAuthorizationService.isAnyResourceAdministrator)")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
     public List<DomainRO> getDomainsForUserType(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @RequestParam(value = PARAM_NAME_TYPE, defaultValue = "domain-admin", required = false) String forRole) {

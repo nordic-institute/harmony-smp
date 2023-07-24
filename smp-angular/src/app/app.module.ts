@@ -1,5 +1,4 @@
 import 'hammerjs';
-import {AccessTokenGenerationDialogComponent} from "./common/dialogs/access-token-generation-dialog/access-token-generation-dialog.component";
 import {AccessTokenPanelComponent} from "./user-settings/user-access-tokens/access-token-panel/access-token-panel.component";
 import {AdminDomainComponent} from "./system-settings/admin-domain/admin-domain.component";
 import {AdminDomainService} from "./system-settings/admin-domain/admin-domain.service";
@@ -11,7 +10,6 @@ import {AlertComponent} from "./alert/alert.component";
 import {AlertMessageComponent} from './common/alert-message/alert-message.component';
 import {AlertMessageService} from './common/alert-message/alert-message.service';
 import {AppComponent} from './app.component';
-import {AuthorizedAdminGuard} from './guards/authorized-admin.guard';
 import {AuthorizedGuard} from './guards/authorized.guard';
 import {AutoFocusDirective} from "./common/directive/autofocus/auto-focus.directive";
 import {BreadcrumbComponent} from "./window/breadcrumb/breadcrumb.component";
@@ -108,9 +106,7 @@ import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
 import {UserCertificatePanelComponent} from "./user-settings/user-certificates/user-certificate-panel/user-certificate-panel.component";
 import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
-import {UserComponent} from './system-settings/user/user.component';
-import {UserDetailsDialogComponent} from './system-settings/user/user-details-dialog/user-details-dialog.component';
-import {UserDetailsService} from './system-settings/user/user-details-dialog/user-details.service';
+import {UserDetailsService} from './system-settings/user/user-details.service';
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
 import {UserService} from './system-settings/user/user.service';
 import {routing} from './app.routes';
@@ -147,11 +143,11 @@ import {SubresourceDocumentWizardComponent} from "./edit/edit-resources/subresou
 import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/smp-warning-panel.component";
 import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dialog/manage-members-dialog.component";
 import {HttpErrorHandlerService} from "./common/error/http-error-handler.service";
+import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-titled-label.component";
 
 
 @NgModule({
   declarations: [
-    AccessTokenGenerationDialogComponent,
     AccessTokenPanelComponent,
     AdminDomainComponent,
     AdminKeystoreComponent,
@@ -222,6 +218,7 @@ import {HttpErrorHandlerService} from "./common/error/http-error-handler.service
     SidenavComponent,
     SmpFieldErrorComponent,
     SmpLabelComponent,
+    SmpTitledLabelComponent,
     SmpWarningPanelComponent,
     SpacerComponent,
     SpinnerComponent,
@@ -233,8 +230,6 @@ import {HttpErrorHandlerService} from "./common/error/http-error-handler.service
     UserAccessTokensComponent,
     UserCertificatePanelComponent,
     UserCertificatesComponent,
-    UserComponent,
-    UserDetailsDialogComponent,
     UserProfileComponent,
     UserProfilePanelComponent,
   ],
@@ -284,7 +279,6 @@ import {HttpErrorHandlerService} from "./common/error/http-error-handler.service
     AdminTruststoreService,
     AdminUserService,
     AlertMessageService,
-    AuthorizedAdminGuard,
     AuthorizedGuard,
     CertificateService,
     DatePipe,

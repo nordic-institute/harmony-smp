@@ -5,7 +5,7 @@
               [labelColumnContent]="searchGroupPanel">
 
     <mat-tab-group #domainTabs
-                   *ngIf="!!resourceList &&  resourceList.length>0;else noUserAdminGroupsDataFound"
+                   *ngIf="!!resourceList && resourceList.length>0;else noUserAdminGroupsDataFound"
                    style="height: 100%">
       <mat-tab>
         <ng-template mat-tab-label>
@@ -31,7 +31,7 @@
 
         ></domain-member-panel>
       </mat-tab>
-      <mat-tab>
+      <mat-tab *ngIf="hasSubResources">
         <ng-template mat-tab-label>
           <smp-label icon="description" label="Subresources"></smp-label>
         </ng-template>
@@ -49,13 +49,13 @@
                       class="smp-no-data-panel"
                        icon="warning"
                        type="warning"
-                       label="User is not administrator of any of the resources"></smp-warning-panel>
+                       [label]="filterResourceResults?'No resources for give filter':'User is not administrator of any of the resources'"></smp-warning-panel>
   </ng-template>
 </div>
 
 <ng-template #searchGroupPanel>
   <div
-    *ngIf="!!resourceList &&  resourceList.length>0"
+    *ngIf="!!resourceList &&  resourceList.length>0 || filterResourceResults "
   >
     <mat-form-field style="width:100%">
       <mat-label>Selected domain</mat-label>
@@ -126,7 +126,7 @@
               "{{inputDomainMemberFilter.value}}"
             </td>
             <ng-template #noDataFound>
-              <td class="mat-cell" colspan="2">No direct members for the domain</td>
+              <td class="mat-cell" colspan="2">the group has no resources</td>
             </ng-template>
           </tr>
         </table>
@@ -136,7 +136,7 @@
                      (page)="onPageChanged($event)"
                      [hidePageSize]="true"
                      [showFirstLastButtons]="true"
-                     [pageSize]="10"
+                     [pageSize]="5"
                      aria-label="Select pages"></mat-paginator>
     </div>
   </div>

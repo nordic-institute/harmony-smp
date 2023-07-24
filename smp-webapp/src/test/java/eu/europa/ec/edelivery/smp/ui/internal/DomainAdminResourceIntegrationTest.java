@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
+@DirtiesContext
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
@@ -118,11 +120,13 @@ public class DomainAdminResourceIntegrationTest {
         assertEquals(domainToUpdate.getDomainCode(), resultObject.getDomainCode());
         assertEquals(EntityROStatus.UPDATED.getStatusNumber(), resultObject.getStatus());
     }
+
     @Test
     public void updateDomainSmlIntegrationData() throws Exception {
         String domainCode = "domainTwo";
         MockHttpSession session = loginWithSystemAdmin(mvc);
-        UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
+        UserRO userRO = (UserRO)session.getAttribute(MOCK_LOGGED_USER);
+
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
         domainToUpdate.setSmlSubdomain("NewCode");
         domainToUpdate.setSmlClientKeyAlias("New alias");

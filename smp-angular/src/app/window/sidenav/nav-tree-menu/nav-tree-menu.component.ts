@@ -17,8 +17,8 @@ export class NavTreeMenu {
     this.notifyClickMenu.emit(this.data);
   }
 
-  get isLeaf(){
-    return !this.data.children || this.data.children.length ==0
+  get isLeaf() {
+    return !this.data.children || this.data.children.length == 0
   }
 
 }

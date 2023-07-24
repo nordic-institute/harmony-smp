@@ -15,12 +15,17 @@ package eu.europa.ec.edelivery.smp.data.model;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
+import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -79,6 +84,14 @@ public class DBGroup extends BaseEntity {
     @Column(name = "VISIBILITY", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
     private VisibilityType visibility = VisibilityType.PUBLIC;
 
+    // set only the remove to cascade!
+    @OneToMany(
+            mappedBy = "group",
+            cascade = CascadeType.REMOVE,
+            fetch = FetchType.LAZY
+    )
+    private List<DBGroupMember> groupMembers = new ArrayList<>();
+
 
     @Override
     public Long getId() {
@@ -119,6 +132,11 @@ public class DBGroup extends BaseEntity {
 
     public void setVisibility(VisibilityType visibility) {
         this.visibility = visibility;
+    }
+
+
+    public List<DBGroupMember> getMembers() {
+        return this.groupMembers;
     }
 
     @Override

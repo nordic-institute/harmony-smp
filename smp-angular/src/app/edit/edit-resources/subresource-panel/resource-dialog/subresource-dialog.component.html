@@ -20,13 +20,13 @@
       <mat-label>Subresource identifier</mat-label>
       <input id="identifierValue_id" type="text" matInput #identifierValue
              formControlName="identifierValue"
-             required auto-focus-directive>
+             auto-focus-directive maxlength="500" required>
     </mat-form-field>
 
     <mat-form-field  style="width: 100%">
       <mat-label>Subresource scheme</mat-label>
       <input id="identifierScheme_id" type="text" matInput
-             formControlName="identifierScheme"
+             formControlName="identifierScheme" maxlength="500"
              >
     </mat-form-field>
   </form>

@@ -1,5 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -11,13 +13,12 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBExtension;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
-import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.user.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -37,6 +38,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @Repository
 public class TestUtilsDao {
+
+    @Autowired
+    UserDao userDao;
     @PersistenceContext
     protected EntityManager memEManager;
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(TestUtilsDao.class);
@@ -45,7 +49,7 @@ public class TestUtilsDao {
     DBDomain d1;
     DBDomain d2;
     DBResourceDef resourceDefSmp;
-    DBSubresourceDef resourceDefSmpMetadata;
+    DBSubresourceDef subresourceDefSmp;
     DBResourceDef resourceDefCpp;
 
     DBDomainResourceDef domainResourceDefD1R1;
@@ -95,7 +99,7 @@ public class TestUtilsDao {
         d1 = null;
         d2 = null;
         resourceDefSmp = null;
-        resourceDefSmpMetadata = null;
+        subresourceDefSmp = null;
         resourceDefCpp = null;
         domainResourceDefD1R1 = null;
         domainResourceDefD1R2 = null;
@@ -175,10 +179,10 @@ public class TestUtilsDao {
             LOG.trace("ResourceDefinitions are already initialized!");
             return;
         }
-        resourceDefSmp = createResourceDefinition(TEST_RESOURCE_DEF_SMP10);
-        resourceDefSmpMetadata =  createSubresourceDefinition(TEST_SUBRESOURCE_DEF_SMP10, resourceDefSmp);
+        resourceDefSmp = createResourceDefinition(TEST_RESOURCE_DEF_SMP10_ID, TEST_RESOURCE_DEF_SMP10_URL);
+        subresourceDefSmp =  createSubresourceDefinition(TEST_SUBRESOURCE_DEF_SMP10_ID, TEST_SUBRESOURCE_DEF_SMP10_URL, resourceDefSmp);
 
-        resourceDefCpp = createResourceDefinition(TEST_RESOURCE_DEF_CPP);
+        resourceDefCpp = createResourceDefinition(TEST_RESOURCE_DEF_CPP, TEST_RESOURCE_DEF_CPP);
 
         assertNotNull(resourceDefSmp.getId());
         assertNotNull(resourceDefCpp.getId());
@@ -211,9 +215,22 @@ public class TestUtilsDao {
             return;
         }
         user1 = createDBUserByUsername(USERNAME_1);
+        DBCredential c1 = TestDBUtils.createDBCredentialForUser(user1, null, null, null);
+        c1.setValue(BCrypt.hashpw(USERNAME_1_PASSWORD, BCrypt.gensalt()));
+        user1.getUserCredentials().add(c1);
+
         user2 = createDBUserByCertificate(USER_CERT_2);
+
         user3 = createDBUserByUsername(USERNAME_3);
-        user4 = createDBUserByUsername(USERNAME_4);
+        DBCredential c3 = TestDBUtils.createDBCredentialForUserAccessToken(user3, null, null, null);
+        c3.setValue(BCrypt.hashpw(USERNAME_3_AT_PASSWORD, BCrypt.gensalt()));
+        c3.setName(USERNAME_3_AT);
+        DBCredential cCert3 = TestDBUtils.createDBCredential(user3, USER_CERT_3, "", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+
+        user3.getUserCredentials().add(c3);
+        user3.getUserCredentials().add(cCert3);
+
+        user4 = createDBUserByUsername(USER_CERT_2);
         user5 = createDBUserByUsername(USERNAME_5);
 
         persistFlushDetach(user1);
@@ -228,6 +245,14 @@ public class TestUtilsDao {
         assertNotNull(user4.getId());
         assertNotNull(user5.getId());
     }
+
+    @Transactional
+    public void deactivateUser(String username) {
+        DBUser user = userDao.findUserByUsername(username).get();
+        user.setActive(false);
+        persistFlushDetach(user);
+    }
+
 
     /**
      * Create domain members for
@@ -261,7 +286,7 @@ public class TestUtilsDao {
     @Transactional
     public void createResourceMemberships() {
         if (resourceMemberU1R1_D2G1RD1_Admin != null) {
-            LOG.trace("GroupMemberships are already initialized!");
+            LOG.trace("ResourceMemberships are already initialized!");
             return;
         }
         createUsers();
@@ -378,14 +403,14 @@ public class TestUtilsDao {
         }
         createGroups();
         createResourceDefinitionsForDomains();
-        documentD1G1RD1 = createDocument(2);
-        documentD2G1RD1 = createDocument(2);
+        documentD1G1RD1 = createDocument(2,TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         resourceD1G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1);
         resourceD1G1RD1.setDocument(documentD1G1RD1);
 
         resourceD1G1RD1.setGroup(groupD1G1);
         resourceD1G1RD1.setDomainResourceDef(domainResourceDefD1R1);
 
+        documentD2G1RD1 = createDocument(2, TEST_SG_ID_2, "");
         resourceD2G1RD1 = TestDBUtils.createDBResource(TEST_SG_ID_2, null);
         resourceD2G1RD1.setDocument(documentD2G1RD1);
 
@@ -428,11 +453,15 @@ public class TestUtilsDao {
         }
         createResources();
 
-        documentD1G1RD1_S1 = createDocument(2);
-        documentD2G1RD1_S1 = createDocument(2);
+        documentD1G1RD1_S1 = createDocument(2, resourceD1G1RD1.getIdentifierValue(), resourceD1G1RD1.getIdentifierScheme(),
+                TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
         subresourceD1G1RD1_S1 = TestDBUtils.createDBSubresource(
                 resourceD1G1RD1.getIdentifierValue(),resourceD1G1RD1.getIdentifierScheme(),
                 TEST_DOC_ID_1, TEST_DOC_SCHEMA_1);
+
+
+        documentD2G1RD1_S1 = createDocument(2, resourceD2G1RD1.getIdentifierValue(),resourceD2G1RD1.getIdentifierScheme(),
+                TEST_DOC_ID_2, TEST_DOC_SCHEMA_2);
         subresourceD2G1RD1_S1 = TestDBUtils.createDBSubresource(
                 resourceD2G1RD1.getIdentifierValue(),resourceD2G1RD1.getIdentifierScheme(),
                 TEST_DOC_ID_2, TEST_DOC_SCHEMA_2);
@@ -443,9 +472,8 @@ public class TestUtilsDao {
         subresourceD1G1RD1_S1.setResource(resourceD1G1RD1);
         subresourceD2G1RD1_S1.setResource(resourceD2G1RD1);
 
-        subresourceD1G1RD1_S1.setSubresourceDef(resourceDefSmpMetadata);
-        subresourceD2G1RD1_S1.setSubresourceDef(resourceDefSmpMetadata);
-
+        subresourceD1G1RD1_S1.setSubresourceDef(subresourceDefSmp);
+        subresourceD2G1RD1_S1.setSubresourceDef(subresourceDefSmp);
 
         persistFlushDetach(subresourceD1G1RD1_S1);
         persistFlushDetach(subresourceD2G1RD1_S1);
@@ -455,13 +483,8 @@ public class TestUtilsDao {
     }
 
     @Transactional
-    public DBDocument createAndPersistDocument() {
-        return createAndPersistDocument(3);
-    }
-
-    @Transactional
-    public DBDocument createAndPersistDocument(int versions) {
-        DBDocument document = createDocument(versions);
+    public DBDocument createAndPersistDocument(int versions, String identifier, String schema) {
+        DBDocument document = createDocument(versions, identifier, schema);
         persistFlushDetach(document);
         for (int i= 0; i< versions; i++ ) {
             assertNotNull(document.getDocumentVersions().get(i).getId());
@@ -472,13 +495,21 @@ public class TestUtilsDao {
         return document;
     }
 
-    public DBDocument createDocument(int versions) {
+    public DBDocument createDocument(int versions, String identifier, String schema) {
         DBDocument document = createDBDocument();
         // add document versions to the document
         for (int i= 0; i< versions; i++ ) {
-            document.addNewDocumentVersion(createDBDocumentVersion());
+            document.addNewDocumentVersion(createDBDocumentVersion(identifier, schema));
         }
+        return document;
+    }
 
+    public DBDocument createDocument(int versions, String identifier, String schema, String docIdentifier, String docSchema) {
+        DBDocument document = createDBDocument();
+        // add document versions to the document
+        for (int i= 0; i< versions; i++ ) {
+            document.addNewDocumentVersion(createDBDocumentVersion(identifier, schema, docIdentifier, docSchema));
+        }
         return document;
     }
 
@@ -539,15 +570,15 @@ public class TestUtilsDao {
     }
 
     @Transactional
-    public DBResourceDef createResourceDefinition(String urlContextDef) {
-        DBResourceDef d = TestDBUtils.createDBResourceDef(urlContextDef, urlContextDef);
+    public DBResourceDef createResourceDefinition(String identifier, String urlContextDef) {
+        DBResourceDef d = TestDBUtils.createDBResourceDef(identifier, urlContextDef);
         persistFlushDetach(d);
         return d;
     }
 
     @Transactional
-    public DBSubresourceDef createSubresourceDefinition(String urlContextDef, DBResourceDef resourceDef) {
-        DBSubresourceDef d = TestDBUtils.createDBSubresourceDef(urlContextDef, urlContextDef);
+    public DBSubresourceDef createSubresourceDefinition(String identifier, String urlContextDef, DBResourceDef resourceDef) {
+        DBSubresourceDef d = TestDBUtils.createDBSubresourceDef(identifier, urlContextDef);
         d.setResourceDef(resourceDef);
         persistFlushDetach(d);
         return d;
@@ -571,10 +602,17 @@ public class TestUtilsDao {
         memEManager.detach(entity);
     }
 
+    @Transactional
     public <E> E merge(E entity) {
         LOG.debug("merge entity: [{}]", entity);
         return memEManager.merge(entity);
     }
+
+
+    public void clear() {
+        memEManager.clear();
+    }
+
 
     public DBDomain getD1() {
         return d1;
@@ -592,9 +630,7 @@ public class TestUtilsDao {
         return resourceDefCpp;
     }
 
-    public DBDomainResourceDef getDomainResourceDefD1R1() {
-        return domainResourceDefD1R1;
-    }
+    public DBDomainResourceDef getDomainResourceDefD1R1() {return domainResourceDefD1R1;}
 
     public DBDomainResourceDef getDomainResourceDefD1R2() {
         return domainResourceDefD1R2;
@@ -640,8 +676,8 @@ public class TestUtilsDao {
         return resourceD1G1RD1;
     }
 
-    public DBSubresourceDef getResourceDefSmpMetadata() {
-        return resourceDefSmpMetadata;
+    public DBSubresourceDef getSubresourceDefSmpMetadata() {
+        return subresourceDefSmp;
     }
 
     public DBDocument getDocumentD1G1RD1_S1() {
@@ -682,5 +718,21 @@ public class TestUtilsDao {
 
     public DBDomainMember getDomainMemberU1D2Viewer() {
         return domainMemberU1D2Viewer;
+    }
+
+    public DBResourceMember getResourceMemberU1R1_D2G1RD1_Admin() {
+        return resourceMemberU1R1_D2G1RD1_Admin;
+    }
+
+    public DBResourceMember getResourceMemberU1R2_D2G1RD1_Viewer(){
+        return resourceMemberU1R2_D2G1RD1_Viewer;
+    }
+
+    public DBGroupMember getGroupMemberU1D1G1Admin() {
+        return groupMemberU1D1G1Admin;
+    }
+
+    public DBGroupMember getGroupMemberU1D2G1Viewer() {
+        return groupMemberU1D2G1Viewer;
     }
 }

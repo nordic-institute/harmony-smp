@@ -43,7 +43,7 @@ public class DomainResourceDefDaoTest extends AbstractBaseDao {
     @Test
     public void getResourceDefConfigurationForDomainAndResourceDef() {
 
-        Optional<DBDomainResourceDef> result = testInstance.getResourceDefConfigurationForDomainCodeAndResourceDefCtx(TEST_DOMAIN_CODE_2, TEST_RESOURCE_DEF_SMP10);
+        Optional<DBDomainResourceDef> result = testInstance.getResourceDefConfigurationForDomainCodeAndResourceDefCtx(TEST_DOMAIN_CODE_2, TEST_RESOURCE_DEF_SMP10_URL);
 
         assertTrue(result.isPresent());
         assertEquals(testUtilsDao.getDomainResourceDefD2R1().getId(), result.get().getId());

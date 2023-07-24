@@ -28,7 +28,7 @@
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-  <h3>{{title}}</h3>
+  <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
   <div class="group-container mat-elevation-z2">
     <div class="group-loading-shade"
          *ngIf="isLoadingResults">
@@ -70,19 +70,22 @@
         ></tr>
 
         <tr class="mat-row" *matNoDataRow>
-          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No direct members
+          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No groups
             matching the filter
             "{{inputDomainMemberFilter.value}}"
           </td>
           <ng-template #noDataFound>
-            <td class="mat-cell" colspan="2">No direct members for the domain</td>
+            <td class="mat-cell" colspan="2">The domain has no groups</td>
           </ng-template>
         </tr>
       </table>
     </div>
 
-    <mat-paginator [hidePageSize]="true"
+
+    <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
+                   [hidePageSize]="true"
                    [showFirstLastButtons]="true"
+                   [pageSize]="5"
                    [disabled]="domainNotSelected"
                    aria-label="Select pages"></mat-paginator>
   </div>

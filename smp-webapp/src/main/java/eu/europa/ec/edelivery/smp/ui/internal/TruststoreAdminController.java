@@ -76,6 +76,7 @@ public class TruststoreAdminController {
         try {
             String alias = uiTruststoreService.addCertificate(null, x509Certificate);
             certificateRO = uiTruststoreService.convertToRo(x509Certificate);
+            uiTruststoreService.basicCertificateValidation(x509Certificate, certificateRO);
             certificateRO.setAlias(alias);
             certificateRO.setStatus(EntityROStatus.NEW.getStatusNumber());
             return certificateRO;
@@ -120,6 +121,7 @@ public class TruststoreAdminController {
 
     public CertificateRO creatEmptyResponse(String alias, EntityROStatus status, String message) {
         CertificateRO certificateRO = new CertificateRO();
+        certificateRO.setError(true);
         certificateRO.setAlias(alias);
         certificateRO.setActionMessage(message);
         certificateRO.setStatus(status.getStatusNumber());

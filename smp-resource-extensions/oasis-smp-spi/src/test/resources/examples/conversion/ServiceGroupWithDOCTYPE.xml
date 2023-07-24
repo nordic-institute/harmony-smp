@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE testingxxe [<!ENTITY value "SAMPLE VALUE" >]>
-<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
-    <ParticipantIdentifier/>
-    <ServiceMetadataReferenceCollection>
-        <ServiceMetadataReference href="&value;"/>
-    </ServiceMetadataReferenceCollection>
-</ServiceGroup>

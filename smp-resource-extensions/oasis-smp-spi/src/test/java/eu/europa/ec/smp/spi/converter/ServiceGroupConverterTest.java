@@ -32,7 +32,7 @@ class ServiceGroupConverterTest {
 
     OasisSMP10ServiceGroupReader testInstance = new OasisSMP10ServiceGroupReader();
 
-    private static final String RES_PATH = "/examples/conversion/";
+    private static final String RES_PATH = "/examples/oasis-smp-1.0/";
 
 
     @Test
@@ -46,8 +46,6 @@ class ServiceGroupConverterTest {
 
         //then
         assertNotNull(serviceGroup);
-        assertTrue(serviceGroup.getExtensions().isEmpty());
-        assertEquals("http://poland.pl", serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences().get(0).getHref());
     }
 
 

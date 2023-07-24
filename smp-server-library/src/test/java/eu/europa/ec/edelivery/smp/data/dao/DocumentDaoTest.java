@@ -25,7 +25,7 @@ public class DocumentDaoTest extends AbstractBaseDao {
     @Test
     public void testPersistDocument() {
 
-        DBDocument document = testUtilsDao.createAndPersistDocument(2);
+        DBDocument document = testUtilsDao.createAndPersistDocument(2, "value1", "schema1");
 
         assertNotNull(document.getId());
         assertEquals(2, document.getDocumentVersions().size());

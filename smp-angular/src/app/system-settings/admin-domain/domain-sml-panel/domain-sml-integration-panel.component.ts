@@ -10,6 +10,7 @@ import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-
 import {SMLResult} from "../../domain/sml-result.model";
 import {SmlIntegrationService} from "../../domain/sml-integration.service";
 import {GlobalLookups} from "../../../common/global-lookups";
+import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.service";
 
 
 @Component({
@@ -65,6 +66,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
 
   constructor(private domainService: AdminDomainService,
               private alertService: AlertMessageService,
+              private httpErrorHandlerService: HttpErrorHandlerService,
               protected smlIntegrationService: SmlIntegrationService,
               protected lookups: GlobalLookups,
               private dialog: MatDialog,
@@ -190,7 +192,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Unregister domain to SML",
-        description: "Action will unregister domain: [" + this._domain?.domainCode + "] and all its resources from SML. Do you wish to continue?"
+        description: "Action will unregister domain: [" + this._domain?.domainCode + "] and all its resources from SML.<br/><br/> Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -207,7 +209,7 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Register domain to SML",
-        description: "Action will register domain: [" + this._domain?.domainCode + "] and all its service groups to SML. Do you wish to continue?"
+        description: "Action will register domain: [" + this._domain?.domainCode + "] and all its service groups to SML. <br/><br/>Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -224,7 +226,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         if (res) {
           if (res.success) {
             this.alertService.success("Domain [" + domain.domainCode + "] registered to sml!");
-            this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = true;
             this.domain = domain;
           } else {
@@ -235,6 +236,9 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         }
       },
       err => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
+          return;
+        }
         //  this.searchTable.showSpinner = false;
         this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, err);
       }
@@ -248,7 +252,6 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         if (res) {
           if (res.success) {
             this.alertService.success("Domain [" + domain.domainCode + "] unregistered from sml!");
-            this.lookups.refreshDomainLookupForLoggedUser();
             domain.smlRegistered = false;
             this.domain = domain;
           } else {
@@ -260,6 +263,9 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       }
       ,
       err => {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
+          return;
+        }
         // this.searchTable.showSpinner = false;
         this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, err);
       }
