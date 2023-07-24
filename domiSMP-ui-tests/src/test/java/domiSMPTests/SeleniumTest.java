@@ -27,7 +27,6 @@ public class SeleniumTest {
 
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite() {
-
         LOG.info("Log file name is " + logFilename);
         LOG.info("-------- Starting -------");
     }
@@ -61,6 +60,15 @@ public class SeleniumTest {
         }
     }
 
+    @AfterMethod
+    protected void afterMethod(Method method) {
+        try {
+            driver.quit();
+        } catch (Exception e) {
+            LOG.warn("Closing the driver failed");
+            LOG.error("EXCEPTION: ", e);
+        }
+    }
 
     @AfterClass(alwaysRun = true)
     protected void afterClass() {

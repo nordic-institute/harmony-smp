@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pages.ProfilePage.ProfilePage;
 import pages.PropertiesPage.PropertiesPage;
+import pages.UsersPage;
 
 import java.util.Objects;
 
@@ -111,8 +112,11 @@ public class SideNavigationComponent extends DomiSMPPage {
         //            case ADMINISTRATION_EDIT_RESOURCES:
         //                expandSection(administrationExpand);
         //                return new DLink(driver, editResourcesLnk);
-        //            case SYSTEM_SETTINGS_USERS:
-        //                expandSection(systemSettingsExpand);
+
+        if (page == Pages.SYSTEM_SETTINGS_USERS) {
+            openSubmenu(systemSettingsExpand, usersLnk);
+            return new UsersPage(driver);
+        }
         //                return new DLink(driver, usersLnk);
         //            case SYSTEM_SETTINGS_DOMAINS:
         //                expandSection(systemSettingsExpand);
