@@ -53,6 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "smp.artifact.version=TestApplicationVersion",
         "smp.artifact.build.time=2018-11-27 00:00:00",
 })
+@DirtiesContext
 public class ApplicationResourceIntegrationTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_PUBLIC_APPLICATION;
 

@@ -4,6 +4,7 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
@@ -13,12 +14,11 @@ import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import eu.europa.ec.edelivery.smp.ui.external.UserResourceIntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -48,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@DirtiesContext
 public class TruststoreAdminResourceIntegrationTest {
     private static final String PATH_INTERNAL = CONTEXT_PATH_INTERNAL_TRUSTSTORE;
     private static final String PATH_PUBLIC = CONTEXT_PATH_PUBLIC_TRUSTSTORE;
@@ -58,15 +59,22 @@ public class TruststoreAdminResourceIntegrationTest {
     @Autowired
     private UITruststoreService uiTruststoreService;
 
+    @Autowired
+    private ConfigurationDao configurationDao;
+
     private MockMvc mvc;
 
-    @Before
-    public void setup() throws IOException {
-        mvc = initializeMockMvc(webAppContext);
-        uiTruststoreService.refreshData();
+    @BeforeClass
+    public static void init() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
     }
 
+    @Before
+    public void setup() throws IOException {
+        configurationDao.reloadPropertiesFromDatabase();
+        uiTruststoreService.refreshData();
+        mvc = initializeMockMvc(webAppContext);
+    }
 
     @Test
     public void validateInvalidCertificate() throws Exception {

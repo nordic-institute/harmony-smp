@@ -118,6 +118,11 @@
                 <directory>src/test/resources</directory>
                 <filtering>false</filtering>
             </testResource>
+            <testResource>
+                <directory>src/test/resources/keystores</directory>
+                <targetPath>${project.build.directory}/keystores</targetPath>
+                <filtering>false</filtering>
+            </testResource>
         </testResources>
         <resources>
             <resource>

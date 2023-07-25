@@ -7,12 +7,12 @@ import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -39,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@DirtiesContext
 public class AuthenticationResourceIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationResourceIntegrationTest.class);
@@ -58,12 +59,16 @@ public class AuthenticationResourceIntegrationTest {
 
     private MockMvc mvc;
 
+    @BeforeClass
+    public static void init() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
+    }
+
     @Before
     public void setup() throws IOException {
-        X509CertificateTestUtils.reloadKeystores();
-        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
+        configurationDao.reloadPropertiesFromDatabase();
         uiKeystoreService.refreshData();
-
+        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
     }
 
     @Test

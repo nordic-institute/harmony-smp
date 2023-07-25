@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
@@ -9,14 +10,14 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
+import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
@@ -44,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@DirtiesContext
 public class DomainAdminResourceIntegrationTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
 
@@ -55,8 +58,17 @@ public class DomainAdminResourceIntegrationTest {
 
     private MockMvc mvc;
 
+    @Autowired
+    private ConfigurationDao configurationDao;
+
+    @BeforeClass
+    public static void init() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
+    }
+
     @Before
     public void setup() {
+        configurationDao.reloadPropertiesFromDatabase();
         mvc = MockMvcUtils.initializeMockMvc(webAppContext);
     }
 

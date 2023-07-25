@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -54,6 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@DirtiesContext
 public class SecurityConfigurationTest {
 
     public static final String RETURN_LOGGED_USER_PATH = "/getLoggedUsername";
@@ -80,7 +82,7 @@ public class SecurityConfigurationTest {
         X509CertificateTestUtils.reloadKeystores();
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED,"true", null);
         mvc = MockMvcUtils.initializeMockMvc(context);
-        configurationDao.contextRefreshedEvent();
+        configurationDao.reloadPropertiesFromDatabase();
     }
 
     @Test

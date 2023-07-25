@@ -2,17 +2,18 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
+import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -40,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
+@DirtiesContext
 public class UserAdminResourceIntegrationTest {
 
     private static final String PATH_INTERNAL = ResourceConstants.CONTEXT_PATH_INTERNAL_USER;
@@ -49,12 +52,21 @@ public class UserAdminResourceIntegrationTest {
 
     private MockMvc mvc;
 
+    @Autowired
+    private ConfigurationDao configurationDao;
+
     ObjectMapper mapper = JsonMapper.builder()
             .findAndAddModules()
             .build();
 
+    @BeforeClass
+    public static void init() throws IOException {
+        X509CertificateTestUtils.reloadKeystores();
+    }
+
     @Before
     public void setup() {
+        configurationDao.reloadPropertiesFromDatabase();
         mvc = initializeMockMvc(webAppContext);
     }
 

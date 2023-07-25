@@ -18,9 +18,7 @@ import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
@@ -98,6 +96,11 @@ public class SignatureValidatorTest {
 
         initServletContext();
 
+    }
+
+    @After
+    public void cleanup() {
+        SecurityContextHolder.clearContext();
     }
 
     private void initServletContext() {

@@ -9,9 +9,7 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -79,6 +77,11 @@ public class SMPAuthorizationServiceTest {
             }
         };
 
+    }
+
+    @After
+    public void cleanUp() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test

@@ -25,6 +25,7 @@ import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -61,6 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties = {
         "smp.automation.authentication.external.tls.clientCert.enabled=true",
 })
+@DirtiesContext
 public class SecurityConfigurationClientCertTest {
 
     //Jul++9+23:59:00+2019+GMT"
@@ -161,7 +163,7 @@ public class SecurityConfigurationClientCertTest {
 
         X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcUtils.initializeMockMvc(context);
-        configurationDao.contextRefreshedEvent();
+        configurationDao.reloadPropertiesFromDatabase();
     }
 
     @Parameterized.Parameter()
