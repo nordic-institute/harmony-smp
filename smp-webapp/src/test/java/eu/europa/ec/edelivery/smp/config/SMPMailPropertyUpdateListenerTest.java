@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.properties.SMPMailPropertyUpdateListener;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static org.junit.Assert.*;
 
 public class SMPMailPropertyUpdateListenerTest {

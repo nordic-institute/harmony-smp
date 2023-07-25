@@ -1,0 +1,62 @@
+<div id="edit-resource-panel" class="mat-elevation-z2">
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
+
+      <button id="showResource" mat-raised-button
+              color="primary"
+              matTooltip="Show resource"
+              (click)="onShowButtonDocumentClicked()"
+              >
+        <mat-icon>article</mat-icon>
+        <span>Edit document</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
+  <form [formGroup]="resourceForm">
+    <mat-form-field style="width:100%">
+      <mat-label>Resource type</mat-label>
+      <mat-select placeholder="Resource type for the resource"
+                  matTooltip="Select type for the resource."
+                  id="resourceTypeIdentifier"
+                  formControlName="resourceTypeIdentifier"
+                  required>
+        <mat-option *ngFor="let resDef of domainResourceDefs"
+                    [value]="resDef.identifier">
+          {{resDef.name}} ({{resDef.identifier}})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field  style="width: 100%">
+      <mat-label>Resource identifier</mat-label>
+      <input id="identifierValue_id" type="text" matInput #identifierValue
+             formControlName="identifierValue"
+             required auto-focus-directive>
+    </mat-form-field>
+
+    <mat-form-field  style="width: 100%">
+      <mat-label>Resource scheme</mat-label>
+      <input id="identifierScheme_id" type="text" matInput
+             formControlName="identifierScheme"
+      >
+    </mat-form-field>
+    <mat-form-field style="width:100%">
+      <mat-label>Resource visibility</mat-label>
+      <mat-select formControlName="visibility"
+                  matTooltip="Resource visibility."
+                  id="visibility_id" required>
+        <mat-option *ngFor="let visibility of groupVisibilityOptions"
+                    [value]="visibility.value">
+          {{visibility.key}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <smp-warning-panel
+      type="desc"
+      icon="info"
+      [label]="visibilityDescription"
+    ></smp-warning-panel>
+  </form>
+
+</div>

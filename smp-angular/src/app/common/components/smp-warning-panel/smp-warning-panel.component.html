@@ -1,0 +1,11 @@
+<div
+  [ngClass]="{ 'smp-warning-panel': label,
+  'smp-warning-panel-padding': padding && !!label,
+   'alert-info': type === 'info',
+  'alert-success': type === 'success',
+  'alert-warning': type === 'warning',
+  'alert-error':  type === 'error'}"
+>
+  <mat-icon *ngIf="icon" style="width:50px">{{icon}}</mat-icon>
+  <span>{{label}}</span>
+</div>

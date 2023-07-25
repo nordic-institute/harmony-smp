@@ -5,17 +5,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import pages.components.ConfirmationDialog;
 import pages.components.GenericSelect;
 import pages.components.baseComponents.PageComponent;
 
 public class UserPopup extends PageComponent {
-	public UserPopup(WebDriver driver) {
-		super(driver);
-		PageFactory.initElements(driver, this);
-		rolesSelect = new GenericSelect(driver, rolesSelectContainer);
-	}
-
-
+	public GenericSelect rolesSelect;
 	@FindBy(id = "userDetailsToggle_id")
 	WebElement userDetailsToggle;
 
@@ -28,38 +23,97 @@ public class UserPopup extends PageComponent {
 	@FindBy(id = "emailAddress_id")
 	WebElement emailInput;
 
-	@FindBy(id = "password_id")
-	WebElement passwordInput;
+	@FindBy(id = "np_id")
+	WebElement newPasswordInput;
 
 	@SuppressWarnings("SpellCheckingInspection")
-	@FindBy(id = "usernameconfirmation_id")
+	@FindBy(id = "cnp_id")
 	WebElement confirmationInput;
+
+	@FindBy(css = "input#cp_id")
+	WebElement adminPassInput;
 
 	@FindBy(css = "mat-form-field.username> div > div.mat-form-field-flex > div > div")
 	WebElement usernameValidationError;
 
-	@FindBy(css = "mat-form-field.password > div > div.mat-form-field-flex > div > div")
+	@FindBy(css = "smp-password-change-dialog .password-panel mat-form-field:nth-child(2) .mat-form-field-subscript-wrapper mat-error")
 	WebElement passValidationError;
 
 	@FindBy(css = "mat-form-field.password-confirmation > div > div.mat-form-field-flex > div > div")
 	WebElement passConfirmationValidationError;
 
-	@FindBy(css = ".mat-form-field-infix > div.has-error")
+	@FindBy(css = ".ng-trigger.ng-trigger-transitionMessages.ng-star-inserted > mat-error")
 	WebElement passMatchValidationError;
 
-	@FindBy(css = "mat-dialog-content > table > tr > td > button:nth-child(1)")
+	@FindBy(css = "mat-dialog-actions button:nth-child(1)")
 	WebElement okBtn;
 
-	@FindBy(css = "mat-dialog-content > table > tr > td > button:nth-child(2)")
+	@FindBy(css = "mat-dialog-actions button:nth-child(2)")
 	WebElement cancelBtn;
+
+	@FindBy(css = "#changePassword_id")
+	WebElement changePassword;
+
+	@FindBy(css = "smp-password-change-dialog mat-dialog-actions button:nth-child(1)")
+	WebElement changedPassword;
+
+	@FindBy(css = "#closebuttondialog_id")
+	WebElement passChangedClose;
+
+	@FindBy(css = "smp-password-change-dialog mat-dialog-actions button:nth-child(2)")
+	WebElement passwordDialogClose;
 
 	@FindBy(css = "#role_id")
 	WebElement rolesSelectContainer;
-	public GenericSelect rolesSelect;
+
+	@FindBy(xpath = "//span[text()='Regenerate access token']")
+	WebElement regenarateAccessTokenBtn;
+
+	@FindBy(css = "label > button.mat-focus-indicator.mat-flat-button.mat-button-base.mat-primary")
+	WebElement importBtn;
+
+	@FindBy(xpath = "//span[text()='Show details']")
+	WebElement showDetailsBtn;
+
+	@FindBy(xpath = "//span[text()='Clear']")
+	WebElement clearBtn;
+
+	@FindBy(css = ".has-error.ng-star-inserted")
+	WebElement emailValidationError;
+
+
+	public UserPopup(WebDriver driver) {
+		super(driver);
+		PageFactory.initElements(driver, this);
+		rolesSelect = new GenericSelect(driver, rolesSelectContainer);
+	}
+
+	public boolean isAdminPasswordInputEnable() {
+		boolean bool = adminPassInput.isEnabled();
+		return bool;
+	}
+
+	public boolean isNewPasswordInputEnable() {
+		boolean bool = newPasswordInput.isEnabled();
+		return bool;
+	}
+
+	public boolean isConfirmPasswordInputEnable() {
+		boolean bool = confirmationInput.isEnabled();
+		return bool;
+	}
 
 
 	public boolean isOKButtonActive() {
 		return isEnabled(okBtn);
+	}
+
+	public boolean isChangedPasswordActive() {
+		return isEnabled(passChangedClose);
+	}
+
+	public boolean isChangePasswordButtonActive() {
+		return isEnabled(changedPassword);
 	}
 
 	public boolean isCancelButtonActive() {
@@ -69,7 +123,7 @@ public class UserPopup extends PageComponent {
 	public void fillData(String user, String email, String role, String password, String confirmation) {
 		clearAndFillInput(userNameInput, user);
 		clearAndFillInput(emailInput, email);
-		clearAndFillInput(passwordInput, password);
+		clearAndFillInput(newPasswordInput, password);
 		clearAndFillInput(confirmationInput, confirmation);
 
 		GenericSelect rolesSelect = new GenericSelect(driver, rolesSelectContainer);
@@ -98,11 +152,57 @@ public class UserPopup extends PageComponent {
 		waitForElementToBeEnabled(userNameInput);
 	}
 
-	public void fillDetailsForm(String username, String pass, String confirmation) {
+	public void fillDetailsForm(String username, String email) {
 		clearAndFillInput(userNameInput, username);
-		clearAndFillInput(passwordInput, pass);
-		clearAndFillInput(confirmationInput, confirmation);
-		emailInput.click();
+		clearAndFillInput(emailInput, email);
+	}
+
+	public void clickSetOrChangePassword() {
+		log.info("click change password");
+		waitForElementToBeClickable(changePassword);
+		waitForXMillis(500);
+		changePassword.click();
+		waitForXMillis(500);
+	}
+
+	public void clickCloseAfterChangedPass() {
+		log.info("click close after change password");
+		try {
+			Thread.sleep(10000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		waitForElementToBeClickable(passChangedClose);
+		log.info("ab");
+		passChangedClose.click();
+		log.info("bd");
+		waitForElementToBeGone(passChangedClose);
+		log.info("cd");
+	}
+
+	public ConfirmationDialog clickChangedPassword() {
+		log.info("click changed password");
+		waitForElementToBeClickable(changedPassword);
+		waitForXMillis(500);
+		changedPassword.click();
+		waitForElementToBeGone(changedPassword);
+		return new ConfirmationDialog(driver);
+	}
+
+	public boolean isPopupChangedPasswordEnabled() {
+		return changedPassword.isEnabled();
+	}
+
+	public void setOrChangePassword(String adminPass, String newPass, String confirmPass) {
+
+		clearAndFillInput(adminPassInput, adminPass);
+		clearAndFillInput(newPasswordInput, newPass);
+		clearAndFillInput(confirmationInput, confirmPass);
+	}
+
+	public void clickClosePasswordDialog() {
+		passwordDialogClose.click();
+		waitForElementToBeGone(passwordDialogClose);
 	}
 
 
@@ -110,6 +210,15 @@ public class UserPopup extends PageComponent {
 		try {
 			waitForElementToBeVisible(usernameValidationError);
 			return usernameValidationError.getText();
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
+	public String userEmailValidationGetErrMsg() {
+		try {
+			waitForElementToBeVisible(emailValidationError);
+			return emailValidationError.getText();
 		} catch (Exception e) {
 		}
 		return null;
@@ -144,7 +253,39 @@ public class UserPopup extends PageComponent {
 	}
 
 	public String getPassDontMatchValidationMsg() {
-//		WebElement passwordUnmatchingMsg = driver.findElement(By.cssSelector(".mat-form-field-infix > div.has-error"));
 		return passMatchValidationError.getText();
 	}
+
+	public boolean isUsernameFieldEnabled() {
+		return isEnabled(userNameInput);
+	}
+
+	public boolean isEmailFieldEnabled() {
+		return isEnabled(emailInput);
+	}
+
+	public boolean isRoleSelectFieldEnabled() {
+		return isEnabled(rolesSelectContainer);
+	}
+
+	public boolean isSetOrChangePassOptionBtnEnabled() {
+		return isEnabled(changePassword);
+	}
+
+	public boolean isRegenerateAccesstokenBtnEnabled() {
+		return isEnabled(regenarateAccessTokenBtn);
+	}
+
+	public boolean isImportButtonActive() {
+		return isEnabled(importBtn);
+	}
+
+	public boolean isShowDetailsButtonActive() {
+		return isEnabled(showDetailsBtn);
+	}
+
+	public boolean isClearButtonActive() {
+		return isEnabled(clearBtn);
+	}
+
 }

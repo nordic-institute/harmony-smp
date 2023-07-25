@@ -15,16 +15,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.edelivery</groupId>
-        <artifactId>smp-modules</artifactId>
-        <version>4.2</version>
+        <groupId>org.niis</groupId>
+        <artifactId>harmonysmp-modules</artifactId>
+        <version>2.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>smp-examples</artifactId>
-    <name>smp-examples</name>
+    <artifactId>harmonysmp-examples</artifactId>
+    <name>harmonysmp-examples</name>
     <packaging>pom</packaging>
     <description>The sub-project contains SMP examples of API and SPI implementations. Currently, SPI payload validation example.</description>
     <modules>
-        <module>smp-spi-example</module>
+        <module>smp-spi-payload-validation-example</module>
+        <module>resource-spi-example</module>
     </modules>
 </project>

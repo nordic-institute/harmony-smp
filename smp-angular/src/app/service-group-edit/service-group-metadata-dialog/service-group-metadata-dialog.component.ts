@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
+import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {ServiceMetadataEditRo} from "../service-metadata-edit-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {ServiceMetadataWizardDialogComponent} from "../service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";
@@ -31,7 +31,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   formTitle: string;
   current: ServiceMetadataEditRo & { confirmation?: string };
   currentServiceGroup: ServiceGroupEditRo;
-  dialogForm: FormGroup;
+  dialogForm: UntypedFormGroup;
   metadataValidationMessage: string;
   xmlServiceMetadataObserver: Observable<ServiceMetadataEditRo>;
   isMetadataValid: boolean = true;
@@ -43,7 +43,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
               private dialogRef: MatDialogRef<ServiceGroupMetadataDialogComponent>,
               private alertService: AlertMessageService,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
 
     this.editMode = data.edit;
     this.formTitle = !!data.metadata ? ServiceGroupMetadataDialogComponent.EDIT_MODE : ServiceGroupMetadataDialogComponent.NEW_MODE;
@@ -58,23 +58,23 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
         smlSubdomain: this.currentServiceGroup.serviceGroupDomains[0].smlSubdomain,
         domainCode: this.currentServiceGroup.serviceGroupDomains[0].domainCode,
         domainId: null,
-        status: SearchTableEntityStatus.NEW,
-        xmlContentStatus: SearchTableEntityStatus.NEW,
+        status: EntityStatus.NEW,
+        xmlContentStatus: EntityStatus.NEW,
       };
 
     this.dialogForm = fb.group({
-      'participantIdentifier': new FormControl({value: this.currentServiceGroup.participantIdentifier, disabled: true}),
-      'participantScheme': new FormControl({value: this.currentServiceGroup.participantScheme, disabled: true}),
-      'domainCode': new FormControl({}, [Validators.required]),
+      'participantIdentifier': new UntypedFormControl({value: this.currentServiceGroup.participantIdentifier, disabled: true}),
+      'participantScheme': new UntypedFormControl({value: this.currentServiceGroup.participantScheme, disabled: true}),
+      'domainCode': new UntypedFormControl({}, [Validators.required]),
 
-      'documentIdentifier': new FormControl({value: this.current.documentIdentifier, disabled: this.editMode},
+      'documentIdentifier': new UntypedFormControl({value: this.current.documentIdentifier, disabled: this.editMode},
         [Validators.required]),
-      'documentIdentifierScheme': new FormControl({
+      'documentIdentifierScheme': new UntypedFormControl({
           value: this.current.documentIdentifierScheme,
           disabled: this.editMode
         },
         []),
-      'xmlContent': new FormControl({value: ''}, [Validators.required]),
+      'xmlContent': new UntypedFormControl({value: ''}, [Validators.required]),
     });
 
     // update values
@@ -85,7 +85,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   ngOnInit() {
 
     // retrieve xml extension for this service group
-    if (this.current.status !== SearchTableEntityStatus.NEW && !this.current.xmlContent) {
+    if (this.current.status !== EntityStatus.NEW && !this.current.xmlContent) {
       // init domains
       this.xmlServiceMetadataObserver = this.http.get<ServiceMetadataEditRo>(SmpConstants.REST_METADATA + '/' + this.current.id);
       this.xmlServiceMetadataObserver.subscribe((res: ServiceMetadataEditRo) => {
@@ -97,7 +97,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
 
   }
 
-  checkValidity(g: FormGroup) {
+  checkValidity(g: UntypedFormGroup) {
     Object.keys(g.controls).forEach(key => {
       g.get(key).markAsDirty();
     });
@@ -121,7 +121,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
         this.dialogForm.controls['documentIdentifierScheme'].value,
       documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
       xmlContent: this.dialogForm.controls['xmlContent'].value,
-      statusAction: this.editMode ? SearchTableEntityStatus.UPDATED : SearchTableEntityStatus.NEW,
+      statusAction: this.editMode ? EntityStatus.UPDATED : EntityStatus.NEW,
     }
     //
     let validationObservable = this.http.post<ServiceMetadataValidationEditRo>(SmpConstants.REST_METADATA_VALIDATE, request);
@@ -244,7 +244,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
         this.dialogForm.controls['documentIdentifierScheme'].value,
       documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
       xmlContent: this.dialogForm.controls['xmlContent'].value,
-      statusAction: this.editMode ? SearchTableEntityStatus.UPDATED : SearchTableEntityStatus.NEW,
+      statusAction: this.editMode ? EntityStatus.UPDATED : EntityStatus.NEW,
     }
     //
     let validationObservable = this.http.post<ServiceMetadataValidationEditRo>(SmpConstants.REST_METADATA_VALIDATE, request);
@@ -268,12 +268,12 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
 
     this.current.xmlContent = this.dialogForm.value['xmlContent'];
     // change this two properties only on new
-    if (this.current.status === SearchTableEntityStatus.NEW) {
+    if (this.current.status === EntityStatus.NEW) {
       this.current.documentIdentifier = this.dialogForm.value['documentIdentifier'];
       this.current.documentIdentifierScheme = this.dialogForm.value['documentIdentifierScheme'];
-    } else if (this.current.status === SearchTableEntityStatus.PERSISTED) {
-      this.current.status = SearchTableEntityStatus.UPDATED;
-      this.current.xmlContentStatus = SearchTableEntityStatus.UPDATED;
+    } else if (this.current.status === EntityStatus.PERSISTED) {
+      this.current.status = EntityStatus.UPDATED;
+      this.current.xmlContentStatus = EntityStatus.UPDATED;
     }
     return this.current;
   }
@@ -287,7 +287,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
     return this.isMetaDataXMLChanged() || !this.isEqual(this.current.domainCode, this.domainList.selected.value.domainCode);
   }
 
-  compareDomainCode(sgDomain: ServiceGroupDomainEditRo, domainCode: String): boolean {
+  compareDomainCode(sgDomain: ServiceGroupDomainEditRo, domainCode: string): boolean {
     return sgDomain.domainCode === domainCode;
   }
 

@@ -25,7 +25,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -45,12 +45,12 @@ public abstract class BaseDao<E extends BaseEntity> {
 
     protected String defaultSortMethod;
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "smpEntityManagerFactory")
     protected EntityManager memEManager;
 
     private final Class<E> entityClass;
 
-    public BaseDao() {
+    BaseDao() {
         entityClass = (Class<E>) GenericTypeResolver.resolveTypeArgument(getClass(), BaseDao.class);
     }
 
@@ -80,9 +80,14 @@ public abstract class BaseDao<E extends BaseEntity> {
      */
     @Transactional
     public void persistFlushDetach(E entity) {
-        memEManager.persist(entity);
+        persist(entity);
         memEManager.flush();
         memEManager.detach(entity);
+    }
+
+    public void persist(E entity) {
+        memEManager.persist(entity);
+
     }
 
     /**
@@ -95,6 +100,10 @@ public abstract class BaseDao<E extends BaseEntity> {
         memEManager.merge(entity);
         memEManager.flush();
         memEManager.detach(entity);
+    }
+
+    public E merge(E entity) {
+        return memEManager.merge(entity);
     }
 
 
@@ -110,6 +119,21 @@ public abstract class BaseDao<E extends BaseEntity> {
         E val = find(primaryKey);
         if (val != null) {
             memEManager.remove(val);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Remove managed object
+     * @param objectToRemove
+     * @return true of object is removed
+     * @param <T>
+     */
+    public <T> boolean remove(T objectToRemove) {
+        // Do not use query delete else envers will not work!!
+        if (objectToRemove != null) {
+            memEManager.remove(objectToRemove);
             return true;
         }
         return false;
@@ -250,13 +274,10 @@ public abstract class BaseDao<E extends BaseEntity> {
                                 searchValue, fieldName);
                     }
                 }
-
             }
         }
         return lstPredicate;
     }
-
-
     public Path getPath(Root<E> om, String fieldName) {
         return getPath(om, fieldName, null);
     }

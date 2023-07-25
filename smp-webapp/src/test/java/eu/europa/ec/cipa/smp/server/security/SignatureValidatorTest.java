@@ -19,6 +19,7 @@ import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,13 +141,9 @@ public class SignatureValidatorTest {
     private void commonTest(String serviceGroupId, Principal principal, String filePathToLoad, String signedByCustomizedSignatureFilePath, String defaultSignatureFilePath) throws Throwable {
         //given
         String documentTypeId = encode("ehealth-resid-qns::urn::epsos##services:extended:epsos::107", "UTF-8");
-        //String documentTypeId = Identifiers.asString(new DocumentIdentifier(encode("ehealth-resid-qns::urn::epsos##services:extended:epsos::107", "UTF-8"), "ehealth-resid-qns"));
-
-        //ServiceMetadataInterface serviceMetadataInterface = new ServiceMetadataInterface();
         PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(principal, "N/A");
         authentication.setDetails(principal);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        //serviceMetadataInterface.setHeaders(new DefaultHttpHeader());
 
         //Sign w/ Customized Signature
         Document docPutRequest = SignatureUtil.loadDocument(filePathToLoad);
@@ -157,7 +154,6 @@ public class SignatureValidatorTest {
 
         //When
         //Save ServiceMetadata
-        //serviceMetadataInterface.saveServiceRegistration(serviceGroupId, documentTypeId, signedByCustomizedSignature);
         mvc.perform(put(uri).header("Domain", "domain")
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
@@ -165,7 +161,6 @@ public class SignatureValidatorTest {
                 .andExpect(status().is2xxSuccessful());
 
         //Retrieve saved ServiceMetadata
-        //Document response = serviceMetadataInterface.getServiceRegistration(serviceGroupId, documentTypeId);
         String responseStr = mvc.perform(get(uri))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -183,8 +178,6 @@ public class SignatureValidatorTest {
         //Default signature validation
         Element smpSigPointer = SignatureUtil.findSignatureByParentNode(response.getDocumentElement());
         SignatureUtil.validateSignature(smpSigPointer);
-        //Assert.assertEquals(SignatureUtil.loadDocumentAsString(signedByCustomizedSignatureFilePath), signedByCustomizedSignature);
-        //Assert.assertEquals(SignatureUtil.loadDocumentAsString(defaultSignatureFilePath), SignatureUtil.marshall(response) );
     }
 
     public static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {

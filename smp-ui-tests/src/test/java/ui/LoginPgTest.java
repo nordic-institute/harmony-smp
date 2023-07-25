@@ -1,14 +1,15 @@
 package ui;
 
 import org.openqa.selenium.JavascriptExecutor;
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import pages.components.messageArea.AlertMessage;
-import pages.service_groups.search.SearchPage;
 import pages.components.baseComponents.SMPPage;
+import pages.components.messageArea.AlertMessage;
 import pages.login.LoginPage;
+import pages.password.PasswordChangepopup;
+import pages.service_groups.search.SearchPage;
+import pages.users.UsersPage;
 import utils.Generator;
 import utils.enums.SMPMessages;
 import utils.rest.SMPRestClient;
@@ -157,12 +158,6 @@ public class LoginPgTest extends BaseTest {
 		soft.assertAll();
 	}
 
-	//	This will serve as a reminder to check this message manually
-	@Test(description = "LGN-50")
-	public void SMPNotRunningTest() {
-		throw new SkipException("This test will be executed manually !!!");
-	}
-
 	@Test(description = "LGN-60")
 	public void loginButtonDisableVerification() {
 		SoftAssert soft = new SoftAssert();
@@ -185,8 +180,7 @@ public class LoginPgTest extends BaseTest {
 	}
 
 	@Test(description = "LGN-80")
-	public void verifyLoginButtonEnable()
-	{
+	public void verifyLoginButtonEnable() {
 		SoftAssert soft = new SoftAssert();
 		SearchPage page = new SearchPage(driver);
 		logger.info("Going to login page");
@@ -199,8 +193,7 @@ public class LoginPgTest extends BaseTest {
 	}
 
 	@Test(description = "LGN-90")
-	public void verifyRoleAfterLogin()
-	{
+	public void verifyRoleAfterLogin() {
 		SoftAssert soft = new SoftAssert();
 
 		SMPPage page = new SMPPage(driver);
@@ -212,10 +205,74 @@ public class LoginPgTest extends BaseTest {
 		SearchPage searchPage = loginPage.login(user.get("username"), user.get("password"));
 		soft.assertTrue(searchPage.pageHeader.sandwichMenu.isLoggedIn(), "User is logged in");
 		String roleName = page.pageHeader.getRoleName();
-		soft.assertEquals(roleName , "System administrator" , "the role doesn't contain System administrator");
+		soft.assertEquals(roleName, "System administrator", "the role doesn't contain System administrator");
 
 		soft.assertAll();
 	}
 
+	@Test(description = "LGN-100")
+	public void loggedUserPasswordDialogView() {
+		SoftAssert soft = new SoftAssert();
 
+
+		String username = Generator.randomAlphaNumeric(10);
+		SMPRestClient.createUser(username, "SYSTEM_ADMIN");
+		logger.info("created user " + username);
+
+		SMPPage page = new SMPPage(driver);
+		logger.info("Going to login page");
+		page.pageHeader.goToLogin();
+
+		logger.info("trying to login with " + username);
+		LoginPage loginPage = new LoginPage(driver);
+		SearchPage searchPage = loginPage.login(username, "QW!@qw12");
+
+		soft.assertTrue(searchPage.pageHeader.sandwichMenu.isLoggedIn(), "User is not logged in");
+		soft.assertTrue(searchPage.isLoaded(), "Search page is not loaded");
+
+		PasswordChangepopup passPopup = searchPage.pageHeader.sandwichMenu.clickChangePasswordOption();
+		soft.assertTrue(passPopup.isCurrentPasswordInputEnable(), "Current password input is not enabled in the password dialog for logged user");
+		soft.assertTrue(passPopup.isNewPasswordInputEnable(), "New password input is not enabled in the password dialog for logged user");
+		soft.assertTrue(passPopup.isConfirmPasswordInputEnable(), "Confirm password input is not enabled in the password dialog for logged user");
+
+		searchPage = passPopup.clickClosePasswordDialog();
+
+		soft.assertAll();
+
+	}
+
+
+	@Test(description = "LGN-100")
+	public void passwordChangeForLoggedUser() {
+		SoftAssert soft = new SoftAssert();
+		String userName = Generator.randomAlphaNumeric(10);
+		String validPass = "Aabcdefghijklm1@";
+
+		SMPPage page = genericLoginProcedure("SYS_ADMIN");
+		SMPRestClient.createUser(userName, "SMP_ADMIN");
+		logger.info("created user " + userName);
+		page.pageHeader.sandwichMenu.logout();
+		page.pageHeader.goToLogin();
+		LoginPage loginPage = new LoginPage(driver);
+		SearchPage searchPage = loginPage.login(userName, "QW!@qw12");
+		PasswordChangepopup passDialog = searchPage.pageHeader.sandwichMenu.clickChangePasswordOption();
+
+		passDialog.waitForXMillis(1000);
+
+		passDialog.fillDataForLoggedUser("QW!@qw12", validPass, validPass);
+		passDialog.clickChangedPassword();
+		searchPage = passDialog.clickCloseAfterChangedPassForLoggedUser();
+
+		passDialog.waitForXMillis(1000);
+
+		soft.assertTrue(searchPage.isLoaded(), "After changing the password for a logged user the page is not redirecting to searchpage");
+		SMPPage page1 = genericLoginProcedure("SYS_ADMIN");
+		logger.info("Going to Users page");
+		page1.sidebar.goToPage(UsersPage.class);
+		UsersPage usersPage = new UsersPage(driver);
+		soft.assertTrue(usersPage.grid().isUserListed(userName), "User is not present in the page after changing the password");
+
+		soft.assertAll();
+
+	}
 }

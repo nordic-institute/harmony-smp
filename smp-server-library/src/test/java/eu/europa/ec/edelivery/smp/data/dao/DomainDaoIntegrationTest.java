@@ -1,9 +1,11 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,11 +28,12 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     @Autowired
     DomainDao testInstance;
 
-    @Autowired
-    ServiceGroupDao serviceGroupDao;
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
+    @Before
+    public void prepareDatabase() {
+        testUtilsDao.clearData();
+    }
+
 
     @Test
     public void persistDomain() {
@@ -62,11 +65,10 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
 
     @Test
     public void getTheOnlyDomainNoDomain() {
-        // set
-        expectedEx.expect(IllegalStateException.class);
-        expectedEx.expectMessage(ErrorCode.NO_DOMAIN.getMessage());
+
         // execute
-        testInstance.getTheOnlyDomain();
+        IllegalStateException exception = assertThrows(IllegalStateException.class, ()->testInstance.getTheOnlyDomain());
+        assertEquals(ErrorCode.NO_DOMAIN.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -102,8 +104,6 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
 
     @Test
     public void getDomainByCodeNotExists() {
-        // set
-
         // test
         Optional<DBDomain> res = testInstance.getDomainByCode(TestConstants.TEST_DOMAIN_CODE_1);
         assertFalse(res.isPresent());
@@ -155,31 +155,23 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testValidateUsersForDeleteOKScenario() {
+    public void testValidateDeleteOKScenario() {
         // set
         DBDomain d = TestDBUtils.createDBDomain();
         testInstance.persistFlushDetach(d);
 
         // execute
-        List<DBDomainDeleteValidation> lst = testInstance.validateDomainsForDelete(Collections.singletonList(d.getId()));
-        assertTrue(lst.isEmpty());
+        Long cnt = testInstance.getResourceCountForDomain(d.getId());
+        assertEquals(0, cnt.intValue());
     }
 
     @Test
-    public void testValidateUsersForDeleteUserIsOwner() {
+    public void testValidateDeleteHasResources() {
         // set
-        DBDomain d = TestDBUtils.createDBDomain();
-        testInstance.persistFlushDetach(d);
+        testUtilsDao.createSubresources();
+        DBDomain d = testUtilsDao.getD1();
+        Long cnt  = testInstance.getResourceCountForDomain(d.getId());
 
-        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
-        sg.addDomain(d);
-
-        serviceGroupDao.persistFlushDetach(sg);
-
-        // execute
-        List<DBDomainDeleteValidation> lst = testInstance.validateDomainsForDelete(Collections.singletonList(d.getId()));
-        assertEquals(1, lst.size());
-        assertEquals(d.getDomainCode(), lst.get(0).getDomainCode());
-        assertEquals(1, lst.get(0).getCount().intValue());
+        assertEquals(1, cnt.intValue());
     }
 }

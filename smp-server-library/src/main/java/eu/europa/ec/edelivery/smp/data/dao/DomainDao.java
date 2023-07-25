@@ -13,8 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainDeleteValidation;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.StringUtils;
@@ -23,10 +23,12 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
@@ -37,9 +39,10 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMA
 @Repository
 public class DomainDao extends BaseDao<DBDomain> {
 
+
     /**
      * Returns the only single record from smp_domain table.
-     * Returns Optional.empty() if there is more than 1 records present.
+     * Returns Optional.empty() if there is more than 1 record present.
      *
      * @return the only single record from smp_domain table
      * @throws IllegalStateException if no domain is configured
@@ -47,7 +50,7 @@ public class DomainDao extends BaseDao<DBDomain> {
     public Optional<DBDomain> getTheOnlyDomain() {
         try {
             // expected is only one domain,
-            TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getAll", DBDomain.class);
+            TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
             return Optional.empty();
@@ -63,21 +66,37 @@ public class DomainDao extends BaseDao<DBDomain> {
      * @throws IllegalStateException if no domain is configured
      */
     public List<DBDomain> getAllDomains() {
-        TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getAll", DBDomain.class);
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
+
         return query.getResultList();
+    }
+
+
+    public Optional<DBDomain> getFirstDomain() {
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);
+        query.setMaxResults(1);
+        try {
+            // expected is only one domain,
+            return Optional.of(query.getSingleResult());
+        } catch (NonUniqueResultException e) {
+            return Optional.empty();
+        }
     }
 
     /**
      * Returns the domain by code.
-     * Returns Returns the domain or Optional.empty() if there is no domain.
+     * Returns the domain or Optional.empty() if there is no domain.
      *
      * @return the only single record for domain code from smp_domain table or empty value
-     * @throws IllegalStateException if no domain is not configured
+     * @throws IllegalStateException if more than one domain is not configured for the code!
      */
     public Optional<DBDomain> getDomainByCode(String domainCode) {
+        if (StringUtils.isEmpty(domainCode)) {
+            return Optional.empty();
+        }
         try {
-            TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getDomainByCode", DBDomain.class);
-            query.setParameter("domainCode", domainCode);
+            TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_CODE, DBDomain.class);
+            query.setParameter(PARAM_DOMAIN_CODE, domainCode);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
@@ -85,6 +104,81 @@ public class DomainDao extends BaseDao<DBDomain> {
             throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(domainCode));
         }
     }
+
+
+    public Optional<DBDomain> getDomainBySmlSmpId(String smlSmpId) {
+        if (StringUtils.isEmpty(smlSmpId)) {
+            return Optional.empty();
+        }
+        try {
+            TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_SMP_SML_ID, DBDomain.class);
+            query.setParameter(PARAM_DOMAIN_SML_SMP_ID, smlSmpId);
+            return Optional.of(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(smlSmpId));
+        }
+    }
+
+    public Long getResourceCountForDomain(Long domainId) {
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCES_BY_DOMAIN_ID_COUNT, Long.class);
+
+        query.setParameter(PARAM_DOMAIN_ID, domainId);
+        return query.getSingleResult();
+    }
+
+    public Long getDomainsByUserIdAndDomainRolesCount(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getSingleResult();
+    }
+
+    public List<DBDomain> getDomainsByUserIdAndDomainRoles(Long userId, MembershipRoleType ... roleTypes) {
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_ROLES, DBDomain.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
+    public Long getDomainsByUserIdAndGroupRolesCount(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_GROUP_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getSingleResult();
+    }
+
+    public List<DBDomain> getDomainsByUserIdAndGroupRoles(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_GROUP_ROLES, DBDomain.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
+    public Long getDomainsByUserIdAndResourceRolesCount(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_RESOURCE_ROLES_COUNT, Long.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getSingleResult();
+    }
+
+    public List<DBDomain> getDomainsByUserIdAndResourceRoles(Long userId, MembershipRoleType ... roleTypes) {
+
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_BY_USER_RESOURCE_ROLES, DBDomain.class);
+        query.setParameter(PARAM_USER_ID, userId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
+        return query.getResultList();
+    }
+
+    public List<MembershipRoleType> toList(MembershipRoleType ... roleTypes){
+        return Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
+    }
+
 
     /**
      * Check if domain for domain code exists. If not SMPRuntimeException with DOMAIN_NOT_EXISTS is thrown.
@@ -120,19 +214,6 @@ public class DomainDao extends BaseDao<DBDomain> {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Validation report for domain which are used by  service groups from list of domain ids..
-     *
-     * @param domainIds
-     * @return
-     */
-    public List<DBDomainDeleteValidation> validateDomainsForDelete(List<Long> domainIds) {
-        TypedQuery<DBDomainDeleteValidation> query = memEManager.createNamedQuery("DBDomainDeleteValidation.validateDomainUsage",
-                DBDomainDeleteValidation.class);
-        query.setParameter("domainIds", domainIds);
-        return query.getResultList();
     }
 
 }

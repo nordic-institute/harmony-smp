@@ -25,6 +25,19 @@
     },
     "cookieDomainRewrite": "localhost"
   },
+  "/edit/**": {
+    "target" : "http://localhost:8080/",
+    "secure" : "false",
+    "pathRewrite": {
+      "^/edit": "/smp/ui/edit"
+    },
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "cookiePathRewrite": {
+      "/smp": "/"
+    },
+    "cookieDomainRewrite": "localhost"
+  },
   "/internal/**": {
     "target" : "https://niis-smp.lxd:8443/ui/",
     "secure" : "false",

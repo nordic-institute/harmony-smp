@@ -1,22 +1,20 @@
 #!/bin/bash
 
 WORKING_DIR="$(dirname $0)"
-SML_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl"
-SML_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql"
-SML_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql"
+SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl"
+#SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql"
+SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql"
 # soap ui data
 PREFIX="smp-sml-tomcat-mysql"
 SMP_VERSION=
 
-# clear volume and containers - to run  restart from strach 
 
-
-# READ argumnets 
+# READ arguments
 while getopts i:v: option
 do
   case "${option}"
   in
-    i) SML_INIT_DATABASE_DATA=${OPTARG};;
+    i) SMP_INIT_DATABASE_DATA=${OPTARG};;
     v) SMP_VERSION=${OPTARG};;
   esac
 done
@@ -42,9 +40,9 @@ then
 fi
 
 # create  database init script from l
-cp   "${SML_INIT_DATABASE}" ./properties/db-scripts/mysql5innodb.ddl
-cp   "${SML_INIT_DATABASE_DATA}" ./properties/db-scripts/mysql5innodb-data.sql
-
+cp   "${SMP_INIT_DATABASE}" ./properties/db-scripts/mysql5innodb.ddl
+cp   "${SMP_INIT_DATABASE_DATA}" ./properties/db-scripts/mysql5innodb-data.sql
+cp
 
 
 function clearOldContainers {
@@ -54,12 +52,8 @@ function clearOldContainers {
 }
 
 
-#
-# Always delete shared-status-folder else weblogic will start to quick!
-# because statuses are sync over shared-status-folder folders and it could contain status from previous run.
-
 export SMP_VERSION="${SMP_VERSION}"
-echo "Clear old containser"
+echo "Clear old containers"
 clearOldContainers
 # start " 
 echo "Start compose"

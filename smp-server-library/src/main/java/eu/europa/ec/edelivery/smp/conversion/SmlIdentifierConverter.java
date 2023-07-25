@@ -15,8 +15,9 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -25,7 +26,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class SmlIdentifierConverter {
 
-    public static ServiceMetadataPublisherServiceForParticipantType toBusdoxParticipantId(ParticipantIdentifierType participantId, String smpId) {
+    public static ServiceMetadataPublisherServiceForParticipantType toBusdoxParticipantId(Identifier participantId, String smpId) {
         if (isBlank(smpId)) {
             throw new IllegalStateException("SMP ID is null or empty");
         }
@@ -40,5 +41,22 @@ public class SmlIdentifierConverter {
         parId.setValue(participantId.getValue());
         busdoxIdentifier.setParticipantIdentifier(parId);
         return busdoxIdentifier;
+    }
+
+
+    public static SMPAdvancedServiceForParticipantType toBDMSLAdvancedParticipantId(Identifier participantId, String smpId, String serviceMetadata) {
+        if (isBlank(smpId)) {
+            throw new IllegalStateException("SMP ID is null or empty");
+        }
+        if (participantId == null || isBlank(participantId.getValue())) {
+            throw new IllegalStateException("Participant Scheme or Id is null or empty");
+        }
+
+        SMPAdvancedServiceForParticipantType bdmslRequest = new SMPAdvancedServiceForParticipantType();
+        bdmslRequest.setServiceName(serviceMetadata);
+
+        ServiceMetadataPublisherServiceForParticipantType bdxlRequest = toBusdoxParticipantId(participantId, smpId);
+        bdmslRequest.setCreateParticipantIdentifier(bdxlRequest);
+        return bdmslRequest;
     }
 }

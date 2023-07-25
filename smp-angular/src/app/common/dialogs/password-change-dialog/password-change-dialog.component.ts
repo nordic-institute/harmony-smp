@@ -1,13 +1,13 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {User} from "../../../security/user.model";
 import {GlobalLookups} from "../../global-lookups";
-import {UserDetailsService} from "../../../user/user-details-dialog/user-details.service";
+import {UserDetailsService} from "../../../system-settings/user/user-details.service";
 import {AlertMessageService} from "../../alert-message/alert-message.service";
 import {SecurityService} from "../../../security/security.service";
 import {InformationDialogComponent} from "../information-dialog/information-dialog.component";
-import {UserRo} from "../../../user/user-ro.model";
+import {UserRo} from "../../../system-settings/user/user-ro.model";
 
 @Component({
   selector: 'smp-password-change-dialog',
@@ -17,7 +17,7 @@ import {UserRo} from "../../../user/user-ro.model";
 export class PasswordChangeDialogComponent {
 
   formTitle = "Set/Change password dialog";
-  dialogForm: FormGroup;
+  dialogForm: UntypedFormGroup;
   hideCurrPwdFiled: boolean = true;
   hideNewPwdFiled: boolean = true;
   hideConfPwdFiled: boolean = true;
@@ -35,7 +35,7 @@ export class PasswordChangeDialogComponent {
     private alertService: AlertMessageService,
     private securityService: SecurityService,
     public dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
   ) {
     // disable close of focus lost
     dialogRef.disableClose = true;
@@ -45,16 +45,16 @@ export class PasswordChangeDialogComponent {
 
     this.forceChange = this.current.forceChangeExpiredPassword;
 
-    let currentPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
+    let currentPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
       this.securityService.getCurrentUser().casAuthenticated && this.adminUser ? null : [Validators.required]);
-    let newPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
+    let newPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
       [Validators.required, Validators.pattern(this.passwordValidationRegExp), equal(currentPasswdFormControl, false)]);
-    let confirmNewPasswdFormControl: FormControl = new FormControl({value: null, readonly: false},
+    let confirmNewPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
       [Validators.required, equal(newPasswdFormControl, true)]);
 
     this.dialogForm = fb.group({
-      'email': new FormControl({value: null, readonly: true}, null),
-      'username': new FormControl({value: null, readonly: true}, null),
+      'email': new UntypedFormControl({value: null, readonly: true}, null),
+      'username': new UntypedFormControl({value: null, readonly: true}, null),
       'current-password': currentPasswdFormControl,
       'new-password': newPasswdFormControl,
       'confirm-new-password': confirmNewPasswdFormControl
@@ -65,6 +65,12 @@ export class PasswordChangeDialogComponent {
     this.dialogForm.controls['current-password'].setValue('');
     this.dialogForm.controls['new-password'].setValue('');
     this.dialogForm.controls['confirm-new-password'].setValue('');
+
+    this.dialogForm.controls['new-password'].valueChanges.subscribe({
+      next: (value) => {
+        this.dialogForm.controls['confirm-new-password'].updateValueAndValidity();
+      }
+    });
   }
 
   get showCurrentPasswordField():boolean {
@@ -153,7 +159,7 @@ export class PasswordChangeDialogComponent {
   }
 }
 
-export function equal(currentPasswdFormControl: FormControl, matchEqual: boolean): ValidatorFn {
+export function equal(currentPasswdFormControl: UntypedFormControl, matchEqual: boolean): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null =>
     (matchEqual ? control.value === currentPasswdFormControl.value : control.value !== currentPasswdFormControl.value)
       ? null : {error: control.value};

@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.config;
 import eu.europa.ec.edelivery.security.ClientCertAuthenticationFilter;
 import eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider;
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.error.SMPSecurityExceptionHandler;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -45,6 +46,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
@@ -85,7 +87,7 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public WSSecurityConfigurerAdapter(SMPAuthenticationProvider smpAuthenticationProvider,
-                                       ConfigurationService configurationService,
+                                       @Lazy ConfigurationService configurationService,
                                        @Lazy MDCLogRequestFilter mdcLogRequestFilter,
                                        @Lazy CsrfTokenRepository csrfTokenRepository,
                                        @Lazy RequestMatcher csrfURLMatcher,
@@ -139,8 +141,11 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .addFilter(getEDeliveryX509AuthenticationFilter());
 
 
-        httpSecurity.httpBasic().authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
-                .anonymous().authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
+        httpSecurity
+                .httpBasic()
+                .authenticationEntryPoint(smpSecurityExceptionHandler).and() // username
+                .anonymous()
+                .authorities(SMPAuthority.S_AUTHORITY_ANONYMOUS.getAuthority()).and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
                 .antMatchers(HttpMethod.POST, SMP_SECURITY_PATH_AUTHENTICATE).permitAll()
@@ -148,11 +153,11 @@ public class WSSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .regexMatchers(HttpMethod.DELETE, "^/(?!ui/)[^/]*(/services/.*)?$").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
-                SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN)
+                        ApplicationRoleType.USER.getAPIRole(),
+                        ApplicationRoleType.SYSTEM_ADMIN.getAPIRole())
                 .regexMatchers(HttpMethod.PUT, "^/(?!ui/)[^/]*(/services/.*)?$").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_TOKEN_WS_SERVICE_GROUP_ADMIN,
-                SMPAuthority.S_AUTHORITY_TOKEN_WS_SMP_ADMIN)
+                        ApplicationRoleType.USER.getAPIRole(),
+                        ApplicationRoleType.SYSTEM_ADMIN.getAPIRole())
                 .regexMatchers(HttpMethod.GET, "^/(?!ui/)[^/]*(/services/.*)?$").permitAll().and()
         ;
     }

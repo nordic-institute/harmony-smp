@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 MAINTAINER Joze Rihtarsic
 
 ARG SMP_VERSION
@@ -6,13 +6,12 @@ ARG SMP_LOGICAL_ADDRESS="${SMP_LOGICAL_ADDRESS:-http://localhost:8080/smp/}"
 
 # Set the SMP_VERSION env variable  \
 ENV SMP_HOME=/opt/smp  \
-    MYSQL_DRV_VERSION=5.1.46  \
-    MYSQL_DRV_SHA1=9a3e63b387e376364211e96827bc27db8d7a92e9	  \
-    TOMCAT_MAJOR=8    \
-    TOMCAT_VERSION=8.5.73   \
-    #native version is dependant from tomcat version!
-    TOMCAT_NAVITVE_VERSION=1.2.31  \
-    TOMCAT_SHA512=bc39e4545c779326803bc2574592d72dfea1b56e4cb95d7ac5264c1b91f3da8b1b94f53c53390d1c8348ebe1dad2c10719cc2746b179e1085719d964aa60a779   \
+    MYSQL_DRV_VERSION=8.0.32  \
+    MYSQL_DRV_SHA1=41ec3f8cdaccf6c46a47d7cd628eeb59a926d9d4 \
+    TOMCAT_MAJOR=9  \
+    TOMCAT_VERSION=9.0.73 \
+    TOMCAT_NAVITVE_VERSION=1.2.36  \
+    TOMCAT_SHA512=4deac84d6f8ff147d0060605e85fd2c0bf92b9eb622e426d4acc19d0cd4fc0d46a394e01e5664076a5e4f1c39ae14fc2238ebee53a7779bf086540f6dc4967c8 \
     SMP_DB_SCHEMA=smp  \
     SMP_DB_USER=smp \
     SMP_INIT_PROPERTY_DELIMITER="||"  \
@@ -20,21 +19,22 @@ ENV SMP_HOME=/opt/smp  \
     SMP_DB_USER_PASSWORD=smp  \
     MYSQL_ROOT_PASSWORD=root \
 # sml environment variables
-    SML_VERSION=4.0.1 \
+    SML_VERSION=4.2 \
     SML_DISTRIBUTION_URL=https://ec.europa.eu/digital-building-blocks/artifact/repository/public/eu/europa/ec/bdmsl/bdmsl-webapp/ \
-    SML_SHA512=b40d6ff717216635839e420f467b9dbf5cab87582babc103dea3ed7cbb0fd264f0755fc95607bb3d5ddbcd976a13f0d2170cbf824b3dfebb2ca046579a5d5278  \
-    SML_SETUP_SHA512=dee04b6c60696c052f4807cc24df72a09dd7443e1c87df82967b08a02381c3042af338f726bc60f40e9428de301af8c317839d286ac58e37b5c7c6ae36c42468  \
+    SML_SHA512=b505958c87ce046c0b25f78fbb8555a22a3a636b3906fec77fd24341f649e9e01037083b2617827269ff3554ddbe5168cb4278f1e2d81172e444f6150e92f73e  \
+    SML_SETUP_SHA512=e99ee7b8e193566964321ca126f2b20dfcc2ed904e5c2d0dc8253e49b727067e48420813bec3ed617d64724a66525c2aa17e502a130a2156d6cb81406c5d2bf9  \
     SML_DB_SCHEMA=sml  \
     SML_DB_USER=sml \
     SML_DB_USER_PASSWORD=sml  \
     BIND_USER=bind   \
 # misc variables
-   JACOCO_VERSION=0.8.4 \
-   LANG=en_US.utf8  \
-   LD_LIBRARY_PATH=/usr/local/apr/lib \
+    JACOCO_VERSION=0.8.8 \
+    JACOCO_SHA512=bc9bbd10434900e7b48e68678cb280173db86489cdd320552089eb91bb470e7297d2f6f4f595907c35747c36cfa212f3fac71eb4005fce6c65451505e17d19a2 \
+    LANG=en_US.utf8  \
+    LD_LIBRARY_PATH=/usr/local/apr/lib \
    # set debug
-   JPDA_ADDRESS="5005" \
-   JPDA_TRANSPORT="dt_socket"
+    JPDA_ADDRESS="5005" \
+    JPDA_TRANSPORT="dt_socket"
 
 
 # Exposing ports used in entrypoint.sh ..
@@ -65,28 +65,32 @@ RUN apt-get update \
 	    libssl-dev \
 	    gcc \
 	    make \
-    && rm -rf /var/lib/apt/lists/*  \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+    && rm -rf /var/lib/apt/lists/*
+RUN   localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
 # set user 
     && addgroup mysql mysql   \
 # download SMP, SMP setup, tomcat mysql driver
     && mkdir -p $SMP_HOME   \
-    && cd $SMP_HOME    \
-    && curl -O  https://repo1.maven.org/maven2/mysql/mysql-connector-java/$MYSQL_DRV_VERSION/mysql-connector-java-$MYSQL_DRV_VERSION.jar    \
-    && sha1sum mysql-connector-java-$MYSQL_DRV_VERSION.jar  | grep $MYSQL_DRV_SHA1    \
-    && curl -o tomcat.zip "https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.zip"    \
+    && cd $SMP_HOME \
+    && curl -o mysql-connector-j.jar https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/$MYSQL_DRV_VERSION/mysql-connector-j-$MYSQL_DRV_VERSION.jar \
+    && sha1sum mysql-connector-j.jar  | grep $MYSQL_DRV_SHA1 \
+    && curl -o tomcat.zip "https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.zip" \
     && sha512sum tomcat.zip | grep $TOMCAT_SHA512    \
-    && unzip tomcat.zip   \
-    && mv mysql-connector-java-$MYSQL_DRV_VERSION.jar $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/lib/    \
+    && unzip tomcat.zip \
+    && mv mysql-connector-j.jar $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/lib/ \
     && rm tomcat.zip   \
     && mkdir -p $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/  \
     && echo "export CLASSPATH=$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes" >   $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/setenv.sh  \
 # add sml and smp datasource 
-    && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SMP_DB_USER\" password=\"$SMP_DB_USER_PASSWORD\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$SMP_DB_SCHEMA?useSSL=false\&amp;characterEncoding=UTF-8\&amp;useUnicode=true\"\/>\\n<Resource name=\"jdbc\/eDeliverySmlDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SML_DB_USER\" password=\"$SML_DB_USER_PASSWORD\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$SML_DB_SCHEMA?useSSL=false\&amp;characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
-    && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"  \
+    && sed -i -e "s/<\/Context>/<Resource name=\"jdbc\/eDeliverySmpDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SMP_DB_USER\" password=\"$SMP_DB_USER_PASSWORD\" driverClassName=\"com.mysql.cj.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$SMP_DB_SCHEMA?characterEncoding=UTF-8\&amp;useUnicode=true\"\/>\\n<Resource name=\"jdbc\/eDeliverySmlDs\" auth=\"Container\" type=\"javax.sql.DataSource\" maxTotal=\"100\" maxIdle=\"30\" maxWaitMillis=\"10000\" username=\"$SML_DB_USER\" password=\"$SML_DB_USER_PASSWORD\" driverClassName=\"com.mysql.jdbc.Driver\" url=\"jdbc:mysql:\/\/localhost:3306\/$SML_DB_SCHEMA?characterEncoding=UTF-8\&amp;useUnicode=true\"\/><\/Context>/g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/context.xml"  \
+    && sed -i -e "s/<Connector /<Connector URIEncoding=\"UTF-8\" /g" "$SMP_HOME/apache-tomcat-$TOMCAT_VERSION/conf/server.xml"
 # add SMP init configuration
-    && echo "datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
-    && echo "hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
+# echo "smp.datasource.jndi=java:comp/env/jdbc/eDeliverySmpDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
+RUN  echo "smp.jdbc.driver=com.mysql.cj.jdbc.Driver" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
+  && echo "smp.jdbc.url=jdbc:mysql://localhost:3306/$SMP_DB_SCHEMA?useSSL=false&characterEncoding=UTF-8&useUnicode=true&allowPublicKeyRetrieval=true" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
+     && echo "smp.database.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
+     && echo "smp.jdbc.user=$SMP_DB_USER" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
+     && echo "smp.jdbc.password=$SMP_DB_USER_PASSWORD" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/smp.config.properties   \
    # add SML init configuration
    && echo "sml.datasource.jndi=java:comp/env/jdbc/eDeliverySmlDs" >  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \
    && echo "sml.hibernate.dialect=org.hibernate.dialect.MySQLDialect" >>  $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/classes/sml.config.properties  \
@@ -131,7 +135,7 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && unzip /tmp/sml-setup.zip -d /tmp/    \
     && mv /tmp/bdmsl-webapp-$SML_VERSION /tmp/sml-setup \
     && cp /tmp/sml-setup/encriptionPrivateKey.private  /opt/smlconf/encriptionPrivateKey.private \
-    && cp /tmp/sml-setup/keystore.jks /opt/smlconf/keystore.jk \
+    && cp /tmp/sml-setup/keystore.jks /opt/smlconf/keystore.jks \
     && mkdir $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/smp-libs \
     && chmod u+x /sbin/entrypoint.sh
 

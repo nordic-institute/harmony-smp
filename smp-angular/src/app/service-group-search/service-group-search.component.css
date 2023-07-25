@@ -13,17 +13,17 @@
 }
 
 
-.datatable-body{
+.datatable-body {
   overflow-y: scroll;
 }
 
 ::ng-deep .inner-table {
-  margin-left: 100px;
+  margin-left: 50px;
   width: 80%;
 }
 
 ::ng-deep .inner-table .datatable-body-cell {
-  padding:  1.5em 2px !important;
+  padding:  0.2em !important;
 
 }
 

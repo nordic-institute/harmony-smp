@@ -1,10 +1,12 @@
 package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -35,9 +37,16 @@ public class URLCsrfIgnoreMatcher implements RequestMatcher {
 
     @Override
     public boolean matches(HttpServletRequest request) {
+        // ignore non ui sites!
+        String uri = request.getRequestURI();
+        LOG.debug("Test CSRF for uri [{}]", uri);
+        if(!StringUtils.startsWithAny(uri,"/ui/","/smp/ui/")) {
+            LOG.debug("URL is not part of the UI  [{}]", uri);
+            return false;
+        }
         Optional<RegexRequestMatcher> unprotectedMatcher = unprotectedMatcherList.stream().filter(requestMatcher -> requestMatcher.matches(request)).findFirst();
         if (unprotectedMatcher.isPresent()) {
-            LOG.debug("Ignore CSRF for: [{}] - [{}] with matcher [{}]!", request.getMethod(), request.getRequestURI(),unprotectedMatcher.get().toString());
+            LOG.debug("Ignore CSRF for: [{}] - [{}] with matcher [{}]!", request.getMethod(), request.getRequestURI(),unprotectedMatcher.get());
         }
         return !unprotectedMatcher.isPresent();
     }

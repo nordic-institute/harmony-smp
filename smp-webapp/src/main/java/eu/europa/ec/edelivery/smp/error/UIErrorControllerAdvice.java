@@ -15,6 +15,7 @@ package eu.europa.ec.edelivery.smp.error;
 
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
 import eu.europa.ec.edelivery.smp.error.exceptions.SMPResponseStatusException;
+import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.springframework.http.HttpStatus;
@@ -34,11 +35,16 @@ import static java.lang.String.format;
  * @author Joze Rihtarsic
  * @since 4.2
  */
-@RestControllerAdvice("eu.europa.ec.edelivery.smp.ui")
+@RestControllerAdvice({"eu.europa.ec.edelivery.smp.ui"})
 public class UIErrorControllerAdvice extends AbstractErrorControllerAdvice {
 
-
-    @ExceptionHandler({BadCredentialsException.class, RuntimeException.class, SMPRuntimeException.class, SMPResponseStatusException.class, AuthenticationException.class,})
+    @Override
+    @ExceptionHandler({BadCredentialsException.class,
+            RuntimeException.class,
+            SMPRuntimeException.class,
+            SMPResponseStatusException.class,
+            AuthenticationException.class,
+            BadRequestException.class})
     public ResponseEntity handleRuntimeException(RuntimeException ex) {
         return super.handleRuntimeException(ex);
     }

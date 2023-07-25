@@ -1,0 +1,79 @@
+<div id="admin-truststore-panel">
+  <data-panel id="admin-truststore-data-panel"
+              title="Truststore administration"
+              text="Truststore is contains certificate trust anchors. <br /> Certificates used for authentication must have trust anchors in the truststore."
+              [labelColumnContent]="searchCertificatePanel">
+    <ng-template #noDataFound>
+      <div class="empty-data-panel">No certificate selected.</div>
+    </ng-template>
+    <smp-warning-panel *ngIf="selected?.invalid;"
+                       icon="error"
+                       label="Invalid certificate: {{selected.invalidReason}}">
+    </smp-warning-panel>
+
+    <certificate-panel [certificate]="selected" *ngIf="selected; else noDataFound"></certificate-panel>
+  </data-panel>
+</div>
+
+
+<ng-template #searchCertificatePanel>
+  <smp-warning-panel  *ngIf="dataSource.data?.length ==0"
+                      icon="warn"
+                     label="When truststore is empty, the trustiness of the certificate is not validated!">
+  </smp-warning-panel>
+  <mat-form-field id="truststore-filter">
+    <mat-label>Filter certificate by alias</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Alias name" #input>
+  </mat-form-field>
+
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <div class="custom-file-upload">
+        <input #fileInput type="file" id="custom-file-upload" accept=".cer,.crt,.pem,.der"
+               (change)="uploadCertificate($event)">
+        <button mat-raised-button mat-flat-button color="primary"
+                (click)="fileInput.click()">Add certificate
+        </button>
+      </div>
+      <button mat-raised-button
+              [disabled]="!selected"
+              color="primary"
+              (click)="onDeleteSelectedCertificateClicked()">
+        <mat-icon>delete</mat-icon>
+        <span>Delete selected</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <table class="mat-elevation-z2" id="admin-truststore-table" mat-table [dataSource]="dataSource" matSort>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="alias">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Alias</th>
+      <td mat-cell *matCellDef="let row"
+          [ngClass]="{'datatable-row-error': row.invalid}"
+          [matTooltip]="row.certificateId">{{row.alias}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+        (click)="certificateSelected(row)"
+        [ngClass]="{'datatable-row-selected': row==selected,'datatable-row-odd': odd}"
+    ></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td *ngIf="input.value;else noDataFound" class="mat-cell" colspan="2">No data matching the filter "{{input.value}}
+        "
+      </td>
+      <ng-template #noDataFound>
+        <td class="mat-cell" colspan="2">No data</td>
+      </ng-template>
+    </tr>
+  </table>
+
+  <mat-paginator class="mat-elevation-z2" id="extension-paginator"
+                 [hidePageSize]="true"
+                 [showFirstLastButtons]="true"
+                 [pageSize]="5" aria-label="Select page"></mat-paginator>
+
+</ng-template>

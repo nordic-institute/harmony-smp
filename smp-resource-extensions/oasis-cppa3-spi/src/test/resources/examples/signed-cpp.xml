@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><CPP xmlns="http://docs.oasis-open.org/ebcore/ns/cppa/v3.0" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns:ns3="http://www.w3.org/2002/03/xkms#" xmlns:ns4="http://www.w3.org/2001/04/xmlenc#">
+    <ProfileInfo>
+        <ProfileIdentifier>TestProfileId</ProfileIdentifier>
+        <Description>Test profile</Description>
+    </ProfileInfo>
+    <PartyInfo>
+        <PartyName>cppa</PartyName>
+        <PartyId type="aa-aa-aa">cppa</PartyId>
+        <Certificate id="sing-cert-001">
+            <ns2:KeyInfo Id="sing-keyInfo-001">
+                <ns2:KeyName>cn=sing-keyInfo-001</ns2:KeyName>
+                <ns2:X509Data>
+                    <ns2:X509Certificate>UmVwbGFjZSBzaW5nLWtleUluZm8tMDAxIHRoaXMgd2l0aCByZWFsIGNlcnRpZmljYXRlIQ==</ns2:X509Certificate>
+                </ns2:X509Data>
+            </ns2:KeyInfo>
+        </Certificate>
+        <Certificate id="enc-cert-001">
+            <ns2:KeyInfo Id="enc-keyInfo-001">
+                <ns2:KeyName>cn=enc-keyInfo-001</ns2:KeyName>
+                <ns2:X509Data>
+                    <ns2:X509Certificate>UmVwbGFjZSBlbmMta2V5SW5mby0wMDEgdGhpcyB3aXRoIHJlYWwgY2VydGlmaWNhdGUh</ns2:X509Certificate>
+                </ns2:X509Data>
+            </ns2:KeyInfo>
+        </Certificate>
+        <CertificateDefaults>
+            <SigningCertificateRef certId="enc-cert-001"/>
+            <EncryptionCertificateRef certId="enc-cert-001"/>
+        </CertificateDefaults>
+    </PartyInfo>
+    <ServiceSpecification name="MailService">
+        <PartyRole name="MailSender"/>
+        <CounterPartyRole name="MailReceiver"/>
+        <ServiceBinding>
+            <Service>SubmitMail</Service>
+            <ActionBinding action="SubmitMail" id="SubmitMailId" sendOrReceive="send">
+                <ChannelId>eDeliverAS4ChannelId</ChannelId>
+                <PayloadProfileId>mailProfileId</PayloadProfileId>
+            </ActionBinding>
+        </ServiceBinding>
+    </ServiceSpecification>
+    <ebMS3Channel id="eDeliverAS4ChannelId" transport="eDeliverAS4EndpointId">
+        <ChannelProfile>bdxr-transport-ebms3-as4-v1p0</ChannelProfile>
+    </ebMS3Channel>
+    <HTTPTransport id="eDeliverAS4EndpointId">
+        <Endpoint>http://localhost:8080/domibus/msh</Endpoint>
+        <ChunkedTransferCoding>true</ChunkedTransferCoding>
+    </HTTPTransport>
+    <PayloadProfile id="mailProfileId">
+        <Description>Example mail profile</Description>
+        <PayloadPart maxOccurs="100" minOccurs="1">
+            <PartName>MailPart</PartName>
+            <MIMEContentType>text/plain</MIMEContentType>
+        </PayloadPart>
+    </PayloadProfile>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>GLti4rdP0gxEtQ5cd3sahiLpELAnxOZUAA01TLHAmnA=</DigestValue></Reference></SignedInfo><SignatureValue>XS9mKQaOxDcD98rAdexLl0/UAHp+V0PmXZeAcw85ma2h12LWbQ0kdi0jdC6yci6RCg8RA1AvAoLY&#13;
+        zVdhaIhlg/wbWzi7cGOZHtG0xyF0DXPk7GnIekeqn8urtVswixe27cUUZrvwzn5z56qTtj1uhJ11&#13;
+        eNi0x1p3W0kIgCkTGvyCS1gaAUouXO+L+s5i7Svs207s4V63xnwHJoGH1DRuRAr5p/7sSxUqGfyf&#13;
+        rig8UIZM65mC2dZsWXehzHZylaebdn64MMSy97tgLuwYWPvjNO+uEjhisoT28a5Ut3JskzaqvnMd&#13;
+        bKJMUNPDPUZ742UqawcXMVkJc1bzi8WQ9xTF/Q==</SignatureValue><KeyInfo><X509Data><X509SubjectName>C=BE,O=DIGITAL,OU=eDelivery,CN=SMP_TEST-PRE-SET-EXAMPLE</X509SubjectName><X509Certificate>MIIDQjCCAiqgAwIBAgIBCjANBgkqhkiG9w0BAQsFADBfMRMwEQYDVQQDDApyb290Q05UZXN0MQsw&#13;
+        CQYDVQQLDAJCNDEOMAwGA1UECgwFRElHSVQxETAPBgNVBAcMCEJydXNzZWxzMQswCQYDVQQIDAJC&#13;
+        RTELMAkGA1UEBhMCQkUwHhcNMjMwNDA2MTgzMDM1WhcNMjgwNDA3MTgzMDM1WjBWMSEwHwYDVQQD&#13;
+        DBhTTVBfVEVTVC1QUkUtU0VULUVYQU1QTEUxEjAQBgNVBAsMCWVEZWxpdmVyeTEQMA4GA1UECgwH&#13;
+        RElHSVRBTDELMAkGA1UEBhMCQkUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCSZvO3&#13;
+        izuDjKDrKIuY2lJpLybb5u9DIQ0545YQjpNaZ6c2+KGWnzvT30WFKYKij/7y1+asf/b94Rjtb+hP&#13;
+        Bw4yhazToemv9RxBg66DqBh0JDPfXbPavJMnzlqE9FroUtu6ylbPG6xAj2Zo4G/sBJ8nXfvCKvT3&#13;
+        gz5/fA4Zb3ezsPk8//duQdeun0ZiKXo6xHoIEhjuG28Av4T9Y4QK2OEYPp51wGZMWujRglUBuOcS&#13;
+        fCEWEDFkl7ygxTFyazwvnEbGdMPPQahmoNagwN7vR3JEpbZYPMAykSptWkLEKa7VD889fGE+G/5I&#13;
+        FRMhDgCWKv3S7HZXTN8vQJumJXJ+NjuNAgMBAAGjEjAQMA4GA1UdDwEB/wQEAwIC9DANBgkqhkiG&#13;
+        9w0BAQsFAAOCAQEAhkCt7zSXPPqoOqtganfw7mlOnDFaL2BZMZGtHzfnuLkZ7MJKfuxvAbKP2Hs6&#13;
+        PNFwIJg8MnRUT1gLYjrow3o97uAfSWuOANUDwtyUMQf2jie6AmXNLzn4I4HwGCx1Kka/4gAHxjrT&#13;
+        GePO9GD8edtvX1l+osHUGv/0/cgoY4LZkJoddVRI8nkCw4Fxh2hnDOKKW7/HMm/Og5jCp6GJkTQh&#13;
+        oLowOc7inm0c9J/2WmhMYoLBpADul8xpWhkfB/d5cLxzh6OVGzJCnAEnjOu5JMLNOdutojBZSfFQ&#13;
+        IbocwAz3mTbPuo+tb7rA+GofflA+TiHU3sBTtwftVZIHF6jj6wPL+Q==</X509Certificate></X509Data></KeyInfo></Signature></CPP>

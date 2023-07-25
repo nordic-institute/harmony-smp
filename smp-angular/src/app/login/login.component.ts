@@ -11,9 +11,9 @@ import {Subscription} from 'rxjs';
 import {ExpiredPasswordDialogComponent} from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
 import {GlobalLookups} from "../common/global-lookups";
 import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
-import {UserDetailsDialogMode} from "../user/user-details-dialog/user-details-dialog.component";
 import {InformationDialogComponent} from "../common/dialogs/information-dialog/information-dialog.component";
 import {DatePipe, formatDate} from "@angular/common";
+import {EntityStatus} from "../common/enums/entity-status.enum";
 
 @Component({
   moduleId: module.id,
@@ -124,7 +124,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         ...config,
         data: {
           ...config.data,
-          mode: config.data.mode || (config.data.edit ? UserDetailsDialogMode.EDIT_MODE : UserDetailsDialogMode.NEW_MODE)
+          mode: config.data.mode || (config.data.edit ? EntityStatus.PERSISTED :EntityStatus.NEW)
         }
       }
       : config;

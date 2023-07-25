@@ -15,10 +15,7 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
-import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
-import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
-import eu.europa.ec.bdmsl.ws.soap.ManageServiceMetadataService;
+import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
@@ -38,11 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SmlClientFactory {
 
-    private static final String SERVICE_METADATA_CONTEXT = "manageservicemetadata";
-    private static final String PARTICIPANT_IDENTIFIER_CONTEXT = "manageparticipantidentifier";
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmlClientFactory.class);
-
-    private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
     @Autowired
     ConfigurationService configurationService;
@@ -52,23 +45,19 @@ public class SmlClientFactory {
 
     @Bean
     @Scope("prototype")
-    public IManageParticipantIdentifierWS create(String clientKeyAlias, String clientCertHttpHeader, boolean clientCertAuthentication) {
+    public IManageParticipantIdentifierWS create() {
         LOG.info("create IManageParticipantIdentifierWS");
-
-
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.getClientFactoryBean().getServiceFactory()
                 .setWsdlURL(ManageBusinessIdentifierService.class.getResource("/ManageBusinessIdentifierService-1.0.wsdl"));
         factory.setServiceName(ManageBusinessIdentifierService.SERVICE);
         factory.setEndpointName(ManageBusinessIdentifierService.ManageBusinessIdentifierServicePort);
-        IManageParticipantIdentifierWS smlPort = factory.create(IManageParticipantIdentifierWS.class);
-
-        return smlPort;
+        return factory.create(IManageParticipantIdentifierWS.class);
     }
 
     @Bean
     @Scope("prototype")
-    public IManageServiceMetadataWS createSmp(String clientKeyAlias, String clientCertHttpHeader, boolean clientCertAuthentication) {
+    public IManageServiceMetadataWS createSmp() {
         LOG.info("create IManageServiceMetadataWS");
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
@@ -76,7 +65,19 @@ public class SmlClientFactory {
                 .setWsdlURL(ManageServiceMetadataService.class.getResource("/ManageServiceMetadataService-1.0.wsdl"));
         factory.setServiceName(ManageServiceMetadataService.SERVICE);
         factory.setEndpointName(ManageServiceMetadataService.ManageServiceMetadataServicePort);
-        IManageServiceMetadataWS smlPort = factory.create(IManageServiceMetadataWS.class);
-        return smlPort;
+        return factory.create(IManageServiceMetadataWS.class);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public IBDMSLServiceWS createBDMSLCustomServices() {
+        LOG.info("create IBDMSLServiceWS");
+
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.getClientFactoryBean().getServiceFactory()
+                .setWsdlURL(BDMSLService.class.getResource("/BDMSLService-1.0.wsdl"));
+        factory.setServiceName(BDMSLService.SERVICE);
+        factory.setEndpointName(BDMSLService.BDMSLServicePort);
+        return factory.create(IBDMSLServiceWS.class);
     }
 }
