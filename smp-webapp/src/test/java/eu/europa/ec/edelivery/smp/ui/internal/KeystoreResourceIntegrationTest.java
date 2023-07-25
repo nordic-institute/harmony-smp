@@ -3,14 +3,13 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,10 +22,10 @@ import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_KEYSTORE;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class KeystoreResourceIntegrationTest extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
@@ -35,7 +34,7 @@ public class KeystoreResourceIntegrationTest extends AbstractControllerTest {
     @Autowired
     private UIKeystoreService uiKeystoreService;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         super.setup();
         uiKeystoreService.refreshData();
@@ -54,7 +53,8 @@ public class KeystoreResourceIntegrationTest extends AbstractControllerTest {
 
         //then
         ObjectMapper mapper = getObjectMapper();
-        List<CertificateRO> listCerts = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<CertificateRO>>(){});
+        List<CertificateRO> listCerts = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<CertificateRO>>() {
+        });
 
         assertNotNull(listCerts);
         assertEquals(countStart, listCerts.size());
@@ -90,7 +90,7 @@ public class KeystoreResourceIntegrationTest extends AbstractControllerTest {
     public void uploadKeystoreInvalidPassword() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
-        UserRO userRO = (UserRO)session.getAttribute(MOCK_LOGGED_USER);
+        UserRO userRO = (UserRO) session.getAttribute(MOCK_LOGGED_USER);
         // given when
         MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/NewPassword1234")
                         .session(session)

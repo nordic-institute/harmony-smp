@@ -66,7 +66,7 @@ public class DomainResourceIntegrationTest {
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
-        //them
+        //then
         ObjectMapper mapper = new ObjectMapper();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
 

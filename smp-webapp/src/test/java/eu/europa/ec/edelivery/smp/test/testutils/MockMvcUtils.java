@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.SearchUserRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +26,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY;
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -142,6 +143,29 @@ public class MockMvcUtils {
         LOG.info("User session validated with logged data: []", new String(asByteArray));
         return mapper.readValue(asByteArray, UserRO.class);
     }
+
+    public static List<DomainRO> geUserDomainsForRole(MockMvc mvc, MockHttpSession session, UserRO userRO, String forRole) throws Exception {
+
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_EDIT_DOMAIN, userRO.getUserId())
+                        .param(PARAM_NAME_TYPE, forRole)
+                        .session(session)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+        return getArrayFromResponse(result, DomainRO.class);
+    }
+
+    public static List<SearchUserRO> geUsersByUsernameFilter(MockMvc mvc, MockHttpSession session, UserRO userRO, String username) throws Exception {
+
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_USER + "/{user-id}/search", userRO.getUserId())
+                        .param(PARAM_PAGINATION_FILTER, username)
+                        .session(session)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+        return getArrayFromResponse(result, SearchUserRO.class);
+    }
+
+
+
 
     public static <T> T getObjectFromResponse(MvcResult result, Class<T> clazz)
             throws IOException {

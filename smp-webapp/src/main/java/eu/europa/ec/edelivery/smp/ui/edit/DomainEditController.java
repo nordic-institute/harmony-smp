@@ -43,6 +43,7 @@ public class DomainEditController {
 
     /**
      * Method returns all domains where user is domain administrator.
+     *
      * @param userEncId encrypted user identifier
      * @return Domain list where user has role domain administrator
      */
@@ -51,7 +52,7 @@ public class DomainEditController {
     public List<DomainRO> getDomainsForUserType(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @RequestParam(value = PARAM_NAME_TYPE, defaultValue = "domain-admin", required = false) String forRole) {
-        logAdminAccess("getDomainsForUserType ["+forRole+"]");
+        logAdminAccess("getDomainsForUserType [" + forRole + "]");
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
 
         if (StringUtils.equals(forRole, "group-admin")) {
@@ -63,7 +64,7 @@ public class DomainEditController {
         if (StringUtils.isBlank(forRole) || StringUtils.equals(forRole, "domain-admin")) {
             return uiDomainService.getAllDomainsForDomainAdminUser(userId);
         }
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "GetDomains", "Unknown parameter type ["+forRole+"]!");
+        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "GetDomains", "Unknown parameter type [" + forRole + "]!");
     }
 
 
@@ -76,14 +77,14 @@ public class DomainEditController {
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
         logAdminAccess("getDomainMemberList");
-        LOG.info("Search for domain members with filter  [{}], paging: [{}/{}], user: {}",filter,  page, pageSize, userEncId);
+        LOG.info("Search for domain members with filter  [{}], paging: [{}/{}], user: {}", filter, page, pageSize, userEncId);
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
-        return uiDomainService.getDomainMembers(domainId, page, pageSize,  filter);
+        return uiDomainService.getDomainMembers(domainId, page, pageSize, filter);
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
-    public MemberRO  putDomainMember(
+    public MemberRO putDomainMember(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
             @RequestBody MemberRO memberRO) {
@@ -91,7 +92,7 @@ public class DomainEditController {
         logAdminAccess("putDomainMember");
         LOG.info("add or update domain member");
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
-        Long memberId = memberRO.getMemberId() == null?null: SessionSecurityUtils.decryptEntityId(memberRO.getMemberId());
+        Long memberId = memberRO.getMemberId() == null ? null : SessionSecurityUtils.decryptEntityId(memberRO.getMemberId());
         if (memberRO.getRoleType() == null) {
             memberRO.setRoleType(MembershipRoleType.VIEWER);
         }
@@ -101,14 +102,14 @@ public class DomainEditController {
 
     @DeleteMapping(value = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_DELETE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and (@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId))")
-    public MemberRO  deleteDomainMember(
+    public MemberRO deleteDomainMember(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
             @PathVariable(PATH_PARAM_ENC_MEMBER_ID) String memberEncId
-            ) {
+    ) {
         logAdminAccess("deleteDomainMember");
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
-        Long memberId= SessionSecurityUtils.decryptEntityId(memberEncId);
+        Long memberId = SessionSecurityUtils.decryptEntityId(memberEncId);
 
         // is user domain admin or system admin
         return uiDomainService.deleteMemberFromDomain(domainId, memberId);
@@ -120,7 +121,7 @@ public class DomainEditController {
             "(@smpAuthorizationService.systemAdministrator or @smpAuthorizationService.isDomainAdministrator(#domainEncId) " +
             "or @smpAuthorizationService.isAnyDomainGroupAdministrator(#domainEncId)" +
             "or @smpAuthorizationService.isAnyResourceAdministrator)")
-    public List<ResourceDefinitionRO>  getDomainResourceDefinitions(
+    public List<ResourceDefinitionRO> getDomainResourceDefinitions(
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId
     ) {
@@ -130,7 +131,6 @@ public class DomainEditController {
         // is user domain admin or system admin
         return uiDomainService.getResourceDefDomainList(domainId);
     }
-
 
 
     protected void logAdminAccess(String action) {

@@ -5,9 +5,8 @@ import eu.europa.ec.edelivery.smp.data.ui.SearchUserRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,7 +30,7 @@ public class UserControllerTest extends AbstractControllerTest {
     @Autowired
     protected UIUserService uiUserService;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         super.setup();
     }
@@ -48,10 +48,10 @@ public class UserControllerTest extends AbstractControllerTest {
 
         NavigationTreeNodeRO result = getObjectFromResponse(response, NavigationTreeNodeRO.class);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(4, result.getChildren().size());
+        assertNotNull(result);
+        assertEquals(4, result.getChildren().size());
         List<String> childrenNames = result.getChildren().stream().map(NavigationTreeNodeRO::getName).collect(Collectors.toList());
-        Assert.assertEquals(Arrays.asList("Search", "Administration", "System settings", "User Settings"), childrenNames);
+        assertEquals(Arrays.asList("Search", "Administration", "System settings", "User Settings"), childrenNames);
     }
 
     @Test
@@ -66,10 +66,10 @@ public class UserControllerTest extends AbstractControllerTest {
 
         NavigationTreeNodeRO result = getObjectFromResponse(response, NavigationTreeNodeRO.class);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(3, result.getChildren().size());
+        assertNotNull(result);
+        assertEquals(3, result.getChildren().size());
         List<String> childrenNames = result.getChildren().stream().map(NavigationTreeNodeRO::getName).collect(Collectors.toList());
-        Assert.assertEquals(Arrays.asList("Search", "Administration", "User Settings"), childrenNames);
+        assertEquals(Arrays.asList("Search", "Administration", "User Settings"), childrenNames);
     }
 
     @Test
@@ -83,8 +83,8 @@ public class UserControllerTest extends AbstractControllerTest {
 
         List<SearchUserRO> result = getArrayFromResponse(response, SearchUserRO.class);
 
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.size()>5);
+        assertNotNull(result);
+        assertTrue(result.size() > 5);
     }
 
     @Test
@@ -98,8 +98,8 @@ public class UserControllerTest extends AbstractControllerTest {
 
         List<SearchUserRO> result = getArrayFromResponse(response, SearchUserRO.class);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(userRO.getUsername(), result.get(0).getUsername());
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(userRO.getUsername(), result.get(0).getUsername());
     }
 }

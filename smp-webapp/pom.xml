@@ -105,6 +105,21 @@
             <artifactId>hamcrest-junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- the default JDBC driver -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -153,14 +168,6 @@
                 <configuration>
                     <runOrder>alphabetical</runOrder>
                 </configuration>
-                <dependencies>
-                    <!-- Force using the latest JUnit 47 provider   Remove this when moving to JUNIT5 -->
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>${maven-surefire-plugin.version}</version>
-                    </dependency>
-                </dependencies>
 
             </plugin>
             <plugin>
