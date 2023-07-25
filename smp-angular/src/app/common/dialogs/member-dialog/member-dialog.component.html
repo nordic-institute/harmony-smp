@@ -18,16 +18,16 @@
 
     <mat-form-field style="width:100%">
       <mat-label>Select role for the user</mat-label>
-      <mat-select placeholder="Role for the member"
+      <select matNativeControl placeholder="Role for the member"
                   formControlName="member-roleType"
                   name="Role type"
                   matTooltip="Role type for the member."
                   id="member-user_id" required>
-        <mat-option *ngFor="let role of memberRoles"
+        <option *ngFor="let role of memberRoles"
                     [value]="role.value">
           {{role.key}}
-        </mat-option>
-      </mat-select>
+        </option>
+      </select>
       <mat-hint> Choose member role</mat-hint>
     </mat-form-field>
   </form>

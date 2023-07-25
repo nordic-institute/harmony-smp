@@ -13,14 +13,14 @@
       <div style="display:flex; flex-direction: row;align-items: center">
         <mat-form-field style="width:100%" class="user-profile-pane-field">
           <mat-label>Application role</mat-label>
-          <mat-select formControlName="role"
+          <select matNativeControl formControlName="role"
                       matTooltip="application role for the user."
                       id="role_id" required>
-            <mat-option *ngFor="let role of applicationRoles"
+            <option *ngFor="let role of applicationRoles"
                         [value]="role.value">
               {{role.key}}
-            </mat-option>
-          </mat-select>
+            </option>
+          </select>
           <mat-hint *ngIf="!isUserDataLoggedInUserData"> Choose member role</mat-hint>
         </mat-form-field>
 
@@ -51,7 +51,7 @@
 
       <mat-form-field class="user-profile-pane-field">
         <mat-label>Theme</mat-label>
-        <select id="smpTheme_id" matNativeControl
+        <select matNativeControl id="smpTheme_id"
                 (change)="onThemeSelect($event.target.value)"
                 formControlName="smpTheme">
           <option *ngFor="let item of themeItems" [value]="item.className">{{item.name}}</option>
@@ -60,7 +60,7 @@
       <div class="user-profile-pane-field" style="display:flex;flex-direction: row">
         <mat-form-field style="flex-grow: 1">
           <mat-label>Locale (Date/time formatting)</mat-label>
-          <select id="smpLocale_id" matNativeControl id="moment-locale"
+          <select matNativeControl id="smpLocale_id"
                   (change)="onLocaleSelect($event.target.value)"
                   formControlName="smpLocale"
           >

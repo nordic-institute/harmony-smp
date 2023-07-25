@@ -33,20 +33,20 @@
       <div [formGroup]="documentForm"
            style="float: right;  vertical-align:middle;display: flex;align-items: center;justify-content: center; gap:0.4em;padding-right: 10px">
         <span style="font-size: 0.8em">Show version:</span>
-        <mat-select style="width: 100px; border-bottom: gray solid 1px"
+        <select matNativeControl style="width: 100px; border-bottom: gray solid 1px"
                     placeholder="All document version"
                     matTooltip="Select version to display."
                     formControlName="payloadVersion"
                     id="document version_id"
-                    (selectionChange)="onSelectionDocumentVersionChanged()"
+                    (change)="onSelectionDocumentVersionChanged()"
         >
-          <mat-option *ngFor="let version of getDocumentVersions"
+          <option *ngFor="let version of getDocumentVersions"
                       [value]="version"
           >
             {{version}}
-          </mat-option>
+          </option>
 
-        </mat-select>
+        </select>
       </div>
     </mat-toolbar-row>
   </mat-toolbar>
