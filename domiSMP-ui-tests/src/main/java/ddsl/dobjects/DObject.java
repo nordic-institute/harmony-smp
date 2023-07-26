@@ -69,7 +69,7 @@ public class DObject {
         if (isEnabled()) {
             wait.forElementToBeClickable(element).click();
         } else {
-            throw new Exception("Not enabled");
+            throw new Exception(element.getAccessibleName() + "Not enabled");
         }
     }
 

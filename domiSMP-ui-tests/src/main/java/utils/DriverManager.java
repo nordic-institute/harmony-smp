@@ -1,24 +1,30 @@
 package utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.asynchttpclient.AsyncHttpClient;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.manager.SeleniumManager;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DriverManager {
     static TestRunData data = new TestRunData();
 
 
+
     public static WebDriver getDriver() {
 
         WebDriver driver;
-        if ( StringUtils.equalsIgnoreCase(data.getRunBrowser(), "firefox")) {
+        if (StringUtils.equalsIgnoreCase(data.getRunBrowser(), "firefox")) {
             driver = getFirefoxDriver();
         } else {
             driver = getChromeDriver();
@@ -26,6 +32,10 @@ public class DriverManager {
         driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+        Logger.getLogger(RemoteWebDriver.class.getName()).setLevel(Level.FINEST);
+        Logger.getLogger(SeleniumManager.class.getName()).setLevel(Level.FINEST);
+        Logger.getLogger(AsyncHttpClient.class.getName()).setLevel(Level.OFF);
+        Logger.getGlobal().setLevel(Level.FINEST);
         return driver;
     }
 
@@ -42,11 +52,12 @@ public class DriverManager {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
         options.addArguments("--disable-popup-blocking");
-        options.addArguments("--headless=new");
+        // options.addArguments("--headless=new");
 
         options.setExperimentalOption("prefs", prefs);
         return new ChromeDriver(options);
     }
+
 
     private static WebDriver getFirefoxDriver() {
         System.setProperty("webdriver.gecko.driver", data.getFirefoxDriverPath());

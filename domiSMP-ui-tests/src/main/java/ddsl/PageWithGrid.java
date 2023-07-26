@@ -1,15 +1,15 @@
-package ddsl.dcomponents;
+package ddsl;
 
-import ddsl.dcomponents.Grid.BasicGrid;
 import ddsl.dcomponents.Grid.GridPagination;
 import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 
-public class GenericPageWithGrid extends DomiSMPPage {
+public class PageWithGrid extends DomiSMPPage {
 
-    public BasicGrid grid;
     @FindBy(css = "mat-form-field input")
     public WebElement FilterInput;
     @FindBy(css = "data-panel >div >div> mat-toolbar button:first-of-type")
@@ -20,17 +20,25 @@ public class GenericPageWithGrid extends DomiSMPPage {
     @FindBy(css = "data-panel > div [class=\"smp-column-data\"]")
     public WebElement SidePanel;
 
-
-    public GenericPageWithGrid(WebDriver driver) {
+    public PageWithGrid(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
-    public GridPagination GridPagination() {
+    public GridPagination getPagination() {
         return new GridPagination(driver);
     }
 
-    public SmallGrid SmallGrid() {
+    public SmallGrid getGrid() {
         return new SmallGrid(driver);
+    }
+
+    public void filter(String filterValue) {
+        try {
+            weToDInput(FilterInput).fill(filterValue);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

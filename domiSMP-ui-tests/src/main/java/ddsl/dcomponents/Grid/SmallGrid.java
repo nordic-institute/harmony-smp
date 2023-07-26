@@ -12,8 +12,13 @@ public class SmallGrid extends DComponent {
     protected List<WebElement> gridHeaders;
     @FindBy(css = "datatable-body-row > div.datatable-row-center.datatable-row-group")
     protected List<WebElement> gridRows;
+
     public SmallGrid(WebDriver driver) {
         super(driver);
     }
 
+    public String getFirstValue() {
+        return gridRows.get(0).getText();
+    }
 }
+

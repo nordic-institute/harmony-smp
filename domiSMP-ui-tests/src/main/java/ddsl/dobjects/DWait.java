@@ -1,9 +1,6 @@
 package ddsl.dobjects;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -14,6 +11,7 @@ import utils.TestRunData;
 import java.time.Duration;
 
 public class DWait {
+
     public final WebDriverWait defaultWait;
     public final WebDriverWait longWait;
     public final WebDriverWait shortWait;
@@ -39,6 +37,7 @@ public class DWait {
     public WebElement forElementToBeClickable(WebElement element) {
         return defaultWait.until(ExpectedConditions.elementToBeClickable(element));
     }
+
 
     public WebElement forElementToBeVisible(WebElement element) {
         return defaultWait.until(ExpectedConditions.visibilityOf(element));
@@ -72,18 +71,16 @@ public class DWait {
         }
     }
 
-    public void forAttributeNotEmpty(WebElement element, String attributeName) {
-        defaultWait.until(ExpectedConditions.attributeToBeNotEmpty(element, attributeName));
-    }
-
     public void forElementToBeGone(WebElement element) {
-        defaultWait.until((ExpectedConditions.invisibilityOf(element)));
+        try {
+            if (element.isDisplayed()) {
+                defaultWait.until((ExpectedConditions.invisibilityOf(element)));
 
-        forXMillis(500);
-    }
+            }
 
-    public void forInvisibilityofLocator(By locator) {
-        defaultWait.until((ExpectedConditions.invisibilityOfElementLocated(locator)));
+        } catch (NoSuchElementException e) {
+
+        }
     }
 
     public void forElementToBeGone(By selector) {

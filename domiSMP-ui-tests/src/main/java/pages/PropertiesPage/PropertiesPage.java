@@ -1,7 +1,7 @@
 package pages.PropertiesPage;
 
+import ddsl.DomiSMPPage;
 import ddsl.dcomponents.ConfirmationDialog;
-import ddsl.dcomponents.DomiSMPPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;

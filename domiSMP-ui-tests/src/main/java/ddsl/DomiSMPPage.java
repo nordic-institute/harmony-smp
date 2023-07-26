@@ -1,6 +1,10 @@
-package ddsl.dcomponents;
+package ddsl;
 
 
+import ddsl.dcomponents.AlertComponent;
+import ddsl.dcomponents.BreadcrumpComponent;
+import ddsl.dcomponents.DComponent;
+import ddsl.dcomponents.SideNavigationComponent;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,6 +21,8 @@ public class DomiSMPPage extends DComponent {
      * Page object for the common components from Domismp like navigation, right menu. This contains the locators of the page and the methods for the behaviour of the page
      */
     private final static Logger LOG = LoggerFactory.getLogger(DomiSMPPage.class);
+    @FindBy(css = "cdk-overlay-backdrop cdk-overlay-dark-backdrop cdk-overlay-backdrop-showing")
+    protected WebElement overlay;
 
     @FindBy(css = "page-header > h1")
     protected WebElement pageTitle;
@@ -71,6 +77,7 @@ public class DomiSMPPage extends DComponent {
 
     public boolean isExpiredPopupEnabled() {
         try {
+            wait.forElementToBeClickable(dialogOKbutton);
             if (dialogOKbutton.isDisplayed()) {
                 return true;
             }
@@ -78,6 +85,18 @@ public class DomiSMPPage extends DComponent {
         } catch (Exception e) {
             LOG.info("Expiration poup not found", e);
             return false;
+        }
+
+    }
+
+    public void closeExpirationPopupIfEnabled() {
+        try {
+            if (isExpiredPopupEnabled()) {
+                LOG.info("Expired password dialog is present.");
+                getSidebar().getExpiredDialoginbutton().click();
+            }
+        } catch (Exception e) {
+            LOG.error("Could not close Expiration popup", e);
         }
     }
 
