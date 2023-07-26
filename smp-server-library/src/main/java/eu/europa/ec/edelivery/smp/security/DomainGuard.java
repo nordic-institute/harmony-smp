@@ -58,13 +58,16 @@ public class DomainGuard {
      * Purpose of the method is to guard domain resources. It validates if users has any "rights to" execute the action
      * on the domain resources and subresources
      *
-     * @param user
-     * @param action
-     * @param domain
-     * @return
+     * @param user  user to be authorized
+     * @param action action to be executed
+     * @param domain domain to be authorized
+     * @return true if user is authorized to execute the action on the domain
      */
     public boolean isUserIsAuthorizedForDomainResourceAction(DBDomain domain, SMPUserDetails user, ResourceAction action) {
         LOG.debug("Authorize check for user [{}], domain [{}] and action [{}]", user, domain, action);
+        if (action == null) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Null http action", "Action cannot be null!");
+        }
         switch (action) {
             case READ:
                 return canRead(user, domain);
@@ -109,10 +112,9 @@ public class DomainGuard {
      * Method validates of the user can delete resources on the domain! Only users with group admin role can delete
      * domain resources
      *
-     *
-     * @param user
-     * @param domain
-     * @return
+     * @param user    user to be authorized
+     * @param domain domain to be authorized
+     * @return true if user is authorized to execute the action on the domain
      */
     public boolean canDelete(SMPUserDetails user, DBDomain domain) {
         LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is trying to delete resource from domain: [{}]", user, domain);
@@ -131,9 +133,9 @@ public class DomainGuard {
      * Method validates of the user can create/update resources on the domain! Only users with group admin role can create and users with admin resource role
      * can update
      *
-     * @param user
-     * @param domain
-     * @return
+     * @param user   user to be authorized
+     * @param domain domain to be authorized
+     * @return  true if user is authorized to execute the action on the domain
      */
     public boolean canCreateUpdate(SMPUserDetails user, DBDomain domain) {
         LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is trying to create/update resource from domain: [{}]", user, domain);

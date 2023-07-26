@@ -134,7 +134,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
             }
         }
         // set headers to response
-        responseData.getHttpHeaders().entrySet().stream()
+        responseData.getHttpHeaders().entrySet()
                 .forEach(entry -> resourceResponse.setHttpHeader(entry.getKey(), entry.getValue()));
         // determinate status before resource is stored to database!
         resourceResponse.setHttpStatus(getHttpStatusForCreateUpdate(isNewResource, responseData));
@@ -232,7 +232,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         // locate the resource handler
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         DBResource resource = resolvedData.getResource();
-        integrationService.unregisterParticipant(resource, resolvedData.domain);
+        integrationService.unregisterParticipant(resource, resolvedData.getDomain());
         resourceStorage.deleteResource(resource);
     }
 

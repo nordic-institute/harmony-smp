@@ -41,7 +41,7 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
     private final ConversionService conversionService;
 
 
-    public UIDomainPublicService(DomainDao domainDao, DomainMemberDao domainMemberDao,ConversionService conversionService, UserDao userDao) {
+    public UIDomainPublicService(DomainDao domainDao, DomainMemberDao domainMemberDao, ConversionService conversionService, UserDao userDao) {
         this.domainDao = domainDao;
         this.domainMemberDao = domainMemberDao;
         this.conversionService = conversionService;
@@ -56,12 +56,12 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
     /**
      * Method returns Domain resource object list for page.
      *
-     * @param page
-     * @param pageSize
-     * @param sortField
-     * @param sortOrder
-     * @param filter
-     * @return
+     * @param page     - page number
+     * @param pageSize - page size
+     * @param sortField - sort field
+     * @param sortOrder - sort order
+     * @param filter  - filter
+     * @return ServiceResult<DomainPublicRO> - list of domain resource objects
      */
     @Override
     public ServiceResult<DomainPublicRO> getTableList(int page, int pageSize,
@@ -94,18 +94,18 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
 
     @Transactional
     public ServiceResult<MemberRO> getDomainMembers(Long domainId, int page, int pageSize,
-                                                   String filter) {
+                                                    String filter) {
         Long count = domainMemberDao.getDomainMemberCount(domainId, filter);
-        ServiceResult<MemberRO> result =  new ServiceResult<>();
+        ServiceResult<MemberRO> result = new ServiceResult<>();
         result.setPage(page);
         result.setPageSize(pageSize);
-        if (count<1) {
+        if (count < 1) {
             result.setCount(0L);
             return result;
         }
         result.setCount(count);
         List<DBDomainMember> memberROS = domainMemberDao.getDomainMembers(domainId, page, pageSize, filter);
-        List<MemberRO> memberList = memberROS.stream().map(member-> conversionService.convert(member, MemberRO.class)).collect(Collectors.toList());
+        List<MemberRO> memberList = memberROS.stream().map(member -> conversionService.convert(member, MemberRO.class)).collect(Collectors.toList());
 
         result.getServiceEntities().addAll(memberList);
         return result;
@@ -115,18 +115,18 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
     public MemberRO addMemberToDomain(Long domainId, MemberRO memberRO, Long memberId) {
         LOG.info("Add member [{}] to domain [{}]", memberRO.getUsername(), domainId);
         DBUser user = userDao.findUserByUsername(memberRO.getUsername())
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add/edit membership", "User ["+memberRO.getUsername()+"] does not exists!"));
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add/edit membership", "User [" + memberRO.getUsername() + "] does not exists!"));
 
         DBDomainMember domainMember;
-        if (memberId !=null) {
+        if (memberId != null) {
             domainMember = domainMemberDao.find(memberId);
             domainMember.setRole(memberRO.getRoleType());
         } else {
             DBDomain domain = domainDao.find(domainId);
             if (domainMemberDao.isUserDomainMember(user, domain)) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add membership", "User ["+memberRO.getUsername()+"] is already a member!");
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Add membership", "User [" + memberRO.getUsername() + "] is already a member!");
             }
-            domainMember = domainMemberDao.addMemberToDomain(domain, user,memberRO.getRoleType() );
+            domainMember = domainMemberDao.addMemberToDomain(domain, user, memberRO.getRoleType());
         }
         return conversionService.convert(domainMember, MemberRO.class);
     }
@@ -138,7 +138,7 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
         if (domainMember == null) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not exists!");
         }
-        if (!Objects.equals(domainMember.getDomain().getId(),domainId  )){
+        if (!Objects.equals(domainMember.getDomain().getId(), domainId)) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "Membership", "Membership does not belong to domain!");
         }
 
@@ -156,7 +156,7 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
 
         //filter and validate resources to be removed
         List<DBDomainResourceDef> domainResourceDefs = domain.getDomainResourceDefs();
-        return domainResourceDefs.stream().map(domRef -> domRef.getResourceDef()).map(resourceDef ->
+        return domainResourceDefs.stream().map(DBDomainResourceDef::getResourceDef).map(resourceDef ->
                 conversionService.convert(resourceDef, ResourceDefinitionRO.class)).collect(Collectors.toList());
     }
 }
