@@ -21,9 +21,8 @@ import static org.junit.Assert.assertNotNull;
 public class SMPAuthorityDeserializerTest {
 
     @Test
-    @Ignore
     public void deserialize() throws IOException {
-        String value = "{\"username\":\"smp\",\"password\":null,\"emailAddress\":null,\"authorities\":[\"ROLE_USER\"],\"active\":true,\"role\":\"ROLE_USER\",\"certificate\":null,\"statusPassword\":0,\"passwordExpired\":true}";
+        String value = "{\"status\":0,\"index\":0,\"actionMessage\":null,\"userId\":\"hsAkhiqJp1o89VZ4iBtmLnEM2vkb5FJTt0vWEUIxOw\",\"username\":\"user\",\"active\":true,\"role\":\"USER\",\"emailAddress\":\"user@mail-example.local\",\"fullName\":null,\"smpTheme\":null,\"smpLocale\":null,\"casAuthenticated\":false,\"casUserDataUrl\":null,\"passwordExpireOn\":null,\"sequentialLoginFailureCount\":0,\"lastFailedLoginAttempt\":null,\"suspendedUtil\":null,\"passwordUpdatedOn\":null,\"authorities\":[\"ROLE_USER\"],\"statusPassword\":0,\"passwordExpired\":true,\"showPasswordExpirationWarning\":false,\"forceChangeExpiredPassword\":false}";
         ObjectMapper mapper = new ObjectMapper();
         UserRO userRO = mapper.readValue(value, UserRO.class);
 
@@ -31,6 +30,5 @@ public class SMPAuthorityDeserializerTest {
         assertNotNull(userRO.getAuthorities());
         assertEquals(1, userRO.getAuthorities().size());
         assertEquals(SMPAuthority.S_AUTHORITY_USER.getAuthority(), userRO.getAuthorities().toArray(new SMPAuthority[]{})[0].getAuthority());
-
     }
 }

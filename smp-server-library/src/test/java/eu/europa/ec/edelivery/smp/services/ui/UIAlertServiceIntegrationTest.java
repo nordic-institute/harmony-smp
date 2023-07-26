@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
+
 @ContextConfiguration(classes = UIAlertService.class)
 public class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTest {
 

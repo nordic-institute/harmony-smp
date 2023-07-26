@@ -24,7 +24,6 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@Ignore
 @ContextConfiguration(classes= UIDomainService.class)
 public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
     @Rule
@@ -42,10 +41,7 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
 
     @Test
     public void testGetTableListEmpty(){
-
-        // given
-
-        //when
+        // given when
         ServiceResult<DomainRO> res = testInstance.getTableList(-1,-1,null, null, null);
         // then
         assertNotNull(res);

@@ -55,7 +55,6 @@ import static org.mockito.Mockito.verify;
         SMLIntegrationService.class})
 public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
-
     @Autowired
     IdentifierService identifierService;
     @Autowired
