@@ -18,8 +18,9 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: smp.war: spring-core-5.3.*.jar
+   file name: smp.war: spring-core-5.3.29.jar
    ]]></notes>
+        <sha1>528eafe4cef7bccf3df290dd99ac5833a9756183</sha1>
         <cve>CVE-2016-1000027</cve>
     </suppress>
     <suppress>
@@ -27,27 +28,6 @@
    file name: smp.war: spring-security-*.jar
    ]]></notes>
         <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: spring-aop-5.3.25.jar spring-expression-5.3.25.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(aop|expression)@.*$</packageUrl>
-        <cve>CVE-2023-20861</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: cxf-xjc-runtime-3.3.2.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf\.xjc\-utils/cxf\-xjc\-runtime@.*$</packageUrl>
-        <cve>CVE-2021-4277</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: cxf-rt-bindings-soap-3.5.5.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf\-rt\-bindings\-soap@.*$</packageUrl>
-        <cve>CVE-2022-40705</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -69,13 +49,6 @@
         <cve>CVE-2022-38752</cve>
         <cve>CVE-2022-41854</cve>
         <cve>CVE-2022-38750</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: bcprov-jdk15on-1.70.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
-        <vulnerabilityName>CVE-2023-33201</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
