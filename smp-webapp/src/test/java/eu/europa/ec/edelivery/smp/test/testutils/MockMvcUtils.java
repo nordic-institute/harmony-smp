@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.SearchUserRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +30,7 @@ import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -152,6 +155,18 @@ public class MockMvcUtils {
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
         return getArrayFromResponse(result, DomainRO.class);
+    }
+
+    public static List<GroupRO> geUserGroups(MockMvc mvc, MockHttpSession session, UserRO userRO, DomainRO domainRO, String forRole) throws Exception {
+
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_EDIT_GROUP, userRO.getUserId(), domainRO.getDomainId())
+                        .session(session)
+                        .param(PARAM_NAME_TYPE, forRole)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        //then
+        return  getArrayFromResponse(result, GroupRO.class);
     }
 
     public static List<SearchUserRO> geUsersByUsernameFilter(MockMvc mvc, MockHttpSession session, UserRO userRO, String username) throws Exception {

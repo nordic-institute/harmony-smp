@@ -41,6 +41,4 @@ public class ExtensionAdminController {
         LOG.info("getExtensionList count: ");
         return uiExtensionService.getExtensions();
     }
-
-
 }

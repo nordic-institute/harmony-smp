@@ -3,7 +3,6 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
@@ -13,7 +12,6 @@ import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import eu.europa.ec.edelivery.smp.ui.external.UserResourceIntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
-
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
