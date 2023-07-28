@@ -2,6 +2,9 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
+import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
@@ -9,13 +12,17 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -27,7 +34,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.testutil.SMPAssert.assertEqualDates;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -37,10 +45,16 @@ import static org.junit.Assert.*;
  * @since 4.1
  */
 @ContextConfiguration(classes = {UIUserService.class, ConversionTestConfig.class})
-public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest {
+public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
 
     @Autowired
     protected UIUserService testInstance;
+
+    @Autowired
+    protected UserDao userDao;
+
+    @Autowired
+    protected CredentialDao credentialDao;
 
 
     protected void insertDataObjects(int size) {
@@ -408,6 +422,26 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals(count + 2, result.getServiceEntities().size());
         MatcherAssert.assertThat(result.getServiceEntities().get(0).getUsername(), CoreMatchers.containsStringIgnoringCase("test"));
         MatcherAssert.assertThat(result.getServiceEntities().get(1).getUsername(), CoreMatchers.containsStringIgnoringCase("test"));
+    }
 
+    @ParameterizedTest
+    @CsvSource({
+            ", USERNAME_PASSWORD, UI, 1, USERNAME_PASSWORD, UI,  'Credential does not exist!'",
+            "1, USERNAME_PASSWORD, UI, 2, USERNAME_PASSWORD, UI,  'User is not owner of the credential'",
+            "1, USERNAME_PASSWORD, UI, 1, ACCESS_TOKEN, UI,  'Credentials are not expected credential type!'",
+            "1, USERNAME_PASSWORD, UI, 1, USERNAME_PASSWORD, REST_API,  'Credentials are not expected target type!'"})
+    public void testValidateCredentialsFails(Long credentialUserId, CredentialType credentialType, CredentialTargetType credentialTargetType, Long testUserId, CredentialType testCredentialType, CredentialTargetType testCredentialTargetType, String errorMessage){
+        DBCredential credential = credentialUserId == null? null:Mockito.mock(DBCredential.class);
+        if (credential!= null){
+            DBUser user = Mockito.mock(DBUser.class);
+            when(user.getId()).thenReturn(credentialUserId);
+            when(credential.getUser()).thenReturn(user);
+            when(credential.getCredentialType()).thenReturn(credentialType);
+            when(credential.getCredentialTarget()).thenReturn(credentialTargetType);
+        }
+
+        BadRequestException result = assertThrows(BadRequestException.class, () -> testInstance.validateCredentials(credential, testUserId, testCredentialType, testCredentialTargetType));
+        assertEquals(ErrorBusinessCode.UNAUTHORIZED, result.getErrorBusinessCode());
+        assertEquals(errorMessage, result.getMessage());
     }
 }

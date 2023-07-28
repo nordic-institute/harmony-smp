@@ -189,6 +189,14 @@ public class UITruststoreService extends BasicKeystoreService {
     public CertificateRO getCertificateData(byte[] buff, boolean validate, boolean validateDuplicate) {
         X509Certificate cert;
         CertificateRO cro;
+
+        if (buff ==null || buff.length ==0){
+            cro = new CertificateRO();
+            cro.setError(true);
+            cro.setInvalid(true);
+            cro.setInvalidReason("Can not read [null/empty] certificate!");
+            return cro;
+        }
         try {
             cert = X509CertificateUtils.getX509Certificate(buff);
         } catch (CertificateException e) {
