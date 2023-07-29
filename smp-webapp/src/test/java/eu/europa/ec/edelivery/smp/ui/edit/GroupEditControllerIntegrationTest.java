@@ -46,7 +46,7 @@ public class GroupEditControllerIntegrationTest extends AbstractControllerTest {
             ", 2",
             "'', 2",
             "group-admin, 1",
-            "resource-admin, 0",
+            "resource-admin, 1",
             "group-viewer, 0",
             "all-roles, 1"
     })
@@ -251,38 +251,6 @@ public class GroupEditControllerIntegrationTest extends AbstractControllerTest {
         assertNotNull(response);
         assertEquals(SG_USER_USERNAME, response.getUsername());
         assertEquals(member.getRoleType(), response.getRoleType());
-    }
-
-
-    public GroupRO addGroupToDomain(MockHttpSession session, DomainRO domainRO, UserRO domainAdminUser) throws Exception {
-
-
-        GroupRO groupRO = TestROUtils.createGroup();
-        MvcResult addGroupResult = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_GROUP_CREATE, domainAdminUser.getUserId(), domainRO.getDomainId())
-                        .session(session)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(groupRO)))
-                .andExpect(status().isOk()).andReturn();
-        return getObjectFromResponse(addGroupResult, GroupRO.class);
-    }
-
-    public MemberRO addGroupMember(MockHttpSession session, DomainRO domainRO, GroupRO groupRO, UserRO domainAdminUser, String newMemberUsername) throws Exception {
-
-        MemberRO memberToAdd = new MemberRO();
-        memberToAdd.setRoleType(MembershipRoleType.VIEWER);
-        memberToAdd.setUsername(newMemberUsername);
-
-        // when
-        MvcResult result = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER_PUT, domainAdminUser.getUserId(), domainRO.getDomainId(), groupRO.getGroupId())
-                        .session(session)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(memberToAdd)))
-                .andExpect(status().isOk()).andReturn();
-
-        //then
-        return getObjectFromResponse(result, MemberRO.class);
     }
 
 }

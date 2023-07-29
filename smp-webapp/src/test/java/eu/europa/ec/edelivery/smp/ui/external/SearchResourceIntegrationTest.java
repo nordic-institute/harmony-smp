@@ -66,8 +66,7 @@ public class SearchResourceIntegrationTest {
     @Test
     public void testSearchByAnonymous() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)
-        ).andExpect(status().isOk()).andReturn();
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)).andExpect(status().isOk()).andReturn();
 
         //then
         ObjectMapper mapper = new ObjectMapper();

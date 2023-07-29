@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class DomainEditControllerTest extends AbstractControllerTest {
+public class DomainEditControllerIntegrationTest extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_EDIT_DOMAIN;
 
     @Autowired
@@ -157,24 +157,4 @@ public class DomainEditControllerTest extends AbstractControllerTest {
         assertEquals(SG_USER_USERNAME, response.getUsername());
         assertEquals(member.getRoleType(), response.getRoleType());
     }
-
-
-    public MemberRO addDomainMember(MockHttpSession session, DomainRO domainRO, UserRO domainAdminUser, String newMemberUsername) throws Exception {
-
-        MemberRO memberToAdd = new MemberRO();
-        memberToAdd.setRoleType(MembershipRoleType.VIEWER);
-        memberToAdd.setUsername(newMemberUsername);
-
-        // when
-        MvcResult result = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT, domainAdminUser.getUserId(), domainRO.getDomainId())
-                        .session(session)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(memberToAdd)))
-                .andExpect(status().isOk()).andReturn();
-
-        //then
-        return getObjectFromResponse(result, MemberRO.class);
-    }
-
 }

@@ -1,12 +1,9 @@
 package eu.europa.ec.edelivery.smp.ui.edit;
 
-import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.ui.*;
-import eu.europa.ec.edelivery.smp.services.ui.UIGroupPublicService;
 import eu.europa.ec.edelivery.smp.services.ui.UIResourceSearchService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
-import eu.europa.ec.edelivery.smp.test.testutils.TestROUtils;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +17,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
@@ -44,11 +40,12 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
         super.setup();
     }
 
+    // test must match the webapp_integration_test_data.sql file!
     @ParameterizedTest
     @CsvSource({
             ",'', 2",
             ",'group-admin', 2",
-            ",'resource-admin', 0",
+            ",'resource-admin', 1",
             "'','', 2",
             "ehealth-actorid-qns,'', 2", // filter by group match
             "'No match at all','', 0",
@@ -131,16 +128,16 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
         int initialSize = getResourceCount();
 
         // when
-        MvcResult result = mvc.perform(delete(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_DELETE, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(),addedResource.getResourceId())
+        MvcResult result = mvc.perform(delete(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_DELETE, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(), addedResource.getResourceId())
                         .session(session)
                         .with(csrf()))
-                        .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk()).andReturn();
         // then
         ResourceRO response = getObjectFromResponse(result, ResourceRO.class);
         assertNotNull(response);
         assertEquals(addedResource.getIdentifierValue(), response.getIdentifierValue());
         assertEquals(addedResource.getIdentifierScheme(), response.getIdentifierScheme());
-        assertEquals(initialSize - 1,  getResourceCount());
+        assertEquals(initialSize - 1, getResourceCount());
     }
 
     @Test
@@ -171,7 +168,6 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
         assertEquals(addedResource.getIdentifierValue(), response.getIdentifierValue());
         assertEquals(addedResource.getIdentifierScheme(), response.getIdentifierScheme());
     }
-
 
     @Test
     public void testGetGroupMembers() throws Exception {
@@ -216,14 +212,14 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
         ResourceRO addedResource = addResourceToGroup(session, domainRO, groupRO, userRO);
 
         //when
-        MemberRO response = addResourceMember(session, domainRO, groupRO,addedResource, userRO, SG_USER_USERNAME);
+        MemberRO response = addResourceMember(session, domainRO, groupRO, addedResource, userRO, SG_USER_USERNAME);
         // then
         assertNotNull(response);
         assertEquals(SG_USER_USERNAME, response.getUsername());
     }
 
     @Test
-   public void testDeleteGroupMember() throws Exception {
+    public void testDeleteGroupMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -277,46 +273,7 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
     }
 
 
-    public MemberRO addResourceMember(MockHttpSession session, DomainRO domainRO, GroupRO groupRO, ResourceRO resourceRO,  UserRO domainAdminUser, String newMemberUsername) throws Exception {
-
-        MemberRO memberToAdd = new MemberRO();
-        memberToAdd.setRoleType(MembershipRoleType.VIEWER);
-        memberToAdd.setUsername(newMemberUsername);
-
-        // when
-        MvcResult result = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_PUT,
-                        domainAdminUser.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(), resourceRO.getResourceId())
-                        .session(session)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(memberToAdd)))
-                .andExpect(status().isOk()).andReturn();
-
-        //then
-        return getObjectFromResponse(result, MemberRO.class);
-    }
-
-
-    public ResourceRO addResourceToGroup(MockHttpSession session, DomainRO domainRO, GroupRO groupRO,  UserRO domainAdminUser) throws Exception {
-
-        ResourceRO resource = new ResourceRO();
-        resource.setResourceTypeIdentifier("edelivery-oasis-smp-1.0-servicegroup");
-        resource.setIdentifierValue(UUID.randomUUID().toString());
-        resource.setIdentifierScheme("test-test-test");
-        resource.setVisibility(VisibilityType.PUBLIC);
-
-        MvcResult result = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_CREATE, domainAdminUser.getUserId(), domainRO.getDomainId(), groupRO.getGroupId())
-                        .session(session)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(resource)))
-                .andExpect(status().isOk()).andReturn();
-
-
-        return getObjectFromResponse(result, ResourceRO.class);
-    }
-
-    public int getResourceCount(){
-        return uiResourceSearchService.getTableList(-1,-1, null, null, new ResourceFilter()).getCount().intValue();
+    public int getResourceCount() {
+        return uiResourceSearchService.getTableList(-1, -1, null, null, new ResourceFilter()).getCount().intValue();
     }
 }

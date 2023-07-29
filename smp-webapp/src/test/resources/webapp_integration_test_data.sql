@@ -131,10 +131,11 @@ insert into SMP_GROUP_MEMBER (ID, FK_GROUP_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREA
 -- set ownership
 insert into SMP_RESOURCE_MEMBER (ID, FK_RESOURCE_ID, FK_USER_ID, MEMBERSHIP_ROLE, CREATED_ON, LAST_UPDATED_ON) values
 (-1, -1, 1, 'ADMIN', NOW(),  NOW()),
-(-2, -2, 1, 'ADMIN', NOW(),  NOW()),
-(-3, -1, 5, 'ADMIN', NOW(),  NOW()),
-(-4, -1, 2, 'ADMIN', NOW(),  NOW()),
-(-5, -1, 6, 'ADMIN', NOW(),  NOW());
+(-2, -1, 3, 'ADMIN', NOW(),  NOW()),
+(-3, -2, 1, 'ADMIN', NOW(),  NOW()),
+(-4, -1, 5, 'ADMIN', NOW(),  NOW()),
+(-5, -1, 2, 'ADMIN', NOW(),  NOW()),
+(-6, -1, 6, 'ADMIN', NOW(),  NOW());
 
 
 

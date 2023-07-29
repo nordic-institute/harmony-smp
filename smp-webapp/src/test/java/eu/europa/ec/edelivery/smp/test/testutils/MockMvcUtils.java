@@ -8,7 +8,6 @@ import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.SearchUserRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
-import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +29,6 @@ import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,11 +42,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 4.2
  */
 public class MockMvcUtils {
-    public static Logger LOG  = LoggerFactory.getLogger(MockMvcUtils.class);
+    public static Logger LOG = LoggerFactory.getLogger(MockMvcUtils.class);
     static ObjectMapper mapper = JsonMapper.builder()
             .findAndAddModules()
             .build();
-
+    // The values match the values in the test data in webapp_integration_test_data.sql
     public static final String SYS_ADMIN_USERNAME = "sys_admin";
     public static final String SYS_ADMIN_PASSWD = "test123";
     public static final String SMP_ADMIN_USERNAME = "smp_admin";
@@ -60,6 +58,8 @@ public class MockMvcUtils {
     public static final String SG_USER2_PASSWD = "test123";
 
     public static final String MOCK_LOGGED_USER = "mock_logged_user";
+
+    public static final String RESOURCE_001_IDENTIFIER_VALUE = "urn:australia:ncpb";
 
     public static RequestPostProcessor getHttpBasicSystemAdminCredentials() {
         return httpBasic(SYS_ADMIN_USERNAME, SYS_ADMIN_PASSWD);
@@ -120,11 +120,11 @@ public class MockMvcUtils {
                 .andReturn();
         // assert successful login
         byte[] asByteArray = result.getResponse().getContentAsByteArray();
-        System.out.println("User logged with data: "+ new String(asByteArray));
+        System.out.println("User logged with data: " + new String(asByteArray));
 
         UserRO userRO = mapper.readValue(asByteArray, UserRO.class);
         assertNotNull(userRO);
-        MockHttpSession session = (MockHttpSession)result.getRequest().getSession();
+        MockHttpSession session = (MockHttpSession) result.getRequest().getSession();
         session.setAttribute(MOCK_LOGGED_USER, userRO);
         return session;
     }
@@ -166,7 +166,7 @@ public class MockMvcUtils {
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        return  getArrayFromResponse(result, GroupRO.class);
+        return getArrayFromResponse(result, GroupRO.class);
     }
 
     public static List<SearchUserRO> geUsersByUsernameFilter(MockMvc mvc, MockHttpSession session, UserRO userRO, String username) throws Exception {
@@ -178,8 +178,6 @@ public class MockMvcUtils {
                 .andExpect(status().isOk()).andReturn();
         return getArrayFromResponse(result, SearchUserRO.class);
     }
-
-
 
 
     public static <T> T getObjectFromResponse(MvcResult result, Class<T> clazz)

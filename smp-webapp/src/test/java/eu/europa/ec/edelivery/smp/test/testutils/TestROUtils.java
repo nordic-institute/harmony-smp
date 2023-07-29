@@ -23,4 +23,13 @@ public class TestROUtils {
     public static String anyString() {
         return UUID.randomUUID().toString();
     }
+
+
+    public static String createSMP10ServiceGroupPayload(String id, String sch) {
+
+        return "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
+                "<ParticipantIdentifier scheme=\"" + sch + "\">" + id + "</ParticipantIdentifier>" +
+                "<ServiceMetadataReferenceCollection />" +
+                "</ServiceGroup>";
+    }
 }
