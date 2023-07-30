@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class UserAdminControllerIntegrationTest extends AbstractControllerTest {
+public class UserAdminControllerIT extends AbstractControllerTest {
 
     private static final String PATH_INTERNAL = ResourceConstants.CONTEXT_PATH_INTERNAL_USER;
 
@@ -74,7 +74,6 @@ public class UserAdminControllerIntegrationTest extends AbstractControllerTest {
 
         assertFalse(dev.getListIds().isEmpty());
         assertFalse(dev.getListDeleteNotPermitedIds().isEmpty());
-
     }
 
     @Test

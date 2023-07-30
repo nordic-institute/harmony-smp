@@ -9,7 +9,7 @@ import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
-import eu.europa.ec.edelivery.smp.ui.external.UserResourceIntegrationTest;
+import eu.europa.ec.edelivery.smp.ui.external.UserResourceIT;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class, UITruststoreService.class})
-public class TruststoreAdminResourceIntegrationTest extends AbstractControllerTest {
+public class TruststoreAdminControllerIT extends AbstractControllerTest {
     private static final String PATH_INTERNAL = CONTEXT_PATH_INTERNAL_TRUSTSTORE;
     private static final String PATH_PUBLIC = CONTEXT_PATH_PUBLIC_TRUSTSTORE;
 
@@ -77,7 +77,7 @@ public class TruststoreAdminResourceIntegrationTest extends AbstractControllerTe
 
     @Test
     public void validateCertificateSystemAdmin() throws Exception {
-        byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(UserResourceIT.class.getResourceAsStream("/SMPtest.crt"));
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
@@ -129,7 +129,7 @@ public class TruststoreAdminResourceIntegrationTest extends AbstractControllerTe
 
     @Test
     public void uploadCertificateInvalidUser() throws Exception {
-        byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(UserResourceIT.class.getResourceAsStream("/SMPtest.crt"));
         // id and logged user not match
         // given when
         mvc.perform(post(PATH_PUBLIC + "/34556655/validate-certificate")
@@ -176,7 +176,7 @@ public class TruststoreAdminResourceIntegrationTest extends AbstractControllerTe
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
 
-        byte[] buff = IOUtils.toByteArray(UserResourceIntegrationTest.class.getResourceAsStream("/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(UserResourceIT.class.getResourceAsStream("/SMPtest.crt"));
 
         int countStart = uiTruststoreService.getNormalizedTrustedList().size();
         MvcResult prepRes = mvc.perform(post(PATH_INTERNAL + "/" + userRO.getUserId() + "/upload-certificate")

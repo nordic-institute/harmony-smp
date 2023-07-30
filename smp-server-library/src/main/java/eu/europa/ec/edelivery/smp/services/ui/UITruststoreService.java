@@ -353,7 +353,7 @@ public class UITruststoreService extends BasicKeystoreService {
      *
      * @param cert
      * @throws CertificateException
-     */
+     *
     public void checkFullCertificateValidityLegacy(CertificateRO cert) throws CertificateException {
         // trust data in database
         if (cert.getValidFrom() != null && OffsetDateTime.now().isBefore(cert.getValidFrom())) {
@@ -391,7 +391,7 @@ public class UITruststoreService extends BasicKeystoreService {
             }
         }
     }
-
+*/
     boolean isTruststoreChanged() {
         File file = getTruststoreFile();
         return !Objects.equals(lastUpdateTrustStoreFile, file) ||

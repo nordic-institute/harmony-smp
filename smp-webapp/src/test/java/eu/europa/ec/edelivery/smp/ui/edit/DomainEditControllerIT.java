@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class DomainEditControllerIntegrationTest extends AbstractControllerTest {
+public class DomainEditControllerIT extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_EDIT_DOMAIN;
 
     @Autowired

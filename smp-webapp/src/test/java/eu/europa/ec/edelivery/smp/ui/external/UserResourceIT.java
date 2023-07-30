@@ -3,7 +3,6 @@ package eu.europa.ec.edelivery.smp.ui.external;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import eu.europa.ec.edelivery.smp.data.ui.AccessTokenRO;
-import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.PasswordChangeRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
@@ -23,7 +22,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.core.MediaType;
-import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_USER;
@@ -44,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-public class UserResourceIntegrationTest {
+public class UserResourceIT {
 
     private static final String PATH_PUBLIC = ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
 

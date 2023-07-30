@@ -27,7 +27,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class KeystoreResourceIntegrationTest extends AbstractControllerTest {
+public class KeystoreAdminControllerIT extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
     Path keystore = Paths.get("src", "test", "resources", "keystores", "smp-keystore.jks");
 

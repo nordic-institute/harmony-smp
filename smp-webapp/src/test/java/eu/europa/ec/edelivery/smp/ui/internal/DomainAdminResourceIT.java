@@ -1,27 +1,19 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
-import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
+import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
@@ -29,24 +21,14 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
-import static org.hamcrest.Matchers.stringContainsInOrder;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@RunWith(SpringRunner.class)
-@WebAppConfiguration
-@DirtiesContext
-@ContextConfiguration(classes = {SmpTestWebAppConfig.class})
-@Sql(scripts = {
-        "classpath:/cleanup-database.sql",
-        "classpath:/webapp_integration_test_data.sql"},
-        executionPhase = BEFORE_TEST_METHOD)
-public class DomainAdminResourceIntegrationTest {
+public class DomainAdminResourceIT extends AbstractControllerTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
 
     @Autowired
@@ -57,13 +39,14 @@ public class DomainAdminResourceIntegrationTest {
 
     private MockMvc mvc;
 
-    @Before
+    @BeforeEach
     public void setup() {
         mvc = MockMvcUtils.initializeMockMvc(webAppContext);
     }
 
     @Test
     public void testGetAllDomains() throws Exception {
+
         List<DBDomain> domain = domainDao.getAllDomains();
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
@@ -125,7 +108,7 @@ public class DomainAdminResourceIntegrationTest {
     public void updateDomainSmlIntegrationData() throws Exception {
         String domainCode = "domainTwo";
         MockHttpSession session = loginWithSystemAdmin(mvc);
-        UserRO userRO = (UserRO)session.getAttribute(MOCK_LOGGED_USER);
+        UserRO userRO = (UserRO) session.getAttribute(MOCK_LOGGED_USER);
 
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
         domainToUpdate.setSmlSubdomain("NewCode");
@@ -145,7 +128,7 @@ public class DomainAdminResourceIntegrationTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void updateDomainDataAddNewResourceDef() throws Exception {
         // set the webapp_integration_test_data.sql for resourceDefID
         String resourceDefID = "edelivery-oasis-cppa";
@@ -194,7 +177,7 @@ public class DomainAdminResourceIntegrationTest {
                         .content("[2]")) // delete domain with id 2
                 .andExpect(status().isOk()).andReturn();
 
-        //them
+        //then
         ObjectMapper mapper = new ObjectMapper();
         DeleteEntityValidation res = mapper.readValue(result.getResponse().getContentAsString(), DeleteEntityValidation.class);
 
@@ -290,8 +273,8 @@ public class DomainAdminResourceIntegrationTest {
 
     }
 
-    private String entitiToString(Object object ) throws Exception {
-            return serializeObject(object);
+    private String entitiToString(Object object) throws Exception {
+        return serializeObject(object);
 
 
     }

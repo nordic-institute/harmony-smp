@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class DocumentEditControllerIntegrationTest extends AbstractControllerTest {
+class DocumentEditControllerIT extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_EDIT_DOCUMENT;
 
     @Autowired

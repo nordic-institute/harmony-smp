@@ -1,9 +1,10 @@
 package eu.europa.ec.edelivery.smp.ui.edit;
 
+import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.ui.*;
-import eu.europa.ec.edelivery.smp.services.ui.UIResourceSearchService;
-import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
+import eu.europa.ec.edelivery.smp.services.ui.UIGroupPublicService;
+import eu.europa.ec.edelivery.smp.test.testutils.TestROUtils;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,145 +30,134 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * For the test configuration see the webapp_integration_test_data.sql file.
  * The system admin user is admin member of domain '1' and group '1'.
  */
-public class ResourceEditControllerIntegrationTest extends AbstractControllerTest {
-    private static final String PATH = CONTEXT_PATH_EDIT_RESOURCE;
+public class GroupEditControllerIT extends AbstractControllerTest {
+    private static final String PATH = CONTEXT_PATH_EDIT_GROUP;
 
     @Autowired
-    protected UIResourceSearchService uiResourceSearchService;
+    protected UIGroupPublicService uiGroupPublicService;
 
     @BeforeEach
     public void setup() throws IOException {
         super.setup();
     }
 
-    // test must match the webapp_integration_test_data.sql file!
     @ParameterizedTest
     @CsvSource({
-            ",'', 2",
-            ",'group-admin', 2",
-            ",'resource-admin', 1",
-            "'','', 2",
-            "ehealth-actorid-qns,'', 2", // filter by group match
-            "'No match at all','', 0",
-            "australia,'', 1", // filter by value match
+            ", 2",
+            "'', 2",
+            "group-admin, 1",
+            "resource-admin, 1",
+            "group-viewer, 0",
+            "all-roles, 1"
     })
-    public void testGetResourcesForGroup(String filter, String roleType, int expectedResults) throws Exception {
+    public void testGetGroup(String roleType, int values) throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
         assertEquals(1, domainsForUser.size());
         DomainRO domainRO = domainsForUser.get(0);
-        List<GroupRO> groupsForUser = geUserGroups(mvc, session, userRO, domainRO, null);
-        assertFalse(groupsForUser.isEmpty()); // set the webapp_integration_test_data.sql file
-        GroupRO groupRO = groupsForUser.get(0);
         // when
-        MvcResult result = mvc.perform(get(PATH, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId())
+        MvcResult result = mvc.perform(get(PATH, userRO.getUserId(), domainRO.getDomainId())
                         .session(session)
-                        .param(PARAM_PAGINATION_FILTER, filter)
                         .param(PARAM_NAME_TYPE, roleType)
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        ServiceResult serviceResult = getObjectFromResponse(result, ServiceResult.class);
-        assertNotNull(serviceResult);
-        assertEquals(expectedResults, serviceResult.getServiceEntities().size());
-
+        List<GroupRO> listGroups = getArrayFromResponse(result, GroupRO.class);
+        assertNotNull(listGroups);
+        assertEquals(values, listGroups.size());
     }
 
     @Test
-    public void testPutResource() throws Exception {
+    public void testPutGroup() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
         assertEquals(1, domainsForUser.size());
         DomainRO domainRO = domainsForUser.get(0);
-        List<GroupRO> groupsForUser = geUserGroups(mvc, session, userRO, domainRO, null);
-        assertFalse(groupsForUser.isEmpty()); // set the webapp_integration_test_data.sql file
-        GroupRO groupRO = groupsForUser.get(0);
+        GroupRO groupRO = new GroupRO();
+        groupRO.setGroupName(UUID.randomUUID().toString());
+        groupRO.setGroupDescription(UUID.randomUUID().toString());
+        groupRO.setVisibility(VisibilityType.PRIVATE);
 
-
-        ResourceRO resource = new ResourceRO();
-        resource.setResourceTypeIdentifier("edelivery-oasis-smp-1.0-servicegroup");
-        resource.setIdentifierValue(UUID.randomUUID().toString());
-        resource.setIdentifierScheme("test-test-test");
-        resource.setVisibility(VisibilityType.PUBLIC);
-
-        int initialSize = getResourceCount();
+        int initialGroupSize = uiGroupPublicService.getAllGroupsForDomain(1L).size();
         // when
-        MvcResult result = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_CREATE, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId())
+        MvcResult result = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_GROUP_CREATE, userRO.getUserId(), domainRO.getDomainId())
                         .session(session)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(resource)))
+                        .content(getObjectMapper().writeValueAsBytes(groupRO)))
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        ResourceRO response = getObjectFromResponse(result, ResourceRO.class);
+        GroupRO response = getObjectFromResponse(result, GroupRO.class);
         assertNotNull(response);
-        assertEquals(VisibilityType.PUBLIC, response.getVisibility());
-        assertEquals(resource.getIdentifierValue(), response.getIdentifierValue());
-        assertEquals(resource.getIdentifierScheme(), response.getIdentifierScheme());
-
-        assertEquals(initialSize + 1, getResourceCount());
+        assertEquals(VisibilityType.PRIVATE, response.getVisibility());
+        assertEquals(groupRO.getGroupName(), response.getGroupName());
+        assertEquals(groupRO.getGroupDescription(), response.getGroupDescription());
+        assertEquals(initialGroupSize + 1, uiGroupPublicService.getAllGroupsForDomain(1L).size());
     }
 
     @Test
-    public void testDeleteResource() throws Exception {
+    public void testDeleteGroup() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
         assertEquals(1, domainsForUser.size());
         DomainRO domainRO = domainsForUser.get(0);
-        List<GroupRO> groupsForUser = geUserGroups(mvc, session, userRO, domainRO, null);
-        GroupRO groupRO = groupsForUser.get(0);
-        ResourceRO addedResource = addResourceToGroup(session, domainRO, groupRO, userRO);
-        int initialSize = getResourceCount();
+        GroupRO groupRO = addGroupToDomain(session, domainRO, userRO);
+
+        int initialGroupSize = uiGroupPublicService.getAllGroupsForDomain(1L).size();
 
         // when
-        MvcResult result = mvc.perform(delete(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_DELETE, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(), addedResource.getResourceId())
+        MvcResult result = mvc.perform(delete(PATH + '/' + SUB_CONTEXT_PATH_EDIT_GROUP_DELETE, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId())
                         .session(session)
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
-        // then
-        ResourceRO response = getObjectFromResponse(result, ResourceRO.class);
+
+
+        GroupRO response = getObjectFromResponse(result, GroupRO.class);
         assertNotNull(response);
-        assertEquals(addedResource.getIdentifierValue(), response.getIdentifierValue());
-        assertEquals(addedResource.getIdentifierScheme(), response.getIdentifierScheme());
-        assertEquals(initialSize - 1, getResourceCount());
+        assertEquals(VisibilityType.PRIVATE, response.getVisibility());
+        assertEquals(groupRO.getGroupName(), response.getGroupName());
+        assertEquals(groupRO.getGroupDescription(), response.getGroupDescription());
+        assertEquals(initialGroupSize - 1, uiGroupPublicService.getAllGroupsForDomain(1L).size());
     }
 
     @Test
-    public void testUpdateResource() throws Exception {
+    public void testUpdateGroup() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
         assertEquals(1, domainsForUser.size());
         DomainRO domainRO = domainsForUser.get(0);
-        List<GroupRO> groupsForUser = geUserGroups(mvc, session, userRO, domainRO, null);
-        GroupRO groupRO = groupsForUser.get(0);
-        ResourceRO addedResource = addResourceToGroup(session, domainRO, groupRO, userRO);
-        addedResource.setVisibility(VisibilityType.PRIVATE);
+        GroupRO groupRO = addGroupToDomain(session, domainRO, userRO);
+
+        groupRO.setVisibility(VisibilityType.PUBLIC);
+        groupRO.setGroupDescription(TestROUtils.anyString());
+        groupRO.setGroupName(TestROUtils.anyString());
 
         // when
-        MvcResult result = mvc.perform(post(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_UPDATE, userRO.getUserId(), domainRO.getDomainId(),
-                        groupRO.getGroupId(), addedResource.getResourceId())
+        MvcResult result = mvc.perform(post(PATH + '/' + SUB_CONTEXT_PATH_EDIT_GROUP_UPDATE, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId())
                         .session(session)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(addedResource)))
+                        .content(getObjectMapper().writeValueAsBytes(groupRO)))
                 .andExpect(status().isOk()).andReturn();
-        // then
-        ResourceRO response = getObjectFromResponse(result, ResourceRO.class);
+
+
+        GroupRO response = getObjectFromResponse(result, GroupRO.class);
         assertNotNull(response);
-        assertEquals(addedResource.getVisibility(), response.getVisibility());
-        assertEquals(addedResource.getIdentifierValue(), response.getIdentifierValue());
-        assertEquals(addedResource.getIdentifierScheme(), response.getIdentifierScheme());
+        assertEquals(groupRO.getVisibility(), response.getVisibility());
+        assertEquals(groupRO.getGroupName(), response.getGroupName());
+        assertEquals(groupRO.getGroupDescription(), response.getGroupDescription());
     }
+
 
     @Test
     public void testGetGroupMembers() throws Exception {
@@ -177,13 +167,10 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
         List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
         assertEquals(1, domainsForUser.size());
         DomainRO domainRO = domainsForUser.get(0);
-        List<GroupRO> groupsForUser = geUserGroups(mvc, session, userRO, domainRO, null);
-        GroupRO groupRO = groupsForUser.get(0);
-        ResourceRO addedResource = addResourceToGroup(session, domainRO, groupRO, userRO);
+        GroupRO groupRO = addGroupToDomain(session, domainRO, userRO);
 
         // when
-        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(),
-                        addedResource.getResourceId())
+        MvcResult result = mvc.perform(get(PATH + '/' + SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId())
                         .session(session)
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
@@ -207,12 +194,10 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
         List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
         assertEquals(1, domainsForUser.size());
         DomainRO domainRO = domainsForUser.get(0);
-        List<GroupRO> groupsForUser = geUserGroups(mvc, session, userRO, domainRO, null);
-        GroupRO groupRO = groupsForUser.get(0);
-        ResourceRO addedResource = addResourceToGroup(session, domainRO, groupRO, userRO);
+        GroupRO groupRO = addGroupToDomain(session, domainRO, userRO);
 
         //when
-        MemberRO response = addResourceMember(session, domainRO, groupRO, addedResource, userRO, SG_USER_USERNAME);
+        MemberRO response = addGroupMember(session, domainRO, groupRO, userRO, SG_USER_USERNAME);
         // then
         assertNotNull(response);
         assertEquals(SG_USER_USERNAME, response.getUsername());
@@ -226,13 +211,10 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
         List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
         assertEquals(1, domainsForUser.size());
         DomainRO domainRO = domainsForUser.get(0);
-        List<GroupRO> groupsForUser = geUserGroups(mvc, session, userRO, domainRO, null);
-        GroupRO groupRO = groupsForUser.get(0);
-        ResourceRO addedResource = addResourceToGroup(session, domainRO, groupRO, userRO);
-        MemberRO member = addResourceMember(session, domainRO, groupRO, addedResource, userRO, SG_USER_USERNAME);
-        //when
-        MvcResult deleteGroupMemberResult = mvc.perform(delete(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_DELETE,
-                        userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(), addedResource.getResourceId(), member.getMemberId())
+        GroupRO groupRO = addGroupToDomain(session, domainRO, userRO);
+        MemberRO member = addGroupMember(session, domainRO, groupRO, userRO, SG_USER_USERNAME);
+
+        MvcResult deleteGroupMemberResult = mvc.perform(delete(PATH + '/' + SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER_DELETE, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(), member.getMemberId())
                         .session(session)
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
@@ -251,14 +233,13 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
         List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
         assertEquals(1, domainsForUser.size());
         DomainRO domainRO = domainsForUser.get(0);
-        List<GroupRO> groupsForUser = geUserGroups(mvc, session, userRO, domainRO, null);
-        GroupRO groupRO = groupsForUser.get(0);
-        ResourceRO addedResource = addResourceToGroup(session, domainRO, groupRO, userRO);
-        MemberRO member = addResourceMember(session, domainRO, groupRO, addedResource, userRO, SG_USER_USERNAME);
+        GroupRO groupRO = addGroupToDomain(session, domainRO, userRO);
+        MemberRO member = addGroupMember(session, domainRO, groupRO, userRO, SG_USER_USERNAME);
+        assertEquals(MembershipRoleType.VIEWER, member.getRoleType());
+        member.setRoleType(MembershipRoleType.ADMIN);
 
 
-        MvcResult updateGroupMemberResult = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_RESOURCE_MEMBER_PUT,
-                        userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(), addedResource.getResourceId(), member.getMemberId())
+        MvcResult deleteGroupMemberResult = mvc.perform(put(PATH + '/' + SUB_CONTEXT_PATH_EDIT_GROUP_MEMBER_PUT, userRO.getUserId(), domainRO.getDomainId(), groupRO.getGroupId(), member.getMemberId())
                         .session(session)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -266,14 +247,10 @@ public class ResourceEditControllerIntegrationTest extends AbstractControllerTes
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        MemberRO response = getObjectFromResponse(updateGroupMemberResult, MemberRO.class);
+        MemberRO response = getObjectFromResponse(deleteGroupMemberResult, MemberRO.class);
         assertNotNull(response);
         assertEquals(SG_USER_USERNAME, response.getUsername());
         assertEquals(member.getRoleType(), response.getRoleType());
     }
 
-
-    public int getResourceCount() {
-        return uiResourceSearchService.getTableList(-1, -1, null, null, new ResourceFilter()).getCount().intValue();
-    }
 }

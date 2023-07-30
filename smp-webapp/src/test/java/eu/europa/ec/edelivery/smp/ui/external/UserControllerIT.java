@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class UserControllerTest extends AbstractControllerTest {
+public class UserControllerIT extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_PUBLIC_USER;
 
     @Autowired

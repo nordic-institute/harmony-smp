@@ -12,7 +12,8 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.edelivery</groupId>
     <artifactId>smp-modules</artifactId>
@@ -94,19 +95,22 @@
         <!-- plugins -->
         <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+        <surefire.jvm.args></surefire.jvm.args>
+        <failsafe.jvm.args></failsafe.jvm.args>
 
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
 
         <sonar.host.url>http://localhost:9000/sonar/</sonar.host.url>
         <sonar.language>java</sonar.language>
-
+        <jacoco.append>true</jacoco.append>
         <sonar.binaries>target/classes</sonar.binaries>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <jacoco.maven.plugin.version>0.8.6</jacoco.maven.plugin.version>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+
+        <jacoco.maven.plugin.version>0.8.9</jacoco.maven.plugin.version>
         <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
         <sonar.exclusions>
             **/target/**,
             **/smp-angular/node_modules/**,
@@ -123,7 +127,8 @@
         </sonar.coverage.exclusions>
         <!-- latest version compatible with SonarQube 5.6 is: 3.3.0.603-->
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
-        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true</release.arguments>
+        <release.arguments>-Dmaven.javadoc.skip=true -Dmaven.test.skipTests=true -Dmaven.test.skip=true
+        </release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
     </properties>
 
@@ -752,8 +757,35 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- make sure methods are  always run in same order -->
+                    <runOrder>alphabetical</runOrder>
+                    <argLine>-ea ${argLine}</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <!-- ... fool Sonar to show test success for both unit and integration tests together by
+                    instructing Failsafe to store its test reports to the same directory as Surefire instead of
+                    the default failsafe-reports.
+
+                    See https://jira.sonarsource.com/browse/SONAR-7526 -->
+
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
                     <runOrder>alphabetical</runOrder>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- jacoco start -->
             <plugin>
@@ -772,6 +804,16 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-agent-it</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${jacoco.report.it}</destFile>
+                            <propertyName>failsafeArgLine</propertyName>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

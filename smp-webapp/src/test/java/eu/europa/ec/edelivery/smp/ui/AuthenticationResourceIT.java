@@ -2,7 +2,6 @@ package eu.europa.ec.edelivery.smp.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
-import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
@@ -22,8 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -39,9 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-public class AuthenticationResourceIntegrationTest {
+public class AuthenticationResourceIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationResourceIntegrationTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationResourceIT.class);
 
     private static final String PATH = ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";
 
