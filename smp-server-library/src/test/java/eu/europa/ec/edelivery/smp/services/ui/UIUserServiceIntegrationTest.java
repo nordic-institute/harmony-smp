@@ -215,6 +215,27 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
+    public void testUpdateUserPasswordByAdminUserNotExists() {
+        // system admin
+        DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
+        user.setApplicationRole(ApplicationRoleType.SYSTEM_ADMIN);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
+        credential.setValue(BCrypt.hashpw("userPassword", BCrypt.gensalt()));
+        userDao.persistFlushDetach(user);
+        credentialDao.persistFlushDetach(credential);
+
+        long authorizedUserId = user.getId();
+        long userToUpdateId =-1000L;
+        String authorizedPassword = "userPassword";
+        String newPassword = "TTTTtttt1111$$$$$";
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId,userToUpdateId, authorizedPassword, newPassword));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id to update"));
+    }
+
+    @Test
     public void testAdminUpdateUserdataOK() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
@@ -260,6 +281,18 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
+    public void testCreateAccessTokenForUserUserNotExists() {
+        CredentialRO credentialRO = new CredentialRO();
+        credentialRO.setCredentialType(CredentialType.ACCESS_TOKEN);
+        credentialRO.setDescription("test description");
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.createAccessTokenForUser(-100L, credentialRO));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
+    }
+
+    @Test
     public void testStoreCertificateCredentialForUser() throws Exception {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
@@ -278,6 +311,21 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         assertEqualDates(certificateRO.getValidTo(), result.getExpireOn());
         assertEqualDates(certificateRO.getValidFrom(), result.getActiveFrom());
         assertEquals(credentialRO.getDescription(), result.getDescription());
+    }
+
+    @Test
+    public void testStoreCertificateCredentialForUserUserNotExists() throws Exception {
+        CertificateRO certificateRO = TestROUtils.createCertificateRO("CN=Test,OU=Test,O=Test,L=Test,ST=Test,C=EU", BigInteger.TEN);
+
+        CredentialRO credentialRO = new CredentialRO();
+        credentialRO.setCredentialType(CredentialType.CERTIFICATE);
+        credentialRO.setDescription("test description");
+        credentialRO.setCertificate(certificateRO);
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.storeCertificateCredentialForUser(-100L, credentialRO));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
     }
 
     @Test

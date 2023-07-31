@@ -19,8 +19,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-
 /**
  * Service implements logic if user can activate action on the resource
  */
@@ -82,22 +80,13 @@ public class ResourceGuard {
         DBDomain domain = group.getDomain();
         DBUser dbuser = user == null ? null : user.getUser();
         // if domain is internal check if user is member of domain, or any internal resources, groups
-        if (domain.getVisibility() == VisibilityType.PRIVATE &&
-                (dbuser == null ||
-                        !(domainMemberDao.isUserDomainMember(dbuser, domain)
-                                || groupMemberDao.isUserAnyDomainGroupResourceMember(dbuser, domain)
-                                || resourceMemberDao.isUserAnyDomainResourceMember(dbuser, domain)))
+        if ((resource.getVisibility() == null || domain.getVisibility() == VisibilityType.PRIVATE)
+                && (dbuser == null ||
+                !(domainMemberDao.isUserDomainMember(dbuser, domain)
+                        || groupMemberDao.isUserAnyDomainGroupResourceMember(dbuser, domain)
+                        || resourceMemberDao.isUserAnyDomainResourceMember(dbuser, domain)))
         ) {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read internal domain [{}] resources", user, domain);
-            return false;
-        }
-        // if group is internal check if user is member of group, or any group resources,
-        if (group.getVisibility() == VisibilityType.PRIVATE &&
-                (dbuser == null ||
-                        !(groupMemberDao.isUserGroupMember(dbuser, Collections.singletonList(group))
-                                || resourceMemberDao.isUserAnyGroupResourceMember(dbuser, group))
-                )) {
-            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read internal group [{}] resources", user, domain);
             return false;
         }
 
@@ -105,16 +94,6 @@ public class ResourceGuard {
         if (resource.getVisibility() == VisibilityType.PUBLIC) {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized to read public resource [{}]", user, resource);
             return true;
-        }
-        if (dbuser == null) {
-            LOG.debug(SMPLogger.SECURITY_MARKER, "Anonymous user [{}] is not authorized to read resource [{}]", user, resource);
-            return false;
-        }
-
-        if (resource.getVisibility() == null || resource.getVisibility() == VisibilityType.PRIVATE) {
-            boolean isResourceMember = resourceMemberDao.isUserResourceMember(user.getUser(), resource);
-            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized: [{}] to read private resource [{}]", user, isResourceMember, resource);
-            return isResourceMember;
         }
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read resource [{}]", user, resource);
         return false;
@@ -158,11 +137,6 @@ public class ResourceGuard {
                 domain,
                 MembershipRoleType.ADMIN);
 
-    }
-
-    public boolean canCreate(SMPUserDetails user, DBSubresource subresource) {
-        LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to create subresource [{}]", user, subresource);
-        return canUpdate(user, subresource);
     }
 
     public boolean canDelete(SMPUserDetails user, DBResource resource, DBDomain domain) {

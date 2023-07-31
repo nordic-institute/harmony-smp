@@ -609,6 +609,15 @@ public class TestUtilsDao {
     }
 
 
+    @Transactional
+    public <E> E find(Class<E> clazz, Object id) {
+        LOG.debug("find entity: [{}] for type [{}]", id, clazz);
+        return memEManager.find(clazz, id);
+    }
+
+
+
+
     public void clear() {
         memEManager.clear();
     }

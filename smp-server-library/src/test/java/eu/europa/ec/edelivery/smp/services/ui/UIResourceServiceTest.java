@@ -164,8 +164,62 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
         assertEquals(VisibilityType.PRIVATE, result.getVisibility());
     }
 
+
     @Test
-    public void testDeleteResourceFromGroup() {
+    public void testUpdateResourceForGroupGroupNotFound() {
+        // given
+        DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
+        ResourceRO testResource = TestROUtils.createResource(dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), dbResource.getDomainResourceDef().getResourceDef().getIdentifier());
+        assertNotEquals(dbResource.getVisibility(), VisibilityType.PRIVATE);
+        testResource.setVisibility(VisibilityType.PRIVATE);
+
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()-> testInstance.updateResourceForGroup(testResource, dbResource.getId(),
+                        -1000L, testUtilsDao.getD1().getId()));
+        // then
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Group does not exist!"));
+    }
+
+    @Test
+    public void testUpdateResourceForGroupNotBelongToDomain() {
+        // given
+        DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
+        ResourceRO testResource = TestROUtils.createResource(dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), dbResource.getDomainResourceDef().getResourceDef().getIdentifier());
+        assertNotEquals(dbResource.getVisibility(), VisibilityType.PRIVATE);
+        testResource.setVisibility(VisibilityType.PRIVATE);
+
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()-> testInstance.updateResourceForGroup(testResource, dbResource.getId(),
+                        testUtilsDao.getGroupD2G1().getId(), testUtilsDao.getD1().getId()));
+        // then
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Group does not belong to the given domain!"));
+    }
+
+
+    @Test
+    public void testUpdateResourceForGroupResourceDefNotFound() {
+        // given
+        String defIdNotExist = UUID.randomUUID().toString();
+        DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
+        ResourceRO testResource = TestROUtils.createResource(dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), defIdNotExist);
+        assertNotEquals(dbResource.getVisibility(), VisibilityType.PRIVATE);
+        testResource.setVisibility(VisibilityType.PRIVATE);
+
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()-> testInstance.updateResourceForGroup(testResource, dbResource.getId(),
+                testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId()));
+        // then
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Resource definition ["+defIdNotExist+"] does not exist!"));
+    }
+
+    @Test
+    public void testDeleteResourceFromGroupOK() {
         // given
         ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
                 testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
@@ -177,6 +231,47 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
         testInstance.deleteResourceFromGroup(resourceId, testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId());
         // then
         assertNull(resourceDao.find(resourceId));
+    }
+
+
+    @Test
+    public void testDeleteResourceFromGroupResourceNotExists() {
+        // given
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()-> testInstance.deleteResourceFromGroup(-1000L, testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId()));
+        // then
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Resource does not exist!"));
+    }
+
+
+    @Test
+    public void testDeleteResourceFromGroupResourceNotBelongToGroup() {
+        // given
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()-> testInstance.deleteResourceFromGroup(testUtilsDao.getResourceD2G1RD1().getId(), testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId()));
+        // then
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Resource does not belong to the group!"));
+    }
+
+    @Test
+    public void testDeleteResourceFromGroup() {
+        // given
+        ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
+                testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
+        ResourceRO resourceRO = testInstance.createResourceForGroup(testResource, testUtilsDao.getGroupD1G1().getId(),
+                testUtilsDao.getD1().getId(), testUtilsDao.getUser1().getId());
+        Long resourceId = new Long(resourceRO.getResourceId());
+        assertNotNull(resourceDao.find(resourceId));
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                ()-> testInstance.deleteResourceFromGroup(resourceId, testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD2().getId()));
+        // then
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Group does not belong to the given domain!"));
     }
 
     @Test
