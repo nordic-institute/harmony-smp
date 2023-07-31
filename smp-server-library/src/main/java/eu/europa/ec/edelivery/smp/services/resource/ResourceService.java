@@ -23,6 +23,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_OWNER;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
+ *
  * @author Joze Rihtarsic
  * @since 5.0
  */

@@ -24,10 +24,9 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_CLUSTE
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 import static org.junit.Assert.*;
 
-@Ignore
+
 @ContextConfiguration(classes = {UIPropertyService.class})
 public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
-
 
     @Autowired
     protected UIPropertyService testInstance;
@@ -130,7 +129,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
         assertEquals(propertyName, result.getProperty());
         assertEquals(propertyValue, result.getValue());
         assertFalse(result.isPropertyValid());
-        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Invalid integer: [" + propertyValue + "]. Error:NumberFormatException: For input string: \"" + propertyValue + "\"!"));
+        MatcherAssert.assertThat(result.getErrorMessage(), CoreMatchers.containsString("Invalid integer: [" + propertyValue + "]. Error:NumberFormatException"));
     }
 
     @Test

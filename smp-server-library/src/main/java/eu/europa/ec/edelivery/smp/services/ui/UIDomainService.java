@@ -100,6 +100,9 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
     @Transactional
     public void createDomainData(DomainRO data) {
+        if (StringUtils.isBlank(data.getDomainCode())){
+            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain code must not be empty!");
+        };
 
         if (domainDao.getDomainByCode(data.getDomainCode()).isPresent()){
             throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain with code ["+data.getDomainCode()+"] already exists!");

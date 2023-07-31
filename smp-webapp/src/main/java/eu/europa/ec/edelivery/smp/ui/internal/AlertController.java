@@ -31,7 +31,7 @@ public class AlertController {
     }
 
     @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
-    public ServiceResult<AlertRO> geDomainList(
+    public ServiceResult<AlertRO> getAlertList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, defaultValue = "id", required = false) String orderBy,

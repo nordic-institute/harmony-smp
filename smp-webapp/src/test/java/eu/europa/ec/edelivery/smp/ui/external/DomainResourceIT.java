@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = {
         "/cleanup-database.sql",
         "/webapp_integration_test_data.sql"})
-public class DomainResourceIntegrationTest {
+public class DomainResourceIT {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_PUBLIC_DOMAIN;
 
     @Autowired
@@ -66,7 +66,7 @@ public class DomainResourceIntegrationTest {
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
-        //them
+        //then
         ObjectMapper mapper = new ObjectMapper();
         ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
 

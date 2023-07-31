@@ -16,16 +16,16 @@
   <form [formGroup]="resourceForm">
     <mat-form-field style="width:100%">
       <mat-label>Resource type</mat-label>
-      <mat-select placeholder="Resource type for the resource"
+      <select matNativeControl placeholder="Resource type for the resource"
                   matTooltip="Select type for the resource."
                   id="resourceTypeIdentifier"
                   formControlName="resourceTypeIdentifier"
                   required>
-        <mat-option *ngFor="let resDef of domainResourceDefs"
+        <option *ngFor="let resDef of domainResourceDefs"
                     [value]="resDef.identifier">
           {{resDef.name}} ({{resDef.identifier}})
-        </mat-option>
-      </mat-select>
+        </option>
+      </select>
     </mat-form-field>
     <mat-form-field  style="width: 100%">
       <mat-label>Resource identifier</mat-label>
@@ -42,14 +42,14 @@
     </mat-form-field>
     <mat-form-field style="width:100%">
       <mat-label>Resource visibility</mat-label>
-      <mat-select formControlName="visibility"
+      <select matNativeControl formControlName="visibility"
                   matTooltip="Resource visibility."
                   id="visibility_id" required>
-        <mat-option *ngFor="let visibility of groupVisibilityOptions"
+        <option *ngFor="let visibility of groupVisibilityOptions"
                     [value]="visibility.value">
           {{visibility.key}}
-        </mat-option>
-      </mat-select>
+        </option>
+      </select>
     </mat-form-field>
 
     <smp-warning-panel

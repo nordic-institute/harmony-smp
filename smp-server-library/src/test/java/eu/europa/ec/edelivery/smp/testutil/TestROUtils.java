@@ -2,7 +2,6 @@ package eu.europa.ec.edelivery.smp.testutil;
 
 import eu.europa.ec.edelivery.smp.conversion.X509CertificateToCertificateROConverter;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
-import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
@@ -32,7 +31,7 @@ public class TestROUtils {
         return CERT_CONVERTER.convert(cert);
     }
 
-    public static GroupRO createGroup(String groupName, VisibilityType visibility){
+    public static GroupRO createGroup(String groupName, VisibilityType visibility) {
         GroupRO group = new GroupRO();
         group.setGroupName(groupName);
         group.setGroupDescription(anyString());
@@ -41,7 +40,7 @@ public class TestROUtils {
     }
 
 
-    public static String anyString(){
+    public static String anyString() {
         return UUID.randomUUID().toString();
     }
 }

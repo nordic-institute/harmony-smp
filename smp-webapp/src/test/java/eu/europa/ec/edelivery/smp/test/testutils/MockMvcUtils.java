@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
+import eu.europa.ec.edelivery.smp.data.ui.SearchUserRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +27,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY;
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -40,11 +42,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 4.2
  */
 public class MockMvcUtils {
-    public static Logger LOG  = LoggerFactory.getLogger(MockMvcUtils.class);
+    public static Logger LOG = LoggerFactory.getLogger(MockMvcUtils.class);
     static ObjectMapper mapper = JsonMapper.builder()
             .findAndAddModules()
             .build();
-
+    // The values match the values in the test data in webapp_integration_test_data.sql
     public static final String SYS_ADMIN_USERNAME = "sys_admin";
     public static final String SYS_ADMIN_PASSWD = "test123";
     public static final String SMP_ADMIN_USERNAME = "smp_admin";
@@ -56,6 +58,8 @@ public class MockMvcUtils {
     public static final String SG_USER2_PASSWD = "test123";
 
     public static final String MOCK_LOGGED_USER = "mock_logged_user";
+
+    public static final String RESOURCE_001_IDENTIFIER_VALUE = "urn:australia:ncpb";
 
     public static RequestPostProcessor getHttpBasicSystemAdminCredentials() {
         return httpBasic(SYS_ADMIN_USERNAME, SYS_ADMIN_PASSWD);
@@ -116,11 +120,11 @@ public class MockMvcUtils {
                 .andReturn();
         // assert successful login
         byte[] asByteArray = result.getResponse().getContentAsByteArray();
-        System.out.println("User logged with data: "+ new String(asByteArray));
+        System.out.println("User logged with data: " + new String(asByteArray));
 
         UserRO userRO = mapper.readValue(asByteArray, UserRO.class);
         assertNotNull(userRO);
-        MockHttpSession session = (MockHttpSession)result.getRequest().getSession();
+        MockHttpSession session = (MockHttpSession) result.getRequest().getSession();
         session.setAttribute(MOCK_LOGGED_USER, userRO);
         return session;
     }
@@ -142,6 +146,39 @@ public class MockMvcUtils {
         LOG.info("User session validated with logged data: []", new String(asByteArray));
         return mapper.readValue(asByteArray, UserRO.class);
     }
+
+    public static List<DomainRO> geUserDomainsForRole(MockMvc mvc, MockHttpSession session, UserRO userRO, String forRole) throws Exception {
+
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_EDIT_DOMAIN, userRO.getUserId())
+                        .param(PARAM_NAME_TYPE, forRole)
+                        .session(session)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+        return getArrayFromResponse(result, DomainRO.class);
+    }
+
+    public static List<GroupRO> geUserGroups(MockMvc mvc, MockHttpSession session, UserRO userRO, DomainRO domainRO, String forRole) throws Exception {
+
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_EDIT_GROUP, userRO.getUserId(), domainRO.getDomainId())
+                        .session(session)
+                        .param(PARAM_NAME_TYPE, forRole)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        //then
+        return getArrayFromResponse(result, GroupRO.class);
+    }
+
+    public static List<SearchUserRO> geUsersByUsernameFilter(MockMvc mvc, MockHttpSession session, UserRO userRO, String username) throws Exception {
+
+        MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_USER + "/{user-id}/search", userRO.getUserId())
+                        .param(PARAM_PAGINATION_FILTER, username)
+                        .session(session)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+        return getArrayFromResponse(result, SearchUserRO.class);
+    }
+
 
     public static <T> T getObjectFromResponse(MvcResult result, Class<T> clazz)
             throws IOException {

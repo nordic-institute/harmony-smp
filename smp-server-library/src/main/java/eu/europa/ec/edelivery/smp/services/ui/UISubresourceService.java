@@ -75,14 +75,11 @@ public class UISubresourceService {
         }
         resource.getSubresources().remove(subresource);
         subresourceDao.remove(subresource);
-
-
-
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 
     @Transactional
-    public SubresourceRO createResourceForGroup(SubresourceRO subResourceRO, Long resourceId) {
+    public SubresourceRO createSubresourceForResource(SubresourceRO subResourceRO, Long resourceId) {
 
         DBResource resParent= resourceDao.find(resourceId);
         if (resParent == null) {
@@ -112,7 +109,6 @@ public class UISubresourceService {
         return conversionService.convert(subresource, SubresourceRO.class);
     }
 
-
     public DBDocument createDocumentForSubresourceDef(DBSubresourceDef subresourceDef) {
         DBDocument document = new DBDocument();
         document.setCurrentVersion(1);
@@ -120,5 +116,4 @@ public class UISubresourceService {
         document.setName(subresourceDef.getName());
         return document;
     }
-
 }

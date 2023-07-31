@@ -19,15 +19,15 @@
 
     <mat-form-field style="width:100%">
       <mat-label>Group visibility</mat-label>
-      <mat-select placeholder="Group visibility"
+      <select matNativeControl placeholder="Group visibility"
                   formControlName="visibility"
                   matTooltip="Group visibility."
                   id="group_id" required>
-        <mat-option *ngFor="let visibility of groupVisibilityOptions"
+        <option *ngFor="let visibility of groupVisibilityOptions"
                     [value]="visibility.value">
           {{visibility.key}}
-        </mat-option>
-      </mat-select>
+        </option>
+      </select>
       <mat-hint>Choose group visibility</mat-hint>
     </mat-form-field>
   </form>

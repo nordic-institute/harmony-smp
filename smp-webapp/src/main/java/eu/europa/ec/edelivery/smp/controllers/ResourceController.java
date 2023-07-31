@@ -194,6 +194,4 @@ public class ResourceController {
             throw new SMPRuntimeException(INVALID_REQUEST, "Can not read input stream!", e);
         }
     }
-
-
 }

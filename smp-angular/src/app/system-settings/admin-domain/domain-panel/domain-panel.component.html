@@ -34,29 +34,29 @@
     </mat-form-field>
     <mat-form-field style="width:100%">
       <mat-label>Response signature Certificate (Signature CertAlias)</mat-label>
-      <mat-select formControlName="signatureKeyAlias"
+      <select matNativeControl matInput formControlName="signatureKeyAlias"
                   matTooltip="Certificate is used for signing REST responses for the domain."
                   id="signatureKeyAlias_id">
-        <mat-option [value]="''" ></mat-option>
-        <mat-option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
+        <option [value]="''" ></option>
+        <option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
           {{cert.alias}} ({{cert.certificateId}})
-        </mat-option>
-      </mat-select>
+        </option>
+      </select>
       <mat-hint align="end">Empty value will cause that Resource responses will not be signed by SMP!
       </mat-hint>
     </mat-form-field>
 
     <mat-form-field style="width:100%">
       <mat-label>Visibility of the domain</mat-label>
-      <mat-select  formControlName="visibility"
+      <select matNativeControl formControlName="visibility"
                   name="visibility"
                   matTooltip="Visibility of the domain."
                   id="domainVisibility_id">
-        <mat-option *ngFor="let visibility of domainVisibilityOptions"
+        <option *ngFor="let visibility of domainVisibilityOptions"
                     [value]="visibility.value">
           {{visibility.key}}
-        </mat-option>
-      </mat-select>
+        </option>
+      </select>
       <mat-hint align="end">Domain visibility. In case of Internal user must be authenticated
         to get read the domain resources
       </mat-hint>
@@ -64,15 +64,15 @@
 
   <mat-form-field *ngIf="domainResourceTypes?.length" style="width:100%">
     <mat-label>Default resource type for the domain</mat-label>
-    <mat-select formControlName="defaultResourceTypeIdentifier"
+    <select matNativeControl formControlName="defaultResourceTypeIdentifier"
                 matTooltip="Default resource type for the domain."
                 id="domainDefaultResourceType_id">
-      <mat-option [value]="''" disabled></mat-option>
-      <mat-option *ngFor="let resDef of domainResourceTypes"
+      <option [value]="''" disabled></option>
+      <option *ngFor="let resDef of domainResourceTypes"
                   [value]="resDef.identifier">
         {{resDef.name}} ({{resDef.identifier}})
-      </mat-option>
-    </mat-select>
+      </option>
+    </select>
     <mat-hint align="end">Domain visibility. In case of Internal user must be authenticated
       to get read the domain resources
     </mat-hint>

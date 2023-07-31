@@ -14,7 +14,6 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
@@ -40,7 +39,6 @@ public class ResourceGuard {
         this.resourceMemberDao = resourceMemberDao;
         this.identifierService = identifierService;
     }
-
 
     /**
      * Method validates if the user is authorized for action on the resource
@@ -118,16 +116,6 @@ public class ResourceGuard {
             LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized: [{}] to read private resource [{}]", user, isResourceMember, resource);
             return isResourceMember;
         }
-        /*
-        // if resource is internal the domain, group members and resource member can see it
-        if (resource.getVisibility() == VisibilityType.INTERNAL) {
-
-            boolean isAuthorized = domainMemberDao.isUserDomainMember(dbuser, resource.getDomainResourceDef().getDomain())
-                    || groupMemberDao.isUserGroupMember(dbuser, Collections.singletonList(resource.getGroup()));
-            LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] authorized: [{}] to read internal resource [{}]", user, isAuthorized, resource);
-            return isAuthorized;
-        }
-*/
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is not authorized to read resource [{}]", user, resource);
         return false;
     }
@@ -191,20 +179,5 @@ public class ResourceGuard {
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to delete resource [{}]", user, subresource);
         // Subresource can be created by the resource admin, the same as for update
         return canUpdate(user, subresource);
-    }
-
-    /**
-     * Method validates if any of the service group users contains userID
-     *
-     * @param userId
-     * @param dbServiceGroup
-     * @return
-     */
-    public boolean isResourceAdmin(Long userId, DBResource dbServiceGroup) {
-       /* return dbServiceGroup != null &&
-                dbServiceGroup.getUsers().stream().filter(user -> user.getId().equals(userId)).findAny().isPresent();
-
-        */
-        return false;
     }
 }

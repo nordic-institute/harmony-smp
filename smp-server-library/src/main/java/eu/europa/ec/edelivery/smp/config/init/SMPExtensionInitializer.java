@@ -102,10 +102,10 @@ public class SMPExtensionInitializer implements InitializingBean {
         Optional<DBResourceDef> resourceDef = resourceDefDao.getResourceDefByIdentifier(resourceDefinitionSpi.identifier());
         if (resourceDef.isPresent()) {
             DBResourceDef dbResourceDef = resourceDef.get();
-            if (StringUtils.equals(extension.getIdentifier(),dbResourceDef.getExtension().getIdentifier() )) {
+            if (dbResourceDef.getExtension()!=null && StringUtils.equals(extension.getIdentifier(),dbResourceDef.getExtension().getIdentifier() )) {
                 updateResourceSPI(resourceDefinitionSpi, dbResourceDef);
             } else {
-                LOG.error("Skip resource definition update due to extension missmatch! ResourceDefinition [{}] is already registered for extension [{}]. The current resource extension identifier is [{}]!",
+                LOG.error("Skip resource definition update due to extension mismatch! ResourceDefinition [{}] is already registered for extension [{}]. The current resource extension identifier is [{}]!",
                         resourceDefinitionSpi,
                         extension,
                         dbResourceDef.getExtension());

@@ -134,28 +134,19 @@ public class UIDocumentService {
         }
 
         DBDocument document = resource.getDocument();
-        int version = document.getDocumentVersions().stream().mapToInt(dv -> dv.getVersion())
-                .max().orElse(0);
-
-        DBDocumentVersion documentVersion = new DBDocumentVersion();
-        documentVersion.setVersion(version + 1);
-        documentVersion.setDocument(document);
-        documentVersion.setContent(bos.toByteArray());
-        document.getDocumentVersions().add(documentVersion);
-        document.setCurrentVersion(documentVersion.getVersion());
-        return convert(document, documentVersion);
+        return createNewVersionAndConvert(document, bos);
     }
 
     @Transactional
     public DocumentRo saveSubresourceDocumentForResource(Long subresource, Long resourceId, DocumentRo documentRo) {
 
         DBResource parentResource = resourceDao.find(resourceId);
-        DBSubresource enitity = subresourceDao.find(subresource);
-        DBSubresourceDef subresourceDef = enitity.getSubresourceDef();
+        DBSubresource entity = subresourceDao.find(subresource);
+        DBSubresourceDef subresourceDef = entity.getSubresourceDef();
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(
                 parentResource.getDomainResourceDef().getDomain(), parentResource,
-                enitity, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
+                entity, new ByteArrayInputStream(documentRo.getPayload().getBytes()));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ResponseData responseData = new SpiResponseData(bos);
         try {
@@ -164,18 +155,8 @@ public class UIDocumentService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreSubresourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
 
-        DBDocument document = enitity.getDocument();
-        ;
-        int version = document.getDocumentVersions().stream().mapToInt(dv -> dv.getVersion())
-                .max().orElse(0);
-
-        DBDocumentVersion documentVersion = new DBDocumentVersion();
-        documentVersion.setVersion(version + 1);
-        documentVersion.setDocument(document);
-        documentVersion.setContent(bos.toByteArray());
-        document.getDocumentVersions().add(documentVersion);
-        document.setCurrentVersion(documentVersion.getVersion());
-        return convert(document, documentVersion);
+        DBDocument document = entity.getDocument();
+        return createNewVersionAndConvert(document, bos);
     }
 
     /**
@@ -190,33 +171,41 @@ public class UIDocumentService {
     public DocumentRo getDocumentForResource(Long resourceId, int version) {
         DBResource resource = resourceDao.find(resourceId);
         DBDocument document = resource.getDocument();
-        DBDocumentVersion documentVersion = null;
-        DBDocumentVersion currentVersion = null;
-
-
-        for (DBDocumentVersion dv : document.getDocumentVersions()) {
-            if (dv.getVersion() == version) {
-                documentVersion = dv;
-            }
-            if (dv.getVersion() == document.getCurrentVersion()) {
-                currentVersion = dv;
-            }
-        }
-        documentVersion = documentVersion == null ? currentVersion : documentVersion;
-        if (documentVersion == null && !document.getDocumentVersions().isEmpty()) {
-            documentVersion = document.getDocumentVersions().get(document.getDocumentVersions().size() - 1);
-        }
-        return convert(document, documentVersion);
+        return convertWithVersion(document, version);
     }
 
     @Transactional
     public DocumentRo getDocumentForSubResource(Long subresourceId, Long resourceId, int version) {
         DBSubresource subresource = subresourceDao.find(subresourceId);
         DBDocument document = subresource.getDocument();
-        DBDocumentVersion documentVersion = null;
+        return convertWithVersion(document, version);
+    }
+
+    /**
+     * return Create new Document version and convert DBDocument  to DocumentRo
+     *
+     * @param document to convert to DocumentRo
+     * @param baos     to write document content
+     * @return DocumentRo
+     */
+    private DocumentRo createNewVersionAndConvert(DBDocument document, ByteArrayOutputStream baos) {
+
+        // get max version
+        int version = document.getDocumentVersions().stream().mapToInt(dv -> dv.getVersion())
+                .max().orElse(0);
+
+        DBDocumentVersion documentVersion = new DBDocumentVersion();
+        documentVersion.setVersion(version + 1);
+        documentVersion.setDocument(document);
+        documentVersion.setContent(baos.toByteArray());
+        document.getDocumentVersions().add(documentVersion);
+        document.setCurrentVersion(documentVersion.getVersion());
+        return convert(document, documentVersion);
+    }
+
+    public DocumentRo convertWithVersion(DBDocument document,  int version) {
         DBDocumentVersion currentVersion = null;
-
-
+        DBDocumentVersion documentVersion = null;
         for (DBDocumentVersion dv : document.getDocumentVersions()) {
             if (dv.getVersion() == version) {
                 documentVersion = dv;
@@ -234,6 +223,7 @@ public class UIDocumentService {
 
     public DocumentRo convert(DBDocument document, DBDocumentVersion version) {
         DocumentRo documentRo = new DocumentRo();
+        // set list of versions
         document.getDocumentVersions().forEach(dv ->
                 documentRo.getAllVersions().add(dv.getVersion()));
 

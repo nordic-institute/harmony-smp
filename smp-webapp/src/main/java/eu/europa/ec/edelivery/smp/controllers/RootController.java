@@ -56,19 +56,27 @@ public class RootController {
             "image/ico", "image/x-ico"
     },
             value = {"/index.html", "/favicon.png", "/favicon.ico"})
-    public byte[] getServiceGroup(HttpServletRequest httpReq, HttpServletResponse httpRes) throws IOException {
+    public byte[] getStaticResources(HttpServletRequest httpReq, HttpServletResponse httpRes) throws IOException {
         String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT, host, httpReq.getPathInfo());
         String value = httpReq.getPathInfo();
-        if (value != null && value.endsWith("favicon.png")) {
-            httpRes.setContentType("image/x-ico");
-            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.png"));
-        } else if (value != null && value.endsWith("favicon.ico")) {
-            httpRes.setContentType(MediaType.IMAGE_PNG_VALUE);
-            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.ico"));
-        } else {
+
+        if (StringUtils.isBlank(value)) {
+            httpRes.setContentType(MediaType.TEXT_HTML_VALUE);
             return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/index.html"));
         }
+
+        if (value != null && value.endsWith("favicon.png")) {
+            httpRes.setContentType(MediaType.IMAGE_PNG_VALUE);
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.png"));
+        } else if (value != null && value.endsWith("favicon.ico")) {
+            httpRes.setContentType("image/x-ico");
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.ico"));
+        }
+
+        httpRes.setContentType(MediaType.TEXT_HTML_VALUE);
+        return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/index.html"));
+
     }
 
     /**
@@ -88,6 +96,4 @@ public class RootController {
         String host = httpReq.getHeader("X-Forwarded-For");
         return StringUtils.isBlank(host) ? httpReq.getRemoteHost() : host;
     }
-
-
 }

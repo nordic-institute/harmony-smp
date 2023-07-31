@@ -13,14 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.test;
 
-import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
-import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
@@ -35,14 +34,14 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 })
 @ComponentScan(basePackages = "eu.europa.ec.edelivery.smp")
 public class PropertiesTestConfig {
-    public static final String DATABASE_URL = "jdbc:h2:file:./target/DomiSmpWebDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE;";
+    public static final String DATABASE_URL = "jdbc:h2:file:./target/DomiSmpWebDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE;Mode=MySQL";
     public static final String DATABASE_USERNAME = "smp";
     public static final String DATABASE_PASS = "smp";
     public static final String DATABASE_DRIVER = "org.h2.Driver";
     public static final String DATABASE_DIALECT = "org.hibernate.dialect.H2Dialect";
 
     public static final String BUILD_FOLDER = "target";
-    public static final Path SECURITY_PATH= Paths.get(BUILD_FOLDER, "keystores");
+    public static final Path SECURITY_PATH = Paths.get(BUILD_FOLDER, "keystores");
 
     static {
         System.setProperty(JDBC_DRIVER.getProperty(), DATABASE_DRIVER);

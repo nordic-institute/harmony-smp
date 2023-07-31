@@ -4,17 +4,17 @@
     <b *ngIf="newMode">To create a new subresource enter unique identifier and scheme and click save.</b>
     <mat-form-field style="width:100%">
       <mat-label>Selected resource type</mat-label>
-      <mat-select placeholder="Select type for the subresource"
+      <select matNativeControl placeholder="Select type for the subresource"
                   matTooltip="Select type for the subresource."
                   id="subresourceTypeIdentifier"
                   formControlName="subresourceTypeIdentifier"
                   required>
-        <mat-option *ngFor="let resDef of subresourceDefs"
+        <option *ngFor="let resDef of subresourceDefs"
                     [value]="resDef.identifier">
           {{resDef.name}} ({{resDef.identifier}})
-        </mat-option>
+        </option>
 
-      </mat-select>
+      </select>
     </mat-form-field>
     <mat-form-field  style="width: 100%">
       <mat-label>Subresource identifier</mat-label>

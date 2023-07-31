@@ -4,7 +4,6 @@ package eu.europa.ec.edelivery.smp.monitor;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Joze Rihtarsic
@@ -26,17 +24,13 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "/monitor")
-public class MonitorResource {
+public class MonitorController {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(MonitorResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(MonitorController.class);
 
-
-    private static final String TEST_NAME = "urn:test:document:is-alive";
-    private static final String TEST_EXTENSION_XML = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension</ex:dummynode></Extension>";
-    private static final String TEST_DB_SUCCESSFUL_ROLLBACK = "TEST_DB_SUCCESSFUL_ROLLBACK MESSAGE";
     private final DomainDao domainDao;
 
-    public MonitorResource(DomainDao domainDao) {
+    public MonitorController(DomainDao domainDao) {
         this.domainDao = domainDao;
     }
 
@@ -49,8 +43,6 @@ public class MonitorResource {
         LOG.debug("Start isAlive function for user: [{}]", user);
         try {
             suc = testDatabase();
-        } catch (SMPTestIsALiveException ex) {
-            suc = Objects.equals(TEST_DB_SUCCESSFUL_ROLLBACK, ex.getMessage());
         } catch (RuntimeException th) {
             LOG.error("Error occurred while testing database connection: Msg: [{}]", ExceptionUtils.getRootCauseMessage(th));
         }

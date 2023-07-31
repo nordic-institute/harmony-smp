@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.auth;
 
-import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -17,22 +16,12 @@ import java.util.Objects;
  * @since 4.2
  */
 public class UILoginAuthenticationToken extends UsernamePasswordAuthenticationToken {
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UILoginAuthenticationToken.class);
     SMPUserDetails userDetails;
 
     public UILoginAuthenticationToken(Object principal, Object credentials, SMPUserDetails userDetails) {
         super(principal, credentials, userDetails == null ? null : userDetails.getAuthorities());
         setDetails(userDetails);
         this.userDetails = userDetails;
-    }
-
-    public SecurityUtils.Secret getSecret() {
-
-        if (userDetails == null) {
-            LOG.warn("Can not retrieve security token for session. User details is null!");
-            return null;
-        }
-        return userDetails.getSessionSecret();
     }
 
     public SMPUserDetails getUserDetails() {
