@@ -191,7 +191,7 @@ public class UIResourceService {
 
         Optional<DBResource> existResource = resourceDao.getResource(resourceIdentifier.getValue(),resourceIdentifier.getScheme(), optRedef.get(), group.getDomain());
         if (existResource.isPresent()) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource [val:" + resourceRO.getIdentifierValue() + " scheme:" + resourceRO.getIdentifierScheme() + "] already exists for domain!");
         }
 
 

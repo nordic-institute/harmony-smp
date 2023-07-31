@@ -63,7 +63,7 @@ public class UserAdminController {
 
     @GetMapping(path = "/{user-enc-id}/search", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public ServiceResult<SearchUserRO> getDomainMemberList(
+    public ServiceResult<SearchUserRO> searchUsers(
             @PathVariable("user-enc-id") String userEncId,
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,

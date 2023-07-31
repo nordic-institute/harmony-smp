@@ -13,7 +13,6 @@ import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -168,6 +167,15 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
+    public void testDeleteCertificateNotExists() throws Exception {
+        // given
+        // when
+        X509Certificate cert = testInstance.deleteCertificate("alias-not-exists");
+        // then
+        assertNull(cert);
+    }
+
+    @Test
     public void testIsTruststoreChanged() throws Exception {
         // given
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
@@ -203,16 +211,16 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     }
 
     @Test
-    public void  validateCertificateWithTruststoreNullCertificate()  {
+    public void validateCertificateWithTruststoreNullCertificate() {
 
         CertificateException result = assertThrows(CertificateException.class,
-                () ->testInstance.validateCertificateWithTruststore(null));
+                () -> testInstance.validateCertificateWithTruststore(null));
 
         assertThat(result.getMessage(), containsString("The X509Certificate is null "));
     }
 
     @Test
-    public void  validateCertificateWithTruststoreNullTruststore() throws Exception {
+    public void validateCertificateWithTruststoreNullTruststore() throws Exception {
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject);
         Mockito.doReturn(null).when(testInstance).getTrustStore();
@@ -232,7 +240,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         CertificateRO cer = testInstance.getCertificateData(buff);
 
         //then
-        assertTrue( cer.isInvalid());
+        assertTrue(cer.isInvalid());
         assertEquals("Can not read the certificate!", cer.getInvalidReason());
     }
 

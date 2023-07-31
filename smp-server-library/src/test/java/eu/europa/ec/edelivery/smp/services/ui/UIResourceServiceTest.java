@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
@@ -10,10 +11,11 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestROUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,10 +23,12 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SG_SCHEMA_1;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(classes = {UIResourceService.class, ConversionTestConfig.class})
-public class UIResourceServiceTest extends AbstractServiceIntegrationTest {
+public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     @Autowired
     protected UIResourceService testInstance;
 
@@ -35,7 +39,7 @@ public class UIResourceServiceTest extends AbstractServiceIntegrationTest {
     @Autowired
     ConversionService conversionService;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         // setup initial data!
         testUtilsDao.clearData();
@@ -75,6 +79,71 @@ public class UIResourceServiceTest extends AbstractServiceIntegrationTest {
         assertNotNull(result);
         assertEquals(testResource.getIdentifierValue(), result.getIdentifierValue());
         assertEquals(testResource.getIdentifierScheme(), result.getIdentifierScheme());
+    }
+
+    @Test
+    public void testCreateResourceForGroupFailsGroupNotExists() {
+        // given
+        ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
+                testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
+
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.createResourceForGroup(testResource, -100L,
+                        testUtilsDao.getD1().getId(), testUtilsDao.getUser1().getId()));
+        // then
+        assertNotNull(result);
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Group does not exist"));
+    }
+
+    @Test
+    public void testCreateResourceForGroupFailsGroupNotForDomain() {
+        // given
+        ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
+                testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
+
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.createResourceForGroup(testResource, testUtilsDao.getGroupD1G1().getId(), -100L,
+                        testUtilsDao.getUser1().getId()));
+        // then
+        assertNotNull(result);
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Group does not belong to the given domain"));
+    }
+
+    @Test
+    public void testCreateResourceForGroupFailInvalidResourceDef() {
+        // given
+        ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
+                UUID.randomUUID().toString());
+
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.createResourceForGroup(testResource, testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId(),
+                        testUtilsDao.getUser1().getId()));
+        // then
+        assertNotNull(result);
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Resource definition [" + testResource.getResourceTypeIdentifier() + "] does not exist!"));
+    }
+
+    @Test
+    public void testCreateResourceForGroupFailAlreadyExists() {
+        // given
+        DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
+        ResourceRO testResource = TestROUtils.createResource(dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(),
+                testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
+
+        // when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.createResourceForGroup(testResource, testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId(),
+                        testUtilsDao.getUser1().getId()));
+        // then
+        assertNotNull(result);
+        assertEquals(ErrorCode.INVALID_REQUEST, result.getErrorCode());
+        assertThat(result.getMessage(), containsString("Resource [val:" + testResource.getIdentifierValue() + " scheme:" + testResource.getIdentifierScheme() + "] already exists for domain!"));
     }
 
     @Test

@@ -368,7 +368,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         UserRO result = convertToRo(user);
 
         return result;
-
     }
 
     public List<CredentialRO> getUserCredentials(Long userId,

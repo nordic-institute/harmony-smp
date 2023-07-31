@@ -5,43 +5,42 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
+import eu.europa.ec.edelivery.smp.test.testutils.TestROUtils;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class DomainAdminResourceIT extends AbstractControllerTest {
+public class DomainAdminControllerIT extends AbstractControllerTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
-
-    @Autowired
-    private WebApplicationContext webAppContext;
 
     @Autowired
     DomainDao domainDao;
 
-    private MockMvc mvc;
-
     @BeforeEach
-    public void setup() {
-        mvc = MockMvcUtils.initializeMockMvc(webAppContext);
+    public void setup() throws IOException {
+        super.setup();
     }
 
     @Test
@@ -62,6 +61,69 @@ public class DomainAdminResourceIT extends AbstractControllerTest {
     }
 
     @Test
+    public void testCreateBasicDomainData() throws Exception {
+        DomainRO testDomain = TestROUtils.createDomain();
+
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
+
+        MvcResult result = mvc.perform(put(PATH + "/" + userRO.getUserId() + "/create")
+                        .session(session)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(entitiToString(testDomain)))
+                .andExpect(status().isOk()).andReturn();
+
+        DomainRO resultObject = parseResponse(result, DomainRO.class);
+        assertNotNull(resultObject);
+        assertNotNull(resultObject.getDomainId());
+        assertEquals(testDomain.getDomainCode(), resultObject.getDomainCode());
+    }
+
+    @Test
+    public void testCreateDomainWithEmptyCode() throws Exception {
+        DomainRO testDomain = TestROUtils.createDomain("");
+
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
+
+        MvcResult result = mvc.perform(put(PATH + "/" + userRO.getUserId() + "/create")
+                        .session(session)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(entitiToString(testDomain)))
+                .andExpect(status().is4xxClientError()).andReturn();
+
+        ErrorResponseRO errorRO = getObjectFromResponse(result, ErrorResponseRO.class);
+        assertNotNull(errorRO);
+        assertEquals(ErrorBusinessCode.INVALID_INPUT_DATA.name(), errorRO.getBusinessCode());
+        MatcherAssert.assertThat(errorRO.getErrorDescription(), Matchers.containsString("Invalid domain data! Domain code must not be empty!"));
+    }
+
+    @Test
+    public void testUpdateResourceDefDomainList() throws Exception {
+        String domainCode = "domainTwo";
+        String documentType = "edelivery-oasis-cppa";
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = (UserRO) session.getAttribute(MOCK_LOGGED_USER);
+
+        DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
+        assertTrue(domainToUpdate.getResourceDefinitions().isEmpty());
+
+        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "/update-resource-types")
+                        .session(session)
+                        .with(csrf())
+                        .header("Content-Type", " application/json")
+                        .content(entitiToString(Collections.singletonList(documentType))))
+                .andExpect(status().isOk()).andReturn();
+        DomainRO resultObject = parseResponse(result, DomainRO.class);
+        //
+        assertNotNull(resultObject);
+        assertEquals(1, resultObject.getResourceDefinitions().size());
+        assertEquals(documentType, resultObject.getResourceDefinitions().get(0));
+    }
+
+    @Test
     public void testDeleteDomainOK() throws Exception {
         // given - delete domain two :)
         String domainCode = "domainTwo";
@@ -70,7 +132,7 @@ public class DomainAdminResourceIT extends AbstractControllerTest {
         DomainRO domainToDelete = getDomain(domainCode, userRO, session);
         assertNotNull(domainToDelete);
 
-        MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/" + domainToDelete.getDomainId() + "" + "/delete")
+        MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/" + domainToDelete.getDomainId() + "/delete")
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")) // delete domain with id 2
@@ -91,7 +153,7 @@ public class DomainAdminResourceIT extends AbstractControllerTest {
         domainToUpdate.setDomainCode("NewCode");
         domainToUpdate.setSignatureKeyAlias("New alias");
 
-        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "" + "/update")
+        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() +  "/update")
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -114,7 +176,7 @@ public class DomainAdminResourceIT extends AbstractControllerTest {
         domainToUpdate.setSmlSubdomain("NewCode");
         domainToUpdate.setSmlClientKeyAlias("New alias");
 
-        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "" + "/update-sml-integration-data")
+        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "/update-sml-integration-data")
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -128,7 +190,6 @@ public class DomainAdminResourceIT extends AbstractControllerTest {
     }
 
     @Test
-    @Disabled
     public void updateDomainDataAddNewResourceDef() throws Exception {
         // set the webapp_integration_test_data.sql for resourceDefID
         String resourceDefID = "edelivery-oasis-cppa";
@@ -138,7 +199,7 @@ public class DomainAdminResourceIT extends AbstractControllerTest {
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
         domainToUpdate.getResourceDefinitions().add(resourceDefID);
 
-        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "" + "/update-resource-types")
+        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "/update-resource-types")
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -150,110 +211,6 @@ public class DomainAdminResourceIT extends AbstractControllerTest {
         assertEquals(domainToUpdate.getDomainCode(), resultObject.getDomainCode());
         assertEquals(EntityROStatus.UPDATED.getStatusNumber(), resultObject.getStatus());
     }
-
-/*
-    @Test
-    public void updateDomainListNotExists() throws Exception {
-// given when
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-
-
-        MvcResult result = mvc.perform(put(PATH)
-                        .session(session)
-                        .with(csrf())
-                        .header("Content-Type", " application/json")
-                        .content("[{\"status\":3,\"index\":9,\"id\":10,\"domainCode\":\"domainTwoNotExist\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
-                .andExpect(status().isOk()).andReturn();
-    }
-
-    @Test
-    public void validateDeleteDomainOK() throws Exception {
-        // given when
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        MvcResult result = mvc.perform(put(PATH + "/validate-delete")
-                        .session(session)
-                        .with(csrf())
-                        .header("Content-Type", " application/json")
-                        .content("[2]")) // delete domain with id 2
-                .andExpect(status().isOk()).andReturn();
-
-        //then
-        ObjectMapper mapper = new ObjectMapper();
-        DeleteEntityValidation res = mapper.readValue(result.getResponse().getContentAsString(), DeleteEntityValidation.class);
-
-        assertNotNull(res);
-        assertTrue(res.getListDeleteNotPermitedIds().isEmpty());
-        assertEquals(1, res.getListIds().size());
-        assertEquals(true, res.isValidOperation());
-        assertNull(res.getStringMessage());
-    }
-
-    @Test
-    public void updateDomainListOkUpdate() throws Exception {
-// given when
-        assertEquals("CEF-SMP-002", domainDao.getDomainByCode("domainTwo").get().getSmlSmpId());
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        MvcResult result = mvc.perform(put(PATH)
-                        .session(session)
-                        .with(csrf())
-                        .header("Content-Type", " application/json")
-                        .content("[{\"status\":1,\"index\":9,\"id\":2,\"domainCode\":\"domainTwo\",\"smlSubdomain\":\"newdomain\",\"smlSmpId\":\"CEF-SMP-010\",\"smlParticipantIdentifierRegExp\":null,\"smlClientCertHeader\":null,\"smlClientKeyAlias\":null,\"signatureKeyAlias\":\"sig-key\",\"smlClientCertAuth\":true,\"smlRegistered\":false}]")) // delete domain with id 2
-                .andExpect(status().isOk()).andReturn();
-
-        // check if exists
-        assertEquals("CEF-SMP-010", domainDao.getDomainByCode("domainTwo").get().getSmlSmpId());
-    }
-
-    @Test
-    public void validateDeleteDomainFalse() throws Exception {
-        // given when
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        MvcResult result = mvc.perform(put(PATH + "/validate-delete")
-                        .session(session)
-                        .with(csrf())
-                        .header("Content-Type", " application/json")
-                        .content("[1]")) // delete domain with id 2
-                .andExpect(status().isOk()).andReturn();
-
-        //them
-        ObjectMapper mapper = new ObjectMapper();
-        DeleteEntityValidation res = mapper.readValue(result.getResponse().getContentAsString(), DeleteEntityValidation.class);
-
-        assertNotNull(res);
-        assertEquals(1, res.getListDeleteNotPermitedIds().size());
-        assertEquals(1, res.getListIds().size());
-        assertEquals(false, res.isValidOperation());
-        assertEquals("Could not delete domains used by Service groups! Domain: domain (domain ) uses by:1 SG.", res.getStringMessage());
-    }
-
-    @Test
-    public void registerDomainAndParticipantsNotEnabled() throws Exception {
-        // given when
-        // 3- user id
-        // domainTwo -  domain code
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        mvc.perform(put(PATH + "/3/sml-register/domainTwo")
-                        .session(session)
-                        .with(csrf())
-                        .header("Content-Type", " application/json"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(stringContainsInOrder("Configuration error: [SML integration is not enabled!]!")));
-    }
-
-    @Test
-    public void unregisterDomainAndParticipants() throws Exception {
-        // given when
-        // 3- user id
-        // domainTwo -  domain code
-        MockHttpSession session = loginWithSystemAdmin(mvc);
-        mvc.perform(put(PATH + "/3/sml-unregister/domainTwo")
-                        .session(session)
-                        .with(csrf())
-                        .header("Content-Type", " application/json"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(stringContainsInOrder("Configuration error: SML integration is not enabled!!")));
-    }
-*/
 
     private List<DomainRO> getAllDomains(UserRO userRO, MockHttpSession session) throws Exception {
         MvcResult result = mvc.perform(get(PATH + "/" + userRO.getUserId())

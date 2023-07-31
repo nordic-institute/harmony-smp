@@ -112,7 +112,6 @@ public class TruststoreAdminControllerTest extends AbstractControllerTest {
     @Test
     public void testDeleteCertificateFailed() throws Exception {
 
-
         String alias = UUID.randomUUID().toString();
 
         MockHttpSession session = loginWithSystemAdmin(mvc);

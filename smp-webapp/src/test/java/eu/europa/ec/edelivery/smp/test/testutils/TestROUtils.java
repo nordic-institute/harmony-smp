@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.test.testutils;
 
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
+import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.GroupRO;
 
 import java.util.UUID;
@@ -18,6 +19,17 @@ public class TestROUtils {
         groupRO.setGroupDescription(anyString());
         groupRO.setVisibility(VisibilityType.PRIVATE);
         return groupRO;
+    }
+
+    public static DomainRO createDomain() {
+        return createDomain(anyString());
+    }
+
+    public static DomainRO createDomain(String name) {
+        DomainRO domainRO = new DomainRO();
+        domainRO.setDomainCode(name);
+        domainRO.setVisibility(VisibilityType.PRIVATE);
+        return domainRO;
     }
 
     public static String anyString() {

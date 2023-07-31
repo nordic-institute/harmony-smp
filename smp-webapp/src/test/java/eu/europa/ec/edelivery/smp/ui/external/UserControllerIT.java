@@ -1,5 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.ui.CredentialRO;
 import eu.europa.ec.edelivery.smp.data.ui.NavigationTreeNodeRO;
 import eu.europa.ec.edelivery.smp.data.ui.SearchUserRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
@@ -34,7 +36,6 @@ public class UserControllerIT extends AbstractControllerTest {
     public void setup() throws IOException {
         super.setup();
     }
-
 
     @Test
     public void testGetUserNavigationTreeForSystemAdmin() throws Exception {
@@ -101,5 +102,44 @@ public class UserControllerIT extends AbstractControllerTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(userRO.getUsername(), result.get(0).getUsername());
+    }
+
+    @Test
+    public void testGetUserCredentialStatus() throws Exception {
+        MockHttpSession session = loginWithUser2(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        MvcResult response = mvc.perform(get(PATH + "/{user-id}/username-credential-status", userRO.getUserId())
+                        .session(session)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+        // when
+        CredentialRO result = getObjectFromResponse(response, CredentialRO.class);
+        // then
+        assertNotNull(result);
+        assertEquals(userRO.getUsername(), result.getName());
+        assertTrue(result.isActive());
+        assertTrue(result.isExpired()); // set by admin
+        assertNull(result.getExpireOn());
+    }
+
+
+    @Test
+    public void testGetAccessTokenCredentials() throws Exception {
+        MockHttpSession session = loginWithUser2(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        MvcResult response = mvc.perform(get(PATH + "/{user-id}/access-token-credentials", userRO.getUserId())
+                        .session(session)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+        // when
+        List<CredentialRO> result = getArrayFromResponse(response, CredentialRO.class);
+        // then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        CredentialRO credentialRO = result.get(0);
+        assertEquals(CredentialType.ACCESS_TOKEN, credentialRO.getCredentialType());
+        assertTrue(credentialRO.isActive());
+        assertTrue(credentialRO.isExpired()); // set by admin
+        assertNull(credentialRO.getExpireOn());
     }
 }

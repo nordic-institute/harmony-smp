@@ -126,14 +126,14 @@ public class KeystoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteKeystoreEntryOK() throws Exception {
+    public void deleteCertificateOK() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
-
+        String alias = "second_domain_alias";
 
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         // given when
-        MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/delete/second_domain_alias")
+        MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/delete/" + alias)
                         .session(session)
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
@@ -147,5 +147,19 @@ public class KeystoreAdminControllerIT extends AbstractControllerTest {
         assertEquals(countStart - 1, uiKeystoreService.getKeystoreEntriesList().size());
     }
 
+    @Test
+    public void deleteCertificateNotExists() throws Exception {
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        String alias = "alias-not-exists";
 
+        // given when
+        MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/delete/"+ alias)
+                        .session(session)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        CertificateRO res = getObjectFromResponse(result, CertificateRO.class);
+        assertEquals("Certificate Key not removed because alias ["+alias+"] does not exist in keystore!", res.getActionMessage());
+    }
 }

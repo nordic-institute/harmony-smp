@@ -31,6 +31,7 @@ public class DBCredentialToCredentialROConverter implements Converter<DBCredenti
         target.setCredentialId(SessionSecurityUtils.encryptedEntityId(source.getId()));
         target.setName(source.getName());
         target.setActive(source.isActive());
+        target.setCredentialType(source.getCredentialType());
         target.setDescription(source.getDescription());
         target.setSequentialLoginFailureCount(source.getSequentialLoginFailureCount());
         target.setLastFailedLoginAttempt(source.getLastFailedLoginAttempt());

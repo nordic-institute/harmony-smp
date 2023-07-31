@@ -22,6 +22,7 @@ public class CredentialROToDBCredentialConverter implements Converter<Credential
             target.setId(SessionSecurityUtils.decryptEntityId(source.getCredentialId()));
         }
         target.setName(source.getName());
+        target.setCredentialType(source.getCredentialType());
         target.setActive(source.isActive());
         target.setDescription(source.getDescription());
         target.setSequentialLoginFailureCount(source.getSequentialLoginFailureCount());
