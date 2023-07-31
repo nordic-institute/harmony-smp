@@ -29,9 +29,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.testutil.SMPAssert.assertEqualDates;
 import static org.junit.jupiter.api.Assertions.*;
@@ -148,6 +147,23 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
 
         assertEquals(urTest.getServiceEntities().size() - 1, iCntNew);
         assertFalse(rmUsr2.isPresent());
+    }
+
+    @Test
+    public void testValidateDeleteRequest() {
+        // given
+        insertDataObjects(15);
+        ServiceResult<UserRO> urTest = testInstance.getTableList(-1, -1, null, null, null);
+        assertEquals(15, urTest.getServiceEntities().size());
+        List<String> listUserIds = urTest.getServiceEntities().stream().map(UserRO::getUserId).collect(Collectors.toList());
+        DeleteEntityValidation deleteEntityValidation = new DeleteEntityValidation();
+        deleteEntityValidation.getListIds().addAll(listUserIds);
+        // when
+        DeleteEntityValidation result =  testInstance.validateDeleteRequest(deleteEntityValidation);
+        // then
+        assertNotNull(result);
+        assertEquals(listUserIds.size(), result.getListIds().size());
+        assertEquals(0, result.getListDeleteNotPermitedIds().size());
     }
 
     @Test

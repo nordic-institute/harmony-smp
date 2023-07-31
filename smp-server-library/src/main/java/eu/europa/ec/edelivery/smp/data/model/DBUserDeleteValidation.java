@@ -1,11 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 
-import org.hibernate.envers.Audited;
-
-import javax.persistence.*;
-
-
 public class DBUserDeleteValidation {
 
     Long id;

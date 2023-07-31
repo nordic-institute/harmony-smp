@@ -153,7 +153,6 @@ public class UserAdminControllerIT extends AbstractControllerTest {
                         StringUtils.equals(SG_USER2_USERNAME, (String) ((Map) userMap).get("username"))).findFirst().get();
         String newPassword = "TESTtest1234!@#$";
 
-
         PasswordChangeRO newPass = new PasswordChangeRO();
         newPass.setUsername(SG_USER2_USERNAME);
         newPass.setCurrentPassword(SYS_ADMIN_PASSWD);
