@@ -23,7 +23,7 @@ public class SMPUserDetails implements UserDetails {
     @Transient
     private final SecurityUtils.Secret sessionSecret;
     private boolean casAuthenticated = false;
-    private List<SMPAuthority> smpAuthorities = new ArrayList<>();
+    private final List<SMPAuthority> smpAuthorities = new ArrayList<>();
 
     public SMPUserDetails(DBUser user, SecurityUtils.Secret sessionSecret, List<SMPAuthority> smpAuthorities) {
         this.user = user;

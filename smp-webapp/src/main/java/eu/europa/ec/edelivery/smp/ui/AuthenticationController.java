@@ -39,9 +39,9 @@ public class AuthenticationController {
 
     protected SMPAuthorizationService authorizationService;
 
-    private ConfigurationService configurationService;
+    private final ConfigurationService configurationService;
 
-    private CsrfTokenRepository csrfTokenRepository;
+    private final CsrfTokenRepository csrfTokenRepository;
 
     SMPCookieWriter smpCookieWriter;
 

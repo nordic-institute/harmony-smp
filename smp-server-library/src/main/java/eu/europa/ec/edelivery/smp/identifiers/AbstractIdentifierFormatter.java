@@ -259,7 +259,7 @@ public abstract class AbstractIdentifierFormatter<T> {
         if (this.formatterTypes == null) {
             this.formatterTypes = new ArrayList<>();
         }
-        this.formatterTypes.addAll(Arrays.asList(formatterTypes));;
+        this.formatterTypes.addAll(Arrays.asList(formatterTypes));
     }
 
     public List<FormatterType> getFormatterTypes() {

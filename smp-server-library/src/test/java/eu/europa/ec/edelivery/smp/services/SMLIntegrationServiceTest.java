@@ -21,13 +21,9 @@ import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -117,7 +111,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         // when
         testInstance.unRegisterDomain(testDomain01);
 
-        assertTrue(!testDomain01.isSmlRegistered());
+        assertFalse(testDomain01.isSmlRegistered());
         assertEquals(1, integrationMock.getSmpManagerClientMocks().size());
         verify(integrationMock.getSmpManagerClientMocks().get(0)).delete(testDomain01.getSmlSmpId());
         Mockito.verifyNoMoreInteractions(integrationMock.getSmpManagerClientMocks().toArray());
@@ -139,90 +133,4 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
 
     }
-/*
-    @Test
-    public void registerParticipantNullScheme() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-        /* given (init database - check setup)
-         * Domain: TEST_DOMAIN_CODE_1
-         * Users: USERNAME_1, USER_CERT_2
-         * ServiceGroup1: TEST_SG_ID_NO_SCHEME, null
-         *    - Domain: TEST_DOMAIN_CODE_1
-         *
-        // when
-        testInstance.registerParticipant(TEST_SG_ID_NO_SCHEME, null, TEST_DOMAIN_CODE_1);
-
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
-    }
-
-    /**
-
-
-    @Test
-    public void unRegisterParticipant() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-        /* given (init database - check setup)
-         * Domain: TEST_DOMAIN_CODE_1
-         * Users: USERNAME_1, USER_CERT_2
-         * ServiceGroup1: TEST_SG_ID_1, TEST_SG_SCHEMA_1
-         *    - Domain: TEST_DOMAIN_CODE_1
-         *
-        // when
-        testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1);
-
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
-
-    }
-
-    @Test
-    public void registerParticipant_NotExists() {
-        expectedExeption.expect(SMPRuntimeException.class);
-        String notExistsId = TEST_SG_ID_1 + "NotExists";
-        expectedExeption.expectMessage("ServiceGroup not found (part. id: '" + TEST_SG_ID_1 + "NotExists', part. sch.: '" + TEST_SG_SCHEMA_1 + "')!");
-
-        // when
-        testInstance.registerParticipant(notExistsId, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1);
-    }
-
-    @Test
-    public void registerParticipant_NotOnDomain() {
-        expectedExeption.expect(SMPRuntimeException.class);
-        expectedExeption.expectMessage("Service group not registered for domain (domain: " + TEST_DOMAIN_CODE_2 + ", part. id: '" + TEST_SG_ID_1 + "', part. sch.: '" + TEST_SG_SCHEMA_1 + "')!");
-
-        // when
-        testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_2);
-    }
-
-*/
-    /*
-    @Test
-    public void registerParticipantToSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
-        // when
-        testInstance.registerParticipantToSML(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testDomain01);
-
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
-    }
-
-    @Test
-    public void unregisterParticipantFromSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
-        testDomain01.setSmlRegistered(true);
-        // when
-        testInstance.unregisterParticipantFromSML(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testDomain01);
-
-        //then -- expect on call
-        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
-        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).delete(any());
-        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
-    }
-
-     */
 }

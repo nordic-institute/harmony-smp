@@ -1,9 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.dao.utils;
 
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -12,19 +10,17 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class SMPSchemaGeneratorTest {
 
-    private static final String DIALECT_ORACLE="org.hibernate.dialect.Oracle10gDialect";
-    private static final String DIALECT_MYSQL_INNO5="org.hibernate.dialect.MySQL5InnoDBDialect";
+    private static final String DIALECT_ORACLE = "org.hibernate.dialect.Oracle10gDialect";
+    private static final String DIALECT_MYSQL_INNO5 = "org.hibernate.dialect.MySQL5InnoDBDialect";
 
-    protected static String ENTITY_PACKAGES= "eu.europa.ec.edelivery.smp.data.model,eu.europa.ec.edelivery.smp.data.model.user,eu.europa.ec.edelivery.smp.data.model.doc,eu.europa.ec.edelivery.smp.data.model.ext";
+    protected static String ENTITY_PACKAGES = "eu.europa.ec.edelivery.smp.data.model,eu.europa.ec.edelivery.smp.data.model.user,eu.europa.ec.edelivery.smp.data.model.doc,eu.europa.ec.edelivery.smp.data.model.ext";
 
 
     private static final Object[] dialectTestCases() {
@@ -55,16 +51,16 @@ public class SMPSchemaGeneratorTest {
         File fDrop = new File("target/oracle10g-drop.ddl");
         f.delete(); // delete if exists
         fDrop.delete(); // delete if exists
-        assertTrue(!f.exists());
-        assertTrue(!fDrop.exists());
+        assertFalse(f.exists());
+        assertFalse(fDrop.exists());
 
 
         testInstance.createDDLScript(folder, dialect, lstPackages, version);
 
         assertTrue(f.exists());
-        assertTrue(f.length()>0);
+        assertTrue(f.length() > 0);
         assertTrue(fDrop.exists());
-        assertTrue(fDrop.length()>0);
+        assertTrue(fDrop.length() > 0);
     }
 
     @Test
@@ -122,11 +118,12 @@ public class SMPSchemaGeneratorTest {
 
         testInstance.getAllEntityClasses("eu.not.exists");
     }
+
     @Test
     public void getAllEntityClasses() throws ClassNotFoundException {
 
         // given when
-        List<Class> result =  testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");
+        List<Class> result = testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");
 
         assertEquals(10, result.size());
     }

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class SMPCas20ServiceTicketValidator extends Cas20ServiceTicketValidator {
     private static final Logger LOG = LoggerFactory.getLogger(Cas20ServiceTicketValidator.class);
 
-    private String urlSuffix;
+    private final String urlSuffix;
 
     public SMPCas20ServiceTicketValidator(String casServerUrl, String urlSuffix) {
         super(casServerUrl);

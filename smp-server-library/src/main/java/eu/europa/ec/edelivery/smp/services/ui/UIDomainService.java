@@ -38,14 +38,14 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainService.class);
 
 
-    private DomainDao domainDao;
-    private DomainMemberDao domainMemberDao;
-    private ResourceDao resourceDao;
-    private ResourceDefDao resourceDefDao;
-    private DomainResourceDefDao domainResourceDefDao;
-    private ConversionService conversionService;
-    private GroupDao groupDao;
-    private GroupMemberDao groupMemberDao;
+    private final DomainDao domainDao;
+    private final DomainMemberDao domainMemberDao;
+    private final ResourceDao resourceDao;
+    private final ResourceDefDao resourceDefDao;
+    private final DomainResourceDefDao domainResourceDefDao;
+    private final ConversionService conversionService;
+    private final GroupDao groupDao;
+    private final GroupMemberDao groupMemberDao;
 
 
     public UIDomainService(ConversionService conversionService,
@@ -102,11 +102,11 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     public void createDomainData(DomainRO data) {
         if (StringUtils.isBlank(data.getDomainCode())){
             throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain code must not be empty!");
-        };
+        }
 
         if (domainDao.getDomainByCode(data.getDomainCode()).isPresent()){
             throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain with code ["+data.getDomainCode()+"] already exists!");
-        };
+        }
         DBDomain domain = new DBDomain();
         domain.setDomainCode(data.getDomainCode());
         domain.setDefaultResourceTypeIdentifier(data.getDefaultResourceTypeIdentifier());

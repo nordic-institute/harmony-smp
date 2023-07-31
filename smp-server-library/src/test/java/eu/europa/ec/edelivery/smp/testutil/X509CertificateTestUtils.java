@@ -38,7 +38,7 @@ public class X509CertificateTestUtils {
         KeyUsage usage = new KeyUsage(244);
         X509Certificate cert = X509CertificateUtils.generateCertificate(serial,
                 key.getPublic(), subject, OffsetDateTime.now().minusDays(1L),
-                OffsetDateTime.now().plusYears(5L), (String) null,
+                OffsetDateTime.now().plusYears(5L), null,
                 key.getPrivate(), false, -1, usage,
                 Collections.emptyList(), Collections.emptyList(),
                 listOfPolicyOIDs);

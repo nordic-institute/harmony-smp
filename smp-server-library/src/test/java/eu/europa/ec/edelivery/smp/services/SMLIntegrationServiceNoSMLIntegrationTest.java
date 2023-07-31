@@ -14,17 +14,15 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 
 /**
  * Purpose of class is to test ServiceGroupService base methods
@@ -46,7 +44,7 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
         configurationDao.refreshProperties();
 
 
-        testUtilsDao.clearData();;
+        testUtilsDao.clearData();
         testUtilsDao.createResources();
     }
 
@@ -78,7 +76,7 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
     public void registerParticipant() {
 
         DBDomain testDomain01 = testUtilsDao.getD1();
-        DBResource resource =   testUtilsDao.getResourceD1G1RD1();
+        DBResource resource = testUtilsDao.getResourceD1G1RD1();
         // nothing is expected to be thrown
         testInstance.registerParticipant(resource, testDomain01);
     }
@@ -87,7 +85,7 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
     public void unregisterParticipant() {
 
         DBDomain testDomain01 = testUtilsDao.getD1();
-        DBResource resource =   testUtilsDao.getResourceD1G1RD1();
+        DBResource resource = testUtilsDao.getResourceD1G1RD1();
         // nothing is expected to be thrown
         testInstance.unregisterParticipant(resource, testDomain01);
     }

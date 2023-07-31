@@ -16,7 +16,7 @@ public class SmpInfoRO implements Serializable {
     private String ssoAuthenticationLabel;
     private String ssoAuthenticationURI;
     private String contextPath;
-    private List<String> authTypes = new ArrayList<>();
+    private final List<String> authTypes = new ArrayList<>();
 
     public String getVersion() {
         return version;

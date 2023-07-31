@@ -393,7 +393,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
                 OffsetDateTime.now().plusYears(1),
                 Collections.emptyList()
         );
-        Mockito.doReturn(Arrays.asList("InvalidKeyTest")).when(configurationService).getAllowedCertificateKeyTypes();
+        Mockito.doReturn(Collections.singletonList("InvalidKeyTest")).when(configurationService).getAllowedCertificateKeyTypes();
         // add as trusted certificate
         testInstance.addCertificate(UUID.randomUUID().toString(), certificate);
 
@@ -478,7 +478,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     @Test
     public void testValidateCertificatePolicyLegacyMatchOk() throws Exception {
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Arrays.asList(CERTIFICATE_POLICY_QCP_NATURAL));
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Collections.singletonList(CERTIFICATE_POLICY_QCP_NATURAL));
         Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL)).when(configurationService).getAllowedCertificatePolicies();
         testInstance.validateCertificatePolicyMatchLegacy(certificate);
     }
@@ -497,7 +497,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     @Test
     public void testValidateCertificatePolicyLegacyMatchMismatch() throws Exception {
         String certSubject = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE";
-        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL_QSCD));
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(certSubject, BigInteger.TEN, Collections.singletonList(CERTIFICATE_POLICY_QCP_LEGAL_QSCD));
         Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL)).when(configurationService).getAllowedCertificatePolicies();
 
         CertificateException result = assertThrows(CertificateException.class,
@@ -507,7 +507,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
 
     @Test
     public void validateCertificateNotUsed() throws CertificateException {
-        String certId = "cn=test" + UUID.randomUUID().toString() + ",o=test,c=eu:123456";
+        String certId = "cn=test" + UUID.randomUUID() + ",o=test,c=eu:123456";
         CertificateRO certificateRO = new CertificateRO();
         certificateRO.setCertificateId(certId);
         // when

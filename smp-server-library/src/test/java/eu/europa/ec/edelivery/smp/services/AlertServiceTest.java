@@ -4,7 +4,6 @@ import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.data.dao.AlertDao;
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -17,7 +16,6 @@ import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialSuspendedProperti
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialVerificationFailedProperties;
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProperties;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -420,7 +418,7 @@ public class AlertServiceTest {
         // test to contain all properties
         for (String prop : templateProperties) {
 
-            assertTrue(prop, model.getModel().keySet().contains(prop));
+            assertTrue(prop, model.getModel().containsKey(prop));
         }
         assertEquals(templateProperties.size(), model.getModel().size());
     }

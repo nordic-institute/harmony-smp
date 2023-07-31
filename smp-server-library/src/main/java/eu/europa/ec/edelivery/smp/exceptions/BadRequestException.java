@@ -13,13 +13,11 @@
 
 package eu.europa.ec.edelivery.smp.exceptions;
 
-import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-
 /**
  * Created by migueti on 13/01/2017.
  */
 public class BadRequestException extends RuntimeException {
-    private ErrorBusinessCode errorBusinessCode;
+    private final ErrorBusinessCode errorBusinessCode;
 
     public BadRequestException(ErrorBusinessCode errorBusinessCode, String sMsg) {
         super(sMsg);

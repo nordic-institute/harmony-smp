@@ -7,10 +7,8 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ICRLVerifierService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +34,8 @@ public class UIKeystoreService extends BasicKeystoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIKeystoreService.class);
 
-    private ConversionService conversionService;
-    private ConfigurationService configurationService;
+    private final ConversionService conversionService;
+    private final ConfigurationService configurationService;
 
     public UIKeystoreService(ConversionService conversionService, ConfigurationService configurationService) {
         super(null);
@@ -45,9 +43,9 @@ public class UIKeystoreService extends BasicKeystoreService {
         this.configurationService = configurationService;
     }
 
-    private Map<String, Key> keystoreKeys = new HashMap<>();
-    private Map<String, X509Certificate> keystoreCertificates = new HashMap<>();
-    private List<CertificateRO> certificateROList = new ArrayList<>();
+    private final Map<String, Key> keystoreKeys = new HashMap<>();
+    private final Map<String, X509Certificate> keystoreCertificates = new HashMap<>();
+    private final List<CertificateRO> certificateROList = new ArrayList<>();
 
     private KeyManager[] keyManagers;
 
@@ -71,7 +69,7 @@ public class UIKeystoreService extends BasicKeystoreService {
 
         KeyStore keyStore = loadKeystore(keystoreFile, keystoreSecToken);
         if (keyStore == null) {
-            LOG.error("Keystore: [{}] is not loaded! Check the keystore and the configuration!",keystoreFile.getAbsolutePath());
+            LOG.error("Keystore: [{}] is not loaded! Check the keystore and the configuration!", keystoreFile.getAbsolutePath());
             return;
         }
         // init key managers for TLS
@@ -263,10 +261,10 @@ public class UIKeystoreService extends BasicKeystoreService {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
 
-        if (keyStore == null || !keyStore.containsAlias(alias)){
+        if (keyStore == null || !keyStore.containsAlias(alias)) {
             return null;
         }
-        X509Certificate certificate = (X509Certificate)keyStore.getCertificate(alias);
+        X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias);
         keyStore.deleteEntry(alias);
         // store keystore
         storeKeystore(keyStore);

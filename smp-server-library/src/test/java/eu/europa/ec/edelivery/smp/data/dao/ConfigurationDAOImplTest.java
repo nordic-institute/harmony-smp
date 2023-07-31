@@ -414,11 +414,11 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         String newTestPassword = UUID.randomUUID().toString();
         String newDBTestPassword = newTestPassword;
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.KEYSTORE_PASSWORD,
-                newDBTestPassword + "", "");
+                newDBTestPassword, "");
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.TRUSTSTORE_PASSWORD,
-                newDBTestPassword + "", "");
+                newDBTestPassword, "");
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_PROXY_PASSWORD,
-                newDBTestPassword + "", "");
+                newDBTestPassword, "");
 
         configurationDao.reloadPropertiesFromDatabase();
 
@@ -440,7 +440,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         assertEquals(newTestPassword, configurationDao.getCachedPropertyValue(SMPPropertyEnum.HTTP_PROXY_PASSWORD));
 
         // test decrypt
-        File encryptionKey = (File) configurationDao.getCachedPropertyValue(SMPPropertyEnum.ENCRYPTION_FILENAME);
+        File encryptionKey = configurationDao.getCachedPropertyValue(SMPPropertyEnum.ENCRYPTION_FILENAME);
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.KEYSTORE_PASSWORD, dbKeystorePassword, encryptionKey));
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.TRUSTSTORE_PASSWORD, dbTruststorePassword, encryptionKey));
         assertEquals(newTestPassword, configurationDao.decryptString(SMPPropertyEnum.HTTP_PROXY_PASSWORD, dbProxyPassword, encryptionKey));
@@ -485,7 +485,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
         configurationDao.contextRefreshedEvent();
         PropertyUpdateListener listener = Mockito.mock(PropertyUpdateListener.class);
-        Mockito.doReturn(Arrays.asList(SMP_ALERT_BATCH_SIZE)).when(listener).handledProperties();
+        Mockito.doReturn(Collections.singletonList(SMP_ALERT_BATCH_SIZE)).when(listener).handledProperties();
         Mockito.doNothing().when(listener).updateProperties(Mockito.anyMap());
         ArgumentCaptor<Map<SMPPropertyEnum, Object>> argCaptor = ArgumentCaptor.forClass(Map.class);
         configurationDao.updateListener("testListener", listener);

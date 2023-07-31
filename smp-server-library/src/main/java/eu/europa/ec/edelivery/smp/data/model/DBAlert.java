@@ -167,16 +167,15 @@ public class DBAlert extends BaseEntity {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("DBAlert{");
-        sb.append("id=").append(id);
-        sb.append(", username=").append(username);
-        sb.append(", processedTime=").append(processedTime);
-        sb.append(", alertType=").append(alertType);
-        sb.append(", reportingTime=").append(reportingTime);
-        sb.append(", alertStatus=").append(alertStatus);
-        sb.append(", alertLevel=").append(alertLevel);
-        sb.append(", properties=").append(String.join(",", properties.keySet()));
-        sb.append('}');
-        return sb.toString();
+        String sb = "DBAlert{" + "id=" + id +
+                ", username=" + username +
+                ", processedTime=" + processedTime +
+                ", alertType=" + alertType +
+                ", reportingTime=" + reportingTime +
+                ", alertStatus=" + alertStatus +
+                ", alertLevel=" + alertLevel +
+                ", properties=" + String.join(",", properties.keySet()) +
+                '}';
+        return sb;
     }
 }

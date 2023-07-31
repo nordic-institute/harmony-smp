@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Component
 public class DBExtensionToExtensionROConverter implements Converter<DBExtension, ExtensionRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBExtensionToExtensionROConverter.class);
-    private ConversionService conversionService;
+    private final ConversionService conversionService;
 
     public DBExtensionToExtensionROConverter( @Lazy ConversionService conversionService) {
         this.conversionService = conversionService;

@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OasisSMPServiceGroup20Test {
     OasisSMPServiceGroup20Handler mockOasisSMPServiceGroup20Handler = Mockito.mock(OasisSMPServiceGroup20Handler.class);
-    ;
     OasisSMPServiceMetadata20 mockOasisSMPServiceMetadata20 = Mockito.mock(OasisSMPServiceMetadata20.class);
 
     OasisSMPServiceGroup20 testInstance = new OasisSMPServiceGroup20(mockOasisSMPServiceGroup20Handler, mockOasisSMPServiceMetadata20);

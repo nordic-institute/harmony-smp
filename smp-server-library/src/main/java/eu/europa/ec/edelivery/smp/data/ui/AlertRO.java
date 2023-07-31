@@ -26,7 +26,7 @@ public class AlertRO extends BaseRO {
     private AlertStatusEnum alertStatus;
     private String alertStatusDesc;
     private AlertLevelEnum alertLevel;
-    private Map<String, String> alertDetails = new HashMap<>();
+    private final Map<String, String> alertDetails = new HashMap<>();
 
     public String getSid() {
         return sid;

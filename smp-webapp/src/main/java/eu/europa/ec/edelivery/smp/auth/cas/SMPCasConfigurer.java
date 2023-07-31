@@ -144,7 +144,7 @@ public class SMPCasConfigurer {
         provider.setTicketValidator(serviceTicketValidator);
         provider.setAuthenticationUserDetailsService(smpCasUserService);
         //A Key is required so CasAuthenticationProvider can identify tokens it previously authenticated
-        provider.setKey(SMP_CAS_KEY + UUID.randomUUID().toString());
+        provider.setKey(SMP_CAS_KEY + UUID.randomUUID());
         return provider;
     }
 

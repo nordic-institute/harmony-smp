@@ -221,7 +221,7 @@ public abstract class BaseDao<E extends BaseEntity> {
                 // get return parameter
                 Object searchValue;
                 try {
-                    searchValue = m.invoke(searchParams, new Object[]{});
+                    searchValue = m.invoke(searchParams);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     LOG.error("Error setting retrieveing search parameters", ex);
                     continue;
@@ -241,7 +241,7 @@ public abstract class BaseDao<E extends BaseEntity> {
                     }
                 } else {
                     try {
-                        cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
+                        cls.getMethod("set" + fieldName, m.getReturnType());
                     } catch (NoSuchMethodException | SecurityException ex) {
                         // method does not have setter // ignore other methods
                         LOG.error("Field '" + fieldName + "' does not have a setter!", ex);

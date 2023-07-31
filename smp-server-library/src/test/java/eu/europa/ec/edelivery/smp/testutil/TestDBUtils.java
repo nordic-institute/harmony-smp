@@ -20,12 +20,11 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_EXTENSION_XML;
 
 public class TestDBUtils {
 
@@ -40,10 +39,10 @@ public class TestDBUtils {
     }
 
     public static DBGroup createDBGroup(String groupName) {
-        return  createDBGroup(groupName, VisibilityType.PUBLIC);
+        return createDBGroup(groupName, VisibilityType.PUBLIC);
     }
 
-    public static DBGroup createDBGroup(String groupName, VisibilityType visibility){
+    public static DBGroup createDBGroup(String groupName, VisibilityType visibility) {
         DBGroup group = new DBGroup();
         group.setGroupName(groupName);
         group.setGroupDescription(anyString());
@@ -54,7 +53,7 @@ public class TestDBUtils {
     public static DBExtension createDBExtension(String identifier) {
         DBExtension entity = new DBExtension();
         entity.setIdentifier(identifier);
-        entity.setImplementationName(identifier+"Name");
+        entity.setImplementationName(identifier + "Name");
         entity.setName(anyString());
         entity.setDescription(anyString());
         entity.setVersion(anyString());
@@ -82,7 +81,7 @@ public class TestDBUtils {
     }
 
     public static DBResourceDef createDBResourceDef(String identifier) {
-       return createDBResourceDef(identifier, anyString());
+        return createDBResourceDef(identifier, anyString());
     }
 
     public static DBAlert createDBAlert(String username) {
@@ -177,7 +176,7 @@ public class TestDBUtils {
     public static DBDocumentVersion createDBDocumentVersion(String id, String sch) {
         DBDocumentVersion docuVersion = new DBDocumentVersion();
         docuVersion.setContent(("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">" +
-                "<ParticipantIdentifier scheme=\""+sch+"\">"+id+"</ParticipantIdentifier>" +
+                "<ParticipantIdentifier scheme=\"" + sch + "\">" + id + "</ParticipantIdentifier>" +
                 "<ServiceMetadataReferenceCollection />" +
                 "</ServiceGroup>").getBytes());
         return docuVersion;
@@ -186,8 +185,8 @@ public class TestDBUtils {
     public static DBDocumentVersion createDBDocumentVersion(String id, String sch, String docId, String docSch) {
         DBDocumentVersion docuVersion = new DBDocumentVersion();
         docuVersion.setContent(("<ServiceMetadata xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ServiceInformation>" +
-                "<ParticipantIdentifier scheme=\""+sch+"\">"+id+"</ParticipantIdentifier>" +
-                "<DocumentIdentifier scheme=\""+docSch+"\">"+docId+"</DocumentIdentifier>" +
+                "<ParticipantIdentifier scheme=\"" + sch + "\">" + id + "</ParticipantIdentifier>" +
+                "<DocumentIdentifier scheme=\"" + docSch + "\">" + docId + "</DocumentIdentifier>" +
                 "<ProcessList><Process>" +
                 "<ProcessIdentifier scheme=\"[test-schema]\">[test-value]</ProcessIdentifier>" +
                 "<ServiceEndpointList>" +
@@ -211,24 +210,24 @@ public class TestDBUtils {
         return createDBCredential(name, "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
     }
 
-    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
-        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
+    public static DBCredential createDBCredentialForUser(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+        DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
         credential.setExpireOn(to);
         credential.setActiveFrom(from);
         credential.setExpireAlertOn(lastAlertSent);
         return credential;
     }
 
-    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
-        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
+    public static DBCredential createDBCredentialForUserAccessToken(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+        DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         credential.setExpireOn(to);
         credential.setActiveFrom(from);
         credential.setExpireAlertOn(lastAlertSent);
         return credential;
     }
 
-    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from , OffsetDateTime to, OffsetDateTime lastAlertSent ) {
-        DBCredential credential =  createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+    public static DBCredential createDBCredentialForUserCertificate(DBUser user, OffsetDateTime from, OffsetDateTime to, OffsetDateTime lastAlertSent) {
+        DBCredential credential = createDBCredential(user, user.getUsername(), "value", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         credential.setExpireAlertOn(lastAlertSent);
         if (to != null) {
             credential.setExpireOn(to);
@@ -248,8 +247,8 @@ public class TestDBUtils {
         dbCredential.setName(name);
         dbCredential.setCredentialType(credentialType);
         dbCredential.setCredentialTarget(credentialTargetType);
-        dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1l));
-        dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2l));
+        dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1L));
+        dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2L));
         dbCredential.setChangedOn(OffsetDateTime.now());
         dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
@@ -263,11 +262,11 @@ public class TestDBUtils {
             certificate.setValidTo(dbCredential.getExpireOn());
 
             int iSplit = name.lastIndexOf(':');
-            if (iSplit>0) {
+            if (iSplit > 0) {
                 String subject = name.substring(0, iSplit);
                 certificate.setSubject(subject);
                 certificate.setIssuer(subject);
-                certificate.setSerialNumber(name.substring(iSplit+1));
+                certificate.setSerialNumber(name.substring(iSplit + 1));
             } else {
                 certificate.setSubject(name);
                 certificate.setIssuer(name);
@@ -286,8 +285,8 @@ public class TestDBUtils {
         dbCredential.setName(name);
         dbCredential.setCredentialType(credentialType);
         dbCredential.setCredentialTarget(credentialTargetType);
-        dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1l));
-        dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2l));
+        dbCredential.setActiveFrom(OffsetDateTime.now().minusDays(1L));
+        dbCredential.setExpireOn(OffsetDateTime.now().plusDays(2L));
         dbCredential.setChangedOn(OffsetDateTime.now());
         dbCredential.setExpireAlertOn(OffsetDateTime.now());
         dbCredential.setSequentialLoginFailureCount(1);
@@ -343,7 +342,7 @@ public class TestDBUtils {
 
     public static DBUser createDBUser(String userName, String certId, OffsetDateTime validFrom, OffsetDateTime validTo) {
         DBUser dbuser = createDBUserByUsername(userName);
-        DBCredential credential = createDBCredential(dbuser, certId,"", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
+        DBCredential credential = createDBCredential(dbuser, certId, "", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         credential.setActiveFrom(validFrom);
         credential.setExpireOn(validTo);
         credential.setCertificate(createDBCertificate(certId, validFrom, validTo));
@@ -351,7 +350,7 @@ public class TestDBUtils {
         return dbuser;
     }
 
-    public static String anyString(){
+    public static String anyString() {
         return UUID.randomUUID().toString();
     }
 }

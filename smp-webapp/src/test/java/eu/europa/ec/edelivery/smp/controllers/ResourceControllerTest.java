@@ -76,7 +76,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
 
     @Test
     public void notFoundIsReturnedWhenServiceGroupDoesNotExist() throws Exception {
-        mvc.perform(get(format("/%s::%s", IDENTIFIER_SCHEME, UUID.randomUUID().toString())))
+        mvc.perform(get(format("/%s::%s", IDENTIFIER_SCHEME, UUID.randomUUID())))
                 .andExpect(status().isNotFound());
     }
 

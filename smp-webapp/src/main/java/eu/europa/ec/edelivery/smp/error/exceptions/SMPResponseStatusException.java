@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
  * @since 4.2
  */
 public class SMPResponseStatusException extends ResponseStatusException {
-    private ErrorBusinessCode errorBusinessCode;
+    private final ErrorBusinessCode errorBusinessCode;
 
     public SMPResponseStatusException(ErrorBusinessCode errorBusinessCode, HttpStatus httpStatus, String sMsg) {
         super(httpStatus, sMsg);

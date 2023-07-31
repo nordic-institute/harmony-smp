@@ -67,12 +67,12 @@ public class SessionSecurityUtils {
         SecurityUtils.Secret secret = getAuthenticationSecret();
         if (secret == null) {
             // try to convert to long value
-            return new Long(id);
+            return Long.valueOf(id);
         }
         String decVal = SecurityUtils.decryptUrlSafe(secret, id);
         int indexOfSeparator = decVal.indexOf('#');
         String value = indexOfSeparator > -1 ? decVal.substring(0, indexOfSeparator) : decVal;
-        return new Long(value);
+        return Long.valueOf(value);
     }
 
     public static Authentication getSessionAuthentication() {

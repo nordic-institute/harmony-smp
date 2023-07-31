@@ -33,6 +33,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -49,7 +50,7 @@ public class XmlTestUtils {
 
     public static String loadDocumentAsString(String docResourcePath) throws IOException, URISyntaxException {
         byte[] value = loadDocumentAsByteArray(docResourcePath);
-        return new String(value, UTF_8);
+        return new String(value, StandardCharsets.UTF_8);
     }
 
     public static Document loadDocument(String docResourcePath) throws ParserConfigurationException, SAXException, IOException {

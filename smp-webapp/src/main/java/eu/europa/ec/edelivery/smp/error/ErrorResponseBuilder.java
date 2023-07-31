@@ -42,11 +42,9 @@ public class ErrorResponseBuilder {
     private String strErrorDescription = "Unexpected technical error occurred.";
 
     private static String getErrorUniqueId() {
-        StringBuilder errId = new StringBuilder();
-        errId.append(OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
-                .append(":")
-                .append(UUID.randomUUID());
-        return String.valueOf(errId);
+        return OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) +
+                ":" +
+                UUID.randomUUID();
     }
 
     public ErrorResponseBuilder() {

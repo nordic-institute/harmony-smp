@@ -14,5 +14,5 @@ package eu.europa.ec.edelivery.smp.auth.enums;
  */
 public enum SMPUserAuthenticationTypes {
     PASSWORD,
-    SSO;
+    SSO
 }

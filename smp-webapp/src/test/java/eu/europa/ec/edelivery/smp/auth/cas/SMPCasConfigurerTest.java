@@ -35,7 +35,7 @@ public class SMPCasConfigurerTest {
         assertNotNull(serviceProperties);
         assertEquals(callbackString, serviceProperties.getService());
         assertEquals(ServiceProperties.DEFAULT_CAS_ARTIFACT_PARAMETER, serviceProperties.getArtifactParameter());
-        assertEquals(true, serviceProperties.isAuthenticateAllArtifacts());
+        assertTrue(serviceProperties.isAuthenticateAllArtifacts());
     }
 
     @Test

@@ -403,7 +403,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         credentialRO.setCertificate(certificateRO);
         credentialRO = testInstance.storeCertificateCredentialForUser(user.getId(), credentialRO);
         // the credential id for the test is not encrypted and we can use "Long parsing".
-        CredentialRO result = testInstance.getUserCertificateCredential(user.getId(), new Long(credentialRO.getCredentialId()));
+        CredentialRO result = testInstance.getUserCertificateCredential(user.getId(), Long.valueOf(credentialRO.getCredentialId()));
 
         assertNotNull(result);
         assertEquals(credentialRO.getCredentialId(), result.getCredentialId());
@@ -425,7 +425,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         assertEquals(1, result.size());
         assertEquals(credentialRO.getDescription(), result.get(0).getDescription());
         // the credential id for the test is not encrypted and we can use "Long parsing".
-        testInstance.deleteUserCredentials(user.getId(), new Long(result.get(0).getCredentialId()), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
+        testInstance.deleteUserCredentials(user.getId(), Long.valueOf(result.get(0).getCredentialId()), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
 
         result = testInstance.getUserCredentials(user.getId(), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         assertNotNull(result);
@@ -450,7 +450,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         credentialRO2.setCredentialType(CredentialType.ACCESS_TOKEN);
         credentialRO2.setDescription("test description 2");
         // the credential id for the test is not encrypted and we can use "Long parsing".
-        testInstance.updateUserCredentials(user.getId(), new Long(result.get(0).getCredentialId()), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API, credentialRO2);
+        testInstance.updateUserCredentials(user.getId(), Long.valueOf(result.get(0).getCredentialId()), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API, credentialRO2);
 
         result = testInstance.getUserCredentials(user.getId(), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         assertNotNull(result);

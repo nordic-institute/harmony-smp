@@ -190,10 +190,10 @@ public class PropertyUtilsTest {
                 Assert.assertEquals(Integer.class, value.getClass());
                 break;
             case LIST_STRING:
-                Assert.assertTrue(List.class.isInstance(value));
+                Assert.assertTrue(value instanceof List);
                 break;
             case MAP_STRING:
-                Assert.assertTrue(Map.class.isInstance(value));
+                Assert.assertTrue(value instanceof Map);
                 break;
             case PATH:
             case FILENAME:

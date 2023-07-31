@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Component
 public class DBResourceDefToResourceDefinitionROConverter implements Converter<DBResourceDef, ResourceDefinitionRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBResourceDefToResourceDefinitionROConverter.class);
-    private ConversionService conversionService;
+    private final ConversionService conversionService;
 
     public DBResourceDefToResourceDefinitionROConverter(@Lazy ConversionService conversionService) {
         this.conversionService = conversionService;

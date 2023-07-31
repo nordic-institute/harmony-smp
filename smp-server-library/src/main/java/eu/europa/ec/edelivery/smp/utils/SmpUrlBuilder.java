@@ -27,7 +27,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
 
 /**
  * This class provides tools to generate SMP's URL in responses. The client can use provided URL for another call to the SMP.
@@ -49,7 +48,7 @@ public class SmpUrlBuilder {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SmpUrlBuilder.class);
 
-    private ConfigurationService configurationService;
+    private final ConfigurationService configurationService;
 
 
     public SmpUrlBuilder(ConfigurationService configurationService) {

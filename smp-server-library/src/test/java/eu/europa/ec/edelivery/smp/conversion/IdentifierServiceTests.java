@@ -56,12 +56,12 @@ public class IdentifierServiceTests {
     @Parameterized.Parameter(3)
     public String expectedValue;
 
-    private IdentifierService testInstance = new IdentifierService(Mockito.mock(ConfigurationService.class));
+    private final IdentifierService testInstance = new IdentifierService(Mockito.mock(ConfigurationService.class));
 
     @Before
     public void init() {
-        testInstance.configureDocumentIdentifierFormatter(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"}));
-        testInstance.configureParticipantIdentifierFormatter(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}), false, null);
+        testInstance.configureDocumentIdentifierFormatter(asList("case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"));
+        testInstance.configureParticipantIdentifierFormatter(asList("case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"), false, null);
     }
 
 

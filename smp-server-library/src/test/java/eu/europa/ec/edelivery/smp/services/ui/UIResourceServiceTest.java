@@ -225,7 +225,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
                 testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
         ResourceRO result = testInstance.createResourceForGroup(testResource, testUtilsDao.getGroupD1G1().getId(),
                 testUtilsDao.getD1().getId(), testUtilsDao.getUser1().getId());
-        Long resourceId = new Long(result.getResourceId());
+        Long resourceId = Long.valueOf(result.getResourceId());
         assertNotNull(resourceDao.find(resourceId));
         // when
         testInstance.deleteResourceFromGroup(resourceId, testUtilsDao.getGroupD1G1().getId(), testUtilsDao.getD1().getId());
@@ -264,7 +264,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
                 testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
         ResourceRO resourceRO = testInstance.createResourceForGroup(testResource, testUtilsDao.getGroupD1G1().getId(),
                 testUtilsDao.getD1().getId(), testUtilsDao.getUser1().getId());
-        Long resourceId = new Long(resourceRO.getResourceId());
+        Long resourceId = Long.valueOf(resourceRO.getResourceId());
         assertNotNull(resourceDao.find(resourceId));
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,

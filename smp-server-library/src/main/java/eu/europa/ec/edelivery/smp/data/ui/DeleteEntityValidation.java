@@ -11,8 +11,8 @@ public class DeleteEntityValidation implements Serializable {
 
     private boolean validOperation;
     private String stringMessage;
-    private List<String> listIds= new ArrayList<>();
-    private List<String> listDeleteNotPermitedIds = new ArrayList<>();
+    private final List<String> listIds= new ArrayList<>();
+    private final List<String> listDeleteNotPermitedIds = new ArrayList<>();
 
     public boolean isValidOperation() {
         return validOperation;

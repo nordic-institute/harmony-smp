@@ -108,8 +108,6 @@ abstract class AbstractHandlerTest {
         Mockito.doReturn(bios).when(requestData).getResourceInputStream();
         Mockito.doReturn(resourceIdentifier).when(mockSmpIdentifierServiceApi).normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString());
         getTestInstance().validateResource(requestData);
-
-        System.out.println("Generated resource: " + new String(baos.toByteArray()));
     }
 
     abstract AbstractHandler getTestInstance();

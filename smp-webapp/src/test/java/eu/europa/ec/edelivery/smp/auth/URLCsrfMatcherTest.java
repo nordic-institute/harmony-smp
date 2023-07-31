@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -19,10 +20,10 @@ public class URLCsrfMatcherTest {
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection cookieWriterTestParameters() {
         return asList(new Object[][]{
-                {"/test/", false, asList("/.*"), null},
-                {"/ui/resource", true, asList("/!(ui/).*"), null},
-                {"/test/resource", false, asList("^/(?!ui/).*"), null},
-                {"/ui/resource", true, asList("^/(?!ui/).*"), null},
+                {"/test/", false, Collections.singletonList("/.*"), null},
+                {"/ui/resource", true, Collections.singletonList("/!(ui/).*"), null},
+                {"/test/resource", false, Collections.singletonList("^/(?!ui/).*"), null},
+                {"/ui/resource", true, Collections.singletonList("^/(?!ui/).*"), null},
 
         });
     }

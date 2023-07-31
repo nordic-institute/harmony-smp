@@ -17,5 +17,5 @@ public class MockAlertBeans {
     @Primary
     public JavaMailSenderImpl getJavaMailSender(){
         return javaMailSender;
-    };
+    }
 }

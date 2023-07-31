@@ -37,6 +37,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -122,7 +123,7 @@ public class SignatureUtil {
         }
 
         // Check core validation status.
-        if (coreValidity == false) {
+        if (!coreValidity) {
             printErrorDetails(valContext, signature);
             throw new Exception("+++ Signature not valild +++");
         } else {
@@ -135,7 +136,7 @@ public class SignatureUtil {
         System.err.println("Signature failed core validation");
         boolean sv = signature.getSignatureValue().validate(valContext);
         System.out.println("signature validation status: " + sv);
-        if (sv == false) {
+        if (!sv) {
             // Check the validation status of each Reference.
             Iterator i1 = signature.getSignedInfo().getReferences().iterator();
             for (int j = 0; i1.hasNext(); j++) {
@@ -213,7 +214,7 @@ public class SignatureUtil {
 
     public static String loadDocumentAsString(String docResourcePath) throws IOException {
         InputStream inputStream = SignatureUtil.class.getResourceAsStream(docResourcePath);
-        return org.apache.commons.io.IOUtils.toString(inputStream, "UTF-8");
+        return org.apache.commons.io.IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 
 }

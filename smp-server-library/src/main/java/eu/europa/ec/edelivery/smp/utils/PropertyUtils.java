@@ -31,7 +31,7 @@ public class PropertyUtils {
     private static final String REG_EXP_VALUE_SEPARATOR = "\\|";
     private static final String REG_EXP_MAP_SEPARATOR = ":";
 
-    private static UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
+    private static final UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
 
 
     public static Object parseProperty(SMPPropertyEnum prop, String value, File rootFolder) {
