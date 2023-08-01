@@ -1,8 +1,8 @@
 package eu.europa.ec.edelivery.smp.config.properties;
 
 import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.stereotype.Component;

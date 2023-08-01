@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.config.properties.SMPSecurityPropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.properties.SMPSecurityPropertyUpdateListener;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;

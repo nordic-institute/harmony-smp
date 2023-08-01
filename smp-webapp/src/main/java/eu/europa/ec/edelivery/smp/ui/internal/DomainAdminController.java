@@ -2,7 +2,8 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.ui.*;
+import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.SMLIntegrationResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
 
 /**
  * DomainAdminResource provides admin services for managing the domains configured in SMP. The services defined in path

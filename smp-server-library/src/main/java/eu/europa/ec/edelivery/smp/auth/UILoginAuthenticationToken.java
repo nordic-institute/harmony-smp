@@ -1,7 +1,5 @@
 package eu.europa.ec.edelivery.smp.auth;
 
-import eu.europa.ec.edelivery.smp.logging.SMPLogger;
-import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 

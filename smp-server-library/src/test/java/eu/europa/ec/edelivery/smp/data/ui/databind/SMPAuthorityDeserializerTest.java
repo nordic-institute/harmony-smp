@@ -3,7 +3,6 @@ package eu.europa.ec.edelivery.smp.data.ui.databind;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;

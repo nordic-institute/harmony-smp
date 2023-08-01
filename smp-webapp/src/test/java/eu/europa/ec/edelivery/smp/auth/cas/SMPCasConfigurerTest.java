@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.auth.cas;
 
-import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.cas.ServiceProperties;

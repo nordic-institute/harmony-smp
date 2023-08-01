@@ -15,24 +15,16 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.services.spi.SmpXmlSignatureService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-
-import static javax.xml.crypto.dsig.DigestMethod.SHA256;
-import static org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;
 
 
 /**

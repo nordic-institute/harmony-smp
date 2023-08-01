@@ -1,19 +1,16 @@
 package eu.europa.ec.edelivery.smp.config.init;
 
 
-
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
-import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.TRUSTSTORE_FILENAME;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SMPKeystoreConfBuilderTest {
 

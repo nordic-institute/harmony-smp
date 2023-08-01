@@ -1,9 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Joze Rihtarsic
  * @since 5.0

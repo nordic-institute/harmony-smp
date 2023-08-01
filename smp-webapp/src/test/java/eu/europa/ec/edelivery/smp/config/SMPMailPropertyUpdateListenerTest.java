@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.config.properties.SMPMailPropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.properties.SMPMailPropertyUpdateListener;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;

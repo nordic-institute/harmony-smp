@@ -2,8 +2,8 @@ package eu.europa.ec.edelivery.smp.config.properties;
 
 import eu.europa.ec.edelivery.smp.config.PropertyUpdateListener;
 import eu.europa.ec.edelivery.smp.config.SMPTaskSchedulerConfig;
-import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.cron.SMPDynamicCronTrigger;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;

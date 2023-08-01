@@ -13,10 +13,6 @@
 
 package eu.europa.ec.edelivery.smp;
 
-import org.apache.commons.lang3.StringUtils;
-
-import static java.lang.String.format;
-
 /**
  * Created by gutowpa on 26/09/2017.
  */

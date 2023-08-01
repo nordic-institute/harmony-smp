@@ -6,8 +6,10 @@ import org.junit.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
-import static org.junit.Assert.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SSO_CAS_SMP_USER_DATA_URL_PATH;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SSO_CAS_URL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 

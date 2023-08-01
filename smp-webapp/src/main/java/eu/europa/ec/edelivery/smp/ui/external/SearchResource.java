@@ -10,7 +10,10 @@ import eu.europa.ec.edelivery.smp.services.ui.UIResourceSearchService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

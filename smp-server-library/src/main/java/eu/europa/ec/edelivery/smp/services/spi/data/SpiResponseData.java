@@ -1,9 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.spi.data;
 
-import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;

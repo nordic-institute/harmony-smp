@@ -1,7 +1,9 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
-import eu.europa.ec.edelivery.smp.data.dao.*;
+import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
+import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
+import eu.europa.ec.edelivery.smp.data.dao.SubresourceDefDao;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;

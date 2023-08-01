@@ -13,8 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.error;
 
-import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
+import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

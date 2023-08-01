@@ -1,40 +1,27 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
-import eu.europa.ec.edelivery.smp.config.SMPDatabaseConfig;
-import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
-import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
-import eu.europa.ec.smp.spi.api.model.RequestData;
-import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
-import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceMetadata10;
 import eu.europa.ec.smp.spi.handler.OasisSMPServiceGroup10Handler;
 import eu.europa.ec.smp.spi.handler.OasisSMPServiceMetadata10Handler;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
 
 // add SPI examples to the context
 @ContextConfiguration(classes = {OasisSMPServiceGroup10.class,

@@ -7,8 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import static org.junit.Assert.*;
-
 public class HttpUtilsTest {
     @Test
     public void testDoesTargetMatchNonProxyLocalhostTrue() throws URISyntaxException, MalformedURLException {

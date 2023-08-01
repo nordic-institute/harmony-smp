@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.PARAM_PAGINATION_FILTER;
 import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntityId;
 
 /**

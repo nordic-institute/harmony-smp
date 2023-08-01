@@ -29,7 +29,9 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.testutil.SMPAssert.assertEqualDates;

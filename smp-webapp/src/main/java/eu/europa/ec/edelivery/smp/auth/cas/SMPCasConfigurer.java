@@ -1,8 +1,8 @@
 package eu.europa.ec.edelivery.smp.auth.cas;
 
 
-import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

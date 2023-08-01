@@ -1,11 +1,7 @@
 package eu.europa.ec.edelivery.smp.config.init;
 
-import eu.europa.ec.edelivery.smp.config.SMPDatabaseConfig;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.ExtensionDao;
-import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
-import eu.europa.ec.smp.spi.OasisSMPExtension;
-import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @ContextConfiguration( classes = {SMPExtensionInitializerTest.OasisSMPExtensionConfig.class}

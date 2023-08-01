@@ -4,8 +4,6 @@ import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 

@@ -1,6 +1,5 @@
 package eu.europa.ec.smp.spi.def;
 
-import eu.europa.ec.smp.spi.OasisCPPA3Extension;
 import eu.europa.ec.smp.spi.handler.OasisCppa3CppHandler;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
@@ -11,7 +10,8 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OasisCppaCppDocumentTest {
 

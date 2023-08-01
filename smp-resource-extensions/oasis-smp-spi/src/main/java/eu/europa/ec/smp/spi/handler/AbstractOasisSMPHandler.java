@@ -2,7 +2,6 @@ package eu.europa.ec.smp.spi.handler;
 
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
-import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import org.apache.commons.lang3.StringUtils;
@@ -10,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * The abstract class with common methods for implementation of the  ResourceHandlerSpi.

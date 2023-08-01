@@ -1,12 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.SMPDatabaseConfig;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
-import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,8 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOMAIN_CODE_1;
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SML_SUBDOMAIN_CODE_1;
 
 /**
  * @author Joze Rihtarsic
