@@ -35,16 +35,19 @@ import java.util.regex.Pattern;
 public class IdentifierService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(IdentifierService.class);
 
-    IdentifierFormatter participantIdentifierFormatter = IdentifierFormatter.Builder
-            .create()
-            .addFormatterTypes(new EBCorePartyIdFormatterType())
-            .build();
+    IdentifierFormatter participantIdentifierFormatter;
     IdentifierFormatter documentIdentifierFormatter = IdentifierFormatter.Builder.create().build();
 
     ConfigurationService configurationService;
 
     public IdentifierService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
+
+        participantIdentifierFormatter = IdentifierFormatter.Builder
+                .create()
+                .addFormatterTypes(new EBCorePartyIdFormatterType(
+                        configurationService.getParticipantIdentifierEbcoreConcatWithDoubleColon()))
+                .build();
     }
 
     /**
