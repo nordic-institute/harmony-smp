@@ -13,14 +13,20 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.services.spi.SmpXmlSignatureService;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import org.junit.Before;
-import org.junit.Ignore;
+import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -28,11 +34,15 @@ import java.nio.file.Paths;
 
 
 /**
- * Created by rodrfla on 20/02/2017.
+ * metadata tests signatures
+ *
+ * @author Flavio Santos
+ * @author Joze Rihtarsic
+ * @since 3.0
+
  */
-@Ignore
 @ContextConfiguration(classes = { SmpXmlSignatureService.class})
-public class ServiceMetadataSignerTest extends AbstractServiceIntegrationTest{
+public class ServiceMetadataSignerTest extends AbstractJunit5BaseDao{
 
     Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
 
@@ -44,24 +54,24 @@ public class ServiceMetadataSignerTest extends AbstractServiceIntegrationTest{
     @Autowired
     private SmpXmlSignatureService signer;
 
-    @Before
+    @BeforeEach
     public void setup(){
         configurationService = Mockito.spy(configurationService);
         ReflectionTestUtils.setField(uiKeystoreService,"configurationService",configurationService);
         ReflectionTestUtils.setField(signer,"uiKeystoreService",uiKeystoreService);
 
         // set keystore properties
-        File keystoreFile = new File(resourceDirectory.toFile(), "smp-keystore.jks");
+        File keystoreFile = new File(resourceDirectory.toAbsolutePath().toFile(), "smp-keystore-all-keys.p12");
         Mockito.doReturn( keystoreFile).when(configurationService).getKeystoreFile();
         Mockito.doReturn( resourceDirectory.toFile()).when(configurationService).getSecurityFolder();
         Mockito.doReturn("test123").when(configurationService).getKeystoreCredentialToken();
+        Mockito.doReturn("PKCS12").when(configurationService).getKeystoreType();
         uiKeystoreService.refreshData();
     }
-/*
-    private Document loadAndSignDocumentForDefault() throws Exception {
-        Document documentToSign = loadDocument("/input/SignedServiceMetadata_withoutSignature.xml");
-        signer.sign(documentToSign, null, ALGO_ID_SIGNATURE_RSA_SHA256, SHA256);
 
+    private Document loadAndSignDocumentForDefault(String alias) throws Exception {
+        Document documentToSign = SignatureUtil.loadDocument("/input/SignedServiceMetadata_withoutSignature.xml");
+        signer.sign(documentToSign, alias, null, null);
         return documentToSign;
     }
 
@@ -70,43 +80,25 @@ public class ServiceMetadataSignerTest extends AbstractServiceIntegrationTest{
         SignatureUtil.validateSignature(smpSigPointer);
     }
 
-
     private Element loadAndSignDocumentForAdmin(String filePath) throws Exception {
-        Document response = loadDocument(filePath);
-        Element smNode = SignatureUtil.findFirstElementByName(response, "ServiceMetadata");
-        Document docUnwrapped = SignatureUtil.buildDocWithGivenRoot(smNode);
-        Element adminSignature = SignatureUtil.findServiceInfoSig(docUnwrapped);
-
+        Document response = SignatureUtil.loadDocument(filePath);
+        Element adminSignature = SignatureUtil.findServiceInfoSig(response);
         return adminSignature;
     }
 
-    @Test
-    public void testDefaultSignatureOk() throws Exception {
-        Document document = loadAndSignDocumentForDefault();
+    @ParameterizedTest
+    @ValueSource(strings = {"sample_key",
+            "smp_ecdsa_nist-b409",
+            "smp_eddsa_25519",
+            "smp_eddsa_448"})
+    public void testSignatureAndDefaultAlgorithmeDefinitionOk(String alias) throws Exception {
+        Document document = loadAndSignDocumentForDefault(alias);
         validateSignatureForDefault(document);
-    }
-
-    @Test(expected = Exception.class)
-    public void testDefaultSignatureNotOk() throws Exception {
-        Document document = loadAndSignDocumentForDefault();
-        String documentStr = SignatureUtil.marshall(document);
-        documentStr = documentStr.replace("<Process>", "<Process><DummyElement></DummyElement>");
-        validateSignatureForDefault(SignatureUtil.parseDocument(documentStr));
     }
 
     @Test
     public void testAdminSignatureOk() throws Exception {
         Element adminSignature = loadAndSignDocumentForAdmin("/expected_output/PUT_ServiceMetadata_request.xml");
-
         SignatureUtil.validateSignature(adminSignature);
     }
-
-    @Test(expected = Exception.class)
-    public void testAdminSignatureNotOk() throws Exception {
-        Element adminSignature = loadAndSignDocumentForAdmin("/expected_output/PUT_ServiceMetadata_request_not_valid.xml");
-
-        SignatureUtil.validateSignature(adminSignature);
-    }
-*/
-
 }

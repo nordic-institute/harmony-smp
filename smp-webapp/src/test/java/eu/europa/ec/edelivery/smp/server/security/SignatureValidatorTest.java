@@ -83,7 +83,6 @@ public class SignatureValidatorTest {
     @Autowired
     private WebApplicationContext webAppContext;
 
-
     private MockMvc mvc;
 
     @Before

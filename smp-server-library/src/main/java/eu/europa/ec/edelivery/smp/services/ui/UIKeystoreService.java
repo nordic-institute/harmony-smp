@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import java.io.*;
+import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -137,7 +138,7 @@ public class UIKeystoreService extends BasicKeystoreService {
 
 
         KeyStore keyStore;
-        try (InputStream keystoreInputStream = new FileInputStream(keyStoreFile)) {
+        try (InputStream keystoreInputStream = Files.newInputStream(keyStoreFile.toPath())) {
             String type = StringUtils.defaultIfEmpty(configurationService.getKeystoreType(), "JKS");
             LOG.info("Load keystore [{}] with type [{}].", keyStoreFile, type);
             keyStore = KeyStore.getInstance(type);
@@ -193,7 +194,7 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         if (keystoreKeys.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: " + keyAlias + " from empty keystore!" + configurationService.getKeystoreFile());
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: [" + keyAlias + "] from empty keystore: [" + configurationService.getKeystoreFile() +"]!");
         }
 
 
