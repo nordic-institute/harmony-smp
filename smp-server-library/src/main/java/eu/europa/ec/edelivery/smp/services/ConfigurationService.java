@@ -555,5 +555,9 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_MAIL_FROM);
     }
 
+    public boolean getParticipantIdentifierEbcoreConcatWithDoubleColon() {
+        Boolean value = configurationDAO.getCachedPropertyValue(PARTC_SCH_EBCORE_CONCAT_WITH_DOUBLE_COLON);
+        return value != null && value;
+    }
 
 }
