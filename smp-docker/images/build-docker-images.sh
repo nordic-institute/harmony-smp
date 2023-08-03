@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script builds docker images for SMP oracle/weblogic environment. Docker images for database and weblogic are from
 # https://github.com/oracle/docker-images
@@ -8,6 +8,7 @@
 #  - OracleDB: oracle-xe-11.2.0-1.0.x86_64.rpm.zip
 #  - Server JDK 1.8:  server-jre-8u211-linux-x64.tar.gz  (https://github.com/oracle/docker-images/tree/master/OracleJava)
 #  - weblogic 12.2.1.3: fmw_12.2.1.3.0_wls_quick_Disk1_1of1.zip
+#  - weblogic 14.1.1.0: fmw_14.1.1.0.0_wls_lite_Disk1_1of1.zip
 # and put them to folder ${ORACLE_ARTEFACTS}
 #
 # 2. build SMP mvn clean install
@@ -28,7 +29,9 @@ ORACLE_DOCKERFILE="Dockerfile.xe"
 
 ORACLE_DB_FILE="${ORACLE_DB11_FILE}"
 SERVER_JDK_FILE="server-jre-8u333-linux-x64.tar.gz"
+SERVER_JDK11_FILE="jdk-11.0.17_linux-x64_bin.tar.gz"
 WEBLOGIC_122_QUICK_FILE="fmw_12.2.1.4.0_wls_quick_Disk1_1of1.zip"
+WEBLOGIC_14_FILE="fmw_14.1.1.0.0_wls_lite_Disk1_1of1.zip"
 SMP_VERSION=
 ORACLE_ARTEFACTS="/CEF/repo"
 
@@ -36,7 +39,7 @@ SMP_ARTEFACTS="../../smp-webapp/target/"
 SMP_ARTEFACTS_CLEAR="false"
 
 SMP_IMAGE_PUBLISH="false"
-DOCKER_USER=$bamboo_DOCKER_USER
+DOCKER_USER=${bamboo_DOCKER_USER:-edeliverytest}$
 DOCKER_PASSWORD=$bamboo_DOCKER_PASSWORD
 DOCKER_REGISTRY_HOST=${bamboo_DOCKER_REGISTRY_HOST}
 DOCKER_FOLDER=${bamboo_DOCKER_FOLDER:-${bamboo_DOCKER_USER}}
@@ -65,7 +68,7 @@ if [[ -z "${SMP_VERSION}" ]]; then
 
 fi
 
-SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-example/target/"
+SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-payload-validation-example/target/"
 
 DIRNAME=$(dirname "$0")
 cd "$DIRNAME"
@@ -106,16 +109,25 @@ validateAndPrepareArtefacts() {
     cp "${ORACLE_ARTEFACTS}/Oracle/OracleDatabase/${ORA_VERSION}/${ORACLE_DB_FILE}" ./oracle/oracle-db-${ORA_VERSION}/
   fi
 
-  # check server JDK
+  # check server JDK for weblogic 12c
   if [[ ! -f "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}" ]]; then
     echo "Server JDK artefacts '${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}' not found."
     exit 1
   else
-    # copy artefact to docker build folder
+    # copy artefact to build java for weblogic 12c
     cp "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}" ./oracle/OracleJava/java-8/
   fi
 
-  # check weblogic
+  # check server JDK for weblogic 14c
+    if [[ ! -f "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK11_FILE}" ]]; then
+      echo "Server JDK artefacts '${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK11_FILE}' not found."
+      exit 1
+    else
+      # copy artefact to build java for weblogic 12c
+      cp "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK11_FILE}" ./oracle/OracleJava/java-11/
+    fi
+
+  # check weblogic 12c
   if [[ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ]]; then
     echo "Weblogic artefacts '${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}' not found."
     exit 1
@@ -124,9 +136,24 @@ validateAndPrepareArtefacts() {
     cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ./oracle/weblogic-12.2.1.4/
   fi
 
+  # WeblLogic 14c
+  if [[ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_14_FILE}" ]]; then
+      echo "Weblogic artefacts '${ORACLE_ARTEFACTS}/${WEBLOGIC_14_FILE}' not found."
+      exit 1
+    else
+      # copy artefact to docker build folder
+      cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_14_FILE}" ./oracle/weblogic-14.1.1.0/
+    fi
+
+
+
   if [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]; then
     mkdir -p "./tomcat-mysql-smp-sml/artefacts"
   fi
+
+  if [[ ! -d "./weblogic-14.1-smp/artefacts/" ]]; then
+      mkdir -p "./weblogic-14.1-smp/artefacts"
+    fi
 
   if [[ ! -d "./weblogic-12.2-smp/artefacts" ]]; then
     mkdir -p "./weblogic-12.2-smp/artefacts"
@@ -138,8 +165,12 @@ validateAndPrepareArtefacts() {
     exit 1
   else
     # copy artefact to docker build folder
+    cp -r shared-artefacts ./weblogic-12.2-smp/artefacts/
+    cp -r shared-artefacts ./weblogic-14.1-smp/artefacts/
+    cp -r shared-artefacts ./tomcat-mysql-smp-sml/artefacts/
     # for weblogic
     cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-12.2-smp/artefacts/smp.war
+    cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-14.1-smp/artefacts/smp.war
     # for mysql tomcat
     cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql-smp-sml/artefacts/smp.war
   fi
@@ -151,23 +182,40 @@ validateAndPrepareArtefacts() {
   else
     # copy artefact to docker build folder
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-12.2-smp/artefacts/smp-setup.zip
+    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-14.1-smp/artefacts/smp-setup.zip
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
   fi
 
   if [[ ! -f "${SMP_PLUGIN_EXAMPLE}" ]]; then
     echo "SMP SPI plugin  '${SMP_PLUGIN_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
     ls -ltr ${SMP_ARTEFACTS}
-    cp "${SMP_ARTEFACTS}/smp-spi-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
+    cp "${SMP_ARTEFACTS}/smp-spi-payload-validation-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-payload-validation-example.jar
   else
-    cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-example.jar
+    cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-payload-validation-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-payload-validation-example.jar
   fi
 }
+
 
 # -----------------------------------------------------------------------------
 # build docker images
 # -----------------------------------------------------------------------------
 buildImages() {
+  buildOracleDatabaseImage
+  buildWebLogicOracleImages12
+  buildWebLogicOracleImages14
+  buildTomcatMysqlImages
+  buildUtils
+}
+buildTomcatMysqlImages() {
+    # build tomcat mysql image  deployment.
+  docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-sml-tomcat-mysql:${SMP_VERSION}]!"
+    exit 10
+  fi
+}
 
+buildOracleDatabaseImage(){
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
@@ -177,6 +225,9 @@ buildImages() {
     echo "Error occurred while building image [smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}]!"
     exit 10
   fi
+}
+
+buildWebLogicOracleImages12(){
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
@@ -200,10 +251,48 @@ buildImages() {
     echo "Error occurred while building image [smp-weblogic-122:${SMP_VERSION}]!"
     exit 10
   fi
-  # build tomcat mysql image  deployment.
-  docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
+
+}
+
+buildUtils(){
+ # build the httpd image for LB. The Http is configured to allow encoded characters which
+  # are not decoded!
+  docker build -t "smp-httpd:${SMP_VERSION}" ./smp-httpd/
+   if [ $? -ne 0 ]; then
+     echo "Error occurred while building image [smp-httpd:${SMP_VERSION}]!"
+     exit 10
+   fi
+}
+
+buildWebLogicOracleImages14(){
+  # -----------------------------------------------------------------------------
+  # build docker image for oracle database
+  # -----------------------------------------------------------------------------
+  # create docker OS image with java (https://github.com/oracle/docker-images/tree/master/OracleJava/java-11)
+  docker build -t oracle/jdk:11 ./oracle/OracleJava/java-11/
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [smp-sml-tomcat-mysql:${SMP_VERSION}]!"
+    echo "Error occurred while building image for oracle server-java!"
+    exit 10
+  fi
+
+  # create weblogic basic (https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/14.1.1.0)
+  docker build -f ./oracle/weblogic-14.1.1.0/Dockerfile.generic-11 -t oracle/weblogic:14.1.1.0-generic ./oracle/weblogic-14.1.1.0/
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image for oracle weblogic:14.1.1.0 server!"
+    exit 10
+  fi
+
+  # build SMP deployment.
+  docker build -t "smp-weblogic-141:${SMP_VERSION}" ./weblogic-14.1-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-weblogic-141:${SMP_VERSION}]!"
+    exit 10
+  fi
+ # build the httpd image for LB. The Http is configured to allow encoded characters which
+ # are not decoded!
+ docker build -t "smp-httpd:${SMP_VERSION}" ./smp-httpd/
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-httpd:${SMP_VERSION}]!"
     exit 10
   fi
 }

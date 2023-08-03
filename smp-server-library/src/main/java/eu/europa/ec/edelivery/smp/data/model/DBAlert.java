@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Database table containing update data
@@ -49,7 +48,7 @@ public class DBAlert extends BaseEntity {
     @NotNull
     private AlertStatusEnum alertStatus;
 
-    @Column(name = "ALERT_STATUS_DESC", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH )
+    @Column(name = "ALERT_STATUS_DESC", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String alertStatusDesc;
 
     @Column(name = "ALERT_LEVEL")
@@ -57,7 +56,7 @@ public class DBAlert extends BaseEntity {
     @NotNull
     private AlertLevelEnum alertLevel;
 
-    @Column(name = "MAIL_SUBJECT",length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
+    @Column(name = "MAIL_SUBJECT", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String mailSubject;
     @Column(name = "MAIL_TO", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String mailTo;

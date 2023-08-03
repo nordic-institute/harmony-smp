@@ -1,4 +1,0 @@
-# tests in this file are ignored in harmony-pom.xml
-
-GeneratedCodeTest
-BdxSmpOasisValidatorTest

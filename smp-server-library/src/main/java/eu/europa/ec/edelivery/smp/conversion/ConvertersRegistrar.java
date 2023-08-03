@@ -15,6 +15,7 @@ import java.util.List;
  * possibly other Spring beans (by first autowiring them into this registrar).
  *
  * @author Sebastian-Ion TINCU
+ * @since 4.1
  */
 @Component
 public class ConvertersRegistrar {

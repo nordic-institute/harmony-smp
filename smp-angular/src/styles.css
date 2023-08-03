@@ -1,9 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-@import '~@swimlane/ngx-datatable/index.css';
-@import '~@swimlane/ngx-datatable/themes/material.css';
-@import '~@swimlane/ngx-datatable/assets/icons.css';
-
 /*--------------------------------------------------
     [NORMALIZE]
 ----------------------------------------------------*/
@@ -14,18 +8,42 @@ html, body {
   width: 100%;
   font-family: 'Open Sans', sans-serif;
 }
-
-.mat-dialog-title {
-  font-family: 'Open Sans', sans-serif !important;
+/* set table cells to wrap words*/
+td , th {
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 200px;
 }
+
+
+.smp-data-panel-field {
+  width: 100% !important;
+}
+
+.smp-no-data-panel {
+  padding:2em;
+  margin:4em;
+  height: 100%;
+  display:flex;
+  flex-direction: row;
+  align-self: center;
+}
+
+.smp-no-data-panel > * {
+  align-self: center;
+}
+
 
 .mat-button, .mat-raised-button, .mat-icon-button {
   font-family: 'Open Sans', sans-serif !important;
   font-weight: bolder !important;
+  margin: 0 2px !important;
 }
-.mat-card{
+
+.mat-card {
   padding: 10px !important;
 }
+
 .text-select {
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -52,23 +70,6 @@ ngx-datatable span:before {
   content: " " !important;
 }
 
-/* selection for datatable */
-.ngx-datatable .datatable-body-cell, .ngx-datatable .datatable-header-cell {
-  -webkit-user-select: auto !important;
-  -moz-user-select: auto !important;
-  -ms-user-select: auto !important;
-  -o-user-select: auto !important;
-  user-select: auto !important;
-}
-
-.ngx-datatable .datatable-body-cell, .ngx-datatable .datatable-header-cell {
-  -webkit-user-select: auto !important;
-  -moz-user-select: auto !important;
-  -ms-user-select: auto !important;
-  -o-user-select: auto !important;
-  user-select: auto !important;
-  padding: 0.5em  !important;
-}
 
 .ngx-datatable span {
   word-wrap: break-word;
@@ -84,17 +85,19 @@ ngx-datatable span:before {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
 
 }
+
 .mat-dialog-title {
   margin: 0px -24px 1em -24px !important;
   padding: 0 24px !important;
   background-color: #2a2a72;
-  background-image: linear-gradient(315deg, #009ffd 0%,  #2a2a72 74%);
+  background-image: linear-gradient(315deg, #009ffd 0%, #2a2a72 74%);
   color: white;
 }
 
-.mat-dialog-container{
+.mat-dialog-container {
   padding: 0 24px !important;
 }
+
 .mat-dialog-actions {
   padding: 0 23px !important;
   justify-content: flex-end;
@@ -102,13 +105,14 @@ ngx-datatable span:before {
   border: gray outset 1px;
   background-color: #c4e1f8;
   min-height: 5px !important;
-  margin: 18px  -24px 0 -24px !important;
+  margin: 18px -24px 0 -24px !important;
 }
 
 .required-fields {
   text-align: left;
   font-size: 65%;
   margin: 0 3px;
+  padding: 0;
 }
 
 .mat-toolbar-multiple-rows {
@@ -116,8 +120,9 @@ ngx-datatable span:before {
   min-height: 32px !important;
   padding: 5px;
 }
+
 .mat-toolbar-row {
-  padding:unset !important;
+  padding: unset !important;
   height: unset !important;
   min-height: 32px !important;
 }
@@ -126,37 +131,13 @@ ngx-datatable span:before {
     [STRUCTURE]
 ----------------------------------------------------*/
 
-/* --- CONTAINER --------- */
-/*------------------------ */
-.mat-sidenav-container {
-  background-color: #F5F5F5;
-  color: rgba(0, 0, 0, .99);
-}
-
-/* --- SIDEBAR --------- */
-/*---------------------- */
-
-/* --- Logo ---*/
 #topLogo {
-  vertical-align: middle;
-}
-
-/* --- Menu ---*/
-.mat-sidenav button {
-  box-shadow: none;
-  border-radius: 0;
-  line-height: 50px !important;
-  letter-spacing: 1px;
-  color: #003399;
   background-color: #f0fbfc;
+  border-right: solid 1px rgba(0, 0, 0, 0.12);
 }
 
-.sideNavButton {
-  padding-left: 20px !important;
-}
-
-.button-text {
-  padding-left: 10px;
+.mat-drawer-inner-container {
+  background-color: #f0fbfc;
 }
 
 /* --- Collapse button ---*/
@@ -173,22 +154,10 @@ ngx-datatable span:before {
   padding-bottom: 30px;
 }
 
-/* --- MAIN CONTENT --------- */
-/*--------------------------- */
-.mat-sidenav-content {
-  min-height: 100vh;
-  margin-left: 0 !important;
-}
-
-/* --- Hamburger Menu ---*/
-/*Hamburger wrapper*/
-#sandwichMenuHolder {
-  position: relative;
-  display: block;
-}
-
 /*Hamburger button*/
 #sandwichMenu {
+
+  width: 100%;
   position: absolute;
   right: 10px;
   top: 0;
@@ -269,7 +238,48 @@ a:hover {
 .panel {
   margin-bottom: 10px;
   padding: 10px;
-  background: #FFF;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+}
+
+.title-panel {
+  margin-bottom: 5px;
+  padding: 5px;
+  text-align: center;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+}
+
+.empty-data-panel {
+  margin-bottom: 10px;
+  padding: 10px;
+
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+}
+
+.error-data-panel {
+  display:flex;
+  flex-direction: row;
+  gap:0.7em;
+  align-items: center;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+  padding: 0.5em;
+}
+
+.smp-warning-panel {
+  display:flex;
+  flex-direction: row;
+  gap:0.7em;
+  align-items: center;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+}
+
+.smp-warning-panel-padding {
+  padding: 0.5em;
+}
+
+.smp-toolbar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }
 
 mat-card {
@@ -281,27 +291,23 @@ mat-card {
 }
 
 /* --- INPUT ---*/
-.panel mat-select, .panel mat-datepicker, .panel mat-select {
+.panel mat-select, .panel mat-datepicker {
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
-.panel mat-select, .panel mat-form-field, .panel mat-datepicker, .panel mat-select {
+.panel mat-select, .panel mat-form-field, .panel mat-datepicker {
   margin-right: 2%;
 }
 
-.panel mat-form-field, .panel mat-select, .panel mat-datepicker, .panel mat-select {
-  width: 22%;
-}
-
 @media (max-width: 991px) {
-  .panel mat-form-field, .panel mat-select, .panel mat-datepicker, .panel mat-select {
+  .panel mat-form-field, .panel mat-select, .panel mat-datepicker {
     width: 46%;
   }
 }
 
 @media (max-width: 767px) {
-  .panel mat-form-field, .panel mat-select, .panel mat-datepicker, .panel mat-select {
+  .panel mat-form-field, .panel mat-select, .panel mat-datepicker {
     width: 100%;
   }
 }
@@ -345,12 +351,14 @@ mat-card {
 /*--------------------------------------------------
     [TABLE]
 ----------------------------------------------------*/
-.ngx-datatable.material {
-  background: #FFF;
-  box-shadow: none;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
 }
 
+/*--------------------------------------------------
+    [alert-message]
+----------------------------------------------------*/
 .alert-message {
   padding: 20px;
   color: white;
@@ -359,8 +367,18 @@ mat-card {
   margin-bottom: 15px;
   z-index: 1000;
 }
-.alert-message-error {background-color: #f44336;}
-.alert-message-success {background-color: #4CAF50;}
+
+.alert-message-error {
+  background-color: #f44336;
+}
+
+.alert-message-warning {
+  background-color: #ff9800;;
+}
+
+.alert-message-success {
+  background-color: #4CAF50;
+}
 
 .alert-message-close-button {
   margin-left: 15px;
@@ -378,6 +396,25 @@ mat-card {
   color: black;
 }
 
-.mat-icon {
-  margin-right: 10px;
-}
+.cm-s-eclipse span.cm-meta { color: #FF1717; }
+.cm-s-eclipse span.cm-keyword { line-height: 1em; font-weight: bold; color: #7F0055; }
+.cm-s-eclipse span.cm-atom { color: #219; }
+.cm-s-eclipse span.cm-number { color: #164; }
+.cm-s-eclipse span.cm-def { color: #00f; }
+.cm-s-eclipse span.cm-variable { color: black; }
+.cm-s-eclipse span.cm-variable-2 { color: #0000C0; }
+.cm-s-eclipse span.cm-variable-3, .cm-s-eclipse span.cm-type { color: #0000C0; }
+.cm-s-eclipse span.cm-property { color: black; }
+.cm-s-eclipse span.cm-operator { color: black; }
+.cm-s-eclipse span.cm-comment { color: #3F7F5F; }
+.cm-s-eclipse span.cm-string { color: #2A00FF; }
+.cm-s-eclipse span.cm-string-2 { color: #f50; }
+.cm-s-eclipse span.cm-qualifier { color: #555; }
+.cm-s-eclipse span.cm-builtin { color: #30a; }
+.cm-s-eclipse span.cm-bracket { color: #cc7; }
+.cm-s-eclipse span.cm-tag { color: #170; }
+.cm-s-eclipse span.cm-attribute { color: #00c; }
+.cm-s-eclipse span.cm-link { color: #219; }
+.cm-s-eclipse span.cm-error { color: #f00; }
+.cm-s-eclipse .CodeMirror-activeline-background { background: #e8f2ff; }
+.cm-s-eclipse .CodeMirror-matchingbracket { outline:1px solid grey; color:black !important; }

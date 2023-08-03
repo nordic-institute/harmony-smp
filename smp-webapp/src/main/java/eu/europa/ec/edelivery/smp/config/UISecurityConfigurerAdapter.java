@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -48,7 +47,6 @@ import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.SMP_UI_AUTH
 @Order(2)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-@ComponentScan("eu.europa.ec.edelivery.smp.auth")
 public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(UISecurityConfigurerAdapter.class);
@@ -104,19 +102,16 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        SMPAuthority.S_AUTHORITY_USER.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.PUT).hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        SMPAuthority.S_AUTHORITY_USER.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.GET).permitAll().and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/ui/**").hasAnyAuthority(
-                SMPAuthority.S_AUTHORITY_SMP_ADMIN.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SERVICE_GROUP.getAuthority(),
-                SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
+                        SMPAuthority.S_AUTHORITY_USER.getAuthority(),
+                        SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority())
         ;
     }
 
@@ -187,8 +182,7 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     @Bean
     public CsrfTokenRepository tokenRepository() {
-        CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        return repository;
+        return CookieCsrfTokenRepository.withHttpOnlyFalse();
     }
 
     @Bean
@@ -196,14 +190,9 @@ public class UISecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         URLCsrfIgnoreMatcher requestMatcher = new URLCsrfIgnoreMatcher();
         // init pages
         requestMatcher.addIgnoreUrl("^$", HttpMethod.GET);
-        //ignore CSRF for SMP rest API
+        //ignore CSRF for SMP rest API (or use CSRF for the UI)
         requestMatcher.addIgnoreUrl("^/(?!ui/)[^/]*(/services/.*)?$", HttpMethod.GET, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.POST);
-
-        //requestMatcher.addIgnoreUrl("^(/smp)?/$", HttpMethod.GET);
-        //requestMatcher.addIgnoreUrl("/favicon(-[0-9x]{2,7})?.(png|ico)$", HttpMethod.GET);
         requestMatcher.addIgnoreUrl("^(/smp)?/(index.html|ui/(#/)?|)$", HttpMethod.GET);
-        // Csrf ignore "SMP API 'stateless' calls! (each call is authenticated and session is not used!)"
-        //requestMatcher.addIgnoreUrl("/.*:+.*(/services/?.*)?", HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.PUT);
         // ignore for login and logout
         requestMatcher.addIgnoreUrl(ResourceConstants.CONTEXT_PATH_PUBLIC_SECURITY + "/authentication", HttpMethod.DELETE, HttpMethod.POST);
         requestMatcher.addIgnoreUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE, HttpMethod.GET);

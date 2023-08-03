@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.error;
 
-import ec.services.smp._1.ErrorResponse;
+import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;

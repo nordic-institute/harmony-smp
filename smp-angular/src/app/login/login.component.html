@@ -1,46 +1,38 @@
-<div id="page" class="login-page" [style]="'justify-content:center; align-items:center; height:100%'">
+﻿<div id="page" class="login-page" [style]="'justify-content:center; align-items:center; height:100%'">
   <div fxLayout="row" [style]="'justify-content:center; align-items:center; height:100%'">
     <mat-card *ngIf="isUserAuthSSOEnabled()  == true" fxFlex="400px" [style]="'width:400px;height:300px;margin:10px'">
-      <mat-card-title>SSO Login: {{lookups.cachedApplicationInfo.ssoAuthenticationLabel}}</mat-card-title>
+      <mat-card-title class="title-panel"  >SSO Login: {{lookups.cachedApplicationInfo.ssoAuthenticationLabel}}</mat-card-title>
       <mat-card-content style="align-items: center;justify-content: center;display: flex;height: 200px;">
-        <a mat-raised-button color="primary" href="{{lookups.cachedApplicationInfo.ssoAuthenticationURI}}" [style]="'width=150px'">
+        <a mat-raised-button color="primary" href="{{lookups.cachedApplicationInfo.ssoAuthenticationURI}}"
+           [style]="'width=150px'">
           <mat-icon>input</mat-icon>
           <span> SSO Login</span>
         </a>
       </mat-card-content>
     </mat-card>
-    <mat-card *ngIf="isUserAuthPasswdEnabled() == true" fxFlex="400px" [style]="'width:400px;height:300px;margin:10px'">
-      <mat-card-title>Harmony SMP Login</mat-card-title>
-      <mat-card-content style="align-items: center;justify-content: center;display: flex;height: 200px;">
+    <mat-card *ngIf="isUserAuthPasswdEnabled() == true" fxFlex="400px" [style]="'width:400px;height:300px;margin:10px;'">
+      <mat-card-title class="title-panel">Harmony SMP Login</mat-card-title>
+      <mat-card-content style="align-items: center;justify-content: center;display: flex;flex-direction:column; height: 200px;">
         <form name="loginForm" #loginForm="ngForm" (ngSubmit)="login()">
-          <table cellspacing="0">
-            <tr>
-              <td>
-                <mat-form-field>
+                <mat-form-field style="width: 100%">
+                  <mat-label>Username</mat-label>
                   <input matInput placeholder="Username" name="username" [(ngModel)]="model.username"
                          #username="ngModel"
-                         required id="username_id">
+                         id="username_id"
+                         auto-focus-directive
+                         required>
                 </mat-form-field>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <mat-form-field>
+                <mat-form-field style="width: 100%">
+                  <mat-label>Password</mat-label>
                   <input type="password" matInput placeholder="Password" name="password" [(ngModel)]="model.password"
                          #password="ngModel" required id="password_id">
                 </mat-form-field>
-              </td>
-            </tr>
-            <tr>
-              <td>
+
                 <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid" id="loginbutton_id"
                         [style]="'width:150px'">
                   <mat-icon>input</mat-icon>
                   <span> Login</span>
                 </button>
-              </td>
-            </tr>
-          </table>
         </form>
       </mat-card-content>
     </mat-card>

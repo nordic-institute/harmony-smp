@@ -1,0 +1,156 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content >
+  <form [formGroup]="domainForm">
+    <mat-card>
+      <mat-card-title>Domain properties</mat-card-title>
+      <mat-card-content>
+        <fieldset style="border: none;">
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Domain Code" name="domainCode"
+                   id="domainCode_id" #domainCode
+                   matTooltip="The SMP's domain code. The code is used in HTTP header 'Domain' when adding service group using the webservice API"
+                   (keypress)="onFieldKeyPressed(domainCode.value, 'domainCodeTimeout')"
+                   [formControl]="domainForm.controls['domainCode']" maxlength="63" required>
+            <mat-hint align="end">For WS API integration: the Domain property</mat-hint>
+            <div
+              *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')"
+              style="color:red; font-size: 70%">
+              Domain code must contain only chars and numbers and must be less than 63 chars long.
+            </div>
+            <div
+              *ngIf="!!fieldWarningTimeoutMap.domainCodeTimeout"
+              style="color:darkorange; font-size: 70%">
+              Domain code must contain only chars and numbers and must be less than 63 chars long.
+            </div>
+            <div
+              *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('notInList')"
+              style="color:red; font-size: 70%">
+              The Domain code already exists!
+            </div>
+          </mat-form-field>
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="SML domain"
+                   matTooltip="The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for mydomain.sml.dns.zone or leave empty for sml.dns.zone). Note: has informative value only, SML DNS zone used for publishing is based on SML configuration."
+                   name="smlSubdomain"
+                   id="smldomain_id" #smldomain
+                   (keypress)="onFieldKeyPressed(smldomain.value, 'smlDomainCodeTimeout')"
+                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="63">
+            <mat-hint align="end">The domain-specific part of the SML DNS zone (e.g., ‘mydomain’ for
+              mydomain.sml.dns.zone).
+            </mat-hint>
+            <div
+              *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
+              &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
+              style="color:red; font-size: 70%">
+              SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit nor a hyphen and should not end with a hyphen.
+            </div>
+            <div
+              *ngIf="!!fieldWarningTimeoutMap.smlDomainCodeTimeout"
+              style="color:darkorange; font-size: 70%">
+              SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit nor a hyphen and should not end with a hyphen.
+            </div>
+            <div
+              *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')"
+              style="color:red; font-size: 70%">
+              The SML subdomain is already defined!
+            </div>
+            <div
+              *ngIf="(!editMode &&  domainForm.controls['smlSubdomain'].hasError('blankDomainError'))"
+              style="color:red; font-size: 70%">
+              Domain with empty sml subdomain already exists!
+            </div>
+          </mat-form-field>
+          <mat-form-field style="width:100%">
+            <mat-select placeholder="Response signature Certificate (Signature CertAlias)"
+                        [formControl]="domainForm.controls['signatureKeyAlias']" name="cert"
+                        matTooltip="Certificate is used for signing REST responses for the domain."
+                        id="signatureKeyAlias_id">
+              <mat-option [value]="''">Choose certificate for signing soap response</mat-option>
+              <mat-option *ngFor="let cert of lookups.cachedCertificateList" [value]="cert.alias">
+                {{cert.alias}} ({{cert.certificateId}})
+              </mat-option>
+            </mat-select>
+            <mat-hint align="end">Empty value will cause that ServiceMetadata response will not be signed by SMP!
+            </mat-hint>
+          </mat-form-field>
+        </fieldset>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-title>SML integration data</mat-card-title>
+      <mat-card-content>
+        <fieldset style="border: none;">
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="SML SMP identifier" name="smlSmpId"
+                   id="smlSMPId_id" #smlSMPId
+                  (keypress)="onFieldKeyPressed(smlSMPId.value, 'smlsmpid')"
+                   [formControl]="domainForm.controls['smlSmpId']" maxlength="63">
+            <mat-hint align="end">SMP ID used for SML</mat-hint>
+            <div
+              *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')"
+              style="color:red; font-size: 70%">
+              SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit nor a hyphen and should not end with a hyphen.
+            </div>
+            <div
+              *ngIf="!!fieldWarningTimeoutMap.smlsmpid"
+              style="color:darkorange; font-size: 70%">
+              SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit nor a hyphen and should not end with a hyphen.
+            </div>
+            <div
+              *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('notInList')"
+              style="color:red; font-size: 70%">
+              SML SMP ID already exists!
+            </div>
+          </mat-form-field>
+
+          <mat-form-field style="width:100%"
+                          matTooltip="Client Certificate used for SML authentication. The SML Client-Cert http Header is also generated from the certificate">
+
+            <mat-select [(value)]="selectedSMLCert"
+                        placeholder="SML ClientCert Alias"
+                        [formControl]="domainForm.controls['smlClientKeyCertificate']"
+                        name="cert"
+                        id="smlClientKeyAlias_id">
+              <mat-option [value]="''">Choose certificate for SML integration</mat-option>
+              <mat-option *ngFor="let cert of lookups.cachedCertificateList" [value]="cert">
+                {{cert.alias}} ({{cert.certificateId}})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field style="width:100%"
+                          matTooltip="SML Client-Cert http Header used for SML authentication. The header is generated from chosen  SML ClientCert Alias">
+            <input matInput placeholder="SML ClientCert Header" name="Client certificate" id="smlClientHeader_id"
+                   [value]="selectedSMLCert?.clientCertHeader" maxlength="2000" readonly="true">
+          </mat-form-field>
+
+          <mat-slide-toggle style="width:100%"
+                            mat-no-ink class="mat-primary" [formControl]="domainForm.controls['smlClientCertAuth']"
+                            id="smlClientCertHeaderAuth_id">
+            Use ClientCert http header authentication.
+          </mat-slide-toggle>
+
+        </fieldset>
+
+      </mat-card-content>
+    </mat-card>
+  </form>
+  <div class="required-fields">* required fields</div>
+</mat-dialog-content>
+
+
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="submitForm()" [disabled]="!domainForm.valid">
+    <mat-icon>check_circle</mat-icon>
+    <span>OK</span>
+  </button>
+  <button mat-raised-button color="primary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
+</mat-dialog-actions>
+

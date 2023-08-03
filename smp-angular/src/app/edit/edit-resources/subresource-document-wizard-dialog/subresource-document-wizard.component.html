@@ -1,0 +1,108 @@
+<h2 mat-dialog-title>Service Metadata Wizard</h2>
+
+<mat-dialog-content class="flex-dialog-content">
+  <form [formGroup]="dialogForm">
+
+        <div class="panel">
+
+          <!-- Process -->
+          <mat-form-field style="width:58%">
+            <mat-label>Process identifier</mat-label>
+            <input matInput name="processidentifier" id="processidentifier_id" matTooltip = "The value part of the identifier of the process."
+                   maxlength="255"
+                   [formControl]="dialogForm.controls['processIdentifier']"
+                   required>
+            <div
+              *ngIf="dialogForm.controls['processIdentifier'].touched &&  dialogForm.controls['processIdentifier'].hasError('required')"
+              style="color:red; font-size: 70%">Process identifier is required!
+            </div>
+          </mat-form-field>
+          <mat-form-field style="width:38%">
+            <mat-label>Process scheme</mat-label>
+            <input matInput name="processSchema" id="processSchema_id" matTooltip = "The scheme part of the identifier of the process."
+                   maxlength="255"
+                   [formControl]="dialogForm.controls['processScheme']"
+                   >
+          </mat-form-field>
+
+          <mat-form-field style="width:58%">
+            <mat-label>Access point URL</mat-label>
+            <input matInput name="endpointUrl" id="endpointUrl_id" matTooltip="The address of an endpoint, as a URL."
+                   maxlength="255"
+                   [formControl]="dialogForm.controls['endpointUrl']"
+                   type="url"
+                   required>
+            <div
+              *ngIf="dialogForm.controls['endpointUrl'].touched &&  dialogForm.controls['endpointUrl'].hasError('required')"
+              style="color:red; font-size: 70%">Access point URL is required!
+            </div>
+          </mat-form-field>
+
+<!-- transport -->
+          <mat-form-field style="width:38%">
+            <mat-label>Transport profile</mat-label>
+            <input matInput name="transportProfile" id="transportProfiler_id"
+                   matTooltip="Indicates the type of transport method that is being used between access points for message exchange. See the message exchange network technical specifications for correct values."
+                    maxlength="255"
+                   [formControl]="dialogForm.controls['transportProfile']"
+                   required>
+            <div
+              *ngIf="dialogForm.controls['transportProfile'].touched &&  dialogForm.controls['transportProfile'].hasError('required')"
+              style="color:red; font-size: 70%">Transport profile  (as example: bdxr-transport-ebms3-as4-v1p0) is required!
+            </div>
+          </mat-form-field>
+
+          <div style="display: block;" style="border:1px; solid: #999999;margin:5px 0; padding:3px;">
+            <label class="custom-file-upload">
+              <input #fileInput type="file" style="display: inline-block;cursor: pointer; display: none;"
+                     id="certificate-file-upload" accept=".cer,.crt,.pem,.der"
+                     (change)="uploadCertificate($event)">
+              <button id="uploadCertificateButton" mat-flat-button color="primary"
+                      (click)="fileInput.click()" >Upload certificate</button>
+            </label>
+            <div *ngIf="certificateValidationMessage"
+                 [ngClass]="{ 'alert-message': certificateValidationMessage, 'alert-message-success': !certificateValidationMessage, 'alert-message-error':!!certificateValidationMessage }"
+                 id="alertmessage_id">
+              <span class="alert-message-close-button" (click)="clearAlert()">&times;</span>
+              {{certificateValidationMessage}}
+            </div>
+            <textarea matInput style="width:100%;border: #03A9F4 1px solid" cols="2" rows="10"
+                      resizeable="false"
+                      id="metadatacertificate_id"
+                      placeholder="Upload a certificate or paste the value inside the field" name="certificate"
+                      [formControl]="dialogForm.controls['endpointCertificate']" required></textarea>
+            </div>
+          <div
+            *ngIf="dialogForm.controls['endpointCertificate'].touched &&  dialogForm.controls['endpointCertificate'].hasError('required')"
+            style="color:red; font-size: 70%">Valid x509 Certificate is required!
+          </div>
+
+<!-- ServiceDescription -->
+          <mat-form-field style="width:100%">
+            <mat-label>Service description</mat-label>
+            <input matInput name="serviceDescription" id="serviceDescription_id" matTooltip="Service description"
+                   [formControl]="dialogForm.controls['serviceDescription']" maxlength="255" >
+          </mat-form-field>
+          <mat-form-field style="width:100%">
+            <mat-label>Technical Contact Url</mat-label>
+            <input matInput name="technicalContactUrl" id="technicalContactUrl_id"  matTooltip="Technical contact for the service"
+                   [formControl]="dialogForm.controls['technicalContactUrl']" maxlength="255" type="url" >
+          </mat-form-field>
+          <div class="required-fields">* required fields</div>
+        </div>
+  </form>
+</mat-dialog-content>
+
+
+<mat-dialog-actions>
+    <button id="generateSubresourceButton" mat-raised-button color="primary" [mat-dialog-close]="true"
+            [disabled]="!dialogForm.valid">
+      <mat-icon>check_circle</mat-icon>
+      <span>OK</span>
+    </button>
+
+    <button id="closeDialogButton" mat-raised-button color="primary" mat-dialog-close>
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+</mat-dialog-actions>

@@ -15,7 +15,6 @@ export class AlertMessageService {
     router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         if (this.isRouteChanged(event.url)) {
-          console.log('Clearing alert when navigating from [' + this.previousRoute + '] to [' + event.url + ']');
           this.clearAlert();
         } else {
           console.log('Alert kept when navigating from [' + this.previousRoute + '] to [' + event.url + ']');

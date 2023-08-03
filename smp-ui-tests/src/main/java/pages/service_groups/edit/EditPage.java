@@ -1,6 +1,5 @@
 package pages.service_groups.edit;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -16,18 +15,13 @@ import utils.PROPERTIES;
 import java.util.List;
 
 public class EditPage extends SMPPage {
-	public EditPage(WebDriver driver) {
-		super(driver);
-		this.pageHeader.waitForTitleToBe("Edit");
-		PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
-		filterArea = new FilterArea(driver);
-	}
-
-
 	public FilterArea filterArea;
-
+	public PaginationControls pagination = new PaginationControls(driver);
 	@FindBy(id = "searchTable")
 	private WebElement searchTable;
+
+	@FindBy(id = "okButton")
+	private WebElement okButton;
 
 	@FindBy(id = "cancelButton")
 	private WebElement cancelButton;
@@ -44,7 +38,12 @@ public class EditPage extends SMPPage {
 	@FindBy(id = "deleteButton")
 	private WebElement deleteButton;
 
-	public PaginationControls pagination = new PaginationControls(driver);
+	public EditPage(WebDriver driver) {
+		super(driver);
+		this.pageHeader.waitForTitleToBe("Edit");
+		PageFactory.initElements(new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
+		filterArea = new FilterArea(driver);
+	}
 
 	public boolean isCancelButtonEnabled() {
 		log.info("cancel button");
@@ -102,6 +101,12 @@ public class EditPage extends SMPPage {
 		return new ConfirmationDialog(driver);
 	}
 
+	public ConfirmationDialog clickOk() {
+		log.info("canceling ...");
+		waitForElementToBeClickable(okButton).click();
+		return new ConfirmationDialog(driver);
+	}
+
 	public void clickDelete() {
 		log.info("deleting ...");
 		waitForElementToBeClickable(deleteButton).click();
@@ -141,6 +146,8 @@ public class EditPage extends SMPPage {
 		log.info("saving..");
 		waitForElementToBeClickable(saveButton).click();
 		new ConfirmationDialog(driver).confirm();
+
+		waitForRowsToLoad();
 	}
 
 }

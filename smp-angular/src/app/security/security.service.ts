@@ -2,7 +2,7 @@
 import {Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
 import {SecurityEventService} from './security-event.service';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
@@ -13,6 +13,8 @@ import {MatDialog} from "@angular/material/dialog";
 export class SecurityService {
 
   readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
+
+
 
   constructor(
     private http: HttpClient,
@@ -34,6 +36,7 @@ export class SecurityService {
       {headers})
       .subscribe((response: User) => {
           this.updateUserDetails(response);
+          this.securityEventService.notifyLoginSuccessEvent(response);
         },
         (error: any) => {
           this.securityEventService.notifyLoginErrorEvent(error);
@@ -41,12 +44,13 @@ export class SecurityService {
   }
 
   refreshLoggedUserFromServer() {
-    this.getCurrentUsernameFromServer().subscribe((res: User) => {
-      this.updateUserDetails(res);
-      if (res?.forceChangeExpiredPassword) {
+    this.getCurrentUsernameFromServer().subscribe((userDetails: User) => {
+      this.updateUserDetails(userDetails);
+      this.securityEventService.notifyLoginSuccessEvent(userDetails);
+      if (userDetails?.forceChangeExpiredPassword) {
         this.dialog.open(PasswordChangeDialogComponent, {
           data: {
-            user: res,
+            user: userDetails,
             adminUser: false
           }
         }).afterClosed().subscribe(res =>
@@ -147,8 +151,8 @@ export class SecurityService {
   }
 
   updateUserDetails(userDetails: User) {
+    // store user data to local storage!
     this.populateLocalStorage(JSON.stringify(userDetails));
-    this.securityEventService.notifyLoginSuccessEvent(userDetails);
   }
 
   private populateLocalStorage(userDetails: string) {
@@ -159,7 +163,8 @@ export class SecurityService {
     return localStorage.getItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
   }
 
-  private clearLocalStorage() {
+  public clearLocalStorage() {
     localStorage.removeItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
   }
+
 }

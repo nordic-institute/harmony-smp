@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Joze Rihtarsic
@@ -8,10 +10,11 @@ import java.util.Date;
  */
 public class CertificateRO extends BaseRO {
 
-    private static final long serialVersionUID = -4971552086560325302L;
+    private static final long serialVersionUID = 9008583888835630004L;
 
     private String certificateId;
     private String alias;
+    private String publicKeyType;
     private String subject;
     private String issuer;
     private String serialNumber;
@@ -19,12 +22,14 @@ public class CertificateRO extends BaseRO {
     private String encodedValue;
     private String clientCertHeader;
     private boolean isInvalid;
-    private String invalidReason;
-    private Date validFrom;
-    private Date validTo;
+    private boolean isError;
 
-    public CertificateRO() {
-    }
+    private boolean isContainingKey;
+
+    private List<String> certificatePolicies = new ArrayList<>();
+    private String invalidReason;
+    private OffsetDateTime validFrom;
+    private OffsetDateTime validTo;
 
     public String getAlias() {
         return alias;
@@ -34,16 +39,12 @@ public class CertificateRO extends BaseRO {
         this.alias = alias;
     }
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
     }
 
     public String getCertificateId() {
         return certificateId;
-    }
-
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
     }
 
     public String getSubject() {
@@ -62,6 +63,14 @@ public class CertificateRO extends BaseRO {
         this.issuer = issuer;
     }
 
+    public String getPublicKeyType() {
+        return publicKeyType;
+    }
+
+    public void setPublicKeyType(String publicKeyType) {
+        this.publicKeyType = publicKeyType;
+    }
+
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -70,19 +79,19 @@ public class CertificateRO extends BaseRO {
         this.serialNumber = serialNumber;
     }
 
-    public Date getValidFrom() {
+    public OffsetDateTime getValidFrom() {
         return validFrom;
     }
 
-    public void setValidFrom(Date validFrom) {
+    public void setValidFrom(OffsetDateTime validFrom) {
         this.validFrom = validFrom;
     }
 
-    public Date getValidTo() {
+    public OffsetDateTime getValidTo() {
         return validTo;
     }
 
-    public void setValidTo(Date validTo) {
+    public void setValidTo(OffsetDateTime validTo) {
         this.validTo = validTo;
     }
 
@@ -110,6 +119,14 @@ public class CertificateRO extends BaseRO {
         this.crlUrl = crlUrl;
     }
 
+    public boolean isContainingKey() {
+        return isContainingKey;
+    }
+
+    public void setContainingKey(boolean containingKey) {
+        isContainingKey = containingKey;
+    }
+
     public boolean isInvalid() {
         return isInvalid;
     }
@@ -118,11 +135,27 @@ public class CertificateRO extends BaseRO {
         isInvalid = invalid;
     }
 
+    public boolean isError() {
+        return isError;
+    }
+
+    /**
+     * Set blocking error
+     * @param error
+     */
+    public void setError(boolean error) {
+        isError = error;
+    }
+
     public String getInvalidReason() {
         return invalidReason;
     }
 
     public void setInvalidReason(String invalidReason) {
         this.invalidReason = invalidReason;
+    }
+
+    public List<String> getCertificatePolicies() {
+        return certificatePolicies;
     }
 }

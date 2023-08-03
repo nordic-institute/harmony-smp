@@ -4,10 +4,13 @@
 WORKING_DIR="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
+#SMP_INIT_DATABASE="/cef/test/smp-migration/smp-5.0/smp-4.2/database-scripts/mig/oracle10g.ddl"
+
 #SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
 SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql"
+#SMP_INIT_DATABASE_DATA="/cef/test/smp-migration/smp-5.0/smp-4.2/database-scripts/mig/data-mig.ddl"
 # soap ui data
-PREFIX="smp-wls-orcl"
+PREFIX="smp-wls12-orcl"
 SMP_VERSION=
 
 
@@ -71,16 +74,16 @@ function createDatabaseSchemaForUser() {
   } >>"$3"
 }
 
-
 function clearOldContainers {
   echo "Clear containers and volumes"
   docker-compose -p "${PREFIX}" rm -s -f -v
   echo "Clear container data ${WORKING_DIR}/data/"
+  rm -rf ${WORKING_DIR}/data/upload/*.*
   rm -rf ${WORKING_DIR}/data/smp/config/*.*
   rm -rf ${WORKING_DIR}/data/smp/security/*.*
   rm -rf ${WORKING_DIR}/data/weblogic/keystores/*.*
   rm -rf ${WORKING_DIR}/data/weblogic/security.properties
-  rm -rf ${WORKING_DIR}/data/*.jar
+  rm -rf ${WORKING_DIR}/data/*.*
 }
 
 createDatabaseSchemaForUser $SMP_DB_USERNAME $SMP_DB_PASSWORD "${SMP_DB_SCRIPTS}/01_create_user.sql"

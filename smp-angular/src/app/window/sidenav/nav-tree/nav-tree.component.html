@@ -1,0 +1,46 @@
+<mat-tree [dataSource]="navigationModel"
+          [treeControl]="treeControl"
+          class="nav-tree">
+  <!-- Leaf nodes -->
+  <mat-tree-node  *matTreeNodeDef="let node" matTreeNodeToggle>
+    <li *ngIf="!node.transient" class="mat-tree-node nav-tree-leaf" [ngClass]="{ 'navigation-selected': navigationModel.selected === node}">
+      <button [id]="node.code+'Button'" mat-menu-item (click)="menuClickHandler(node)">
+        <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+        <span *ngIf="fullMenu">{{node.name}}</span>
+      </button>
+    </li>
+  </mat-tree-node>
+  <!-- expandable nodes -->
+  <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+    <li>
+      <div class="mat-tree-node">
+        <ng-container *ngIf="fullMenu; else iconButton">
+          <a *ngIf="fullMenu" mat-icon-button matTreeNodeToggle class="nav-tree-expand-button"
+             [attr.aria-label]="'toggle ' + node.code">
+            <mat-icon class="nav-tree-expand-button-icon">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </a>
+          <button [id]="node.code+'Button'" mat-menu-item (click)="menuClickHandler(node)">
+            <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+            <span *ngIf="fullMenu">{{node.name}}</span>
+          </button>
+        </ng-container>
+        <ng-template #iconButton>
+          <button [id]="node.code+'Button'" #iconItem mat-menu-item [matMenuTriggerFor]="itemMenu">
+            <mat-icon *ngIf="node.icon">{{node.icon}}</mat-icon>
+          </button>
+          <mat-menu #itemMenu="matMenu" xPosition="before" yPosition="below">
+            <ng-container *ngFor="let item of node.children; let i = index">
+              <nav-tree-menu (notifyClickMenu)="menuClickHandler(item)" [trigger]="item.code"
+                             [data]="item"></nav-tree-menu>
+            </ng-container>
+          </mat-menu>
+        </ng-template>
+      </div>
+      <ul *ngIf="fullMenu" [class.nav-tree-invisible]="!treeControl.isExpanded(node)">
+        <ng-container matTreeNodeOutlet></ng-container>
+      </ul>
+    </li>
+  </mat-nested-tree-node>
+</mat-tree>

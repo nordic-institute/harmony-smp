@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns5:ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2/BasicComponents" xmlns:ns2="http://docs.oasis-open.org/bdxr/ns/SMP/2/ExtensionComponents" xmlns:ns3="http://docs.oasis-open.org/bdxr/ns/SMP/2/AggregateComponents" xmlns:ns4="http://www.w3.org/2000/09/xmldsig#" xmlns:ns5="http://docs.oasis-open.org/bdxr/ns/SMP/2/ServiceGroup">
+    <SMPVersionID>2.0</SMPVersionID>
+    <ParticipantID schemeID="${=request.getProperty('ResourceIdentifierScheme').getValue()}">${=request.getProperty('ResourceIdentifierValue').getValue()}</ParticipantID>
+</ns5:ServiceGroup>

@@ -1,0 +1,143 @@
+<div id="admin-resource-panel">
+  <data-panel id="admin-resource-data-panel"
+              title="Edit Resource"
+              text="Edit resource administration panel is a tool for resource administrators to administer the resource"
+              [labelColumnContent]="searchGroupPanel">
+
+    <mat-tab-group #domainTabs
+                   *ngIf="!!resourceList && resourceList.length>0;else noUserAdminGroupsDataFound"
+                   style="height: 100%">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <smp-label icon="article" label="Resource details"></smp-label>
+        </ng-template>
+        <resource-detail-panel
+          [domainResourceDefs]="_selectedDomainResourceDef"
+          [domain]="selectedDomain"
+          [group]="selectedGroup"
+          [resource]="selectedResource"
+        >
+        </resource-detail-panel>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <smp-label icon="groups" label="Members"></smp-label>
+        </ng-template>
+        <domain-member-panel #groupMemberPanelComponent
+                             [membershipType]="groupMembershipType"
+                             [domain]="selectedDomain"
+                             [group]="selectedGroup"
+                             [resource]="selectedResource"
+
+        ></domain-member-panel>
+      </mat-tab>
+      <mat-tab *ngIf="hasSubResources">
+        <ng-template mat-tab-label>
+          <smp-label icon="description" label="Subresources"></smp-label>
+        </ng-template>
+        <subresource-panel
+          [domainResourceDefs]="_selectedDomainResourceDef"
+          [domain]="selectedDomain"
+          [group]="selectedGroup"
+          [resource]="selectedResource"
+        ></subresource-panel>
+      </mat-tab>
+    </mat-tab-group>
+  </data-panel>
+  <ng-template #noUserAdminGroupsDataFound>
+    <smp-warning-panel *ngIf="!isLoadingResults"
+                      class="smp-no-data-panel"
+                       icon="warning"
+                       type="warning"
+                       [label]="filterResourceResults?'No resources for give filter':'User is not administrator of any of the resources'"></smp-warning-panel>
+  </ng-template>
+</div>
+
+<ng-template #searchGroupPanel>
+  <div
+    *ngIf="!!resourceList &&  resourceList.length>0 || filterResourceResults "
+  >
+    <mat-form-field style="width:100%">
+      <mat-label>Selected domain</mat-label>
+      <mat-select placeholder="Select domain"
+                  matTooltip="Select domain."
+                  id="domain_id"
+                  [(value)]="selectedDomain"
+                  required>
+        <mat-option *ngFor="let domain of domainList"
+                    [value]="domain"
+        >
+          {{domain.domainCode}}
+        </mat-option>
+
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field style="width:100%">
+      <mat-label>Selected Group</mat-label>
+      <mat-select placeholder="Select group"
+                  matTooltip="Select group."
+                  id="group_id"
+                  [(value)]="selectedGroup"
+                  required>
+        <mat-option *ngFor="let group of groupList"
+                    [value]="group">{{group.groupName}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="edit-resource-container mat-elevation-z2">
+      <div class="edit-resource-loading-shade"
+           *ngIf="isLoadingResults">
+        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+      </div>
+
+      <div class="edit-resource-table-container">
+
+        <mat-form-field id="edit-resource-filter" style="width: 100%">
+          <mat-label>Resource filter</mat-label>
+          <input matInput (keyup)="applyResourceFilter($event)"
+                 placeholder="Resource filter"
+                 [disabled]="disabledResourceFilter"
+                 #inputDomainMemberFilter>
+        </mat-form-field>
+
+        <table class="mat-elevation-z2" mat-table [dataSource]="data">
+
+          <ng-container matColumnDef="identifierScheme">
+            <th mat-header-cell *matHeaderCellDef>Scheme</th>
+            <td mat-cell *matCellDef="let row">{{row.identifierScheme}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="identifierValue">
+            <th mat-header-cell *matHeaderCellDef>Identifier</th>
+            <td mat-cell *matCellDef="let row">{{row.identifierValue}}</td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+              (click)="onResourceSelected(row)"
+              [ngClass]="{'datatable-row-selected': row==selectedResource,'datatable-row-odd': odd}"
+          ></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No resources
+              matching the filter
+              "{{inputDomainMemberFilter.value}}"
+            </td>
+            <ng-template #noDataFound>
+              <td class="mat-cell" colspan="2">the group has no resources</td>
+            </ng-template>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
+                     (page)="onPageChanged($event)"
+                     [hidePageSize]="true"
+                     [showFirstLastButtons]="true"
+                     [pageSize]="5"
+                     aria-label="Select pages"></mat-paginator>
+    </div>
+  </div>
+</ng-template>

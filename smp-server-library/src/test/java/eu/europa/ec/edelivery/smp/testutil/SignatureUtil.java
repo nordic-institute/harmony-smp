@@ -170,17 +170,6 @@ public class SignatureUtil {
         return findSignatureByParentNode(extension);
     }
 
-    public static Document buildDocWithGivenRoot(Element smNode) throws ParserConfigurationException, TransformerException, IOException, SAXException {
-        Document docUnwrapped = XmlTestUtils.getDocumentBuilder().newDocument();
-        Node sm = docUnwrapped.importNode(smNode, true);
-        docUnwrapped.appendChild(sm);
-
-        // Marshalling and parsing the document - signature validation fails without this stinky "magic".
-        // _Probably_ SUN's implementation doesn't import correctly signatures between two different documents.
-        String strUnwrapped = marshall(docUnwrapped);
-        return parseDocument(strUnwrapped);
-    }
-
     public static Element findSignatureByParentNode(Element sigParent) {
         for (Node child = sigParent.getFirstChild(); child != null; child = child.getNextSibling()) {
             if ("Signature".equals(child.getLocalName()) && "http://www.w3.org/2000/09/xmldsig#".equals(child.getNamespaceURI())) {
@@ -190,10 +179,7 @@ public class SignatureUtil {
         throw new RuntimeException("Signature not found in given node.");
     }
 
-    public static Document parseDocument(String docContent) throws IOException, SAXException, ParserConfigurationException {
-        InputStream inputStream = new ByteArrayInputStream(docContent.getBytes());
-        return XmlTestUtils.getDocumentBuilder().parse(inputStream);
-    }
+
 
     public static Element findExtensionInServiceInformation(Document doc) throws ParserConfigurationException, SAXException, IOException {
         Element serviceInformation = findFirstElementByName(doc, "ServiceInformation");

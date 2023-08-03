@@ -10,19 +10,18 @@ import java.util.List;
  * @since 4.1
  */
 public class SmpConfigRO implements Serializable {
-    private static final long serialVersionUID = -49712226560325303L;
+    private static final long serialVersionUID = 9008583888835630021L;
 
-    boolean smlIntegrationOn;
-    boolean smlParticipantMultiDomainOn;
-    boolean concatEBCorePartyId;
-    boolean partyIDSchemeMandatory;
-    String participantSchemaRegExp;
-    String participantSchemaRegExpMessage;
+    private boolean smlIntegrationOn;
+    private boolean concatEBCorePartyId;
+    private boolean partyIDSchemeMandatory;
+    private String participantSchemaRegExp;
+    private String participantSchemaRegExpMessage;
 
 
-    String passwordValidationRegExp;
-    String passwordValidationRegExpMessage;
-    List<String> webServiceAuthTypes = new ArrayList<>();
+    private String passwordValidationRegExp;
+    private String passwordValidationRegExpMessage;
+    private List<String> webServiceAuthTypes = new ArrayList<>();
 
 
     public boolean isSmlIntegrationOn() {
@@ -31,14 +30,6 @@ public class SmpConfigRO implements Serializable {
 
     public void setSmlIntegrationOn(boolean smlIntegrationOn) {
         this.smlIntegrationOn = smlIntegrationOn;
-    }
-
-    public boolean isSmlParticipantMultiDomainOn() {
-        return smlParticipantMultiDomainOn;
-    }
-
-    public void setSmlParticipantMultiDomainOn(boolean smlParticipantMultidomainOn) {
-        this.smlParticipantMultiDomainOn = smlParticipantMultidomainOn;
     }
 
     public boolean isConcatEBCorePartyId() {
