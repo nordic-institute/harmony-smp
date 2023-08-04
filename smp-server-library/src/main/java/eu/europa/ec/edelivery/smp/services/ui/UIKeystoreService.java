@@ -131,11 +131,14 @@ public class UIKeystoreService extends BasicKeystoreService {
 
     private KeyStore loadKeystore(File keyStoreFile, String keystoreSecToken) {
         // Load the KeyStore.
-        if (keyStoreFile != null && !keyStoreFile.exists()) {
-            LOG.error("Keystore file '{}' does not exists!", keyStoreFile.getAbsolutePath());
+        if (keyStoreFile == null) {
+            LOG.error("Keystore file is not defined!");
             return null;
         }
-
+        if (!keyStoreFile.exists()) {
+            LOG.error("Keystore file '[{}]' does not exists!", keyStoreFile);
+            return null;
+        }
 
         KeyStore keyStore;
         try (InputStream keystoreInputStream = Files.newInputStream(keyStoreFile.toPath())) {
@@ -235,8 +238,8 @@ public class UIKeystoreService extends BasicKeystoreService {
     /**
      * Import keys smp keystore
      *
-     * @param newKeystore
-     * @param password
+     * @param newKeystore  new keystore file to import
+     * @param password    password for new keystore file
      */
     public List<CertificateRO> importKeys(KeyStore newKeystore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
@@ -256,7 +259,7 @@ public class UIKeystoreService extends BasicKeystoreService {
     /**
      * Delete keys smp keystore
      *
-     * @param alias
+     * @param alias alias of the key to delete from keystore
      */
     public X509Certificate deleteKey(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
@@ -277,10 +280,10 @@ public class UIKeystoreService extends BasicKeystoreService {
      * Store keystore
      *
      * @param keyStore to store
-     * @throws IOException
-     * @throws CertificateException
-     * @throws NoSuchAlgorithmException
-     * @throws KeyStoreException
+     * @throws IOException if the keystore can not be persisted
+     * @throws CertificateException if keystore cannot be stored
+     * @throws NoSuchAlgorithmException if keystore type algorithm is not supported
+     * @throws KeyStoreException if keystore cannot be stored
      */
     private void storeKeystore(KeyStore keyStore) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         File keystoreFilePath = configurationService.getKeystoreFile();
