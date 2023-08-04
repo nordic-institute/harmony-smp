@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.identifiers;
 
-import eu.europa.ec.edelivery.smp.identifiers.types.FormatterType;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.AbstractIdentifierFormatter;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.AbstractFormatterType;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.FormatterType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +56,7 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
         List<String> caseSensitiveSchemas;
         FormatterType[] formatterTypes = null;
 
-        FormatterType defaultFormatter;
+        AbstractFormatterType defaultFormatter;
 
         public Builder schemeMandatory(boolean schemeMandatory) {
             this.schemeMandatory = schemeMandatory;
@@ -79,7 +81,7 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
             return this;
         }
 
-        public void setDefaultFormatter(FormatterType defaultFormatter) {
+        public void setDefaultFormatter(AbstractFormatterType defaultFormatter) {
             this.defaultFormatter = defaultFormatter;
         }
 
@@ -89,7 +91,9 @@ public class IdentifierFormatter extends AbstractIdentifierFormatter<Identifier>
             identifierFormatter.setCaseSensitiveSchemas(caseSensitiveSchemas);
             identifierFormatter.setSchemeValidationPattern(schemeValidationPattern);
             identifierFormatter.addFormatterTypes(formatterTypes);
-            identifierFormatter.setDefaultFormatter(defaultFormatter);
+            if (defaultFormatter != null) {
+                identifierFormatter.setDefaultFormatter(defaultFormatter);
+            }
             return identifierFormatter;
         }
     }

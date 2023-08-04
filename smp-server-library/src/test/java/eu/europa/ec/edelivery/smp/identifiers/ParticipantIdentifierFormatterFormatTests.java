@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.identifiers;
 
 
-import eu.europa.ec.edelivery.smp.identifiers.types.EBCorePartyIdFormatterType;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.identifiers.types;
 
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.OasisSMPFormatterType;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
@@ -70,9 +71,9 @@ public class OasisSMPFormatterTypeTest {
 
 
     @Test
-    public void isTypeByScheme() {
+    public void isSchemeValid() {
 
-        boolean result = testInstance.isTypeByScheme(schemaPart);
+        boolean result = testInstance.isSchemeValid(schemaPart);
         assertEquals(isValidPartyId, result);
     }
 

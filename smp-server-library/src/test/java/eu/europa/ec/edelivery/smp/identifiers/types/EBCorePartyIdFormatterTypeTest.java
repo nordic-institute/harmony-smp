@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.identifiers.types;
 
-import eu.europa.ec.edelivery.smp.exceptions.MalformedIdentifierException;
+import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
@@ -123,9 +124,9 @@ public class EBCorePartyIdFormatterTypeTest {
 
 
     @Test
-    public void isTypeByScheme() {
+    public void isSchemeValid() {
 
-        boolean result = testInstance.isTypeByScheme(schemaPart);
+        boolean result = testInstance.isSchemeValid(schemaPart);
         assertEquals(isEBCorePartyId, result);
     }
 
