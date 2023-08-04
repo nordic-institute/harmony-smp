@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OasisCPPA3ExtensionTest {
     OasisCppaCppDocument mockOasisCppaCppDocument = Mockito.mock(OasisCppaCppDocument.class);

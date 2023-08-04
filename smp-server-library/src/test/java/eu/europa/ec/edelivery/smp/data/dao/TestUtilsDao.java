@@ -20,10 +20,10 @@ import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.*;
@@ -607,6 +607,15 @@ public class TestUtilsDao {
         LOG.debug("merge entity: [{}]", entity);
         return memEManager.merge(entity);
     }
+
+
+    @Transactional
+    public <E> E find(Class<E> clazz, Object id) {
+        LOG.debug("find entity: [{}] for type [{}]", id, clazz);
+        return memEManager.find(clazz, id);
+    }
+
+
 
 
     public void clear() {

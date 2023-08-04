@@ -16,14 +16,12 @@ package eu.europa.ec.edelivery.smp.data.model;
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
-import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 

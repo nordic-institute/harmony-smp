@@ -1,27 +1,24 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-@ContextConfiguration(classes = {UIResourceSearchService.class, ConversionTestConfig.class})
-public class UIResourceSearchServiceTest extends AbstractServiceIntegrationTest {
+public class UIResourceSearchServiceTest extends AbstractJunit5BaseDao {
 
 
     @Autowired
     protected UIResourceSearchService testInstance;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         // setup initial data!
         testUtilsDao.clearData();

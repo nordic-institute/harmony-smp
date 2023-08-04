@@ -1,24 +1,19 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.data.model.*;
-import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
 
 /**
- *  Purpose of class is to test all resource methods with database.
+ * Purpose of class is to test all resource methods with database.
  *
  * @author Joze Rihtarsic
  * @since 4.1
@@ -67,7 +62,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     public void getTheOnlyDomainNoDomain() {
 
         // execute
-        IllegalStateException exception = assertThrows(IllegalStateException.class, ()->testInstance.getTheOnlyDomain());
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testInstance.getTheOnlyDomain());
         assertEquals(ErrorCode.NO_DOMAIN.getMessage(), exception.getMessage());
     }
 
@@ -85,7 +80,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
 
         // test
         Optional<DBDomain> res = testInstance.getTheOnlyDomain();
-        assertTrue(!res.isPresent());
+        assertFalse(res.isPresent());
     }
 
     @Test
@@ -170,7 +165,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         // set
         testUtilsDao.createSubresources();
         DBDomain d = testUtilsDao.getD1();
-        Long cnt  = testInstance.getResourceCountForDomain(d.getId());
+        Long cnt = testInstance.getResourceCountForDomain(d.getId());
 
         assertEquals(1, cnt.intValue());
     }

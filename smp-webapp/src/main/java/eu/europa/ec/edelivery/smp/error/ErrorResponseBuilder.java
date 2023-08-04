@@ -13,8 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.error;
 
-import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.data.ui.exceptions.ErrorResponseRO;
+import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +42,9 @@ public class ErrorResponseBuilder {
     private String strErrorDescription = "Unexpected technical error occurred.";
 
     private static String getErrorUniqueId() {
-        StringBuilder errId = new StringBuilder();
-        errId.append(OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
-                .append(":")
-                .append(UUID.randomUUID());
-        return String.valueOf(errId);
+        return OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) +
+                ":" +
+                UUID.randomUUID();
     }
 
     public ErrorResponseBuilder() {

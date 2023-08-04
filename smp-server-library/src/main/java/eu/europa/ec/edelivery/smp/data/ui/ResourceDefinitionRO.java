@@ -19,7 +19,7 @@ public class ResourceDefinitionRO extends BaseRO {
     private String mimeType;
     private String urlSegment;
 
-    private List<SubresourceDefinitionRO> subresourceDefinitions = new ArrayList<>();
+    private final List<SubresourceDefinitionRO> subresourceDefinitions = new ArrayList<>();
 
     public String getResourceId() {
         return resourceId;

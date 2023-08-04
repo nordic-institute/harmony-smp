@@ -30,7 +30,7 @@ public class SMPAuthenticationEventListener implements ApplicationListener<Authe
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPAuthenticationEventListener.class);
 
-    private ConfigurationService configurationService;
+    private final ConfigurationService configurationService;
 
     @Autowired
     public SMPAuthenticationEventListener(ConfigurationService configurationService) {

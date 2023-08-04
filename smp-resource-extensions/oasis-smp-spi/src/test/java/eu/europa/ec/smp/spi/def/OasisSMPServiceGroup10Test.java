@@ -10,11 +10,11 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OasisSMPServiceGroup10Test {
 
-    OasisSMPServiceGroup10Handler mockOasisSMPServiceGroup10Handler  = Mockito.mock(OasisSMPServiceGroup10Handler.class);;
+    OasisSMPServiceGroup10Handler mockOasisSMPServiceGroup10Handler  = Mockito.mock(OasisSMPServiceGroup10Handler.class);
     OasisSMPServiceMetadata10 mockOasisSMPServiceMetadata10  = Mockito.mock(OasisSMPServiceMetadata10.class);
 
     OasisSMPServiceGroup10 testInstance = new OasisSMPServiceGroup10(mockOasisSMPServiceGroup10Handler,mockOasisSMPServiceMetadata10 );

@@ -2,7 +2,6 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
-import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

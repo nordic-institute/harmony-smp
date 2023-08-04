@@ -7,16 +7,15 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import eu.europa.ec.edelivery.smp.services.ICRLVerifierService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import java.io.*;
+import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -36,8 +35,8 @@ public class UIKeystoreService extends BasicKeystoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIKeystoreService.class);
 
-    private ConversionService conversionService;
-    private ConfigurationService configurationService;
+    private final ConversionService conversionService;
+    private final ConfigurationService configurationService;
 
     public UIKeystoreService(ConversionService conversionService, ConfigurationService configurationService) {
         super(null);
@@ -45,9 +44,9 @@ public class UIKeystoreService extends BasicKeystoreService {
         this.configurationService = configurationService;
     }
 
-    private Map<String, Key> keystoreKeys = new HashMap<>();
-    private Map<String, X509Certificate> keystoreCertificates = new HashMap<>();
-    private List<CertificateRO> certificateROList = new ArrayList<>();
+    private final Map<String, Key> keystoreKeys = new HashMap<>();
+    private final Map<String, X509Certificate> keystoreCertificates = new HashMap<>();
+    private final List<CertificateRO> certificateROList = new ArrayList<>();
 
     private KeyManager[] keyManagers;
 
@@ -71,7 +70,7 @@ public class UIKeystoreService extends BasicKeystoreService {
 
         KeyStore keyStore = loadKeystore(keystoreFile, keystoreSecToken);
         if (keyStore == null) {
-            LOG.error("Keystore: [{}] is not loaded! Check the keystore and the configuration!",keystoreFile.getAbsolutePath());
+            LOG.error("Keystore: [{}] is not loaded! Check the keystore and the configuration!", keystoreFile.getAbsolutePath());
             return;
         }
         // init key managers for TLS
@@ -132,14 +131,17 @@ public class UIKeystoreService extends BasicKeystoreService {
 
     private KeyStore loadKeystore(File keyStoreFile, String keystoreSecToken) {
         // Load the KeyStore.
-        if (keyStoreFile != null && !keyStoreFile.exists()) {
-            LOG.error("Keystore file '{}' does not exists!", keyStoreFile.getAbsolutePath());
+        if (keyStoreFile == null) {
+            LOG.error("Keystore file is not defined!");
+            return null;
+        }
+        if (!keyStoreFile.exists()) {
+            LOG.error("Keystore file '[{}]' does not exists!", keyStoreFile);
             return null;
         }
 
-
         KeyStore keyStore;
-        try (InputStream keystoreInputStream = new FileInputStream(keyStoreFile)) {
+        try (InputStream keystoreInputStream = Files.newInputStream(keyStoreFile.toPath())) {
             String type = StringUtils.defaultIfEmpty(configurationService.getKeystoreType(), "JKS");
             LOG.info("Load keystore [{}] with type [{}].", keyStoreFile, type);
             keyStore = KeyStore.getInstance(type);
@@ -195,7 +197,7 @@ public class UIKeystoreService extends BasicKeystoreService {
         }
 
         if (keystoreKeys.isEmpty()) {
-            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: " + keyAlias + " from empty keystore!" + configurationService.getKeystoreFile());
+            throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Could not retrieve key: [" + keyAlias + "] from empty keystore: [" + configurationService.getKeystoreFile() +"]!");
         }
 
 
@@ -236,8 +238,8 @@ public class UIKeystoreService extends BasicKeystoreService {
     /**
      * Import keys smp keystore
      *
-     * @param newKeystore
-     * @param password
+     * @param newKeystore  new keystore file to import
+     * @param password    password for new keystore file
      */
     public List<CertificateRO> importKeys(KeyStore newKeystore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
@@ -257,16 +259,16 @@ public class UIKeystoreService extends BasicKeystoreService {
     /**
      * Delete keys smp keystore
      *
-     * @param alias
+     * @param alias alias of the key to delete from keystore
      */
     public X509Certificate deleteKey(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
 
-        if (keyStore == null || !keyStore.containsAlias(alias)){
+        if (keyStore == null || !keyStore.containsAlias(alias)) {
             return null;
         }
-        X509Certificate certificate = (X509Certificate)keyStore.getCertificate(alias);
+        X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias);
         keyStore.deleteEntry(alias);
         // store keystore
         storeKeystore(keyStore);
@@ -278,10 +280,10 @@ public class UIKeystoreService extends BasicKeystoreService {
      * Store keystore
      *
      * @param keyStore to store
-     * @throws IOException
-     * @throws CertificateException
-     * @throws NoSuchAlgorithmException
-     * @throws KeyStoreException
+     * @throws IOException if the keystore can not be persisted
+     * @throws CertificateException if keystore cannot be stored
+     * @throws NoSuchAlgorithmException if keystore type algorithm is not supported
+     * @throws KeyStoreException if keystore cannot be stored
      */
     private void storeKeystore(KeyStore keyStore) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         File keystoreFilePath = configurationService.getKeystoreFile();

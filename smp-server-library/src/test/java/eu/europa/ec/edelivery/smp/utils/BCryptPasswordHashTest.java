@@ -14,7 +14,6 @@
 package eu.europa.ec.edelivery.smp.utils;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 

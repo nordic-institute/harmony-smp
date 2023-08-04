@@ -121,6 +121,7 @@
         <sonar.coverage.exclusions>
             **/*Entity.java,
             **/*RO.java,
+            **/DB*.java,
             **/*Exception.java,
             **/*Types.java,
             **/*Constants.java,

@@ -22,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
@@ -55,7 +54,7 @@ public class SMPAuthorizationServiceTest {
         }}, null, Collections.singletonList(SMPAuthority.S_AUTHORITY_USER));
 
         mockSecurityContextSystemAdmin = new SecurityContext() {
-            SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", sysUserDetails);
+            final SMPAuthenticationToken smpa = new SMPAuthenticationToken("sg_admin", "test123", sysUserDetails);
 
             @Override
             public Authentication getAuthentication() {
@@ -67,7 +66,7 @@ public class SMPAuthorizationServiceTest {
             }
         };
         mockSecurityContextSMPAdmin = new SecurityContext() {
-            SMPAuthenticationToken smpa = new SMPAuthenticationToken("smp_admin", "test123", smpUserDetails);
+            final SMPAuthenticationToken smpa = new SMPAuthenticationToken("smp_admin", "test123", smpUserDetails);
 
             @Override
             public Authentication getAuthentication() {

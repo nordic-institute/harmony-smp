@@ -4,12 +4,11 @@ import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup20;
 import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OasisSMPExtensionTest {
 

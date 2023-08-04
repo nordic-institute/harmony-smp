@@ -76,11 +76,10 @@ public class ErrorResponseRO {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("ErrorResponseRO{");
-        sb.append("'businessCode'='").append(businessCode).append('\'');
-        sb.append(", 'errorDescription'='").append(errorDescription).append('\'');
-        sb.append(", 'errorUniqueId'='").append(errorUniqueId).append('\'');
-        sb.append('}');
-        return sb.toString();
+        String sb = "ErrorResponseRO{" + "'businessCode'='" + businessCode + '\'' +
+                ", 'errorDescription'='" + errorDescription + '\'' +
+                ", 'errorUniqueId'='" + errorUniqueId + '\'' +
+                '}';
+        return sb;
     }
 }

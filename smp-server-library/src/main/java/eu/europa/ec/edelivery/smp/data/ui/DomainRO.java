@@ -25,8 +25,8 @@ public class DomainRO extends BaseRO {
     private boolean smlRegistered;
     private VisibilityType visibility;
     private String defaultResourceTypeIdentifier;
-    private List<GroupRO> groups = new ArrayList<>();
-    private List<String> resourceDefinitions = new ArrayList<>();
+    private final List<GroupRO> groups = new ArrayList<>();
+    private final List<String> resourceDefinitions = new ArrayList<>();
 
     public String getDomainId() {
         return domainId;

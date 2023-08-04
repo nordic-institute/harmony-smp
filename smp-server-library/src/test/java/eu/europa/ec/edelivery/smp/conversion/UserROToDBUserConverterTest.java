@@ -9,8 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.ConversionService;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * @author Sebastian-Ion TINCU
  */

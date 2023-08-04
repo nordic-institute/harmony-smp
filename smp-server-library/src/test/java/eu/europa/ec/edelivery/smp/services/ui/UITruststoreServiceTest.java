@@ -58,7 +58,7 @@ public class UITruststoreServiceTest {
 
     @Test
     public void validateCertificateNotUsedOk() throws CertificateException {
-        String certId = "cn=test" + UUID.randomUUID().toString() + ",o=test,c=eu:123456";
+        String certId = "cn=test" + UUID.randomUUID() + ",o=test,c=eu:123456";
         CertificateRO certificateRO = new CertificateRO();
         certificateRO.setCertificateId(certId);
         doReturn(Optional.empty()).when(userDao).findUserByCertificateId(ArgumentMatchers.anyString());
@@ -73,7 +73,7 @@ public class UITruststoreServiceTest {
 
     @Test
     public void validateCertificateNotUsedIsUsed() {
-        String certId = "cn=test" + UUID.randomUUID().toString() + ",o=test,c=eu:123456";
+        String certId = "cn=test" + UUID.randomUUID() + ",o=test,c=eu:123456";
         CertificateRO certificateRO = new CertificateRO();
         certificateRO.setCertificateId(certId);
         doReturn(Optional.of(new DBUser())).when(userDao).findUserByCertificateId(ArgumentMatchers.anyString());
@@ -405,7 +405,7 @@ public class UITruststoreServiceTest {
     /**
      * This method is not a tests is it done for generating the  tests Soapui certificates
      *
-     * @throws Exception
+     * @throws Exception  if an error occurs
      */
     @Test
     @Disabled

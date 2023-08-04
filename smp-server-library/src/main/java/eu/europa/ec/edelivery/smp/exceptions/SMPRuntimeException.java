@@ -4,7 +4,7 @@ package eu.europa.ec.edelivery.smp.exceptions;
  *
  */
 public class SMPRuntimeException  extends RuntimeException  {
-    private ErrorCode errorCode;
+    private final ErrorCode errorCode;
 
     public SMPRuntimeException(ErrorCode errorCode, Object ... args) {
         super(errorCode.getMessage(args));

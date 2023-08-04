@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hamcrest.Matchers;
 import org.hamcrest.core.IsNot;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,9 +13,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.doReturn;
 
 @RunWith(Parameterized.class)

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_RESOURCE;
 
 /**
  * Database optimization: load service metadata xml only when needed and

@@ -6,11 +6,9 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Purpose of class is to test database data. Class is created as a bean so that
@@ -39,15 +37,15 @@ public class DBAssertion {
     @Transactional
     public void assertServiceGroupExtensionEqual(String partId, String partSchema, byte[] expectedExt) {
         byte[] ext = getExtensionForServiceGroup(partId, partSchema);
-        assertTrue(Arrays.equals(expectedExt, ext));
+        assertArrayEquals(expectedExt, ext);
     }
 
     @Transactional
     public byte[] getExtensionForServiceGroup(String partId, String partSchema) {
         DBResource sg = serviceGroupDao.findServiceGroup(partId, partSchema).get();
-        DBDocumentVersion currentVersion =  sg.getDocument()!=null && !sg.getDocument().getDocumentVersions().isEmpty()?
-        sg.getDocument().getDocumentVersions().stream().filter(res -> res.getVersion() == sg.getDocument().getCurrentVersion()).findFirst().orElse(null)  :null;
-        return currentVersion!=null? currentVersion.getContent():null;
+        DBDocumentVersion currentVersion = sg.getDocument() != null && !sg.getDocument().getDocumentVersions().isEmpty() ?
+                sg.getDocument().getDocumentVersions().stream().filter(res -> res.getVersion() == sg.getDocument().getCurrentVersion()).findFirst().orElse(null) : null;
+        return currentVersion != null ? currentVersion.getContent() : null;
     }
 
     @Transactional

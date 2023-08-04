@@ -32,6 +32,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.testutil.SMPAssert.assertEqualDates;
 import static org.junit.jupiter.api.Assertions.*;
@@ -151,6 +152,23 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
+    public void testValidateDeleteRequest() {
+        // given
+        insertDataObjects(15);
+        ServiceResult<UserRO> urTest = testInstance.getTableList(-1, -1, null, null, null);
+        assertEquals(15, urTest.getServiceEntities().size());
+        List<String> listUserIds = urTest.getServiceEntities().stream().map(UserRO::getUserId).collect(Collectors.toList());
+        DeleteEntityValidation deleteEntityValidation = new DeleteEntityValidation();
+        deleteEntityValidation.getListIds().addAll(listUserIds);
+        // when
+        DeleteEntityValidation result =  testInstance.validateDeleteRequest(deleteEntityValidation);
+        // then
+        assertNotNull(result);
+        assertEquals(listUserIds.size(), result.getListIds().size());
+        assertEquals(0, result.getListDeleteNotPermitedIds().size());
+    }
+
+    @Test
     public void testUpdateUserPasswordNotMatchReqExpression() {
         long authorizedUserId = 1L;
         long userToUpdateId = 1L;
@@ -215,6 +233,27 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
+    public void testUpdateUserPasswordByAdminUserNotExists() {
+        // system admin
+        DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
+        user.setApplicationRole(ApplicationRoleType.SYSTEM_ADMIN);
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
+        credential.setValue(BCrypt.hashpw("userPassword", BCrypt.gensalt()));
+        userDao.persistFlushDetach(user);
+        credentialDao.persistFlushDetach(credential);
+
+        long authorizedUserId = user.getId();
+        long userToUpdateId =-1000L;
+        String authorizedPassword = "userPassword";
+        String newPassword = "TTTTtttt1111$$$$$";
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId,userToUpdateId, authorizedPassword, newPassword));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id to update"));
+    }
+
+    @Test
     public void testAdminUpdateUserdataOK() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
@@ -260,6 +299,18 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
+    public void testCreateAccessTokenForUserUserNotExists() {
+        CredentialRO credentialRO = new CredentialRO();
+        credentialRO.setCredentialType(CredentialType.ACCESS_TOKEN);
+        credentialRO.setDescription("test description");
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.createAccessTokenForUser(-100L, credentialRO));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
+    }
+
+    @Test
     public void testStoreCertificateCredentialForUser() throws Exception {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
@@ -278,6 +329,21 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         assertEqualDates(certificateRO.getValidTo(), result.getExpireOn());
         assertEqualDates(certificateRO.getValidFrom(), result.getActiveFrom());
         assertEquals(credentialRO.getDescription(), result.getDescription());
+    }
+
+    @Test
+    public void testStoreCertificateCredentialForUserUserNotExists() throws Exception {
+        CertificateRO certificateRO = TestROUtils.createCertificateRO("CN=Test,OU=Test,O=Test,L=Test,ST=Test,C=EU", BigInteger.TEN);
+
+        CredentialRO credentialRO = new CredentialRO();
+        credentialRO.setCredentialType(CredentialType.CERTIFICATE);
+        credentialRO.setDescription("test description");
+        credentialRO.setCertificate(certificateRO);
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.storeCertificateCredentialForUser(-100L, credentialRO));
+
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [UserId]. Error: Can not find user id!"));
     }
 
     @Test
@@ -339,7 +405,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         credentialRO.setCertificate(certificateRO);
         credentialRO = testInstance.storeCertificateCredentialForUser(user.getId(), credentialRO);
         // the credential id for the test is not encrypted and we can use "Long parsing".
-        CredentialRO result = testInstance.getUserCertificateCredential(user.getId(), new Long(credentialRO.getCredentialId()));
+        CredentialRO result = testInstance.getUserCertificateCredential(user.getId(), Long.valueOf(credentialRO.getCredentialId()));
 
         assertNotNull(result);
         assertEquals(credentialRO.getCredentialId(), result.getCredentialId());
@@ -361,7 +427,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         assertEquals(1, result.size());
         assertEquals(credentialRO.getDescription(), result.get(0).getDescription());
         // the credential id for the test is not encrypted and we can use "Long parsing".
-        testInstance.deleteUserCredentials(user.getId(), new Long(result.get(0).getCredentialId()), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
+        testInstance.deleteUserCredentials(user.getId(), Long.valueOf(result.get(0).getCredentialId()), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
 
         result = testInstance.getUserCredentials(user.getId(), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         assertNotNull(result);
@@ -386,7 +452,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
         credentialRO2.setCredentialType(CredentialType.ACCESS_TOKEN);
         credentialRO2.setDescription("test description 2");
         // the credential id for the test is not encrypted and we can use "Long parsing".
-        testInstance.updateUserCredentials(user.getId(), new Long(result.get(0).getCredentialId()), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API, credentialRO2);
+        testInstance.updateUserCredentials(user.getId(), Long.valueOf(result.get(0).getCredentialId()), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API, credentialRO2);
 
         result = testInstance.getUserCredentials(user.getId(), CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         assertNotNull(result);

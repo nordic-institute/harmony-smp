@@ -35,8 +35,8 @@ public class MailService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(MailService.class);
 
-    private Configuration freemarkerConfig;
-    private JavaMailSenderImpl javaMailSender;
+    private final Configuration freemarkerConfig;
+    private final JavaMailSenderImpl javaMailSender;
 
     public MailService(Configuration freemarkerConfig, JavaMailSenderImpl javaMailSender) {
         this.freemarkerConfig = freemarkerConfig;

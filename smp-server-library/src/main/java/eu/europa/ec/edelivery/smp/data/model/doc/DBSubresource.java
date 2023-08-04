@@ -14,7 +14,8 @@
 package eu.europa.ec.edelivery.smp.data.model.doc;
 
 import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
-import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
+import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBSubresourceDef;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;

@@ -1,11 +1,14 @@
 package eu.europa.ec.edelivery.smp.ui.internal;
 
-import eu.europa.ec.edelivery.smp.data.ui.*;
+import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
+import eu.europa.ec.edelivery.smp.data.ui.PasswordChangeRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -152,7 +155,6 @@ public class UserAdminControllerIT extends AbstractControllerTest {
                 .filter(userMap ->
                         StringUtils.equals(SG_USER2_USERNAME, (String) ((Map) userMap).get("username"))).findFirst().get();
         String newPassword = "TESTtest1234!@#$";
-
 
         PasswordChangeRO newPass = new PasswordChangeRO();
         newPass.setUsername(SG_USER2_USERNAME);

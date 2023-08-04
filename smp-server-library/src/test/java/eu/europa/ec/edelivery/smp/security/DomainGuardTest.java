@@ -2,7 +2,9 @@ package eu.europa.ec.edelivery.smp.security;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
+import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
@@ -23,7 +25,7 @@ class DomainGuardTest extends AbstractJunit5BaseDao {
     DomainGuard testInstance;
 
     ResourceRequest resourceRequest = Mockito.mock(ResourceRequest.class);
-    SMPUserDetails user = Mockito.mock(SMPUserDetails.class);
+    SMPUserDetails userDetails = Mockito.mock(SMPUserDetails.class);
 
     @BeforeEach
     public void prepareDatabase() {
@@ -37,7 +39,7 @@ class DomainGuardTest extends AbstractJunit5BaseDao {
     void testResolveAndAuthorizeForDomainInvalidRequestMissingAction() {
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
-                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, user));
+                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails));
 
         assertThat(result.getMessage(), containsString("Invalid request"));
     }
@@ -46,44 +48,44 @@ class DomainGuardTest extends AbstractJunit5BaseDao {
     void testResolveAndAuthorizeForDomainDeleteInvalidRequestNotUser() {
         when(resourceRequest.getAction()).thenReturn(ResourceAction.DELETE);
         AuthenticationServiceException result = assertThrows(AuthenticationServiceException.class,
-                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, user));
+                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails));
 
         assertThat(result.getMessage(), containsString("User is not authorized for the domain!"));
     }
 
     @Test
     void testResolveAndAuthorizeForDomainDeleteInvalidRequestUserNotAuthorized() {
-        when(user.getUser()).thenReturn(testUtilsDao.getUser3());
+        when(userDetails.getUser()).thenReturn(testUtilsDao.getUser3());
         when(resourceRequest.getAction()).thenReturn(ResourceAction.DELETE);
         AuthenticationServiceException result = assertThrows(AuthenticationServiceException.class,
-                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, user));
+                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails));
 
         assertThat(result.getMessage(), containsString("User is not authorized for the domain!"));
     }
 
     @Test
     void testResolveAndAuthorizeForDomainCreateInvalidRequestUserNotAuthorized() {
-        when(user.getUser()).thenReturn(testUtilsDao.getUser3());
+        when(userDetails.getUser()).thenReturn(testUtilsDao.getUser3());
         when(resourceRequest.getAction()).thenReturn(ResourceAction.CREATE_UPDATE);
         AuthenticationServiceException result = assertThrows(AuthenticationServiceException.class,
-                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, user));
+                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails));
 
         assertThat(result.getMessage(), containsString("User is not authorized for the domain!"));
     }
 
     @Test
     void testResolveAndAuthorizeForDomainDeleteUserAuthorized() {
-        when(user.getUser()).thenReturn(testUtilsDao.getUser1());
+        when(userDetails.getUser()).thenReturn(testUtilsDao.getUser1());
         when(resourceRequest.getAction()).thenReturn(ResourceAction.DELETE);
-        DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, user);
+        DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails);
         assertNotNull(domain);
     }
 
     @Test
     void testResolveAndAuthorizeForDomainDeleteCreateAuthorized() {
-        when(user.getUser()).thenReturn(testUtilsDao.getUser1());
+        when(userDetails.getUser()).thenReturn(testUtilsDao.getUser1());
         when(resourceRequest.getAction()).thenReturn(ResourceAction.CREATE_UPDATE);
-        DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, user);
+        DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails);
         assertNotNull(domain);
     }
 
@@ -91,7 +93,7 @@ class DomainGuardTest extends AbstractJunit5BaseDao {
     void testResolveAndAuthorizeForDomainCreateInvalidRequestNotUser() {
         when(resourceRequest.getAction()).thenReturn(ResourceAction.CREATE_UPDATE);
         AuthenticationServiceException result = assertThrows(AuthenticationServiceException.class,
-                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, user));
+                () -> testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails));
 
         assertThat(result.getMessage(), containsString("User is not authorized for the domain!"));
     }
@@ -99,16 +101,37 @@ class DomainGuardTest extends AbstractJunit5BaseDao {
     @Test
     void testResolveAndAuthorizeForDomainNoUserOK() {
         when(resourceRequest.getAction()).thenReturn(ResourceAction.READ);
-        DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, user);
+        DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails);
         assertNotNull(domain);
     }
 
     @Test
     void testResolveAndAuthorizeForDomain() {
-        when(user.getUser()).thenReturn(testUtilsDao.getUser1());
+        when(userDetails.getUser()).thenReturn(testUtilsDao.getUser1());
         when(resourceRequest.getAction()).thenReturn(ResourceAction.READ);
-        DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, user);
+        DBDomain domain = testInstance.resolveAndAuthorizeForDomain(resourceRequest, userDetails);
         assertNotNull(domain);
     }
 
+    @Test
+    void testCanReadPrivateDomainAnonimous() {
+        DBDomain domain = Mockito.mock(DBDomain.class);
+        when(domain.getVisibility()).thenReturn(VisibilityType.PRIVATE);
+        when(userDetails.getUser()).thenReturn(null);
+        boolean result = testInstance.canRead(userDetails, domain);
+        assertFalse(result);
+    }
+
+    @Test
+    void testCanReadPrivateDomainUnAuthorized() {
+        DBDomain domain = Mockito.mock(DBDomain.class);
+        DBUser user = Mockito.mock(DBUser.class);
+        when(domain.getVisibility()).thenReturn(VisibilityType.PRIVATE);
+        when(userDetails.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(-100L);
+        when(domain.getId()).thenReturn(-100L);
+        // then user is not authorized to read the domain
+        boolean result = testInstance.canRead(userDetails, domain);
+        assertFalse(result);
+    }
 }

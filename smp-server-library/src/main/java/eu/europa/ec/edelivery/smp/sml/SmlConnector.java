@@ -120,7 +120,7 @@ public class SmlConnector implements ApplicationContextAware {
         } catch (NotFoundFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (Exception e) {
-            LOG.error(e.getClass().getName() + "" + e.getMessage(), e);
+            LOG.error(e.getClass().getName() + e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
     }
@@ -193,7 +193,7 @@ public class SmlConnector implements ApplicationContextAware {
         } catch (BadRequestFault e) {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
-            LOG.error(e.getClass().getName() + "" + e.getMessage(), e);
+            LOG.error(e.getClass().getName() + e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
         // if not error is thrown - the registration is done OK.
@@ -256,7 +256,7 @@ public class SmlConnector implements ApplicationContextAware {
         } catch (NotFoundFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (Exception e) {
-            LOG.error(e.getClass().getName() + "" + e.getMessage(), e);
+            LOG.error(e.getClass().getName() + e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
     }
@@ -273,7 +273,7 @@ public class SmlConnector implements ApplicationContextAware {
         } catch (NotFoundFault e) {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
-            LOG.error(e.getClass().getName() + "" + e.getMessage(), e);
+            LOG.error(e.getClass().getName() + e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
     }

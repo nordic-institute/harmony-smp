@@ -112,7 +112,7 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
 
 
     public static ResourceRequest createResourceRequest(DBResource resource) {
-        return new ResourceRequest(ResourceAction.READ, null, Arrays.asList(resource.getIdentifierScheme() + "::" + resource.getIdentifierValue()), null);
+        return new ResourceRequest(ResourceAction.READ, null, Collections.singletonList(resource.getIdentifierScheme() + "::" + resource.getIdentifierValue()), null);
     }
 
     public static ResourceRequest createResourceRequest(DBSubresource subresource) {

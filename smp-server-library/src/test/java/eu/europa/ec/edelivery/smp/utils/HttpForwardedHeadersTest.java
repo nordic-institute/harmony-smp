@@ -4,12 +4,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
-import org.springframework.http.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Collection;
-import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.utils.HttpForwardedHeaders.ForwardedHeaderNameEnum.*;
 import static java.util.Arrays.asList;
@@ -56,7 +53,6 @@ public class HttpForwardedHeadersTest {
     @Test
     public void getReadForwardHeadersFromRequest() {
 
-
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.doReturn(hostName).when(request).getHeader(HOST.getHeaderName());
         Mockito.doReturn(scheme).when(request).getHeader(PROTO.getHeaderName());
@@ -70,7 +66,5 @@ public class HttpForwardedHeadersTest {
         assertEquals(resultDefaultPort, testInstance.getNonDefaultPort());
         assertEquals(resultScheme, testInstance.getProto());
         assertEquals(resultForCall, testInstance.getForClientHost());
-
     }
-
 }

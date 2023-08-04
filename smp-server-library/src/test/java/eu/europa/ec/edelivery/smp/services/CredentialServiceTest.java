@@ -3,42 +3,54 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
+import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
+import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static eu.europa.ec.edelivery.smp.services.ui.UITruststoreServiceIntegrationTest.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {CredentialService.class})
-public class CredentialServiceTest extends AbstractServiceIntegrationTest {
+public class CredentialServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired
     CredentialService testInstance;
+    @Autowired
+    ConfigurationService configurationService;
+    @Autowired
+    ConfigurationDao configurationDao;
 
-    @Before
+    ConfigurationService spyConfigurationService;
+
+    @BeforeEach
     public void beforeMethods() throws IOException {
         testUtilsDao.clearData();
         testUtilsDao.createUsers();
         resetKeystore();
         configurationDao.reloadPropertiesFromDatabase();
+
+        spyConfigurationService = Mockito.spy(configurationService);
+        ReflectionTestUtils.setField(testInstance, "configurationService", spyConfigurationService);
     }
 
     @Test
@@ -66,7 +78,6 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void authenticateByUsernamePasswordTestBadPassword() {
         // given
         String username = TestConstants.USERNAME_1;
@@ -264,4 +275,40 @@ public class CredentialServiceTest extends AbstractServiceIntegrationTest {
         // then
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.startsWith("Login failed"));
     }
+
+
+    @Test
+    public void testValidateCertificatePolicyLegacyMatchOk() {
+        String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
+        Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
+                .when(spyConfigurationService).getAllowedCertificatePolicies();
+        List<String> certPolicies = Collections.singletonList(CERTIFICATE_POLICY_QCP_NATURAL);
+        testInstance.validateCertificatePolicyMatchLegacy(certID, certPolicies);
+    }
+
+    @Test
+    public void testValidateCertificatePolicyLegacyMatchMatchEmpty() {
+        String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
+        Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
+                .when(spyConfigurationService).getAllowedCertificatePolicies();
+        List<String> certPolicies = Collections.emptyList();
+
+        AuthenticationServiceException result = assertThrows(AuthenticationServiceException.class,
+                () -> testInstance.validateCertificatePolicyMatchLegacy(certID, certPolicies));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate [" + certID + "] does not have CertificatePolicy extension."));
+    }
+
+    @Test
+    public void testValidateCertificatePolicyLegacyMatchMismatch() {
+        String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
+        Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
+                .when(spyConfigurationService).getAllowedCertificatePolicies();
+        List<String> certPolicies = Collections.singletonList(CERTIFICATE_POLICY_QCP_LEGAL_QSCD);
+
+        AuthenticationServiceException result = assertThrows(AuthenticationServiceException.class,
+                () -> testInstance.validateCertificatePolicyMatchLegacy(certID, certPolicies));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate policy verification failed."));
+    }
+
+
 }

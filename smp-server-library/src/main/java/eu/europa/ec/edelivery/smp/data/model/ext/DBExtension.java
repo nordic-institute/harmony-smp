@@ -12,7 +12,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_EXTENSION_ALL;
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_EXTENSION_BY_IDENTIFIER;
 
 /**
  * Database table containing registered extensions data/description

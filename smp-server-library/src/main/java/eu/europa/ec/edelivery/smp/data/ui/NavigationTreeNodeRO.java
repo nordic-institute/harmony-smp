@@ -17,7 +17,7 @@ public class NavigationTreeNodeRO extends BaseRO {
     private String icon;
     private String tooltip;
     private String routerLink;
-    private List<NavigationTreeNodeRO> children = new ArrayList<>();
+    private final List<NavigationTreeNodeRO> children = new ArrayList<>();
 
     public NavigationTreeNodeRO() {
     }

@@ -257,7 +257,7 @@ public class CRLVerifierService implements ICRLVerifierService {
             return false;
         }
 
-        for (String parameter : Arrays.asList(parameters)) {
+        for (String parameter : parameters) {
 
             if (StringUtils.isBlank(parameter)) {
                 return false;

@@ -14,14 +14,16 @@
 package eu.europa.ec.edelivery.smp.testutil;
 
 import javax.xml.crypto.*;
-import javax.xml.crypto.dsig.SignatureMethod;
 import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
-import java.security.Key;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Iterator;
 
+/**
+ * This test class is used to extract the public key from an X509 certificate.
+ * It is used in the test cases to verify the signature of the SML response.
+ */
 public class X509KeySelector extends KeySelector {
 
     private X509Certificate certificate;
@@ -50,30 +52,12 @@ public class X509KeySelector extends KeySelector {
                 final PublicKey key = this.certificate.getPublicKey();
                 // Make sure the algorithm is compatible
                 // with the method.
-                if (algEquals(method.getAlgorithm(), key.getAlgorithm())) {
-                    return new KeySelectorResult() {
-                        public Key getKey() {
-                            return key;
-                        }
-                    };
-                }
+                return () -> key;
             }
         }
         throw new KeySelectorException("No key found!");
     }
 
-    static boolean algEquals(String algorithmURI, String algorithmName) {
-        if ((algorithmName.equalsIgnoreCase("DSA") &&
-                algorithmURI.equalsIgnoreCase(SignatureMethod.DSA_SHA1))
-                || (algorithmName.equalsIgnoreCase("RSA") &&
-                algorithmURI.equalsIgnoreCase(SignatureMethod.RSA_SHA1))
-                || (algorithmName.equalsIgnoreCase("RSA")
-                && algorithmURI.equalsIgnoreCase("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"))) {
-
-            return true;
-        }
-        return false;
-    }
 
     public X509Certificate getCertificate() {
         return this.certificate;

@@ -21,7 +21,7 @@ public class ServiceGroupSearchRO extends BaseRO {
     private String resourceDefUrlSegment;
     private String participantIdentifier;
     private String participantScheme;
-    private List<ServiceMetadataRO> lstServiceMetadata = new ArrayList<>();
+    private final List<ServiceMetadataRO> lstServiceMetadata = new ArrayList<>();
 
 
     public Long getId() {

@@ -1,8 +1,8 @@
 package eu.europa.ec.edelivery.smp.auth.cas;
 
 
-import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +144,7 @@ public class SMPCasConfigurer {
         provider.setTicketValidator(serviceTicketValidator);
         provider.setAuthenticationUserDetailsService(smpCasUserService);
         //A Key is required so CasAuthenticationProvider can identify tokens it previously authenticated
-        provider.setKey(SMP_CAS_KEY + UUID.randomUUID().toString());
+        provider.setKey(SMP_CAS_KEY + UUID.randomUUID());
         return provider;
     }
 

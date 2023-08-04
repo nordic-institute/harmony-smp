@@ -26,7 +26,7 @@ public class CertificateRO extends BaseRO {
 
     private boolean isContainingKey;
 
-    private List<String> certificatePolicies = new ArrayList<>();
+    private final List<String> certificatePolicies = new ArrayList<>();
     private String invalidReason;
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;

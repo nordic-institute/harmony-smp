@@ -21,7 +21,7 @@ public class SmpConfigRO implements Serializable {
 
     private String passwordValidationRegExp;
     private String passwordValidationRegExpMessage;
-    private List<String> webServiceAuthTypes = new ArrayList<>();
+    private final List<String> webServiceAuthTypes = new ArrayList<>();
 
 
     public boolean isSmlIntegrationOn() {

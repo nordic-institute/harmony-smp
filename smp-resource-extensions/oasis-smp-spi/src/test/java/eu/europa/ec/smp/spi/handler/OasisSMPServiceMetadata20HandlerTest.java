@@ -2,11 +2,9 @@ package eu.europa.ec.smp.spi.handler;
 
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
-import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata20Validator;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.Assert.assertThrows;
 

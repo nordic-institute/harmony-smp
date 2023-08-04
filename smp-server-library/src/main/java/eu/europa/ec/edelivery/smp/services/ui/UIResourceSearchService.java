@@ -102,7 +102,6 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
             smdro.setDocumentIdentifier(subresource.getIdentifierValue());
             smdro.setDocumentIdentifierScheme(subresource.getIdentifierScheme());
             serviceGroupRo.getServiceMetadata().add(smdro);
-
         });
 
         return serviceGroupRo;

@@ -1,16 +1,15 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.SMPDatabaseConfig;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,9 +32,13 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum.*;
 public abstract class AbstractJunit5BaseDao {
 
     @Autowired
+    protected ConfigurationDao configurationDao;
+
+    @Autowired
     protected TestUtilsDao testUtilsDao;
+
     public static final String BUILD_FOLDER = "target";
-    public static final Path SECURITY_PATH= Paths.get(BUILD_FOLDER, "smp");
+    public static final Path SECURITY_PATH = Paths.get(BUILD_FOLDER, "smp");
     public static final String DATABASE_URL = "jdbc:h2:file:./target/DomiSmpTestDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE;";
     public static final String DATABASE_USERNAME = "smp";
     public static final String DATABASE_PASS = "smp";
@@ -61,6 +64,12 @@ public abstract class AbstractJunit5BaseDao {
     protected void resetKeystore() throws IOException {
         FileUtils.deleteDirectory(SECURITY_PATH.toFile());
         FileUtils.copyDirectory(resourceDirectory.toFile(), SECURITY_PATH.toFile());
+    }
+
+
+    public void setDatabaseProperty(SMPPropertyEnum prop, String value) {
+        configurationDao.setPropertyToDatabase(prop, value, "Test property");
+        configurationDao.reloadPropertiesFromDatabase();
     }
 
 }

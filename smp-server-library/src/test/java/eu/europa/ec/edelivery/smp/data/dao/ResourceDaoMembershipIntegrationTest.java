@@ -6,8 +6,8 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import org.junit.Test;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 import static org.junit.Assert.*;

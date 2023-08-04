@@ -18,7 +18,7 @@ public class ExtensionRO extends BaseRO {
     private String name;
     private String description;
     private String implementationName;
-    private List<ResourceDefinitionRO> resourceDefinitions = new ArrayList<>();
+    private final List<ResourceDefinitionRO> resourceDefinitions = new ArrayList<>();
 
     public String getExtensionId() {
         return extensionId;

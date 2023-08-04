@@ -7,10 +7,6 @@ import eu.europa.ec.edelivery.smp.data.ui.DocumentRo;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
-import eu.europa.ec.edelivery.smp.services.resource.ResourceResolverService;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import eu.europa.ec.smp.spi.api.SmpDataServiceApi;
-import eu.europa.ec.smp.spi.api.SmpIdentifierServiceApi;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
 import eu.europa.ec.smp.spi.def.OasisSMPServiceMetadata10;
 import eu.europa.ec.smp.spi.handler.OasisSMPServiceGroup10Handler;
@@ -23,7 +19,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 @ContextConfiguration(classes = {UIDocumentService.class, ConversionTestConfig.class, ResourceHandlerService.class,
         OasisSMPServiceGroup10.class, OasisSMPServiceGroup10Handler.class, OasisSMPServiceMetadata10.class, OasisSMPServiceMetadata10Handler.class, ServiceMetadata10Validator.class,})

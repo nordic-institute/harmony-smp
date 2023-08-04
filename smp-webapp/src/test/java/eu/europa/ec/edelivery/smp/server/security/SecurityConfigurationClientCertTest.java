@@ -61,8 +61,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SecurityConfigurationClientCertTest {
 
     //Jul++9+23:59:00+2019+GMT"
-    private static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM  dd HH:mm:ss yyyy 'GMT'");
-    private static String CLIENT_CERT_FORMAT = "sno=%s" +
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM  dd HH:mm:ss yyyy 'GMT'");
+    private static final String CLIENT_CERT_FORMAT = "sno=%s" +
             "&subject=%s" +
             "&validfrom=%s" +
             "&validto=%s" +

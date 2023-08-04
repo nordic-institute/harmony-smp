@@ -49,12 +49,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIUserService.class);
 
-    private UserDao userDao;
+    private final UserDao userDao;
     CredentialDao credentialDao;
-    private ConfigurationService configurationService;
-    private ConversionService conversionService;
+    private final ConfigurationService configurationService;
+    private final ConversionService conversionService;
 
-    private UITruststoreService truststoreService;
+    private final UITruststoreService truststoreService;
 
     public UIUserService(UserDao userDao,
                          CredentialDao credentialDao,

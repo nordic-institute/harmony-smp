@@ -28,5 +28,5 @@ public enum ErrorBusinessCode {
     NOT_FOUND,
     USER_NOT_FOUND,
     INVALID_INPUT_DATA,
-    TECHNICAL;
+    TECHNICAL
 }
