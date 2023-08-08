@@ -11,6 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PropertiesPage extends DomiSMPPage {
+
+    /**
+     * Page object for the Properties page. This contains the locators of the page and the methods for the behaviour of the page
+     */
     private final static Logger LOG = LoggerFactory.getLogger(PropertiesPage.class);
 
     @FindBy(id = "searchTable")

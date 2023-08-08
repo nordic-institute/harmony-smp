@@ -1,20 +1,15 @@
 package utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.asynchttpclient.AsyncHttpClient;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.manager.SeleniumManager;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DriverManager {
     static TestRunData data = new TestRunData();
@@ -32,10 +27,7 @@ public class DriverManager {
         driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
-        Logger.getLogger(RemoteWebDriver.class.getName()).setLevel(Level.FINEST);
-        Logger.getLogger(SeleniumManager.class.getName()).setLevel(Level.FINEST);
-        Logger.getLogger(AsyncHttpClient.class.getName()).setLevel(Level.OFF);
-        Logger.getGlobal().setLevel(Level.FINEST);
+
         return driver;
     }
 

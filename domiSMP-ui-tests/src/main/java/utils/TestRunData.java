@@ -51,7 +51,7 @@ public class TestRunData {
         HashMap<String, String> toReturn = new HashMap<>();
 
         toReturn.put("username", prop.getProperty(role + ".username"));
-        toReturn.put("pass", prop.getProperty(role + ".password"));
+        toReturn.put("password", prop.getProperty(role + ".password"));
 
         return toReturn;
     }

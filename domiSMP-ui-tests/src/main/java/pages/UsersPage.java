@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import rest.models.UserModel;
 
 public class UsersPage extends PageWithGrid {
+    /**
+     * Page object for the Users page. This contains the locators of the page and the methods for the behaviour of the page
+     */
     private final static Logger LOG = LoggerFactory.getLogger(UsersPage.class);
 
     public UserDataCommonComponent userData;
@@ -25,13 +28,15 @@ public class UsersPage extends PageWithGrid {
     public UsersPage(WebDriver driver) {
         super(driver);
         userData = new UserDataCommonComponent(driver);
+        LOG.debug("Loading Users page.");
     }
 
     public DButton getCreateUserBtn() {
         return new DButton(driver, AddBtn);
     }
 
-    public void fillNewUserData(UserModel newUserData) {
+    public void fillNewUserDataAndSave(UserModel newUserData) {
+        LOG.debug("Filling user data...");
         try {
             weToDInput(usernameInput).fill(newUserData.getUsername());
         } catch (Exception e) {
@@ -40,6 +45,32 @@ public class UsersPage extends PageWithGrid {
         weToDSelect(applicationRoleDdl).selectValue(newUserData.getRole());
 
         userData.fillUserProfileData(newUserData.getEmailAddress(), newUserData.getFullName(), newUserData.getSmpTheme(), newUserData.getSmpLocale());
+        LOG.debug("User {} was created", newUserData.getUsername());
+    }
+
+    public String getUsername() {
+        return usernameInput.getText();
+    }
+
+    public String getApplicationRole() {
+        return weToDSelect(applicationRoleDdl).getCurrentValue();
+    }
+
+    public String getFullName() {
+        return userData.getFullName();
+    }
+
+    public Boolean isSelectedUserActive() {
+        try {
+            if (weToDInput(isActive).getAttribute("class").contains("checked")) {
+                return true;
+            }
+            ;
+            return false;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

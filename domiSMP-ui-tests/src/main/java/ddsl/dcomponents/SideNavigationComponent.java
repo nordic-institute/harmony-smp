@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pages.ProfilePage.ProfilePage;
@@ -99,11 +100,11 @@ public class SideNavigationComponent extends DomiSMPPage {
 
     public DomiSMPPage navigateTo(Pages page) {
 
-        wait.forElementToHaveText(sideBar);
+        wait.defaultWait.until(ExpectedConditions.visibilityOf(sideBar));
 
         LOG.debug("Get link to " + page.name());
         //            case SEARCH_RESOURCES:
-        //                expandSection(resourcesExpandLnk);
+        //                expandSection(resourcesExpandLnk);s
         //                return new DLink(driver, resourcesLnk);
         //            case ADMINISTRATION_EDIT_DOMAINS:
         //                expandSection(administrationExpand);

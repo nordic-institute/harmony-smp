@@ -8,6 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UserDataCommonComponent extends DomiSMPPage {
+
+    /**
+     * Common component for user data used in Profile and Users page. This contains the locators of the page and the methods for the behaviour of the page
+     */
     private final static Logger LOG = LoggerFactory.getLogger(UserDataCommonComponent.class);
     @FindBy(id = "changePassword_id")
     public WebElement setChangePasswordBtn;
@@ -67,12 +71,9 @@ public class UserDataCommonComponent extends DomiSMPPage {
             if (!emailValue.isEmpty()) {
                 weToDInput(fullNameInput).fill(fullNameValue);
             }
-            if (!(selectThemeValue == null)) {
-                weToDSelect(themeSel).selectValue(selectThemeValue);
-            }
-            if (!localeValue.isEmpty()) {
-                weToDSelect(localeSel).selectValue(localeValue);
-            }
+            weToDSelect(themeSel).selectValue(selectThemeValue);
+            weToDSelect(localeSel).selectValue(localeValue);
+
 
         } catch (Exception e) {
             LOG.error("Cannot change User Profile Data ", e);
@@ -81,7 +82,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
         if (saveBtn.isEnabled()) {
             saveBtn.click();
         } else {
-            LOG.debug("Save button enable is " + saveBtn.isEnabled());
+            LOG.debug("Save button is " + saveBtn.isEnabled());
         }
 
         try {

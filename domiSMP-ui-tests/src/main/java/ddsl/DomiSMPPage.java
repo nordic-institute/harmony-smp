@@ -11,6 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pages.LoginPage;
@@ -23,9 +24,6 @@ public class DomiSMPPage extends DComponent {
     private final static Logger LOG = LoggerFactory.getLogger(DomiSMPPage.class);
     @FindBy(css = "cdk-overlay-backdrop cdk-overlay-dark-backdrop cdk-overlay-backdrop-showing")
     protected WebElement overlay;
-
-    @FindBy(css = "page-header > h1")
-    protected WebElement pageTitle;
     @FindBy(id = "login_id")
     private WebElement loginBtnTop;
     @FindBy(id = "settingsmenu_id")
@@ -65,6 +63,7 @@ public class DomiSMPPage extends DComponent {
 
     public void refreshPage() {
         driver.navigate().refresh();
+        waitForPageToLoaded();
     }
 
     public AlertComponent getAlertArea() {
@@ -77,7 +76,6 @@ public class DomiSMPPage extends DComponent {
 
     public boolean isExpiredPopupEnabled() {
         try {
-            wait.forElementToBeClickable(dialogOKbutton);
             if (dialogOKbutton.isDisplayed()) {
                 return true;
             }
@@ -98,6 +96,10 @@ public class DomiSMPPage extends DComponent {
         } catch (Exception e) {
             LOG.error("Could not close Expiration popup", e);
         }
+    }
+
+    public void waitForPageToLoaded() {
+        wait.defaultWait.until(ExpectedConditions.visibilityOf(getBreadcrump().BreadcrumpItems.get(0)));
     }
 
 }

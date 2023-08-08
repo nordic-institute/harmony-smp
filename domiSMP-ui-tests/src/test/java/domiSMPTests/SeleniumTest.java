@@ -10,6 +10,7 @@ import utils.DriverManager;
 import utils.TestRunData;
 
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 public class SeleniumTest {
 
@@ -40,6 +41,9 @@ public class SeleniumTest {
     public void beforeClass() {
         LOG.info("--------Initialize test class-------");
         driver = DriverManager.getDriver();
+        java.util.logging.Logger.getLogger("io.netty.util.NetUtil").setLevel(Level.OFF);
+        java.util.logging.Logger.getLogger("org.asynchttpclient.netty.handler").setLevel(Level.OFF);
+
 
     }
 

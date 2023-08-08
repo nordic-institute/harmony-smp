@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PropertyPopup extends DComponent {
+    /**
+     * Property popup component used when modifying a property.
+     */
     private final static Logger LOG = LoggerFactory.getLogger(PropertiesPage.class);
     @FindBy(id = "updatePropertyButton")
     WebElement popupOkBtn;
