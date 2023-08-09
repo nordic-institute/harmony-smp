@@ -17,7 +17,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
     public WebElement setChangePasswordBtn;
     @FindBy(id = "smpTheme_id")
     private WebElement themeSel;
-    @FindBy(id = "moment-locale")
+    @FindBy(id = "smpLocale_id")
     private WebElement localeSel;
     @FindBy(id = "saveButton")
     private WebElement saveBtn;
@@ -63,7 +63,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
     }
 
 
-    public void fillUserProfileData(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
+    public String fillUserProfileData(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
         try {
             if (!emailValue.isEmpty()) {
                 weToDInput(emailAddressInput).fill(emailValue);
@@ -86,9 +86,9 @@ public class UserDataCommonComponent extends DomiSMPPage {
         }
 
         try {
-            getAlertArea().getAlertMessage();
+            return getAlertArea().getAlertMessage();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 

@@ -74,6 +74,10 @@ public class DomiSMPPage extends DComponent {
         return weToDButton(dialogOKbutton);
     }
 
+    public boolean isExpiredDialoginbuttonEnabled() {
+        return dialogOKbutton.isEnabled();
+    }
+
     public boolean isExpiredPopupEnabled() {
         try {
             if (dialogOKbutton.isDisplayed()) {

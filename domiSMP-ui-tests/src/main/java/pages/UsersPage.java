@@ -35,7 +35,7 @@ public class UsersPage extends PageWithGrid {
         return new DButton(driver, AddBtn);
     }
 
-    public void fillNewUserDataAndSave(UserModel newUserData) {
+    public String fillNewUserDataAndSave(UserModel newUserData) {
         LOG.debug("Filling user data...");
         try {
             weToDInput(usernameInput).fill(newUserData.getUsername());
@@ -44,33 +44,40 @@ public class UsersPage extends PageWithGrid {
         }
         weToDSelect(applicationRoleDdl).selectValue(newUserData.getRole());
 
-        userData.fillUserProfileData(newUserData.getEmailAddress(), newUserData.getFullName(), newUserData.getSmpTheme(), newUserData.getSmpLocale());
+        String alertMessage = userData.fillUserProfileData(newUserData.getEmailAddress(), newUserData.getFullName(), newUserData.getSmpTheme(), newUserData.getSmpLocale());
         LOG.debug("User {} was created", newUserData.getUsername());
+        return alertMessage;
     }
 
-    public String getUsername() {
-        return usernameInput.getText();
-    }
-
-    public String getApplicationRole() {
+    public String getApplicationRoleValue() {
         return weToDSelect(applicationRoleDdl).getCurrentValue();
     }
 
-    public String getFullName() {
+    public String getFullNameValue() {
         return userData.getFullName();
     }
 
     public Boolean isSelectedUserActive() {
         try {
-            if (weToDInput(isActive).getAttribute("class").contains("checked")) {
-                return true;
-            }
-            ;
-            return false;
+            return weToDInput(isActive).getAttribute("class").contains("checked");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getEmailValue() {
+        return userData.getEmailAddress();
+    }
+
+    public String getSelectedThemeValue() {
+        return userData.getSelectedTheme();
+
+    }
+
+    public String getSelectedLocaleValue() {
+        return userData.getSelectedLocale();
+
     }
 
 

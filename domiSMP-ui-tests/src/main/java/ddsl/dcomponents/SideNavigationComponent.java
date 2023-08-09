@@ -12,6 +12,7 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.DomainsPage;
 import pages.ProfilePage.ProfilePage;
 import pages.PropertiesPage.PropertiesPage;
 import pages.UsersPage;
@@ -98,6 +99,18 @@ public class SideNavigationComponent extends DomiSMPPage {
         return null;
     }
 
+    public <T> T navigateTo2(Pages page) {
+
+        wait.defaultWait.until(ExpectedConditions.visibilityOf(sideBar));
+        if (page == Pages.SYSTEM_SETTINGS_DOMAINS) {
+            openSubmenu(systemSettingsExpand, domainsLnk);
+            return (T) new DomainsPage(driver);
+        }
+        return null;
+
+
+    }
+
     public DomiSMPPage navigateTo(Pages page) {
 
         wait.defaultWait.until(ExpectedConditions.visibilityOf(sideBar));
@@ -120,10 +133,11 @@ public class SideNavigationComponent extends DomiSMPPage {
             openSubmenu(systemSettingsExpand, usersLnk);
             return new UsersPage(driver);
         }
-        //                return new DLink(driver, usersLnk);
-        //            case SYSTEM_SETTINGS_DOMAINS:
-        //                expandSection(systemSettingsExpand);
-        //                return new DLink(driver, domainsLnk);
+        if (page == Pages.SYSTEM_SETTINGS_DOMAINS) {
+            openSubmenu(systemSettingsExpand, domainsLnk);
+            return new DomainsPage(driver);
+        }
+
         //            case SYSTEM_SETTINGS_KEYSTORE:
         //                expandSection(systemSettingsExpand);
         //                return new DLink(driver, keystoreLnk);

@@ -27,7 +27,6 @@ public class BaseRestClient {
     protected String token;
     protected String username;
     protected String password;
-    protected String newPassword;
 
     public BaseRestClient(String username, String password) {
         this.username = username;
@@ -37,7 +36,7 @@ public class BaseRestClient {
 
     public BaseRestClient() {
         this.username = data.getAdminUser().get("username");
-        this.password = data.getAdminUser().get("pass");
+        this.password = data.getAdminUser().get("password");
     }
 
     //	---------------------------------------Default request methods -------------------------------------------------
@@ -71,12 +70,6 @@ public class BaseRestClient {
 
         return builder.type(type).put(ClientResponse.class, body.toString());
     }
-
-
-    protected ClientResponse jsonPUT(WebResource resource, String params) {
-        return requestPUT(resource, params, MediaType.APPLICATION_JSON);
-    }
-
     protected ClientResponse jsonPUT(WebResource resource, JSONObject body) {
         return requestPUT(resource, body, MediaType.APPLICATION_JSON);
     }

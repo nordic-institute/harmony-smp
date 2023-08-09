@@ -16,10 +16,8 @@ public class DSelect extends DObject {
     public void selectValue(String value) {
         select.selectByVisibleText(value);
     }
-
     public String getCurrentValue() {
         return select.getAllSelectedOptions().get(0).getText();
     }
-
 
 }

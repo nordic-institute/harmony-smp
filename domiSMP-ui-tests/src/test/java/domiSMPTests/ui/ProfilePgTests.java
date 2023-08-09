@@ -148,7 +148,7 @@ public class ProfilePgTests extends SeleniumTest {
         Assert.assertEquals(profilePage.userData.setChangePasswordDialog().setNewPassword(data.getNewPassword(), newPass).size(), 0, "Could not change the password of the user");
 
         loginPage.login(adminUser.getUsername(), newPass);
-        ProfilePage profilePage2 = (ProfilePage) loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        profilePage = (ProfilePage) loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
 
         // Assert.assertNotSame(profilePage2.getLastSetValue(), oldLastSet, "Last set value is not reseted");
         //Assert.assertNotSame(profilePage2.getPasswordExpiresOnValue(), oldPasswordExpiresOn, "Password expires on value is not reseted");
