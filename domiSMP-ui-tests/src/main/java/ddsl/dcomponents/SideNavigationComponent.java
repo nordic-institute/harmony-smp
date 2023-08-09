@@ -12,7 +12,7 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.DomainsPage;
+import pages.DomainsPage.DomainsPage;
 import pages.ProfilePage.ProfilePage;
 import pages.PropertiesPage.PropertiesPage;
 import pages.UsersPage;

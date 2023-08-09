@@ -9,5 +9,10 @@ public class DomiSMPRestClient extends BaseRestClient {
     public UserClient users() {
         return new UserClient(username, password);
     }
+
+    public DomainClient domains() {
+        return new DomainClient();
+    }
+
 }
 

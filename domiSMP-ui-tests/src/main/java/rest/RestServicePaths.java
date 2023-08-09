@@ -18,5 +18,12 @@ public class RestServicePaths {
         return "/internal/rest/user/" + currentUserId + "/change-password-for/" + forUserId;
     }
 
+    //Domains paths
+
+    public static String getDomainPath(String currentUserId) {
+
+        return "/internal/rest/domain/" + currentUserId + "/create";
+    }
+
 
 }
