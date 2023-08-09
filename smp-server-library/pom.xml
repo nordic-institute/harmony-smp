@@ -40,6 +40,10 @@
             <artifactId>edelivery-springsecurity-2-way-ssl-auth</artifactId>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.dynamic-discovery</groupId>
+            <artifactId>dynamic-discovery-client</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -145,11 +149,9 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.14</version>
         </dependency>
         <dependency>
             <groupId>org.apache.santuario</groupId>

@@ -13,9 +13,9 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.identifiers.IdentifierFormatter;
-import eu.europa.ec.edelivery.smp.identifiers.types.EBCorePartyIdFormatterType;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;

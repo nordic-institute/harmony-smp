@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.identifiers.types;
 
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.TemplateFormatterType;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
@@ -75,9 +76,9 @@ public class TemplateFormatterTypeTest {
 
 
     @Test
-    public void isTypeByScheme() {
+    public void isSchemeValid() {
 
-        boolean result = testInstance.isTypeByScheme(schemaPart);
+        boolean result = testInstance.isSchemeValid(schemaPart);
         assertEquals(isValidPartyId, result);
     }
 
