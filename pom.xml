@@ -87,7 +87,7 @@
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.12</spring-boot.version>
         <spring-boot.tomcat.version>9.0.75</spring-boot.tomcat.version>
-        <spring.security.version>5.8.4</spring.security.version>
+        <spring.security.version>5.8.5</spring.security.version>
         <spring.version>5.3.29</spring.version>
         <xmlunit.version>2.9.0</xmlunit.version>
 
@@ -786,7 +786,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.2.1</version>
+                        <version>8.3.1</version>
                         <inherited>false</inherited>
                         <configuration>
                             <skipProvidedScope>true</skipProvidedScope>

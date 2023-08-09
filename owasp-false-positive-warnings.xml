@@ -30,27 +30,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: spring-aop-5.3.25.jar spring-expression-5.3.25.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(aop|expression)@.*$</packageUrl>
-        <cve>CVE-2023-20861</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: cxf-xjc-runtime-3.3.2.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf\.xjc\-utils/cxf\-xjc\-runtime@.*$</packageUrl>
-        <cve>CVE-2021-4277</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: cxf-rt-bindings-soap-3.5.5.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf\-rt\-bindings\-soap@.*$</packageUrl>
-        <cve>CVE-2022-40705</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
    file name: guava-30.1-jre.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
@@ -76,5 +55,11 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
         <vulnerabilityName>CVE-2023-33201</vulnerabilityName>
+      </suppress>
+    <suppress>
+      <notes><![CDATA[
+      file name: jackson-databind-2.15.2.jar
+      ]]></notes>
+      <cve>CVE-2023-35116</cve>
     </suppress>
 </suppressions>
