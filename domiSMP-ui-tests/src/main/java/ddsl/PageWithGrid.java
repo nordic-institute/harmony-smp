@@ -11,14 +11,9 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 public class PageWithGrid extends DomiSMPPage {
 
     @FindBy(css = "mat-form-field input")
-    public WebElement FilterInput;
+    public WebElement filterInput;
     @FindBy(css = "data-panel >div >div> mat-toolbar button:first-of-type")
-    public WebElement AddBtn;
-
-    @FindBy(css = "data-panel >div >div> mat-toolbar button:last-of-type")
-    public WebElement DeleteBtn;
-    @FindBy(css = "data-panel > div [class=\"smp-column-data\"]")
-    public WebElement SidePanel;
+    public WebElement addBtn;
 
     public PageWithGrid(WebDriver driver) {
         super(driver);
@@ -32,14 +27,4 @@ public class PageWithGrid extends DomiSMPPage {
     public SmallGrid getGrid() {
         return new SmallGrid(driver);
     }
-
-    public void filter(String filterValue) {
-        try {
-            weToDInput(FilterInput).fill(filterValue);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
 }

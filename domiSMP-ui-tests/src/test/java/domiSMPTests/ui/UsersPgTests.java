@@ -18,13 +18,13 @@ public class UsersPgTests extends SeleniumTest {
         LoginPage loginPage = homePage.goToLoginPage();
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
 
-        UsersPage usersPage = (UsersPage) homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
         usersPage.getCreateUserBtn().click();
         UserModel adminNewUserData = UserModel.generateUserWithADMINrole();
         usersPage.fillNewUserDataAndSave(adminNewUserData);
 
         usersPage.refreshPage();
-        usersPage.filter(adminNewUserData.getUsername());
+        // usersPage.filter(adminNewUserData.getUsername());
         WebElement newUser = usersPage.getGrid().searchValueInColumn("Username", adminNewUserData.getUsername());
         Assert.assertNotNull(newUser);
         newUser.click();
@@ -45,7 +45,7 @@ public class UsersPgTests extends SeleniumTest {
         LoginPage loginPage = homePage.goToLoginPage();
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
 
-        UsersPage usersPage = (UsersPage) homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
+        UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
         usersPage.getCreateUserBtn().click();
         UserModel adminNewUserData = UserModel.generateUserWithADMINrole();
         usersPage.fillNewUserDataAndSave(adminNewUserData);
@@ -54,12 +54,6 @@ public class UsersPgTests extends SeleniumTest {
         usersPage.getCreateUserBtn().click();
         String alertMessage = usersPage.fillNewUserDataAndSave(adminNewUserData);
         Assert.assertEquals(alertMessage, "Invalid request [CreateUser]. Error: User with username [" + adminNewUserData.getUsername() + "] already exists!!");
-
-
-
-
-
-
 
 
     }

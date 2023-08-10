@@ -7,7 +7,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rest.models.DomainModel;
 
 import java.util.List;
 
@@ -17,22 +16,11 @@ public class DomainsPage extends PageWithGrid {
      */
     private final static Logger LOG = LoggerFactory.getLogger(DomainsPage.class);
 
-    @FindBy(id = "domainCode_id")
-    private WebElement domainIdInput;
-    @FindBy(id = "signatureKeyAlias_id")
-    private WebElement responseSignatureCertificateDdl;
-
-    @FindBy(id = "domainVisibility_id")
-    private WebElement visibilityOfDomainDdl;
-
-    @FindBy(id = "saveButton")
-    private WebElement saveBtn;
-
-    @FindBy(css = "[role = \"tab\"] ")
+    @FindBy(css = "[role = \"tab\"]")
     private List<WebElement> tabList;
 
-    private ResourceTab resourceTab;
-
+    @FindBy(css = "smp-warning-panel span")
+    private WebElement warningLabel;
 
 
     public DomainsPage(WebDriver driver) {
@@ -41,7 +29,7 @@ public class DomainsPage extends PageWithGrid {
     }
 
     public DButton getCreateDomainBtn() {
-        return new DButton(driver, AddBtn);
+        return new DButton(driver, addBtn);
     }
 
     public ResourceTab getResourceTab() {
@@ -49,18 +37,15 @@ public class DomainsPage extends PageWithGrid {
         return new ResourceTab(driver);
     }
 
+    public DomainTab getDomainTab() {
 
-    public void fillDomainData(DomainModel domainModel) {
-
-        domainIdInput.sendKeys(domainModel.getDomainCode());
-        weToDSelect(responseSignatureCertificateDdl).selectValue(domainModel.getSignatureKeyAlias());
+        return new DomainTab(driver);
     }
 
-    public String saveChangesAndGetMessage() {
-        saveBtn.click();
-        return getAlertArea().getAlertMessage();
-    }
+    public SMLIntegrationTab getSMLIntegrationTab() {
 
+        return new SMLIntegrationTab(driver);
+    }
     public void goToTab(String tabName) {
         for (WebElement element : tabList) {
             if (element.getText().contains(tabName)) {
@@ -69,6 +54,14 @@ public class DomainsPage extends PageWithGrid {
                 LOG.debug("Domain tab {} is opened", tabName);
             }
         }
+    }
+
+    public String getAlert() {
+        return getAlertArea().getAlertMessage();
+    }
+
+    public String getDomainWarningMessage() {
+        return warningLabel.getText();
     }
 
 

@@ -58,7 +58,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
         return passwordExpiresOnLbl.getText();
     }
 
-    public SetChangePasswordDialog setChangePasswordDialog() {
+    public SetChangePasswordDialog getChangePasswordDialog() {
         return new SetChangePasswordDialog(driver);
     }
 
@@ -71,8 +71,8 @@ public class UserDataCommonComponent extends DomiSMPPage {
             if (!emailValue.isEmpty()) {
                 weToDInput(fullNameInput).fill(fullNameValue);
             }
-            weToDSelect(themeSel).selectValue(selectThemeValue);
-            weToDSelect(localeSel).selectValue(localeValue);
+            weToDSelect(themeSel).selectByVisibleText(selectThemeValue);
+            weToDSelect(localeSel).selectByVisibleText(localeValue);
 
 
         } catch (Exception e) {

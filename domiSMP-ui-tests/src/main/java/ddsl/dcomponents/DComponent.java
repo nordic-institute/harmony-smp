@@ -6,13 +6,13 @@ import ddsl.dobjects.DSelect;
 import ddsl.dobjects.DWait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.TestRunData;
 
 public class DComponent {
+    /**
+     * Generic component for webelement.
+     */
 
-    private final static Logger LOG = LoggerFactory.getLogger(DComponent.class);
     public DWait wait;
     protected WebDriver driver;
     protected TestRunData data = new TestRunData();

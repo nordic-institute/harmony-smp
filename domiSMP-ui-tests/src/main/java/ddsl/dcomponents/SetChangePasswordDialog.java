@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetChangePasswordDialog extends DComponent {
+
+    /**
+     * Page object for the Set/change password dialog. This contains the locators of the page and the methods for the behaviour of the page
+     */
     private final static Logger LOG = LoggerFactory.getLogger(SetChangePasswordDialog.class);
     @FindBy(css = ".smp-field-error")
     List<WebElement> fieldsError;

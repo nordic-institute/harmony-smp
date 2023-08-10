@@ -30,9 +30,6 @@ public class DomiSMPPage extends DComponent {
     private WebElement rightMenuBtn;
     @FindBy(id = "logout_id")
     private WebElement logoutMenuBtn;
-    @FindBy(className = "smp-expired-password-dialog")
-    private WebElement expiredPasswordDialog;
-
     @FindBy(css = "#okbuttondialog_id ")
     private WebElement dialogOKbutton;
 
@@ -75,33 +72,14 @@ public class DomiSMPPage extends DComponent {
     }
 
     public boolean isExpiredDialoginbuttonEnabled() {
-        return dialogOKbutton.isEnabled();
-    }
-
-    public boolean isExpiredPopupEnabled() {
         try {
-            if (dialogOKbutton.isDisplayed()) {
-                return true;
-            }
-            return false;
+            return dialogOKbutton.isEnabled();
+
         } catch (Exception e) {
             LOG.info("Expiration poup not found", e);
             return false;
         }
-
     }
-
-    public void closeExpirationPopupIfEnabled() {
-        try {
-            if (isExpiredPopupEnabled()) {
-                LOG.info("Expired password dialog is present.");
-                getSidebar().getExpiredDialoginbutton().click();
-            }
-        } catch (Exception e) {
-            LOG.error("Could not close Expiration popup", e);
-        }
-    }
-
     public void waitForPageToLoaded() {
         wait.defaultWait.until(ExpectedConditions.visibilityOf(getBreadcrump().BreadcrumpItems.get(0)));
     }

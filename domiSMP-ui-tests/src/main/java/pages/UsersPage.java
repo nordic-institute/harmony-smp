@@ -32,7 +32,7 @@ public class UsersPage extends PageWithGrid {
     }
 
     public DButton getCreateUserBtn() {
-        return new DButton(driver, AddBtn);
+        return new DButton(driver, addBtn);
     }
 
     public String fillNewUserDataAndSave(UserModel newUserData) {

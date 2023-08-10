@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class ResourceTab extends DComponent {
+    /**
+     * Page object for the Resource tab of Domains page. This contains the locators of the page and the methods for the behaviour of the page
+     */
     private final static Logger LOG = LoggerFactory.getLogger(ResourceTab.class);
 
     @FindBy(css = "mat-list-option")
@@ -31,8 +34,9 @@ public class ResourceTab extends DComponent {
             saveBtn.click();
             if (saveBtn.getAttribute("disabled").equals("truw")) {
                 LOG.debug("Resource tab changes were succesfully saved");
+            } else {
+                LOG.error("Resource tab changes were not saved");
             }
-            LOG.debug("Resource tab changes were not saved");
         }
     }
 

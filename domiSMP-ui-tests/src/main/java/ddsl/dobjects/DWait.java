@@ -12,6 +12,10 @@ import java.time.Duration;
 
 public class DWait {
 
+    /**
+     * Wait class which gives access to different types of waits.
+     */
+
     public final WebDriverWait defaultWait;
     public final WebDriverWait longWait;
     public final WebDriverWait shortWait;

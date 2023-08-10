@@ -14,18 +14,18 @@ import java.util.regex.Pattern;
 public class GridPagination extends DComponent {
     private final static Logger LOG = LoggerFactory.getLogger(GridPagination.class);
 
-    @FindBy(css = "#extension-paginator > div > div > div > div")
+    @FindBy(css = "div.mat-mdc-paginator-range-label")
     public WebElement currentElementsLbl;
 
-    @FindBy(css = "#extension-paginator > div > div > div  [aria-label = \"First page\"]")
+    @FindBy(css = "[aria-label=\"First page\"]")
     public WebElement firstPageBtn;
-    @FindBy(css = "#extension-paginator > div > div > div  [aria-label = \"Next page\"]")
+    @FindBy(css = "[aria-label= \"Next page\"]")
     public WebElement previousPageBtn;
 
-    @FindBy(css = "#extension-paginator > div > div > div  [aria-label = \"Next page\"]")
+    @FindBy(css = "[aria-label= \"Next page\"]")
     public WebElement nextPageBtn;
 
-    @FindBy(css = "#extension-paginator > div > div > div  [aria-label = \"Last page\"]")
+    @FindBy(css = "[aria-label= \"Last page\"]")
     public WebElement lastPageBtn;
 
 

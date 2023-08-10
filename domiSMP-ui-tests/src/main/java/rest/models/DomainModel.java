@@ -24,10 +24,21 @@ public class DomainModel {
         domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumeric(6);
         domainModel.signatureKeyAlias = ResponseCertificates.getRandomCertificate();
         domainModel.visibility = "PUBLIC";
-
-
         return domainModel;
     }
+
+    public static DomainModel generatePublicDomainModelWithSML() {
+        DomainModel domainModel = new DomainModel();
+        domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumeric(6);
+        domainModel.signatureKeyAlias = ResponseCertificates.getRandomCertificateWithSML();
+        domainModel.visibility = "PUBLIC";
+        domainModel.smlClientCertAuth = true;
+        domainModel.smlSubdomain = "AUTDomSML" + Generator.randomAlphaNumeric(6);
+        domainModel.smlSmpId = "AUTSMLSMP" + Generator.randomAlphaNumeric(4);
+        domainModel.smlClientKeyAlias = ResponseCertificates.getRandomCertificateWithSML();
+        return domainModel;
+    }
+
 
     public String getSmlSmpId() {
         return smlSmpId;
@@ -42,7 +53,7 @@ public class DomainModel {
     }
 
     public String getVisibility() {
-        return visibility;
+        return visibility.toUpperCase();
     }
 
     public String getSmlClientKeyAlias() {
