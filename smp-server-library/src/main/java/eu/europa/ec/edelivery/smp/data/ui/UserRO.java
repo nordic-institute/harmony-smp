@@ -1,10 +1,9 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import eu.europa.ec.edelivery.smp.data.dao.utils.ColumnDescription;
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
-import javax.persistence.Column;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 
@@ -15,32 +14,31 @@ import java.util.Collection;
  */
 public class UserRO extends BaseRO {
 
-    static final long serialVersionUID = 2821447495333163882L;
+    private static final long serialVersionUID = 9008583888835630023L;
 
-    String username;
-    String password;
-    OffsetDateTime passwordExpireOn;
-    Integer sequentialLoginFailureCount;
-    OffsetDateTime lastFailedLoginAttempt;
-    OffsetDateTime suspendedUtil;
-    String accessTokenId;
-    OffsetDateTime accessTokenExpireOn;
-    Integer sequentialTokenLoginFailureCount;
-    OffsetDateTime lastTokenFailedLoginAttempt;
-    OffsetDateTime tokenSuspendedUtil;
-    String emailAddress;
-    Collection<SMPAuthority> authorities;
-    boolean active = true;
-    String role;
-    String userId;
-    CertificateRO certificate;
-    int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
-    boolean passwordExpired = false;
-    boolean showPasswordExpirationWarning = false;
-    boolean forceChangeExpiredPassword = false;
-    boolean casAuthenticated = false;
+    private String userId;
+    private String username;
+    private boolean active = true;
+    private ApplicationRoleType role;
+    private String emailAddress;
+    private String fullName;
+    private String smpTheme;
+    private String smpLocale;
+    // operational UI data
+    private boolean casAuthenticated = false;
+    private String casUserDataUrl;
+    private OffsetDateTime passwordExpireOn;
+    private Integer sequentialLoginFailureCount;
+    private OffsetDateTime lastFailedLoginAttempt;
+    private OffsetDateTime suspendedUtil;
+    private OffsetDateTime passwordUpdatedOn;
 
-    String casUserDataUrl;
+    private Collection<SMPAuthority> authorities;
+
+    private int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
+    private boolean passwordExpired = false;
+    private boolean showPasswordExpirationWarning = false;
+    private boolean forceChangeExpiredPassword = false;
 
     /**
      * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
@@ -56,6 +54,14 @@ public class UserRO extends BaseRO {
         this.userId = userId;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -64,20 +70,12 @@ public class UserRO extends BaseRO {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public ApplicationRoleType getRole() {
+        return role;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAccessTokenId() {
-        return accessTokenId;
-    }
-
-    public void setAccessTokenId(String accessTokenId) {
-        this.accessTokenId = accessTokenId;
+    public void setRole(ApplicationRoleType role) {
+        this.role = role;
     }
 
     public String getEmailAddress() {
@@ -88,6 +86,31 @@ public class UserRO extends BaseRO {
         this.emailAddress = email;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getSmpTheme() {
+        return smpTheme;
+    }
+
+    public void setSmpTheme(String smpTheme) {
+        this.smpTheme = smpTheme;
+    }
+
+
+    public String getSmpLocale() {
+        return smpLocale;
+    }
+
+    public void setSmpLocale(String smpLocale) {
+        this.smpLocale = smpLocale;
+    }
+
     public boolean isPasswordExpired() {
         return passwordExpired;
     }
@@ -96,13 +119,6 @@ public class UserRO extends BaseRO {
         this.passwordExpired = passwordExpired;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 
     public OffsetDateTime getPasswordExpireOn() {
         return passwordExpireOn;
@@ -112,28 +128,12 @@ public class UserRO extends BaseRO {
         this.passwordExpireOn = passwordExpireOn;
     }
 
-    public OffsetDateTime getAccessTokenExpireOn() {
-        return accessTokenExpireOn;
+    public OffsetDateTime getPasswordUpdatedOn() {
+        return passwordUpdatedOn;
     }
 
-    public void setAccessTokenExpireOn(OffsetDateTime accessTokenExpireOn) {
-        this.accessTokenExpireOn = accessTokenExpireOn;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public CertificateRO getCertificate() {
-        return certificate;
-    }
-
-    public void setCertificate(CertificateRO certificate) {
-        this.certificate = certificate;
+    public void setPasswordUpdatedOn(OffsetDateTime passwordUpdatedOn) {
+        this.passwordUpdatedOn = passwordUpdatedOn;
     }
 
     public Collection<SMPAuthority> getAuthorities() {
@@ -206,29 +206,5 @@ public class UserRO extends BaseRO {
 
     public void setSuspendedUtil(OffsetDateTime suspendedUtil) {
         this.suspendedUtil = suspendedUtil;
-    }
-
-    public Integer getSequentialTokenLoginFailureCount() {
-        return sequentialTokenLoginFailureCount;
-    }
-
-    public void setSequentialTokenLoginFailureCount(Integer sequentialTokenLoginFailureCount) {
-        this.sequentialTokenLoginFailureCount = sequentialTokenLoginFailureCount;
-    }
-
-    public OffsetDateTime getLastTokenFailedLoginAttempt() {
-        return lastTokenFailedLoginAttempt;
-    }
-
-    public void setLastTokenFailedLoginAttempt(OffsetDateTime lastTokenFailedLoginAttempt) {
-        this.lastTokenFailedLoginAttempt = lastTokenFailedLoginAttempt;
-    }
-
-    public OffsetDateTime getTokenSuspendedUtil() {
-        return tokenSuspendedUtil;
-    }
-
-    public void setTokenSuspendedUtil(OffsetDateTime tokenSuspendedUtil) {
-        this.tokenSuspendedUtil = tokenSuspendedUtil;
     }
 }

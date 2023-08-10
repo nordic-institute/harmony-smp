@@ -1,18 +1,19 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.ui.SmpConfigRO;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.hamcrest.MatcherAssert;
+import org.junit.*;
+import org.junit.runner.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -26,10 +27,10 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
-import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithSMPAdmin;
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithSystemAdmin;
+import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.loginWithUserGroupAdmin;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,6 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "smp.artifact.version=TestApplicationVersion",
         "smp.artifact.build.time=2018-11-27 00:00:00",
 })
+@DirtiesContext
 public class ApplicationResourceIntegrationTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_PUBLIC_APPLICATION;
 
@@ -55,7 +57,7 @@ public class ApplicationResourceIntegrationTest {
     private WebApplicationContext webAppContext;
 
     @Autowired
-    private ApplicationResource applicationResource;
+    private ApplicationController applicationResource;
 
     private MockMvc mvc;
 
@@ -87,7 +89,7 @@ public class ApplicationResourceIntegrationTest {
     @Test
     public void getDisplayName() throws Exception {
         String value = applicationResource.getDisplayVersion();
-        assertEquals("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00|Central European Time]", value);
+        MatcherAssert.assertThat(value, startsWith("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00"));
     }
 
     @Test
@@ -100,7 +102,7 @@ public class ApplicationResourceIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         SmpInfoRO info = mapper.readValue(value, SmpInfoRO.class);
 
-        assertEquals("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00|Central European Time]", info.getVersion());
+        MatcherAssert.assertThat(info.getVersion(), startsWith("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00"));
         assertEquals("/", info.getContextPath());
     }
 
@@ -116,19 +118,10 @@ public class ApplicationResourceIntegrationTest {
 
     @Test
     public void testGetApplicationConfigAuthorized() throws Exception {
-        //  SMP admin
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+
+        //  User
+        MockHttpSession sessionUser = loginWithUserGroupAdmin(mvc);
         String val = mvc.perform(get(PATH + "/config")
-                .session(session)
-                .with(csrf()))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        assertNotNull(val);
-        //  service group
-        MockHttpSession sessionUser = loginWithServiceGroupUser(mvc);
-        val = mvc.perform(get(PATH + "/config")
                 .session(sessionUser)
                 .with(csrf()))
                 .andExpect(status().isOk())
@@ -149,9 +142,9 @@ public class ApplicationResourceIntegrationTest {
     }
 
     @Test
-    public void testGetApplicationConfigSMPAdmin() throws Exception {
+    public void testGetApplicationConfigUser() throws Exception {
         // when
-        MockHttpSession session = loginWithSMPAdmin(mvc);
+        MockHttpSession session = loginWithUserGroupAdmin(mvc);
         String value = mvc.perform(get(PATH + "/config")
                 .session(session)
                 .with(csrf()))
@@ -165,10 +158,9 @@ public class ApplicationResourceIntegrationTest {
         SmpConfigRO res = mapper.readValue(value, SmpConfigRO.class);
 
         assertNotNull(res);
-        assertEquals("Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9].", res.getParticipantSchemaRegExpMessage());
-        assertEquals("^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$", res.getParticipantSchemaRegExp());
+        assertEquals(SMPPropertyEnum.PARTC_SCH_REGEXP_MSG.getDefValue(), res.getParticipantSchemaRegExpMessage());
+        assertEquals(SMPPropertyEnum.PARTC_SCH_VALIDATION_REGEXP.getDefValue(), res.getParticipantSchemaRegExp());
         assertEquals(SMPPropertyEnum.PARTC_EBCOREPARTYID_CONCATENATE.getDefValue(), res.isConcatEBCorePartyId() + "");
         assertFalse(res.isSmlIntegrationOn());
-        assertFalse(res.isSmlParticipantMultiDomainOn());
     }
 }

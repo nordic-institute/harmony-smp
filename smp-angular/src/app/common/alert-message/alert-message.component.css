@@ -1,16 +1,24 @@
 .alert-message {
+  position: fixed;
+  max-width: 70%;
+  top: 3em;
+  left: 50%;
+  transform: translate(-50%, 0);
   padding: 20px;
   color: white;
   opacity: 1;
   transition: opacity 0.6s;
   margin-bottom: 15px;
-  z-index: 1000;
+  z-index: 2000;
 }
 
-.alert-error {background-color: #f44336;}
-.alert-success {background-color: #4CAF50;}
-.alert-info {background-color: #2196F3;}
-.alert-warning {background-color: #ff9800;}
+.stickyError {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  left: 180px;
+}
 
 .closebtn {
   margin-left: 15px;

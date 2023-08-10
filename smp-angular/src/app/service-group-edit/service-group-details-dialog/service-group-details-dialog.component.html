@@ -123,8 +123,8 @@
 
     <mat-card-content fxLayout="column" style="flex-grow: 1;display: flex;
     align-items: stretch;">
-      <mat-toolbar style="flex-grow: 0">
-        <mat-toolbar-row>
+      <mat-toolbar class ="mat-elevation-z2">
+        <mat-toolbar-row  class="smp-toolbar-row">
           <button mat-raised-button color="primary"
                   matTooltip="Clear the extension content."
                   matTooltipPosition="below"
@@ -162,9 +162,10 @@
 
     </mat-card-content>
   </mat-card>
+  <div class="required-fields">* required fields</div>
 </mat-dialog-content>
 
-<div class="required-fields">* required fields</div>
+
 <mat-dialog-actions>
   <button mat-raised-button color="primary" (click)="submitForm()"
           [disabled]="!dialogForm.valid">

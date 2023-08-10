@@ -3,15 +3,14 @@ package eu.europa.ec.edelivery.smp.data.ui;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class  ServiceResult<T> implements Serializable {
+public class ServiceResult<T> implements Serializable {
 
-    private static final long serialVersionUID = -4971552086560325302L;
+    private static final long serialVersionUID = 9008583888835630020L;
 
     private String filter; //NOSONAR
     private List<T> serviceEntities; //NOSONAR

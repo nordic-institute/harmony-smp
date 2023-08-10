@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.auth.cas;
 
 
-import eu.europa.ec.edelivery.smp.controllers.SmpUrlBuilder;
+import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.config.SMPSecurityConstants.*;
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.SSO_CAS_URL;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SSO_CAS_URL;
 
 
 /**
@@ -82,7 +82,7 @@ public class SMPCasConfigurer {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
         entryPoint.setLoginUrl(casUrlLogin);
         entryPoint.setServiceProperties(serviceProperties);
-        LOG.info("Configured CAS CasAuthenticationEntryPoint Url: " + entryPoint.getLoginUrl());
+        LOG.info("Configured CAS CasAuthenticationEntryPoint Url: [{}]", entryPoint.getLoginUrl());
         return entryPoint;
     }
 
@@ -159,11 +159,10 @@ public class SMPCasConfigurer {
     @Bean(SMP_CAS_FILTER_BEAN)
     public CasAuthenticationFilter casAuthenticationFilter(
             @Qualifier(SMP_AUTHENTICATION_MANAGER_BEAN) AuthenticationManager authenticationManager,
-            @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties casServiceProperties) throws Exception {
+            @Qualifier(SMP_CAS_PROPERTIES_BEAN) ServiceProperties casServiceProperties) {
 
         CasAuthenticationFilter filter = new CasAuthenticationFilter();
         filter.setFilterProcessesUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE + "/login");
-        //filter.setFilterProcessesUrl(SMP_SECURITY_PATH_CAS_AUTHENTICATE);
         filter.setServiceProperties(casServiceProperties);
         filter.setAuthenticationManager(authenticationManager);
         LOG.info("Created CAS Filter: [{}] with the properties: [{}]", filter.getClass().getSimpleName() , casServiceProperties.getArtifactParameter());

@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.data.dao.utils;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -10,6 +11,7 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +23,8 @@ public class SMPSchemaGeneratorTest {
 
     private static final String DIALECT_ORACLE="org.hibernate.dialect.Oracle10gDialect";
     private static final String DIALECT_MYSQL_INNO5="org.hibernate.dialect.MySQL5InnoDBDialect";
-    private static final String ENTITY_PACKAGE= "eu.europa.ec.edelivery.smp.data.model";
+
+    protected static String ENTITY_PACKAGES= "eu.europa.ec.edelivery.smp.data.model,eu.europa.ec.edelivery.smp.data.model.user,eu.europa.ec.edelivery.smp.data.model.doc,eu.europa.ec.edelivery.smp.data.model.ext";
 
 
     private static final Object[] dialectTestCases() {
@@ -47,7 +50,7 @@ public class SMPSchemaGeneratorTest {
         String folder = "target";
         String dialect = DIALECT_ORACLE;
         String version = "4.1.0-SNAPSHOT";
-        List<String> lstPackages = Collections.singletonList(ENTITY_PACKAGE);
+        List<String> lstPackages = Arrays.asList(ENTITY_PACKAGES.split(","));
         File f = new File("target/oracle10g.ddl");
         File fDrop = new File("target/oracle10g-drop.ddl");
         f.delete(); // delete if exists
@@ -123,8 +126,8 @@ public class SMPSchemaGeneratorTest {
     public void getAllEntityClasses() throws ClassNotFoundException {
 
         // given when
-        List<Class> result =  testInstance.getAllEntityClasses(ENTITY_PACKAGE);
+        List<Class> result =  testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");
 
-        assertEquals(16, result.size());
+        assertEquals(10, result.size());
     }
 }

@@ -1,0 +1,15 @@
+#user-access-token-panel {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  height: 100%;
+  padding: 0 2em;
+}
+
+.user-profile-pane-field {
+  width: 100% !important;
+}
+#user-profile-panel-toolbar{
+  width: 100%;
+  margin-top: auto;
+}

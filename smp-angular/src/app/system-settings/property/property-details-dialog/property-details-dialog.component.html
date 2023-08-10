@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="min-height:100px;width:580px">
+  <form [formGroup]="propertyForm">
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title
+          style="font-size: 1.1em">{{ propertyForm.controls['property'].value}}</mat-card-title>
+        <fieldset style="border: solid gray 1px;">
+          <legend>Description:</legend>
+          <label>{{ propertyForm.controls['desc'].value}}</label>
+        </fieldset>
+        <mat-form-field *ngIf="propertyForm.controls['type'].value !== 'BOOLEAN'" appearance="fill" style="width: 100%">
+          <mat-label>Property value:</mat-label>
+          <input
+            matInput type="{{ getInputType(propertyForm.controls['type'].value) }}" style="width: 100%;padding: 5px"
+            formControlName="value" [pattern]="propertyForm.controls['valuePattern'].value"/>
+        </mat-form-field>
+        <mat-checkbox *ngIf="propertyForm.controls['type'].value === 'BOOLEAN'"
+                      formControlName="value" style="width: 100%">
+          {{ propertyForm.controls['property'].value }}
+        </mat-checkbox>
+        <div *ngIf="propertyForm.controls['errorMessage'].value" class="alert-message-error">
+          {{ propertyForm.controls['errorMessage'].value}}
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button id="updatePropertyButton" mat-raised-button color="primary" (click)="submitForm()" [disabled]="!propertyForm.valid">
+    <mat-icon>check_circle</mat-icon>
+    <span>OK</span>
+  </button>
+  <button mat-raised-button color="primary" mat-dialog-close>
+    <mat-icon>cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
+</mat-dialog-actions>

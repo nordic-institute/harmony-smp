@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
-import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -52,14 +52,14 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {HTTP_PROXY_PASSWORD, TEST_STRING, "getProxyCredentialToken", true},
                 {HTTP_PROXY_PORT, 8800, "getHttpProxyPort", true},
                 {HTTP_PROXY_USER, TEST_STRING, "getProxyUsername", true},
-                {PARTC_SCH_REGEXP, TEST_REXEXP,"getParticipantIdentifierSchemeRexExp", true},
-                {PARTC_SCH_REGEXP, TEST_STRING, "getParticipantIdentifierSchemeRexExpPattern", false},
+                {PARTC_SCH_VALIDATION_REGEXP, TEST_REXEXP,"getParticipantIdentifierSchemeRexExp", true},
+                {PARTC_SCH_VALIDATION_REGEXP, TEST_STRING, "getParticipantIdentifierSchemeRexExpPattern", false},
                 {PARTC_SCH_REGEXP_MSG, TEST_STRING, "getParticipantIdentifierSchemeRexExpMessage", true},
-                {PARTC_EBCOREPARTYID_CONCATENATE, Boolean.FALSE, "getForceConcatenateEBCorePartyId", true},
+                //{PARTC_EBCOREPARTYID_CONCATENATE, Boolean.FALSE, "getForceConcatenateEBCorePartyId", true},
+                {PARTC_SCH_MANDATORY, Boolean.FALSE, "getParticipantSchemeMandatory", true},
                 {CS_PARTICIPANTS, TEST_STRING_LIST, "getCaseSensitiveParticipantScheme", true},
                 {CS_DOCUMENTS, TEST_STRING_LIST, "getCaseSensitiveDocumentScheme", true},
                 {SML_ENABLED, Boolean.FALSE, "isSMLIntegrationEnabled", true},
-                {SML_PARTICIPANT_MULTIDOMAIN, Boolean.FALSE, "isSMLMultiDomainEnabled", true},
                 {SML_URL,TEST_URL, "getSMLIntegrationUrl", true},
                 {SML_TLS_DISABLE_CN_CHECK, Boolean.FALSE, "smlDisableCNCheck", true},
                 {SML_TLS_SERVER_CERT_SUBJECT_REGEXP, TEST_REXEXP, "getSMLIntegrationServerCertSubjectRegExp", true},
@@ -70,7 +70,6 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {TRUSTSTORE_PASSWORD, TEST_STRING, "getTruststoreCredentialToken", true},
                 {TRUSTSTORE_FILENAME, TEST_FILE, "getTruststoreFile", true},
                 {CERTIFICATE_CRL_FORCE, Boolean.FALSE, "forceCRLValidation", true},
-                {CONFIGURATION_DIR, TEST_FILE, "getConfigurationFolder", true},
                 //{ENCRYPTION_FILENAME, TEST_STRING, "", true},
                 //{KEYSTORE_PASSWORD_DECRYPTED, TEST_STRING, "", true},
                 //{TRUSTSTORE_PASSWORD_DECRYPTED, TEST_STRING, "", true},
@@ -105,8 +104,6 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {SSO_CAS_TOKEN_VALIDATION_URL_PATH, TEST_STRING, "getCasURLTokenValidation", true},
                 {SSO_CAS_TOKEN_VALIDATION_PARAMS, TEST_MAP, "getCasTokenValidationParams", true},
                 {SSO_CAS_TOKEN_VALIDATION_GROUPS, TEST_STRING_LIST, "getCasURLTokenValidationGroups", true},
-                {PARTC_EBCOREPARTYID_CONCATENATE, Boolean.FALSE, "getForceConcatenateEBCorePartyId", true},
-                {PARTC_SCH_MANDATORY, Boolean.FALSE, "getParticipantSchemeMandatory", true},
                 {SMP_CLUSTER_ENABLED, Boolean.FALSE, "isClusterEnabled", true},
                 {ENCODED_SLASHES_ALLOWED_IN_URL, Boolean.FALSE, "encodedSlashesAllowedInUrl", true},
                 {SMP_ALERT_CREDENTIALS_SERVER, TEST_STRING, "getTargetServerForCredentialValidation", true},

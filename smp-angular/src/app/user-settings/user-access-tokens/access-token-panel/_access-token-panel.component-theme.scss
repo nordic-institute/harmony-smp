@@ -1,0 +1,9 @@
+@use '../../../../_smp-theme-helper' as smp;
+
+@mixin set-component-colors($theme) {
+  .access-token:hover {
+    background-color: smp.get-theme-color($theme, primary, 0.2);
+  }
+}
+
+

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #Define WL_DOMAIN_HOME
 INIT_SCRIPTS=$1
@@ -21,11 +21,11 @@ elif [ -f "${INIT_SCRIPTS}/../properties/smp.config.properties" ]; then
   cat "${INIT_SCRIPTS}/../properties/smp.config.properties" > "${SMP_CONFIG_DIR}/config/smp.config.properties"
 else
   cat <<EOT >"${SMP_CONFIG_DIR}/config/smp.config.properties"
-hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
-datasource.jndi=jdbc/eDeliverySmpDs
-authentication.blueCoat.enabled=true
-log.folder=./logs/
-configuration.dir=${SMP_SECURITY_DIR}/
+smp.jdbc.hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+smp.datasource.jndi=jdbc/eDeliverySmpDs
+smp.automation.authentication.external.tls.clientCert.enabled=true
+smp.log.folder=./logs/
+smp.security.folder=${SMP_SECURITY_DIR}/
 EOT
 fi
 
@@ -33,4 +33,4 @@ cp /u01/oracle/init/smp.war "${WL_DOMAIN_HOME}/"
 ls -ltr "${WL_DOMAIN_HOME}/"
 
 # Deploy Application
-wlst.sh -skipWLSModuleScanning /u01/oracle/smp-app-deploy.py
+wlst.sh -skipWLSModuleScanning "${ORACLE_HOME}"/smp-app-deploy.py

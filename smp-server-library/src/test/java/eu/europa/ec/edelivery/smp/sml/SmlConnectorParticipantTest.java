@@ -21,10 +21,10 @@ import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +45,6 @@ import static org.mockito.Mockito.verify;
 @ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class})
 public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     protected ConfigurationService configurationService;
@@ -65,7 +63,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
 
 
         configurationService = Mockito.spy(configurationService);
-        ReflectionTestUtils.setField(testInstance,"configurationService",configurationService);
+        ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
         DEFAULT_DOMAIN.setSmlRegistered(true);
         mockSml.reset();
@@ -74,7 +72,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     @Test
     public void testRegisterInDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
         //then
         assertTrue(result);
@@ -88,7 +86,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
         mockSml.setThrowException(ex);
-        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
         //then
         assertTrue(result);
@@ -98,22 +96,21 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testRegisterInDnsUnknownException() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testRegisterInDnsUnknownException() {
         //when
         String message = "something unexpected";
         Exception ex = new Exception(message);
         mockSml.setThrowException(ex);
-        expectedException.expectMessage(message);
-        expectedException.expect(SMPRuntimeException.class);
 
-        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(message));
     }
 
     @Test
     public void testRegisterInDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
-        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
+        testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
         //then
         assertEquals(2, mockSml.getParticipantManagmentClientMocks().size());
@@ -152,10 +149,10 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
         mockSml.setThrowException(ex);
-        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedException.expect(SMPRuntimeException.class);
 
-        testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(ERROR_UNEXPECTED_MESSAGE));
+
     }
 
     @Test
@@ -164,10 +161,9 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
         String message = "something unexpected";
         Exception ex = new Exception(message);
         mockSml.setThrowException(ex);
-        expectedException.expectMessage(message);
-        expectedException.expect(SMPRuntimeException.class);
 
-        testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(message));
     }
 
     @Test
@@ -216,22 +212,22 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     @Test
     public void testProcessSMLErrorMessageBadRequestFaultFailed() {
 
-        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedException.expect(SMPRuntimeException.class);
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
 
-        testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(ERROR_UNEXPECTED_MESSAGE));
     }
 
 
     @Test
     public void testProcessSMLErrorMessageNoFoundFaultFailed() {
 
-        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedException.expect(SMPRuntimeException.class);
         NotFoundFault ex = new NotFoundFault(ERROR_UNEXPECTED_MESSAGE);
 
-        testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(ERROR_UNEXPECTED_MESSAGE));
+
+
     }
 
     @Test

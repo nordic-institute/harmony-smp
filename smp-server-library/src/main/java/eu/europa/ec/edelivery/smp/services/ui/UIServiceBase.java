@@ -8,7 +8,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -28,10 +27,13 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
     private final Class<E> dbClass;
 
 
-    public UIServiceBase() {
+    protected UIServiceBase() {
         Class[] clsArg = GenericTypeResolver.resolveTypeArguments(getClass(), UIServiceBase.class);
-        roClass =(Class<R>)clsArg[1];
-        dbClass =(Class<E>)clsArg[0];
+        if (clsArg == null || clsArg.length != 2) {
+            throw new IllegalArgumentException("Illegal initialization error. Class template initialization must have RO and DB templates ");
+        }
+        roClass = (Class<R>) clsArg[1];
+        dbClass = (Class<E>) clsArg[0];
 
     }
 
@@ -50,37 +52,36 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
                                          Object filter) {
 
         ServiceResult<R> sg = new ServiceResult<>();
-        sg.setPage(page<0?0:page);
+        sg.setPage(page < 0 ? 0 : page);
 
         long iCnt = getDatabaseDao().getDataListCount(filter);
         if (pageSize < 0) { // if page size iz -1 return all results and set pageSize to maxCount
-            pageSize = (int)iCnt;
+            pageSize = (int) iCnt;
         }
         sg.setPageSize(pageSize);
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
-            int iStartIndex = pageSize<0?-1:page * pageSize;
-            if (iStartIndex >= iCnt && page > 0){
-                page = page -1;
+            int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
+            if (iStartIndex >= iCnt && page > 0) {
+                page = page - 1;
                 sg.setPage(page); // go back for a page
-                iStartIndex = pageSize<0?-1:page * pageSize;
+                iStartIndex = pageSize < 0 ? -1 : page * pageSize;
             }
-
 
 
             List<E> lst = getDatabaseDao().getDataList(iStartIndex, pageSize, sortField, sortOrder, filter);
 
-            List<R>  lstRo = new ArrayList<>();
+            List<R> lstRo = new ArrayList<>();
             for (E d : lst) {
                 R dro = convertToRo(d);
-                 try {
+                try {
                     BeanUtils.setProperty(dro, "index", iStartIndex++);
                     lstRo.add(dro);
                 } catch (InvocationTargetException | IllegalAccessException e) {
-                     String msg = "Error occurred while retrieving list for " +roClass.getName();
-                    LOG.error(msg, e );
-                     throw new SMPRuntimeException(INTERNAL_ERROR, "DB list query exception.", msg);
+                    String msg = "Error occurred while retrieving list for " + roClass.getName();
+                    LOG.error(msg, e);
+                    throw new SMPRuntimeException(INTERNAL_ERROR, "DB list query exception.", msg);
                 }
             }
             sg.getServiceEntities().addAll(lstRo);
@@ -91,6 +92,7 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
 
     /**
      * Simple method for converting types. Property name and property type must match
+     *
      * @param d
      * @return
      */
@@ -99,25 +101,26 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
             R dro = roClass.newInstance();
             BeanUtils.copyProperties(dro, d);
             return dro;
-         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            String msg = "Error occurred while converting to RO Entity for " +roClass.getName();
-            LOG.error(msg, e );
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            String msg = "Error occurred while converting to RO Entity for " + roClass.getName();
+            LOG.error(msg, e);
             throw new SMPRuntimeException(INTERNAL_ERROR, "DB to RO entity conversion.", msg);
         }
     }
+
     /*
      * Simple method for converting types. Property name and property type must match
      * @param d
      * @return
-             */
+     */
     public E convertFromRo(R d) {
         try {
             E e = dbClass.newInstance();
             BeanUtils.copyProperties(e, d);
             return e;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            String msg = "Error occurred while converting to DB entity for " +dbClass.getName();
-            LOG.error(msg, e );
+            String msg = "Error occurred while converting to DB entity for " + dbClass.getName();
+            LOG.error(msg, e);
             throw new SMPRuntimeException(INTERNAL_ERROR, "RO to DB entity conversion.", msg);
         }
     }

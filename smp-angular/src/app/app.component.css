@@ -2,13 +2,6 @@
   width: 100%;
 }
 
-mat-sidenav-container {
-  width: 100%;
-  height: 100%;
-  /*border: solid green;*/
-
-}
-
 mat-sidenav {
   text-align: center;
   background-color: #f0fbfc;
@@ -25,12 +18,6 @@ mat-sidenav.menu-collapsed {
   width: 55px;
 }
 
-html, body, material-app, .my-content {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  /*border: dashed red;*/
-}
 
 .menu-expanded .sideNavButton {
   text-align: left;
@@ -81,9 +68,16 @@ html, body, material-app, .my-content {
   padding-right: 5px;
 }
 
-#collapse_id, #expand_id {
+#collapse_id {
   text-align: center;
   width: 50px;
+  height: 50px;
+  min-width: 0
+}
+
+#expand_id {
+  text-align: center;
+  width: 150px;
   height: 50px;
   min-width: 0
 }

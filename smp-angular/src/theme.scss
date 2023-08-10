@@ -1,151 +1,98 @@
-@import '~@angular/material/theming';
-// Plus imports for other components in your app.
+@use '@angular/material' as mat;
+@use '_smp-all-themes' as smp;
+@use 'sass:map';
+// DomiSMP default palette
+@use './_colors_harmony' as smp-colors;
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat-core();
-
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue.
-
-$harmonypalette: (
-  50 : #e0e7f3,
-  100 : #b3c2e0,
-  200 : #8099cc,
-  300 : #4d70b8,
-  400 : #2652a8,
-  500 : #003399,
-  600 : #002e91,
-  700 : #002786,
-  800 : #00207c,
-  900 : #00146b,
-  A100 : #9aa5ff,
-  A200 : #6778ff,
-  A400 : #344aff,
-  A700 : #1a33ff,
-  contrast: (
-    50 : #000000,
-    100 : #000000,
-    200 : #000000,
-    300 : #ffffff,
-    400 : #ffffff,
-    500 : #ffffff,
-    600 : #ffffff,
-    700 : #ffffff,
-    800 : #ffffff,
-    900 : #ffffff,
-    A100 : #000000,
-    A200 : #000000,
-    A400 : #ffffff,
-    A700 : #ffffff,
-  )
-);
-
-$harmonylight: (
-  50 : #f9fdfe,
-  100 : #f0fbfc,
-  200 : #e6f9fb,
-  300 : #dcf6f9,
-  400 : #d5f4f7,
-  500 : #cdf2f6,
-  600 : #c8f0f5,
-  700 : #c1eef3,
-  800 : #baecf2,
-  900 : #aee8ef,
-  A100 : #ffffff,
-  A200 : #ffffff,
-  A400 : #ffffff,
-  A700 : #ffffff,
-  contrast: (
-    50 : #000000,
-    100 : #000000,
-    200 : #000000,
-    300 : #000000,
-    400 : #000000,
-    500 : #000000,
-    600 : #000000,
-    700 : #000000,
-    800 : #000000,
-    900 : #000000,
-    A100 : #000000,
-    A200 : #000000,
-    A400 : #000000,
-    A700 : #000000,
-  )
-);
-
-$input-app-primary: mat-palette($harmonypalette);
-$input-app-accent: mat-palette($harmonylight);
+/* You can add global styles to this file, and also import other style files */
 
 
-// Create the theme object (a Sass map containing all of the palettes).
-$input-app-theme: mat-light-theme($input-app-primary, $input-app-accent);
+//The core mixin must be included exactly once for your application, even if you define multiple themes.
+// Including the core mixin multiple times will result in duplicate CSS in your application.
+@include mat.core();
+
+
+// -----------------------------------------
+// primary theme
+$smp-theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette(smp-colors.$smp-primary-palette),
+    accent: mat.define-palette(smp-colors.$smp-accent-palette),
+    warn: mat.define-palette(smp-colors.$smp-warn-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// -----------------------------------------
+// blue theme
+$blue_theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette(mat.$blue-palette),
+    accent: mat.define-palette(mat.$light-blue-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// indigo-pink theme
+$indigo_pink_theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette(mat.$indigo-palette),
+    accent: mat.define-palette(mat.$pink-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// -----------------------------------------
+// dark theme
+$pink_blue-grey_theme: mat.define-dark-theme((
+  color: (
+    primary: mat.define-palette(mat.$pink-palette),
+    accent: mat.define-palette(mat.$blue-grey-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  // Only include `typography` and `density` in the default dark theme.
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+$purple_green_theme: mat.define-dark-theme((
+  color: (
+    primary: mat.define-palette(mat.$purple-palette),
+    accent: mat.define-palette(mat.$green-palette),
+    warn: mat.define-palette(mat.$red-palette),
+  ),
+  // Only include `typography` and `density` in the default dark theme.
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// define theme class
+.blue_theme {
+  @include mat.all-component-colors($blue-theme);
+  @include smp.all-component-colors($blue-theme);
+}
+
+.indigo_pink_theme {
+  @include mat.all-component-colors($indigo_pink_theme);
+  @include smp.all-component-colors($indigo_pink_theme);
+}
+
+.pink_blue-grey_theme {
+  @include mat.all-component-colors($pink_blue-grey_theme);
+  @include smp.all-component-colors($pink_blue-grey_theme);
+}
+
+.purple_green_theme {
+  @include mat.all-component-colors($purple_green_theme);
+  @include smp.all-component-colors($purple_green_theme);
+}
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($input-app-theme);
-
-$datatable_background_color_hover: map-get($mat-grey, 600);
-$datatable_background_color_focus: map-get($mat-grey, 600);
-$datatable_background_color_active: map-get($mat-grey, 600);
-
-.ngx-datatable.material.cell-selection .datatable-body-cell.active,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active .datatable-row-group {
-  background-color: $datatable_background_color_active;
-  //color: #0d0d0d;
-}
-
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:hover,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:hover .datatable-row-group {
-  background-color: $datatable_background_color_hover;
-  //color: #0d0d0d;
-}
-
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:focus,
-.ngx-datatable.material.cell-selection .datatable-body-cell.active:focus .datatable-row-group {
-  background-color: $datatable_background_color_focus;
-  //color: #0d0d0d;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active,
-.ngx-datatable.material.single-selection .datatable-body-row.active .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active,
-.ngx-datatable.material.multi-selection .datatable-body-row.active .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active .datatable-row-group {
-  background-color: $datatable_background_color_active;
-  color: #FFF;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.single-selection .datatable-body-row.active:hover .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.multi-selection .datatable-body-row.active:hover .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active:hover,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active:hover .datatable-row-group {
-  background-color: $datatable_background_color_hover;
-  color: #FFF;
-}
-
-.ngx-datatable.material.single-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.single-selection .datatable-body-row.active:focus .datatable-row-group, .ngx-datatable.material.multi-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.multi-selection .datatable-body-row.active:focus .datatable-row-group, .ngx-datatable.material.multi-click-selection .datatable-body-row.active:focus,
-.ngx-datatable.material.multi-click-selection .datatable-body-row.active:focus .datatable-row-group {
-  background-color: $datatable_background_color_focus;
-  color: #0d0d0d;
-}
-
-.smpLink {
-  color: #003399;
-}
-
-.searchArea {
-  margin: 20px 0 0 0;
-  display:block;
-  a {
-    @extend .smpLink;
-    vertical-align: bottom;
-    margin-left: 10px;
-    color: #003399;
-  }
-}
-
+@include mat.all-component-themes($smp-theme);
+@include smp.all-component-colors($smp-theme);

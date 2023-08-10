@@ -1,7 +1,10 @@
 package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
+import eu.europa.ec.edelivery.smp.auth.SMPCertificateAuthentication;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -9,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,12 +27,18 @@ import java.util.stream.Collectors;
 public class SessionSecurityUtils {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SessionSecurityUtils.class);
 
+
+    protected SessionSecurityUtils() {
+    }
+
     /**
-     * '
-     * Currently authentication tokens supported to create na UI session.
+     * Current supported SMP authentication tokens.
      */
-    protected static final List<Class> sessionAuthenticationClasses = Arrays.asList(SMPAuthenticationToken.class,
-            CasAuthenticationToken.class);
+    protected static final List<Class> sessionAuthenticationClasses = Arrays.asList(
+            UILoginAuthenticationToken.class,
+            CasAuthenticationToken.class,
+            SMPAuthenticationToken.class,
+            SMPCertificateAuthentication.class);
 
     /**
      * SMP uses entity ids type long. Because the keys are sequence keys, SMP encrypts ids for the User.
@@ -42,7 +52,11 @@ public class SessionSecurityUtils {
         }
         SecurityUtils.Secret secret = getAuthenticationSecret();
         String idValue = id.toString();
-        return secret != null ? SecurityUtils.encryptURLSafe(secret, idValue) : idValue;
+        if (secret == null) {
+            return idValue;
+        }
+        String valWithSeed = idValue + '#' + Calendar.getInstance().getTimeInMillis();
+        return SecurityUtils.encryptURLSafe(secret, valWithSeed);
     }
 
 
@@ -51,7 +65,13 @@ public class SessionSecurityUtils {
             return null;
         }
         SecurityUtils.Secret secret = getAuthenticationSecret();
-        String value = secret != null ? SecurityUtils.decryptUrlSafe(secret, id) : id;
+        if (secret == null) {
+            // try to convert to long value
+            return new Long(id);
+        }
+        String decVal = SecurityUtils.decryptUrlSafe(secret, id);
+        int indexOfSeparator = decVal.indexOf('#');
+        String value = indexOfSeparator > -1 ? decVal.substring(0, indexOfSeparator) : decVal;
         return new Long(value);
     }
 
@@ -81,6 +101,11 @@ public class SessionSecurityUtils {
         if (authentication == null) {
             LOG.warn("No active SMP session Authentication!");
             return null;
+        }
+
+        if (authentication instanceof UILoginAuthenticationToken) {
+            LOG.debug("Return user details from SMPAuthenticationToken");
+            return ((UILoginAuthenticationToken) authentication).getUserDetails();
         }
 
         if (authentication instanceof SMPAuthenticationToken) {

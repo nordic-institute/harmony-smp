@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.dao.CredentialDao;
+import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.HttpUtils;
@@ -21,16 +21,16 @@ import java.util.List;
 public class CredentialValidatorService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(CredentialValidatorService.class);
 
-    private final AlertService alertService;
+    private final CredentialsAlertService alertService;
     private final ConfigurationService configurationService;
-    private final UserDao userDao;
+    private final CredentialDao credentialDao;
 
     public CredentialValidatorService(ConfigurationService configurationService,
-                                      AlertService alertService,
-                                      UserDao userDao) {
+                                      CredentialsAlertService alertService,
+                                      CredentialDao credentialDao) {
         this.configurationService = configurationService;
         this.alertService = alertService;
-        this.userDao = userDao;
+        this.credentialDao = credentialDao;
     }
 
     /**
@@ -59,11 +59,12 @@ public class CredentialValidatorService {
             LOG.debug("Before expire user password validation is disabled");
             return;
         }
-        List<DBUser> dbUserBeforeExpireList = userDao.getBeforePasswordExpireUsersForAlerts(
+        List<DBCredential> dbUserBeforeExpireList = credentialDao.getBeforePasswordExpireUsersForAlerts(
                 configurationService.getAlertBeforeExpirePasswordPeriod(),
                 configurationService.getAlertBeforeExpirePasswordInterval(),
                 configurationService.getAlertCredentialsBatchSize());
-        dbUserBeforeExpireList.forEach(alertService::alertBeforeUsernamePasswordExpire);
+
+        dbUserBeforeExpireList.forEach(alertService::alertBeforeCredentialExpire);
     }
 
     protected void validateCredentialsForExpiredUsernames() {
@@ -72,11 +73,11 @@ public class CredentialValidatorService {
             LOG.debug("Expire user password validation is disabled");
             return;
         }
-        List<DBUser> dbUserExpiredList = userDao.getPasswordExpiredUsersForAlerts(
+        List<DBCredential> dbUserExpiredList = credentialDao.getPasswordExpiredUsersForAlerts(
                 configurationService.getAlertExpiredPasswordPeriod(),
                 configurationService.getAlertExpiredPasswordInterval(),
                 configurationService.getAlertCredentialsBatchSize());
-        dbUserExpiredList.forEach(alertService::alertUsernamePasswordExpired);
+        dbUserExpiredList.forEach(alertService::alertCredentialExpired);
     }
 
     protected void validateCredentialsForBeforeExpireAccessToken() {
@@ -86,11 +87,11 @@ public class CredentialValidatorService {
             LOG.debug("Before expire user AccessToken validation is disabled");
             return;
         }
-        List<DBUser> dbUserBeforeExpireList = userDao.getBeforeAccessTokenExpireUsersForAlerts(
+        List<DBCredential> dbUserBeforeExpireList = credentialDao.getBeforeAccessTokenExpireUsersForAlerts(
                 configurationService.getAlertBeforeExpireAccessTokenPeriod(),
                 configurationService.getAlertBeforeExpireAccessTokenInterval(),
                 configurationService.getAlertCredentialsBatchSize());
-        dbUserBeforeExpireList.forEach(alertService::alertBeforeAccessTokenExpire);
+        dbUserBeforeExpireList.forEach(alertService::alertBeforeCredentialExpire);
     }
 
     protected void validateCredentialsForExpiredAccessToken() {
@@ -99,11 +100,11 @@ public class CredentialValidatorService {
             LOG.debug("Expire user AccessToken validation is disabled");
             return;
         }
-        List<DBUser> dbUserExpiredList = userDao.getAccessTokenExpiredUsersForAlerts(
+        List<DBCredential> dbUserExpiredList = credentialDao.getAccessTokenExpiredUsersForAlerts(
                 configurationService.getAlertExpiredAccessTokenPeriod(),
                 configurationService.getAlertExpiredAccessTokenInterval(),
                 configurationService.getAlertCredentialsBatchSize());
-        dbUserExpiredList.forEach(alertService::alertAccessTokenExpired);
+        dbUserExpiredList.forEach(alertService::alertCredentialExpired);
     }
 
 
@@ -114,11 +115,11 @@ public class CredentialValidatorService {
             LOG.debug("Before expire user Certificate validation is disabled");
             return;
         }
-        List<DBUser> dbUserBeforeExpireList = userDao.getBeforeCertificateExpireUsersForAlerts(
+        List<DBCredential> dbUserBeforeExpireList = credentialDao.getBeforeCertificateExpireUsersForAlerts(
                 configurationService.getAlertBeforeExpireCertificatePeriod(),
                 configurationService.getAlertBeforeExpireCertificateInterval(),
                 configurationService.getAlertCredentialsBatchSize());
-        dbUserBeforeExpireList.forEach(alertService::alertBeforeCertificateExpire);
+        dbUserBeforeExpireList.forEach(alertService::alertBeforeCredentialExpire);
     }
 
     protected void validateCredentialsForExpiredCertificate() {
@@ -127,11 +128,11 @@ public class CredentialValidatorService {
             LOG.debug("Expire user Certificate validation is disabled");
             return;
         }
-        List<DBUser> dbUserExpiredList = userDao.getCertificateExpiredUsersForAlerts(
+        List<DBCredential> dbUserExpiredList = credentialDao.getCertificateExpiredUsersForAlerts(
                 configurationService.getAlertExpiredCertificatePeriod(),
                 configurationService.getAlertExpiredCertificateInterval(),
                 configurationService.getAlertCredentialsBatchSize());
-        dbUserExpiredList.forEach(alertService::alertCertificateExpired);
+        dbUserExpiredList.forEach(alertService::alertCredentialExpired);
     }
 
     /**

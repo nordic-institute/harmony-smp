@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
@@ -38,7 +39,7 @@ public class SessionSecurityUtilsTest {
 
         assertNotNull(result);
         String decResult = SecurityUtils.decryptUrlSafe(token.getSecret(), result);
-        assertEquals(value, Long.valueOf(decResult));
+        assertEquals(value, Long.valueOf(decResult.substring(0, decResult.indexOf('#')) ));
     }
 
     @Test
@@ -101,21 +102,21 @@ public class SessionSecurityUtilsTest {
     @Test
     public void getSessionAuthenticationClasses() {
         List<Class> list = SessionSecurityUtils.getSessionAuthenticationClasses();
-        Assert.assertEquals(2, list.size());
+        Assert.assertEquals(4, list.size());
         Assert.assertTrue(list.contains(SMPAuthenticationToken.class));
         Assert.assertTrue(list.contains(CasAuthenticationToken.class));
     }
 
     public SMPAuthenticationToken setTestSMPAuthenticationToken() {
-        SecurityUtils.Secret secret = SecurityUtils.generatePrivateSymmetricKey();
+        SecurityUtils.Secret secret = SecurityUtils.generatePrivateSymmetricKey(true);
         SMPAuthenticationToken token = new SMPAuthenticationToken(null, null, new SMPUserDetails(null, secret, null));
         SecurityContextHolder.getContext().setAuthentication(token);
         return token;
     }
 
     public CasAuthenticationToken setTestCasAuthenticationToken() {
-        SecurityUtils.Secret secret = SecurityUtils.generatePrivateSymmetricKey();
-        List<SMPAuthority> smpAuthorities = Collections.singletonList(SMPAuthority.S_AUTHORITY_SMP_ADMIN);
+        SecurityUtils.Secret secret = SecurityUtils.generatePrivateSymmetricKey(true);
+        List<SMPAuthority> smpAuthorities = Collections.singletonList(SMPAuthority.S_AUTHORITY_USER);
         CasAuthenticationToken token = new CasAuthenticationToken("test", "test", "test", smpAuthorities,
                 new SMPUserDetails(null, secret, smpAuthorities), Mockito.mock(Assertion.class));
         SecurityContextHolder.getContext().setAuthentication(token);

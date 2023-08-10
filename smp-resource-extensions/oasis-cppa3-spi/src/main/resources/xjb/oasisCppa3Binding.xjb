@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings version="2.1" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+               xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+    <!--  bind various namespaces to dedicated packages to prevent object collision -->
+    <jaxb:bindings scd="x-schema::tns" xmlns:tns="http://docs.oasis-open.org/ebcore/ns/cppa/v3.0" >
+        <jaxb:schemaBindings>
+            <jaxb:package name="gen.eu.europa.ec.ddc.api.cppa"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/cppa3.xsd" node="//xs:complexType[@name='EDIINTChannelType']/xs:complexContent/xs:extension[@base='cppa:ChannelType']">
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ErrorHandling']">
+            <jaxb:property name="EdiIntErrorHandling"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ReceiptHandling']">
+            <jaxb:property name="EdiIntReceiptHandling"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/cppa3.xsd" node="//xs:complexType[@name='WSChannelType']/xs:complexContent/xs:extension[@base='cppa:ChannelType']">
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:Addressing']">
+            <jaxb:property name="WsAddressing"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ReliableMessagingBinding']">
+            <jaxb:property name="WsReliableMessagingBinding"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/cppa3.xsd" node="//xs:complexType[@name='WSSecurityBindingType']/xs:complexContent/xs:extension[@base='cppa:ChannelFeatureType']">
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:SecurityPolicy']">
+            <jaxb:property name="WsSecurityPolicy"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+
+    <jaxb:bindings schemaLocation="../xsd/cppa3.xsd" node="//xs:complexType[@name='ebMS2ChannelType']/xs:complexContent/xs:extension[@base='cppa:ChannelType']">
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ErrorHandling']">
+            <jaxb:property name="EbMS2ErrorHandling"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ReceiptHandling']">
+            <jaxb:property name="EbMS2ReceiptHandling"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+
+    <jaxb:bindings schemaLocation="../xsd/cppa3.xsd" node="//xs:complexType[@name='ebMS3ChannelType']/xs:complexContent/xs:extension[@base='cppa:WSChannelType']">
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ErrorHandling']">
+            <jaxb:property name="EbMS3ErrorHandling"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ReceiptHandling']">
+            <jaxb:property name="EbMS3ReceiptHandling"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:Compression']">
+            <jaxb:property name="EbMS3Compression"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:Bundling']">
+            <jaxb:property name="EbMS3Bundling"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:Splitting']">
+            <jaxb:property name="EbMS3Splitting"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/cppa3.xsd" node="//xs:element[@name='WSReliableMessagingBinding']/xs:complexType/xs:complexContent/xs:extension[@base='cppa:ReliableMessagingBindingType']">
+        <jaxb:bindings node="./xs:sequence/xs:element[@ref='cppa:ReceiptHandling']">
+            <jaxb:property name="RMReceiptHandling"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>

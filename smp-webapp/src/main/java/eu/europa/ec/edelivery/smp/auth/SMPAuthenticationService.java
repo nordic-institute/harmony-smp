@@ -39,7 +39,7 @@ public class SMPAuthenticationService {
     @Transactional(noRollbackFor = AuthenticationException.class)
     public Authentication authenticate(String username, String password) {
         LOG.debug("Authenticate: [{}]", username);
-        UILoginAuthenticationToken token = new UILoginAuthenticationToken(username, password);
+        UILoginAuthenticationToken token = new UILoginAuthenticationToken(username, password, null);
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;

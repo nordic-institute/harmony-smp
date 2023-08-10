@@ -1,0 +1,94 @@
+<div id="domain-group-panel" class="mat-elevation-z2">
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
+      <button id="createButton" mat-raised-button (click)="onAddButtonClicked()" color="primary"
+              matTooltip="Create new group"
+              [disabled]="domainNotSelected"
+      >
+        <mat-icon>add</mat-icon>
+        <span>Create</span>
+      </button>
+      <button id="editButton" mat-raised-button (click)="onEditSelectedButtonClicked()" color="primary"
+              matTooltip="Edit selected group"
+              [disabled]="!groupSelected">
+        <mat-icon>edit</mat-icon>
+        <span>Edit data</span>
+      </button>
+      <button id="groupMembersButton" mat-raised-button (click)="onEditSelectedGroupMembersButtonClicked()" color="primary"
+              matTooltip="Group members"
+              [disabled]="!groupSelected">
+        <mat-icon>group</mat-icon>
+        <span>Group members</span>
+      </button>
+      <button id="deleteButton" mat-raised-button (click)="onDeleteSelectedButtonClicked()" color="primary"
+              matTooltip="Delete selected group"
+              [disabled]="!groupSelected">
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <h3 style="word-wrap: break-word; max-width: 750px">{{title}}</h3>
+  <div class="group-container mat-elevation-z2">
+    <div class="group-loading-shade"
+         *ngIf="isLoadingResults">
+      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+    </div>
+
+    <div class="group-table-container">
+
+      <mat-form-field id="group-filter">
+        <mat-label>Member filter</mat-label>
+        <input matInput (keyup)="applyGroupFilter($event)"
+               placeholder="Member filter"
+               [disabled]="domainNotSelected"
+               #inputDomainMemberFilter>
+      </mat-form-field>
+
+      <table class="mat-elevation-z2" mat-table [dataSource]="dataSource">
+
+        <ng-container matColumnDef="groupName">
+          <th mat-header-cell *matHeaderCellDef>Group name</th>
+          <td mat-cell *matCellDef="let row">{{row.groupName}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="visibility">
+          <th mat-header-cell *matHeaderCellDef>Visibility</th>
+          <td mat-cell *matCellDef="let row">{{row.visibility}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="groupDescription">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let row">{{row.groupDescription}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+            (click)="onGroupSelected(row)"
+            (dblclick)="showEditDialogForGroup(row)"
+            [ngClass]="{'datatable-row-selected': row==selectedGroup,'datatable-row-odd': odd}"
+        ></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td *ngIf="inputDomainMemberFilter.value;else noDataFound" class="mat-cell" colspan="2">No groups
+            matching the filter
+            "{{inputDomainMemberFilter.value}}"
+          </td>
+          <ng-template #noDataFound>
+            <td class="mat-cell" colspan="2">The domain has no groups</td>
+          </ng-template>
+        </tr>
+      </table>
+    </div>
+
+
+    <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
+                   [hidePageSize]="true"
+                   [showFirstLastButtons]="true"
+                   [pageSize]="5"
+                   [disabled]="domainNotSelected"
+                   aria-label="Select pages"></mat-paginator>
+  </div>
+
+</div>
+

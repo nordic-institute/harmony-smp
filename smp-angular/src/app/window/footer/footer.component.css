@@ -1,0 +1,13 @@
+#footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  text-align: center;
+}
+
+#footer .smpVersion {
+  display: inline-block;
+  font-size: 15px;
+}

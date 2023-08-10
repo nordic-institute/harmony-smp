@@ -1,0 +1,19 @@
+@use '../../../../_smp-theme-helper' as smp;
+
+@mixin set-component-colors($theme) {
+  .navigation-selected {
+    border-color: smp.get-theme-color($theme, primary, 900) !important;
+    background-color: smp.get-theme-color($theme, primary, 600) !important;
+    color: smp.get-theme-color($theme, primary, 800-contrast) !important;
+  }
+
+  .navigation-selected span {
+    color: smp.get-theme-color($theme, primary, 800-contrast) !important;
+  }
+
+  .nav-tree-leaf {
+    border-color: smp.get-theme-color($theme, primary, 0.5);
+    background-color: smp.get-theme-color($theme, primary, 0.2);
+    color: smp.get-theme-color($theme, primary, 500-contrast);
+  }
+}

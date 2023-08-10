@@ -30,15 +30,11 @@ In addition, the following documents that are available on the [SMP release page
 
 Harmony SMP can be built using the following command:
 
-    mvn -f harmony-pom.xml clean install
+    ./mvnw clean install
 
-Integration tests can be skipped using the `skipITs` property:
+Unit and integration tests can be skipped using the `skipTests` and `skipITs` properties:
 
-    mvn -f harmony-pom.xml clean install -DskipITs=true
-
-All tests can be skipped using the `maven.test.skip` property
-
-    mvn -f harmony-pom.xml clean install -Dmaven.test.skip=true
+    ./mvnw clean install -DskipTests -DskipITs
 
 Full build instruction are available in the `harmony-common` [repository](https://github.com/nordic-institute/harmony-common/).
 
