@@ -21,8 +21,6 @@ public class SmallGrid extends DComponent {
         super(driver);
         PageFactory.initElements(driver, this);
         this.parentElement = parentElement;
-        wait.forElementToBeVisible(parentElement);
-
 
     }
 
@@ -44,6 +42,7 @@ public class SmallGrid extends DComponent {
 
     public WebElement searchValueInColumn(String columnName, String value) {
 
+        wait.forXMillis(100);
         Integer numOfPages = getGridPagination().getTotalPageNumber();
         List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;

@@ -32,6 +32,14 @@ public class InviteMembersPopup extends DComponent {
         selectMemberBtn.sendKeys(Keys.ENTER);
         weToDSelect(selectMemberROleDdl).selectByVisibleText(role);
         saveBtn.click();
+    }
 
+    public void changeRole(String newRole) {
+
+        if (!weToDSelect(selectMemberROleDdl).getCurrentValue().equals(newRole)) {
+            weToDSelect(selectMemberROleDdl).selectByVisibleText(newRole);
+            LOG.debug("Changing role to {}", newRole);
+        }
+        saveBtn.click();
     }
 }

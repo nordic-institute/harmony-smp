@@ -1,4 +1,4 @@
-package pages.ProfilePage;
+package pages.profilePage;
 
 import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.WebDriver;
@@ -8,9 +8,9 @@ import org.openqa.selenium.support.PageFactory;
 
 public class SuccesfullPasswordChangedPopup extends DComponent {
     @FindBy(css = "#mat-mdc-dialog-2 > div > div > app-information-dialog > div > div.panel")
-    WebElement message;
+    private WebElement message;
     @FindBy(id = "closebuttondialog_id")
-    WebElement closeBtn;
+    private WebElement closeBtn;
 
     public SuccesfullPasswordChangedPopup(WebDriver driver) {
         super(driver);

@@ -1,4 +1,4 @@
-package pages.PropertiesPage;
+package pages.propertiesPage;
 
 import ddsl.dcomponents.Grid.BasicGrid;
 import org.openqa.selenium.WebDriver;

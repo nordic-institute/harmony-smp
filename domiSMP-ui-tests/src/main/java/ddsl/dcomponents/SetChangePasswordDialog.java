@@ -7,7 +7,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.ProfilePage.SuccesfullPasswordChangedPopup;
+import pages.profilePage.SuccesfullPasswordChangedPopup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +22,12 @@ public class SetChangePasswordDialog extends DComponent {
     List<WebElement> fieldsError;
     @FindBy(id = "cp_id")
     private WebElement currentPasswordInput;
-    @SuppressWarnings("SpellCheckingInspection")
     @FindBy(id = "np_id")
     private WebElement newPasswordInput;
     @FindBy(id = "cnp_id")
     private WebElement confirmationPasswordInput;
     @FindBy(id = "changeCurrentUserPasswordButton")
     private WebElement setPasswordBtn;
-    @FindBy(id = "closeDialogButton")
-    private WebElement closeBtn;
 
 
     public SetChangePasswordDialog(WebDriver driver) {

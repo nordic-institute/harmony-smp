@@ -10,10 +10,11 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.DomainsPage.DomainsPage;
-import pages.ProfilePage.ProfilePage;
-import pages.PropertiesPage.PropertiesPage;
 import pages.UsersPage;
+import pages.domainsPage.DomainsPage;
+import pages.editDomainsPage.EditDomainsPage;
+import pages.profilePage.ProfilePage;
+import pages.propertiesPage.PropertiesPage;
 
 import java.util.Objects;
 
@@ -102,9 +103,11 @@ public class SideNavigationComponent extends DomiSMPPage {
         //            case SEARCH_RESOURCES:
         //                expandSection(resourcesExpandLnk);s
         //                return new DLink(driver, resourcesLnk);
-        //            case ADMINISTRATION_EDIT_DOMAINS:
-        //                expandSection(administrationExpand);
-        //                return new DLink(driver, editDomainsLnk);
+        if (page == Pages.ADMINISTRATION_EDIT_DOMAINS) {
+            openSubmenu(administrationExpand, editDomainsLnk);
+            return (T) new EditDomainsPage(driver);
+        }
+
         //            case ADMINISTRATION_EDIT_GROUPS:
         //                expandSection(administrationExpand);
         //                return new DLink(driver, editGroupsLnk);

@@ -1,4 +1,4 @@
-package pages.DomainsPage;
+package pages.domainsPage;
 
 import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.WebDriver;
@@ -39,8 +39,6 @@ public class ResourceTab extends DComponent {
             }
         }
     }
-
-
     public void checkResource(String resourceName) {
         wait.forElementToBeClickable(resourceOptions.get(0));
         for (WebElement element : resourceOptions) {

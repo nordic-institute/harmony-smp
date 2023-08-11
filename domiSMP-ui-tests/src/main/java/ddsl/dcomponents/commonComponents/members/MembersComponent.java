@@ -1,8 +1,10 @@
 package ddsl.dcomponents.commonComponents.members;
 
+import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.Grid.SmallGrid;
 import ddsl.dobjects.DButton;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -17,8 +19,6 @@ public class MembersComponent extends DComponent {
 
     @FindBy(id = "deleteButton")
     private WebElement removeMemberBtn;
-    @FindBy(id = "deleteButton")
-    private WebElement deleteBtn;
     @FindBy(css = "div domain-member-panel")
     private WebElement sidePanel;
 
@@ -38,6 +38,21 @@ public class MembersComponent extends DComponent {
 
     public DButton getInviteMemberBtn() {
         return weToDButton(inviteMemberBtn);
+    }
+
+    public void removeUser(String username) throws Exception {
+        getMembersGrid().searchValueInColumn("Username", username).click();
+        weToDButton(removeMemberBtn).click();
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
+        confirmationDialog.confirm();
+    }
+
+    public void changeRoleOfUser(String username, String newRole) throws Exception {
+        getMembersGrid().searchValueInColumn("Username", username).click();
+        weToDButton(sidePanel.findElement(By.id("editButton"))).click();
+        getInviteMembersPopup().changeRole(newRole);
+
+
     }
 
 }

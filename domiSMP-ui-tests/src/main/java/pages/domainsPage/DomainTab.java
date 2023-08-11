@@ -1,4 +1,4 @@
-package pages.DomainsPage;
+package pages.domainsPage;
 
 import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.WebDriver;

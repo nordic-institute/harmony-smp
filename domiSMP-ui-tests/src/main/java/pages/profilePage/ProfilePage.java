@@ -1,4 +1,4 @@
-package pages.ProfilePage;
+package pages.profilePage;
 
 import ddsl.PageWithGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
@@ -17,5 +17,6 @@ public class ProfilePage extends PageWithGrid {
     public ProfilePage(WebDriver driver) {
         super(driver);
         userData = new UserDataCommonComponent(driver);
+        LOG.debug("Profile page has loaded");
     }
 }
