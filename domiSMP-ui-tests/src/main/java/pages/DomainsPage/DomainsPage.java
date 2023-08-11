@@ -46,6 +46,11 @@ public class DomainsPage extends PageWithGrid {
 
         return new SMLIntegrationTab(driver);
     }
+
+    public MembersTab getMembersTab() {
+
+        return new MembersTab(driver);
+    }
     public void goToTab(String tabName) {
         for (WebElement element : tabList) {
             if (element.getText().contains(tabName)) {
@@ -57,14 +62,13 @@ public class DomainsPage extends PageWithGrid {
     }
 
     public String getAlert() {
+
         return getAlertArea().getAlertMessage();
     }
 
     public String getDomainWarningMessage() {
         return warningLabel.getText();
     }
-
-
 
 
 }

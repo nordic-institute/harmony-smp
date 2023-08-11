@@ -4,9 +4,7 @@ import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,29 +12,30 @@ import java.util.List;
 
 public class SmallGrid extends DComponent {
     private final static Logger LOG = LoggerFactory.getLogger(SmallGrid.class);
+    protected static final By gridHeadersLocator = By.cssSelector("table thead th");
+    protected static final By gridRowsLocator = By.cssSelector("table tbody tr");
+    private final WebElement parentElement;
 
-    @FindBy(css = "data-panel table thead th")
-    protected List<WebElement> gridHeaders;
-    @FindBy(css = "data-panel table tbody tr")
-    protected List<WebElement> gridRows;
 
-    public SmallGrid(WebDriver driver) {
+    public SmallGrid(WebDriver driver, WebElement parentElement) {
         super(driver);
         PageFactory.initElements(driver, this);
+        this.parentElement = parentElement;
+        wait.forElementToBeVisible(parentElement);
+
 
     }
 
     public GridPagination getGridPagination() {
-        return new GridPagination(driver);
+        return new GridPagination(driver, parentElement);
     }
 
-    public List<WebElement> gerGridHeaders() {
-        return wait.defaultWait.until(ExpectedConditions.visibilityOfAllElements(gridHeaders));
+    public List<WebElement> getGridHeaders() {
+        return parentElement.findElements(gridHeadersLocator);
     }
 
     public List<WebElement> getRows() {
-        wait.forXMillis(50);
-        return wait.defaultWait.until(ExpectedConditions.visibilityOfAllElements(gridRows));
+        return parentElement.findElements(gridRowsLocator);
     }
 
     public List<WebElement> getCells(WebElement row) {
@@ -46,7 +45,7 @@ public class SmallGrid extends DComponent {
     public WebElement searchValueInColumn(String columnName, String value) {
 
         Integer numOfPages = getGridPagination().getTotalPageNumber();
-        List<WebElement> rowHeaders = gerGridHeaders();
+        List<WebElement> rowHeaders = getGridHeaders();
         int columnIndex = -1;
         for (int i = 0; i < rowHeaders.size(); i++) {
             if (rowHeaders.get(i).getText().equals(columnName)) {

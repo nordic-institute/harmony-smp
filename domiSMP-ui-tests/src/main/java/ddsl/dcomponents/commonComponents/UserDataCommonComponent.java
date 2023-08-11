@@ -1,6 +1,7 @@
-package ddsl.dcomponents;
+package ddsl.dcomponents.commonComponents;
 
 import ddsl.DomiSMPPage;
+import ddsl.dcomponents.SetChangePasswordDialog;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;

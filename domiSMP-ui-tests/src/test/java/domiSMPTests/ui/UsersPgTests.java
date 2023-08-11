@@ -25,12 +25,13 @@ public class UsersPgTests extends SeleniumTest {
 
         usersPage.refreshPage();
         // usersPage.filter(adminNewUserData.getUsername());
-        WebElement newUser = usersPage.getGrid().searchValueInColumn("Username", adminNewUserData.getUsername());
+        WebElement newUser = usersPage.getDataPanelGrid().searchValueInColumn("Username", adminNewUserData.getUsername());
         Assert.assertNotNull(newUser);
         newUser.click();
 
         Assert.assertEquals(usersPage.getApplicationRoleValue(), adminNewUserData.getRole());
         Assert.assertEquals(usersPage.getFullNameValue(), adminNewUserData.getFullName());
+        Assert.assertTrue(usersPage.isSelectedUserActive(), "User active status is true");
 
         Assert.assertEquals(usersPage.getEmailValue(), adminNewUserData.getEmailAddress());
         Assert.assertEquals(usersPage.getSelectedThemeValue(), adminNewUserData.getSmpTheme());

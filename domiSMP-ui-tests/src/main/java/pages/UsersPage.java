@@ -1,7 +1,7 @@
 package pages;
 
 import ddsl.PageWithGrid;
-import ddsl.dcomponents.UserDataCommonComponent;
+import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

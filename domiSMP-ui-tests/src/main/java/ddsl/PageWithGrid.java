@@ -15,16 +15,19 @@ public class PageWithGrid extends DomiSMPPage {
     @FindBy(css = "data-panel >div >div> mat-toolbar button:first-of-type")
     public WebElement addBtn;
 
+    @FindBy(css = "data-panel")
+    public WebElement dataPanel;
+
     public PageWithGrid(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
     public GridPagination getPagination() {
-        return new GridPagination(driver);
+        return new GridPagination(driver, dataPanel);
     }
 
-    public SmallGrid getGrid() {
-        return new SmallGrid(driver);
+    public SmallGrid getDataPanelGrid() {
+        return new SmallGrid(driver, dataPanel);
     }
 }

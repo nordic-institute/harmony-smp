@@ -1,7 +1,7 @@
 package pages.ProfilePage;
 
 import ddsl.PageWithGrid;
-import ddsl.dcomponents.UserDataCommonComponent;
+import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +17,5 @@ public class ProfilePage extends PageWithGrid {
     public ProfilePage(WebDriver driver) {
         super(driver);
         userData = new UserDataCommonComponent(driver);
-
     }
 }
