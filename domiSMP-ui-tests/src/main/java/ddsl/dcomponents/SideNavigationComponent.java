@@ -10,6 +10,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.TruststorePage;
 import pages.UsersPage;
 import pages.domainsPage.DomainsPage;
 import pages.editDomainsPage.EditDomainsPage;
@@ -127,9 +128,10 @@ public class SideNavigationComponent extends DomiSMPPage {
         //            case SYSTEM_SETTINGS_KEYSTORE:
         //                expandSection(systemSettingsExpand);
         //                return new DLink(driver, keystoreLnk);
-        //            case SYSTEM_SETTINGS_TRUSTSTORE:
-        //                expandSection(systemSettingsExpand);
-        //                return new DLink(driver, truststoreLnk);
+        if (page == Pages.SYSTEM_SETTINGS_TRUSTSTORE) {
+            openSubmenu(systemSettingsExpand, truststoreLnk);
+            return (T) new TruststorePage(driver);
+        }
         //            case SYSTEM_SETTINGS_EXTENSIONS:
         //                expandSection(systemSettingsExpand);
         //                return new DLink(driver, extensionsLnk);
