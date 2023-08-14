@@ -71,15 +71,15 @@
     <mat-form-field style="width:100%"
                     matTooltip="Client Certificate used for SML authentication. The SML Client-Cert http Header is also generated from the certificate">
       <mat-label>SML Client Certificate Alias</mat-label>
-      <mat-select
+      <select matNativeControl
         formControlName="smlClientKeyAlias"
         id="smlClientKeyAlias_id">
-        <mat-option [value]="''">Choose certificate for signing soap response</mat-option>
-        <mat-option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
+        <option [value]="''">Choose certificate for signing soap response</option>
+        <option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
           {{cert.alias}} ({{cert.certificateId}})
-        </mat-option>
+        </option>
 
-      </mat-select>
+      </select>
     </mat-form-field>
 
     <mat-slide-toggle style="width:100%"

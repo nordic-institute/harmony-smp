@@ -1,11 +1,5 @@
 <div id="certificate-panel" class="mat-elevation-z2">
   <h3>Selected certificate data</h3>
-  <mat-form-field *ngIf="certificate?.invalidReason">
-    <mat-label>Error message</mat-label>
-    <input matInput placeholder="Error message"
-           [value]="certificate?.invalidReason"
-           readonly>
-  </mat-form-field>
   <div style="display: flex;flex-direction: row;flex:1 1">
     <mat-form-field *ngIf="!!this.certificate?.publicKeyType"  style="flex:1 1">
       <mat-label>Public key type</mat-label>
