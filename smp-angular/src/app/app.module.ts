@@ -90,11 +90,6 @@ import {SaveDialogComponent} from './common/dialogs/save-dialog/save-dialog.comp
 import {SearchTableComponent} from './common/search-table/search-table.component';
 import {SecurityEventService} from './security/security-event.service';
 import {SecurityService} from './security/security.service';
-import {ServiceGroupDetailsDialogComponent} from './service-group-edit/service-group-details-dialog/service-group-details-dialog.component';
-import {ServiceGroupEditComponent} from './service-group-edit/service-group-edit.component';
-import {ServiceGroupExtensionWizardDialogComponent} from './service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component';
-import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-group-metadata-dialog/service-group-metadata-dialog.component';
-import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
 import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
 import {SidenavComponent} from './window/sidenav/sidenav.component';
 import {SmlIntegrationService} from "./system-settings/domain/sml-integration.service";
@@ -144,6 +139,7 @@ import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/sm
 import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dialog/manage-members-dialog.component";
 import {HttpErrorHandlerService} from "./common/error/http-error-handler.service";
 import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-titled-label.component";
+import {ServiceGroupSearchComponent} from "./service-group-search/service-group-search.component";
 
 
 @NgModule({
@@ -209,10 +205,6 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
     RowLimiterComponent,
     SaveDialogComponent,
     SearchTableComponent,
-    ServiceGroupDetailsDialogComponent,
-    ServiceGroupEditComponent,
-    ServiceGroupExtensionWizardDialogComponent,
-    ServiceGroupMetadataDialogComponent,
     ServiceGroupSearchComponent,
     ServiceMetadataWizardDialogComponent,
     SidenavComponent,

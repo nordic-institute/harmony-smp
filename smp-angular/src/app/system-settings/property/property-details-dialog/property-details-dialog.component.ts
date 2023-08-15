@@ -4,9 +4,7 @@ import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular
 import {PropertyRo} from "../property-ro.model";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
-import {ServiceGroupValidationRo} from "../../../service-group-edit/service-group-details-dialog/service-group-validation-edit-ro.model";
 import {SmpConstants} from "../../../smp.constants";
-import {ServiceGroupValidationErrorCodeModel} from "../../../service-group-edit/service-group-details-dialog/service-group-validation-error-code.model";
 import {PropertyValidationRo} from "../property-validate-ro.model";
 import {HttpClient} from "@angular/common/http";
 import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.service";
