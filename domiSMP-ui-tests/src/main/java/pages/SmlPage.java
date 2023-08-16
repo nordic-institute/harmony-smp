@@ -22,14 +22,12 @@ public class SmlPage extends DComponent {
     }
 
     public boolean isDomainRegistered(DomainModel domainModel) {
+        String dnsRecord = domainModel.getSmlSmpId();
+
         for (WebElement element : dnsRecords) {
-            String dnsRecord = domainModel.getSmlSmpId();
             String elementRecords = element.getText();
 
-            if (elementRecords.contains(dnsRecord)) {
-                return true;
-            }
-            return false;
+            return elementRecords.contains(dnsRecord);
         }
         return false;
     }
