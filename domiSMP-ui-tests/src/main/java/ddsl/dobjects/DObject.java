@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DObject {
+    /**
+     * Generic element object used to have access to element actions.
+     */
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     public WebElement element;
     protected WebDriver driver;
@@ -73,7 +76,7 @@ public class DObject {
         }
     }
 
-    public String getAttribute(String attributeName) throws Exception {
+    public String getAttribute(String attributeName) {
         if (isPresent()) {
             String attr = element.getAttribute(attributeName);
             if (attr == null) {

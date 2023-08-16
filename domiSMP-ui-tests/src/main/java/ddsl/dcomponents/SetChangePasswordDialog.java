@@ -13,12 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetChangePasswordDialog extends DComponent {
+    /**
+     * Component object for dialog of changing password.
+     */
+
     private final static Logger LOG = LoggerFactory.getLogger(SetChangePasswordDialog.class);
     @FindBy(css = ".smp-field-error")
     List<WebElement> fieldsError;
     @FindBy(id = "cp_id")
     private WebElement currentPasswordInput;
-    @SuppressWarnings("SpellCheckingInspection")
     @FindBy(id = "np_id")
     private WebElement newPasswordInput;
     @FindBy(id = "cnp_id")
@@ -49,7 +52,7 @@ public class SetChangePasswordDialog extends DComponent {
 
     public List<String> getFieldErrorMessage() {
         ArrayList<String> fieldErrors = new ArrayList<>();
-        if (fieldsError.size() > 0) {
+        if (!fieldsError.isEmpty()) {
             fieldsError.forEach(error -> {
                 fieldErrors.add(error.getText());
             });

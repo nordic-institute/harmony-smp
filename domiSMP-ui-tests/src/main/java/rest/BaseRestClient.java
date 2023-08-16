@@ -70,6 +70,7 @@ public class BaseRestClient {
 
         return builder.type(type).put(ClientResponse.class, body.toString());
     }
+
     protected ClientResponse jsonPUT(WebResource resource, JSONObject body) {
         return requestPUT(resource, body, MediaType.APPLICATION_JSON);
     }
@@ -101,6 +102,7 @@ public class BaseRestClient {
 
         return builder;
     }
+
     public List<NewCookie> login() throws SMPRestException {
         log.debug("Rest client using to login: " + this.username);
         HashMap<String, String> params = new HashMap<>();
@@ -121,6 +123,7 @@ public class BaseRestClient {
         throw new SMPRestException("Login failed", response);
 
     }
+
     private String extractToken() {
         String mytoken = null;
         for (NewCookie cookie : cookies) {
@@ -130,6 +133,7 @@ public class BaseRestClient {
         }
         return mytoken;
     }
+
     public void refreshCookies() throws Exception {
         if (isLoggedIn()) {
             return;
@@ -145,6 +149,7 @@ public class BaseRestClient {
             throw new Exception("Could not obtain XSRF token, tests will not be able to generate necessary data!");
         }
     }
+
     public boolean isLoggedIn() {
         WebResource.Builder builder = decorateBuilder(resource.path(RestServicePaths.CONNECTED));
         int response = builder.get(ClientResponse.class).getStatus();

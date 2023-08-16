@@ -5,6 +5,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class DInput extends DObject {
+    /**
+     * Generic wrapper for input element.
+     */
     public DInput(WebDriver driver, WebElement element) {
         super(driver, element);
     }

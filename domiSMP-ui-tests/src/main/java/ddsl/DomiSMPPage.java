@@ -55,10 +55,10 @@ public class DomiSMPPage extends DComponent {
         return new LoginPage(driver);
     }
 
-    public LoginPage logout() {
+    public void logout() {
         rightMenuBtn.click();
         logoutMenuBtn.click();
-        return new LoginPage(driver);
+
     }
 
     public void refreshPage() {
@@ -80,10 +80,7 @@ public class DomiSMPPage extends DComponent {
 
     public boolean isExpiredPopupEnabled() {
         try {
-            if (dialogOKbutton.isDisplayed()) {
-                return true;
-            }
-            return false;
+            return dialogOKbutton.isDisplayed();
         } catch (Exception e) {
             LOG.info("Expiration poup not found", e);
             return false;

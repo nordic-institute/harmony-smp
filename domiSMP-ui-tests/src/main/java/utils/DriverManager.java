@@ -15,7 +15,6 @@ public class DriverManager {
     static TestRunData data = new TestRunData();
 
 
-
     public static WebDriver getDriver() {
 
         WebDriver driver;

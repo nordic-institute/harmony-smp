@@ -6,6 +6,9 @@ import rest.models.DomainModel;
 
 public class DomainClient extends BaseRestClient {
 
+    /**
+     * Rest client for domain actions
+     */
     public DomainClient() {
         super();
     }

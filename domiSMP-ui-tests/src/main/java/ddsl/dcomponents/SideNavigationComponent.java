@@ -20,6 +20,10 @@ import pages.UsersPage;
 import java.util.Objects;
 
 public class SideNavigationComponent extends DomiSMPPage {
+
+    /**
+     * Navigation object to navigate through application.
+     */
     private final static Logger LOG = LoggerFactory.getLogger(SideNavigationComponent.class);
 
     @FindBy(id = "window-sidenav-panel")
@@ -172,6 +176,7 @@ public class SideNavigationComponent extends DomiSMPPage {
     public Boolean isMenuAvailable(Pages page) {
         MenuNavigation navigationLinks = getNavigationLinks(page);
         try {
+            assert navigationLinks != null;
             if (navigationLinks.menuLink.isEnabled()) {
                 navigationLinks.menuLink.click();
                 return navigationLinks.submenuLink.isEnabled();
@@ -190,7 +195,7 @@ public class SideNavigationComponent extends DomiSMPPage {
                 LOG.info("Current page is " + getBreadcrump().getCurrentPage());
 
             } else {
-                LOG.error("Current page is not as expected. EXPECTED: [{}] but ACTUAL PAGE [{}]", submenuBtn.getText().toString(), getBreadcrump().getCurrentPage().toString());
+                LOG.error("Current page is not as expected. EXPECTED: [{}] but ACTUAL PAGE [{}]", submenuBtn.getText(), getBreadcrump().getCurrentPage());
                 throw new RuntimeException();
             }
 
@@ -209,7 +214,7 @@ public class SideNavigationComponent extends DomiSMPPage {
         }
     }
 
-    public class MenuNavigation {
+    public static class MenuNavigation {
         WebElement menuLink;
         WebElement submenuLink;
 

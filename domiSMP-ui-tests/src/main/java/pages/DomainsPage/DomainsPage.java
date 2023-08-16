@@ -34,7 +34,6 @@ public class DomainsPage extends PageWithGrid {
     private ResourceTab resourceTab;
 
 
-
     public DomainsPage(WebDriver driver) {
         super(driver);
         LOG.debug("Loading Domains page.");
@@ -70,8 +69,6 @@ public class DomainsPage extends PageWithGrid {
             }
         }
     }
-
-
 
 
 }

@@ -12,6 +12,10 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class ResourceTab extends DComponent {
+
+    /**
+     * Resource tab component of Domain page. Gives access to resource tab behaviour.
+     */
     private final static Logger LOG = LoggerFactory.getLogger(ResourceTab.class);
 
     @FindBy(css = "mat-list-option")

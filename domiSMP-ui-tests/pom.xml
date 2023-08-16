@@ -19,6 +19,10 @@
         <json_version>20230227</json_version>
         <jackson_version>2.15.0-rc3</jackson_version>
         <javax.ws.rs-api_version>2.1.1</javax.ws.rs-api_version>
+        <javax.ws.rs-api_version>2.1.1</javax.ws.rs-api_version>
+        <xmlunit_version>1.6</xmlunit_version>
+        <maven-surefire-plugin_version>3.0.0-M7</maven-surefire-plugin_version>
+
     </properties>
 
     <build>
@@ -220,13 +224,13 @@
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
-            <version>1.6</version>
+            <version>${xmlunit_version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0-M7</version>
+            <version>${maven-surefire-plugin_version}</version>
         </dependency>
 
     </dependencies>
