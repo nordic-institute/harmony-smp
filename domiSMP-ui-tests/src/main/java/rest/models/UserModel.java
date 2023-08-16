@@ -94,7 +94,7 @@ public class UserModel {
         this.smpLocale = smpLocale;
     }
 
-    public static UserModel createUserWithUSERrole() {
+    public static UserModel generateUserWithUSERrole() {
         UserModel userModel = new UserModel();
         userModel.username = ("AUT_username_" + Generator.randomAlphaNumeric(4)).toLowerCase();
         userModel.active = true;
@@ -106,7 +106,7 @@ public class UserModel {
         return userModel;
     }
 
-    public static UserModel createUserWithADMINrole() {
+    public static UserModel generateUserWithADMINrole() {
         UserModel userModel = new UserModel();
         userModel.username = ("AUT_username_" + Generator.randomAlphaNumeric(4)).toLowerCase();
         userModel.active = true;
@@ -126,6 +126,7 @@ public class UserModel {
         userModel.smpLocale = "Dutch";
         return userModel;
     }
+
 
 }
 

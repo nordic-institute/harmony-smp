@@ -1,6 +1,7 @@
 package ddsl.dcomponents;
 
 
+import ddsl.DomiSMPPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -8,6 +9,9 @@ import org.openqa.selenium.support.FindBy;
 import java.util.List;
 
 public class BreadcrumpComponent extends DomiSMPPage {
+    /**
+     * Component for the Breadcrump of DomiSMP
+     */
 
     @FindBy(xpath = "//smp-breadcrumb/div/smp-breadcrumb-item/a/div[3]/span")
     public List<WebElement> BreadcrumpItems;

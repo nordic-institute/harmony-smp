@@ -1,7 +1,7 @@
 package pages.PropertiesPage;
 
+import ddsl.DomiSMPPage;
 import ddsl.dcomponents.ConfirmationDialog;
-import ddsl.dcomponents.DomiSMPPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -11,6 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PropertiesPage extends DomiSMPPage {
+
+    /**
+     * Page object for the Properties page. This contains the locators of the page and the methods for the behaviour of the page
+     */
     private final static Logger LOG = LoggerFactory.getLogger(PropertiesPage.class);
 
     @FindBy(id = "searchTable")
@@ -50,6 +54,10 @@ public class PropertiesPage extends DomiSMPPage {
         } catch (Exception e) {
             LOG.error("Cannot set value for property {1}", propertyName);
         }
+    }
+
+    public String getPropertyValue(String propertyName) {
+        return grid().getPropertyValue(propertyName);
 
     }
 

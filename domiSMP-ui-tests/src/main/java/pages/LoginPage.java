@@ -1,6 +1,6 @@
 package pages;
 
-import ddsl.dcomponents.DomiSMPPage;
+import ddsl.DomiSMPPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -32,7 +32,7 @@ public class LoginPage extends DomiSMPPage {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
-    public DomiSMPPage login(String user, String pass) throws Exception {
+    public void login(String user, String pass) throws Exception {
         HashMap<String, String> usr = new HashMap<>();
         usr.put("username", user);
         usr.put("pass", pass);
@@ -43,13 +43,17 @@ public class LoginPage extends DomiSMPPage {
         weToDInput(password).fill(usr.get("pass"));
         weToDButton(loginBtn).click();
 
-        if (getExpiredDialoginbutton().isPresent()) {
-            LOG.info("Expired password dialog is present.");
-            getExpiredDialoginbutton().click();
+        try {
+            if (isExpiredDialoginbuttonEnabled()) {
+                getExpiredDialoginbutton().click();
+            }
+
+        } catch (Exception e) {
+            LOG.debug("Password expiration popup is not present");
+
+            throw new RuntimeException(e);
         }
 
-
-        return new DomiSMPPage(driver);
 
     }
 

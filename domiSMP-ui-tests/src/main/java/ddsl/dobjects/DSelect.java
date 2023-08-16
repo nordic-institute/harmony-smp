@@ -6,7 +6,9 @@ import org.openqa.selenium.support.ui.Select;
 
 
 public class DSelect extends DObject {
-
+    /**
+     * Generic wrapper for select element.
+     */
     Select select = new Select(element);
 
     public DSelect(WebDriver driver, WebElement element) {
@@ -20,6 +22,5 @@ public class DSelect extends DObject {
     public String getCurrentValue() {
         return select.getAllSelectedOptions().get(0).getText();
     }
-
 
 }

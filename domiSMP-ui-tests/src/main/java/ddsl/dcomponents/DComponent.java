@@ -6,13 +6,14 @@ import ddsl.dobjects.DSelect;
 import ddsl.dobjects.DWait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.TestRunData;
 
 public class DComponent {
 
-    private final static Logger LOG = LoggerFactory.getLogger(DComponent.class);
+    /**
+     * Generic component which which gives access of driver, wait and wrappers of elements. This should be inhered by each component class.
+     */
+
     public DWait wait;
     protected WebDriver driver;
     protected TestRunData data = new TestRunData();
@@ -33,4 +34,5 @@ public class DComponent {
     protected DSelect weToDSelect(WebElement element) {
         return new DSelect(driver, element);
     }
+
 }

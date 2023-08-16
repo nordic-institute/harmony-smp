@@ -6,6 +6,10 @@ import org.openqa.selenium.WebElement;
 
 public class PropGrid extends BasicGrid {
 
+    /**
+     * This class is used to map Property grid component.
+     */
+
     public PropGrid(WebDriver driver, WebElement container) {
         super(driver, container);
     }
@@ -15,6 +19,7 @@ public class PropGrid extends BasicGrid {
         return new PropertyPopup(driver);
     }
 
-    ;
-
+    public String getPropertyValue(String propertyName) {
+        return getValue(propertyName);
+    }
 }

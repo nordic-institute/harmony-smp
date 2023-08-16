@@ -1,5 +1,6 @@
 package ddsl.dcomponents;
 
+import ddsl.DomiSMPPage;
 import ddsl.enums.Pages;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.NoSuchElementException;
@@ -8,14 +9,21 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.ProfilePage;
+import pages.DomainsPage.DomainsPage;
+import pages.ProfilePage.ProfilePage;
 import pages.PropertiesPage.PropertiesPage;
+import pages.UsersPage;
 
 import java.util.Objects;
 
 public class SideNavigationComponent extends DomiSMPPage {
+
+    /**
+     * Navigation object to navigate through application.
+     */
     private final static Logger LOG = LoggerFactory.getLogger(SideNavigationComponent.class);
 
     @FindBy(id = "window-sidenav-panel")
@@ -85,6 +93,7 @@ public class SideNavigationComponent extends DomiSMPPage {
     public SideNavigationComponent(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, 1), this);
+        wait.forElementToBeGone(overlay);
     }
 
     private MenuNavigation getNavigationLinks(Pages pages) {
@@ -94,13 +103,25 @@ public class SideNavigationComponent extends DomiSMPPage {
         return null;
     }
 
+    public <T> T navigateTo2(Pages page) {
+
+        wait.defaultWait.until(ExpectedConditions.visibilityOf(sideBar));
+        if (page == Pages.SYSTEM_SETTINGS_DOMAINS) {
+            openSubmenu(systemSettingsExpand, domainsLnk);
+            return (T) new DomainsPage(driver);
+        }
+        return null;
+
+
+    }
+
     public DomiSMPPage navigateTo(Pages page) {
 
-        wait.forElementToHaveText(sideBar);
+        wait.defaultWait.until(ExpectedConditions.visibilityOf(sideBar));
 
         LOG.debug("Get link to " + page.name());
         //            case SEARCH_RESOURCES:
-        //                expandSection(resourcesExpandLnk);
+        //                expandSection(resourcesExpandLnk);s
         //                return new DLink(driver, resourcesLnk);
         //            case ADMINISTRATION_EDIT_DOMAINS:
         //                expandSection(administrationExpand);
@@ -111,12 +132,16 @@ public class SideNavigationComponent extends DomiSMPPage {
         //            case ADMINISTRATION_EDIT_RESOURCES:
         //                expandSection(administrationExpand);
         //                return new DLink(driver, editResourcesLnk);
-        //            case SYSTEM_SETTINGS_USERS:
-        //                expandSection(systemSettingsExpand);
-        //                return new DLink(driver, usersLnk);
-        //            case SYSTEM_SETTINGS_DOMAINS:
-        //                expandSection(systemSettingsExpand);
-        //                return new DLink(driver, domainsLnk);
+
+        if (page == Pages.SYSTEM_SETTINGS_USERS) {
+            openSubmenu(systemSettingsExpand, usersLnk);
+            return new UsersPage(driver);
+        }
+        if (page == Pages.SYSTEM_SETTINGS_DOMAINS) {
+            openSubmenu(systemSettingsExpand, domainsLnk);
+            return new DomainsPage(driver);
+        }
+
         //            case SYSTEM_SETTINGS_KEYSTORE:
         //                expandSection(systemSettingsExpand);
         //                return new DLink(driver, keystoreLnk);
@@ -151,41 +176,45 @@ public class SideNavigationComponent extends DomiSMPPage {
     public Boolean isMenuAvailable(Pages page) {
         MenuNavigation navigationLinks = getNavigationLinks(page);
         try {
+            assert navigationLinks != null;
             if (navigationLinks.menuLink.isEnabled()) {
                 navigationLinks.menuLink.click();
                 return navigationLinks.submenuLink.isEnabled();
             }
             return false;
         } catch (NoSuchElementException e) {
+            LOG.error("No menu element found");
             return false;
         }
     }
 
-    private void openSubmenu(WebElement menu, WebElement submenu) {
+    private void openSubmenu(WebElement menuBtn, WebElement submenuBtn) {
         try {
-            submenu.click();
-            if (submenu.getText().contains(getBreadcrump().getCurrentPage())) {
+            submenuBtn.click();
+            if (submenuBtn.getText().contains(getBreadcrump().getCurrentPage())) {
                 LOG.info("Current page is " + getBreadcrump().getCurrentPage());
 
             } else {
-                LOG.error("Current page is not as expected. EXPECTED: [{}] but ACTUAL PAGE [{}]", submenu.getText().toString(), getBreadcrump().getCurrentPage().toString());
+                LOG.error("Current page is not as expected. EXPECTED: [{}] but ACTUAL PAGE [{}]", submenuBtn.getText(), getBreadcrump().getCurrentPage());
                 throw new RuntimeException();
             }
 
         } catch (ElementNotInteractableException exception) {
-            menu.click();
-            submenu.click();
-            if (submenu.getText().contains(getBreadcrump().getCurrentPage())) {
+
+            // closeExpirationPopupIfEnabled();
+            menuBtn.click();
+            submenuBtn.click();
+            if (submenuBtn.getText().contains(getBreadcrump().getCurrentPage())) {
                 LOG.info("Current page is " + getBreadcrump().getCurrentPage());
 
             } else {
-                LOG.error("Current page is not as expected. EXPECTED: " + submenu.getText() + "but ACTUAL PAGE: " + getBreadcrump().getCurrentPage());
+                LOG.error("Current page is not as expected. EXPECTED: " + submenuBtn.getText() + "but ACTUAL PAGE: " + getBreadcrump().getCurrentPage());
                 throw new RuntimeException();
             }
         }
     }
 
-    public class MenuNavigation {
+    public static class MenuNavigation {
         WebElement menuLink;
         WebElement submenuLink;
 

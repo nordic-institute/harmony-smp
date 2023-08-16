@@ -47,9 +47,9 @@ public class BasicGrid extends DComponent {
         wait.forXMillis(500);
     }
 
-    public void doubleClickRow(String propertyName) {
+    public void doubleClickRow(String fieldName) {
         gridRows.forEach(row -> {
-                    if (row.getText().startsWith(propertyName)) {
+                    if (row.getText().startsWith(fieldName)) {
                         Actions action = new Actions(driver);
                         action.doubleClick(row).perform();
                     }
@@ -59,24 +59,16 @@ public class BasicGrid extends DComponent {
         wait.forXMillis(500);
     }
 
-    public void doubleClickRow(int rowNumber) {
+    public String getValue(String fieldName) {
+        String fieldValue = null;
+        for (WebElement row : gridRows) {
+            if (row.getText().startsWith(fieldName)) {
+                fieldValue = row.getText().replace(fieldName, "").trim();
 
-        LOG.info("double clicking row ... " + rowNumber);
-        wait.forXMillis(500);
-        if (rowNumber >= gridRows.size()) {
-            return;
+            }
         }
-        Actions action = new Actions(driver);
-        action.doubleClick(gridRows.get(rowNumber)).perform();
-    }
+        return fieldValue;
 
-    public int getColumnsNo() {
-        LOG.info("getting number of columns");
-        return gridHeaders.size();
-    }
-
-    public int getRowsNo() {
-        return gridRows.size();
     }
 
     public void scrollRow(int index) {

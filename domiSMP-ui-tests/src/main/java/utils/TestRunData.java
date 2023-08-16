@@ -18,9 +18,9 @@ public class TestRunData {
     public static SimpleDateFormat CSV_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     public static SimpleDateFormat REST_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     public static SimpleDateFormat REST_JMS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    public String userId;
     static Properties prop = new Properties();
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    public String userId;
 
     public TestRunData() {
         if (prop.isEmpty()) {
@@ -51,7 +51,7 @@ public class TestRunData {
         HashMap<String, String> toReturn = new HashMap<>();
 
         toReturn.put("username", prop.getProperty(role + ".username"));
-        toReturn.put("pass", prop.getProperty(role + ".password"));
+        toReturn.put("password", prop.getProperty(role + ".password"));
 
         return toReturn;
     }

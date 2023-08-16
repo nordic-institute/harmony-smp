@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PropertyPopup extends DComponent {
+    /**
+     * Property popup component used when modifying a property.
+     */
     private final static Logger LOG = LoggerFactory.getLogger(PropertiesPage.class);
     @FindBy(id = "updatePropertyButton")
     WebElement popupOkBtn;
@@ -63,9 +66,9 @@ public class PropertyPopup extends DComponent {
     }
 
     public PropertiesPage enableCheckboxOfProperty() {
-        Boolean bool = propertyCheckbox.isSelected();
+        boolean bool = propertyCheckbox.isSelected();
 
-        if (bool == false) {
+        if (!bool) {
             propertyCheckbox.click();
             popupOkBtn.click();
         } else {
@@ -75,14 +78,14 @@ public class PropertyPopup extends DComponent {
     }
 
     public PropertiesPage disableCheckboxOfProperty() {
-        Boolean bool = propertyCheckbox.isSelected();
-        if (bool == true) {
+        boolean bool = propertyCheckbox.isSelected();
+        if (bool) {
             JavascriptExecutor executor = (JavascriptExecutor) driver;
             executor.executeScript("arguments[0].click();", propertyCheckbox);
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error(String.valueOf(e));
             }
             popupOkBtn.click();
         } else {

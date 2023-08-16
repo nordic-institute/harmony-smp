@@ -8,8 +8,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.time.Duration;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 public class DriverManager {
     static TestRunData data = new TestRunData();
@@ -18,14 +18,15 @@ public class DriverManager {
     public static WebDriver getDriver() {
 
         WebDriver driver;
-        if ( StringUtils.equalsIgnoreCase(data.getRunBrowser(), "firefox")) {
+        if (StringUtils.equalsIgnoreCase(data.getRunBrowser(), "firefox")) {
             driver = getFirefoxDriver();
         } else {
             driver = getChromeDriver();
         }
         driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+
         return driver;
     }
 
@@ -42,16 +43,19 @@ public class DriverManager {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
         options.addArguments("--disable-popup-blocking");
+        // options.addArguments("--headless=new");
 
         options.setExperimentalOption("prefs", prefs);
         return new ChromeDriver(options);
     }
 
+
     private static WebDriver getFirefoxDriver() {
         System.setProperty("webdriver.gecko.driver", data.getFirefoxDriverPath());
 
         FirefoxOptions options = new FirefoxOptions();
-        options.setHeadless(data.isHeadless());
+        options.addArguments("--headless=new");
+
         //code added for auto download
         options.addPreference("browser.download.folderList", 2);
         options.addPreference("browser.download.manager.showWhenStarting", false);

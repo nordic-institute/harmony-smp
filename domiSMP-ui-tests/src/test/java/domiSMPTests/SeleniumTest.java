@@ -10,6 +10,7 @@ import utils.DriverManager;
 import utils.TestRunData;
 
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 public class SeleniumTest {
 
@@ -17,17 +18,15 @@ public class SeleniumTest {
      * This class is extending all the test classes to have access to the Base tests methods.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(SeleniumTest.class);
-    static int methodCount = 1;
-    public String logFilename;
-
     public static TestRunData data = new TestRunData();
     public static DomiSMPRestClient rest = new DomiSMPRestClient();
+    static int methodCount = 1;
+    public String logFilename;
     public WebDriver driver;
 
 
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite() {
-
         LOG.info("Log file name is " + logFilename);
         LOG.info("-------- Starting -------");
     }
@@ -41,6 +40,9 @@ public class SeleniumTest {
     public void beforeClass() {
         LOG.info("--------Initialize test class-------");
         driver = DriverManager.getDriver();
+        java.util.logging.Logger.getLogger("io.netty.util.NetUtil").setLevel(Level.OFF);
+        java.util.logging.Logger.getLogger("org.asynchttpclient.netty.handler").setLevel(Level.OFF);
+
 
     }
 
@@ -61,6 +63,15 @@ public class SeleniumTest {
         }
     }
 
+    @AfterMethod
+    protected void afterMethod(Method method) {
+        try {
+            driver.quit();
+        } catch (Exception e) {
+            LOG.warn("Closing the driver failed");
+            LOG.error("EXCEPTION: ", e);
+        }
+    }
 
     @AfterClass(alwaysRun = true)
     protected void afterClass() {
