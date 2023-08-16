@@ -1,4 +1,4 @@
-package pages.domainsPage;
+package pages.DomainsPage;
 
 import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.WebDriver;
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class ResourceTab extends DComponent {
+
     /**
      * Page object for the Resource tab of Domains page. This contains the locators of the page and the methods for the behaviour of the page
      */

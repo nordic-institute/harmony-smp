@@ -10,9 +10,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.DomainsPage.DomainsPage;
 import pages.TruststorePage;
 import pages.UsersPage;
-import pages.domainsPage.DomainsPage;
 import pages.editDomainsPage.EditDomainsPage;
 import pages.profilePage.ProfilePage;
 import pages.propertiesPage.PropertiesPage;
@@ -20,6 +20,10 @@ import pages.propertiesPage.PropertiesPage;
 import java.util.Objects;
 
 public class SideNavigationComponent extends DomiSMPPage {
+
+    /**
+     * Navigation object to navigate through application.
+     */
     private final static Logger LOG = LoggerFactory.getLogger(SideNavigationComponent.class);
 
     @FindBy(id = "window-sidenav-panel")
@@ -212,7 +216,7 @@ public class SideNavigationComponent extends DomiSMPPage {
 //        }
 //    }
 
-    public class MenuNavigation {
+    public static class MenuNavigation {
         WebElement menuLink;
         WebElement submenuLink;
 

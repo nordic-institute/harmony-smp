@@ -14,6 +14,11 @@ import java.util.List;
 
 public class PageWithGrid extends DomiSMPPage {
     private final static Logger LOG = LoggerFactory.getLogger(PageWithGrid.class);
+
+    /**
+     * Generic page used for pages which have small grid in the right of the page. This element gives access to action buttons and elements of the page.
+     */
+
     @FindBy(css = "mat-form-field input")
     public WebElement filterInput;
     @FindBy(css = "data-panel >div >div> mat-toolbar button:first-of-type")

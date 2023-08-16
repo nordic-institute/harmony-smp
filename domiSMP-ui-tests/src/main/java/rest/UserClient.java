@@ -6,6 +6,11 @@ import rest.models.UserModel;
 
 public class UserClient extends BaseRestClient {
 
+
+    /**
+     * Rest client for user actions
+     */
+
     public UserClient(String username, String password) {
         super(username, password);
     }

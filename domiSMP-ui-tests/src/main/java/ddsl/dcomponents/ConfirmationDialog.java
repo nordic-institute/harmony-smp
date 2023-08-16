@@ -9,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConfirmationDialog extends DComponent {
+    /**
+     * Page component for conformation popups/dialogs for different actions
+     */
     private final static Logger LOG = LoggerFactory.getLogger(ConfirmationDialog.class);
 
     @FindBy(id = "yesbuttondialog_id")
@@ -26,7 +29,7 @@ public class ConfirmationDialog extends DComponent {
         LOG.info("dialog .. confirm");
         wait.forElementToBeClickable(yesBtn);
         yesBtn.click();
-        wait.forElementToBeClickable(yesBtn);
+        wait.forElementToBeGone(yesBtn);
     }
 
     public void cancel() {

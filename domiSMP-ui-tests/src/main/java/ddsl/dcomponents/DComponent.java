@@ -9,8 +9,9 @@ import org.openqa.selenium.WebElement;
 import utils.TestRunData;
 
 public class DComponent {
+
     /**
-     * Generic component for webelement.
+     * Generic component which which gives access of driver, wait and wrappers of elements. This should be inhered by each component class.
      */
 
     public DWait wait;

@@ -7,6 +7,10 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 public class SuccesfullPasswordChangedPopup extends DComponent {
+
+    /**
+     * This class is used to map the succesfull password changed dialog.
+     */
     @FindBy(css = "#mat-mdc-dialog-2 > div > div > app-information-dialog > div > div.panel")
     private WebElement message;
     @FindBy(id = "closebuttondialog_id")

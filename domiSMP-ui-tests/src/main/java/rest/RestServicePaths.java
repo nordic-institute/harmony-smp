@@ -1,12 +1,11 @@
 package rest;
 
 public class RestServicePaths {
-    private RestServicePaths() {
-    }
-
     public static final String LOGIN = "/public/rest/security/authentication";
     public static final String CONNECTED = "/public/rest/security/user";
 
+    private RestServicePaths() {
+    }
 
     public static String getUsersPath(String currentUserId) {
 

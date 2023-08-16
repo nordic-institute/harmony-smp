@@ -9,6 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AlertComponent extends DComponent {
+
+    /**
+     * This component is used to retrive the alerts which appear in application
+     */
     private final static Logger LOG = LoggerFactory.getLogger(AlertComponent.class);
 
     @FindBy(id = "alertmessage_id")

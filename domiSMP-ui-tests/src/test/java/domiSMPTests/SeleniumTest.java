@@ -18,11 +18,10 @@ public class SeleniumTest {
      * This class is extending all the test classes to have access to the Base tests methods.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(SeleniumTest.class);
-    static int methodCount = 1;
-    public String logFilename;
-
     public static TestRunData data = new TestRunData();
     public static DomiSMPRestClient rest = new DomiSMPRestClient();
+    static int methodCount = 1;
+    public String logFilename;
     public WebDriver driver;
 
 

@@ -46,10 +46,6 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
     this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_SERVICE_GROUP;
   }
 
-  ngOnDestroy() {
-
-  }
-
   ngOnInit(): void {
     this.serviceGroupSearchController = new ServiceGroupSearchController(this.dialog);
   }

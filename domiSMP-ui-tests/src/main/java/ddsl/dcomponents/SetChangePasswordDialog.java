@@ -50,7 +50,7 @@ public class SetChangePasswordDialog extends DComponent {
 
     public List<String> getFieldErrorMessage() {
         ArrayList<String> fieldErrors = new ArrayList<>();
-        if (fieldsError.size() > 0) {
+        if (!fieldsError.isEmpty()) {
             fieldsError.forEach(error -> {
                 fieldErrors.add(error.getText());
             });

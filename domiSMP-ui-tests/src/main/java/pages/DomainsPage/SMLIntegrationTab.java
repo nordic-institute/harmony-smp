@@ -1,4 +1,4 @@
-package pages.domainsPage;
+package pages.DomainsPage;
 
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;

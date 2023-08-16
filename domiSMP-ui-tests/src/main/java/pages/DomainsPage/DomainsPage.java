@@ -1,4 +1,4 @@
-package pages.domainsPage;
+package pages.DomainsPage;
 
 import ddsl.PageWithGrid;
 import ddsl.dobjects.DButton;

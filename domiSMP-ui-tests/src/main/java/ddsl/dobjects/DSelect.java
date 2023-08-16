@@ -6,7 +6,9 @@ import org.openqa.selenium.support.ui.Select;
 
 
 public class DSelect extends DObject {
-
+    /**
+     * Generic wrapper for select element.
+     */
     Select select = new Select(element);
 
     public DSelect(WebDriver driver, WebElement element) {
