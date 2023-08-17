@@ -27,7 +27,9 @@ public class SmlPage extends DComponent {
         for (WebElement element : dnsRecords) {
             String elementRecords = element.getText();
 
-            return elementRecords.contains(dnsRecord);
+            if (elementRecords.contains(dnsRecord)) {
+                return true;
+            }
         }
         return false;
     }
