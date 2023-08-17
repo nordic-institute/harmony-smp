@@ -1,6 +1,7 @@
-package ddsl.dcomponents;
+package ddsl.dcomponents.commonComponents;
 
 import ddsl.DomiSMPPage;
+import ddsl.dcomponents.SetChangePasswordDialog;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -58,7 +59,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
         return passwordExpiresOnLbl.getText();
     }
 
-    public SetChangePasswordDialog setChangePasswordDialog() {
+    public SetChangePasswordDialog getChangePasswordDialog() {
         return new SetChangePasswordDialog(driver);
     }
 
@@ -71,8 +72,8 @@ public class UserDataCommonComponent extends DomiSMPPage {
             if (!emailValue.isEmpty()) {
                 weToDInput(fullNameInput).fill(fullNameValue);
             }
-            weToDSelect(themeSel).selectValue(selectThemeValue);
-            weToDSelect(localeSel).selectValue(localeValue);
+            weToDSelect(themeSel).selectByVisibleText(selectThemeValue);
+            weToDSelect(localeSel).selectByVisibleText(localeValue);
 
 
         } catch (Exception e) {

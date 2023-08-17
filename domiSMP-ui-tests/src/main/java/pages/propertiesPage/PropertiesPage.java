@@ -1,4 +1,4 @@
-package pages.PropertiesPage;
+package pages.propertiesPage;
 
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.ConfirmationDialog;
@@ -19,12 +19,8 @@ public class PropertiesPage extends DomiSMPPage {
 
     @FindBy(id = "searchTable")
     private WebElement propertyTableContainer;
-    @FindBy(id = "cancelButton")
-    private WebElement cancelBtn;
     @FindBy(id = "saveButton")
     private WebElement saveBtn;
-    @FindBy(id = "editButton")
-    private WebElement editBtn;
     @FindBy(id = "searchProperty")
     private WebElement searchPropertyField;
     @FindBy(id = "searchbutton_id")

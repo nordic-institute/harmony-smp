@@ -1,7 +1,7 @@
 package pages;
 
 import ddsl.PageWithGrid;
-import ddsl.dcomponents.UserDataCommonComponent;
+import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,7 +32,7 @@ public class UsersPage extends PageWithGrid {
     }
 
     public DButton getCreateUserBtn() {
-        return new DButton(driver, AddBtn);
+        return new DButton(driver, addBtn);
     }
 
     public String fillNewUserDataAndSave(UserModel newUserData) {

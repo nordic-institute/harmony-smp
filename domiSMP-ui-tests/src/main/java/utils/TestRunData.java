@@ -71,6 +71,12 @@ public class TestRunData {
         return url;
     }
 
+    public String getSMLUrl() {
+        String url = prop.getProperty("SML_URL");
+        log.debug("Opening SML " + url);
+        return url;
+    }
+
     public Integer getTIMEOUT() {
         return Integer.valueOf(prop.getProperty("SHORT_TIMEOUT_SECONDS"));
     }

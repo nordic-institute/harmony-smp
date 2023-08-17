@@ -7,16 +7,16 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.ProfilePage.SuccesfullPasswordChangedPopup;
+import pages.profilePage.SuccesfullPasswordChangedPopup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SetChangePasswordDialog extends DComponent {
-    /**
-     * Component object for dialog of changing password.
-     */
 
+    /**
+     * Page object for the Set/change password dialog. This contains the locators of the page and the methods for the behaviour of the page
+     */
     private final static Logger LOG = LoggerFactory.getLogger(SetChangePasswordDialog.class);
     @FindBy(css = ".smp-field-error")
     List<WebElement> fieldsError;
@@ -28,8 +28,6 @@ public class SetChangePasswordDialog extends DComponent {
     private WebElement confirmationPasswordInput;
     @FindBy(id = "changeCurrentUserPasswordButton")
     private WebElement setPasswordBtn;
-    @FindBy(id = "closeDialogButton")
-    private WebElement closeBtn;
 
 
     public SetChangePasswordDialog(WebDriver driver) {

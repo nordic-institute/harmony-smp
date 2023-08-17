@@ -1,0 +1,33 @@
+package domiSMPTests.ui;
+
+import ddsl.DomiSMPPage;
+import ddsl.enums.Pages;
+import domiSMPTests.SeleniumTest;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import pages.LoginPage;
+import pages.TruststorePage;
+import utils.FileUtils;
+
+public class TrustorePgTests extends SeleniumTest {
+
+    //TODO work in progress
+
+    @Test(description = "TRST-01 System admin is able to import certificates")
+    public void SystemAdminIsAbleToImportCertificates() throws Exception {
+
+
+        DomiSMPPage homePage = new DomiSMPPage(driver);
+
+        LoginPage loginPage = homePage.goToLoginPage();
+        loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
+
+        TruststorePage truststorepage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_TRUSTSTORE);
+        String path = FileUtils.getAbsolutePath("./src/main/resources/truststore/test.cer");
+
+        String certificateALias = truststorepage.addCertificateAndReturnAlias(path);
+        Assert.assertNotNull(certificateALias);
+
+    }
+
+}

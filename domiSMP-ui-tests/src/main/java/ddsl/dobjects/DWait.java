@@ -17,6 +17,10 @@ public class DWait {
 
     private final static Logger LOG = LoggerFactory.getLogger(DWait.class);
 
+    /**
+     * Wait class which gives access to different types of waits.
+     */
+
     public final WebDriverWait defaultWait;
     public final WebDriverWait longWait;
     public final WebDriverWait shortWait;

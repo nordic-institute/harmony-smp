@@ -18,6 +18,10 @@ public class AlertComponent extends DComponent {
     @FindBy(id = "alertmessage_id")
     public WebElement alertToaster;
 
+    @FindBy(css = "[class = \"closebtn\"]")
+    public WebElement closeBtn;
+
+
     public AlertComponent(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
@@ -28,11 +32,11 @@ public class AlertComponent extends DComponent {
             wait.forElementToBeVisible(alertToaster, true);
             String alertMesageText = alertToaster.getText().replace("×", "").replaceAll("\n", "");
             LOG.debug("Displayed message : {}.", alertToaster.getText());
-
+            closeBtn.click();
             return alertMesageText;
         } catch (Exception e) {
-            LOG.debug("No messages displayed.");
-            return null;
+            LOG.error("No messages displayed.");
+            return "No alert message found";
         }
     }
 

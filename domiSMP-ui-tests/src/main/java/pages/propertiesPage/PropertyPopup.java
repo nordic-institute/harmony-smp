@@ -1,4 +1,4 @@
-package pages.PropertiesPage;
+package pages.propertiesPage;
 
 import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.JavascriptExecutor;

@@ -6,8 +6,8 @@ import domiSMPTests.SeleniumTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
-import pages.ProfilePage.ProfilePage;
-import pages.PropertiesPage.PropertiesPage;
+import pages.profilePage.ProfilePage;
+import pages.propertiesPage.PropertiesPage;
 import rest.models.UserModel;
 import utils.Generator;
 
@@ -64,7 +64,7 @@ public class ProfilePgTests extends SeleniumTest {
         loginPage.login(normalUser.getUsername(), data.getNewPassword());
 
         //Navigate to page
-        ProfilePage profilePage = (ProfilePage) homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        ProfilePage profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         UserModel userNewProfileData = UserModel.generateUserProfileData();
         profilePage.userData.fillUserProfileData(userNewProfileData.getEmailAddress(), userNewProfileData.getFullName(), userNewProfileData.getSmpTheme(), userNewProfileData.getSmpLocale());
 
@@ -89,7 +89,7 @@ public class ProfilePgTests extends SeleniumTest {
         loginPage.login(adminUser.getUsername(), data.getNewPassword());
 
         //Navigate to page
-        profilePage = (ProfilePage) homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         UserModel adminNewProfileData = UserModel.generateUserProfileData();
         profilePage.userData.fillUserProfileData(adminNewProfileData.getEmailAddress(), adminNewProfileData.getFullName(), adminNewProfileData.getSmpTheme(), adminNewProfileData.getSmpLocale());
 
@@ -117,16 +117,16 @@ public class ProfilePgTests extends SeleniumTest {
         LoginPage loginPage = homePage.goToLoginPage();
         loginPage.login(adminUser.getUsername(), data.getNewPassword());
 
-        PropertiesPage propertiesPage = (PropertiesPage) homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_PROPERTIES);
+        PropertiesPage propertiesPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_PROPERTIES);
         propertiesPage.propertySearch(propertyValue);
         if (!propertiesPage.getPropertyValue(propertyValue).equals(newPropertyValue)) {
             propertiesPage.setPropertyValue("smp.passwordPolicy.validationRegex", "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,35}$");
             propertiesPage.save();
         }
 
-        ProfilePage profilePage = (ProfilePage) propertiesPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        ProfilePage profilePage = propertiesPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         profilePage.userData.setChangePasswordBtn.click();
-        Assert.assertEquals(0, profilePage.userData.setChangePasswordDialog().setNewPassword(data.getNewPassword(), "Edeltest!23456789Edeltest!234567890").size(), "Could not change the password of the user");
+        Assert.assertEquals(0, profilePage.userData.getChangePasswordDialog().setNewPassword(data.getNewPassword(), "Edeltest!23456789Edeltest!234567890").size(), "Could not change the password of the user");
 
     }
 
@@ -135,21 +135,23 @@ public class ProfilePgTests extends SeleniumTest {
     public void UserShouldBeAbleToChangeHisPassword() throws Exception {
         UserModel adminUser = UserModel.generateUserWithADMINrole();
         rest.users().createUser(adminUser);
+
         DomiSMPPage homePage = new DomiSMPPage(driver);
         LoginPage loginPage = homePage.goToLoginPage();
         loginPage.login(adminUser.getUsername(), data.getNewPassword());
-        ProfilePage profilePage = (ProfilePage) loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+
+        ProfilePage profilePage = loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         String oldLastSet = profilePage.userData.getLastSetValue();
         String oldPasswordExpiresOn = profilePage.userData.getPasswordExpiresOnValue();
 
         profilePage.userData.setChangePasswordBtn.click();
         String newPass = "Edeltest!23456789Edelt" + Generator.randomAlphaNumeric(4);
 
-        Assert.assertEquals(profilePage.userData.setChangePasswordDialog().setNewPassword(data.getNewPassword(), newPass).size(), 0, "Could not change the password of the user");
+        Assert.assertEquals(profilePage.userData.getChangePasswordDialog().setNewPassword(data.getNewPassword(), newPass).size(), 0, "Could not change the password of the user");
 
         loginPage.login(adminUser.getUsername(), newPass);
-        profilePage = (ProfilePage) loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
-
+        profilePage = loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        //TODO wait until the lastvalue and old password fields show value as text
         // Assert.assertNotSame(profilePage2.getLastSetValue(), oldLastSet, "Last set value is not reseted");
         //Assert.assertNotSame(profilePage2.getPasswordExpiresOnValue(), oldPasswordExpiresOn, "Password expires on value is not reseted");
 

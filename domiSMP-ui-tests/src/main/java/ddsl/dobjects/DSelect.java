@@ -15,10 +15,13 @@ public class DSelect extends DObject {
         super(driver, element);
     }
 
-    public void selectValue(String value) {
+    public void selectByVisibleText(String value) {
         select.selectByVisibleText(value);
     }
 
+    public void selectValue(String value) {
+        select.selectByValue(value);
+    }
     public String getCurrentValue() {
         return select.getAllSelectedOptions().get(0).getText();
     }
