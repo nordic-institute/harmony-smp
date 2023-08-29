@@ -73,7 +73,8 @@ public class UserDataCommonComponent extends DomiSMPPage {
                 weToDInput(fullNameInput).fill(fullNameValue);
             }
             weToDSelect(themeSel).selectByVisibleText(selectThemeValue);
-            weToDSelect(localeSel).selectByVisibleText(localeValue);
+            wait.forXMillis(50);
+            weToDSelect(localeSel).selectByVisibleText(localeValue, true);
 
 
         } catch (Exception e) {

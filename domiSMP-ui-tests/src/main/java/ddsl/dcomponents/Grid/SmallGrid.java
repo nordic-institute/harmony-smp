@@ -60,9 +60,10 @@ public class SmallGrid extends DComponent {
             List<WebElement> rows = getRows();
             for (WebElement row : rows) {
                 List<WebElement> cells = getCells(row);
-                if (cells.get(columnIndex).getText().equals(value)) {
+                WebElement currentCell = cells.get(columnIndex);
+                if (currentCell.getText().equals(value)) {
                     LOG.debug("[{}] found on page [{}]", value, pageNr);
-                    return row;
+                    return currentCell;
                 }
             }
             getGridPagination().goToNextPage();

@@ -16,7 +16,6 @@ public class MembersComponent extends DComponent {
 
     @FindBy(id = "addMemberButton")
     private WebElement inviteMemberBtn;
-
     @FindBy(id = "deleteButton")
     private WebElement removeMemberBtn;
     @FindBy(css = "div domain-member-panel")
@@ -25,7 +24,6 @@ public class MembersComponent extends DComponent {
     public MembersComponent(WebDriver driver) {
         super(driver);
         LOG.debug("Members component is loaded");
-        //wait.forElementToBeVisible(inviteMemberBtn);
     }
 
     public SmallGrid getMembersGrid() {

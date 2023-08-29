@@ -29,7 +29,6 @@ public class ConfirmationDialog extends DComponent {
         LOG.info("dialog .. confirm");
         wait.forElementToBeClickable(yesBtn);
         yesBtn.click();
-        wait.forElementToBeGone(yesBtn);
     }
 
     public void cancel() {

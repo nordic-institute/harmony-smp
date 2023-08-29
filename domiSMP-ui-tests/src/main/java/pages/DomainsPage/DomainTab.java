@@ -44,7 +44,7 @@ public class DomainTab extends DComponent {
     public void fillDomainData(DomainModel domainModel) {
 
         domainIdInput.sendKeys(domainModel.getDomainCode());
-        weToDSelect(responseSignatureCertificateDdl).selectByVisibleText(domainModel.getSignatureKeyAlias());
+        weToDSelect(responseSignatureCertificateDdl).selectByVisibleText(domainModel.getSignatureKeyAlias(), true);
         weToDSelect(visibilityOfDomainDdl).selectValue(domainModel.getVisibility());
     }
 

@@ -6,12 +6,12 @@ import ddsl.dcomponents.BreadcrumpComponent;
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.SideNavigationComponent;
 import ddsl.dobjects.DButton;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pages.LoginPage;
@@ -37,6 +37,7 @@ public class DomiSMPPage extends DComponent {
     public DomiSMPPage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        waitForPageToLoaded();
     }
 
     public SideNavigationComponent getSidebar() {
@@ -53,6 +54,7 @@ public class DomiSMPPage extends DComponent {
     }
 
     public void logout() {
+        wait.waitforOverlayToGone();
         rightMenuBtn.click();
         logoutMenuBtn.click();
 
@@ -80,7 +82,8 @@ public class DomiSMPPage extends DComponent {
         }
     }
     public void waitForPageToLoaded() {
-        wait.defaultWait.until(ExpectedConditions.visibilityOf(getBreadcrump().BreadcrumpItems.get(0)));
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("return document.readyState").toString().equals("complete");
     }
 
 }

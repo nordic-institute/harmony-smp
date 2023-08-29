@@ -93,7 +93,7 @@ public class SideNavigationComponent extends DomiSMPPage {
     public SideNavigationComponent(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, 1), this);
-        wait.forElementToBeGone(overlay);
+        waitForPageToLoaded();
     }
 
     private MenuNavigation getNavigationLinks(Pages pages) {
@@ -189,33 +189,6 @@ public class SideNavigationComponent extends DomiSMPPage {
             throw new RuntimeException();
         }
     }
-
-//    private void openSubmenu(WebElement menuBtn, WebElement submenuBtn) {
-//        try {
-//            submenuBtn.click();
-//            if (submenuBtn.getText().contains(getBreadcrump().getCurrentPage())) {
-//                LOG.info("Current page is " + getBreadcrump().getCurrentPage());
-//
-//            } else {
-//                LOG.error("Current page is not as expected. EXPECTED: [{}] but ACTUAL PAGE [{}]", submenuBtn.getText().toString(), getBreadcrump().getCurrentPage().toString());
-//                throw new RuntimeException();
-//            }
-//
-//        } catch (ElementNotInteractableException exception) {
-//
-//            // closeExpirationPopupIfEnabled();
-//            menuBtn.click();
-//            submenuBtn.click();
-//            if (submenuBtn.getText().contains(getBreadcrump().getCurrentPage())) {
-//                LOG.info("Current page is " + getBreadcrump().getCurrentPage());
-//
-//            } else {
-//                LOG.error("Current page is not as expected. EXPECTED: " + submenuBtn.getText() + "but ACTUAL PAGE: " + getBreadcrump().getCurrentPage());
-//                throw new RuntimeException();
-//            }
-//        }
-//    }
-
     public static class MenuNavigation {
         WebElement menuLink;
         WebElement submenuLink;

@@ -39,8 +39,9 @@ public class SetChangePasswordDialog extends DComponent {
 
         LOG.info("Set new password");
         weToDInput(currentPasswordInput).fill(currentPassword);
-        weToDInput(newPasswordInput).fill(newPassword);
-        weToDInput(confirmationPasswordInput).fill(newPassword);
+        weToDInput(newPasswordInput).fill(newPassword, true);
+        weToDInput(confirmationPasswordInput).fill(newPassword, true);
+        wait.forElementToBeClickable(setPasswordBtn);
         weToDButton(setPasswordBtn).click();
         SuccesfullPasswordChangedPopup popup = new SuccesfullPasswordChangedPopup(driver);
         popup.closePopup();
