@@ -24,6 +24,30 @@ public class DInput extends DObject {
         }
     }
 
+    /**
+     * Method to send values which are bigger which can't be handled by Angular issue
+     */
+    public void fill(String value, Boolean slowSendValues) throws Exception {
+        if (null == value) {
+            return;
+        }
+        if (isEnabled()) {
+            element.clear();
+
+            if (slowSendValues) {
+                for (int i = 0; i < value.length(); i++) {
+                    char c = value.charAt(i);
+                    String s = new StringBuilder().append(c).toString();
+                    element.sendKeys(s);
+                }
+            } else {
+                element.sendKeys(value);
+            }
+        } else {
+            throw new ElementNotInteractableException("Cannot type disabled field");
+        }
+    }
+
     public void clear() throws Exception {
         if (isEnabled()) {
             element.clear();

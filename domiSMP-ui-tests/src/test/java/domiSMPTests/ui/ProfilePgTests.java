@@ -72,10 +72,10 @@ public class ProfilePgTests extends SeleniumTest {
 
         //Verify if data is changed
 
-        Assert.assertEquals(profilePage.userData.getEmailAddress(), userNewProfileData.getEmailAddress());
-        Assert.assertEquals(profilePage.userData.getFullName(), userNewProfileData.getFullName());
-        Assert.assertEquals(profilePage.userData.getSelectedTheme(), userNewProfileData.getSmpTheme());
-        Assert.assertEquals(profilePage.userData.getSelectedLocale(), userNewProfileData.getSmpLocale());
+        Assert.assertEquals(profilePage.userData.getEmailAddress(), userNewProfileData.getEmailAddress(), "Email value is different");
+        Assert.assertEquals(profilePage.userData.getFullName(), userNewProfileData.getFullName(), "Full name value is different");
+        Assert.assertEquals(profilePage.userData.getSelectedTheme(), userNewProfileData.getSmpTheme(), "Selected theme value is different");
+        Assert.assertEquals(profilePage.userData.getSelectedLocale(), userNewProfileData.getSmpLocale(), "Locale value is different");
 
         homePage.logout();
 
@@ -107,7 +107,8 @@ public class ProfilePgTests extends SeleniumTest {
     @Test(description = "PROF-03 Password validation is accord to the smp propeties values")
     public void PasswordValidationsShouldBeAccordingToPropertiesValue() throws Exception {
         String propertyValue = "smp.passwordPolicy.validationRegex";
-        String newPropertyValue = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,35}$";
+        String newPropertyValue = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,40}$";
+        String new40CharactersPasswordValue = "Edeltest!23456789Edeltest!234567890sssf";
 
         UserModel adminUser = UserModel.generateUserWithADMINrole();
 
@@ -120,13 +121,13 @@ public class ProfilePgTests extends SeleniumTest {
         PropertiesPage propertiesPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_PROPERTIES);
         propertiesPage.propertySearch(propertyValue);
         if (!propertiesPage.getPropertyValue(propertyValue).equals(newPropertyValue)) {
-            propertiesPage.setPropertyValue("smp.passwordPolicy.validationRegex", "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,35}$");
+            propertiesPage.setPropertyValue("smp.passwordPolicy.validationRegex", newPropertyValue);
             propertiesPage.save();
         }
 
         ProfilePage profilePage = propertiesPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         profilePage.userData.setChangePasswordBtn.click();
-        Assert.assertEquals(0, profilePage.userData.getChangePasswordDialog().setNewPassword(data.getNewPassword(), "Edeltest!23456789Edeltest!234567890").size(), "Could not change the password of the user");
+        Assert.assertEquals(0, profilePage.userData.getChangePasswordDialog().setNewPassword(data.getNewPassword(), new40CharactersPasswordValue).size(), "Could not change the password of the user");
 
     }
 
@@ -152,8 +153,8 @@ public class ProfilePgTests extends SeleniumTest {
         loginPage.login(adminUser.getUsername(), newPass);
         profilePage = loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         //TODO wait until the lastvalue and old password fields show value as text
-        // Assert.assertNotSame(profilePage2.getLastSetValue(), oldLastSet, "Last set value is not reseted");
-        //Assert.assertNotSame(profilePage2.getPasswordExpiresOnValue(), oldPasswordExpiresOn, "Password expires on value is not reseted");
+        // Assert.assertNotSame(profilePage.userData.getLastSetValue(), oldLastSet, "Last set value is not reseted");
+        // Assert.assertNotSame(profilePage.userData.getPasswordExpiresOnValue(), oldPasswordExpiresOn, "Password expires on value is not reseted");
 
 
     }

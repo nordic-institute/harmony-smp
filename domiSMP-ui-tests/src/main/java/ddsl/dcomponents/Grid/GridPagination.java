@@ -41,7 +41,7 @@ public class GridPagination extends DComponent {
         try {
             if (weToDButton(parentElement.findElement(nextPageBtnLocator)).isPresent()) {
                 weToDButton(parentElement.findElement(nextPageBtnLocator)).click();
-                LOG.error("Click on Grid Next Page button");
+                LOG.debug("Click on Grid Next Page button");
 
             } else {
                 LOG.error("Next page button is not available.");

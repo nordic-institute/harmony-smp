@@ -71,7 +71,7 @@ public class DWait {
     }
 
     public void forElementToBeDisabled(WebElement element) {
-        int maxTimeout = data.getTIMEOUT() * 1000;
+        int maxTimeout = data.getTIMEOUT() * 100;
         int waitedSoFar = 0;
 
         while ((null == element.getAttribute("disabled")) && (waitedSoFar < maxTimeout)) {
@@ -140,5 +140,9 @@ public class DWait {
         defaultWait.ignoring(StaleElementReferenceException.class)
                 .until(ExpectedConditions.textToBePresentInElement(element, text));
 
+    }
+
+    public void waitforOverlayToGone() {
+        defaultWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("cdk-overlay-backdrop cdk-overlay-dark-backdrop cdk-overlay-backdrop-showing")));
     }
 }

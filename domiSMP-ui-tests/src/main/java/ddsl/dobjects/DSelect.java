@@ -1,5 +1,6 @@
 package ddsl.dobjects;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
@@ -19,11 +20,22 @@ public class DSelect extends DObject {
         select.selectByVisibleText(value);
     }
 
+    public void selectByVisibleText(String value, boolean forceSelection) {
+        if (forceSelection) {
+            select.getWrappedElement().sendKeys(Keys.ENTER);
+        }
+        select.selectByVisibleText(value);
+    }
+
     public void selectValue(String value) {
         select.selectByValue(value);
     }
     public String getCurrentValue() {
-        return select.getAllSelectedOptions().get(0).getText();
+        try {
+            return select.getAllSelectedOptions().get(0).getText();
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
     }
 
 }

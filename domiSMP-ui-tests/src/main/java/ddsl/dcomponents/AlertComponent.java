@@ -30,7 +30,8 @@ public class AlertComponent extends DComponent {
     public String getAlertMessage() {
         try {
             wait.forElementToBeVisible(alertToaster, true);
-            String alertMesageText = alertToaster.getText().replace("×", "").replaceAll("\n", "");
+            String alertMesageText = alertToaster.getText();
+            alertMesageText = alertMesageText.replace("×", "").replaceAll("\n", "");
             LOG.debug("Displayed message : {}.", alertToaster.getText());
             closeBtn.click();
             return alertMesageText;
