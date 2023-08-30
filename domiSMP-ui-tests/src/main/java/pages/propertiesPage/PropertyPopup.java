@@ -22,6 +22,9 @@ public class PropertyPopup extends DComponent {
     WebElement propertyCheckbox;
     @FindBy(css = "property-details-dialog input")
     WebElement propertryEditInput;
+    @FindBy(css = "property-details-dialog .alert-message-error")
+    WebElement errorMessageLbl;
+
 
     public PropertyPopup(WebDriver driver) {
         super(driver);
@@ -53,8 +56,11 @@ public class PropertyPopup extends DComponent {
         LOG.info("click OK");
         wait.forElementToBeClickable(popupOkBtn);
         weToDButton(popupOkBtn).click();
-        wait.forElementToBeGone(popupOkBtn);
-        return new PropertiesPage(driver);
+        if (!errorMessageLbl.isDisplayed()) {
+            wait.forElementToBeGone(popupOkBtn);
+            return new PropertiesPage(driver);
+        }
+        return null;
     }
 
     public PropertiesPage clickCancel() {
@@ -98,5 +104,12 @@ public class PropertyPopup extends DComponent {
     public void editInputField(String string) {
         propertryEditInput.clear();
         propertryEditInput.sendKeys(string);
+    }
+
+    public String getErrorMessage() {
+        if (!errorMessageLbl.isDisplayed()) {
+            return null;
+        }
+        return errorMessageLbl.getText();
     }
 }

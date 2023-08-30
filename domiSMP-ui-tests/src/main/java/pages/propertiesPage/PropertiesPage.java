@@ -25,6 +25,8 @@ public class PropertiesPage extends DomiSMPPage {
     private WebElement searchPropertyField;
     @FindBy(id = "searchbutton_id")
     private WebElement searchBtn;
+    @FindBy(css = "smp-search-table [id=\"editButton\"]")
+    private WebElement editBtn;
 
 
     public PropertiesPage(WebDriver driver) {
@@ -42,15 +44,26 @@ public class PropertiesPage extends DomiSMPPage {
         wait.forElementToBeClickable(searchBtn).click();
     }
 
-    public void setPropertyValue(String propertyName, String propertyValue) {
-        PropertyPopup popup = grid().selectValue(propertyName);
-        popup.editInputField(propertyValue);
-        try {
-            popup.clickOK();
-        } catch (Exception e) {
-            LOG.error("Cannot set value for property {1}", propertyName);
-        }
+    public PropertyPopup openEditPropertyPopupup(String propertyName) {
+        return grid().doubleClickValue(propertyName);
     }
+
+    public PropertyPopup clickEdit() {
+        try {
+            if (!weToDButton(editBtn).isEnabled()) {
+                LOG.error("Edit property button is not enabled");
+                return null;
+            }
+            weToDButton(editBtn).click();
+        } catch (Exception e) {
+            LOG.error("Edit property button is not enabled");
+            throw new RuntimeException(e);
+        }
+        return new PropertyPopup(driver);
+
+
+    }
+
 
     public String getPropertyValue(String propertyName) {
         return grid().getPropertyValue(propertyName);
@@ -61,6 +74,5 @@ public class PropertiesPage extends DomiSMPPage {
         weToDButton(saveBtn).click();
         ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
         confirmationDialog.confirm();
-
     }
 }

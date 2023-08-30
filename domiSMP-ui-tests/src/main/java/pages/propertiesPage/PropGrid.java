@@ -14,7 +14,7 @@ public class PropGrid extends BasicGrid {
         super(driver, container);
     }
 
-    public PropertyPopup selectValue(String propertyValue) {
+    public PropertyPopup doubleClickValue(String propertyValue) {
         this.doubleClickRow(propertyValue);
         return new PropertyPopup(driver);
     }

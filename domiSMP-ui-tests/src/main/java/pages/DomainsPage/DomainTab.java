@@ -57,6 +57,8 @@ public class DomainTab extends DComponent {
             } else {
                 LOG.error("Domain tab changes were not saved");
             }
+        } else {
+            LOG.error("Save domain button is disabled");
         }
     }
 

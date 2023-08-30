@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 import pages.LoginPage;
 import pages.profilePage.ProfilePage;
 import pages.propertiesPage.PropertiesPage;
+import pages.propertiesPage.PropertyPopup;
 import rest.models.UserModel;
 import utils.Generator;
 
@@ -106,7 +107,7 @@ public class ProfilePgTests extends SeleniumTest {
 
     @Test(description = "PROF-03 Password validation is accord to the smp propeties values")
     public void PasswordValidationsShouldBeAccordingToPropertiesValue() throws Exception {
-        String propertyValue = "smp.passwordPolicy.validationRegex";
+        String propertyName = "smp.passwordPolicy.validationRegex";
         String newPropertyValue = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,40}$";
         String new40CharactersPasswordValue = "Edeltest!23456789Edeltest!234567890sssf";
 
@@ -119,9 +120,11 @@ public class ProfilePgTests extends SeleniumTest {
         loginPage.login(adminUser.getUsername(), data.getNewPassword());
 
         PropertiesPage propertiesPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_PROPERTIES);
-        propertiesPage.propertySearch(propertyValue);
-        if (!propertiesPage.getPropertyValue(propertyValue).equals(newPropertyValue)) {
-            propertiesPage.setPropertyValue("smp.passwordPolicy.validationRegex", newPropertyValue);
+        propertiesPage.propertySearch(propertyName);
+        if (!propertiesPage.getPropertyValue(propertyName).equals(newPropertyValue)) {
+            PropertyPopup propertyEditPoup = propertiesPage.openEditPropertyPopupup(propertyName);
+            propertyEditPoup.editInputField(newPropertyValue);
+            propertyEditPoup.clickOK();
             propertiesPage.save();
         }
 
