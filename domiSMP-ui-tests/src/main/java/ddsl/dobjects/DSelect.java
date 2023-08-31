@@ -24,6 +24,7 @@ public class DSelect extends DObject {
         if (forceSelection) {
             select.getWrappedElement().sendKeys(Keys.ENTER);
         }
+        wait.forXMillis(10);
         select.selectByVisibleText(value);
     }
 

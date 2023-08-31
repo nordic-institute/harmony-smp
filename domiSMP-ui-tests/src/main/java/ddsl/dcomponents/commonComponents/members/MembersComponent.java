@@ -39,14 +39,14 @@ public class MembersComponent extends DComponent {
     }
 
     public void removeUser(String username) throws Exception {
-        getMembersGrid().searchValueInColumn("Username", username).click();
+        getMembersGrid().searchAndGetElementInColumn("Username", username).click();
         weToDButton(removeMemberBtn).click();
         ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
         confirmationDialog.confirm();
     }
 
     public void changeRoleOfUser(String username, String newRole) throws Exception {
-        getMembersGrid().searchValueInColumn("Username", username).click();
+        getMembersGrid().searchAndGetElementInColumn("Username", username).click();
         weToDButton(sidePanel.findElement(By.id("editButton"))).click();
         getInviteMembersPopup().changeRole(newRole);
 

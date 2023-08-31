@@ -6,9 +6,9 @@ import domiSMPTests.SeleniumTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
-import pages.profilePage.ProfilePage;
-import pages.propertiesPage.PropertiesPage;
-import pages.propertiesPage.PropertyPopup;
+import pages.systemSettings.propertiesPage.PropertiesPage;
+import pages.systemSettings.propertiesPage.PropertyPopup;
+import pages.userSettings.ProfilePage;
 import rest.models.UserModel;
 import utils.Generator;
 

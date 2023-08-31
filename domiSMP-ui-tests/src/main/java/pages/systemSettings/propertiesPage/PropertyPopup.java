@@ -1,7 +1,8 @@
-package pages.propertiesPage;
+package pages.systemSettings.propertiesPage;
 
 import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -52,15 +53,31 @@ public class PropertyPopup extends DComponent {
         }
     }
 
-    public PropertiesPage clickOK() throws Exception {
+    public void clickOK() throws Exception {
         LOG.info("click OK");
         wait.forElementToBeClickable(popupOkBtn);
         weToDButton(popupOkBtn).click();
-        if (!errorMessageLbl.isDisplayed()) {
-            wait.forElementToBeGone(popupOkBtn);
-            return new PropertiesPage(driver);
+        try {
+            if (!errorMessageLbl.isDisplayed()) {
+                wait.forElementToBeGone(popupOkBtn);
+            }
+        } catch (RuntimeException e) {
+            LOG.debug("No error are present");
         }
-        return null;
+    }
+
+    public void clickOK2() throws Exception {
+        LOG.info("click OK");
+        wait.forElementToBeClickable(popupOkBtn);
+        weToDButton(popupOkBtn).click();
+        try {
+            if (!errorMessageLbl.isDisplayed()) {
+                wait.forElementToBeGone(popupOkBtn);
+            }
+        } catch (NoSuchElementException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public PropertiesPage clickCancel() {

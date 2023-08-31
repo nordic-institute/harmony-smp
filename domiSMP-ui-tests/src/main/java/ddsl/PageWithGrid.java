@@ -33,6 +33,10 @@ public class PageWithGrid extends DomiSMPPage {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
+    public SmallGrid getGrid() {
+        return new SmallGrid(driver, dataPanel);
+    }
+
     public GridPagination getPagination() {
         return new GridPagination(driver, dataPanel);
     }

@@ -7,7 +7,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pages.profilePage.SuccesfullPasswordChangedPopup;
+import pages.userSettings.SuccesfullPasswordChangedPopup;
 
 import java.util.ArrayList;
 import java.util.List;
