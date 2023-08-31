@@ -1,4 +1,4 @@
-package pages;
+package pages.systemSettings;
 
 import ddsl.PageWithGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
@@ -72,12 +72,10 @@ public class UsersPage extends PageWithGrid {
 
     public String getSelectedThemeValue() {
         return userData.getSelectedTheme();
-
     }
 
     public String getSelectedLocaleValue() {
         return userData.getSelectedLocale();
-
     }
 
 

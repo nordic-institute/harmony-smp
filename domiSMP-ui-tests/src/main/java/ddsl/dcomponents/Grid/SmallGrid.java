@@ -40,7 +40,7 @@ public class SmallGrid extends DComponent {
         return row.findElements(By.cssSelector("td"));
     }
 
-    public WebElement searchValueInColumn(String columnName, String value) {
+    public WebElement searchAndGetElementInColumn(String columnName, String value) {
 
         wait.forXMillis(100);
         Integer numOfPages = getGridPagination().getTotalPageNumber();

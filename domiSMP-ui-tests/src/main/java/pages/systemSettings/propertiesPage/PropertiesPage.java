@@ -1,4 +1,4 @@
-package pages.propertiesPage;
+package pages.systemSettings.propertiesPage;
 
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.ConfirmationDialog;

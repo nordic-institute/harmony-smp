@@ -7,7 +7,7 @@ import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
-import pages.UsersPage;
+import pages.systemSettings.UsersPage;
 import rest.models.UserModel;
 
 public class UsersPgTests extends SeleniumTest {
@@ -25,7 +25,7 @@ public class UsersPgTests extends SeleniumTest {
 
         usersPage.refreshPage();
         // usersPage.filter(adminNewUserData.getUsername());
-        WebElement newUser = usersPage.getDataPanelGrid().searchValueInColumn("Username", adminNewUserData.getUsername());
+        WebElement newUser = usersPage.getDataPanelGrid().searchAndGetElementInColumn("Username", adminNewUserData.getUsername());
         Assert.assertNotNull(newUser);
         newUser.click();
 

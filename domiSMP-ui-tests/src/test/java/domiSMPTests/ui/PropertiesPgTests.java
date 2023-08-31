@@ -8,8 +8,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
-import pages.propertiesPage.PropertiesPage;
-import pages.propertiesPage.PropertyPopup;
+import pages.systemSettings.propertiesPage.PropertiesPage;
+import pages.systemSettings.propertiesPage.PropertyPopup;
 import rest.models.UserModel;
 import utils.Generator;
 

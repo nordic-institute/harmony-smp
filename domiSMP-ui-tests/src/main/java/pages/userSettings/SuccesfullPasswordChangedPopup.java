@@ -1,4 +1,4 @@
-package pages.profilePage;
+package pages.userSettings;
 
 import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.WebDriver;

@@ -1,4 +1,4 @@
-package pages.editDomainsPage;
+package pages.administration;
 
 import ddsl.PageWithGrid;
 import org.openqa.selenium.WebDriver;

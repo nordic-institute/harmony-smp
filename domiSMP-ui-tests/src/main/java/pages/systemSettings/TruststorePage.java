@@ -1,7 +1,6 @@
-package pages;
+package pages.systemSettings;
 
-import ddsl.PageWithGrid;
-import ddsl.dcomponents.Grid.SmallGrid;
+import ddsl.StorePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -9,31 +8,18 @@ import org.openqa.selenium.support.FindBy;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TruststorePage extends PageWithGrid {
+public class TruststorePage extends StorePage {
     /**
      * Page object for the Truststorepage. This contains the locators of the page and the methods for the behaviour of the page
      */
 
-    //TODO work in progress
     @FindBy(id = "custom-file-upload")
     private WebElement uploadInput;
-    @FindBy(id = "publicKeyType_id")
-    private WebElement publicKeyTypeLbl;
-    @FindBy(id = "alias_id")
-    private WebElement aliasIdLbl;
-    @FindBy(id = "certificateId_id")
-    private WebElement smpCertificateId;
-    @FindBy(id = "subject_id")
-    private WebElement subjectName;
-
 
     public TruststorePage(WebDriver driver) {
         super(driver);
     }
 
-    public SmallGrid getGrid() {
-        return new SmallGrid(driver, dataPanel);
-    }
 
     public String addCertificateAndReturnAlias(String filePath) {
         uploadInput.sendKeys(filePath);
