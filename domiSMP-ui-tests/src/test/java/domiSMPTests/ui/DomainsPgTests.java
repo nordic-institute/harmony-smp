@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
 import pages.SmlPage;
-import pages.administration.EditDomainsPage;
+import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.systemSettings.domainsPage.DomainsPage;
 import rest.models.DomainModel;
 import rest.models.UserModel;
@@ -146,5 +146,10 @@ public class DomainsPgTests extends SeleniumTest {
 
     }
 
+    @Test(description = "DOM-03 System admin is able to Invite/Remove users from domains")
+    public void SystemAdminIsAbleToInviteRemoveUsersFromDomains22() throws Exception {
+
+        rest.domains().createDomain(DomainModel.generatePublicDomainModelWithoutSML());
+    }
 
 }

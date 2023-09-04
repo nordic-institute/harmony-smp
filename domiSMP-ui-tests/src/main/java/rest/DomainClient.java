@@ -25,7 +25,7 @@ public class DomainClient extends BaseRestClient {
             }
         }
 
-        String createDomainPath = RestServicePaths.getDomainPath(data.userId);
+        String createDomainPath = RestServicePaths.getCreateDomainPath(data.userId);
 
         ClientResponse response = jsonPUT(resource.path(createDomainPath), domainJson);
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
@@ -41,5 +41,36 @@ public class DomainClient extends BaseRestClient {
 
     }
 
+
+    public JSONObject AddMembersToDomain(String domainId, String username, String roleType) {
+
+        JSONObject json = new JSONObject();
+        json.put("memberOf", "DOMAIN");
+        json.put("username", username);
+        json.put("roleType", roleType);
+
+
+        JSONObject membersJson = new JSONObject(json);
+
+        if (!isLoggedIn()) {
+            try {
+                refreshCookies();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        String addMemberPath = RestServicePaths.getDomainAddMemberPath(data.userId, domainId);
+
+        ClientResponse response = jsonPUT(resource.path(addMemberPath), membersJson);
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not create domain", response);
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        log.debug("Domain: " + "" + "  has been created successfully!");
+        return membersJson;
+    }
 
 }
