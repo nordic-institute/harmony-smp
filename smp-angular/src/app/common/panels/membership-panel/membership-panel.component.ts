@@ -173,7 +173,6 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
         member: member,
       }
     }).afterClosed().subscribe(value => {
-
       this.refresh();
     });
   }
