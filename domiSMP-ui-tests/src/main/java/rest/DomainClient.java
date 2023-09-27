@@ -1,8 +1,11 @@
 package rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import org.json.JSONObject;
 import rest.models.DomainModel;
+import rest.models.MemberModel;
 import utils.TestRunData;
 
 public class DomainClient extends BaseRestClient {
@@ -43,14 +46,9 @@ public class DomainClient extends BaseRestClient {
     }
 
 
-    public JSONObject addMembersToDomain(String domainId, String username, String roleType) {
-
-        JSONObject membersJson = new JSONObject();
-        membersJson.put("memberOf", "DOMAIN");
-        membersJson.put("username", username);
-        membersJson.put("roleType", roleType);
-
-
+    public MemberModel addMembersToDomain(String domainId, MemberModel domainMember) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String membersJson = mapper.writeValueAsString(domainMember);
         if (!isLoggedIn()) {
             try {
                 createSession();
@@ -68,8 +66,8 @@ public class DomainClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Member: " + username + " has been added!");
-        return membersJson;
+        log.debug("Member: " + domainMember.getUsername() + " has been added!");
+        return response.getEntity(MemberModel.class);
     }
 
 }

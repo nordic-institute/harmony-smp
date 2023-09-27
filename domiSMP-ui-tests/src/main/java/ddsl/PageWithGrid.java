@@ -1,6 +1,5 @@
 package ddsl;
 
-import ddsl.dcomponents.Grid.GridPagination;
 import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -23,8 +22,10 @@ public class PageWithGrid extends DomiSMPPage {
     public WebElement filterInput;
     @FindBy(css = "data-panel >div >div> mat-toolbar button:first-of-type")
     public WebElement addBtn;
-    @FindBy(css = "data-panel")
+    @FindBy(css = "[class=smp-column-data]")
     public WebElement dataPanel;
+    @FindBy(css = "[class~=smp-column-label]")
+    public WebElement rightPanel;
     @FindBy(css = "[role = \"tab\"]")
     private List<WebElement> tabList;
 
@@ -34,15 +35,11 @@ public class PageWithGrid extends DomiSMPPage {
     }
 
     public SmallGrid getGrid() {
-        return new SmallGrid(driver, dataPanel);
-    }
-
-    public GridPagination getPagination() {
-        return new GridPagination(driver, dataPanel);
+        return new SmallGrid(driver, rightPanel);
     }
 
     public SmallGrid getDataPanelGrid() {
-        return new SmallGrid(driver, dataPanel);
+        return new SmallGrid(driver, rightPanel);
     }
 
     public void goToTab(String tabName) {

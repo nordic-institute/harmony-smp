@@ -3,7 +3,6 @@ package domiSMPTests.ui;
 import ddsl.DomiSMPPage;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
-import org.json.JSONObject;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -147,13 +146,47 @@ public class DomainsPgTests extends SeleniumTest {
 
     }
 
-    @Test(description = "DOM-03 System admin is able to Invite/Remove users from domains")
-    public void SystemAdminIsAbleToInviteRemoveUsersFromDomains22() throws Exception {
+    @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
+    public void SystemAdminIsNotAbleToCreateDuplicatedDomains() throws Exception {
+        UserModel normalUser = UserModel.generateUserWithUSERrole();
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithoutSML();
 
-        JSONObject domain = rest.domains().createDomain(DomainModel.generatePublicDomainModelWithoutSML());
-        String domainId = domain.get("domainId").toString();
-        rest.domains().addMembersToDomain(domainId, "system", "ADMIN");
+        rest.users().createUser(normalUser);
 
+        domainsPage.getCreateDomainBtn().click();
+        domainsPage.getDomainTab().fillDomainData(domainModel);
+        domainsPage.getDomainTab().saveChanges();
+        String alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
+
+        domainsPage.getCreateDomainBtn().click();
+        domainsPage.getDomainTab().fillDomainData(domainModel);
+        domainsPage.getDomainTab().saveChanges();
+        alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Invalid domain data! Domain with code [" + domainModel.getDomainCode() + "] already exists!");
+        soft.assertAll();
+
+
+//        DomainModel generatedDomain = DomainModel.generatePublicDomainModelWithoutSML();
+//
+//        MemberModel memberUser = new MemberModel();
+//        memberUser.setMemberOf("Domain");
+//        memberUser.setRoleType("VIEWER");
+//        memberUser.setUsername("system");
+//
+//        JSONObject domain = rest.domains().createDomain(generatedDomain);
+//        String domainId = domain.get("domainId").toString();
+//        memberUser = rest.domains().addMembersToDomain(domainId, memberUser);
+//
+//        EditDomainsPage editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
+//        soft.assertNull(editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", generatedDomain.getDomainCode()));
+//
+//        memberUser.setRoleType("ADMIN");
+//        rest.domains().addMembersToDomain(domainId, memberUser);
+//        editDomainsPage.refreshPage();
+//
+//        soft.assertNotNull(editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", generatedDomain.getDomainCode()));
+//        soft.assertAll();
     }
 
 }

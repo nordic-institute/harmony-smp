@@ -55,10 +55,29 @@ public class BaseRestClient {
         return builder.type(type).put(ClientResponse.class, body.toString());
     }
 
+    protected ClientResponse requestPUT(WebResource resource, String body, String type) {
+
+        if (!isLoggedIn()) {
+            log.info("User is not loggedin");
+            try {
+                createSession();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        WebResource.Builder builder = decorateBuilder(resource);
+
+        return builder.type(type).put(ClientResponse.class, body);
+    }
+
     protected ClientResponse jsonPUT(WebResource resource, JSONObject body) {
         return requestPUT(resource, body, MediaType.APPLICATION_JSON);
     }
 
+    protected ClientResponse jsonPUT(WebResource resource, String body) {
+        return requestPUT(resource, body, MediaType.APPLICATION_JSON);
+    }
     protected ClientResponse requestPOST(WebResource resource, String params, String type) {
 
 
