@@ -4,11 +4,13 @@ import ddsl.enums.ApplicationRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.NewCookie;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -20,7 +22,10 @@ public class TestRunData {
     public static SimpleDateFormat REST_JMS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     static Properties prop = new Properties();
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    public String userId;
+    public static String XSRFToken;
+    public static List<NewCookie> cookies;
+    private static String userId;
+
 
     public TestRunData() {
         if (prop.isEmpty()) {
@@ -28,8 +33,16 @@ public class TestRunData {
         }
     }
 
-    public String getUserId() {
+    public static String getUserId() {
         return userId;
+    }
+
+    public static List<NewCookie> getCookies() {
+        return cookies;
+    }
+
+    public void setCookies(List<NewCookie> cookies) {
+        TestRunData.cookies = cookies;
     }
 
     public void setUserId(String userId) {
@@ -127,5 +140,14 @@ public class TestRunData {
     public String downloadFolderPath() {
         return System.getProperty("user.dir") + File.separator + "downloadFiles";
     }
+
+    public static String getXSRFToken() {
+        return XSRFToken;
+    }
+
+    public void setXSRFToken(String xsrfToken) {
+        this.XSRFToken = xsrfToken;
+    }
+
 
 }

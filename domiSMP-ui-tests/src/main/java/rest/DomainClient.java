@@ -3,6 +3,7 @@ package rest;
 import com.sun.jersey.api.client.ClientResponse;
 import org.json.JSONObject;
 import rest.models.DomainModel;
+import utils.TestRunData;
 
 public class DomainClient extends BaseRestClient {
 
@@ -19,13 +20,13 @@ public class DomainClient extends BaseRestClient {
 
         if (!isLoggedIn()) {
             try {
-                refreshCookies();
+                createSession();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        String createDomainPath = RestServicePaths.getCreateDomainPath(data.userId);
+        String createDomainPath = RestServicePaths.getCreateDomainPath(TestRunData.getUserId());
 
         ClientResponse response = jsonPUT(resource.path(createDomainPath), domainJson);
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
@@ -42,24 +43,22 @@ public class DomainClient extends BaseRestClient {
     }
 
 
-    public JSONObject AddMembersToDomain(String domainId, String username, String roleType) {
+    public JSONObject addMembersToDomain(String domainId, String username, String roleType) {
 
-        JSONObject json = new JSONObject();
-        json.put("memberOf", "DOMAIN");
-        json.put("username", username);
-        json.put("roleType", roleType);
+        JSONObject membersJson = new JSONObject();
+        membersJson.put("memberOf", "DOMAIN");
+        membersJson.put("username", username);
+        membersJson.put("roleType", roleType);
 
-
-        JSONObject membersJson = new JSONObject(json);
 
         if (!isLoggedIn()) {
             try {
-                refreshCookies();
+                createSession();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        String addMemberPath = RestServicePaths.getDomainAddMemberPath(data.userId, domainId);
+        String addMemberPath = RestServicePaths.getDomainAddMemberPath(TestRunData.getUserId(), domainId);
 
         ClientResponse response = jsonPUT(resource.path(addMemberPath), membersJson);
         if (response.getStatus() != 200) {
@@ -69,7 +68,7 @@ public class DomainClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Domain: " + "" + "  has been created successfully!");
+        log.debug("Member: " + username + " has been added!");
         return membersJson;
     }
 

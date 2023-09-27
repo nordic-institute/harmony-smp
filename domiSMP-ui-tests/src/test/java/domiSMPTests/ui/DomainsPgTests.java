@@ -3,6 +3,7 @@ package domiSMPTests.ui;
 import ddsl.DomiSMPPage;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
+import org.json.JSONObject;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -149,7 +150,10 @@ public class DomainsPgTests extends SeleniumTest {
     @Test(description = "DOM-03 System admin is able to Invite/Remove users from domains")
     public void SystemAdminIsAbleToInviteRemoveUsersFromDomains22() throws Exception {
 
-        rest.domains().createDomain(DomainModel.generatePublicDomainModelWithoutSML());
+        JSONObject domain = rest.domains().createDomain(DomainModel.generatePublicDomainModelWithoutSML());
+        String domainId = domain.get("domainId").toString();
+        rest.domains().addMembersToDomain(domainId, "system", "ADMIN");
+
     }
 
 }

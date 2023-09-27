@@ -29,7 +29,7 @@ public class EditDomainsPgTests extends SeleniumTest {
 
         JSONObject domainJson = rest.domains().createDomain(domainModel);
         String domainId = domainJson.get("domainId").toString();
-        rest.domains().AddMembersToDomain(domainId, adminUser.getUsername(), "ADMIN");
+        rest.domains().addMembersToDomain(domainId, adminUser.getUsername(), "ADMIN");
 
         homePage = new DomiSMPPage(driver);
 
