@@ -20,15 +20,15 @@ public class SubcategoryTabComponent extends DComponent {
     private WebElement resourceMembersBtn;
     @FindBy(id = "deleteButton")
     private WebElement deleteBtn;
-    @FindBy(css = "div smp-column-data")
-    private WebElement sidePanel;
+    @FindBy(css = "[class=smp-column-data]")
+    private WebElement rightSidePanel;
 
     public SubcategoryTabComponent(WebDriver driver) {
         super(driver);
     }
 
     public SmallGrid getGrid() {
-        return new SmallGrid(driver, sidePanel);
+        return new SmallGrid(driver, rightSidePanel);
     }
 
     public DComponent create() throws Exception {

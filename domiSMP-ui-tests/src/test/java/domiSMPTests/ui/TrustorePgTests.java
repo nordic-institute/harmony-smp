@@ -55,7 +55,7 @@ public class TrustorePgTests extends SeleniumTest {
         String duplicatedCertificateALias = truststorepage.addCertificateAndReturnAlias(path);
         WebElement certificate = truststorepage.getCertificateGrid().searchAndGetElementInColumn("Alias", certificateALias);
         soft.assertNotNull(certificate);
-        truststorepage.getDataPanelGrid().searchAndGetElementInColumn("Alias", duplicatedCertificateALias);
+        truststorepage.getLeftSideGrid().searchAndGetElementInColumn("Alias", duplicatedCertificateALias);
 
         soft.assertNotNull(duplicatedCertificateALias);
         soft.assertEquals(truststorepage.getPublicKeyTypeLbl(), "RSA");

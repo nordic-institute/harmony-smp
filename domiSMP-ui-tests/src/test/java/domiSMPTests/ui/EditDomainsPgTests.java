@@ -9,8 +9,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
+import pages.administration.editDomainsPage.CreateGroupDetailsDialog;
 import pages.administration.editDomainsPage.EditDomainsPage;
+import pages.administration.editGroupsPage.EditGroupsPage;
 import rest.models.DomainModel;
+import rest.models.GroupModel;
 import rest.models.MemberModel;
 import rest.models.UserModel;
 
@@ -51,7 +54,7 @@ public class EditDomainsPgTests extends SeleniumTest {
         rest.users().createUser(memberUser);
 
         //Invite user as VIEW and check if he has admin rights for domain
-        editDomainPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         editDomainPage.getDomainMembersTab().getInviteMemberBtn().click();
         editDomainPage.getDomainMembersTab().getInviteMembersPopup().selectMember(memberUser.getUsername(), "VIEWER");
         WebElement userMemberElement = editDomainPage.getDomainMembersTab().getMembersGrid().searchAndGetElementInColumn("Username", memberUser.getUsername());
@@ -62,14 +65,14 @@ public class EditDomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(memberUser.getUsername(), data.getNewPassword());
         EditDomainsPage editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        WebElement domainElement = editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
+        WebElement domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
         soft.assertNull(domainElement, "Domain found for user which doesn't have rights");
 
         homePage.logout();
         loginPage = homePage.goToLoginPage();
         loginPage.login(adminUser.getUsername(), data.getNewPassword());
         editDomainPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        editDomainPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         editDomainPage.getDomainMembersTab().changeRoleOfUser(memberUser.getUsername(), "ADMIN");
 
         //check if user has admin rights to domain as Admin
@@ -77,7 +80,7 @@ public class EditDomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(memberUser.getUsername(), data.getNewPassword());
         editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        domainElement = editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
+        domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
         soft.assertNotNull(domainElement, "Domain found for user which doesn't have rights");
 
 
@@ -86,7 +89,7 @@ public class EditDomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(adminUser.getUsername(), data.getNewPassword());
         editDomainPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        editDomainPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         editDomainPage.getDomainMembersTab().removeUser(memberUser.getUsername());
         userMemberElement = editDomainPage.getDomainMembersTab().getMembersGrid().searchAndGetElementInColumn("Username", memberUser.getUsername());
         soft.assertNull(userMemberElement, "Domain found for user which doesn't have rights");
@@ -95,9 +98,28 @@ public class EditDomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(memberUser.getUsername(), data.getNewPassword());
         editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        domainElement = editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
+        domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
         soft.assertNull(domainElement, "Domain found for user which doesn't have rights");
+        soft.assertAll();
 
+    }
+
+    @Test(description = "EDTDOM-02 Domain admins are able to create new groups")
+    public void DomainAdminsAreAbleToCreate() throws Exception {
+        GroupModel groupToBeCreated = GroupModel.generatePublicDomain();
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+
+        editDomainPage.goToTab("Group");
+
+        CreateGroupDetailsDialog createGroupDetailsDialog = editDomainPage.getGroupTab().clickOnCreateNewGroup();
+        createGroupDetailsDialog.fillGroupDetails(groupToBeCreated);
+        Boolean isSaveSuccesfully = createGroupDetailsDialog.tryClickOnSave();
+        soft.assertTrue(isSaveSuccesfully);
+
+        WebElement createGroup = editDomainPage.getGroupTab().getGrid().searchAndGetElementInColumn("Group name", groupToBeCreated.getGroupName());
+        soft.assertNotNull(createGroup);
+
+        EditGroupsPage editgroupPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_GROUPS);
         soft.assertAll();
 
     }

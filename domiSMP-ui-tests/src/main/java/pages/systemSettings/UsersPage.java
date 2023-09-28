@@ -1,6 +1,6 @@
 package pages.systemSettings;
 
-import ddsl.CommonPageWithGrid;
+import ddsl.CommonPageWithTabsAndGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rest.models.UserModel;
 
-public class UsersPage extends CommonPageWithGrid {
+public class UsersPage extends CommonPageWithTabsAndGrid {
     /**
      * Page object for the Users page. This contains the locators of the page and the methods for the behaviour of the page
      */

@@ -34,7 +34,7 @@ public class UsersPgTests extends SeleniumTest {
 
         usersPage.refreshPage();
         // usersPage.filter(adminNewUserData.getUsername());
-        WebElement newUser = usersPage.getDataPanelGrid().searchAndGetElementInColumn("Username", adminNewUserData.getUsername());
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", adminNewUserData.getUsername());
         soft.assertNotNull(newUser);
         newUser.click();
 
