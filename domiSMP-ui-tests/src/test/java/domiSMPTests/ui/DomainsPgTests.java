@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
 import pages.SmlPage;
-import pages.administration.EditDomainsPage;
+import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.systemSettings.domainsPage.DomainsPage;
 import rest.models.DomainModel;
 import rest.models.UserModel;
@@ -146,5 +146,25 @@ public class DomainsPgTests extends SeleniumTest {
 
     }
 
+    @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
+    public void SystemAdminIsNotAbleToCreateDuplicatedDomains() throws Exception {
+        UserModel normalUser = UserModel.generateUserWithUSERrole();
+        DomainModel domainModel = DomainModel.generatePublicDomainModelWithoutSML();
+
+        rest.users().createUser(normalUser);
+
+        domainsPage.getCreateDomainBtn().click();
+        domainsPage.getDomainTab().fillDomainData(domainModel);
+        domainsPage.getDomainTab().saveChanges();
+        String alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
+
+        domainsPage.getCreateDomainBtn().click();
+        domainsPage.getDomainTab().fillDomainData(domainModel);
+        domainsPage.getDomainTab().saveChanges();
+        alert = domainsPage.getAlertMessageAndClose();
+        soft.assertEquals(alert, "Invalid domain data! Domain with code [" + domainModel.getDomainCode() + "] already exists!");
+        soft.assertAll();
+    }
 
 }

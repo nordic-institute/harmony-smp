@@ -5,11 +5,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.NewCookie;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -36,6 +38,9 @@ public class TestRunData {
         ADMIN_PASSWORD("test.user.SYSTEM_ADMIN.password", "123456", "Password for username with admin/system role. User is used for setting up the test data"),
         USER_USERNAME("test.user.USER.username", "user", "Username with user role (not admin). User is used for basic tests"),
         USER_PASSWORD("test.user.USER.password", "123456", "Password for username with user role"),
+
+        TEST_DATA_PASSWORD_DEFAULT("test.data.password.default", "QW!@QW!@qw12qw12", "Default password when creating new users"),
+        TEST_DATA_PASSWORD_NEW("test.data.password.new", "Test1234!Test1234!", "New Password when changing users password "),
         ;
 
         String propertyName;
@@ -78,7 +83,11 @@ public class TestRunData {
     public static SimpleDateFormat REST_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     public static SimpleDateFormat REST_JMS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     static Properties prop = new Properties();
-    public String userId;
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    public String XSRFToken;
+    public List<NewCookie> cookies;
+    private String userId;
+
 
     private static TestRunData instance;
 
@@ -97,6 +106,14 @@ public class TestRunData {
 
     public String getUserId() {
         return userId;
+    }
+
+    public List<NewCookie> getCookies() {
+        return cookies;
+    }
+
+    public void setCookies(List<NewCookie> cookies) {
+        this.cookies = cookies;
     }
 
     public void setUserId(String userId) {
@@ -136,8 +153,12 @@ public class TestRunData {
         return getUser(ApplicationRoles.SYSTEM_ADMIN);
     }
 
+    public String getDefaultPassword() {
+        return getPropertyValue(TestEnvironmentProperty.TEST_DATA_PASSWORD_DEFAULT);
+    }
+
     public String getNewPassword() {
-        return prop.getProperty("new.password");
+        return getPropertyValue(TestEnvironmentProperty.TEST_DATA_PASSWORD_NEW);
     }
 
     public String getUiBaseUrl() {
@@ -192,6 +213,7 @@ public class TestRunData {
         return getPropertyValue(TestEnvironmentProperty.WEBDRIVER_TYPE);
     }
 
+
     public String downloadFolderPath() {
         return System.getProperty("user.dir") + File.separator + "downloadFiles";
     }
@@ -202,4 +224,11 @@ public class TestRunData {
         return value;
     }
 
+    public String getXSRFToken() {
+        return XSRFToken;
+    }
+
+    public void setXSRFToken(String xsrfToken) {
+        this.XSRFToken = xsrfToken;
+    }
 }

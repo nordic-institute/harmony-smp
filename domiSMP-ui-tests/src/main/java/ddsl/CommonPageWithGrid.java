@@ -1,6 +1,5 @@
 package ddsl;
 
-import ddsl.dcomponents.Grid.GridPagination;
 import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class PageWithGrid extends DomiSMPPage {
-    private final static Logger LOG = LoggerFactory.getLogger(PageWithGrid.class);
+public class CommonPageWithGrid extends DomiSMPPage {
+    private final static Logger LOG = LoggerFactory.getLogger(CommonPageWithGrid.class);
 
     /**
      * Generic page used for pages which have small grid in the right of the page. This element gives access to action buttons and elements of the page.
@@ -23,26 +22,24 @@ public class PageWithGrid extends DomiSMPPage {
     public WebElement filterInput;
     @FindBy(css = "data-panel >div >div> mat-toolbar button:first-of-type")
     public WebElement addBtn;
-    @FindBy(css = "data-panel")
+    @FindBy(css = "[class=smp-column-data]")
     public WebElement dataPanel;
+    @FindBy(css = "[class~=smp-column-label]")
+    public WebElement rightPanel;
     @FindBy(css = "[role = \"tab\"]")
     private List<WebElement> tabList;
 
-    public PageWithGrid(WebDriver driver) {
+    public CommonPageWithGrid(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
     public SmallGrid getGrid() {
-        return new SmallGrid(driver, dataPanel);
-    }
-
-    public GridPagination getPagination() {
-        return new GridPagination(driver, dataPanel);
+        return new SmallGrid(driver, rightPanel);
     }
 
     public SmallGrid getDataPanelGrid() {
-        return new SmallGrid(driver, dataPanel);
+        return new SmallGrid(driver, rightPanel);
     }
 
     public void goToTab(String tabName) {

@@ -42,7 +42,6 @@ public class DomainTab extends DComponent {
     }
 
     public void fillDomainData(DomainModel domainModel) {
-
         domainIdInput.sendKeys(domainModel.getDomainCode());
         weToDSelect(responseSignatureCertificateDdl).selectByVisibleText(domainModel.getSignatureKeyAlias(), true);
         weToDSelect(visibilityOfDomainDdl).selectValue(domainModel.getVisibility());
@@ -52,13 +51,14 @@ public class DomainTab extends DComponent {
         if (saveBtn.isEnabled()) {
             saveBtn.click();
             wait.forElementToBeDisabled(saveBtn);
-            if (saveBtn.getAttribute("disabled").equals("true")) {
+            try {
+                saveBtn.getAttribute("disabled").equals("true");
                 LOG.debug("Domain tab changes were succesfully saved");
-            } else {
-                LOG.error("Domain tab changes were not saved");
+
+            } catch (NullPointerException e) {
+                LOG.debug("Domain tab changes were not saved");
             }
-        } else {
-            LOG.error("Save domain button is disabled");
+
         }
     }
 

@@ -1,6 +1,6 @@
 package pages.systemSettings;
 
-import ddsl.StorePage;
+import ddsl.CommonCertificatePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -8,7 +8,7 @@ import org.openqa.selenium.support.FindBy;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TruststorePage extends StorePage {
+public class TruststorePage extends CommonCertificatePage {
     /**
      * Page object for the Truststorepage. This contains the locators of the page and the methods for the behaviour of the page
      */

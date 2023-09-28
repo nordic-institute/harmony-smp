@@ -3,6 +3,7 @@ package rest;
 import com.sun.jersey.api.client.ClientResponse;
 import org.json.JSONObject;
 import rest.models.UserModel;
+import utils.TestRunData;
 
 public class UserClient extends BaseRestClient {
 
@@ -21,13 +22,13 @@ public class UserClient extends BaseRestClient {
 
         if (!isLoggedIn()) {
             try {
-                refreshCookies();
+                createSession();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        String usersPath = RestServicePaths.getUsersPath(data.userId);
+        String usersPath = RestServicePaths.getUsersPath(TestRunData.getInstance().getUserId());
 
         ClientResponse response = jsonPUT(resource.path(usersPath), usrObj);
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
@@ -53,7 +54,7 @@ public class UserClient extends BaseRestClient {
     public JSONObject changePassword(String forUserId, String newPassword) {
 
 
-        String changePasswordPath = RestServicePaths.getChangePasswordPath(data.userId, forUserId);
+        String changePasswordPath = RestServicePaths.getChangePasswordPath(TestRunData.getInstance().getUserId(), forUserId);
         JSONObject passwordChangeBody = new JSONObject();
         passwordChangeBody.put("currentPassword", password);
         passwordChangeBody.put("newPassword", newPassword);

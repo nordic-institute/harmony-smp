@@ -1,8 +1,12 @@
 package rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import org.json.JSONObject;
 import rest.models.DomainModel;
+import rest.models.MemberModel;
+import utils.TestRunData;
 
 public class DomainClient extends BaseRestClient {
 
@@ -19,13 +23,13 @@ public class DomainClient extends BaseRestClient {
 
         if (!isLoggedIn()) {
             try {
-                refreshCookies();
+                createSession();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        String createDomainPath = RestServicePaths.getDomainPath(data.userId);
+        String createDomainPath = RestServicePaths.getCreateDomainPath(TestRunData.getInstance().getUserId());
 
         ClientResponse response = jsonPUT(resource.path(createDomainPath), domainJson);
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
@@ -41,5 +45,29 @@ public class DomainClient extends BaseRestClient {
 
     }
 
+
+    public MemberModel addMembersToDomain(String domainId, MemberModel domainMember) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String membersJson = mapper.writeValueAsString(domainMember);
+        if (!isLoggedIn()) {
+            try {
+                createSession();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        String addMemberPath = RestServicePaths.getDomainAddMemberPath(TestRunData.getInstance().getUserId(), domainId);
+
+        ClientResponse response = jsonPUT(resource.path(addMemberPath), membersJson);
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not create domain", response);
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        log.debug("Member: " + domainMember.getUsername() + " has been added!");
+        return response.getEntity(MemberModel.class);
+    }
 
 }
