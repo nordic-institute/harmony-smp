@@ -10,11 +10,7 @@
 
     <properties>
         <!-- configuration example-->
-        <test.webdriver.path>./chromedriver.exe</test.webdriver.path>
-        <test.webdriver.type>chrome</test.webdriver.type>
-        <test.webdriver.headless>false</test.webdriver.headless>
-        <test.application.url>http://eulogin.protected.smp.local:8982/smp/ui/</test.application.url>
-        <test.sml.url>http://localhost:8982/edelivery-sml/</test.sml.url>
+        <test.properties.path>./src/main/resources/myLocal.properties</test.properties.path>
 
         <commons-csv_version>1.10.0</commons-csv_version>
         <selenium-chrome-driver_version>4.11.0</selenium-chrome-driver_version>
@@ -54,13 +50,7 @@
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                     <systemPropertyVariables>
-
-                        <!--propertiesFile>./src/main/resources/myLocal.properties</propertiesFile -->
-                        <test.webdriver.path>${test.webdriver.path}</test.webdriver.path>
-                        <test.webdriver.type>${test.webdriver.type}</test.webdriver.type>
-                        <test.webdriver.headless>${test.webdriver.headless}</test.webdriver.headless>
-                        <test.application.url>${test.application.url}</test.application.url>
-                        <test.sml.url>${test.sml.url}</test.sml.url>
+                        <test.properties.path>${test.properties.path}</test.properties.path>
                     </systemPropertyVariables>
                     <properties>
                         <property>
