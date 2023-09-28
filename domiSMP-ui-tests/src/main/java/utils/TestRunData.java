@@ -95,7 +95,7 @@ public class TestRunData {
     }
 
     public Duration getTIMEOUTinDuration() {
-        return Duration.ofMinutes(Long.parseLong((prop.getProperty("SHORT_TIMEOUT_SECONDS"))));
+        return Duration.ofSeconds(Long.parseLong((prop.getProperty("SHORT_TIMEOUT_SECONDS"))));
     }
 
     public Integer getLongWait() {
@@ -103,7 +103,7 @@ public class TestRunData {
     }
 
     public Duration getLongWaitInDuration() {
-        return Duration.ofMinutes(Long.parseLong(prop.getProperty("LONG_TIMEOUT_SECONDS")));
+        return Duration.ofSeconds(Long.parseLong(prop.getProperty("LONG_TIMEOUT_SECONDS")));
     }
 
 

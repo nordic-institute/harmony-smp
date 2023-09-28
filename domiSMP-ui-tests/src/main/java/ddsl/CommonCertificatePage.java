@@ -4,7 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class StorePage extends PageWithGrid {
+public class CommonCertificatePage extends CommonPageWithGrid {
     /**
      * Common page used for Keystore and Truststore
      */
@@ -29,7 +29,7 @@ public class StorePage extends PageWithGrid {
     @FindBy(css = ".smp-warning-panel span")
     private WebElement smpWarningLbl;
 
-    public StorePage(WebDriver driver) {
+    public CommonCertificatePage(WebDriver driver) {
         super(driver);
     }
 

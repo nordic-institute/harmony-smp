@@ -4,18 +4,27 @@ import ddsl.DomiSMPPage;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
 import org.openqa.selenium.WebElement;
-import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
 import pages.systemSettings.UsersPage;
 import rest.models.UserModel;
 
 public class UsersPgTests extends SeleniumTest {
+    SoftAssert soft;
+    DomiSMPPage homePage;
+    LoginPage loginPage;
+
+    @BeforeMethod(alwaysRun = true)
+    public void beforeTest() throws Exception {
+        soft = new SoftAssert();
+        homePage = new DomiSMPPage(driver);
+        loginPage = homePage.goToLoginPage();
+    }
     @Test(description = "USR-01 System admin is able to create new users")
     public void SystemAdminIsAbleToCreateNewUsers() throws Exception {
 
-        DomiSMPPage homePage = new DomiSMPPage(driver);
-        LoginPage loginPage = homePage.goToLoginPage();
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
 
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
@@ -26,24 +35,25 @@ public class UsersPgTests extends SeleniumTest {
         usersPage.refreshPage();
         // usersPage.filter(adminNewUserData.getUsername());
         WebElement newUser = usersPage.getDataPanelGrid().searchAndGetElementInColumn("Username", adminNewUserData.getUsername());
-        Assert.assertNotNull(newUser);
+        soft.assertNotNull(newUser);
         newUser.click();
 
-        Assert.assertEquals(usersPage.getApplicationRoleValue(), adminNewUserData.getRole());
-        Assert.assertEquals(usersPage.getFullNameValue(), adminNewUserData.getFullName());
-        Assert.assertTrue(usersPage.isSelectedUserActive(), "User active status is true");
+        soft.assertEquals(usersPage.getApplicationRoleValue(), adminNewUserData.getRole());
+        soft.assertEquals(usersPage.getFullNameValue(), adminNewUserData.getFullName());
+        soft.assertTrue(usersPage.isSelectedUserActive(), "User active status is true");
 
-        Assert.assertEquals(usersPage.getEmailValue(), adminNewUserData.getEmailAddress());
-        Assert.assertEquals(usersPage.getSelectedThemeValue(), adminNewUserData.getSmpTheme());
-        Assert.assertEquals(usersPage.getSelectedLocaleValue(), adminNewUserData.getSmpLocale());
+        soft.assertEquals(usersPage.getEmailValue(), adminNewUserData.getEmailAddress());
+        soft.assertEquals(usersPage.getSelectedThemeValue(), adminNewUserData.getSmpTheme());
+        soft.assertEquals(usersPage.getSelectedLocaleValue(), adminNewUserData.getSmpLocale());
+
+        soft.assertAll();
 
 
     }
 
     @Test(description = "USR-02 USR-02 System admin is not able to create duplicated user")
     public void SystemAdminIsNotAbleToCreateDuplicatedUser() throws Exception {
-        DomiSMPPage homePage = new DomiSMPPage(driver);
-        LoginPage loginPage = homePage.goToLoginPage();
+
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
 
         UsersPage usersPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_USERS);
@@ -54,6 +64,7 @@ public class UsersPgTests extends SeleniumTest {
         usersPage.refreshPage();
         usersPage.getCreateUserBtn().click();
         String alertMessage = usersPage.fillNewUserDataAndSave(adminNewUserData);
-        Assert.assertEquals(alertMessage, "Invalid request [CreateUser]. Error: User with username [" + adminNewUserData.getUsername() + "] already exists!!");
+        soft.assertEquals(alertMessage, "Invalid request [CreateUser]. Error: User with username [" + adminNewUserData.getUsername() + "] already exists!!");
+        soft.assertAll();
     }
 }

@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class PageWithGrid extends DomiSMPPage {
-    private final static Logger LOG = LoggerFactory.getLogger(PageWithGrid.class);
+public class CommonPageWithGrid extends DomiSMPPage {
+    private final static Logger LOG = LoggerFactory.getLogger(CommonPageWithGrid.class);
 
     /**
      * Generic page used for pages which have small grid in the right of the page. This element gives access to action buttons and elements of the page.
@@ -29,7 +29,7 @@ public class PageWithGrid extends DomiSMPPage {
     @FindBy(css = "[role = \"tab\"]")
     private List<WebElement> tabList;
 
-    public PageWithGrid(WebDriver driver) {
+    public CommonPageWithGrid(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
