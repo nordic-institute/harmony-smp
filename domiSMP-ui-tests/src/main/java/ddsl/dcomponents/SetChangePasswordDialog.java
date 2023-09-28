@@ -1,5 +1,6 @@
 package ddsl.dcomponents;
 
+import ddsl.DomiSMPPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -35,18 +36,24 @@ public class SetChangePasswordDialog extends DComponent {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
     }
 
-    public List<WebElement> setNewPassword(String currentPassword, String newPassword) throws Exception {
+    public void fillChangePassword(String currentPassword, String newPassword) throws Exception {
 
         LOG.info("Set new password");
         weToDInput(currentPasswordInput).fill(currentPassword);
         weToDInput(newPasswordInput).fill(newPassword, true);
         weToDInput(confirmationPasswordInput).fill(newPassword, true);
-        wait.forElementToBeClickable(setPasswordBtn);
-        weToDButton(setPasswordBtn).click();
-        SuccesfullPasswordChangedPopup popup = new SuccesfullPasswordChangedPopup(driver);
-        popup.closePopup();
+    }
 
-        return fieldsError;
+    public DomiSMPPage TryClickOnChangePassword() throws Exception {
+        wait.forElementToBeClickable(setPasswordBtn);
+        if (weToDButton(setPasswordBtn).isEnabled() && fieldsError.isEmpty()) {
+            weToDButton(setPasswordBtn).click();
+            SuccesfullPasswordChangedPopup popup = new SuccesfullPasswordChangedPopup(driver);
+            popup.closePopup();
+            return new DomiSMPPage(driver);
+        } else {
+            return null;
+        }
     }
 
     public List<String> getFieldErrorMessage() {

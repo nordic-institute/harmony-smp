@@ -19,9 +19,14 @@ public class RestServicePaths {
 
     //Domains paths
 
-    public static String getDomainPath(String currentUserId) {
+    public static String getCreateDomainPath(String currentUserId) {
 
         return "/internal/rest/domain/" + currentUserId + "/create";
+    }
+
+    public static String getDomainAddMemberPath(String currentUserId, String domainId) {
+
+        return "/edit/rest/" + currentUserId + "/domain/" + domainId + "/member/put";
     }
 
 

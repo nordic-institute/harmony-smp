@@ -33,34 +33,18 @@ public class BaseRestClient {
         this.password = password;
     }
 
-
     public BaseRestClient() {
         this.username = data.getAdminUser().get("username");
         this.password = data.getAdminUser().get("password");
     }
 
     //	---------------------------------------Default request methods -------------------------------------------------
-    protected ClientResponse requestPUT(WebResource resource, String params, String type) {
-
-        if (!isLoggedIn()) {
-            try {
-                refreshCookies();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        WebResource.Builder builder = decorateBuilder(resource);
-
-        return builder.type(type).put(ClientResponse.class, params);
-    }
-
     protected ClientResponse requestPUT(WebResource resource, JSONObject body, String type) {
 
         if (!isLoggedIn()) {
             log.info("User is not loggedin");
             try {
-                refreshCookies();
+                createSession();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -71,10 +55,29 @@ public class BaseRestClient {
         return builder.type(type).put(ClientResponse.class, body.toString());
     }
 
+    protected ClientResponse requestPUT(WebResource resource, String body, String type) {
+
+        if (!isLoggedIn()) {
+            log.info("User is not loggedin");
+            try {
+                createSession();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        WebResource.Builder builder = decorateBuilder(resource);
+
+        return builder.type(type).put(ClientResponse.class, body);
+    }
+
     protected ClientResponse jsonPUT(WebResource resource, JSONObject body) {
         return requestPUT(resource, body, MediaType.APPLICATION_JSON);
     }
 
+    protected ClientResponse jsonPUT(WebResource resource, String body) {
+        return requestPUT(resource, body, MediaType.APPLICATION_JSON);
+    }
     protected ClientResponse requestPOST(WebResource resource, String params, String type) {
 
 
@@ -88,7 +91,7 @@ public class BaseRestClient {
     protected WebResource.Builder decorateBuilder(WebResource resource) {
 
         WebResource.Builder builder = resource.getRequestBuilder();
-
+        cookies = TestRunData.getCookies();
         if (null != cookies) {
             log.debug("");
             for (NewCookie cookie : cookies) {
@@ -96,66 +99,60 @@ public class BaseRestClient {
                 log.debug("cookie " + cookie + " is added to the builder");
             }
         }
-        if (null != token) {
-            builder = builder.header("X-XSRF-TOKEN", token);
+        if (null != TestRunData.getXSRFToken()) {
+            builder = builder.header("X-XSRF-TOKEN", TestRunData.getXSRFToken());
         }
 
         return builder;
     }
 
-    public List<NewCookie> login() throws SMPRestException {
+    public void createSession() throws Exception {
         log.debug("Rest client using to login: " + this.username);
         HashMap<String, String> params = new HashMap<>();
         params.put("username", this.username);
         params.put("password", this.password);
 
         ClientResponse response = resource.path(RestServicePaths.LOGIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, new JSONObject(params).toString());
-
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
-        // extract userId to be used in the Paths of the requests
-
-        data.setUserId((String) responseBody.get("userId"));
-        log.debug("Last Userid is " + data.getUserId());
 
         if (response.getStatus() == 200) {
-            return response.getCookies();
+            // extract userId to be used in the Paths of the requests
+            data.setUserId((String) responseBody.get("userId"));
+            log.debug(String.format("UserID: %s is stored!", TestRunData.getUserId()));
+
+            data.setCookies(response.getCookies());
+            log.debug("Cookies are stored!");
+
+            if (null != TestRunData.getCookies()) {
+                token = extractToken();
+            } else {
+                throw new Exception("Could not login, COOKIES are not found!");
+            }
+        } else {
+            throw new SMPRestException("Login failed", response);
+
         }
-        throw new SMPRestException("Login failed", response);
 
     }
 
     private String extractToken() {
         String mytoken = null;
-        for (NewCookie cookie : cookies) {
+        for (NewCookie cookie : TestRunData.getCookies()) {
             if (StringUtils.equalsIgnoreCase(cookie.getName(), "XSRF-TOKEN")) {
                 mytoken = cookie.getValue();
+
             }
         }
+        data.setXSRFToken(mytoken);
+        log.debug("XSRF-Token " + mytoken + " has been stored!");
         return mytoken;
     }
 
-    public void refreshCookies() throws Exception {
-        if (isLoggedIn()) {
-            return;
-        }
-        cookies = login();
-        if (null != cookies) {
-            token = extractToken();
-        } else {
-            throw new Exception("Could not login, tests will not be able to generate necessary data!");
-        }
-
-        if (null == token) {
-            throw new Exception("Could not obtain XSRF token, tests will not be able to generate necessary data!");
-        }
-    }
-
     public boolean isLoggedIn() {
+
         WebResource.Builder builder = decorateBuilder(resource.path(RestServicePaths.CONNECTED));
         int response = builder.get(ClientResponse.class).getStatus();
         log.debug("Connected endpoint returns: " + response);
-        log.debug("UserID is: " + data.getUserId());
-        return (!(response == 401) && !data.getUserId().isEmpty());
+        return (!(response == 401));
     }
-
 }
