@@ -18,7 +18,7 @@ import java.util.List;
 
 public class BaseRestClient {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    protected TestRunData data = new TestRunData();
+    protected TestRunData data =  TestRunData.getInstance();
 
     protected Client client = Client.create();
     public WebResource resource = client.resource(data.getUiBaseUrl());

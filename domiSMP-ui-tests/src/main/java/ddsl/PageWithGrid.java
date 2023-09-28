@@ -30,7 +30,7 @@ public class PageWithGrid extends DomiSMPPage {
 
     public PageWithGrid(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
     public SmallGrid getGrid() {

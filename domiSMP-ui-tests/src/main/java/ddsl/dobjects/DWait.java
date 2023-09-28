@@ -25,12 +25,12 @@ public class DWait {
     public final WebDriverWait longWait;
     public final WebDriverWait shortWait;
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final TestRunData data = new TestRunData();
+    private final TestRunData data =  TestRunData.getInstance();
     private final WebDriver driver;
 
     public DWait(WebDriver driver) {
-        this.defaultWait = new WebDriverWait(driver, data.getTIMEOUTinDuration());
-        this.longWait = new WebDriverWait(driver, data.getLongWaitInDuration());
+        this.defaultWait = new WebDriverWait(driver, data.getWaitDurationShort());
+        this.longWait = new WebDriverWait(driver, data.getWaitDurationLong());
         this.shortWait = new WebDriverWait(driver, Duration.ofMinutes(1));
         this.driver = driver;
     }
@@ -61,7 +61,7 @@ public class DWait {
     }
 
     public void forElementToBeEnabled(WebElement element) {
-        int maxTimeout = data.getTIMEOUT() * 1000;
+        int maxTimeout = data.getWaitTimeShort() * 1000;
         int waitedSoFar = 0;
 
         while ((null != element.getAttribute("disabled")) && (waitedSoFar < maxTimeout)) {
@@ -71,7 +71,7 @@ public class DWait {
     }
 
     public void forElementToBeDisabled(WebElement element) {
-        int maxTimeout = data.getTIMEOUT() * 100;
+        int maxTimeout = data.getWaitTimeShort() * 100;
         int waitedSoFar = 0;
 
         while ((null == element.getAttribute("disabled")) && (waitedSoFar < maxTimeout)) {

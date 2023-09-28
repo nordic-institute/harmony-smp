@@ -9,6 +9,13 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <!-- configuration example-->
+        <test.webdriver.path>./chromedriver.exe</test.webdriver.path>
+        <test.webdriver.type>chrome</test.webdriver.type>
+        <test.webdriver.headless>false</test.webdriver.headless>
+        <test.application.url>http://eulogin.protected.smp.local:8982/smp/ui/</test.application.url>
+        <test.sml.url>http://localhost:8982/edelivery-sml/</test.sml.url>
+
         <commons-csv_version>1.10.0</commons-csv_version>
         <selenium-chrome-driver_version>4.11.0</selenium-chrome-driver_version>
         <selenium-java_version>4.11.0</selenium-java_version>
@@ -47,8 +54,13 @@
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                     <systemPropertyVariables>
-                        <runBrowser>firefox</runBrowser>
-                        <propertiesFile>./src/main/resources/myLocal.properties</propertiesFile>
+
+                        <!--propertiesFile>./src/main/resources/myLocal.properties</propertiesFile -->
+                        <test.webdriver.path>${test.webdriver.path}</test.webdriver.path>
+                        <test.webdriver.type>${test.webdriver.type}</test.webdriver.type>
+                        <test.webdriver.headless>${test.webdriver.headless}</test.webdriver.headless>
+                        <test.application.url>${test.application.url}</test.application.url>
+                        <test.sml.url>${test.sml.url}</test.sml.url>
                     </systemPropertyVariables>
                     <properties>
                         <property>
@@ -72,6 +84,7 @@
                         <configuration>
                             <systemPropertyVariables>
                                 <propertiesFile>./src/main/resources/myLocal.properties</propertiesFile>
+
                             </systemPropertyVariables>
                             <suiteXmlFiles>
                                 <suiteXmlFile>testng.xml</suiteXmlFile>
@@ -127,7 +140,6 @@
         </dependency>
 
         <!--**************************************-->
-
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>

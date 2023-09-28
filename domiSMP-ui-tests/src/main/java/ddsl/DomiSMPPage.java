@@ -36,7 +36,7 @@ public class DomiSMPPage extends DComponent {
 
     public DomiSMPPage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
         waitForPageToLoaded();
     }
 

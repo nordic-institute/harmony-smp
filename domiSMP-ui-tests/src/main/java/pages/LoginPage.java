@@ -29,7 +29,7 @@ public class LoginPage extends DomiSMPPage {
     public LoginPage(WebDriver driver) {
         super(driver);
         LOG.debug(".... init");
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
     public void login(String user, String pass) throws Exception {
