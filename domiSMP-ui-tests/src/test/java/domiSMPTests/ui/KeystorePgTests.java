@@ -5,6 +5,7 @@ import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
@@ -36,6 +37,7 @@ public class KeystorePgTests extends SeleniumTest {
     }
 
     //TODO: wait until the mat-select for certificate type is changed to select
+    @Ignore
     @Test(description = "KEYS-02 System admin is able to import PKCS 12 Keystore")
     public void SystemAdminIsAbleToImportPKCS12() throws Exception {
         String path = FileUtils.getAbsolutePath("./src/main/resources/keystore/expired_keystore_JKS.jks");

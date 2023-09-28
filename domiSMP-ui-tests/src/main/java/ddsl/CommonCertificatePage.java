@@ -34,38 +34,38 @@ public class CommonCertificatePage extends CommonPageWithGrid {
     }
 
     public String getPublicKeyTypeLbl() {
-        return publicKeyTypeLbl.getText();
+        return publicKeyTypeLbl.getAttribute("value");
     }
 
     public String getAliasIdLbl() {
-        return aliasIdLbl.getText();
+        return aliasIdLbl.getAttribute("value");
     }
 
     public String getSmpCertificateIdLbl() {
-        return smpCertificateIdLbl.getText();
+        return smpCertificateIdLbl.getAttribute("value");
     }
 
     public String getSubjectNameLbl() {
-        return subjectNameLbl.getText();
+        return subjectNameLbl.getAttribute("value");
     }
 
     public String getValidFromLbl() {
-        return validFromLbl.getText();
+        return validFromLbl.getAttribute("value");
     }
 
     public String getValidToLbl() {
-        return validToLbl.getText();
+        return validToLbl.getAttribute("value");
     }
 
     public String getIssuerLbl() {
-        return issuerLbl.getText();
+        return issuerLbl.getAttribute("value");
     }
 
     public String getSerialNumberLbl() {
-        return serialNumberLbl.getText();
+        return serialNumberLbl.getAttribute("value");
     }
 
     public String getCertificateRevolcationListURLlbl() {
-        return certificateRevolcationListURLlbl.getText();
+        return certificateRevolcationListURLlbl.getAttribute("value");
     }
 }
