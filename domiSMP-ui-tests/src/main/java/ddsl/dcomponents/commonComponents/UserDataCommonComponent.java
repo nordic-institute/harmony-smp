@@ -15,7 +15,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
      */
     private final static Logger LOG = LoggerFactory.getLogger(UserDataCommonComponent.class);
     @FindBy(id = "changePassword_id")
-    public WebElement setChangePasswordBtn;
+    private WebElement setChangePasswordBtn;
     @FindBy(id = "smpTheme_id")
     private WebElement themeSel;
     @FindBy(id = "smpLocale_id")
@@ -52,18 +52,17 @@ public class UserDataCommonComponent extends DomiSMPPage {
     }
 
     public String getLastSetValue() {
-        return lastSetLbl.getText();
+        return lastSetLbl.getAttribute("value");
     }
 
     public String getPasswordExpiresOnValue() {
-        return passwordExpiresOnLbl.getText();
+        return passwordExpiresOnLbl.getAttribute("value");
     }
 
-    public SetChangePasswordDialog getChangePasswordDialog() {
+    public SetChangePasswordDialog clickOnChangePassword() throws InterruptedException {
+        setChangePasswordBtn.click();
         return new SetChangePasswordDialog(driver);
     }
-
-
     public String fillUserProfileData(String emailValue, String fullNameValue, String selectThemeValue, String localeValue) {
         try {
             if (!emailValue.isEmpty()) {
@@ -93,10 +92,4 @@ public class UserDataCommonComponent extends DomiSMPPage {
             return null;
         }
     }
-
-    public void ChangePassword(String currentPasssword, String newPassword) throws Exception {
-        SetChangePasswordDialog dialog = new SetChangePasswordDialog(driver);
-        dialog.setNewPassword(currentPasssword, newPassword);
-    }
-
 }
