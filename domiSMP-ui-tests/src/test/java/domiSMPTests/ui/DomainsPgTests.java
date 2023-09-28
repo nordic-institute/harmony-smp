@@ -165,28 +165,6 @@ public class DomainsPgTests extends SeleniumTest {
         alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Invalid domain data! Domain with code [" + domainModel.getDomainCode() + "] already exists!");
         soft.assertAll();
-
-
-//        DomainModel generatedDomain = DomainModel.generatePublicDomainModelWithoutSML();
-//
-//        MemberModel memberUser = new MemberModel();
-//        memberUser.setMemberOf("Domain");
-//        memberUser.setRoleType("VIEWER");
-//        memberUser.setUsername("system");
-//
-//        JSONObject domain = rest.domains().createDomain(generatedDomain);
-//        String domainId = domain.get("domainId").toString();
-//        memberUser = rest.domains().addMembersToDomain(domainId, memberUser);
-//
-//        EditDomainsPage editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-//        soft.assertNull(editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", generatedDomain.getDomainCode()));
-//
-//        memberUser.setRoleType("ADMIN");
-//        rest.domains().addMembersToDomain(domainId, memberUser);
-//        editDomainsPage.refreshPage();
-//
-//        soft.assertNotNull(editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", generatedDomain.getDomainCode()));
-//        soft.assertAll();
     }
 
 }
