@@ -25,7 +25,7 @@ public class TestRunData {
     public enum TestEnvironmentProperty {
         PROPERTIES_PATH("test.properties.path", "./test.properties", "Path to init properties. example: ./src/test/resources/test.properties"),
         WEBDRIVER_PATH("test.webdriver.path", null, "Webdriver path"),
-        WEBDRIVER_TYPE("test.webdriver.type", "gecko", "Webdriver type: chrome, gecko, edge"),
+        WEBDRIVER_TYPE("test.webdriver.type", "chrome", "Webdriver type: chrome, firefox"),
         WEBDRIVER_HEADLESS("test.webdriver.headless", "false", "Run Webdriver headless. Default is false"),
         APPLICATION_UI_URL("test.application.ui.url", "http://localhost:8080/smp/ui/", "Application UI url"),
         SML_URL("test.sml.url", "http://localhost:8982/edelivery-sml/listDNS", "Webdriver type: chrome, gecko, edge"),
