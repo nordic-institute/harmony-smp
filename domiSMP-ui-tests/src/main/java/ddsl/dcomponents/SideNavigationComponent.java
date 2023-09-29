@@ -5,6 +5,7 @@ import ddsl.enums.Pages;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
@@ -107,6 +108,11 @@ public class SideNavigationComponent extends DomiSMPPage {
 
     public <T> T navigateTo(Pages page) {
         LOG.debug("Get link to " + page.name());
+        // DomiSMP behaviour. Button is not expanded if already focused and not expanded - issue when re-login
+        // with this we make sure the starting point from Search
+        openSubmenu(resourcesExpandLnk, null);
+
+
         //            case SEARCH_RESOURCES:
         //                expandSection(resourcesExpandLnk);s
         //                return new DLink(driver, resourcesLnk);
@@ -184,7 +190,15 @@ public class SideNavigationComponent extends DomiSMPPage {
     private void openSubmenu(WebElement menuBtn, WebElement submenuBtn) {
 
         if (!menuBtn.getAttribute("class").contains("cdk-focused")) {
+            // Driver Issue:  is not clickable at point (105, 356). Other element would receive the click:
+            Actions actions = new Actions(driver);
+            actions.moveToElement(menuBtn);
+            actions.perform();
+
             menuBtn.click();
+        }
+        if (submenuBtn == null){
+            return;
         }
         submenuBtn.click();
         if (submenuBtn.getText().contains(getBreadcrump().getCurrentPage())) {

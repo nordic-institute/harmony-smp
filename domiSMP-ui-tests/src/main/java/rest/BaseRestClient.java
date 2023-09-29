@@ -18,7 +18,7 @@ import java.util.List;
 
 public class BaseRestClient {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
-    protected TestRunData data = new TestRunData();
+    protected TestRunData data =  TestRunData.getInstance();
 
     protected Client client = Client.create();
     public WebResource resource = client.resource(data.getUiBaseUrl());
@@ -91,7 +91,7 @@ public class BaseRestClient {
     protected WebResource.Builder decorateBuilder(WebResource resource) {
 
         WebResource.Builder builder = resource.getRequestBuilder();
-        cookies = TestRunData.getCookies();
+        cookies = TestRunData.getInstance().getCookies();;
         if (null != cookies) {
             log.debug("");
             for (NewCookie cookie : cookies) {
@@ -99,8 +99,8 @@ public class BaseRestClient {
                 log.debug("cookie " + cookie + " is added to the builder");
             }
         }
-        if (null != TestRunData.getXSRFToken()) {
-            builder = builder.header("X-XSRF-TOKEN", TestRunData.getXSRFToken());
+        if (null != TestRunData.getInstance().getXSRFToken()) {
+            builder = builder.header("X-XSRF-TOKEN", TestRunData.getInstance().getXSRFToken());
         }
 
         return builder;
@@ -118,12 +118,12 @@ public class BaseRestClient {
         if (response.getStatus() == 200) {
             // extract userId to be used in the Paths of the requests
             data.setUserId((String) responseBody.get("userId"));
-            log.debug(String.format("UserID: %s is stored!", TestRunData.getUserId()));
+            log.debug(String.format("UserID: %s is stored!", TestRunData.getInstance().getUserId()));
 
             data.setCookies(response.getCookies());
             log.debug("Cookies are stored!");
 
-            if (null != TestRunData.getCookies()) {
+            if (null != TestRunData.getInstance().getCookies()) {
                 token = extractToken();
             } else {
                 throw new Exception("Could not login, COOKIES are not found!");
@@ -137,7 +137,7 @@ public class BaseRestClient {
 
     private String extractToken() {
         String mytoken = null;
-        for (NewCookie cookie : TestRunData.getCookies()) {
+        for (NewCookie cookie : TestRunData.getInstance().getCookies()) {
             if (StringUtils.equalsIgnoreCase(cookie.getName(), "XSRF-TOKEN")) {
                 mytoken = cookie.getValue();
 

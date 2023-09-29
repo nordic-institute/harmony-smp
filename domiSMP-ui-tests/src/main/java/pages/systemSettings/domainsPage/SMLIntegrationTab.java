@@ -37,7 +37,7 @@ public class SMLIntegrationTab extends DComponent {
 
     public SMLIntegrationTab(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
 
     }
 

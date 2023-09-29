@@ -25,7 +25,7 @@ public class DomainTab extends DComponent {
     private WebElement saveBtn;
     public DomainTab(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
 
     }
 

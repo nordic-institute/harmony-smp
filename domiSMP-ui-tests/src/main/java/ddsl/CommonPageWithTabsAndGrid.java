@@ -25,7 +25,7 @@ public class CommonPageWithTabsAndGrid extends CommonPageWithTabs {
 
     public CommonPageWithTabsAndGrid(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
     public SmallGrid getLeftSideGrid() {

@@ -8,6 +8,6 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 public class MembersTab extends MembersComponent {
     public MembersTab(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 }

@@ -24,7 +24,7 @@ public class AlertComponent extends DComponent {
 
     public AlertComponent(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
     public String getAlertMessage() {

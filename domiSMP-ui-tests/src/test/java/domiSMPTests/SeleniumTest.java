@@ -18,7 +18,7 @@ public class SeleniumTest {
      * This class is extending all the test classes to have access to the Base tests methods.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(SeleniumTest.class);
-    public static TestRunData data = new TestRunData();
+    public static TestRunData data = TestRunData.getInstance();
     public static DomiSMPRestClient rest = new DomiSMPRestClient();
     static int methodCount = 1;
     public String logFilename;
@@ -75,7 +75,9 @@ public class SeleniumTest {
 
     @AfterClass(alwaysRun = true)
     protected void afterClass() {
-
+        if (driver == null) {
+            return;
+        }
         LOG.info("-------- Quitting driver after test class-------");
         try {
             driver.quit();
