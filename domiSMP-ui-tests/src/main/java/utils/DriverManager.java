@@ -29,6 +29,7 @@ public class DriverManager {
             default:
                 throw new RuntimeException("Unknown driver type: [" + driverType+"]");
         }
+
         driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
@@ -45,10 +46,15 @@ public class DriverManager {
         prefs.put("download.default_directory", data.downloadFolderPath());
         prefs.put("safebrowsing.enabled", "true");
 
+
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
         options.addArguments("--disable-popup-blocking");
-        // options.addArguments("--headless=new");
+        if (data.enableHeadlessStart()) {
+            options.addArguments("--headless");
+            // options.addArguments("--headless=new");
+        }
+
 
         options.setExperimentalOption("prefs", prefs);
         return new ChromeDriver(options);
@@ -59,7 +65,10 @@ public class DriverManager {
         System.setProperty("webdriver.gecko.driver", data.getWebDriverPath());
 
         FirefoxOptions options = new FirefoxOptions();
-        options.addArguments("--headless=new");
+        if (data.enableHeadlessStart()) {
+            options.addArguments("--headless");
+        }
+
 
         //code added for auto download
         options.addPreference("browser.download.folderList", 2);

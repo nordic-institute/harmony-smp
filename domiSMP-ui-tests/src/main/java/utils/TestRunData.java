@@ -196,7 +196,7 @@ public class TestRunData {
         return getPropertyValue(TestEnvironmentProperty.REPORT_FOLDER);
     }
 
-    public boolean isWebDriverStartedHeadless() {
+    public boolean enableHeadlessStart() {
         return Boolean.parseBoolean(getPropertyValue(TestEnvironmentProperty.WEBDRIVER_HEADLESS));
     }
 
