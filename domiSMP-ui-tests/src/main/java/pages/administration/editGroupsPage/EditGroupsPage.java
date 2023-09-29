@@ -4,8 +4,11 @@ import ddsl.CommonPageWithTabs;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rest.models.DomainModel;
+import rest.models.GroupModel;
 
 public class EditGroupsPage extends CommonPageWithTabs {
     /**
@@ -16,11 +19,15 @@ public class EditGroupsPage extends CommonPageWithTabs {
     @FindBy(id = "domain_id")
     private WebElement domainDdl;
     @FindBy(id = "group_id")
-    private WebElement groupDdl;
+    private Select groupDdl;
 
     public EditGroupsPage(WebDriver driver) {
         super(driver);
         LOG.debug("Loading Edit groups page.");
+    }
+
+    public void selectGroup(DomainModel domainModel, GroupModel groupModel) throws Exception {
+        weToMatDSelect(domainDdl).selectOptionByText(domainModel.getDomainCode());
     }
 
     public GroupMembersTab getDomainMembersTab() {

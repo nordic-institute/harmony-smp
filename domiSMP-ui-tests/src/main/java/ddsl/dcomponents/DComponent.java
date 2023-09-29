@@ -1,9 +1,6 @@
 package ddsl.dcomponents;
 
-import ddsl.dobjects.DButton;
-import ddsl.dobjects.DInput;
-import ddsl.dobjects.DSelect;
-import ddsl.dobjects.DWait;
+import ddsl.dobjects.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import utils.TestRunData;
@@ -33,6 +30,10 @@ public class DComponent {
 
     protected DSelect weToDSelect(WebElement element) {
         return new DSelect(driver, element);
+    }
+
+    protected DMatSelect weToMatDSelect(WebElement element) {
+        return new DMatSelect(driver, element);
     }
 
 }

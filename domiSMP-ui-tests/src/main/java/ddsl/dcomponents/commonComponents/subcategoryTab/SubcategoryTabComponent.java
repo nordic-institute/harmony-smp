@@ -1,8 +1,8 @@
 package ddsl.dcomponents.commonComponents.subcategoryTab;
 
+import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;
 import ddsl.dcomponents.Grid.SmallGrid;
-import org.apache.poi.ss.formula.functions.T;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -31,16 +31,23 @@ public class SubcategoryTabComponent extends DComponent {
         return new SmallGrid(driver, rightSidePanel);
     }
 
-    public DComponent create() throws Exception {
+    public void create() throws Exception {
         weToDButton(createBtn).click();
-        return new DComponent(driver);
     }
 
-    public T edit(String columnName, String value) throws Exception {
+    protected void edit(String columnName, String value) throws Exception {
         WebElement tobeEdited = getGrid().searchAndGetElementInColumn(columnName, value);
         tobeEdited.click();
         wait.forElementToBeEnabled(editBtn);
         weToDButton(editBtn).click();
-        return new T();
+    }
+
+    protected void delete(String columnName, String value) throws Exception {
+        WebElement tobeDeleted = getGrid().searchAndGetElementInColumn(columnName, value);
+        tobeDeleted.click();
+        wait.forElementToBeEnabled(deleteBtn);
+        weToDButton(deleteBtn).click();
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
+        confirmationDialog.confirm();
     }
 }

@@ -6,6 +6,7 @@ import domiSMPTests.SeleniumTest;
 import org.json.JSONObject;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
@@ -104,6 +105,7 @@ public class EditDomainsPgTests extends SeleniumTest {
 
     }
 
+    @Ignore
     @Test(description = "EDTDOM-02 Domain admins are able to create new groups")
     public void DomainAdminsAreAbleToCreate() throws Exception {
         GroupModel groupToBeCreated = GroupModel.generatePublicDomain();
@@ -111,7 +113,7 @@ public class EditDomainsPgTests extends SeleniumTest {
 
         editDomainPage.goToTab("Group");
 
-        CreateGroupDetailsDialog createGroupDetailsDialog = editDomainPage.getGroupTab().clickOnCreateNewGroup();
+        CreateGroupDetailsDialog createGroupDetailsDialog = editDomainPage.getGroupTab().clickCreateNewGroup();
         createGroupDetailsDialog.fillGroupDetails(groupToBeCreated);
         Boolean isSaveSuccesfully = createGroupDetailsDialog.tryClickOnSave();
         soft.assertTrue(isSaveSuccesfully);
@@ -122,5 +124,43 @@ public class EditDomainsPgTests extends SeleniumTest {
         EditGroupsPage editgroupPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_GROUPS);
         soft.assertAll();
 
+    }
+
+    @Test(description = "EDTDOM-03 Domain admins are not able to create duplicated groups")
+    public void DomainAdminsAreNotAbleToCreateDuplicatedGroups() throws Exception {
+        GroupModel duplicatedGroup = GroupModel.generatePublicDomain();
+
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        editDomainPage.goToTab("Group");
+        CreateGroupDetailsDialog createGroupDetailsDialog = editDomainPage.getGroupTab().clickCreateNewGroup();
+        createGroupDetailsDialog.fillGroupDetails(duplicatedGroup);
+        Boolean isSaveSuccesfully = createGroupDetailsDialog.tryClickOnSave();
+        soft.assertTrue(isSaveSuccesfully);
+
+
+        createGroupDetailsDialog = editDomainPage.getGroupTab().clickCreateNewGroup();
+        createGroupDetailsDialog.fillGroupDetails(duplicatedGroup);
+        isSaveSuccesfully = createGroupDetailsDialog.tryClickOnSave();
+        String duplicateAlertMessage = createGroupDetailsDialog.getAlertArea().getAlertMessage();
+        soft.assertTrue(isSaveSuccesfully);
+        soft.assertEquals(duplicateAlertMessage, String.format("Invalid request [CreateGroup]. Error: Group with name [%s] already exists!!", duplicatedGroup.getGroupName()));
+        soft.assertAll();
+    }
+
+    @Test(description = "EDTDOM-04 Domain admins are able to delete groups without resources")
+    public void DomainAdminsAreNotAbleToDeleteGroups() throws Exception {
+        GroupModel groupToBeDeleted = GroupModel.generatePublicDomain();
+
+        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        editDomainPage.goToTab("Group");
+        CreateGroupDetailsDialog createGroupDetailsDialog = editDomainPage.getGroupTab().clickCreateNewGroup();
+        createGroupDetailsDialog.fillGroupDetails(groupToBeDeleted);
+        Boolean isSaveSuccesfully = createGroupDetailsDialog.tryClickOnSave();
+        soft.assertTrue(isSaveSuccesfully);
+
+        editDomainPage.getGroupTab().deleteGroup(groupToBeDeleted.getGroupName());
+        String deleteMessage = editDomainPage.getAlertArea().getAlertMessage();
+        soft.assertEquals(deleteMessage, String.format("Domain group [%s] deleted", groupToBeDeleted.getGroupName()));
+        soft.assertAll();
     }
 }

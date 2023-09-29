@@ -9,7 +9,7 @@ public class GroupMembersTab extends MembersComponent {
 
     public GroupMembersTab(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 }
 

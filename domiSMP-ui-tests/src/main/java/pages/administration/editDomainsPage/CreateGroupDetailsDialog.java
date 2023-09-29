@@ -1,5 +1,6 @@
 package pages.administration.editDomainsPage;
 
+import ddsl.dcomponents.AlertComponent;
 import ddsl.dcomponents.DComponent;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,9 +20,14 @@ public class CreateGroupDetailsDialog extends DComponent {
     private WebElement saveBtn;
     public CreateGroupDetailsDialog(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
 
     }
+
+    public AlertComponent getAlertArea() {
+        return new AlertComponent(driver);
+    }
+
 
     public void fillGroupDetails(GroupModel group) {
         groupNameLbl.sendKeys(group.getGroupName());

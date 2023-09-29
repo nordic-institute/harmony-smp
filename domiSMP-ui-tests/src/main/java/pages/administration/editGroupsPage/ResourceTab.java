@@ -9,7 +9,7 @@ import pages.administration.editDomainsPage.CreateGroupDetailsDialog;
 public class ResourceTab extends SubcategoryTabComponent {
     public ResourceTab(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
 
     }
 
