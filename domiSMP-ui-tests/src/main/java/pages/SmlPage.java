@@ -17,7 +17,7 @@ public class SmlPage extends DComponent {
 
     public SmlPage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
 
     }
 

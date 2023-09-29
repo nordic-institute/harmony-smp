@@ -12,26 +12,31 @@ import java.time.Duration;
 import java.util.HashMap;
 
 public class DriverManager {
-    static TestRunData data = new TestRunData();
+    static TestRunData data = TestRunData.getInstance();
 
 
     public static WebDriver getDriver() {
 
         WebDriver driver;
-        if (StringUtils.equalsIgnoreCase(data.getRunBrowser(), "firefox")) {
-            driver = getFirefoxDriver();
-        } else {
-            driver = getChromeDriver();
+        String driverType = data.getWebDriverType();
+        switch (StringUtils.lowerCase(driverType)) {
+            case "chrome":
+                driver = getChromeDriver();
+                break;
+            case "firefox":
+                driver = getFirefoxDriver();
+                break;
+            default:
+                throw new RuntimeException("Unknown driver type: [" + driverType+"]");
         }
         driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
-
         return driver;
     }
 
     private static WebDriver getChromeDriver() {
-        System.setProperty("webdriver.chrome.driver", data.getChromeDriverPath());
+        System.setProperty("webdriver.chrome.driver", data.getWebDriverPath());
 
 
         //Code added for auto download
@@ -51,7 +56,7 @@ public class DriverManager {
 
 
     private static WebDriver getFirefoxDriver() {
-        System.setProperty("webdriver.gecko.driver", data.getFirefoxDriverPath());
+        System.setProperty("webdriver.gecko.driver", data.getWebDriverPath());
 
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("--headless=new");

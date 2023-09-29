@@ -9,6 +9,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <!-- configuration example-->
+        <test.properties.path>./src/main/resources/myLocal.properties</test.properties.path>
+
         <commons-csv_version>1.10.0</commons-csv_version>
         <selenium-chrome-driver_version>4.11.0</selenium-chrome-driver_version>
         <selenium-java_version>4.11.0</selenium-java_version>
@@ -47,8 +50,7 @@
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                     <systemPropertyVariables>
-                        <runBrowser>firefox</runBrowser>
-                        <propertiesFile>./src/main/resources/myLocal.properties</propertiesFile>
+                        <test.properties.path>${test.properties.path}</test.properties.path>
                     </systemPropertyVariables>
                     <properties>
                         <property>
@@ -72,6 +74,7 @@
                         <configuration>
                             <systemPropertyVariables>
                                 <propertiesFile>./src/main/resources/myLocal.properties</propertiesFile>
+
                             </systemPropertyVariables>
                             <suiteXmlFiles>
                                 <suiteXmlFile>testng.xml</suiteXmlFile>
@@ -127,7 +130,6 @@
         </dependency>
 
         <!--**************************************-->
-
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>

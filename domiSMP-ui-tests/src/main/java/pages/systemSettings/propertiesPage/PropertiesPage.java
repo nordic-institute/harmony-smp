@@ -31,7 +31,7 @@ public class PropertiesPage extends DomiSMPPage {
 
     public PropertiesPage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
     public PropGrid grid() {

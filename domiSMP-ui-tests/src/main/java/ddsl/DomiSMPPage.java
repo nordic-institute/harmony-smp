@@ -9,6 +9,7 @@ import ddsl.dobjects.DButton;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
@@ -36,7 +37,7 @@ public class DomiSMPPage extends DComponent {
 
     public DomiSMPPage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
         waitForPageToLoaded();
     }
 
@@ -56,8 +57,13 @@ public class DomiSMPPage extends DComponent {
     public void logout() {
         wait.waitforOverlayToGone();
         rightMenuBtn.click();
-        logoutMenuBtn.click();
+        // TODO investigate why sometimes the button is not in view
+        // Driver Issue:  is not clickable at point (105, 356). Other element would receive the click:
+        Actions actions = new Actions(driver);
+        actions.moveToElement(logoutMenuBtn);
+        actions.perform();
 
+        logoutMenuBtn.click();
     }
 
     public void refreshPage() {

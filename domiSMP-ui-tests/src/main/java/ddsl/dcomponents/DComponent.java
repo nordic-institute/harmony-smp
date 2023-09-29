@@ -16,7 +16,7 @@ public class DComponent {
 
     public DWait wait;
     protected WebDriver driver;
-    protected TestRunData data = new TestRunData();
+    protected TestRunData data = TestRunData.getInstance();
 
     public DComponent(WebDriver driver) {
         this.driver = driver;

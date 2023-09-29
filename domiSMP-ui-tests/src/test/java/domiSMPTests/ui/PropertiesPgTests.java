@@ -36,7 +36,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-2 - Admin doubleclicks or selects a property and clicks edit button and Edit property dialog is opened")
-    public void AdminDoubleClicksOrSelectsAPropertyAndClicksEditButtonandEditPropertyDialogIsOpened() throws Exception {
+    public void AdminDoubleClicksOrSelectsAPropertyAndClicksEditButtonandEditPropertyDialogIsOpened()  {
 
         String property = "bdmsl.integration.url";
         propertiesPage.propertySearch(property);

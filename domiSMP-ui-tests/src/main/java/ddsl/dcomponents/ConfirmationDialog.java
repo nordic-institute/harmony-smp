@@ -22,7 +22,7 @@ public class ConfirmationDialog extends DComponent {
 
     public ConfirmationDialog(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
     public void confirm() {

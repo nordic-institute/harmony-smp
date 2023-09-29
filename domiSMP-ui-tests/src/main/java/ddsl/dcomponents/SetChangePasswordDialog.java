@@ -33,7 +33,7 @@ public class SetChangePasswordDialog extends DComponent {
 
     public SetChangePasswordDialog(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 
     public void fillChangePassword(String currentPassword, String newPassword) throws Exception {

@@ -9,7 +9,7 @@ public class DomainMembersTab extends MembersComponent {
 
     public DomainMembersTab(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
     }
 }
 

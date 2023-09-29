@@ -29,7 +29,7 @@ public class DomainClient extends BaseRestClient {
             }
         }
 
-        String createDomainPath = RestServicePaths.getCreateDomainPath(TestRunData.getUserId());
+        String createDomainPath = RestServicePaths.getCreateDomainPath(TestRunData.getInstance().getUserId());
 
         ClientResponse response = jsonPUT(resource.path(createDomainPath), domainJson);
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
@@ -56,7 +56,7 @@ public class DomainClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        String addMemberPath = RestServicePaths.getDomainAddMemberPath(TestRunData.getUserId(), domainId);
+        String addMemberPath = RestServicePaths.getDomainAddMemberPath(TestRunData.getInstance().getUserId(), domainId);
 
         ClientResponse response = jsonPUT(resource.path(addMemberPath), membersJson);
         if (response.getStatus() != 200) {

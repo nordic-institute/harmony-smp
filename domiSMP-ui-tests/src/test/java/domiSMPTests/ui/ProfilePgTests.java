@@ -128,12 +128,12 @@ public class ProfilePgTests extends SeleniumTest {
             propertiesPage.save();
         }
 
-        ProfilePage profilePage = propertiesPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
+        ProfilePage profilePage = homePage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         SetChangePasswordDialog setChangePasswordDialog = profilePage.profileData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(data.getNewPassword(), new40CharactersPasswordValue);
-        List<String> erros = setChangePasswordDialog.getFieldErrorMessage();
+        List<String> errors = setChangePasswordDialog.getFieldErrorMessage();
         DomiSMPPage homepage = setChangePasswordDialog.TryClickOnChangePassword();
-        soft.assertEquals(erros.size(), 0, "Could not change the password of the user");
+        soft.assertEquals(errors.size(), 0, "Could not change the password of the user");
         soft.assertNotNull(homepage, "Could not change the password of the user");
         soft.assertAll();
 

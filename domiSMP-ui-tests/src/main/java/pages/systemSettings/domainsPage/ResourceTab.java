@@ -26,7 +26,7 @@ public class ResourceTab extends DComponent {
 
     public ResourceTab(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getTIMEOUT()), this);
+        PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
 
     }
 

@@ -28,7 +28,7 @@ public class UserClient extends BaseRestClient {
             }
         }
 
-        String usersPath = RestServicePaths.getUsersPath(TestRunData.getUserId());
+        String usersPath = RestServicePaths.getUsersPath(TestRunData.getInstance().getUserId());
 
         ClientResponse response = jsonPUT(resource.path(usersPath), usrObj);
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
@@ -54,7 +54,7 @@ public class UserClient extends BaseRestClient {
     public JSONObject changePassword(String forUserId, String newPassword) {
 
 
-        String changePasswordPath = RestServicePaths.getChangePasswordPath(TestRunData.getUserId(), forUserId);
+        String changePasswordPath = RestServicePaths.getChangePasswordPath(TestRunData.getInstance().getUserId(), forUserId);
         JSONObject passwordChangeBody = new JSONObject();
         passwordChangeBody.put("currentPassword", password);
         passwordChangeBody.put("newPassword", newPassword);
