@@ -159,7 +159,7 @@ validateAndPrepareArtefacts() {
 
   # SMP artefats
   if [[ ! -f "${SMP_ARTEFACTS}/smp.war" ]]; then
-    echo "SMP artefact   '${SMP_ARTEFACTS}/smp.war' not found. Was project built!"
+    echo "SMP artefact '${SMP_ARTEFACTS}/smp.war' not found. Was project built!"
     exit 1
   else
     # copy artefact to docker build folder
@@ -175,7 +175,7 @@ validateAndPrepareArtefacts() {
 
   # SMP setup zip
   if [[ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]]; then
-    echo "SMP setup bundle  '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found. Was project built!"
+    echo "SMP setup bundle '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found. Was project built!"
     exit 1
   else
     # copy artefact to docker build folder
@@ -184,8 +184,8 @@ validateAndPrepareArtefacts() {
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
   fi
 
-  if [[ ! -f "${SMP_PLUGIN_EXAMPLE}" ]]; then
-    echo "SMP SPI plugin  '${SMP_PLUGIN_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
+  if [[ ! -d "${SMP_PLUGIN_EXAMPLE}" ]]; then
+    echo "SMP SPI plugin '${SMP_PLUGIN_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
     ls -ltr ${SMP_ARTEFACTS}
     cp "${SMP_ARTEFACTS}/smp-spi-payload-validation-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-payload-validation-example.jar
   else
@@ -205,7 +205,7 @@ buildImages() {
   buildUtils
 }
 buildTomcatMysqlImages() {
-    # build tomcat mysql image  deployment.
+    # build tomcat mysql image deployment.
   docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
   if [ $? -ne 0 ]; then
     echo "Error occurred while building image [smp-sml-tomcat-mysql:${SMP_VERSION}]!"
