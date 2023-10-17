@@ -9,10 +9,12 @@ import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This is the page object for the Keystore import dialog. It contains the WebElements and the methods specific to the dialog.
+ *
+ */
 public class KeyStoreImportDialog extends DComponent {
-    /**
-     * This is the page object for the Keystore import dialog. It contains the webelements and the methods specific to the dialog.
-     */
+
     private final static Logger LOG = LoggerFactory.getLogger(KeyStoreImportDialog.class);
 
     @FindBy(id = "keystore-file-upload")
@@ -29,13 +31,12 @@ public class KeyStoreImportDialog extends DComponent {
     public KeyStoreImportDialog(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
-
     }
 
     public void addCertificate(String filepath, KeyStoreTypes keyStoreTypes, String password) {
         try {
             importKeyStoreInput.sendKeys(filepath);
-            weToDSelect(keyStoreTypeDdl).selectValue(keyStoreTypes.toString());
+            weToMatSelect(keyStoreTypeDdl).selectByVisibleText(keyStoreTypes.toString());
             weToDInput(passwordIdInput).fill(password);
 
         } catch (Exception e) {
