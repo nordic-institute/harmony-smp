@@ -13,6 +13,7 @@ import pages.systemSettings.keyStorePage.KeyStoreImportDialog;
 import pages.systemSettings.keyStorePage.KeystorePage;
 import rest.models.UserModel;
 import utils.FileUtils;
+import utils.Utils;
 
 public class KeystorePgTests extends SeleniumTest {
 
@@ -37,16 +38,25 @@ public class KeystorePgTests extends SeleniumTest {
     }
 
 
-    @Test(description = "KEYS-02 System admin is able to import JKS Keystore")
+    @Test(description = "KEYS-02 System admin is able to import JKS Keystore", priority = 0)
     public void systemAdminIsAbleToImportJKS() throws Exception {
         String path = FileUtils.getAbsoluteKeystorePath("expired_keystore_JKS.jks");
 
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test1234");
         keyStoreImportDialog.clickImport();
-
         String value =  keystorePage.getAlertArea().getAlertMessage();
+        String alias = Utils.getAliasFromMessage(value);
+        keystorePage.getGrid().searchAndClickElementInColumn("Alias", alias);
+        soft.assertEquals(keystorePage.getPublicKeyTypeValue(),"RSA");
+        soft.assertEquals(keystorePage.getSmpCertificateIdValue(), "CN=blue_gw,O=edelivery,C=BE:00000000645901cb");
+        soft.assertEquals(keystorePage.getSubjectNameValue(),"CN=blue_gw,O=edelivery,C=BE" );
+        soft.assertEquals(keystorePage.getValidFromValue(),"5/8/2023, 5:06:03 PM");
+        soft.assertEquals(keystorePage.getValidToValue(), "5/1/2023, 5:06:03 PM");
+        soft.assertEquals(keystorePage.getIssuerValue(), "CN=blue_gw,O=edelivery,C=BE");
+        soft.assertEquals(keystorePage.getSerialNumberValue(),"645901cb");
         sofAssertThatContains("Certificates added [blue_gw", value);
+
         soft.assertAll();
     }
 

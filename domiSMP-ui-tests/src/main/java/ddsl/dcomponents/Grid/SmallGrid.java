@@ -71,6 +71,38 @@ public class SmallGrid extends DComponent {
         }
         return null;
     }
+    public void searchAndClickElementInColumn(String columnName, String value) {
+
+        wait.forXMillis(100);
+        Integer numOfPages = getGridPagination().getTotalPageNumber();
+        List<WebElement> rowHeaders = getGridHeaders();
+        int columnIndex = -1;
+        for (int i = 0; i < rowHeaders.size(); i++) {
+            if (rowHeaders.get(i).getText().equals(columnName)) {
+                columnIndex = i;
+                break;
+            }
+        }
+        if (columnIndex == -1) {
+            LOG.error("No element found");
+            ;
+        }
+        for (int pageNr = 1; pageNr < numOfPages + 1; pageNr++) {
+
+            List<WebElement> rows = getRows();
+            for (WebElement row : rows) {
+                List<WebElement> cells = getCells(row);
+                WebElement currentCell = cells.get(columnIndex);
+                if (currentCell.getText().equals(value)) {
+                    LOG.debug("[{}] found on page [{}]", value, pageNr);
+                    currentCell.click();
+                }
+            }
+            getGridPagination().goToNextPage();
+
+        }
+        LOG.error("No element found");
+    }
 
 
 }
