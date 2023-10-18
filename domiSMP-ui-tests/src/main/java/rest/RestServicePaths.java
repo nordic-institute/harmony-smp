@@ -29,5 +29,9 @@ public class RestServicePaths {
         return "/edit/rest/" + currentUserId + "/domain/" + domainId + "/member/put";
     }
 
+    public static String getAddResourcePath(String currentUserId, String domainId) {
+        return String.format("/internal/rest/domain/%userId/%domainId/update-resource-types", currentUserId, domainId);
+    }
+
 
 }
