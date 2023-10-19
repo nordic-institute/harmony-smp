@@ -1,6 +1,10 @@
 package ddsl.dcomponents;
 
-import ddsl.dobjects.*;
+import ddsl.dcomponents.mat.MatSelect;
+import ddsl.dobjects.DButton;
+import ddsl.dobjects.DInput;
+import ddsl.dobjects.DSelect;
+import ddsl.dobjects.DWait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import utils.TestRunData;
@@ -8,7 +12,7 @@ import utils.TestRunData;
 public class DComponent {
 
     /**
-     * Generic component which which gives access of driver, wait and wrappers of elements. This should be inhered by each component class.
+     * Generic component which gives access of driver, wait and wrappers of elements. This should be inhered by each component class.
      */
 
     public DWait wait;
@@ -32,8 +36,8 @@ public class DComponent {
         return new DSelect(driver, element);
     }
 
-    protected DMatSelect weToMatDSelect(WebElement element) {
-        return new DMatSelect(driver, element);
+    protected MatSelect weToMatSelect(WebElement element) {
+        return new MatSelect(driver, element);
     }
 
 }
