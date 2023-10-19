@@ -2,11 +2,10 @@ package ddsl.dobjects;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
+/**
+ * Generic wrapper for link element.
+ */
 public class DLink extends DObject {
-    /**
-     * Generic wrapper for link element.
-     */
     public DLink(WebDriver driver, WebElement element) {
         super(driver, element);
     }

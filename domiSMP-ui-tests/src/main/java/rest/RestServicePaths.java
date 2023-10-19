@@ -1,36 +1,43 @@
 package rest;
 
 public class RestServicePaths {
-    public static final String LOGIN = "/public/rest/security/authentication";
-    public static final String CONNECTED = "/public/rest/security/user";
+    private static final String CONTEXT_PATH_PUBLIC = "/public/rest/";
+    private static final String CONTEXT_PATH_INTERNAL = "/internal/rest/";
+    private static final String CONTEXT_PATH_EDIT = "/edit/rest/";
+    private static final String CONTEXT_PATH_INTERNAL_USER = CONTEXT_PATH_INTERNAL + "user";
+    private static final String CONTEXT_PATH_INTERNAL_DOMAIN = CONTEXT_PATH_INTERNAL + "domain";
+    public static final String LOGIN = CONTEXT_PATH_PUBLIC +"security/authentication";
+    public static final String CONNECTED =CONTEXT_PATH_PUBLIC + "security/user";
 
     private RestServicePaths() {
     }
 
     public static String getUsersPath(String currentUserId) {
 
-        return "/internal/rest/user/" + currentUserId + "/create";
+        return CONTEXT_PATH_INTERNAL_USER + "/" + currentUserId + "/create";
     }
 
     public static String getChangePasswordPath(String currentUserId, String forUserId) {
 
-        return "/internal/rest/user/" + currentUserId + "/change-password-for/" + forUserId;
+        return CONTEXT_PATH_INTERNAL_USER + "/" + currentUserId + "/change-password-for/" + forUserId;
     }
 
     //Domains paths
 
     public static String getCreateDomainPath(String currentUserId) {
 
-        return "/internal/rest/domain/" + currentUserId + "/create";
+        return CONTEXT_PATH_INTERNAL_DOMAIN +"/" + currentUserId + "/create";
     }
 
     public static String getDomainAddMemberPath(String currentUserId, String domainId) {
 
-        return "/edit/rest/" + currentUserId + "/domain/" + domainId + "/member/put";
+        return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/member/put";
     }
 
     public static String getAddResourcePath(String currentUserId, String domainId) {
-        return String.format("/internal/rest/domain/%userId/%domainId/update-resource-types", currentUserId, domainId);
+
+       return CONTEXT_PATH_INTERNAL_DOMAIN +"/" + currentUserId +"/" +domainId + "/update-resource-types";
+        //return String.format("/internal/rest/domain/%userId/%domainId/update-resource-types", currentUserId, domainId);
     }
 
 

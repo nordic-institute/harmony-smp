@@ -107,7 +107,7 @@ public class EditDomainsPgTests extends SeleniumTest {
 
     @Ignore
     @Test(description = "EDTDOM-02 Domain admins are able to create new groups")
-    public void DomainAdminsAreAbleToCreate() throws Exception {
+    public void domainAdminsAreAbleToCreate() throws Exception {
         GroupModel groupToBeCreated = GroupModel.generatePublicDomain();
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
 
@@ -127,7 +127,7 @@ public class EditDomainsPgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTDOM-03 Domain admins are not able to create duplicated groups")
-    public void DomainAdminsAreNotAbleToCreateDuplicatedGroups() throws Exception {
+    public void domainAdminsAreNotAbleToCreateDuplicatedGroups() throws Exception {
         GroupModel duplicatedGroup = GroupModel.generatePublicDomain();
 
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
@@ -148,7 +148,7 @@ public class EditDomainsPgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTDOM-04 Domain admins are able to delete groups without resources")
-    public void DomainAdminsAreNotAbleToDeleteGroups() throws Exception {
+    public void domainAdminsAreNotAbleToDeleteGroups() throws Exception {
         GroupModel groupToBeDeleted = GroupModel.generatePublicDomain();
 
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();

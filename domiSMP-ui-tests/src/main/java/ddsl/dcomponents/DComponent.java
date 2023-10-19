@@ -8,17 +8,13 @@ import ddsl.dobjects.DWait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import utils.TestRunData;
-
+/**
+ * Generic component which gives access of driver, wait and wrappers of elements. This should be inhered by each component class.
+ */
 public class DComponent {
-
-    /**
-     * Generic component which gives access of driver, wait and wrappers of elements. This should be inhered by each component class.
-     */
-
     public DWait wait;
     protected WebDriver driver;
     protected TestRunData data = TestRunData.getInstance();
-
     public DComponent(WebDriver driver) {
         this.driver = driver;
         this.wait = new DWait(driver);

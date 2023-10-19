@@ -5,17 +5,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-
+/**
+ * Generic wrapper for select element.
+ */
 public class DSelect extends DObject {
-    /**
-     * Generic wrapper for select element.
-     */
     Select select = new Select(element);
-
     public DSelect(WebDriver driver, WebElement element) {
         super(driver, element);
     }
-
     public void selectByVisibleText(String value) {
         select.selectByVisibleText(value);
     }

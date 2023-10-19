@@ -14,7 +14,7 @@ public class TrustorePgTests extends SeleniumTest {
 
 
     @Test(description = "TRST-01 System admin is able to import certificates")
-    public void SystemAdminIsAbleToImportCertificates() throws Exception {
+    public void systemAdminIsAbleToImportCertificates() throws Exception {
 
         SoftAssert soft = new SoftAssert();
         DomiSMPPage homePage = new DomiSMPPage(driver);
@@ -31,8 +31,8 @@ public class TrustorePgTests extends SeleniumTest {
         soft.assertEquals(truststorepage.getAliasIdLbl(), certificateALias);
         soft.assertEquals(truststorepage.getSmpCertificateIdLbl(), "CN=red_gw,O=eDelivery,C=BE:00000000110fa0d8");
         soft.assertEquals(truststorepage.getSubjectNameLbl(), "C=BE,O=eDelivery,CN=red_gw");
-        soft.assertEquals(truststorepage.getValidFromLbl(), "23-3-2023, 10:49:22");
-        soft.assertEquals(truststorepage.getValidToLbl(), "22-3-2033, 10:49:22");
+        soft.assertEquals(truststorepage.getValidFromLbl(), "23/3/2023, 10:49:22");
+        soft.assertEquals(truststorepage.getValidToLbl(), "22/3/2033, 10:49:22");
         soft.assertEquals(truststorepage.getIssuerLbl(), "C=BE,O=eDelivery,CN=red_gw");
         soft.assertEquals(truststorepage.getSerialNumberLbl(), "110fa0d8");
         soft.assertAll();
@@ -40,7 +40,7 @@ public class TrustorePgTests extends SeleniumTest {
     }
 
     @Test(description = "TRST-02 System admin is able to import duplicated certificates")
-    public void SystemAdminIsAbleToImportDuplicatedCertificates() throws Exception {
+    public void systemAdminIsAbleToImportDuplicatedCertificates() throws Exception {
 
         SoftAssert soft = new SoftAssert();
         DomiSMPPage homePage = new DomiSMPPage(driver);
@@ -62,8 +62,8 @@ public class TrustorePgTests extends SeleniumTest {
         soft.assertEquals(truststorepage.getAliasIdLbl(), duplicatedCertificateALias);
         soft.assertEquals(truststorepage.getSmpCertificateIdLbl(), "CN=red_gw,O=eDelivery,C=BE:00000000110fa0d8");
         soft.assertEquals(truststorepage.getSubjectNameLbl(), "C=BE,O=eDelivery,CN=red_gw");
-        soft.assertEquals(truststorepage.getValidFromLbl(), "23-3-2023, 10:49:22");
-        soft.assertEquals(truststorepage.getValidToLbl(), "22-3-2033, 10:49:22");
+        soft.assertEquals(truststorepage.getValidFromLbl(), "23/3/2023, 10:49:22");
+        soft.assertEquals(truststorepage.getValidToLbl(), "22/3/2033, 10:49:22");
         soft.assertEquals(truststorepage.getIssuerLbl(), "C=BE,O=eDelivery,CN=red_gw");
         soft.assertEquals(truststorepage.getSerialNumberLbl(), "110fa0d8");
         soft.assertAll();

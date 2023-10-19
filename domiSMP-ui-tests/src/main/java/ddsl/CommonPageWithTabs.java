@@ -7,10 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
+/**
+ * Generic page used for pages which have tabs in the left part. This element gives access to action buttons and elements of the page.
+ */
 public class CommonPageWithTabs extends DomiSMPPage {
     private final static Logger LOG = LoggerFactory.getLogger(CommonPageWithTabs.class);
-
     @FindBy(css = "[role = \"tab\"]")
     private List<WebElement> tabList;
 
@@ -24,6 +25,7 @@ public class CommonPageWithTabs extends DomiSMPPage {
                 element.click();
                 wait.forAttributeToContain(element, "aria-selected", "true");
                 LOG.debug("Domain tab {} is opened", tabName);
+                break;
             }
         }
     }

@@ -9,8 +9,12 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * Generic component for Invite members popup. It contains the WebElements and the methods specific to the dialog.
+ *
+ */
 public class InviteMembersPopup extends DComponent {
+
     private final static Logger LOG = LoggerFactory.getLogger(InviteMembersPopup.class);
     @FindBy(id = "saveButton")
     public WebElement saveBtn;

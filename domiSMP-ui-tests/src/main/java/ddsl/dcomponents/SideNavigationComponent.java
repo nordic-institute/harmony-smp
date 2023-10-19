@@ -21,14 +21,11 @@ import pages.systemSettings.propertiesPage.PropertiesPage;
 import pages.userSettings.ProfilePage;
 
 import java.util.Objects;
-
+/**
+ * Navigation object to navigate through application.
+ */
 public class SideNavigationComponent extends DomiSMPPage {
-
-    /**
-     * Navigation object to navigate through application.
-     */
     private final static Logger LOG = LoggerFactory.getLogger(SideNavigationComponent.class);
-
     @FindBy(id = "window-sidenav-panel")
     public WebElement sideBar;
 

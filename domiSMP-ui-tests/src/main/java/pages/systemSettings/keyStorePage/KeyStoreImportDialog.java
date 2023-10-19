@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class KeyStoreImportDialog extends DComponent {
-
     private final static Logger LOG = LoggerFactory.getLogger(KeyStoreImportDialog.class);
-
     @FindBy(id = "keystore-file-upload")
     private WebElement importKeyStoreInput;
     @FindBy(id = "keystoreFilename")
