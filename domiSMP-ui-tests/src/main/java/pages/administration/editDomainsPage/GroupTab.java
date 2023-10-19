@@ -4,7 +4,9 @@ import ddsl.dcomponents.commonComponents.subcategoryTab.SubcategoryTabComponent;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
-
+/**
+ * Page object Groups tab of Edit Groups page. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class GroupTab extends SubcategoryTabComponent {
     public GroupTab(WebDriver driver) {
         super(driver);
@@ -12,7 +14,7 @@ public class GroupTab extends SubcategoryTabComponent {
 
     }
 
-    public CreateGroupDetailsDialog clickCreateNewGroup() throws Exception {
+    public CreateGroupDetailsDialog clickCreateNewGroup(){
         create();
         return new CreateGroupDetailsDialog(driver);
     }
@@ -22,7 +24,7 @@ public class GroupTab extends SubcategoryTabComponent {
         return new CreateGroupDetailsDialog(driver);
     }
 
-    public void deleteGroup(String domainCode) throws Exception {
+    public void deleteGroup(String domainCode){
         delete("Group name", domainCode);
     }
 

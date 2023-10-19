@@ -8,10 +8,10 @@ import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Page object for the Users page. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class DomainsPage extends CommonPageWithTabsAndGrid {
-    /**
-     * Page object for the Users page. This contains the locators of the page and the methods for the behaviour of the page
-     */
     private final static Logger LOG = LoggerFactory.getLogger(DomainsPage.class);
     @FindBy(css = "smp-warning-panel span")
     private WebElement warningLabel;

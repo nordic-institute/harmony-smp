@@ -9,14 +9,11 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * Page object for the Properties page. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class PropertiesPage extends DomiSMPPage {
-
-    /**
-     * Page object for the Properties page. This contains the locators of the page and the methods for the behaviour of the page
-     */
     private final static Logger LOG = LoggerFactory.getLogger(PropertiesPage.class);
-
     @FindBy(id = "searchTable")
     private WebElement propertyTableContainer;
     @FindBy(id = "saveButton")
@@ -42,6 +39,7 @@ public class PropertiesPage extends DomiSMPPage {
         LOG.info("Search for property");
         wait.forElementToBeVisible(searchPropertyField).sendKeys(propertyname);
         wait.forElementToBeClickable(searchBtn).click();
+        wait.forXMillis(500);
     }
 
     public PropertyPopup openEditPropertyPopupup(String propertyName) {
@@ -70,7 +68,7 @@ public class PropertiesPage extends DomiSMPPage {
 
     }
 
-    public void save() throws Exception {
+    public void save(){
         weToDButton(saveBtn).click();
         ConfirmationDialog confirmationDialog = new ConfirmationDialog(driver);
         confirmationDialog.confirm();

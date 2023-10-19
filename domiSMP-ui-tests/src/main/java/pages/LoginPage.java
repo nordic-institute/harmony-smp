@@ -10,15 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-
+/**
+ * Page object for the Login page. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class LoginPage extends DomiSMPPage {
-
-    /**
-     * Page object for the Login page. This contains the locators of the page and the methods for the behaviour of the page
-     */
-
     private final static Logger LOG = LoggerFactory.getLogger(LoginPage.class);
-
     @FindBy(id = "username_id")
     private WebElement username;
     @FindBy(id = "password_id")

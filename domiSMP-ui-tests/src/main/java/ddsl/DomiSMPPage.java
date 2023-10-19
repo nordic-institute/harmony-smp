@@ -16,12 +16,10 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pages.LoginPage;
-
+/**
+ * Page object for the common components from Domismp like navigation, right menu. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class DomiSMPPage extends DComponent {
-
-    /**
-     * Page object for the common components from Domismp like navigation, right menu. This contains the locators of the page and the methods for the behaviour of the page
-     */
     private final static Logger LOG = LoggerFactory.getLogger(DomiSMPPage.class);
     @FindBy(css = "cdk-overlay-backdrop cdk-overlay-dark-backdrop cdk-overlay-backdrop-showing")
     protected WebElement overlay;
@@ -33,6 +31,9 @@ public class DomiSMPPage extends DComponent {
     private WebElement logoutMenuBtn;
     @FindBy(css = "#okbuttondialog_id ")
     private WebElement dialogOKbutton;
+
+    private AlertComponent alertComponent = null;
+
 
 
     public DomiSMPPage(WebDriver driver) {
@@ -70,9 +71,16 @@ public class DomiSMPPage extends DComponent {
         driver.navigate().refresh();
         waitForPageToLoaded();
     }
+//
+//    public AlertComponent getAlertArea() {
+//        return new AlertComponent(driver);
+//    }
 
-    public AlertComponent getAlertArea() {
-        return new AlertComponent(driver);
+    public AlertComponent getAlertArea(){
+        if (  alertComponent == null){
+            alertComponent = new AlertComponent(driver);
+        }
+        return alertComponent;
     }
 
     public DButton getExpiredDialoginbutton() {

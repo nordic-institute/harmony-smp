@@ -9,13 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rest.models.DomainModel;
 import rest.models.GroupModel;
-
+/**
+ * Page object for the Edit groups page. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class EditGroupsPage extends CommonPageWithTabs {
-    /**
-     * Page object for the Edit groups page. This contains the locators of the page and the methods for the behaviour of the page
-     */
     private final static Logger LOG = LoggerFactory.getLogger(EditGroupsPage.class);
-
     @FindBy(id = "domain_id")
     private WebElement domainDdl;
     @FindBy(id = "group_id")
@@ -26,8 +24,8 @@ public class EditGroupsPage extends CommonPageWithTabs {
         LOG.debug("Loading Edit groups page.");
     }
 
-    public void selectGroup(DomainModel domainModel, GroupModel groupModel) throws Exception {
-        weToMatDSelect(domainDdl).selectOptionByText(domainModel.getDomainCode());
+    public void selectGroup(DomainModel domainModel, GroupModel groupModel){
+        weToMatSelect(domainDdl).selectByVisibleText(domainModel.getDomainCode());
     }
 
     public GroupMembersTab getDomainMembersTab() {

@@ -9,18 +9,11 @@ import org.slf4j.LoggerFactory;
 import utils.TestRunData;
 
 import java.time.Duration;
-
+/**
+ * Wait class util used to have access to different types of waits.
+ */
 public class DWait {
-    /**
-     * Wait class util used to have access to different types of waits.
-     */
-
     private final static Logger LOG = LoggerFactory.getLogger(DWait.class);
-
-    /**
-     * Wait class which gives access to different types of waits.
-     */
-
     public final WebDriverWait defaultWait;
     public final WebDriverWait longWait;
     public final WebDriverWait shortWait;

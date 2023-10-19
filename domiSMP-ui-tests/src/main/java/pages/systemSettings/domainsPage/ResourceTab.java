@@ -10,17 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
+/**
+ * Page object for the Resource tab of Domains page. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class ResourceTab extends DComponent {
-
-    /**
-     * Page object for the Resource tab of Domains page. This contains the locators of the page and the methods for the behaviour of the page
-     */
     private final static Logger LOG = LoggerFactory.getLogger(ResourceTab.class);
-
     @FindBy(css = "mat-list-option")
     private List<WebElement> resourceOptions;
-
     @FindBy(id = "saveButton")
     private WebElement saveBtn;
 

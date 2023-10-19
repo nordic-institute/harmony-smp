@@ -52,7 +52,7 @@ public class EditGroupsPgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTDOM-01 Domain admins are able to invite/edit/remove members")
-    public void DomainAdminsAreAbleToInviteEditRemoveMembers() throws Exception {
+    public void domainAdminsAreAbleToInviteEditRemoveMembers(){
 
     }
 }
