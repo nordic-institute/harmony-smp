@@ -40,49 +40,57 @@ public class KeystorePgTests extends SeleniumTest {
 
     @Test(description = "KEYS-02 System admin is able to import JKS Keystore", priority = 0)
     public void systemAdminIsAbleToImportJKS() throws Exception {
-        String path = FileUtils.getAbsoluteKeystorePath("expired_keystore_JKS.jks");
+        String path = FileUtils.getAbsoluteKeystorePath("valid_keystore.jks");
 
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
-        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test1234");
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
         keyStoreImportDialog.clickImport();
-        String value =  keystorePage.getAlertArea().getAlertMessage();
+        String value = keystorePage.getAlertArea().getAlertMessage();
         String alias = Utils.getAliasFromMessage(value);
-        keystorePage.getGrid().searchAndClickElementInColumn("Alias", alias);
-        soft.assertEquals(keystorePage.getPublicKeyTypeValue(),"RSA");
-        soft.assertEquals(keystorePage.getSmpCertificateIdValue(), "CN=blue_gw,O=edelivery,C=BE:00000000645901cb");
-        soft.assertEquals(keystorePage.getSubjectNameValue(),"CN=blue_gw,O=edelivery,C=BE" );
-        soft.assertEquals(keystorePage.getValidFromValue(),"5/8/2023, 5:06:03 PM");
-        soft.assertEquals(keystorePage.getValidToValue(), "5/1/2023, 5:06:03 PM");
-        soft.assertEquals(keystorePage.getIssuerValue(), "CN=blue_gw,O=edelivery,C=BE");
-        soft.assertEquals(keystorePage.getSerialNumberValue(),"645901cb");
+        keystorePage.getLeftSideGrid().searchAndClickElementInColumn("Alias", alias);
+        soft.assertEquals(keystorePage.getPublicKeyTypeValue(), "RSA");
+        soft.assertEquals(keystorePage.getSmpCertificateIdValue(), "CN=blue_gw,O=eDelivery,C=BE:e07b6b956330a19a");
+        soft.assertEquals(keystorePage.getSubjectNameValue(), "C=BE,O=eDelivery,CN=blue_gw");
+        soft.assertEquals(keystorePage.getValidFromValue(), "9/14/2017, 10:27:39 AM");
+        soft.assertEquals(keystorePage.getValidToValue(), "12/1/2025, 9:27:39 AM");
+        soft.assertEquals(keystorePage.getIssuerValue(), "C=BE,O=eDelivery,CN=blue_gw");
+        soft.assertEquals(keystorePage.getSerialNumberValue(), "e07b6b956330a19a");
         sofAssertThatContains("Certificates added [blue_gw", value);
 
         soft.assertAll();
     }
 
-    @Test(description = "KEYS-xx Wrong keystore type")
-    public void systemAdminImportFailedWithWrongKeystoreType() throws Exception {
-        String path = FileUtils.getAbsoluteKeystorePath("expired_keystore_JKS.jks");
-
-        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
-        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.PKCS12, "test1234");
-        keyStoreImportDialog.clickImport();
-
-        String value =  keystorePage.getAlertArea().getAlertMessage();
-        sofAssertThatContains("Error occurred while importing keystore", value);
-        soft.assertAll();
-    }
-
-    @Test(description = "KEYS-xx Wrong keystore password")
-    public void systemAdminImportFailedWithWrongPassword() throws Exception {
-        String path = FileUtils.getAbsoluteKeystorePath("expired_keystore_JKS.jks");
+    @Test(description = "KEYS-03 System admin is NOT able to import keystore with wrong password", priority = 0)
+    public void systemAdminIsNotAbleToImportWithWrongPassword() throws Exception {
+        String path = FileUtils.getAbsoluteKeystorePath("valid_keystore.jks");
 
         KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
         keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "wrongPassword");
         keyStoreImportDialog.clickImport();
 
-        String value =  keystorePage.getAlertArea().getAlertMessage();
+        String value = keystorePage.getAlertArea().getAlertMessage();
         sofAssertThatContains("Error occurred while importing keystore", value);
+        soft.assertAll();
+    }
+
+    @Test(description = "KEYS-03 SSystem admin is able to import duplicated keystore", priority = 1)
+    public void systemAdminIsAbleToImportDuplicatedKeyStores() throws Exception {
+        String path = FileUtils.getAbsoluteKeystorePath("valid_keystore.jks");
+
+        KeyStoreImportDialog keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
+        keyStoreImportDialog.clickImport();
+        String value = keystorePage.getAlertArea().getAlertMessage();
+        String alias = Utils.getAliasFromMessage(value);
+        soft.assertTrue(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", alias));
+
+        keyStoreImportDialog = keystorePage.clickImportkeyStoreBtn();
+        keyStoreImportDialog.addCertificate(path, KeyStoreTypes.JKS, "test123");
+        keyStoreImportDialog.clickImport();
+        String duplicatedAlertMessage = keystorePage.getAlertArea().getAlertMessage();
+        String duplicatedAlias = Utils.getAliasFromMessage(duplicatedAlertMessage);
+        soft.assertTrue(keystorePage.getLeftSideGrid().isValuePresentInColumn("Alias", duplicatedAlias));
+
         soft.assertAll();
     }
 

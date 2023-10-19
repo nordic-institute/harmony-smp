@@ -6,7 +6,6 @@ import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
@@ -139,7 +138,6 @@ public class ProfilePgTests extends SeleniumTest {
 
     }
 
-    @Ignore
     @Test(description = "PROF-04 User should be able to change his password")
     public void userShouldBeAbleToChangeHisPassword() throws Exception {
         UserModel adminUser = UserModel.generateUserWithADMINrole();
@@ -163,7 +161,6 @@ public class ProfilePgTests extends SeleniumTest {
         loginPage.login(adminUser.getUsername(), newPass);
         profilePage = loginPage.getSidebar().navigateTo(Pages.USER_SETTINGS_PROFILE);
         Assert.assertNotSame(profilePage.profileData.getLastSetValue(), oldLastSet, "Last set value is not reseted");
-        //TODO: passwordexpiresOn label has a different id after the value is set reason why the test is failing with not element found
         Assert.assertNotSame(profilePage.profileData.getPasswordExpiresOnValue(), oldPasswordExpiresOn, "Password expires on value is not reseted");
     }
 }

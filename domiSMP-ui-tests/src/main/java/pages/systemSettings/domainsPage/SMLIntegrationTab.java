@@ -43,7 +43,7 @@ public class SMLIntegrationTab extends DComponent {
             weToDInput(smlDomainInput).fill(domainModel.getSmlSubdomain());
             weToDInput(smlsmpIdentifierInput).fill(domainModel.getSmlSmpId());
             //TODO : check of clientcertificatealias is changed from mat-select to select
-            weToDSelect(smlClientCertificateAliasDdl).selectByVisibleText(domainModel.getSignatureKeyAlias());
+            weToDSelect(smlClientCertificateAliasDdl).selectByVisibleText(domainModel.getSignatureKeyAlias(), true);
             weToDButton(useClientCertBtn).click();
 
         } catch (Exception e) {
