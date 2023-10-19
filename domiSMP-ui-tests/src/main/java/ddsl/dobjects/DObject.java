@@ -1,20 +1,19 @@
 package ddsl.dobjects;
 
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * Generic element object used to have access to element actions.
+ */
 public class DObject {
-    /**
-     * Generic element object used to have access to element actions.
-     */
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
     public WebElement element;
     protected WebDriver driver;
     protected DWait wait;
-
     public DObject(WebDriver driver, WebElement element) {
         wait = new DWait(driver);
         this.driver = driver;
@@ -31,12 +30,18 @@ public class DObject {
         return true;
     }
 
-    public boolean isEnabled() throws Exception {
-        if (isPresent()) {
-            wait.forElementToBeEnabled(element);
-            return element.isEnabled();
+    public boolean isEnabled() throws ElementNotInteractableException {
+        try {
+            if (isPresent()) {
+                wait.forElementToBeEnabled(element);
+                return element.isEnabled();
+            }
         }
-        throw new Exception();
+        catch (ElementNotInteractableException e){
+            throw new ElementNotInteractableException("Element not enabled: "+ e);
+        }
+
+        return false;
     }
 
     public boolean isDisabled() throws Exception {
@@ -68,11 +73,11 @@ public class DObject {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
     }
 
-    public void click() throws Exception {
+    public void click() throws ElementNotInteractableException {
         if (isEnabled()) {
             wait.forElementToBeClickable(element).click();
         } else {
-            throw new Exception(element.getAccessibleName() + "Not enabled");
+            throw new ElementNotInteractableException(element.getAccessibleName() + "Not enabled");
         }
     }
 

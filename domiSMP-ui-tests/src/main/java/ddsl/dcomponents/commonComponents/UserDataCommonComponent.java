@@ -7,12 +7,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * Common component for user data used in Profile and Users page. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class UserDataCommonComponent extends DomiSMPPage {
-
-    /**
-     * Common component for user data used in Profile and Users page. This contains the locators of the page and the methods for the behaviour of the page
-     */
     private final static Logger LOG = LoggerFactory.getLogger(UserDataCommonComponent.class);
     @FindBy(id = "changePassword_id")
     private WebElement setChangePasswordBtn;
@@ -59,7 +57,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
         return passwordExpiresOnLbl.getAttribute("value");
     }
 
-    public SetChangePasswordDialog clickOnChangePassword() throws InterruptedException {
+    public SetChangePasswordDialog clickOnChangePassword(){
         setChangePasswordBtn.click();
         return new SetChangePasswordDialog(driver);
     }

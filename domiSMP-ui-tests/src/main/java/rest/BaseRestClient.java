@@ -78,12 +78,20 @@ public class BaseRestClient {
     protected ClientResponse jsonPUT(WebResource resource, String body) {
         return requestPUT(resource, body, MediaType.APPLICATION_JSON);
     }
-    protected ClientResponse requestPOST(WebResource resource, String params, String type) {
 
+    protected ClientResponse requestPOST(WebResource resource, String body) {
+        if (!isLoggedIn()) {
+            log.info("User is not loggedin");
+            try {
+                createSession();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         WebResource.Builder builder = decorateBuilder(resource);
 
-        return builder.type(type).post(ClientResponse.class, params);
+        return builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, body);
     }
 
     // -------------------------------------------- Login --------------------------------------------------------------

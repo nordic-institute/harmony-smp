@@ -36,7 +36,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-2 - Admin doubleclicks or selects a property and clicks edit button and Edit property dialog is opened")
-    public void AdminDoubleClicksOrSelectsAPropertyAndClicksEditButtonandEditPropertyDialogIsOpened()  {
+    public void adminDoubleClicksOrSelectsAPropertyAndClicksEditButtonandEditPropertyDialogIsOpened()  {
 
         String property = "bdmsl.integration.url";
         propertiesPage.propertySearch(property);
@@ -54,7 +54,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-5 Value is validated according to expected format (URL")
-    public void PropertyValueURLIsValidatedAccordingToExpectedFormat() throws Exception {
+    public void propertyValueURLIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "bdmsl.integration.url";
         String wrongValue1 = Generator.randomAlphaNumeric(6);
@@ -94,7 +94,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-5 Value is validated according to expected format (email)")
-    public void PropertyValueEmailIsValidatedAccordingToExpectedFormat() throws Exception {
+    public void propertyValueEmailIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "smp.alert.mail.from";
         String wrongValue1 = Generator.randomAlphaNumeric(6);
@@ -134,7 +134,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-5 Value is validated according to expected format (cron expression)")
-    public void PropertyValueCRONexpressionIsValidatedAccordingToExpectedFormat() throws Exception {
+    public void propertyValueCRONexpressionIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "smp.alert.credentials.cronJobExpression";
         String wrongValue1 = Generator.randomAlphaNumeric(6);
@@ -174,7 +174,7 @@ public class PropertiesPgTests extends SeleniumTest {
     }
 
     @Test(description = "PRP-5 Value is validated according to expected format (numeric)")
-    public void PropertyValueNumericIsValidatedAccordingToExpectedFormat() throws Exception {
+    public void propertyValueNumericIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "smp.ui.session.idle_timeout.user";
         String wrongValue1 = Generator.randomAlphaNumeric(6);

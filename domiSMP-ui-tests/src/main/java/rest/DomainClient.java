@@ -3,10 +3,14 @@ package rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
+import ddsl.enums.ResourceTypes;
 import org.json.JSONObject;
 import rest.models.DomainModel;
 import rest.models.MemberModel;
 import utils.TestRunData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DomainClient extends BaseRestClient {
 
@@ -70,4 +74,31 @@ public class DomainClient extends BaseRestClient {
         return response.getEntity(MemberModel.class);
     }
 
+    public DomainModel addResourcesToDomain(String domainId, List<ResourceTypes> resourceTypesList) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> resourceListToBeAdded = new ArrayList<>();
+        for (ResourceTypes resourceType : resourceTypesList) {
+            resourceListToBeAdded.add(resourceType.getName());
+        }
+
+        String resourceTypes = mapper.writeValueAsString(resourceListToBeAdded);
+        if (!isLoggedIn()) {
+            try {
+                createSession();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        String addMemberPath = RestServicePaths.getAddResourcePath(TestRunData.getInstance().getUserId(), resourceTypes);
+        ClientResponse response = requestPOST(resource.path(addMemberPath), resourceTypes);
+        if (response.getStatus() != 200) {
+            try {
+                throw new SMPRestException("Could not add resource!", response);
+            } catch (SMPRestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        log.debug("Resources have been added!");
+        return response.getEntity(DomainModel.class);
+    }
 }

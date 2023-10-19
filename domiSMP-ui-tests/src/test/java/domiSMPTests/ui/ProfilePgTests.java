@@ -29,13 +29,13 @@ public class ProfilePgTests extends SeleniumTest {
     LoginPage loginPage;
 
     @BeforeMethod(alwaysRun = true)
-    public void beforeTest() throws Exception {
+    public void beforeTest(){
         soft = new SoftAssert();
         homePage = new DomiSMPPage(driver);
         loginPage = homePage.goToLoginPage();
     }
     @Test(description = "PROF-01 All logged users are able to view the Profile Page")
-    public void AllLoggedUsersShouldAbleToSeeProfilePage() throws Exception {
+    public void allLoggedUsersShouldAbleToSeeProfilePage() throws Exception {
         UserModel normalUser = UserModel.generateUserWithUSERrole();
         rest.users().createUser(normalUser);
 
@@ -68,7 +68,7 @@ public class ProfilePgTests extends SeleniumTest {
     }
 
     @Test(description = "PROF-02 All loggedin users are able to update profile data")
-    public void AllLoggedUsersShouldAbleToUpdateProfilePage() throws Exception {
+    public void allLoggedUsersShouldAbleToUpdateProfilePage() throws Exception {
         UserModel normalUser = UserModel.generateUserWithUSERrole();
         rest.users().createUser(normalUser);
 
@@ -110,7 +110,7 @@ public class ProfilePgTests extends SeleniumTest {
     }
 
     @Test(description = "PROF-03 Password validation is accord to the smp propeties values")
-    public void PasswordValidationsShouldBeAccordingToPropertiesValue() throws Exception {
+    public void passwordValidationsShouldBeAccordingToPropertiesValue() throws Exception {
         String propertyName = "smp.passwordPolicy.validationRegex";
         String newPropertyValue = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[~`!@#$%^&+=\\-_<>.,?:;*/()|\\[\\]{}'\"\\\\]).{16,40}$";
         String new40CharactersPasswordValue = "Edeltest!23456789Edeltest!234567890sssf";
@@ -141,7 +141,7 @@ public class ProfilePgTests extends SeleniumTest {
 
     @Ignore
     @Test(description = "PROF-04 User should be able to change his password")
-    public void UserShouldBeAbleToChangeHisPassword() throws Exception {
+    public void userShouldBeAbleToChangeHisPassword() throws Exception {
         UserModel adminUser = UserModel.generateUserWithADMINrole();
         rest.users().createUser(adminUser);
 

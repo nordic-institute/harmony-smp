@@ -9,11 +9,10 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * Property popup component used when modifying a property.
+ */
 public class PropertyPopup extends DComponent {
-    /**
-     * Property popup component used when modifying a property.
-     */
     private final static Logger LOG = LoggerFactory.getLogger(PropertiesPage.class);
     @FindBy(id = "updatePropertyButton")
     WebElement popupOkBtn;
@@ -53,7 +52,7 @@ public class PropertyPopup extends DComponent {
         }
     }
 
-    public void clickOK() throws Exception {
+    public void clickOK(){
         LOG.info("click OK");
         wait.forElementToBeClickable(popupOkBtn);
         weToDButton(popupOkBtn).click();
@@ -65,21 +64,6 @@ public class PropertyPopup extends DComponent {
             LOG.debug("No error are present");
         }
     }
-
-    public void clickOK2() throws Exception {
-        LOG.info("click OK");
-        wait.forElementToBeClickable(popupOkBtn);
-        weToDButton(popupOkBtn).click();
-        try {
-            if (!errorMessageLbl.isDisplayed()) {
-                wait.forElementToBeGone(popupOkBtn);
-            }
-        } catch (NoSuchElementException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
     public PropertiesPage clickCancel() {
         LOG.info("click cancel");
         wait.forElementToBeClickable(popupCancelBtn);

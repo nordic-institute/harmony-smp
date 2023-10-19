@@ -9,11 +9,10 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rest.models.DomainModel;
-
+/**
+ * Page object for the Domains tab of Domains page. This contains the locators of the page and the methods for the behaviour of the page
+ */
 public class DomainTab extends DComponent {
-    /**
-     * Page object for the Domains tab of Domains page. This contains the locators of the page and the methods for the behaviour of the page
-     */
     private final static Logger LOG = LoggerFactory.getLogger(DomainTab.class);
     @FindBy(id = "domainCode_id")
     private WebElement domainIdInput;

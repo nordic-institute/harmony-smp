@@ -17,13 +17,13 @@ public class UsersPgTests extends SeleniumTest {
     LoginPage loginPage;
 
     @BeforeMethod(alwaysRun = true)
-    public void beforeTest() throws Exception {
+    public void beforeTest(){
         soft = new SoftAssert();
         homePage = new DomiSMPPage(driver);
         loginPage = homePage.goToLoginPage();
     }
     @Test(description = "USR-01 System admin is able to create new users")
-    public void SystemAdminIsAbleToCreateNewUsers() throws Exception {
+    public void systemAdminIsAbleToCreateNewUsers() throws Exception {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
 
@@ -34,7 +34,7 @@ public class UsersPgTests extends SeleniumTest {
 
         usersPage.refreshPage();
         // usersPage.filter(adminNewUserData.getUsername());
-        WebElement newUser = usersPage.getDataPanelGrid().searchAndGetElementInColumn("Username", adminNewUserData.getUsername());
+        WebElement newUser = usersPage.getLeftSideGrid().searchAndGetElementInColumn("Username", adminNewUserData.getUsername());
         soft.assertNotNull(newUser);
         newUser.click();
 
@@ -52,7 +52,7 @@ public class UsersPgTests extends SeleniumTest {
     }
 
     @Test(description = "USR-02 USR-02 System admin is not able to create duplicated user")
-    public void SystemAdminIsNotAbleToCreateDuplicatedUser() throws Exception {
+    public void systemAdminIsNotAbleToCreateDuplicatedUser() throws Exception {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
 

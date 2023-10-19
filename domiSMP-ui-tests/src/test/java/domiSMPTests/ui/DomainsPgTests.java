@@ -44,7 +44,7 @@ public class DomainsPgTests extends SeleniumTest {
         String alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
 
-        domainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         soft.assertEquals(domainModel.getSignatureKeyAlias(), domainsPage.getDomainTab().getResponseSignatureCertificateSelectedValue());
         soft.assertEquals(domainModel.getVisibility(), domainsPage.getDomainTab().getVisibilityOfDomainSelectedValue());
         soft.assertEquals("To complete domain configuration, please select at least one resource type from the Resource Types tab", domainsPage.getDomainWarningMessage());
@@ -62,7 +62,7 @@ public class DomainsPgTests extends SeleniumTest {
         String alert = domainsPage.getAlertMessageAndClose();
         soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
 
-        domainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         domainsPage.goToTab("SML integration");
         domainsPage.getSMLIntegrationTab().fillSMLIntegrationTab(domainModel);
         domainsPage.getSMLIntegrationTab().saveChanges();
@@ -104,14 +104,14 @@ public class DomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(normalUser.getUsername(), data.getNewPassword());
         EditDomainsPage editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        WebElement domainElement = editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
+        WebElement domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
         soft.assertNull(domainElement, "Domain found for user which doesn't have rights");
 
         homePage.logout();
         loginPage = homePage.goToLoginPage();
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         domainsPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_DOMAINS);
-        domainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         domainsPage.goToTab("Members");
         domainsPage.getMembersTab().changeRoleOfUser(normalUser.getUsername(), "ADMIN");
 
@@ -120,7 +120,7 @@ public class DomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(normalUser.getUsername(), data.getNewPassword());
         editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        domainElement = editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
+        domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
         soft.assertNotNull(domainElement, "Domain found for user which doesn't have rights");
 
 
@@ -129,7 +129,7 @@ public class DomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));
         domainsPage = homePage.getSidebar().navigateTo(Pages.SYSTEM_SETTINGS_DOMAINS);
-        domainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         domainsPage.goToTab("Members");
         domainsPage.getMembersTab().removeUser(normalUser.getUsername());
         userMemberElement = domainsPage.getMembersTab().getMembersGrid().searchAndGetElementInColumn("Username", normalUser.getUsername());
@@ -139,7 +139,7 @@ public class DomainsPgTests extends SeleniumTest {
         homePage.goToLoginPage();
         loginPage.login(normalUser.getUsername(), data.getNewPassword());
         editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        domainElement = editDomainsPage.getDataPanelGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
+        domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
         soft.assertNull(domainElement, "Domain found for user which doesn't have rights");
 
         soft.assertAll();

@@ -3,11 +3,10 @@ package ddsl;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-public class CommonCertificatePage extends CommonPageWithGrid {
-    /**
-     * Common page used for Keystore and Truststore
-     */
+/**
+ * Common page used for Keystore and Truststore
+ */
+public class CommonCertificatePage extends CommonPageWithTabsAndGrid {
     @FindBy(id = "publicKeyType_id")
     private WebElement publicKeyTypeLbl;
     @FindBy(id = "alias_id")
@@ -34,38 +33,38 @@ public class CommonCertificatePage extends CommonPageWithGrid {
     }
 
     public String getPublicKeyTypeLbl() {
-        return publicKeyTypeLbl.getText();
+        return weToDInput(publicKeyTypeLbl).getText();
     }
 
     public String getAliasIdLbl() {
-        return aliasIdLbl.getText();
+        return weToDInput(aliasIdLbl).getText();
     }
 
     public String getSmpCertificateIdLbl() {
-        return smpCertificateIdLbl.getText();
+        return weToDInput(smpCertificateIdLbl).getText();
     }
 
     public String getSubjectNameLbl() {
-        return subjectNameLbl.getText();
+        return weToDInput(subjectNameLbl).getText();
     }
 
     public String getValidFromLbl() {
-        return validFromLbl.getText();
+        return weToDInput(validFromLbl).getText();
     }
 
     public String getValidToLbl() {
-        return validToLbl.getText();
+        return weToDInput(validToLbl).getText();
     }
 
     public String getIssuerLbl() {
-        return issuerLbl.getText();
+        return weToDInput(issuerLbl).getText();
     }
 
     public String getSerialNumberLbl() {
-        return serialNumberLbl.getText();
+        return weToDInput(serialNumberLbl).getText();
     }
 
     public String getCertificateRevolcationListURLlbl() {
-        return certificateRevolcationListURLlbl.getText();
+        return weToDInput(certificateRevolcationListURLlbl).getText();
     }
 }

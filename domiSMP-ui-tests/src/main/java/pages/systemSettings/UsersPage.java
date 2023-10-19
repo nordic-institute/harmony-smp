@@ -1,6 +1,6 @@
 package pages.systemSettings;
 
-import ddsl.CommonPageWithGrid;
+import ddsl.CommonPageWithTabsAndGrid;
 import ddsl.dcomponents.commonComponents.UserDataCommonComponent;
 import ddsl.dobjects.DButton;
 import org.openqa.selenium.WebDriver;
@@ -9,13 +9,11 @@ import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rest.models.UserModel;
-
-public class UsersPage extends CommonPageWithGrid {
-    /**
-     * Page object for the Users page. This contains the locators of the page and the methods for the behaviour of the page
-     */
+/**
+ * Page object for the Users page. This contains the locators of the page and the methods for the behaviour of the page
+ */
+public class UsersPage extends CommonPageWithTabsAndGrid {
     private final static Logger LOG = LoggerFactory.getLogger(UsersPage.class);
-
     public UserDataCommonComponent userData;
     @FindBy(id = "username_id")
     private WebElement usernameInput;
