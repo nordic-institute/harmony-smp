@@ -16,6 +16,9 @@ public class UserModel {
     private String smpTheme;
     private String smpLocale;
 
+    public UserModel() {
+    }
+
     public UserModel(String username, boolean active, String role, String emailAddress, String fullName, String smpTheme, String smpLocale) {
         this.username = username;
         this.active = active;
@@ -24,9 +27,6 @@ public class UserModel {
         this.fullName = fullName;
         this.smpTheme = smpTheme;
         this.smpLocale = smpLocale;
-    }
-
-    public UserModel() {
     }
 
     public String getUserId() {

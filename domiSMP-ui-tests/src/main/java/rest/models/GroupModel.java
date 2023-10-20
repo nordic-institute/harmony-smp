@@ -12,22 +12,6 @@ public class GroupModel {
     private Long index;
     private Long status;
 
-    public static GroupModel generatePublicGroup() {
-        GroupModel groupModel = new GroupModel();
-        groupModel.groupName = ("AUT_groupName_" + Generator.randomAlphaNumeric(4)).toLowerCase();
-        groupModel.groupDescription = Generator.randomAlphaNumeric(10).toLowerCase();
-        groupModel.visibility = "PUBLIC";
-        return groupModel;
-    }
-
-    public static GroupModel generatePrivateGroup() {
-        GroupModel groupModel = new GroupModel();
-        groupModel.groupName = ("AUT_groupName_" + Generator.randomAlphaNumeric(4)).toLowerCase();
-        groupModel.groupDescription = Generator.randomAlphaNumeric(10).toLowerCase();
-        groupModel.visibility = "PRIVATE";
-        return groupModel;
-    }
-
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
@@ -70,5 +54,20 @@ public class GroupModel {
         return groupDescription;
     }
 
+    public static GroupModel generatePublicGroup() {
+        GroupModel groupModel = new GroupModel();
+        groupModel.groupName = ("AUT_groupName_" + Generator.randomAlphaNumeric(4)).toLowerCase();
+        groupModel.groupDescription = Generator.randomAlphaNumeric(10).toLowerCase();
+        groupModel.visibility = "PUBLIC";
+        return groupModel;
+    }
+
+    public static GroupModel generatePrivateGroup() {
+        GroupModel groupModel = new GroupModel();
+        groupModel.groupName = ("AUT_groupName_" + Generator.randomAlphaNumeric(4)).toLowerCase();
+        groupModel.groupDescription = Generator.randomAlphaNumeric(10).toLowerCase();
+        groupModel.visibility = "PRIVATE";
+        return groupModel;
+    }
 
 }

@@ -21,7 +21,6 @@ public class EditGroupsPgTests extends SeleniumTest {
     DomiSMPPage homePage;
     LoginPage loginPage;
     EditGroupsPage editGroupPage;
-    String domainId;
     UserModel adminUser;
     DomainModel domainModel;
     GroupModel groupModel;
@@ -43,7 +42,7 @@ public class EditGroupsPgTests extends SeleniumTest {
         superMember.setRoleType("ADMIN");
 
         //create user
-        String adminUserId = rest.users().createUser(adminUser).getString("userId");
+        rest.users().createUser(adminUser).getString("userId");
 
         //create domain
         domainModel = rest.domains().createDomain(domainModel);
