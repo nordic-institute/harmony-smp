@@ -8,11 +8,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
+import pages.administration.editGroupsPage.CreateResourceDetailsDialog;
 import pages.administration.editGroupsPage.EditGroupsPage;
-import rest.models.DomainModel;
-import rest.models.GroupModel;
-import rest.models.MemberModel;
-import rest.models.UserModel;
+import rest.models.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +67,7 @@ public class EditGroupsPgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTGRP-01 Group admins are able to invite/edit/remove group members", priority = 2)
-    public void domainAdminsAreAbleToInviteEditRemoveMembers(){
+    public void groupAdminsAreAbleToInviteEditRemoveMembers() {
 
         UserModel domainMember = UserModel.generateUserWithUSERrole();
         rest.users().createUser(domainMember);
@@ -89,6 +87,19 @@ public class EditGroupsPgTests extends SeleniumTest {
         editGroupPage.getGroupMembersTab().removeUser(domainMember.getUsername());
         soft.assertFalse(editGroupPage.getGroupMembersTab().getMembersGrid().isValuePresentInColumn("Username", domainMember.getUsername()));
 
+        soft.assertAll();
+    }
+
+    @Test(description = "EDTGRP-02 Group admins are able to create new resources", priority = 0)
+    public void groupsAdminsAreAbleToCreateNewResources() {
+        ResourceModel resourceModel = ResourceModel.generatePublicResource();
+
+        editGroupPage.selectDomain(domainModel, groupModel);
+        editGroupPage.goToTab("Resources");
+        CreateResourceDetailsDialog createResourceDetailsDialog = editGroupPage.getResourceTab().clickOnCreateNewResource();
+        createResourceDetailsDialog.fillResourceDetails(resourceModel);
+        createResourceDetailsDialog.tryClickOnSave();
+        soft.assertTrue(editGroupPage.getResourceTab().getGrid().isValuePresentInColumn("Identifier", resourceModel.getIdentifierValue()));
         soft.assertAll();
     }
 }

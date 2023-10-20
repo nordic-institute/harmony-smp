@@ -96,11 +96,11 @@ public class UserModel {
 
     public static UserModel generateUserWithUSERrole() {
         UserModel userModel = new UserModel();
-        userModel.username = ("AUT_username_" + Generator.randomAlphaNumeric(4)).toLowerCase();
+        userModel.username = ("AUT_username_" + Generator.randomAlphaNumericValue(4)).toLowerCase();
         userModel.active = true;
         userModel.role = ApplicationRoles.USER;
-        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumeric(4) + "@automation.com";
-        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumeric(4);
+        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumericValue(4) + "@automation.com";
+        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumericValue(4);
         userModel.smpTheme = SMPThemes.getRandomTheme();
         userModel.smpLocale = "English";
         return userModel;
@@ -108,11 +108,11 @@ public class UserModel {
 
     public static UserModel generateUserWithADMINrole() {
         UserModel userModel = new UserModel();
-        userModel.username = ("AUT_username_" + Generator.randomAlphaNumeric(4)).toLowerCase();
+        userModel.username = ("AUT_username_" + Generator.randomAlphaNumericValue(4)).toLowerCase();
         userModel.active = true;
         userModel.role = ApplicationRoles.SYSTEM_ADMIN;
-        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumeric(4) + "@automation.com";
-        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumeric(4);
+        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumericValue(4) + "@automation.com";
+        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumericValue(4);
         userModel.smpTheme = SMPThemes.getRandomTheme();
         userModel.smpLocale = "English";
         return userModel;
@@ -120,8 +120,8 @@ public class UserModel {
 
     public static UserModel generateUserProfileData() {
         UserModel userModel = new UserModel();
-        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumeric(4) + "@automation.com";
-        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumeric(4);
+        userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumericValue(4) + "@automation.com";
+        userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumericValue(4);
         userModel.smpTheme = SMPThemes.getRandomTheme();
         userModel.smpLocale = "English";
         return userModel;

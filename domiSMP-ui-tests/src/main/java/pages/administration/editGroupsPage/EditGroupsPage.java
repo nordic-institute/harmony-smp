@@ -31,7 +31,7 @@ public class EditGroupsPage extends CommonPageWithTabs {
         return new GroupMembersTab(driver);
     }
 
-    public ResourceTab getGroupTab() {
+    public ResourceTab getResourceTab() {
         return new ResourceTab(driver);
     }
 

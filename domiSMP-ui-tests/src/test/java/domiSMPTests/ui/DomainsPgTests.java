@@ -14,11 +14,10 @@ import pages.systemSettings.domainsPage.DomainsPage;
 import rest.models.DomainModel;
 import rest.models.UserModel;
 
+/**
+ * This class has the tests against Domains Page
+ */
 public class DomainsPgTests extends SeleniumTest {
-
-    /**
-     * This class has the tests against Domains Page
-     */
     DomiSMPPage homePage;
     LoginPage loginPage;
     DomainsPage domainsPage;
@@ -35,7 +34,7 @@ public class DomainsPgTests extends SeleniumTest {
 
 
     @Test(description = "DOM-01 System admin is able to create Domains")
-    public void SystemAdminIsAbleToCreateDomains() throws Exception {
+    public void SystemAdminIsAbleToCreateDomains() {
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithoutSML();
 
         domainsPage.getCreateDomainBtn().click();

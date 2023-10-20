@@ -56,16 +56,16 @@ public class GroupModel {
 
     public static GroupModel generatePublicGroup() {
         GroupModel groupModel = new GroupModel();
-        groupModel.groupName = ("AUT_groupName_" + Generator.randomAlphaNumeric(4)).toLowerCase();
-        groupModel.groupDescription = Generator.randomAlphaNumeric(10).toLowerCase();
+        groupModel.groupName = ("AUT_groupName_" + Generator.randomAlphaNumericValue(4)).toLowerCase();
+        groupModel.groupDescription = Generator.randomAlphaNumericValue(10).toLowerCase();
         groupModel.visibility = "PUBLIC";
         return groupModel;
     }
 
     public static GroupModel generatePrivateGroup() {
         GroupModel groupModel = new GroupModel();
-        groupModel.groupName = ("AUT_groupName_" + Generator.randomAlphaNumeric(4)).toLowerCase();
-        groupModel.groupDescription = Generator.randomAlphaNumeric(10).toLowerCase();
+        groupModel.groupName = ("AUT_groupName_" + Generator.randomAlphaNumericValue(4)).toLowerCase();
+        groupModel.groupDescription = Generator.randomAlphaNumericValue(10).toLowerCase();
         groupModel.visibility = "PRIVATE";
         return groupModel;
     }

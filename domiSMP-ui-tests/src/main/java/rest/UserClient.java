@@ -15,6 +15,7 @@ public class UserClient extends BaseRestClient {
     public JSONObject createUser(UserModel user) {
 
         JSONObject usrObj = new JSONObject(user);
+        startSession();
         String usersPath = RestServicePaths.getUsersPath(TestRunData.getInstance().getUserId());
         ClientResponse response = jsonPUT(resource.path(usersPath), usrObj);
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));

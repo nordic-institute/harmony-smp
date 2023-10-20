@@ -136,19 +136,19 @@ public class DomainModel {
 
     public static DomainModel generatePublicDomainModelWithSML() {
         DomainModel domainModel = new DomainModel();
-        domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumeric(6);
+        domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumericValue(6);
         domainModel.signatureKeyAlias = Utils.randomEnum(new ResponseCertificates[]{SMP_DOMAIN_01, SMP_DOMAIN_02}).getName();
         domainModel.visibility = "PUBLIC";
         domainModel.smlClientCertAuth = true;
-        domainModel.smlSubdomain = "AUTDomSML" + Generator.randomAlphaNumeric(6);
-        domainModel.smlSmpId = "AUTSMLSMP" + Generator.randomAlphaNumeric(4);
+        domainModel.smlSubdomain = "AUTDomSML" + Generator.randomAlphaNumericValue(6);
+        domainModel.smlSmpId = "AUTSMLSMP" + Generator.randomAlphaNumericValue(4);
         domainModel.smlClientKeyAlias = StringUtils.lowerCase(Utils.randomEnum(new ResponseCertificates[]{SMP_DOMAIN_01, SMP_DOMAIN_02}).toString());
         return domainModel;
     }
 
     public static DomainModel generatePublicDomainModelWithoutSML() {
         DomainModel domainModel = new DomainModel();
-        domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumeric(6);
+        domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumericValue(6);
         domainModel.signatureKeyAlias = Utils.randomEnum(ResponseCertificates.values()).getName();
         domainModel.visibility = "PUBLIC";
         return domainModel;

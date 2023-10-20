@@ -10,6 +10,10 @@ public class Utils {
         return values[x];
     }
 
+    public static <T extends Enum<T>> T[] getAllEnumValues(Class<T> enumClass) {
+        return enumClass.getEnumConstants();
+    }
+
     public static String getAliasFromMessage(String message){
         Pattern pattern = Pattern.compile("(?<= \\[)(.*?)(?=\\])");
         Matcher matcher = pattern.matcher(message);

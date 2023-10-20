@@ -150,7 +150,7 @@ public class ProfilePgTests extends SeleniumTest {
         String oldPasswordExpiresOn = profilePage.profileData.getPasswordExpiresOnValue();
 
         //profilePage.profileData.setChangePasswordBtn.click();
-        String newPass = "Edeltest!23456789Edelt" + Generator.randomAlphaNumeric(4);
+        String newPass = "Edeltest!23456789Edelt" + Generator.randomAlphaNumericValue(4);
         SetChangePasswordDialog setChangePasswordDialog = profilePage.profileData.clickOnChangePassword();
         setChangePasswordDialog.fillChangePassword(data.getNewPassword(), newPass);
         homePage = setChangePasswordDialog.TryClickOnChangePassword();
