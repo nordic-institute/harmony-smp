@@ -40,13 +40,11 @@ public class LoginPage extends DomiSMPPage {
         weToDButton(loginBtn).click();
 
         try {
-            if (isExpiredDialoginbuttonEnabled()) {
+            if (getBreadcrump().getCurrentPage().equals("Login")) {
                 getExpiredDialoginbutton().click();
             }
-
         } catch (Exception e) {
             LOG.debug("Password expiration popup is not present");
-
             throw new RuntimeException("Password expiration popup is not present", e);
         }
 

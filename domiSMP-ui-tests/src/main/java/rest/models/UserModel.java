@@ -123,7 +123,7 @@ public class UserModel {
         userModel.emailAddress = "AUT_email_" + Generator.randomAlphaNumeric(4) + "@automation.com";
         userModel.fullName = "AUT_fullname_" + Generator.randomAlphaNumeric(4);
         userModel.smpTheme = SMPThemes.getRandomTheme();
-        userModel.smpLocale = "Dutch";
+        userModel.smpLocale = "English";
         return userModel;
     }
 

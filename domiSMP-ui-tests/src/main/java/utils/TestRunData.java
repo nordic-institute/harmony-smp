@@ -220,7 +220,7 @@ public class TestRunData {
 
     public String getPropertyValue(TestEnvironmentProperty propertyName) {
         String value = System.getProperty(propertyName.getPropertyName(), prop.getProperty(propertyName.getPropertyName(), propertyName.getDefaultValue()));
-        LOG.debug("Get Property [{}] value: [{}]", propertyName.getPropertyName(), value);
+       // LOG.debug("Get Property [{}] value: [{}]", propertyName.getPropertyName(), value);
         return value;
     }
 

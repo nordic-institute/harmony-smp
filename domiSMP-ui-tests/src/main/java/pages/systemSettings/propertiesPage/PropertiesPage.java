@@ -35,9 +35,11 @@ public class PropertiesPage extends DomiSMPPage {
         return new PropGrid(driver, propertyTableContainer);
     }
 
+    //TODO: property grid is not loaded yet when the search is done. Maybe we can improve the application
     public void propertySearch(String propertyname) {
         LOG.info("Search for property");
         wait.forElementToBeVisible(searchPropertyField).sendKeys(propertyname);
+        wait.forXMillis(500);
         wait.forElementToBeClickable(searchBtn).click();
         wait.forXMillis(500);
     }

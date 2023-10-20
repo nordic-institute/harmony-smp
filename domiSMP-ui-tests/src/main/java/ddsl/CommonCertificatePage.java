@@ -3,28 +3,29 @@ package ddsl;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-/**
- * Common page used for Keystore and Truststore
- */
+
 public class CommonCertificatePage extends CommonPageWithTabsAndGrid {
+    /**
+     * Common page used for Keystore and Truststore
+     */
     @FindBy(id = "publicKeyType_id")
-    private WebElement publicKeyTypeLbl;
+    private WebElement publicKeyTypeInput;
     @FindBy(id = "alias_id")
-    private WebElement aliasIdLbl;
+    private WebElement aliasIdInput;
     @FindBy(id = "certificateId_id")
-    private WebElement smpCertificateIdLbl;
+    private WebElement smpCertificateIdInput;
     @FindBy(id = "subject_id")
-    private WebElement subjectNameLbl;
+    private WebElement subjectNameInput;
     @FindBy(css = "certificate-panel [placeholder=\"Valid from date\"]")
-    private WebElement validFromLbl;
+    private WebElement validFromInput;
     @FindBy(css = "certificate-panel [placeholder=\"Valid to date\"]")
-    private WebElement validToLbl;
+    private WebElement validToInput;
     @FindBy(id = "issuer_id")
-    private WebElement issuerLbl;
+    private WebElement issuerInput;
     @FindBy(id = "servialNumber_id")
-    private WebElement serialNumberLbl;
+    private WebElement serialNumberInput;
     @FindBy(id = "clrUrl_id")
-    private WebElement certificateRevolcationListURLlbl;
+    private WebElement certificateRevolcationListURLInput;
     @FindBy(css = ".smp-warning-panel span")
     private WebElement smpWarningLbl;
 
@@ -32,39 +33,39 @@ public class CommonCertificatePage extends CommonPageWithTabsAndGrid {
         super(driver);
     }
 
-    public String getPublicKeyTypeLbl() {
-        return weToDInput(publicKeyTypeLbl).getText();
+    public String getPublicKeyTypeValue() {
+        return weToDInput(publicKeyTypeInput).getText();
     }
 
-    public String getAliasIdLbl() {
-        return weToDInput(aliasIdLbl).getText();
+    public String getAliasIdValue() {
+        return weToDInput(aliasIdInput).getText();
     }
 
-    public String getSmpCertificateIdLbl() {
-        return weToDInput(smpCertificateIdLbl).getText();
+    public String getSmpCertificateIdValue() {
+        return weToDInput(smpCertificateIdInput).getText();
     }
 
-    public String getSubjectNameLbl() {
-        return weToDInput(subjectNameLbl).getText();
+    public String getSubjectNameValue() {
+        return weToDInput(subjectNameInput).getText();
     }
 
-    public String getValidFromLbl() {
-        return weToDInput(validFromLbl).getText();
+    public String getValidFromValue() {
+        return weToDInput(validFromInput).getText();
     }
 
-    public String getValidToLbl() {
-        return weToDInput(validToLbl).getText();
+    public String getValidToValue() {
+        return weToDInput(validToInput).getText();
     }
 
-    public String getIssuerLbl() {
-        return weToDInput(issuerLbl).getText();
+    public String getIssuerValue() {
+        return weToDInput(issuerInput).getText();
     }
 
-    public String getSerialNumberLbl() {
-        return weToDInput(serialNumberLbl).getText();
+    public String getSerialNumberValue() {
+        return weToDInput(serialNumberInput).getText();
     }
 
-    public String getCertificateRevolcationListURLlbl() {
-        return weToDInput(certificateRevolcationListURLlbl).getText();
+    public String getCertificateRevolcationListURLValue() {
+        return weToDInput(certificateRevolcationListURLInput).getText();
     }
 }

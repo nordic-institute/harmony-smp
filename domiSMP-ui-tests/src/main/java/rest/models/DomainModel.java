@@ -39,7 +39,7 @@ public class DomainModel {
         domainModel.smlClientCertAuth = true;
         domainModel.smlSubdomain = "AUTDomSML" + Generator.randomAlphaNumeric(6);
         domainModel.smlSmpId = "AUTSMLSMP" + Generator.randomAlphaNumeric(4);
-        domainModel.smlClientKeyAlias = Utils.randomEnum(new ResponseCertificates[]{SMP_DOMAIN_01, SMP_DOMAIN_02}).getName();
+        domainModel.smlClientKeyAlias = Utils.randomEnum(new ResponseCertificates[]{SMP_DOMAIN_01, SMP_DOMAIN_02}).toString().toLowerCase();
         return domainModel;
     }
 

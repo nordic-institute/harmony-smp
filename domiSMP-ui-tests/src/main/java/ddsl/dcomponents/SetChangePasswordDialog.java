@@ -43,8 +43,8 @@ public class SetChangePasswordDialog extends DComponent {
     }
 
     public DomiSMPPage TryClickOnChangePassword(){
-        wait.forElementToBeClickable(setPasswordBtn);
-        if (weToDButton(setPasswordBtn).isEnabled() && fieldsError.isEmpty()) {
+        //wait.forElementToBeClickable(setPasswordBtn);
+        if (weToDButton(setPasswordBtn).isEnabled()) {
             weToDButton(setPasswordBtn).click();
             SuccesfullPasswordChangedPopup popup = new SuccesfullPasswordChangedPopup(driver);
             popup.closePopup();
