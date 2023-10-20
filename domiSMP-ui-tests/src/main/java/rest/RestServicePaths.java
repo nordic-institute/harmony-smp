@@ -41,4 +41,15 @@ public class RestServicePaths {
     }
 
 
+    //Groups
+    public static String getCreateGroupPath(String currentUserId, String domainId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/create";
+    }
+
+    public static String getGroupAddMemberPath(String currentUserId, String domainId, String groupId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/member/put";
+    }
+
 }

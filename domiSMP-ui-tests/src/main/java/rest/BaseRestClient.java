@@ -41,15 +41,7 @@ public class BaseRestClient {
     //	---------------------------------------Default request methods -------------------------------------------------
     protected ClientResponse requestPUT(WebResource resource, JSONObject body, String type) {
 
-        if (!isLoggedIn()) {
-            log.info("User is not loggedin");
-            try {
-                createSession();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+        startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
         return builder.type(type).put(ClientResponse.class, body.toString());
@@ -57,15 +49,7 @@ public class BaseRestClient {
 
     protected ClientResponse requestPUT(WebResource resource, String body, String type) {
 
-        if (!isLoggedIn()) {
-            log.info("User is not loggedin");
-            try {
-                createSession();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+        startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
         return builder.type(type).put(ClientResponse.class, body);
@@ -80,15 +64,7 @@ public class BaseRestClient {
     }
 
     protected ClientResponse requestPOST(WebResource resource, String body) {
-        if (!isLoggedIn()) {
-            log.info("User is not loggedin");
-            try {
-                createSession();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+        startSession();
         WebResource.Builder builder = decorateBuilder(resource);
 
         return builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, body);
@@ -114,7 +90,7 @@ public class BaseRestClient {
         return builder;
     }
 
-    public void createSession() throws Exception {
+    private void createNewSession() throws Exception {
         log.debug("Rest client using to login: " + this.username);
         HashMap<String, String> params = new HashMap<>();
         params.put("username", this.username);
@@ -156,11 +132,21 @@ public class BaseRestClient {
         return mytoken;
     }
 
-    public boolean isLoggedIn() {
+    private boolean isLoggedIn() {
 
         WebResource.Builder builder = decorateBuilder(resource.path(RestServicePaths.CONNECTED));
         int response = builder.get(ClientResponse.class).getStatus();
         log.debug("Connected endpoint returns: " + response);
         return (!(response == 401));
+    }
+
+    public void startSession() {
+        if (!isLoggedIn()) {
+            try {
+                createNewSession();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

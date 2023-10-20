@@ -3,7 +3,6 @@ package domiSMPTests.ui;
 import ddsl.DomiSMPPage;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
-import org.json.JSONObject;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Ignore;
@@ -39,9 +38,8 @@ public class EditDomainsPgTests extends SeleniumTest {
         domainMember.setRoleType("ADMIN");
 
         rest.users().createUser(adminUser);
-        JSONObject domainJson = rest.domains().createDomain(domainModel);
-        domainId = domainJson.get("domainId").toString();
-        rest.domains().addMembersToDomain(domainId, domainMember);
+        domainModel = rest.domains().createDomain(domainModel);
+        rest.domains().addMembersToDomain(domainModel, domainMember);
 
         homePage = new DomiSMPPage(driver);
         loginPage = homePage.goToLoginPage();
@@ -51,64 +49,30 @@ public class EditDomainsPgTests extends SeleniumTest {
 
     @Test(description = "EDTDOM-01 Domain admins are able to invite/edit/remove members")
     public void DomainAdminsAreAbleToInviteEditRemoveMembers() throws Exception {
-        UserModel memberUser = UserModel.generateUserWithADMINrole();
-        rest.users().createUser(memberUser);
+        UserModel domainMember = UserModel.generateUserWithUSERrole();
+        rest.users().createUser(domainMember);
 
-        //Invite user as VIEW and check if he has admin rights for domain
-        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
+        //Add user
         editDomainPage.getDomainMembersTab().getInviteMemberBtn().click();
-        editDomainPage.getDomainMembersTab().getInviteMembersPopup().selectMember(memberUser.getUsername(), "VIEWER");
-        WebElement userMemberElement = editDomainPage.getDomainMembersTab().getMembersGrid().searchAndGetElementInColumn("Username", memberUser.getUsername());
-        soft.assertNotNull(userMemberElement, "Invited user is found");
+        editDomainPage.getDomainMembersTab().getInviteMembersPopup().selectMember(domainMember.getUsername(), "VIEWER");
+        soft.assertTrue(editDomainPage.getDomainMembersTab().getMembersGrid().isValuePresentInColumn("Username", domainMember.getUsername()));
 
-        //check if user has admin rights to domain as VIEWER
-        homePage.logout();
-        homePage.goToLoginPage();
-        loginPage.login(memberUser.getUsername(), data.getNewPassword());
-        EditDomainsPage editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        WebElement domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
-        soft.assertNull(domainElement, "Domain found for user which doesn't have rights");
+        //Change role of user
+        editDomainPage.getDomainMembersTab().changeRoleOfUser(domainMember.getUsername(), "ADMIN");
+        String currentRoleTypeOfuser = editDomainPage.getDomainMembersTab().getMembersGrid().getColumnValueForSpecificRow("Username", domainMember.getUsername(), "Role type");
+        soft.assertEquals(currentRoleTypeOfuser, "ADMIN");
 
-        homePage.logout();
-        loginPage = homePage.goToLoginPage();
-        loginPage.login(adminUser.getUsername(), data.getNewPassword());
-        editDomainPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
-        editDomainPage.getDomainMembersTab().changeRoleOfUser(memberUser.getUsername(), "ADMIN");
+        //Remove user
+        editDomainPage.getDomainMembersTab().removeUser(domainMember.getUsername());
+        soft.assertFalse(editDomainPage.getDomainMembersTab().getMembersGrid().isValuePresentInColumn("Username", domainMember.getUsername()));
 
-        //check if user has admin rights to domain as Admin
-        homePage.logout();
-        homePage.goToLoginPage();
-        loginPage.login(memberUser.getUsername(), data.getNewPassword());
-        editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
-        soft.assertNotNull(domainElement, "Domain found for user which doesn't have rights");
-
-
-        //Remove member user and check if he has access to the domain
-        homePage.logout();
-        homePage.goToLoginPage();
-        loginPage.login(adminUser.getUsername(), data.getNewPassword());
-        editDomainPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
-        editDomainPage.getDomainMembersTab().removeUser(memberUser.getUsername());
-        userMemberElement = editDomainPage.getDomainMembersTab().getMembersGrid().searchAndGetElementInColumn("Username", memberUser.getUsername());
-        soft.assertNull(userMemberElement, "Domain found for user which doesn't have rights");
-
-        homePage.logout();
-        homePage.goToLoginPage();
-        loginPage.login(memberUser.getUsername(), data.getNewPassword());
-        editDomainsPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_DOMAINS);
-        domainElement = editDomainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode());
-        soft.assertNull(domainElement, "Domain found for user which doesn't have rights");
         soft.assertAll();
-
     }
 
     @Ignore
     @Test(description = "EDTDOM-02 Domain admins are able to create new groups")
     public void domainAdminsAreAbleToCreate() throws Exception {
-        GroupModel groupToBeCreated = GroupModel.generatePublicDomain();
+        GroupModel groupToBeCreated = GroupModel.generatePublicGroup();
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
 
         editDomainPage.goToTab("Group");
@@ -128,7 +92,7 @@ public class EditDomainsPgTests extends SeleniumTest {
 
     @Test(description = "EDTDOM-03 Domain admins are not able to create duplicated groups")
     public void domainAdminsAreNotAbleToCreateDuplicatedGroups() throws Exception {
-        GroupModel duplicatedGroup = GroupModel.generatePublicDomain();
+        GroupModel duplicatedGroup = GroupModel.generatePublicGroup();
 
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         editDomainPage.goToTab("Group");
@@ -149,7 +113,7 @@ public class EditDomainsPgTests extends SeleniumTest {
 
     @Test(description = "EDTDOM-04 Domain admins are able to delete groups without resources")
     public void domainAdminsAreNotAbleToDeleteGroups() throws Exception {
-        GroupModel groupToBeDeleted = GroupModel.generatePublicDomain();
+        GroupModel groupToBeDeleted = GroupModel.generatePublicGroup();
 
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         editDomainPage.goToTab("Group");

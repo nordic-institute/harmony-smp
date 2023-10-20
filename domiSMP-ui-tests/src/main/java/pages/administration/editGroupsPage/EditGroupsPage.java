@@ -4,7 +4,6 @@ import ddsl.CommonPageWithTabs;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rest.models.DomainModel;
@@ -17,7 +16,7 @@ public class EditGroupsPage extends CommonPageWithTabs {
     @FindBy(id = "domain_id")
     private WebElement domainDdl;
     @FindBy(id = "group_id")
-    private Select groupDdl;
+    private WebElement groupDdl;
 
     public EditGroupsPage(WebDriver driver) {
         super(driver);
@@ -28,12 +27,17 @@ public class EditGroupsPage extends CommonPageWithTabs {
         weToMatSelect(domainDdl).selectByVisibleText(domainModel.getDomainCode());
     }
 
-    public GroupMembersTab getDomainMembersTab() {
+    public GroupMembersTab getGroupMembersTab() {
         return new GroupMembersTab(driver);
     }
 
     public ResourceTab getGroupTab() {
         return new ResourceTab(driver);
+    }
+
+    public void selectDomain(DomainModel domainModel, GroupModel groupModel) {
+        weToMatSelect(domainDdl).selectByVisibleText(domainModel.getDomainCode());
+        weToMatSelect(groupDdl).selectByVisibleText(groupModel.getGroupName());
     }
 
 }

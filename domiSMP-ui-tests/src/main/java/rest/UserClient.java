@@ -5,31 +5,17 @@ import org.json.JSONObject;
 import rest.models.UserModel;
 import utils.TestRunData;
 
+/**
+ * Rest client for user actions
+ */
 public class UserClient extends BaseRestClient {
-
-
-    /**
-     * Rest client for user actions
-     */
-
     public UserClient(String username, String password) {
         super(username, password);
     }
-
     public JSONObject createUser(UserModel user) {
 
         JSONObject usrObj = new JSONObject(user);
-
-        if (!isLoggedIn()) {
-            try {
-                createSession();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         String usersPath = RestServicePaths.getUsersPath(TestRunData.getInstance().getUserId());
-
         ClientResponse response = jsonPUT(resource.path(usersPath), usrObj);
         JSONObject responseBody = new JSONObject(response.getEntity(String.class));
         // extract userId to be used in the Paths of the requests
@@ -53,13 +39,10 @@ public class UserClient extends BaseRestClient {
 
     public JSONObject changePassword(String forUserId, String newPassword) {
 
-
         String changePasswordPath = RestServicePaths.getChangePasswordPath(TestRunData.getInstance().getUserId(), forUserId);
         JSONObject passwordChangeBody = new JSONObject();
         passwordChangeBody.put("currentPassword", password);
         passwordChangeBody.put("newPassword", newPassword);
-
-
         ClientResponse response = jsonPUT(resource.path(changePasswordPath), passwordChangeBody);
         return new JSONObject(response.getEntity(String.class));
     }
