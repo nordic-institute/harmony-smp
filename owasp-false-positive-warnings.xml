@@ -18,9 +18,9 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: smp.war: spring-core-5.3.29.jar
+   file name: smp.war: spring-core-5.3.30.jar
    ]]></notes>
-        <sha1>528eafe4cef7bccf3df290dd99ac5833a9756183</sha1>
+        <sha1>cd2b09bf9bdb45c3cf2b771317b6dd0d6b2f6a25</sha1>
         <cve>CVE-2016-1000027</cve>
     </suppress>
     <suppress>
