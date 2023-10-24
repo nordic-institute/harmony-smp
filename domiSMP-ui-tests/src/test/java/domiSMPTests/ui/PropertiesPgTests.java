@@ -57,7 +57,7 @@ public class PropertiesPgTests extends SeleniumTest {
     public void propertyValueURLIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "bdmsl.integration.url";
-        String wrongValue1 = Generator.randomAlphaNumeric(6);
+        String wrongValue1 = Generator.randomAlphaNumericValue(6);
         String wrongValue2 = wrongValue1 + ".com";
         String wrongValue3 = "www." + wrongValue1 + ".com";
 
@@ -97,7 +97,7 @@ public class PropertiesPgTests extends SeleniumTest {
     public void propertyValueEmailIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "smp.alert.mail.from";
-        String wrongValue1 = Generator.randomAlphaNumeric(6);
+        String wrongValue1 = Generator.randomAlphaNumericValue(6);
         String wrongValue2 = wrongValue1 + "@yahoo";
         String wrongValue3 = wrongValue1 + ".com";
 
@@ -137,7 +137,7 @@ public class PropertiesPgTests extends SeleniumTest {
     public void propertyValueCRONexpressionIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "smp.alert.credentials.cronJobExpression";
-        String wrongValue1 = Generator.randomAlphaNumeric(6);
+        String wrongValue1 = Generator.randomAlphaNumericValue(6);
         String wrongValue2 = "0 0/1 * * * * *";
         String wrongValue3 = "0 A * * * * ";
 
@@ -177,7 +177,7 @@ public class PropertiesPgTests extends SeleniumTest {
     public void propertyValueNumericIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "smp.ui.session.idle_timeout.user";
-        String wrongValue1 = Generator.randomAlphaNumeric(6);
+        String wrongValue1 = Generator.randomAlphaNumericValue(6);
         String wrongValue2 = "333333333333333333333333333333333333333333333333333333";
         String wrongValue3 = "0 A * * * * ";
 

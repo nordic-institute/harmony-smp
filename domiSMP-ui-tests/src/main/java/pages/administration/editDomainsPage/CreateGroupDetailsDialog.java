@@ -29,11 +29,6 @@ public class CreateGroupDetailsDialog extends DComponent {
 
     }
 
-//    public AlertComponent getAlertArea() {
-//        return new AlertComponent(driver);
-//    }
-
-
     public AlertComponent getAlertArea(){
         if (  alertComponent == null){
             alertComponent = new AlertComponent(driver);

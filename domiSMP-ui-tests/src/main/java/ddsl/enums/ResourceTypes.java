@@ -15,7 +15,6 @@ public enum ResourceTypes {
 
     ResourceTypes(String name) {
         this.name = name;
-
     }
 
 

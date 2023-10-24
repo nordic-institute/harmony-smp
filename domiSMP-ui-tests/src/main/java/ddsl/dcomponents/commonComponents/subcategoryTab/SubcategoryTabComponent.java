@@ -36,7 +36,7 @@ public class SubcategoryTabComponent extends DComponent {
         return new SmallGrid(driver, rightSidePanel);
     }
 
-    public void create() throws ElementNotInteractableException {
+    protected void create() throws ElementNotInteractableException {
         weToDButton(createBtn).click();
     }
 

@@ -103,6 +103,45 @@ public class SmallGrid extends DComponent {
         }
         return false;
     }
+
+    public String getColumnValueForSpecificRow(String columnNameToSearch, String valueToSearch, String searchedColumnValue) {
+        wait.forXMillis(100);
+        Integer numOfPages = getGridPagination().getTotalPageNumber();
+        List<WebElement> rowHeaders = getGridHeaders();
+        int columnIndex = -1;
+        int searchedColumnIndex = -1;
+
+        for (int i = 0; i < rowHeaders.size(); i++) {
+            if (rowHeaders.get(i).getText().equals(columnNameToSearch)) {
+                columnIndex = i;
+            } else if (rowHeaders.get(i).getText().equals(searchedColumnValue)) {
+                searchedColumnIndex = i;
+            }
+            if (columnIndex != -1 && searchedColumnIndex != -1) {
+                break;
+            }
+        }
+
+        if (columnIndex == -1 || searchedColumnIndex == -1) {
+            LOG.debug("Search value was not found in the grid");
+            return null;
+        }
+        for (int pageNr = 1; pageNr < numOfPages + 1; pageNr++) {
+
+            List<WebElement> rows = getRows();
+            for (WebElement row : rows) {
+                List<WebElement> cells = getCells(row);
+                WebElement currentCell = cells.get(columnIndex);
+                if (currentCell.getText().equals(valueToSearch)) {
+                    LOG.debug("[{}] found on page [{}]", valueToSearch, pageNr);
+                    return cells.get(searchedColumnIndex).getText();
+                }
+            }
+            getGridPagination().goToNextPage();
+
+        }
+        return null;
+    }
     public void searchAndClickElementInColumn(String columnName, String value) {
 
         wait.forXMillis(100);
@@ -117,7 +156,6 @@ public class SmallGrid extends DComponent {
         }
         if (columnIndex == -1) {
             LOG.error("No element found");
-            ;
         }
         for (int pageNr = 1; pageNr < numOfPages + 1; pageNr++) {
 
