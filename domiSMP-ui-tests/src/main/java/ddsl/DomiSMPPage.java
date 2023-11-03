@@ -65,6 +65,7 @@ public class DomiSMPPage extends DComponent {
         actions.perform();
 
         logoutMenuBtn.click();
+        // data.destroySession();
     }
 
     public void refreshPage() {

@@ -10,10 +10,14 @@ public class DomiSMPRestClient extends BaseRestClient {
     public DomainClient domains() {
         return new DomainClient();
     }
-
     public GroupClient groups() {
         return new GroupClient();
     }
+
+    public ResourceClient resources() {
+        return new ResourceClient();
+    }
+
 
 }
 
