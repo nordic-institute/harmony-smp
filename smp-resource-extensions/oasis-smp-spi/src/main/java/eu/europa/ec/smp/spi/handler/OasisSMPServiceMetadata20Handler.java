@@ -1,6 +1,6 @@
 package eu.europa.ec.smp.spi.handler;
 
-import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP20ServiceMetadataReader;
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.oasis20.OasisSMP20ServiceMetadataReader;
 import eu.europa.ec.dynamicdiscovery.core.validator.OasisSmpSchemaValidator;
 import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.exception.XmlInvalidAgainstSchemaException;
