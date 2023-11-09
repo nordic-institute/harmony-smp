@@ -232,6 +232,11 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>${maven-surefire-plugin_version}</version>
         </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.2</version>
+        </dependency>
     </dependencies>
 
 

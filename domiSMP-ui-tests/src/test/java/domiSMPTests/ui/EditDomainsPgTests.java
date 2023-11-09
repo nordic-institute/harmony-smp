@@ -1,11 +1,11 @@
 package domiSMPTests.ui;
 
 import ddsl.DomiSMPPage;
+import ddsl.dcomponents.commonComponents.members.InviteMembersWithGridPopup;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
@@ -17,12 +17,15 @@ import rest.models.GroupModel;
 import rest.models.MemberModel;
 import rest.models.UserModel;
 
+/**
+ * Test class for Edit domains page tests.
+ */
+
 public class EditDomainsPgTests extends SeleniumTest {
 
     DomiSMPPage homePage;
     LoginPage loginPage;
     EditDomainsPage editDomainPage;
-    String domainId;
     DomainModel domainModel;
     UserModel adminUser;
     SoftAssert soft;
@@ -48,7 +51,7 @@ public class EditDomainsPgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTDOM-01 Domain admins are able to invite/edit/remove members")
-    public void DomainAdminsAreAbleToInviteEditRemoveMembers() throws Exception {
+    public void DomainAdminsAreAbleToInviteEditRemoveMembers() {
         UserModel domainMember = UserModel.generateUserWithUSERrole();
         rest.users().createUser(domainMember);
 
@@ -69,9 +72,8 @@ public class EditDomainsPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Ignore
     @Test(description = "EDTDOM-02 Domain admins are able to create new groups")
-    public void domainAdminsAreAbleToCreate() throws Exception {
+    public void domainAdminsAreAbleToCreate() {
         GroupModel groupToBeCreated = GroupModel.generatePublicGroup();
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
 
@@ -84,14 +86,19 @@ public class EditDomainsPgTests extends SeleniumTest {
 
         WebElement createGroup = editDomainPage.getGroupTab().getGrid().searchAndGetElementInColumn("Group name", groupToBeCreated.getGroupName());
         soft.assertNotNull(createGroup);
+        createGroup.click();
+        InviteMembersWithGridPopup inviteMembersWithGridPopup = editDomainPage.getGroupTab().clickOnGroupMembersBtn();
+        soft.assertTrue(inviteMembersWithGridPopup.isMemberPresentByUsername(adminUser));
+        inviteMembersWithGridPopup.clickOnCloseBtn();
 
         EditGroupsPage editgroupPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_GROUPS);
+        editgroupPage.selectDomain(domainModel, groupToBeCreated);
         soft.assertAll();
 
     }
 
     @Test(description = "EDTDOM-03 Domain admins are not able to create duplicated groups")
-    public void domainAdminsAreNotAbleToCreateDuplicatedGroups() throws Exception {
+    public void domainAdminsAreNotAbleToCreateDuplicatedGroups() {
         GroupModel duplicatedGroup = GroupModel.generatePublicGroup();
 
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
@@ -112,7 +119,7 @@ public class EditDomainsPgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTDOM-04 Domain admins are able to delete groups without resources")
-    public void domainAdminsAreNotAbleToDeleteGroups() throws Exception {
+    public void domainAdminsAreNotAbleToDeleteGroups() {
         GroupModel groupToBeDeleted = GroupModel.generatePublicGroup();
 
         editDomainPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();

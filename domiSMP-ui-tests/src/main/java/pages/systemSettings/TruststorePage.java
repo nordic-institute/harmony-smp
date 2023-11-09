@@ -1,7 +1,6 @@
 package pages.systemSettings;
 
 import ddsl.CommonCertificatePage;
-import ddsl.dcomponents.Grid.SmallGrid;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -17,10 +16,6 @@ public class TruststorePage extends CommonCertificatePage {
 
     public TruststorePage(WebDriver driver) {
         super(driver);
-    }
-
-    public SmallGrid getCertificateGrid() {
-        return new SmallGrid(driver, rightPanel);
     }
     public String addCertificateAndReturnAlias(String filePath) {
         uploadInput.sendKeys(filePath);

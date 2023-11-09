@@ -8,9 +8,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
+import pages.administration.editResourcesPage.EditResourceDocumentPage;
 import pages.administration.editResourcesPage.EditResourcePage;
 import rest.models.*;
 import utils.TestRunData;
+import utils.XMLUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +27,8 @@ public class EditResourcePgTests extends SeleniumTest {
     ResourceModel resourceModel;
     SoftAssert soft;
 
+    MemberModel adminMember;
+
     @BeforeMethod(alwaysRun = true)
     public void beforeTest() throws Exception {
         soft = new SoftAssert();
@@ -33,7 +37,7 @@ public class EditResourcePgTests extends SeleniumTest {
         groupModel = GroupModel.generatePublicGroup();
         resourceModel = ResourceModel.generatePublicResourceUnregisteredToSML();
 
-        MemberModel adminMember = new MemberModel() {
+        adminMember = new MemberModel() {
         };
         adminMember.setUsername(adminUser.getUsername());
         adminMember.setRoleType("ADMIN");
@@ -112,33 +116,79 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertTrue(editResourcePage.getResourceMembersTab().getMembersGrid().isValuePresentInColumn("Username", domainMember.getUsername()));
     }
 
-    @Test(description = "EDTGRP-02 Group admins are able to create new resources", priority = 0)
-    public void groupsAdminsAreAbleToCreateNewResources() throws Exception {
+    @Test(description = "EDTRES-03 Resource admins are able to add generated document", priority = 1)
+    public void ResourceAdminsAreAbleToAddGeneratedDocument() throws Exception {
 
-        UserModel resourseAdmin = UserModel.generateUserWithADMINrole();
-        rest.users().createUser(resourseAdmin);
+        //Generate resource Oasis 3
+        ResourceModel resourceModelOasis3 = ResourceModel.generatePublicResourceUnregisteredToSML();
+        resourceModelOasis3.setResourceTypeIdentifier(ResourceTypes.OASIS3.getName());
+        resourceModelOasis3 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis3);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis3, adminMember);
 
-        MemberModel resourceMember = new MemberModel();
-        resourceMember.setUsername(resourseAdmin.getUsername());
-        resourceMember.setRoleType("VIEWER");
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis3);
+        editResourcePage.goToTab("Resource details");
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnGenerate();
+        editResourceDocumentPage.clickOnSave();
+        String currentGeneratedValue = editResourceDocumentPage.getDocumentValue();
 
-        homePage.logout();
-        loginPage = homePage.goToLoginPage();
-        loginPage.login(resourseAdmin.getUsername(), TestRunData.getInstance().getNewPassword());
+        editResourceDocumentPage.clickOnValidate();
+        soft.assertEquals(editResourceDocumentPage.getAlertArea().getAlertMessage(), "Document is Valid.", "Generated document is not valid");
+
+        soft.assertNotNull(currentGeneratedValue, "Document is empty");
+        XMLUtils documentXML = new XMLUtils(currentGeneratedValue);
+        soft.assertTrue(documentXML.isNodePresent("CPP"), "Node is not present in generated document");
+
         editResourcePage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_RESOURCES);
-        soft.assertTrue(editResourcePage.isCurrentUserAdministrator());
 
-        resourceMember = rest.resources().addMembersToResource(domainModel, groupModel, resourceModel, resourceMember);
-        //Check if viewer can see resources in Edit Resource page
-        editResourcePage.refreshPage();
-        soft.assertTrue(editResourcePage.isCurrentUserAdministrator());
-
-        resourceMember.setRoleType("ADMIN");
-        rest.resources().addMembersToResource(domainModel, groupModel, resourceModel, resourceMember);
-        //Check if admin can see resources in Edit Resource page
+        //Generate resource Oasis 2
+        ResourceModel resourceModelOasis2 = ResourceModel.generatePublicResourceUnregisteredToSML();
+        resourceModelOasis2.setResourceTypeIdentifier(ResourceTypes.OASIS2.getName());
+        resourceModelOasis2 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis2);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis2, adminMember);
 
         editResourcePage.refreshPage();
-        soft.assertTrue(editResourcePage.getLeftSideGrid().isValuePresentInColumn("Identifier", resourceModel.getIdentifierValue()));
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis2);
+        editResourcePage.goToTab("Resource details");
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnGenerate();
+        editResourceDocumentPage.clickOnSave();
+
+        String oasis2GeneratedDocumentValue = editResourceDocumentPage.getDocumentValue();
+
+        editResourceDocumentPage.clickOnValidate();
+
+        soft.assertEquals(editResourceDocumentPage.getAlertArea().getAlertMessage(), "Document is Valid.", "Generated document is not valid");
+        soft.assertNotNull(oasis2GeneratedDocumentValue, "Document is empty");
+        XMLUtils oasis2DocumentXML = new XMLUtils(oasis2GeneratedDocumentValue);
+        soft.assertTrue(oasis2DocumentXML.isNodePresent("ns5:ServiceGroup"), " Service group Node is not present in generated document");
+
+        //Generate resource Oasis 3
+        ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResourceUnregisteredToSML();
+        resourceModelOasis1.setResourceTypeIdentifier(ResourceTypes.OASIS1.getName());
+        resourceModelOasis1 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1, adminMember);
+
+        editResourcePage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_RESOURCES);
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
+        editResourcePage.goToTab("Resource details");
+        editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnGenerate();
+        editResourceDocumentPage.clickOnSave();
+
+        String oasis1GeneratedDocumentValue = editResourceDocumentPage.getDocumentValue();
+
+        editResourceDocumentPage.clickOnValidate();
+
+        soft.assertEquals(editResourceDocumentPage.getAlertArea().getAlertMessage(), "Document is Valid.", "Generated document is not valid");
+        soft.assertNotNull(oasis1GeneratedDocumentValue, "Document is empty");
+        XMLUtils oasis1DocumentXML = new XMLUtils(oasis1GeneratedDocumentValue);
+        soft.assertTrue(oasis1DocumentXML.isNodePresent("ServiceGroup"), " Service group Node is not present in generated document");
         soft.assertAll();
     }
 }
+
+
+

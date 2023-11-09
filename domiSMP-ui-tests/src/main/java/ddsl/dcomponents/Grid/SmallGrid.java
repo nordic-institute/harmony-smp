@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class SmallGrid extends DComponent {
     private final static Logger LOG = LoggerFactory.getLogger(SmallGrid.class);
@@ -157,6 +158,7 @@ public class SmallGrid extends DComponent {
         if (columnIndex == -1) {
             LOG.error("No element found");
         }
+        boolean isElementPresent = false;
         for (int pageNr = 1; pageNr < numOfPages + 1; pageNr++) {
 
             List<WebElement> rows = getRows();
@@ -165,13 +167,21 @@ public class SmallGrid extends DComponent {
                 WebElement currentCell = cells.get(columnIndex);
                 if (currentCell.getText().equals(value)) {
                     LOG.debug("[{}] found on page [{}]", value, pageNr);
+                    isElementPresent = true;
                     currentCell.click();
+                    break;
                 }
             }
+            if (isElementPresent) {
+                break;
+            }
             getGridPagination().goToNextPage();
+        }
+        if (!isElementPresent) {
+            throw new NoSuchElementException("Value [" + value + "] was not found in the grid");
 
         }
-        LOG.error("No element found");
+
     }
 
 
