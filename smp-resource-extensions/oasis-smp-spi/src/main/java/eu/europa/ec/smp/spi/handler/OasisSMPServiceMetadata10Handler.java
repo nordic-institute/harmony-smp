@@ -1,6 +1,6 @@
 package eu.europa.ec.smp.spi.handler;
 
-import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP10ServiceMetadataReader;
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.oasis10.OasisSMP10ServiceMetadataReader;
 import eu.europa.ec.dynamicdiscovery.core.validator.OasisSmpSchemaValidator;
 import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.exception.XmlInvalidAgainstSchemaException;
@@ -173,7 +173,7 @@ public class OasisSMPServiceMetadata10Handler extends AbstractOasisSMPHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
 
-        ServiceMetadata serviceMetadata = null;
+        ServiceMetadata serviceMetadata;
         try {
             serviceMetadata = (ServiceMetadata) reader.parseNative(new ByteArrayInputStream(bytearray));
         } catch (TechnicalException e) {

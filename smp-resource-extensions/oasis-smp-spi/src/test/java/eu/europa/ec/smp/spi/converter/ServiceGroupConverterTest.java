@@ -13,18 +13,17 @@
 
 package eu.europa.ec.smp.spi.converter;
 
-import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP10ServiceGroupReader;
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.oasis10.OasisSMP10ServiceGroupReader;
 import eu.europa.ec.dynamicdiscovery.exception.BindException;
 import eu.europa.ec.smp.spi.testutils.XmlTestUtils;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceGroup;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
 
 /**
  * Created by gutowpa on 11/04/2017.
@@ -46,7 +45,7 @@ class ServiceGroupConverterTest {
         ServiceGroup serviceGroup = testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
-        assertNotNull(serviceGroup);
+        Assertions.assertNotNull(serviceGroup);
     }
 
 
@@ -55,7 +54,7 @@ class ServiceGroupConverterTest {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupWithDOCTYPE.xml");
         //when then
-        BindException result = assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
+        BindException result = Assertions.assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
         MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("DOCTYPE is disallowed"));
     }
 }

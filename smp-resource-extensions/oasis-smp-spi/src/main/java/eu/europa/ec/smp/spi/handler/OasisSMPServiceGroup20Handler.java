@@ -1,6 +1,6 @@
 package eu.europa.ec.smp.spi.handler;
 
-import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP20ServiceGroupReader;
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.oasis20.OasisSMP20ServiceGroupReader;
 import eu.europa.ec.dynamicdiscovery.core.validator.OasisSmpSchemaValidator;
 import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.exception.XmlInvalidAgainstSchemaException;
@@ -85,7 +85,7 @@ public class OasisSMPServiceGroup20Handler extends AbstractOasisSMPHandler {
             LOG.warn("Empty document input stream for service-group [{}]!", identifier);
             return;
         }
-        ServiceGroup serviceGroup = null;
+        ServiceGroup serviceGroup;
         try {
             serviceGroup = reader.parseNative(resourceData.getResourceInputStream());
         } catch (TechnicalException e) {
@@ -172,11 +172,11 @@ public class OasisSMPServiceGroup20Handler extends AbstractOasisSMPHandler {
             OasisSmpSchemaValidator.validateOasisSMP20ServiceGroupSchema(bytearray);
         } catch (IOException | XmlInvalidAgainstSchemaException e) {
             String ids = identifier != null ?
-                    Stream.of(identifier).map(identifier1 -> identifier1.toString()).collect(Collectors.joining(",")) : "";
+                    Stream.of(identifier).map(ResourceIdentifier::toString).collect(Collectors.joining(",")) : "";
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 2.0 ServiceGroup: [" + ids + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         // if service group
-        ServiceGroup serviceGroup = null;
+        ServiceGroup serviceGroup;
         try {
             serviceGroup = reader.parseNative(new ByteArrayInputStream(bytearray));
         } catch (TechnicalException e) {

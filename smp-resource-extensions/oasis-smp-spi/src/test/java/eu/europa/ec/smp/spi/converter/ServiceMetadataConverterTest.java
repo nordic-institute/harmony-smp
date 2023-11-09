@@ -13,7 +13,7 @@
 
 package eu.europa.ec.smp.spi.converter;
 
-import eu.europa.ec.dynamicdiscovery.core.extension.impl.OasisSMP10ServiceMetadataReader;
+import eu.europa.ec.dynamicdiscovery.core.extension.impl.oasis10.OasisSMP10ServiceMetadataReader;
 import eu.europa.ec.dynamicdiscovery.exception.BindException;
 import eu.europa.ec.smp.spi.testutils.XmlTestUtils;
 import gen.eu.europa.ec.ddc.api.smp10.RedirectType;
@@ -22,16 +22,14 @@ import gen.eu.europa.ec.ddc.api.smp10.ServiceInformationType;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceMetadata;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import java.io.ByteArrayInputStream;
 
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -43,13 +41,10 @@ public class ServiceMetadataConverterTest {
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
     private static final String RES_PATH = "/examples/oasis-smp-1.0/";
 
-    @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
-
     OasisSMP10ServiceMetadataReader testInstance = new OasisSMP10ServiceMetadataReader();
 
     @Test
-    public void testUnmarshalServiceInformation() throws Exception {
+    void testUnmarshalServiceInformation() throws Exception {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceOk.xml");
 
@@ -69,7 +64,7 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testUnmarshalServiceInformationUtf8() throws Exception {
+    void testUnmarshalServiceInformationUtf8() throws Exception {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformationUtf8.xml");
 
@@ -83,7 +78,7 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testUnmarshalRedirect() throws Exception {
+    void testUnmarshalRedirect() throws Exception {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithRedirect.xml");
 
@@ -100,7 +95,7 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testUnmarshalMalformedInput() throws Exception {
+    void testUnmarshalMalformedInput() {
 
         byte[] inputDoc ="this is malformed XML body".getBytes();
 
@@ -110,7 +105,7 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testInvalidDocumentNamespace() throws Exception {
+    void testInvalidDocumentNamespace() throws Exception {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataMissingMandatoryFields.xml");
         //when then
@@ -119,7 +114,7 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testToSignedServiceMetadataDocument() throws Exception {
+    void testToSignedServiceMetadataDocument() throws Exception {
         //given
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceOk.xml");
 
@@ -139,7 +134,7 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
-    public void testVulnerabilityParsingDTD() throws Exception {
+    void testVulnerabilityParsingDTD() throws Exception {
 
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithDOCTYPE.xml");
 
