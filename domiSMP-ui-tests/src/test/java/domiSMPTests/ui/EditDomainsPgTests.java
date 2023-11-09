@@ -51,7 +51,7 @@ public class EditDomainsPgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTDOM-01 Domain admins are able to invite/edit/remove members")
-    public void DomainAdminsAreAbleToInviteEditRemoveMembers() {
+    public void domainAdminsAreAbleToInviteEditRemoveMembers() {
         UserModel domainMember = UserModel.generateUserWithUSERrole();
         rest.users().createUser(domainMember);
 

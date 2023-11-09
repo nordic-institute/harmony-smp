@@ -77,7 +77,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourcePage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_RESOURCES);
     }
 
-    @Test(description = "EDTRES-01 Resource admins are able to invite/edit/remove resource members", priority = 0)
+    @Test(description = "EDTRES-01 Resource admins are able to invite/edit/remove resource members")
     public void resourceAdminsAreAbleToInviteEditRemoveMembers() {
 
         UserModel domainMember = UserModel.generateUserWithUSERrole();
@@ -117,7 +117,7 @@ public class EditResourcePgTests extends SeleniumTest {
     }
 
     @Test(description = "EDTRES-03 Resource admins are able to add generated document", priority = 1)
-    public void ResourceAdminsAreAbleToAddGeneratedDocument() throws Exception {
+    public void resourceAdminsAreAbleToAddGeneratedDocument() throws Exception {
 
         //Generate resource Oasis 3
         ResourceModel resourceModelOasis3 = ResourceModel.generatePublicResourceUnregisteredToSML();

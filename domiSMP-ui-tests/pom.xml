@@ -13,23 +13,23 @@
         <test.properties.path>./src/main/resources/myLocal.properties</test.properties.path>
 
         <commons-csv_version>1.10.0</commons-csv_version>
-        <selenium-chrome-driver_version>4.11.0</selenium-chrome-driver_version>
-        <selenium-java_version>4.11.0</selenium-java_version>
-        <poi-ooxml_version>5.2.3</poi-ooxml_version>
+        <selenium-chrome-driver_version>4.15.0</selenium-chrome-driver_version>
+        <selenium-java_version>4.15.0</selenium-java_version>
+        <poi-ooxml_version>5.2.4</poi-ooxml_version>
         <reflections_version>0.10.2</reflections_version>
         <jersey-client_version>1.19.4</jersey-client_version>
         <jersey-multipart_version>1.19.4</jersey-multipart_version>
-        <json_version>20230618</json_version>
+        <json_version>20231013</json_version>
         <jackson_version>2.15.2</jackson_version>
         <javax.ws.rs-api_version>2.1.1</javax.ws.rs-api_version>
         <javax.ws.rs-api_version>2.1.1</javax.ws.rs-api_version>
         <xmlunit_version>1.6</xmlunit_version>
-        <maven-surefire-plugin_version>3.1.2</maven-surefire-plugin_version>
+        <maven-surefire-plugin_version>3.2.2</maven-surefire-plugin_version>
         <testng_version>7.8.0</testng_version>
         <logback-classic_version>1.4.11</logback-classic_version>
-        <extentreports_version>5.1.0</extentreports_version>
+        <extentreports_version>5.1.1</extentreports_version>
         <commons-lang3_version>3.13.0</commons-lang3_version>
-        <commons-io_version>2.13.0</commons-io_version>
+        <commons-io_version>2.15.0</commons-io_version>
 
     </properties>
 

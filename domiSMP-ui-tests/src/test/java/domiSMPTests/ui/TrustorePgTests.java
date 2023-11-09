@@ -13,7 +13,7 @@ public class TrustorePgTests extends SeleniumTest {
 
 
     @Test(description = "TRST-01 System admin is able to import certificates")
-    public void SystemAdminIsAbleToImportCertificates() throws Exception {
+    public void systemAdminIsAbleToImportCertificates() throws Exception {
 
         SoftAssert soft = new SoftAssert();
         DomiSMPPage homePage = new DomiSMPPage(driver);

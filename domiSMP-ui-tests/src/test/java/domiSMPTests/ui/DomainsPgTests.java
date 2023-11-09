@@ -34,7 +34,7 @@ public class DomainsPgTests extends SeleniumTest {
 
 
     @Test(description = "DOM-01 System admin is able to create Domains")
-    public void SystemAdminIsAbleToCreateDomains() {
+    public void systemAdminIsAbleToCreateDomains() {
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithoutSML();
 
         domainsPage.getCreateDomainBtn().click();
@@ -52,7 +52,7 @@ public class DomainsPgTests extends SeleniumTest {
 
 
     @Test(description = "DOM-02 System admin can integrates domain with SMP")
-    public void SystemAdminCanIntegrateDomainWithSMP() throws Exception {
+    public void systemAdminCanIntegrateDomainWithSMP() throws Exception {
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithSML();
 
         domainsPage.getCreateDomainBtn().click();
@@ -79,7 +79,7 @@ public class DomainsPgTests extends SeleniumTest {
     }
 
     @Test(description = "DOM-03 System admin is able to Invite/Remove users from domains")
-    public void SystemAdminIsAbleToInviteRemoveUsersFromDomains() throws Exception {
+    public void systemAdminIsAbleToInviteRemoveUsersFromDomains() throws Exception {
         UserModel normalUser = UserModel.generateUserWithUSERrole();
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithoutSML();
 
@@ -146,7 +146,7 @@ public class DomainsPgTests extends SeleniumTest {
     }
 
     @Test(description = "DOM-04 System admin is not able to create duplicated Domains")
-    public void SystemAdminIsNotAbleToCreateDuplicatedDomains() throws Exception {
+    public void systemAdminIsNotAbleToCreateDuplicatedDomains() {
         UserModel normalUser = UserModel.generateUserWithUSERrole();
         DomainModel domainModel = DomainModel.generatePublicDomainModelWithoutSML();
 
