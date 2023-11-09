@@ -26,7 +26,7 @@ public class UserDataCommonComponent extends DomiSMPPage {
     private WebElement fullNameInput;
     @FindBy(id = "passwordUpdatedOn_id")
     private WebElement lastSetLbl;
-    @FindBy(id = "passwordExpireOnMessage_id")
+    @FindBy(id = "passwordExpireOn_id")
     private WebElement passwordExpiresOnLbl;
 
     public UserDataCommonComponent(WebDriver driver) {
