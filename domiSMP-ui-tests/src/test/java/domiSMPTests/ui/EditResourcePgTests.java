@@ -131,6 +131,8 @@ public class EditResourcePgTests extends SeleniumTest {
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
         editResourceDocumentPage.clickOnGenerate();
         editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getAlertArea().closeAlert();
+
         String currentGeneratedValue = editResourceDocumentPage.getDocumentValue();
 
         editResourceDocumentPage.clickOnValidate();
@@ -154,7 +156,7 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
         editResourceDocumentPage.clickOnGenerate();
         editResourceDocumentPage.clickOnSave();
-
+        editResourceDocumentPage.getAlertArea().closeAlert();
         String oasis2GeneratedDocumentValue = editResourceDocumentPage.getDocumentValue();
 
         editResourceDocumentPage.clickOnValidate();
@@ -177,6 +179,8 @@ public class EditResourcePgTests extends SeleniumTest {
         editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
         editResourceDocumentPage.clickOnGenerate();
         editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getAlertArea().closeAlert();
+
 
         String oasis1GeneratedDocumentValue = editResourceDocumentPage.getDocumentValue();
 
@@ -187,6 +191,10 @@ public class EditResourcePgTests extends SeleniumTest {
         XMLUtils oasis1DocumentXML = new XMLUtils(oasis1GeneratedDocumentValue);
         soft.assertTrue(oasis1DocumentXML.isNodePresent("ServiceGroup"), " Service group Node is not present in generated document");
         soft.assertAll();
+    }
+
+    @Test(description = "EDTRES-04 Resource admins are able to add generated document", priority = 1)
+    public void resourceAdminsAreAbleToAddGeneratedDocument2() throws Exception {
     }
 }
 
