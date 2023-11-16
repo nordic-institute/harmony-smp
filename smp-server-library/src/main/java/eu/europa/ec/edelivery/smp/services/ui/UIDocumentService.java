@@ -78,32 +78,25 @@ public class UIDocumentService {
         RequestData data = resourceHandlerService.buildRequestDataForResource(domainResourceDef.getDomain(),
                 resource, null);
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ResponseData responseData = new SpiResponseData(bos);
-        try {
-            resourceHandler.generateResource(data, responseData, Collections.emptyList());
-        } catch (ResourceException e) {
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
-        }
-        String genDoc = new String(bos.toByteArray());
-        LOG.info("Generate document [{}]", genDoc);
-        DocumentRo result = new DocumentRo();
-        result.setPayload(genDoc);
-        return result;
+        return getDocumentRo(resourceHandler, data);
     }
 
     @Transactional
     public DocumentRo generateDocumentForSubresource(Long subresourceId, Long resourceId, DocumentRo documentRo) {
         LOG.info("Generate document");
         DBResource parentEntity = resourceDao.find(resourceId);
-        DBSubresource enitity = subresourceDao.find(subresourceId);
-        DBSubresourceDef subresourceDef = enitity.getSubresourceDef();
+        DBSubresource entity = subresourceDao.find(subresourceId);
+        DBSubresourceDef subresourceDef = entity.getSubresourceDef();
 
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
 
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(parentEntity.getDomainResourceDef().getDomain(),
-                parentEntity, enitity);
+                parentEntity, entity);
 
+        return getDocumentRo(resourceHandler, data);
+    }
+
+    private DocumentRo getDocumentRo(ResourceHandlerSpi resourceHandler, RequestData data) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ResponseData responseData = new SpiResponseData(bos);
         try {
@@ -111,7 +104,7 @@ public class UIDocumentService {
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "StoreResourceValidation", ExceptionUtils.getRootCauseMessage(e));
         }
-        String genDoc = new String(bos.toByteArray());
+        String genDoc = bos.toString();
         LOG.info("Generate document [{}]", genDoc);
         DocumentRo result = new DocumentRo();
         result.setPayload(genDoc);
@@ -163,9 +156,9 @@ public class UIDocumentService {
      * return version, if version does not exists return current version. if current version does not exists
      * return last version
      *
-     * @param resourceId
-     * @param version
-     * @return
+     * @param resourceId resource id of the document
+     * @param version   version of the payload for the document
+     * @return DocumentRo with payload and version
      */
     @Transactional
     public DocumentRo getDocumentForResource(Long resourceId, int version) {
@@ -198,6 +191,9 @@ public class UIDocumentService {
         documentVersion.setVersion(version + 1);
         documentVersion.setDocument(document);
         documentVersion.setContent(baos.toByteArray());
+        // to get the current persist time
+        documentVersion.prePersist();
+
         document.getDocumentVersions().add(documentVersion);
         document.setCurrentVersion(documentVersion.getVersion());
         return convert(document, documentVersion);
@@ -231,6 +227,7 @@ public class UIDocumentService {
         documentRo.setName(document.getName());
         documentRo.setCurrentResourceVersion(document.getCurrentVersion());
         if (version != null) {
+            documentRo.setPayloadCreatedOn(version.getCreatedOn());
             documentRo.setPayloadVersion(version.getVersion());
             documentRo.setPayload(new String(version.getContent()));
         }

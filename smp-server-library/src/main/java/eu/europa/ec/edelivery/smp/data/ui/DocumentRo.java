@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class DocumentRo {
     String name;
     Integer payloadVersion;
     String payload;
+    OffsetDateTime payloadCreatedOn;
 
     public String getDocumentId() {
         return documentId;
@@ -66,5 +68,13 @@ public class DocumentRo {
 
     public void setPayload(String payload) {
         this.payload = payload;
+    }
+
+    public OffsetDateTime getPayloadCreatedOn() {
+        return payloadCreatedOn;
+    }
+
+    public void setPayloadCreatedOn(OffsetDateTime payloadCreatedOn) {
+        this.payloadCreatedOn = payloadCreatedOn;
     }
 }

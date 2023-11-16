@@ -33,7 +33,7 @@
       <div [formGroup]="documentForm"
            style="float: right;  vertical-align:middle;display: flex;align-items: center;justify-content: center; gap:0.4em;padding-right: 10px">
         <span style="font-size: 0.8em">Show version:</span>
-        <select matNativeControl style="width: 100px; border-bottom: gray solid 1px"
+        <select matNativeControl style="width: 100px; border-bottom: grey solid 1px"
                     placeholder="All document version"
                     matTooltip="Select version to display."
                     formControlName="payloadVersion"
@@ -45,8 +45,15 @@
           >
             {{version}}
           </option>
-
         </select>
+        <span style="font-size: 0.8em">Created on:</span>
+        <input id="payloadCreatedOn_id"
+               matInput [ngxMatDatetimePicker]="payloadCreatedOnPicker"
+               formControlName="payloadCreatedOn"
+               readonly>
+        <mat-datepicker-toggle matSuffix [for]="payloadCreatedOnPicker" style="visibility: hidden"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #payloadCreatedOnPicker [showSpinners]="true" [showSeconds]="false"
+                                 [hideTime]="false"></ngx-mat-datetime-picker>
       </div>
     </mat-toolbar-row>
   </mat-toolbar>

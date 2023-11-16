@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.Optional;
+
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -248,9 +250,15 @@ public class TestUtilsDao {
 
     @Transactional
     public void deactivateUser(String username) {
-        DBUser user = userDao.findUserByUsername(username).get();
+        Optional<DBUser> userOpt = userDao.findUserByUsername(username);
+        if (!userOpt.isPresent()) {
+            LOG.warn("User [{}] not found and cannot be deactivated!", username);
+            return;
+        }
+        DBUser user = userOpt.get();
         user.setActive(false);
         persistFlushDetach(user);
+
     }
 
 
@@ -490,7 +498,7 @@ public class TestUtilsDao {
             assertNotNull(document.getDocumentVersions().get(i).getId());
         }
         // current version is the last version
-        assertEquals(versions-1, document.getCurrentVersion());
+        assertEquals(versions, document.getCurrentVersion());
 
         return document;
     }
@@ -614,9 +622,6 @@ public class TestUtilsDao {
         LOG.debug("find entity: [{}] for type [{}]", id, clazz);
         return memEManager.find(clazz, id);
     }
-
-
-
 
     public void clear() {
         memEManager.clear();
