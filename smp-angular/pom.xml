@@ -19,7 +19,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <node.version>v18.18.2</node.version>
-    <npm.version>9.8.1</npm.version>
+    <npm.version>8.19.4</npm.version>
 
     <!--
     set variable to force use of pre-installed npm-->
