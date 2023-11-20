@@ -56,6 +56,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       'mimeType': new FormControl({value: null}),
       'name': new FormControl({value: null}),
       'currentResourceVersion': new FormControl({value: null}),
+      'payloadCreatedOn': new FormControl({value: null}),
       'payloadVersion': new FormControl({value: null}),
       'payload': new FormControl({value: null}),
     });
@@ -109,6 +110,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
+      this.documentForm.controls['payloadCreatedOn'].setValue(value.payloadCreatedOn);
       this.documentForm.controls['payload'].setValue(!value.payload?"":value.payload);
       this.documentForm.controls['payload'].enable();
       // the method documentVersionsExists already uses the current value to check if versions exists
@@ -122,6 +124,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
       this.documentForm.controls['payload'].setValue("");
       this.documentForm.controls['currentResourceVersion'].setValue("");
       this.documentForm.controls['payloadVersion'].setValue("");
+      this.documentForm.controls['payloadCreatedOn'].setValue("");
       this.documentForm.controls['payload'].setValue("");
     }
     this.documentForm.markAsPristine();

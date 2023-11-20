@@ -63,16 +63,18 @@ public class ResourceDaoTest extends AbstractBaseDao {
         Assert.assertTrue(optResult.isPresent());
         Assert.assertNotNull(optResult.get().getDocument());
         Assert.assertNotNull(optResult.get().getDocument().getId());
-        Assert.assertEquals(0, optResult.get().getDocument().getCurrentVersion());
+        Assert.assertEquals(1, optResult.get().getDocument().getCurrentVersion());
         Assert.assertEquals(1, optResult.get().getDocument().getDocumentVersions().size());
         Assert.assertNotNull(optResult.get().getDocument().getDocumentVersions().get(0).getId());
-        Assert.assertEquals(0, optResult.get().getDocument().getDocumentVersions().get(0).getVersion());
+        Assert.assertEquals(1, optResult.get().getDocument().getDocumentVersions().get(0).getVersion());
     }
 
     @Test
     @Transactional
     public void persistNewVersionToResourceWithDocument() {
-        Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
+        Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
+                testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
+        Assert.assertTrue(optResource.isPresent());
         DBResource resource = testInstance.find(optResource.get().getId());
 
         int docCount = resource.getDocument().getDocumentVersions().size();

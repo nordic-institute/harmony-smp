@@ -103,10 +103,9 @@ public class DBDocument extends BaseEntity {
 
     protected int getNextVersionIndex(){
         List<DBDocumentVersion> list = getDocumentVersions();
-        return  list.stream()
+        return list.stream()
                 .map(DBDocumentVersion::getVersion)
-                .reduce(-1, (a, b) -> Integer.max(a, b))
-                .intValue() + 1;
+                .reduce(0, (a, b) -> Integer.max(a, b)) + 1;
     }
 
 

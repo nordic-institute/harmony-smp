@@ -1,6 +1,3 @@
-import {SearchTableEntity} from '../search-table/search-table-entity.model';
-import {VisibilityEnum} from "../enums/visibility.enum";
-
 export interface DocumentRo {
   mimeType?: string;
   name?: string;
@@ -8,6 +5,7 @@ export interface DocumentRo {
   currentResourceVersion?:number;
   allVersions?: number[];
   payloadVersion?:number;
+  payloadCreatedOn?: Date;
   payload?:string;
 }
 
