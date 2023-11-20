@@ -105,10 +105,15 @@ public class AbstractResourceHandler {
 
     public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
+        if (content==null || content.length == 0) {
+            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_MISSING,
+                    subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
+                    resource.getIdentifierValue(), resource.getIdentifierScheme());
+        }
         return new SpiRequestData(domain.getDomainCode(),
                 SPIUtils.toUrlIdentifier(resource),
                 SPIUtils.toUrlIdentifier(subresource),
-                new ByteArrayInputStream(content == null?new byte[]{}:content));
+                new ByteArrayInputStream(content));
     }
 
     public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource, InputStream inputStream) {
@@ -124,7 +129,7 @@ public class AbstractResourceHandler {
             if (StringUtils.isNotBlank(responseData.getContentType())) {
                 resourceResponse.setContentType(responseData.getContentType());
             }
-            responseData.getHttpHeaders().entrySet().stream()
+            responseData.getHttpHeaders().entrySet()
                     .forEach(entry -> resourceResponse.setHttpHeader(entry.getKey(), entry.getValue()));
 
         } catch (ResourceException e) {

@@ -70,13 +70,9 @@ public enum ErrorCode {
     MAIL_SUBMISSION_ERROR (500,"SMP:550",ErrorBusinessCode.TECHNICAL, "Mail submission error: %s!"),
 
     RESOURCE_DOCUMENT_MISSING(500,"SMP:180",ErrorBusinessCode.TECHNICAL, "Empty document for the resource: [id: '%s', sch.: '%s']!"),
-    RESOURCE_DOCUMENT_ERROR(500,"SMP:180",ErrorBusinessCode.TECHNICAL, "Error occurred while reading the resource document: [id: '%s', sch.: '%s']! Error [%s]"),
-
-
-
-
-
-    //
+    RESOURCE_DOCUMENT_ERROR(500,"SMP:181",ErrorBusinessCode.TECHNICAL, "Error occurred while reading the resource document: [id: '%s', sch.: '%s']! Error [%s]"),
+    SUBRESOURCE_DOCUMENT_MISSING(500,"SMP:182",ErrorBusinessCode.TECHNICAL, "Empty document for the subresource: [docId: '%s', docSch.: '%s'] of the resource [id: '%s', sch.: '%s']"),
+    SUBRESOURCE_DOCUMENT_ERROR(500,"SMP:183",ErrorBusinessCode.TECHNICAL, "Error occurred while reading the subresource document: : [docId: '%s', docSch.: '%s'] of the resource[id: '%s', sch: '%s']! Error [%s]"),
     ;
 
     private final int httpCode;
