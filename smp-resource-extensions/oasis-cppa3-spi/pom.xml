@@ -20,7 +20,6 @@
         <version>2.1.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
         <org.glassfish.jaxb.jaxb-runtime.version>2.3.8</org.glassfish.jaxb.jaxb-runtime.version>

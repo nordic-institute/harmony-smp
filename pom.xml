@@ -131,7 +131,7 @@
     <scm>
         <developerConnection>scm:git:https://ec.europa.eu/digital-building-blocks/code/scm/edelivery/smp.git
         </developerConnection>
-        <tag>5.0</tag>
+        <tag>5.0.1</tag>
     </scm>
 
     <repositories>
@@ -651,6 +651,7 @@
                         <argLine>-Duser.language=en -Duser.timezone=Europe/Brussels</argLine>
                     </configuration>
                 </plugin>
+
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
