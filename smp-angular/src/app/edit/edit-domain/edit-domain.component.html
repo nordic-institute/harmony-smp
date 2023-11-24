@@ -39,7 +39,7 @@
 <ng-template #searchDomainPanel>
 
     <mat-form-field id="domain-filter">
-      <mat-label>Filter Domain by domain code</mat-label>
+      <mat-label>Filter by domain code</mat-label>
       <input matInput (keyup)="applyDomainFilter($event)" placeholder="Domain code" #inputDomainFilter>
     </mat-form-field>
     <table class="mat-elevation-z2" id="edit-domain-table" mat-table [dataSource]="dataSource" matSort>
