@@ -1,5 +1,6 @@
 .dialog {
   width: 500px;
+  align-content: center;
   text-align: center;
 }
 
@@ -14,11 +15,7 @@ label:hover, label:active, input:hover + label, input:active + label {
 
 .divTableRow {
   display: table-row;
-}
-
-.divTableHeading {
-  background-color: #EEE;
-  display: table-header-group;
+  width: 100%;
 }
 
 .divTableCell, .divTableHead {
@@ -26,12 +23,14 @@ label:hover, label:active, input:hover + label, input:active + label {
   display: table-cell;
   padding: 3px 3px;
   text-align: center;
+  width: 100%;
 }
 
 .divTableHeading {
   background-color: #EEE;
   display: table-header-group;
   font-weight: bold;
+  width: 100%;
 }
 
 .divTableFoot {

@@ -1,18 +1,17 @@
 ﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {SecurityService} from '../security/security.service';
-import {HttpEventService} from '../http/http-event.service';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
-import {MatDialogRef, MatDialog} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
 import {Subscription} from 'rxjs';
 import {ExpiredPasswordDialogComponent} from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
 import {GlobalLookups} from "../common/global-lookups";
 import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {InformationDialogComponent} from "../common/dialogs/information-dialog/information-dialog.component";
-import {DatePipe, formatDate} from "@angular/common";
+import {formatDate} from "@angular/common";
 import {EntityStatus} from "../common/enums/entity-status.enum";
 
 @Component({
@@ -32,7 +31,6 @@ export class LoginComponent implements OnInit, OnDestroy {
               private router: Router,
               public lookups: GlobalLookups,
               private securityService: SecurityService,
-              private httpEventService: HttpEventService,
               private alertService: AlertMessageService,
               private securityEventService: SecurityEventService,
               private dialog: MatDialog) {
