@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pages.administration.editDomainsPage.EditDomainsPage;
 import pages.administration.editGroupsPage.EditGroupsPage;
+import pages.administration.editResourcesPage.EditResourcePage;
 import pages.systemSettings.TruststorePage;
 import pages.systemSettings.UsersPage;
 import pages.systemSettings.domainsPage.DomainsPage;
@@ -121,12 +122,10 @@ public class SideNavigationComponent extends DomiSMPPage {
             openSubmenu(administrationExpand, editGroupsLnk);
             return (T) new EditGroupsPage(driver);
         }
-
-
-        //            case ADMINISTRATION_EDIT_RESOURCES:
-        //                expandSection(administrationExpand);
-        //                return new DLink(driver, editResourcesLnk);
-
+        if (page == Pages.ADMINISTRATION_EDIT_RESOURCES) {
+            openSubmenu(administrationExpand, editResourcesLnk);
+            return (T) new EditResourcePage(driver);
+        }
         if (page == Pages.SYSTEM_SETTINGS_USERS) {
             openSubmenu(systemSettingsExpand, usersLnk);
             return (T) new UsersPage(driver);

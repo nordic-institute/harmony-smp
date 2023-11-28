@@ -73,7 +73,7 @@ public class KeystorePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "KEYS-03 SSystem admin is able to import duplicated keystore", priority = 1)
+    @Test(description = "KEYS-04 SSystem admin is able to import duplicated keystore", priority = 1)
     public void systemAdminIsAbleToImportDuplicatedKeyStores() throws Exception {
         String path = FileUtils.getAbsoluteKeystorePath("valid_keystore.jks");
 

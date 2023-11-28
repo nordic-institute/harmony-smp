@@ -85,4 +85,16 @@ public class ResourceModel {
     public void setVisibility(String visibility) {
         this.visibility = visibility;
     }
+
+    public static ResourceModel generatePublicResourceUnregisteredToSML() {
+        ResourceModel resourceModel = new ResourceModel();
+        resourceModel.identifierScheme = StringUtils.lowerCase(Generator.randomAlphabeticalValue(3) + "-" + Generator.randomAlphaNumericValue(3) + "-" + Generator.randomAlphaNumericValue(3));
+        resourceModel.identifierValue = "AUT_resIden_" + Generator.randomAlphaNumericValue(4).toLowerCase();
+        resourceModel.smlRegistered = false;
+        resourceModel.resourceTypeIdentifier = StringUtils.lowerCase(Utils.randomEnum(ResourceTypes.values()).getName());
+        resourceModel.visibility = "PUBLIC";
+        return resourceModel;
+    }
+
+
 }

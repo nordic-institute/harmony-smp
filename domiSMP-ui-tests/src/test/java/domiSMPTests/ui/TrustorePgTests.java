@@ -13,7 +13,7 @@ public class TrustorePgTests extends SeleniumTest {
 
 
     @Test(description = "TRST-01 System admin is able to import certificates")
-    public void SystemAdminIsAbleToImportCertificates() throws Exception {
+    public void systemAdminIsAbleToImportCertificates() throws Exception {
 
         SoftAssert soft = new SoftAssert();
         DomiSMPPage homePage = new DomiSMPPage(driver);
@@ -34,11 +34,7 @@ public class TrustorePgTests extends SeleniumTest {
         soft.assertEquals(truststorepage.getValidToValue(), "22/3/2033, 10:49:22");
         soft.assertEquals(truststorepage.getIssuerValue(), "C=BE,O=eDelivery,CN=red_gw");
         soft.assertEquals(truststorepage.getSerialNumberValue(), "110fa0d8");
-
-
         soft.assertAll();
-
-
     }
 
     @Test(description = "TRST-02 System admin is able to import certificates")
@@ -60,9 +56,7 @@ public class TrustorePgTests extends SeleniumTest {
         String duplicatedCertificateALias = truststorepage.addCertificateAndReturnAlias(path);
         soft.assertNotNull(duplicatedCertificateALias);
         soft.assertTrue(truststorepage.getLeftSideGrid().isValuePresentInColumn("Alias", duplicatedCertificateALias));
-
         soft.assertAll();
-
 
     }
 

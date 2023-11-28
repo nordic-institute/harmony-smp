@@ -51,7 +51,7 @@ public class UsersPgTests extends SeleniumTest {
 
     }
 
-    @Test(description = "USR-02 USR-02 System admin is not able to create duplicated user")
+    @Test(description = "USR-02 System admin is not able to create duplicated user")
     public void systemAdminIsNotAbleToCreateDuplicatedUser() throws Exception {
 
         loginPage.login(data.getAdminUser().get("username"), data.getAdminUser().get("password"));

@@ -53,7 +53,7 @@ public class PropertiesPgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Test(description = "PRP-5 Value is validated according to expected format (URL")
+    @Test(description = "PRP-5 Value is validated according to expected format (URL)", priority = 4)
     public void propertyValueURLIsValidatedAccordingToExpectedFormat() throws Exception {
 
         String property = "bdmsl.integration.url";

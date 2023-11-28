@@ -11,6 +11,7 @@ import pages.LoginPage;
 import pages.administration.editGroupsPage.CreateResourceDetailsDialog;
 import pages.administration.editGroupsPage.EditGroupsPage;
 import rest.models.*;
+import utils.TestRunData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +37,7 @@ public class EditGroupsPgTests extends SeleniumTest {
         adminMember.setRoleType("ADMIN");
 
         MemberModel superMember = new MemberModel();
-        superMember.setUsername(data.getAdminUsername());
+        superMember.setUsername(TestRunData.getInstance().getAdminUsername());
         superMember.setRoleType("ADMIN");
 
         //create user
@@ -62,7 +63,7 @@ public class EditGroupsPgTests extends SeleniumTest {
 
         homePage = new DomiSMPPage(driver);
         loginPage = homePage.goToLoginPage();
-        loginPage.login(adminUser.getUsername(), data.getNewPassword());
+        loginPage.login(adminUser.getUsername(), TestRunData.getInstance().getNewPassword());
         editGroupPage = homePage.getSidebar().navigateTo(Pages.ADMINISTRATION_EDIT_GROUPS);
     }
 

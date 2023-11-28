@@ -16,10 +16,10 @@ public class AlertComponent extends DComponent {
     private final static Logger LOG = LoggerFactory.getLogger(AlertComponent.class);
 
     @FindBy(id = "alertmessage_id")
-    public WebElement alertToaster;
+    private WebElement alertToaster;
 
     @FindBy(css = "[class = \"closebtn\"]")
-    public WebElement closeBtn;
+    private WebElement closeBtn;
 
 
     public AlertComponent(WebDriver driver) {
@@ -39,6 +39,10 @@ public class AlertComponent extends DComponent {
             LOG.error("No messages displayed.");
             return "No alert message found";
         }
+    }
+
+    public void closeAlert() {
+        weToDButton(closeBtn).click();
     }
 
 }
