@@ -14,11 +14,6 @@ import utils.TestRunData;
  * Rest client for group actions
  */
 public class ResourceClient extends BaseRestClient {
-
-    public ResourceClient() {
-        super();
-    }
-
     public ResourceModel createResourceForGroup(DomainModel domainModel, GroupModel groupModel, ResourceModel resourceModelToBeCreated) {
         JSONObject resourceJson = new JSONObject(resourceModelToBeCreated);
         String createResourcePath = RestServicePaths.getCreateResourcePath(TestRunData.getInstance().getUserId(), domainModel.getDomainId(), groupModel.getGroupId());

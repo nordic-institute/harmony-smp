@@ -5,6 +5,7 @@ import ddsl.enums.Pages;
 import ddsl.enums.ResourceTypes;
 import domiSMPTests.SeleniumTest;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
@@ -14,6 +15,7 @@ import rest.models.*;
 import utils.TestRunData;
 import utils.XMLUtils;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -193,8 +195,17 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
+    @Ignore //TODO: continue test with select version
     @Test(description = "EDTRES-04 Resource admins are able to add generated document", priority = 1)
-    public void resourceAdminsAreAbleToAddGeneratedDocument2() throws Exception {
+    public void resourceAdminsAreAbleToAddGeneratedDocument2() throws ParserConfigurationException {
+
+        editResourcePage.goToTab("Resource details");
+        EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
+        editResourceDocumentPage.clickOnGenerate();
+        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.getAlertArea().closeAlert();
+        XMLUtils document1 = new XMLUtils(editResourceDocumentPage.getDocumentValue());
+
     }
 }
 

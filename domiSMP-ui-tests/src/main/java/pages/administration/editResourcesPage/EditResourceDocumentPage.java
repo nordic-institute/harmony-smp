@@ -30,11 +30,12 @@ public class EditResourceDocumentPage extends DomiSMPPage {
     private WebElement documentMimeTypeLbl;
     @FindBy(css = "smp-titled-label[title=\"Current document version:\"] div.smp-tl-value")
     private WebElement currentDocumentVersionLbl;
-
     @FindBy(id = "saveResource_id")
     private WebElement saveBtn;
     @FindBy(id = "cancel_id")
     private WebElement cancelBtn;
+    @FindBy(id = "document version_id")
+    private WebElement versionDdl;
 
     @FindBy(css = "ngx-codemirror[formcontrolname= \"payload\"] div textarea")
     private WebElement codeEditorSendValueElement;
@@ -64,22 +65,17 @@ public class EditResourceDocumentPage extends DomiSMPPage {
 
         return formatedDoc;
     }
-
     public void clickOnGenerate() {
         weToDButton(generateBtn).click();
     }
-
     public void clickOnSave() {
         weToDButton(saveBtn).click();
     }
-
     public void clickOnValidate() {
         weToDButton(validateBtn).click();
     }
 
-
-
-
-
-    
+    public void selectDocumentVersion(int version) {
+        weToDSelect(versionDdl).selectValue(String.valueOf(version));
+    }
 }

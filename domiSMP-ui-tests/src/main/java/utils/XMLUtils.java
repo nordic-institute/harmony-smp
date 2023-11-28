@@ -20,11 +20,12 @@ public class XMLUtils {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
     Document doc;
 
     public XMLUtils(String xmlStr) throws ParserConfigurationException {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         try {
             doc = dBuilder.parse(new InputSource(new StringReader(xmlStr)));
         } catch (Exception e) {

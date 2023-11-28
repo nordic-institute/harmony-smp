@@ -169,11 +169,11 @@ public class SmallGrid extends DComponent {
                     LOG.debug("[{}] found on page [{}]", value, pageNr);
                     isElementPresent = true;
                     currentCell.click();
-                    break;
+                    return;
                 }
             }
             if (isElementPresent) {
-                break;
+                return;
             }
             getGridPagination().goToNextPage();
         }
