@@ -36,7 +36,8 @@ public class PropertyController {
     }
 
     @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
-    public ServiceResult<PropertyRO> gePropertyList(
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
+    public ServiceResult<PropertyRO> getPropertyList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, required = false) String orderBy,
