@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.niis</groupId>
         <artifactId>harmonysmp-modules</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>harmonysmp-server-library</artifactId>
@@ -229,25 +229,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.jks</exclude>
-                    <exclude>**/*.crt</exclude>
-                </excludes>
-            </testResource>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>false</filtering>
-                <!-- With filtering=true Maven was introducing changes in keystore binary files [sic!] -->
-                <includes>
-                    <include>**/*.jks</include>
-                    <include>**/*.crt</include>
-                </includes>
-            </testResource>
-        </testResources>
         <plugins>
         <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
