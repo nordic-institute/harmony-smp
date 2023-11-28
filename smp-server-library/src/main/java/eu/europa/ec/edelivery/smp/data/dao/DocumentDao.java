@@ -30,7 +30,7 @@ public class DocumentDao extends BaseDao<DBDocument> {
      * Method returns the document for the resource
      *
      * @param dbResource resource
-     * @return
+     * @return document for the resource or empty if not found
      */
     public Optional<DBDocument> getDocumentForResource(DBResource dbResource) {
         try {
@@ -67,7 +67,10 @@ public class DocumentDao extends BaseDao<DBDocument> {
             query.setParameter(PARAM_SUBRESOURCE_ID, subresource.getId());
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
-            throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_ERROR, subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
+            DBResource resource = subresource.getResource();
+            throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_ERROR,
+                    subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
+                    resource.getIdentifierValue(), resource.getIdentifierScheme(),
                     "Multiple documents for subresource");
         } catch (NoResultException e) {
             return Optional.empty();

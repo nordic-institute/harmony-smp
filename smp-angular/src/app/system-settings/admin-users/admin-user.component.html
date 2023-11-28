@@ -17,17 +17,17 @@
 </div>
 
 <ng-template #searchUserPanel>
-  <mat-form-field id="domain-filter">
-    <mat-label>Filter Users</mat-label>
+  <mat-form-field id="user-filter">
+    <mat-label>Filter by username</mat-label>
     <input matInput (keyup)="applyUserFilter($event)" placeholder="User name or full name" #inputUserFilter>
   </mat-form-field>
 
-  <mat-toolbar class ="mat-elevation-z2">
-    <mat-toolbar-row  class="smp-toolbar-row">
+  <mat-toolbar class="mat-elevation-z2">
+    <mat-toolbar-row class="smp-toolbar-row">
       <button mat-raised-button
               mat-flat-button color="primary"
               (click)="onCreateUserClicked()"
-      >Create User
+      >Create user
       </button>
 
       <button mat-raised-button
@@ -39,7 +39,7 @@
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-  <table class="mat-elevation-z2" id="admin-domain-table" mat-table [dataSource]="userData" >
+  <table class="mat-elevation-z2" id="admin-user-table" mat-table [dataSource]="userData" >
     <ng-container matColumnDef="username">
       <th mat-header-cell *matHeaderCellDef >Username</th>
       <td mat-cell *matCellDef="let row" [matTooltip]="row.username">{{row.username}}</td>
