@@ -13,14 +13,11 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pages.LoginPage;
 /**
  * Page object for the common components from Domismp like navigation, right menu. This contains the locators of the page and the methods for the behaviour of the page
  */
 public class DomiSMPPage extends DComponent {
-    private final static Logger LOG = LoggerFactory.getLogger(DomiSMPPage.class);
     @FindBy(css = "cdk-overlay-backdrop cdk-overlay-dark-backdrop cdk-overlay-backdrop-showing")
     protected WebElement overlay;
     @FindBy(id = "login_id")
@@ -63,7 +60,6 @@ public class DomiSMPPage extends DComponent {
         Actions actions = new Actions(driver);
         actions.moveToElement(logoutMenuBtn);
         actions.perform();
-
         logoutMenuBtn.click();
     }
 
@@ -71,30 +67,14 @@ public class DomiSMPPage extends DComponent {
         driver.navigate().refresh();
         waitForPageToLoaded();
     }
-//
-//    public AlertComponent getAlertArea() {
-//        return new AlertComponent(driver);
-//    }
-
     public AlertComponent getAlertArea(){
         if (  alertComponent == null){
             alertComponent = new AlertComponent(driver);
         }
         return alertComponent;
     }
-
     public DButton getExpiredDialoginbutton() {
         return weToDButton(dialogOKbutton);
-    }
-
-    public boolean isExpiredDialoginbuttonEnabled() {
-        try {
-            return weToDButton(dialogOKbutton).isPresent();
-            // return dialogOKbutton.isEnabled();
-        } catch (Exception e) {
-            LOG.info("Expiration poup not found", e);
-            return false;
-        }
     }
     public void waitForPageToLoaded() {
         JavascriptExecutor js = (JavascriptExecutor) driver;

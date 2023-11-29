@@ -31,7 +31,6 @@ public class CommonPageWithTabs extends DomiSMPPage {
     }
 
     public String getAlertMessageAndClose() {
-
         return getAlertArea().getAlertMessage();
     }
 }

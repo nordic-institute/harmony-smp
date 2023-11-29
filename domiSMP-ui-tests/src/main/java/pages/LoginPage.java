@@ -45,7 +45,6 @@ public class LoginPage extends DomiSMPPage {
             }
         } catch (Exception e) {
             LOG.debug("Password expiration popup is not present");
-            throw new RuntimeException("Password expiration popup is not present", e);
         }
 
 

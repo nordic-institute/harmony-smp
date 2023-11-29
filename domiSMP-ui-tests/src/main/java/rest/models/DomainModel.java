@@ -10,6 +10,9 @@ import java.util.List;
 import static ddsl.enums.ResponseCertificates.SMP_DOMAIN_01;
 import static ddsl.enums.ResponseCertificates.SMP_DOMAIN_02;
 
+/**
+ * Data model for Domain used for generating domains, mapping domain rest calls.
+ */
 public class DomainModel {
 
     private String smlSmpId;

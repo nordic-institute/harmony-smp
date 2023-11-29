@@ -52,4 +52,16 @@ public class RestServicePaths {
         return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/member/put";
     }
 
+    //Resources
+
+    public static String getCreateResourcePath(String currentUserId, String domainId, String groupId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/create";
+    }
+
+    public static String getResourceAddMemberPath(String currentUserId, String domainId, String groupId, String resourceId) {
+
+        return CONTEXT_PATH_EDIT + currentUserId + "/domain/" + domainId + "/group/" + groupId + "/resource/" + resourceId + "/member/put";
+    }
+
 }

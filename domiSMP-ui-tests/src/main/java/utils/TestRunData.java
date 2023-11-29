@@ -116,6 +116,11 @@ public class TestRunData {
         this.cookies = cookies;
     }
 
+    public void destroySession() {
+        setUserId(null);
+        getCookies().clear();
+
+    }
     public void setUserId(String userId) {
         this.userId = userId;
     }
