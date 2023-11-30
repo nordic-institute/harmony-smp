@@ -36,6 +36,8 @@ SMP_VERSION=
 ORACLE_ARTEFACTS="/CEF/repo"
 
 SMP_ARTEFACTS="../../smp-webapp/target/"
+SMP_SPRINGBOOT_ARTEFACTS="../../smp-springboot/target/"
+SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-payload-validation-example/target/"
 SMP_ARTEFACTS_CLEAR="false"
 
 SMP_IMAGE_PUBLISH="false"
@@ -45,12 +47,13 @@ DOCKER_REGISTRY_HOST=${bamboo_DOCKER_REGISTRY_HOST}
 DOCKER_FOLDER=${bamboo_DOCKER_FOLDER:-${bamboo_DOCKER_USER}}
 
 # READ arguments
-while getopts v:o:s:c:p: option; do
+while getopts v:o:a:s:c:p: option; do
   case "${option}" in
 
   v) SMP_VERSION=${OPTARG} ;;
   o) ORACLE_ARTEFACTS=${OPTARG} ;;
-  s) SMP_ARTEFACTS=${OPTARG} ;;
+  a) SMP_ARTEFACTS=${OPTARG} ;;
+  s) SMP_SPRINGBOOT_ARTEFACTS=${OPTARG} ;;
   c) SMP_ARTEFACTS_CLEAR=${OPTARG} ;;
   p) SMP_IMAGE_PUBLISH=${OPTARG} ;;
   esac
@@ -65,17 +68,16 @@ if [[ -z "${SMP_VERSION}" ]]; then
     echo "Try to get version from artefacts: $(ls -ltr $SMP_ARTEFACTS)"
     SMP_VERSION="$(ls ${SMP_ARTEFACTS}/smp-*-setup.zip | sed -e 's/.*smp-//g' | sed -e 's/-setup\.zip$//g')"
   fi
-
 fi
 
-SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-payload-validation-example/target/"
 
 DIRNAME=$(dirname "$0")
 cd "$DIRNAME"
 DIRNAME="$(pwd -P)"
 echo "*****************************************************************"
 echo "* SMP artefact folders: $SMP_ARTEFACTS, (Clear folder after build: $SMP_ARTEFACTS_CLEAR )"
-echo "* Plugin example: $SMP_PLUGIN_EXAMPLE "
+echo "* SMP artefact springboot folders: $SMP_SPRINGBOOT_ARTEFACTS"
+echo "* SMP Plugin example: $SMP_PLUGIN_EXAMPLE "
 echo "* Build SMP image for version $SMP_VERSION"
 echo "* Oracle artefact folders: $ORACLE_ARTEFACTS"
 echo "*****************************************************************"
@@ -145,9 +147,13 @@ validateAndPrepareArtefacts() {
       cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_14_FILE}" ./oracle/weblogic-14.1.1.0/
     fi
 
-  if [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]; then
-    mkdir -p "./tomcat-mysql-smp-sml/artefacts"
+  if [[ ! -d "./smp-springboot-mysql/artefacts/" ]]; then
+    mkdir -p "./smp-springboot-mysql/artefacts"
   fi
+
+  if [[ ! -d "./tomcat-mysql-smp-sml/artefacts/" ]]; then
+      mkdir -p "./tomcat-mysql-smp-sml/artefacts"
+    fi
 
   if [[ ! -d "./weblogic-14.1-smp/artefacts/" ]]; then
       mkdir -p "./weblogic-14.1-smp/artefacts"
@@ -157,21 +163,31 @@ validateAndPrepareArtefacts() {
     mkdir -p "./weblogic-12.2-smp/artefacts"
   fi
 
-  # SMP artefats
+  # SMP artefacts
   if [[ ! -f "${SMP_ARTEFACTS}/smp.war" ]]; then
-    echo "SMP artefact '${SMP_ARTEFACTS}/smp.war' not found. Was project built!"
+    echo "SMP artefact '${SMP_ARTEFACTS}/smp.war' not found. Was project built?"
     exit 1
   else
     # copy artefact to docker build folder
     cp -r shared-artefacts ./weblogic-12.2-smp/artefacts/
     cp -r shared-artefacts ./weblogic-14.1-smp/artefacts/
     cp -r shared-artefacts ./tomcat-mysql-smp-sml/artefacts/
+    cp -r shared-artefacts ./smp-springboot-mysql/artefacts/
     # for weblogic
     cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-12.2-smp/artefacts/smp.war
     cp "${SMP_ARTEFACTS}/smp.war" ./weblogic-14.1-smp/artefacts/smp.war
     # for mysql tomcat
     cp "${SMP_ARTEFACTS}/smp.war" ./tomcat-mysql-smp-sml/artefacts/smp.war
   fi
+
+  # add SMP smp-springboot artefacts to smp-springboot-mysql imag
+    if [[ ! -f "${SMP_SPRINGBOOT_ARTEFACTS}/smp-springboot-$SMP_VERSION-exec.jar" ]]; then
+      echo "SMP artefact '${SMP_SPRINGBOOT_ARTEFACTS}/smp-springboot-$SMP_VERSION-exec.jar' not found!"
+      exit 1
+    else
+      # for mysql tomcat
+      cp "${SMP_SPRINGBOOT_ARTEFACTS}/smp-springboot-$SMP_VERSION-exec.jar" ./smp-springboot-mysql/artefacts/smp-springboot-exec.jar
+    fi
 
   # SMP setup zip
   if [[ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]]; then
@@ -182,6 +198,7 @@ validateAndPrepareArtefacts() {
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-12.2-smp/artefacts/smp-setup.zip
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./weblogic-14.1-smp/artefacts/smp-setup.zip
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./tomcat-mysql-smp-sml/artefacts/smp-setup.zip
+    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ./smp-springboot-mysql/artefacts/smp-setup.zip
   fi
 
   if [[ ! -d "${SMP_PLUGIN_EXAMPLE}" ]]; then
@@ -202,8 +219,18 @@ buildImages() {
   buildWebLogicOracleImages12
   buildWebLogicOracleImages14
   buildTomcatMysqlImages
+  buildSpringbootMysqlImages
   buildUtils
 }
+buildSpringbootMysqlImages() {
+    # build tomcat mysql image deployment.
+  docker build -t "smp-springboot-mysql:${SMP_VERSION}" ./smp-springboot-mysql/ --build-arg SMP_VERSION=${SMP_VERSION}
+  if [ $? -ne 0 ]; then
+    echo "Error occurred while building image [smp-springboot-mysql:${SMP_VERSION}]!"
+    exit 10
+  fi
+}
+
 buildTomcatMysqlImages() {
     # build tomcat mysql image deployment.
   docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
