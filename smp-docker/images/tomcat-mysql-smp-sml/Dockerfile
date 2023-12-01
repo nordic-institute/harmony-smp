@@ -60,6 +60,7 @@ RUN apt-get update \
         bind9 \
         bind9utils  \
         dnsutils \
+        haveged \
         libapr1 \
 	    libapr1-dev \
 	    libssl-dev \

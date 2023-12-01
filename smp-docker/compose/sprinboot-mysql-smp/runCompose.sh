@@ -5,7 +5,7 @@ SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/mysql
 #SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql"
 SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql"
 # soap ui data
-PREFIX="smp-sml-tomcat-mysql"
+PREFIX="smp-springboot-mysql"
 SMP_VERSION=
 
 
@@ -59,5 +59,5 @@ echo "Start compose"
 docker-compose -p ${PREFIX} up -d --force-recreate 
 
 # wait until service is up
-for i in `seq 100`; do timeout 1  bash -c 'curl --silent --fail http://localhost:8982/smp/'; if [ $? -eq 0  ] ; then break;fi; echo "$i. Wait for tomcat to start!";  sleep 5;  done;
+for i in `seq 100`; do timeout 1  bash -c 'curl --silent --fail http://localhost:8282/smp/'; if [ $? -eq 0  ] ; then break;fi; echo "$i. Wait for tomcat to start!";  sleep 5;  done;
 

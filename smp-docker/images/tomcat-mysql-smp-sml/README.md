@@ -1,13 +1,17 @@
-# Experiamental SMP docker image
-Purpose of image is to help SMP and AP sofware developers to create development environment for localy testing Dynamic Discovery using SML and SMP.
-Image uses latest version of eDelivery SMP setup on tomcat, mysql ubuntu
+# Test and Domo SMP docker image
+
+The Image is intended for internal testing of the DomiSMP snapshots builds. The images should not
+be used in production environment.
+
 
 # Image build
 
     docker build -t smp .
 
 # Run container based on smp image
-  
+
+    docker run --name smp -p 8080:8080 smp
+
     docker run --name smp -it --rm -p [http-port]:8080  edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:${SMP_VERSION}
 
 example:
