@@ -42,7 +42,6 @@ fi
 # create  database init script from l
 cp   "${SMP_INIT_DATABASE}" ./properties/db-scripts/mysql5innodb.ddl
 cp   "${SMP_INIT_DATABASE_DATA}" ./properties/db-scripts/mysql5innodb-data.sql
-cp
 
 
 function clearOldContainers {
