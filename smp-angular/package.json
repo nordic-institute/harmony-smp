@@ -1,6 +1,6 @@
 {
   "name": "smp-builders",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "license": "EUPL 1.2",
   "angular-cli": {},
   "scripts": {
@@ -29,10 +29,10 @@
     "@angular/router": "^15.2.4",
     "@angular/flex-layout": "^15.0.0-beta.42",
     "@swimlane/ngx-datatable": "^20.1.0",
-    "@angular-material-components/datetime-picker" : "^9.0.0",
-    "@angular-material-components/moment-adapter" : "^9.0.0",
+    "@angular-material-components/datetime-picker" : "^15.0.0",
+    "@angular-material-components/moment-adapter" : "^15.0.0",
     "@ctrl/ngx-codemirror": "^6.1.0",
-    "codemirror":"5.65.12",
+    "codemirror": "^5.65.16",
     "file-saver": "^2.0.5",
     "rxjs": "^6.6.3",
     "ts-helpers": "^1.1.2",
