@@ -21,7 +21,6 @@ import {
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 
 @Component({
-  moduleId: module.id,
   templateUrl: './subresource-document-panel.component.html',
   styleUrls: ['./subresource-document-panel.component.scss'],
   encapsulation: ViewEncapsulation.None,

@@ -20,12 +20,11 @@ import {DomainPanelComponent} from "./domain-panel/domain-panel.component";
 import {DomainResourceTypePanelComponent} from "./domain-resource-type-panel/domain-resource-type-panel.component";
 import {DomainSmlIntegrationPanelComponent} from "./domain-sml-panel/domain-sml-integration-panel.component";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
-import {Subscription} from "rxjs";
+import {firstValueFrom, Subscription} from "rxjs";
 import {VisibilityEnum} from "../../common/enums/visibility.enum";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './admin-domain.component.html',
   styleUrls: ['./admin-domain.component.css']
 })
@@ -128,7 +127,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       }
 
       if (this.isCurrentTabDirty()) {
-        let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+        let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
         canChangeTab.then((canChange: boolean) => {
           if (canChange) {
             // reset
@@ -195,7 +194,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       return true;
     }
 
-    let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+    let canChangeTab =firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
     canChangeTab.then((canChange: boolean) => {
       if (canChange) {
         // reset
@@ -278,7 +277,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       return;
     }
     if (this.isCurrentTabDirty()) {
-      let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+      let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
       canChangeTab.then((canChange: boolean) => {
         if (canChange) {
           // reset

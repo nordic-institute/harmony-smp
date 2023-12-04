@@ -26,7 +26,6 @@ import {SmlIntegrationService} from "./sml-integration.service";
 import {SMLResult} from "./sml-result.model";
 
 @Component({
-  moduleId: module.id,
   templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css']
 })

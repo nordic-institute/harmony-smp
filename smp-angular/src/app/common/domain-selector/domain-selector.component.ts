@@ -4,6 +4,7 @@ import {DomainService} from '../../security/domain.service';
 import {Domain} from '../../security/domain.model';
 import {MatDialog} from '@angular/material/dialog';
 import {CancelDialogComponent} from '../dialogs/cancel-dialog/cancel-dialog.component';
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'domain-selector',
@@ -37,7 +38,7 @@ export class DomainSelectorComponent implements OnInit {
   changeDomain () {
     let canChangeDomain = Promise.resolve(true);
     if (this.currentComponent && this.currentComponent.isDirty && this.currentComponent.isDirty()) {
-      canChangeDomain = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+      canChangeDomain = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
     }
 
     canChangeDomain.then((canChange: boolean) => {

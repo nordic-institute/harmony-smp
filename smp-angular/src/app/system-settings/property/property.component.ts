@@ -20,7 +20,6 @@ import {EntityStatus} from "../../common/enums/entity-status.enum";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './property.component.html',
   styleUrls: ['./property.component.css']
 })

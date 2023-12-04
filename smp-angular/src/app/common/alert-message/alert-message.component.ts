@@ -2,7 +2,6 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {AlertMessageService} from './alert-message.service';
 
 @Component({
-  moduleId: module.id,
   selector: 'alert',
   templateUrl: './alert-message.component.html',
   styleUrls: ['./alert-message.component.css']

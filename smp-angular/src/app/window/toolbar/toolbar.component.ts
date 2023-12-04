@@ -17,7 +17,6 @@ import {NavigationService} from "../sidenav/navigation-model.service";
  * @since 5.0
  */
 @Component({
-  moduleId: module.id,
   selector: 'window-toolbar',
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.scss']

@@ -14,7 +14,6 @@ import {Subscription} from "rxjs";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './admin-keystore.component.html',
   styleUrls: ['./admin-keystore.component.css']
 })

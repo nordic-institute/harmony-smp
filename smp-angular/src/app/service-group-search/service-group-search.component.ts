@@ -20,7 +20,6 @@ import {ServiceGroupSearchRo} from "./service-group-search-ro.model";
 import {ServiceMetadataSearchRo} from "./service-metadata-search-ro.model";
 
 @Component({
-  moduleId: module.id,
   templateUrl: './service-group-search.component.html',
   styleUrls: ['./service-group-search.component.css']
 })

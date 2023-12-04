@@ -15,7 +15,6 @@ import {formatDate} from "@angular/common";
 import {EntityStatus} from "../common/enums/entity-status.enum";
 
 @Component({
-  moduleId: module.id,
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })

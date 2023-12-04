@@ -1,4 +1,4 @@
-﻿import {Component, OnInit} from '@angular/core';
+﻿import {Component} from '@angular/core';
 import {NavigationService, NavigationNode} from "../sidenav/navigation-model.service";
 
 
@@ -9,7 +9,6 @@ import {NavigationService, NavigationNode} from "../sidenav/navigation-model.ser
  * @since 5.0
  */
 @Component({
-  moduleId: module.id,
   selector: 'smp-breadcrumb',
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.css']

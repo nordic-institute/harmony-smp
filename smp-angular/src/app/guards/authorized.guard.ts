@@ -1,11 +1,11 @@
 ﻿import {Injectable} from '@angular/core';
-import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import {SecurityService} from '../security/security.service';
 import {ReplaySubject} from 'rxjs';
 import {Authority} from "../security/authority.model";
 
 @Injectable()
-export class AuthorizedGuard implements CanActivate {
+export class AuthorizedGuard  {
 
   constructor(private securityService: SecurityService) {
   }

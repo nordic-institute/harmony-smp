@@ -8,7 +8,6 @@ import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './extension.component.html',
   styleUrls: ['./extension.component.css']
 })

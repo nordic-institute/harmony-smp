@@ -13,7 +13,6 @@ import {Subscription} from "rxjs";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './admin-truststore.component.html',
   styleUrls: ['./admin-truststore.component.css']
 })

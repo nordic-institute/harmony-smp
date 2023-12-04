@@ -14,7 +14,6 @@ import {TableResult} from "../../common/model/table-result.model";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './edit-resource.component.html',
   styleUrls: ['./edit-resource.component.css']
 })
@@ -213,8 +212,7 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
       return null;
     }
 
-    let result: ResourceDefinitionRo = this._selectedDomainResourceDef.find(def => def.identifier == this._selectedResource.resourceTypeIdentifier);
-    return result
+    return this._selectedDomainResourceDef.find(def => def.identifier == this._selectedResource.resourceTypeIdentifier)
   }
 
 }
