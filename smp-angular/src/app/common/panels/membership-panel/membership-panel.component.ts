@@ -67,6 +67,10 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
     return this._domain;
   }
 
+  public get membershipCount(): number {
+    return this.resultsLength;
+  }
+
   @Input() set domain(value: DomainRo) {
     this._domain = value;
     if (!!value) {

@@ -91,9 +91,8 @@
 
 
     <tr class="mat-row" *matNoDataRow>
-      <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell" colspan="2">No data matching the filter
-        "{{inputDomainFilter.value}}"
-      </td>
+      <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell" colspan="2"
+      >No data matching the filter "{{inputDomainFilter.value}}"</td>
       <ng-template #noDataFound>
         <td class="mat-cell" colspan="2">No data</td>
       </ng-template>

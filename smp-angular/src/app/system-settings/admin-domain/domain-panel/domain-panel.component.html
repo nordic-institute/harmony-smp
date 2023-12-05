@@ -5,9 +5,9 @@
     <smp-warning-panel *ngIf="showWarning"
                        icon="warning"
                        type="warning"
-                       [label]="showWarningMessage"></smp-warning-panel>
+                       [htmlContent]="showWarningMessage"></smp-warning-panel>
     <mat-form-field style="width:100%">
-      <mat-label>Domain Code</mat-label>
+      <mat-label>Domain Code [{{domainForm.controls['adminMemberCount'].value}}]</mat-label>
       <input matInput
              id="domainCode_id" #domainCode
              matTooltip="The SMP's domain code. The code must be unique and is used in HTTP header 'Domain' or URL path sequence when retrieving/creating the resource using the webservice API"

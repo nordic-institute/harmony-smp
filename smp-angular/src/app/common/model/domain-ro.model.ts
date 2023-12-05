@@ -14,5 +14,6 @@ export interface DomainRo extends SearchTableEntity {
   visibility?:VisibilityEnum;
   defaultResourceTypeIdentifier?:string;
   resourceDefinitions?: string[]
+  adminMemberCount?: number;
 }
 

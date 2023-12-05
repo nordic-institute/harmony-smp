@@ -1,7 +1,5 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.security.utils.KeystoreUtils;
-import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
@@ -13,7 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -22,14 +19,15 @@ import org.springframework.core.convert.ConversionService;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.*;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -371,7 +369,7 @@ public class UITruststoreServiceTest {
 
 
     @Test
-    public void testAddCertificate() throws Exception  {
+    public void testAddCertificate() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
 
@@ -386,7 +384,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testDeleteCertificate() throws Exception  {
+    public void testDeleteCertificate() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
         doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
@@ -402,30 +400,6 @@ public class UITruststoreServiceTest {
         assertEquals(count - 1, testInstance.getNormalizedTrustedList().size());
     }
 
-    /**
-     * This method is not a tests is it done for generating the  tests Soapui certificates
-     *
-     * @throws Exception  if an error occurs
-     */
-    @Test
-    @Disabled
-    public void generateSoapUITestCertificates() throws Exception {
-
-        List<String[]> listCerts = Arrays.asList(new String[]{"f71ee8b11cb3b787", "CN=EHEALTH_SMP_EC,O=European Commission,C=BE", "ehealth_smp_ec",},
-                new String[]{"E07B6b956330a19a", "CN=blue_gw,O=eDelivery,C=BE", "blue_gw"},
-                new String[]{"9792ce69BC89F14C", "CN=red_gw,O=eDelivery,C=BE", "red_gw"}
-        );
-        String token = "test123";
-        File keystoreFile = new File("./target/smp-test-examples.p12");
-        KeyStore keyStore = KeystoreUtils.createNewKeystore(keystoreFile, token);
-        for (String[] data : listCerts) {
-            BigInteger serial = new BigInteger(data[0], 16);
-            X509CertificateUtils.createAndStoreSelfSignedCertificate(serial, data[1], data[2], keyStore, token);
-        }
-        try (FileOutputStream fos = new FileOutputStream(keystoreFile)) {
-            keyStore.store(fos, token.toCharArray());
-        }
-    }
 
     protected void resetKeystore() throws IOException {
         FileUtils.deleteDirectory(targetDirectory.toFile());
