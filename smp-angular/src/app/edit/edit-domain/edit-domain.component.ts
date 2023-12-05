@@ -10,10 +10,10 @@ import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {MatTabGroup} from "@angular/material/tabs";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
+import {firstValueFrom} from "rxjs";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './edit-domain.component.html',
   styleUrls: ['./edit-domain.component.css']
 })
@@ -84,7 +84,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
       }
 
       if (this.isCurrentTabDirty()) {
-        let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+        let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
         canChangeTab.then((canChange: boolean) => {
           if (canChange) {
             // reset
@@ -125,7 +125,7 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
       return;
     }
     if (this.isCurrentTabDirty()) {
-      let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
+      let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
       canChangeTab.then((canChange: boolean) => {
         if (canChange) {
           // reset

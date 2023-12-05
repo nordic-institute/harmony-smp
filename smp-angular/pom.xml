@@ -20,7 +20,7 @@
     <!--  Currently last version not supported by the build server :(
     node.version>v18.18.2</node.version>
     <npm.version>9.8.1</npm.version -->
-    <node.version>v16.20.0</node.version>
+    <node.version>v16.20.2</node.version>
     <npm.version>8.19.4</npm.version>
 
     <!--

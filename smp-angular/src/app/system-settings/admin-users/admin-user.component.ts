@@ -17,10 +17,10 @@ import {
 import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
+import {firstValueFrom} from "rxjs";
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './admin-user.component.html',
   styleUrls: ['./admin-user.component.css']
 })
@@ -106,8 +106,8 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
       return;
     }
     if (this.isDirty()) {
-      let canChangeTab = this.dialog.open(CancelDialogComponent).afterClosed().toPromise<boolean>();
-      canChangeTab.then((canChange: boolean) => {
+      firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed())
+        .then((canChange: boolean) => {
         if (canChange) {
           this.selectAndRetrieveUserData(userSelected);
         }

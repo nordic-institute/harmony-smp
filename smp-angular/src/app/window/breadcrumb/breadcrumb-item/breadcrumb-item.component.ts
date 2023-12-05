@@ -9,7 +9,6 @@ import {NavigationNode} from "../../sidenav/navigation-model.service";
  * @since 5.0
  */
 @Component({
-  moduleId: module.id,
   selector: 'smp-breadcrumb-item',
   templateUrl: './breadcrumb-item.component.html',
   styleUrls: ['./breadcrumb-item.component.scss']

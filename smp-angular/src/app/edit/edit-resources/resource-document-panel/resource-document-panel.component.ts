@@ -15,7 +15,6 @@ import {DocumentWizardDialogComponent} from "../document-wizard-dialog/document-
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 
 @Component({
-  moduleId: module.id,
   templateUrl: './resource-document-panel.component.html',
   styleUrls: ['./resource-document-panel.component.scss'],
   encapsulation: ViewEncapsulation.None,

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {MatPaginator} from "@angular/material/paginator";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
@@ -9,7 +9,6 @@ import {GroupRo} from "../../common/model/group-ro.model";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
 @Component({
-  moduleId: module.id,
   templateUrl: './edit-group.component.html',
   styleUrls: ['./edit-group.component.css']
 })

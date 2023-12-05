@@ -1,5 +1,5 @@
 ﻿import {Injectable} from '@angular/core';
-import {Router, NavigationStart, NavigationEnd} from '@angular/router';
+import {NavigationEnd, NavigationStart, Router} from '@angular/router';
 import {Observable, Subject} from 'rxjs';
 
 @Injectable()
@@ -20,8 +20,7 @@ export class AlertMessageService {
           console.log('Alert kept when navigating from [' + this.previousRoute + '] to [' + event.url + ']');
         }
       } else if (event instanceof NavigationEnd) {
-        let navigationEnd: NavigationEnd = event;
-        this.previousRoute = navigationEnd.url;
+        this.previousRoute = event.url;
       }
     });
   }
@@ -43,7 +42,7 @@ export class AlertMessageService {
   }
 
   clearAlert (): void {
-    this.subject.next();
+    this.subject.next(null);
   }
 
   success (message: string, keepAfterNavigationChange = false) {

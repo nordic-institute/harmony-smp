@@ -21,7 +21,6 @@ import {ObjectPropertiesDialogComponent} from "../common/dialogs/object-properti
 
 
 @Component({
-  moduleId: module.id,
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css']
 })
