@@ -108,7 +108,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    // currenctly  MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
+    // currently  MatTab has only onTabChanged which is a bit to late. Register new listener to  internal
     // _handleClick handler
     this.registerTabClick();
   }
@@ -272,7 +272,6 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       this.registerTabClick();
     }
 
-
     if (this.selected == domainSelected) {
       return;
     }
@@ -286,8 +285,6 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
         }
       });
     } else {
-      console.log("domain selected")
-
       this.selected = domainSelected;
     }
   }

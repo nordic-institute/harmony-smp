@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
+import static eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType.toList;
 
 /**
  * @author Joze Rihtarsic
@@ -92,10 +93,11 @@ public class DomainMemberDao extends BaseDao<DBDomainMember> {
         return query.getResultList();
     }
 
-    public Long getDomainMemberCount(Long domainId, String filter) {
+    public Long getDomainMemberCount(Long domainId, String filter, MembershipRoleType ... roleTypes) {
         boolean hasFilter = StringUtils.isNotBlank(filter);
         TypedQuery<Long> query = memEManager.createNamedQuery(hasFilter ? QUERY_DOMAIN_MEMBERS_FILTER_COUNT : QUERY_DOMAIN_MEMBERS_COUNT, Long.class);
         query.setParameter(PARAM_DOMAIN_ID, domainId);
+        query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
         if (hasFilter) {
             query.setParameter(PARAM_USER_FILTER, StringUtils.wrapIfMissing(StringUtils.trim(filter),"%" ));
         }

@@ -30,13 +30,18 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 @NamedQuery(name = QUERY_DOMAIN_MEMBER_BY_USER_DOMAINS, query = "SELECT c FROM DBDomainMember c " +
         "WHERE c.user.id = :user_id and c.domain.id in (:domain_ids)")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
-        " WHERE c.domain.id = :domain_id")
+        " WHERE c.domain.id = :domain_id AND c.role in (:membership_roles)")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS, query = "SELECT c FROM DBDomainMember c " +
         " WHERE c.domain.id = :domain_id order by c.user.username")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER_COUNT, query = "SELECT count(c) FROM DBDomainMember c " +
-        " WHERE c.domain.id = :domain_id AND (lower(c.user.fullName) like lower(:user_filter) OR  lower(c.user.username) like lower(:user_filter))")
+        " WHERE c.domain.id = :domain_id " +
+        "  AND c.role in (:membership_roles)" +
+        "  AND (lower(c.user.fullName) like lower(:user_filter) " +
+        "    OR  lower(c.user.username) like lower(:user_filter))")
 @NamedQuery(name = QUERY_DOMAIN_MEMBERS_FILTER, query = "SELECT c FROM DBDomainMember c " +
-        " WHERE c.domain.id = :domain_id  AND (lower(c.user.fullName) like lower(:user_filter) OR  lower(c.user.username) like lower(:user_filter))  order by c.user.username")
+        " WHERE c.domain.id = :domain_id  " +
+        " AND (lower(c.user.fullName) like lower(:user_filter) " +
+        "   OR lower(c.user.username) like lower(:user_filter))  order by c.user.username")
 public class DBDomainMember extends BaseEntity {
 
     @Id

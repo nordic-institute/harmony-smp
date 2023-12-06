@@ -86,6 +86,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
       'domainCode': new FormControl({value: '', readonly: true}, [Validators.pattern(this.domainCodePattern),
         this.notInList(this.currentDomains?.map(a => a.domainCode), this._domain?.domainCode)]),
       'signatureKeyAlias': new FormControl({value: '', readonly: true}),
+      'adminMemberCount': new FormControl({value: '', readonly: true}),
       'visibility': new FormControl({value: '', readonly: true}),
       'defaultResourceTypeIdentifier': new FormControl({value: '', disabled: this.isNewDomain()}),
     });
@@ -106,6 +107,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     if (!!value) {
       this.domainForm.controls['domainCode'].setValue(this._domain.domainCode);
       this.domainForm.controls['signatureKeyAlias'].setValue(this._domain.signatureKeyAlias);
+      this.domainForm.controls['adminMemberCount'].setValue(this._domain.adminMemberCount);
       this.domainForm.controls['visibility'].setValue(this._domain.visibility);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue(this._domain.defaultResourceTypeIdentifier);
       this.domainForm.enable();
@@ -115,6 +117,7 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     } else {
       this.domainForm.controls['domainCode'].setValue("");
       this.domainForm.controls['signatureKeyAlias'].setValue("");
+      this.domainForm.controls['adminMemberCount'].setValue("0");
       this.domainForm.controls['visibility'].setValue(VisibilityEnum.Public);
       this.domainForm.controls['defaultResourceTypeIdentifier'].setValue("");
       this.domainForm.disable();
@@ -137,12 +140,26 @@ export class DomainPanelComponent implements BeforeLeaveGuard {
     return this.domiSMPResourceDefinitions.filter(resType => this._domain.resourceDefinitions.includes(resType.identifier))
   }
 
-  get showWarning(){
-    return !!this._domain?.domainId && !this.domainResourceTypes?.length
+  get showWarning() {
+    return !!this._domain?.domainId && (!this.domainResourceTypes?.length
+      || !this._domain.signatureKeyAlias
+      || !this._domain.adminMemberCount
+      || this._domain.adminMemberCount < 1)
   }
 
-  get showWarningMessage(){
-    return "To complete domain configuration, please select at least one resource type from the Resource Types tab";
+  get showWarningMessage() {
+    let message = "To complete domain configuration, please: <ul>";
+    if (!this._domain.signatureKeyAlias) {
+      message += "<li>select the signature key to be used for signing the domain's responses!</li>";
+    }
+    if (!this.domainResourceTypes?.length) {
+      message += "<li>select at least one resource type from the Resource Types tab</li>";
+    }
+    if (!this._domain.adminMemberCount || this._domain.adminMemberCount < 1) {
+      message += "<li>add a domain member with 'ADMIN' role from the Members tab!</li>";
+    }
+    message += "</ul>";
+    return message;
   }
 
   get submitButtonEnabled(): boolean {

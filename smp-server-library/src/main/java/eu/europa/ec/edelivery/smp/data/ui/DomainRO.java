@@ -27,6 +27,7 @@ public class DomainRO extends BaseRO {
     private String defaultResourceTypeIdentifier;
     private final List<GroupRO> groups = new ArrayList<>();
     private final List<String> resourceDefinitions = new ArrayList<>();
+    private long adminMemberCount = -1;
 
     public String getDomainId() {
         return domainId;
@@ -114,5 +115,13 @@ public class DomainRO extends BaseRO {
 
     public List<String> getResourceDefinitions() {
         return resourceDefinitions;
+    }
+
+    public long getAdminMemberCount() {
+        return adminMemberCount;
+    }
+
+    public void setAdminMemberCount(long adminMemberCount) {
+        this.adminMemberCount = adminMemberCount;
     }
 }

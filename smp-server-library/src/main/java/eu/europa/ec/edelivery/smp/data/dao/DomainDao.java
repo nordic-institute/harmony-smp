@@ -31,6 +31,7 @@ import java.util.Optional;
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
+import static eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType.toList;
 
 /**
  * @author gutowpa
@@ -174,11 +175,6 @@ public class DomainDao extends BaseDao<DBDomain> {
         query.setParameter(PARAM_MEMBERSHIP_ROLES, toList(roleTypes));
         return query.getResultList();
     }
-
-    public List<MembershipRoleType> toList(MembershipRoleType ... roleTypes){
-        return Arrays.asList(roleTypes ==null || roleTypes.length==0 ?MembershipRoleType.values(): roleTypes);
-    }
-
 
     /**
      * Check if domain for domain code exists. If not SMPRuntimeException with DOMAIN_NOT_EXISTS is thrown.

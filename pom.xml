@@ -13,7 +13,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.edelivery</groupId>
     <artifactId>smp-modules</artifactId>
@@ -113,8 +113,6 @@
         <!-- plugins -->
         <plugin.frontend-maven-plugin.version>1.15.0</plugin.frontend-maven-plugin.version>
         <plugin.exec-maven-plugin.version>1.6.0</plugin.exec-maven-plugin.version>
-        <surefire.jvm.args></surefire.jvm.args>
-        <failsafe.jvm.args></failsafe.jvm.args>
 
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
@@ -778,6 +776,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <systemPropertyVariables>
+                        <!-- build directory for test logging -->
+                        <buildDirectory>${project.build.directory}</buildDirectory>
+                    </systemPropertyVariables>
                     <!-- make sure methods are  always run in same order -->
                     <runOrder>alphabetical</runOrder>
                     <argLine>-ea ${argLine}</argLine>
@@ -787,6 +789,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
+                    <systemPropertyVariables>
+                        <!-- build directory for test logging -->
+                        <buildDirectory>${project.build.directory}</buildDirectory>
+                    </systemPropertyVariables>
+
                     <!-- ... fool Sonar to show test success for both unit and integration tests together by
                     instructing Failsafe to store its test reports to the same directory as Surefire instead of
                     the default failsafe-reports.
