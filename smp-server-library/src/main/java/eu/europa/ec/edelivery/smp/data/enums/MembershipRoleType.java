@@ -15,8 +15,7 @@ import java.util.List;
  */
 public enum MembershipRoleType {
     VIEWER,
-    ADMIN
-    ;
+    ADMIN;
 
     /**
      * Method to convert MembershipRoleType to List<MembershipRoleType>. if roleTypes is null or empty,
@@ -25,7 +24,7 @@ public enum MembershipRoleType {
      * @param roleTypes - list of role types
      * @return list of role types
      */
-    public static List<MembershipRoleType> toList(MembershipRoleType ... roleTypes){
-        return Arrays.asList(roleTypes ==null || roleTypes.length==0 ?values(): roleTypes);
+    public static List<MembershipRoleType> toList(MembershipRoleType... roleTypes) {
+        return Arrays.asList(roleTypes == null || roleTypes.length == 0 ? values() : roleTypes);
     }
 }

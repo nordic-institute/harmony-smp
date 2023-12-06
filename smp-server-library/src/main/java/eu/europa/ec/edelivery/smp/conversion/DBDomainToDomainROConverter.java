@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Converter for domain DAO entity {@link DBDomain} to enriched webservice object {@link DomainRO}.
  *
  * @author Joze Rihtarsic
- * @since 5.
+ * @since 5.0
  */
 @Component
 public class DBDomainToDomainROConverter implements Converter<DBDomain, DomainRO> {
