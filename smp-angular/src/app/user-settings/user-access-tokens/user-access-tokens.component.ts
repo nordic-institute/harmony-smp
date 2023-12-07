@@ -1,5 +1,4 @@
-import {Component, QueryList, ViewChildren,} from '@angular/core';
-import {SecurityService} from "../../security/security.service";
+import {AfterViewInit, Component, QueryList, ViewChild, ViewChildren,} from '@angular/core';
 import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
@@ -8,22 +7,26 @@ import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/credential-dialog.component";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {AccessTokenPanelComponent} from "./access-token-panel/access-token-panel.component";
-
+import {MatPaginator} from "@angular/material/paginator";
+import {MatTableDataSource} from "@angular/material/table";
 
 @Component({
   templateUrl: './user-access-tokens.component.html',
   styleUrls: ['./user-access-tokens.component.scss']
 })
-export class UserAccessTokensComponent implements BeforeLeaveGuard {
+export class UserAccessTokensComponent implements AfterViewInit, BeforeLeaveGuard {
+  displayedColumns: string[] = ['accessTokens'];
+  dataSource: MatTableDataSource<CredentialRo> = new MatTableDataSource();
   accessTokens: CredentialRo[] = [];
+
   @ViewChildren(AccessTokenPanelComponent)
   userTokenCredentialComponents: QueryList<AccessTokenPanelComponent>;
 
-  constructor(private securityService: SecurityService,
-              private userService: UserService,
+  @ViewChild(MatPaginator)
+  paginator: MatPaginator;
+
+  constructor(private userService: UserService,
               public dialog: MatDialog) {
-
-
     this.userService.onAccessTokenCredentialsUpdateSubject().subscribe((credentials: CredentialRo[]) => {
       this.updateAccessTokenCredentials(credentials);
     });
@@ -37,6 +40,11 @@ export class UserAccessTokensComponent implements BeforeLeaveGuard {
 
   public updateAccessTokenCredentials(userAccessTokens: CredentialRo[]) {
     this.accessTokens = userAccessTokens;
+    this.dataSource.data = this.accessTokens;
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
   }
 
   public updateAccessTokenCredential(userAccessToken: CredentialRo) {
@@ -57,6 +65,9 @@ export class UserAccessTokensComponent implements BeforeLeaveGuard {
         userAccessToken];
     }
 
+    this.dataSource.data = this.accessTokens;
+    // show the last page
+    this.paginator.lastPage();
   }
 
   public trackListItem(index: number, credential: CredentialRo) {
@@ -80,13 +91,12 @@ export class UserAccessTokensComponent implements BeforeLeaveGuard {
     this.dialog.open(CredentialDialogComponent, {
       data: {
         credentialType: CredentialDialogComponent.ACCESS_TOKEN_TYPE,
-        formTitle: "Access token generation dialog"
+        formTitle: "New Access token created"
       }
     }).afterClosed();
   }
 
   public onSaveItemClicked(credential: CredentialRo) {
-
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Update Access token",

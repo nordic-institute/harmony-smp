@@ -140,7 +140,7 @@ import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dial
 import {HttpErrorHandlerService} from "./common/error/http-error-handler.service";
 import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-titled-label.component";
 import {ServiceGroupSearchComponent} from "./service-group-search/service-group-search.component";
-
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @NgModule({
   declarations: [
@@ -264,6 +264,7 @@ import {ServiceGroupSearchComponent} from "./service-group-search/service-group-
     routing,
     MatAutocompleteModule,
     CodemirrorModule,
+    ClipboardModule,
   ],
   providers: [
     AdminDomainService,
