@@ -47,7 +47,7 @@ public class AbstractResourceHandler {
                 resourceDef.getIdentifier(),
                 "Can not find resource definition for identifier: [" + resourceDef.getIdentifier() + "] Registered resource SPI IDs ["
                         + resourceDefinitionSpiList.stream()
-                        .map(rd -> rd.identifier())
+                        .map(ResourceDefinitionSpi::identifier)
                         .collect(Collectors.joining(","))
                         + "]"));
     }
@@ -69,7 +69,7 @@ public class AbstractResourceHandler {
                 () -> new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, subResourceId,
                         "Can not find subresource definition: [" + subResourceId + "]. Registered subresource IDs ["
                                 + resourceDefinitionSpi.getSubresourceSpiList().stream()
-                                .map(rd -> rd.identifier())
+                                .map(SubresourceDefinitionSpi::identifier)
                                 .collect(Collectors.joining(","))
                                 + "]"));
     }
@@ -104,9 +104,9 @@ public class AbstractResourceHandler {
     }
 
     public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource,
-                                                      DBSubresource subresource, boolean mustNotBeEmpty) {
+                                                      DBSubresource subresource) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
-        if (mustNotBeEmpty && (content == null || content.length == 0)) {
+        if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_MISSING,
                     subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
                     resource.getIdentifierValue(), resource.getIdentifierScheme());
@@ -130,7 +130,7 @@ public class AbstractResourceHandler {
             if (StringUtils.isNotBlank(responseData.getContentType())) {
                 resourceResponse.setContentType(responseData.getContentType());
             }
-            responseData.getHttpHeaders().forEach((key, value) -> resourceResponse.setHttpHeader(key, value));
+            responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
 
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the subresource!", e);

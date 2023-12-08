@@ -90,7 +90,7 @@ public class UIDocumentService {
 
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(parentEntity.getDomainResourceDef().getDomain(),
-                parentEntity, entity, false);
+                parentEntity, entity, null);
 
         return getDocumentRo(resourceHandler, data);
     }

@@ -90,7 +90,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         ResourceHandlerSpi handlerSpi = getSubresourceHandler(resolvedSubresource.getSubresourceDef(), resolvedData.getResourceDef());
         // generate request and respond
         RequestData requestData = buildRequestDataForSubResource(resolvedData.getDomain(), resolvedData.getResource(),
-                resolvedData.getSubresource(), true);
+                resolvedData.getSubresource());
         ResponseData responseData = new SpiResponseData(resourceResponse.getOutputStream());
         // handle data
         handleReadResource(handlerSpi, requestData, responseData, resourceResponse);
@@ -135,7 +135,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
             }
         }
         // set headers to response
-        responseData.getHttpHeaders().forEach((key, value) -> resourceResponse.setHttpHeader(key, value));
+        responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
         // determinate status before resource is stored to database!
         resourceResponse.setHttpStatus(getHttpStatusForCreateUpdate(isNewResource, responseData));
 
@@ -205,8 +205,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
             }
         }
         // set headers to response
-        responseData.getHttpHeaders().entrySet()
-                .forEach(entry -> resourceResponse.setHttpHeader(entry.getKey(), entry.getValue()));
+        responseData.getHttpHeaders().forEach((key, value) -> resourceResponse.setHttpHeader(key, value));
         // determinate status before resource is stored to database!
         resourceResponse.setHttpStatus(getHttpStatusForCreateUpdate(isNewResource, responseData));
 
