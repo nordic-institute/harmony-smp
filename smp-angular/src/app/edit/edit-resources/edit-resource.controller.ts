@@ -21,8 +21,7 @@ export class EditResourceController {
 
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];
-  resourceList: ResourceRo[] = []
-
+  resourceList: ResourceRo[] = [];
 
   _selectedDomain: DomainRo;
   _selectedGroup: GroupRo;
