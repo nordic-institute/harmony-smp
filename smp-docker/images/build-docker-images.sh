@@ -28,8 +28,8 @@ ORACLE_DB19_FILE="LINUX.X64_193000_db_home.zip"
 ORACLE_DOCKERFILE="Dockerfile.xe"
 
 ORACLE_DB_FILE="${ORACLE_DB11_FILE}"
-SERVER_JDK_FILE="server-jre-8u333-linux-x64.tar.gz"
-SERVER_JDK11_FILE="jdk-11.0.17_linux-x64_bin.tar.gz"
+SERVER_JDK_FILE="server-jre-8u391-linux-x64.tar.gz"
+SERVER_JDK11_FILE="jdk-11.0.21_linux-x64_bin.tar.gz"
 WEBLOGIC_122_QUICK_FILE="fmw_12.2.1.4.0_wls_quick_Disk1_1of1.zip"
 WEBLOGIC_14_FILE="fmw_14.1.1.0.0_wls_lite_Disk1_1of1.zip"
 SMP_VERSION=

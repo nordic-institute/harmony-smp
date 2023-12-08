@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2018, 2020 Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -20,7 +20,9 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim as base
+ARG BASE_IMAGE=oraclelinux:7-slim
+# hadolint ignore=DL3006
+FROM ${BASE_IMAGE} as base
 
 # Labels
 # ------
@@ -36,26 +38,43 @@ LABEL "provider"="Oracle"                                               \
 
 # Argument to control removal of components not needed after db software installation
 ARG SLIMMING=true
+ARG INSTALL_FILE_1="LINUX.X64_193000_db_home.zip"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/19c/dbhome_1 \
     INSTALL_DIR=/opt/install \
-    INSTALL_FILE_1="LINUX.X64_193000_db_home.zip" \
+    INSTALL_FILE_1=$INSTALL_FILE_1 \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
     PWD_FILE="setPassword.sh" \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
     CREATE_DB_FILE="createDB.sh" \
+    CREATE_OBSERVER_FILE="createObserver.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
-    SLIMMING=$SLIMMING
+    CONFIG_TCPS_FILE="configTcps.sh" \
+    SLIMMING=$SLIMMING \
+    ENABLE_ARCHIVELOG=false \
+    ARCHIVELOG_DIR_NAME=archive_logs \
+    # To clone a database referred by PRIMARY_DB_CONN_STR
+    CLONE_DB=false \
+    # To create a standby database referred by PRIMARY_DB_CONN_STR
+    STANDBY_DB=false \
+    # Env var below should be in <HOST>:<PORT>/<SERVICE_NAME> format
+    PRIMARY_DB_CONN_STR="" \
+    # For creating dataguard observer
+    DG_OBSERVER_ONLY=false \
+    DG_OBSERVER_NAME="" \
+    CHECKPOINT_FILE_EXTN=".created" \
+    # Directory for keeping Oracle Wallet
+    WALLET_DIR=""
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
@@ -65,7 +84,7 @@ ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
 # Copy files needed during both installation and runtime
 # -------------
 COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
-COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $ORACLE_BASE/
+COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CREATE_OBSERVER_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $CONFIG_TCPS_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
@@ -90,9 +109,9 @@ COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_RSP $INSTALL_DB_BINARIES_FILE $
 
 # Install DB software binaries
 USER oracle
-RUN chmod ug+x $INSTALL_DIR/*.sh && \
+RUN chmod ug+x "$INSTALL_DIR"/*.sh && \
     sync && \
-    $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE $DB_EDITION
+    "$INSTALL_DIR"/"$INSTALL_DB_BINARIES_FILE" $DB_EDITION
 
 
 
@@ -108,14 +127,18 @@ USER oracle
 COPY --chown=oracle:dba --from=builder $ORACLE_BASE $ORACLE_BASE
 
 USER root
-RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh
+RUN "$ORACLE_BASE"/oraInventory/orainstRoot.sh && \
+    "$ORACLE_HOME"/root.sh
 
 USER oracle
 WORKDIR /home/oracle
 
-HEALTHCHECK --interval=1m --start-period=5m \
+# Add a bashrc file to capitalize ORACLE_SID in the environment
+# hadolint ignore=SC2016
+RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
+
+HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
-CMD exec $ORACLE_BASE/$RUN_FILE
+CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
