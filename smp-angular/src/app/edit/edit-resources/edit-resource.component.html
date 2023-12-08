@@ -12,7 +12,7 @@
           <smp-label icon="article" label="Resource details"></smp-label>
         </ng-template>
         <resource-detail-panel
-          [domainResourceDefs]="_selectedDomainResourceDef"
+          [domainResourceDefs]="selectedDomainResourceDefs"
           [domain]="selectedDomain"
           [group]="selectedGroup"
           [resource]="selectedResource"
@@ -36,7 +36,7 @@
           <smp-label icon="description" label="Subresources"></smp-label>
         </ng-template>
         <subresource-panel
-          [domainResourceDefs]="_selectedDomainResourceDef"
+          [domainResourceDefs]="selectedDomainResourceDefs"
           [domain]="selectedDomain"
           [group]="selectedGroup"
           [resource]="selectedResource"
@@ -46,7 +46,7 @@
   </data-panel>
   <ng-template #noUserAdminGroupsDataFound>
     <smp-warning-panel *ngIf="!isLoadingResults"
-                      class="smp-no-data-panel"
+                       class="smp-no-data-panel"
                        icon="warning"
                        type="warning"
                        [label]="filterResourceResults?'No resources for give filter':'User is not administrator of any of the resources'"></smp-warning-panel>
@@ -101,7 +101,7 @@
                  #inputDomainMemberFilter>
         </mat-form-field>
 
-        <table class="mat-elevation-z2" mat-table [dataSource]="data">
+        <table class="mat-elevation-z2" mat-table [dataSource]="resourceList">
 
           <ng-container matColumnDef="identifierScheme">
             <th mat-header-cell *matHeaderCellDef>Scheme</th>

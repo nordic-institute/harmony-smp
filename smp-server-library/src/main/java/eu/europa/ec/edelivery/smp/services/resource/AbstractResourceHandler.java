@@ -88,7 +88,7 @@ public class AbstractResourceHandler {
      */
     public RequestData buildRequestDataForResource(DBDomain domain, DBResource resource) {
         byte[] content = resourceStorage.getDocumentContentForResource(resource);
-        if (content==null || content.length == 0) {
+        if (content == null || content.length == 0) {
             throw new SMPRuntimeException(ErrorCode.RESOURCE_DOCUMENT_MISSING, resource.getIdentifierValue(), resource.getIdentifierScheme());
         }
         ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
@@ -103,9 +103,10 @@ public class AbstractResourceHandler {
                 inputStream);
     }
 
-    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource, DBSubresource subresource) {
+    public RequestData buildRequestDataForSubResource(DBDomain domain, DBResource resource,
+                                                      DBSubresource subresource, boolean mustNotBeEmpty) {
         byte[] content = resourceStorage.getDocumentContentForSubresource(subresource);
-        if (content==null || content.length == 0) {
+        if (mustNotBeEmpty && (content == null || content.length == 0)) {
             throw new SMPRuntimeException(ErrorCode.SUBRESOURCE_DOCUMENT_MISSING,
                     subresource.getIdentifierValue(), subresource.getIdentifierScheme(),
                     resource.getIdentifierValue(), resource.getIdentifierScheme());
@@ -129,8 +130,7 @@ public class AbstractResourceHandler {
             if (StringUtils.isNotBlank(responseData.getContentType())) {
                 resourceResponse.setContentType(responseData.getContentType());
             }
-            responseData.getHttpHeaders().entrySet()
-                    .forEach(entry -> resourceResponse.setHttpHeader(entry.getKey(), entry.getValue()));
+            responseData.getHttpHeaders().forEach((key, value) -> resourceResponse.setHttpHeader(key, value));
 
         } catch (ResourceException e) {
             throw new SMPRuntimeException(ErrorCode.INTERNAL_ERROR, "Error occurred while reading the subresource!", e);

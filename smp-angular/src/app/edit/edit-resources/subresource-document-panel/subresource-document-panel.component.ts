@@ -146,7 +146,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
       this.documentForm.controls['payloadCreatedOn'].setValue(value.payloadCreatedOn);
-      this.documentForm.controls['payload'].setValue(!value.payload?"":value.payload);
+      this.documentForm.controls['payload'].setValue(!value.payload ? "" : value.payload);
       this.documentForm.controls['payload'].enable();
 
       if (!this.documentVersionsExists) {
@@ -170,6 +170,10 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
     let doc: DocumentRo = {...this._document};
     doc.payload = this.documentForm.controls['payload'].value;
     return doc;
+  }
+
+  onBackButtonClicked(): void {
+    this.navigationService.navigateUp();
   }
 
   onSaveButtonClicked(): void {
@@ -206,7 +210,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
       participantIdentifier: this._resource.identifierValue,
       participantScheme: this._resource.identifierScheme,
       documentIdentifier: this._subresource.identifierValue,
-      documentIdentifierScheme:  this._subresource.identifierScheme,
+      documentIdentifierScheme: this._subresource.identifierScheme,
       processIdentifier: '',
       processScheme: '',
       transportProfile: 'bdxr-transport-ebms3-as4-v1p0', // default value for oasis AS4
@@ -276,10 +280,11 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
     return !this._document?.allVersions ? [] : this._document?.allVersions;
   }
 
-  get documentVersionsExists(): boolean{
+  get documentVersionsExists(): boolean {
     return this.getDocumentVersions.length > 0
   }
-  get emptyDocument(): boolean{
+
+  get emptyDocument(): boolean {
     return !this.documentForm.controls['payload']?.value
   }
 
@@ -308,7 +313,8 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
       }
     });
   }
-  resetChanges(){
+
+  resetChanges() {
     let currentVersion = this._document?.payloadVersion;
     if (!currentVersion) {
       this.documentForm.controls['payload'].setValue("");

@@ -89,9 +89,8 @@ public class UIDocumentService {
         DBSubresourceDef subresourceDef = entity.getSubresourceDef();
 
         ResourceHandlerSpi resourceHandler = resourceHandlerService.getSubresourceHandler(subresourceDef, subresourceDef.getResourceDef());
-
         RequestData data = resourceHandlerService.buildRequestDataForSubResource(parentEntity.getDomainResourceDef().getDomain(),
-                parentEntity, entity);
+                parentEntity, entity, false);
 
         return getDocumentRo(resourceHandler, data);
     }
@@ -157,7 +156,7 @@ public class UIDocumentService {
      * return last version
      *
      * @param resourceId resource id of the document
-     * @param version   version of the payload for the document
+     * @param version    version of the payload for the document
      * @return DocumentRo with payload and version
      */
     @Transactional
@@ -184,7 +183,7 @@ public class UIDocumentService {
     private DocumentRo createNewVersionAndConvert(DBDocument document, ByteArrayOutputStream baos) {
 
         // get max version
-        int version = document.getDocumentVersions().stream().mapToInt(dv -> dv.getVersion())
+        int version = document.getDocumentVersions().stream().mapToInt(DBDocumentVersion::getVersion)
                 .max().orElse(0);
 
         DBDocumentVersion documentVersion = new DBDocumentVersion();
@@ -199,7 +198,7 @@ public class UIDocumentService {
         return convert(document, documentVersion);
     }
 
-    public DocumentRo convertWithVersion(DBDocument document,  int version) {
+    public DocumentRo convertWithVersion(DBDocument document, int version) {
         DBDocumentVersion currentVersion = null;
         DBDocumentVersion documentVersion = null;
         for (DBDocumentVersion dv : document.getDocumentVersions()) {
