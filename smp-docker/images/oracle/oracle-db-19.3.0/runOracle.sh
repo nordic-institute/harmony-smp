@@ -299,8 +299,9 @@ fi;
 status=$?
 
 if [ $status -eq 0 ]; then
+  #!! Do not remove |& tee /u01/status/database.status to indicate database is ready in the status file
   echo "#########################"
-  echo "DATABASE IS READY TO USE!"
+  echo "DATABASE IS READY TO USE!" |& tee /u01/status/database.status
   echo "#########################"
 
   # Execute startup script for extensions
@@ -311,7 +312,8 @@ if [ $status -eq 0 ]; then
 else
   echo "#####################################"
   echo "########### E R R O R ###############"
-  echo "DATABASE SETUP WAS NOT SUCCESSFUL!"
+  #!! Do not remove |& tee /u01/status/database.status to indicate database is ready in the status file
+  echo "DATABASE SETUP WAS NOT SUCCESSFUL!" |& tee /u01/status/database.status
   echo "Please check output for further info!"
   echo "########### E R R O R ###############" 
   echo "#####################################"

@@ -192,17 +192,19 @@ fi;
 # Check whether database is up and running
 $ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
+  #!!! Do not remove |& tee /u01/status/database.status to indicate database is ready in the status file
   echo "#########################"
-  echo "DATABASE IS READY TO USE!"
+  echo "DATABASE IS READY TO USE!" |& tee /u01/status/database.status
   echo "#########################"
 
   # Execute custom provided startup scripts
   runUserScripts $ORACLE_BASE/scripts/startup
 
 else
+  #!! Do not remove |& tee /u01/status/database.status to indicate database is ready in the status file
   echo "#####################################"
   echo "########### E R R O R ###############"
-  echo "DATABASE SETUP WAS NOT SUCCESSFUL!"
+  echo "DATABASE SETUP WAS NOT SUCCESSFUL!"  |& tee /u01/status/database.status
   echo "Please check output for further info!"
   echo "########### E R R O R ###############"
   echo "#####################################"
