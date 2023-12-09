@@ -34,14 +34,14 @@
            style="float: right;  vertical-align:middle;display: flex;align-items: center;justify-content: center; gap:0.4em;padding-right: 10px">
         <span style="font-size: 0.8em">Show version:</span>
         <select matNativeControl style="width: 100px; border-bottom: grey solid 1px"
-                    placeholder="All document version"
-                    matTooltip="Select version to display."
-                    formControlName="payloadVersion"
-                    id="document version_id"
-                    (change)="onSelectionDocumentVersionChanged()"
+                placeholder="All document version"
+                matTooltip="Select version to display."
+                formControlName="payloadVersion"
+                id="document version_id"
+                (change)="onSelectionDocumentVersionChanged()"
         >
           <option *ngFor="let version of getDocumentVersions"
-                      [value]="version"
+                  [value]="version"
           >
             {{version}}
           </option>
@@ -51,7 +51,8 @@
                matInput [ngxMatDatetimePicker]="payloadCreatedOnPicker"
                formControlName="payloadCreatedOn"
                readonly>
-        <mat-datepicker-toggle matSuffix [for]="payloadCreatedOnPicker" style="visibility: hidden"></mat-datepicker-toggle>
+        <mat-datepicker-toggle matSuffix [for]="payloadCreatedOnPicker"
+                               style="visibility: hidden"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker #payloadCreatedOnPicker [showSpinners]="true" [showSeconds]="false"
                                  [hideTime]="false"></ngx-mat-datetime-picker>
       </div>
@@ -93,6 +94,11 @@
     </div>
     <mat-toolbar class="mat-elevation-z2" style="flex-grow: 0">
       <mat-toolbar-row class="smp-toolbar-row">
+        <button id="back_id" mat-raised-button color="primary"
+                (click)="onBackButtonClicked()">
+          <mat-icon>arrow_circle_left</mat-icon>
+          <span>Back</span>
+        </button>
         <button id="cancel_id" mat-raised-button color="primary"
                 [disabled]="cancelButtonDisabled"
                 (click)="onDocumentResetButtonClicked()">

@@ -37,7 +37,7 @@ if [ ! -e ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log ]; then
    echo "Create Domain"
    PROPERTIES_FILE=/u01/oracle/properties/domain.properties
    if [ ! -e "$PROPERTIES_FILE" ]; then
-      echo "A properties file [$PROPERTIES_FILE] with the username and password needs to be supplied."
+      echo "A properties file with the username and password needs to be supplied."
       exit
    fi
 

@@ -104,13 +104,13 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     this._document = value;
     this.documentForm.disable();
     if (!!value) {
-      this.codemirror.setOptionIfChanged("mode",value.mimeType);
+      this.codemirror.setOptionIfChanged("mode", value.mimeType);
       this.documentForm.controls['mimeType'].setValue(value.mimeType);
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
       this.documentForm.controls['payloadCreatedOn'].setValue(value.payloadCreatedOn);
-      this.documentForm.controls['payload'].setValue(!value.payload?"":value.payload);
+      this.documentForm.controls['payload'].setValue(!value.payload ? "" : value.payload);
       this.documentForm.controls['payload'].enable();
       // the method documentVersionsExists already uses the current value to check if versions exists
       if (!this.documentVersionsExists) {
@@ -135,8 +135,11 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     return doc;
   }
 
-  onDocumentResetButtonClicked(): void {
+  onBackButtonClicked(): void {
+    this.navigationService.navigateUp();
+  }
 
+  onDocumentResetButtonClicked(): void {
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Cancel changes",
@@ -149,7 +152,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     });
   }
 
-  resetChanges(){
+  resetChanges() {
 
     let currentVersion = this._document?.payloadVersion;
     if (!currentVersion) {
@@ -251,11 +254,11 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     return !this._document?.allVersions ? [] : this._document?.allVersions;
   }
 
-  get emptyDocument(): boolean{
+  get emptyDocument(): boolean {
     return !this.documentForm.controls['payload']?.value
   }
 
-  get documentVersionsExists(): boolean{
+  get documentVersionsExists(): boolean {
     return this.getDocumentVersions.length > 0
   }
 

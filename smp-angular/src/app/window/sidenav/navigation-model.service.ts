@@ -74,14 +74,10 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
 
   private selectedPathSubject = new Subject<NavigationNode[]>();
   selected: NavigationNode;
-
   previousSelected: NavigationNode;
-
   selectedPath: NavigationNode[];
 
   private rootNode: NavigationNode = PUBLIC_NAVIGATION_TREE;
-  private userDetailsNode: NavigationNode = null;
-
 
   constructor(protected securityService: SecurityService,
               protected securityEventService: SecurityEventService,
@@ -343,10 +339,6 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     let node: NavigationNode = this.createNew();
     this.rootNode.children.push(node);
     this.select(node);
-
-    //this.reset();
-    //this.router.navigate(['/login'], {queryParams: {returnUrl: this.router.url}});
-    //this.router.parseUrl('/login');
   }
 
   public navigateToHome(): void {
@@ -358,14 +350,11 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
     if (this.selectedPath?.length > 0) {
       this.select(this.selectedPath[this.selectedPath.length - 1]);
     }
-
-
   }
 
   public navigateToUserDetails(): void {
     this.setNavigationTreeByPath(['user-settings', 'user-profile'], this.rootNode)
   }
-
 
   public createNew(): NavigationNode {
     return {
@@ -378,5 +367,4 @@ export class NavigationService extends MatTreeNestedDataSource<NavigationNode> {
       transient: true,
     }
   }
-
 }

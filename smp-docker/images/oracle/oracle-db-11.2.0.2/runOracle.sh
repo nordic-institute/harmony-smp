@@ -83,12 +83,6 @@ function _term() {
   /etc/init.d/oracle-xe stop
 }
 
-########### SIGKILL handler ############
-function _kill() {
-   echo "SIGKILL received, shutting down database!"
-   /etc/init.d/oracle-xe stop
-}
-
 ############# Create DB ################
 function createDB {
    # Auto generate ORACLE PWD if not passed on
@@ -169,9 +163,6 @@ EOF"
 # Set SIGTERM handler
 trap _term SIGTERM
 
-# Set SIGKILL handler
-trap _kill SIGKILL
-
 # Check whether database already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    symLinkFiles;
@@ -201,6 +192,7 @@ fi;
 # Check whether database is up and running
 $ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
+  #!!! Do not remove |& tee /u01/status/database.status to indicate database is ready in the status file
   echo "#########################"
   echo "DATABASE IS READY TO USE!" |& tee /u01/status/database.status
   echo "#########################"
@@ -209,6 +201,7 @@ if [ $? -eq 0 ]; then
   runUserScripts $ORACLE_BASE/scripts/startup
 
 else
+  #!! Do not remove |& tee /u01/status/database.status to indicate database is ready in the status file
   echo "#####################################"
   echo "########### E R R O R ###############"
   echo "DATABASE SETUP WAS NOT SUCCESSFUL!"  |& tee /u01/status/database.status

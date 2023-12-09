@@ -83,7 +83,7 @@ public class OasisSMPServiceGroup10Handler extends AbstractOasisSMPHandler {
         try {
             serviceGroup = reader.parseNative(resourceData.getResourceInputStream());
         } catch (TechnicalException e) {
-            throw new ResourceException(PARSE_ERROR, "Can not pase service group xml for identifier: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
+            throw new ResourceException(PARSE_ERROR, "Can not parse service group xml for identifier: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         // get references
         serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());

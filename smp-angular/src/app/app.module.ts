@@ -140,6 +140,7 @@ import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dial
 import {HttpErrorHandlerService} from "./common/error/http-error-handler.service";
 import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-titled-label.component";
 import {ServiceGroupSearchComponent} from "./service-group-search/service-group-search.component";
+import {EditResourceController} from "./edit/edit-resources/edit-resource.controller";
 import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @NgModule({
@@ -280,6 +281,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     DownloadService,
     EditDomainService,
     EditGroupService,
+    EditResourceController,
     EditResourceService,
     HttpErrorHandlerService,
     ExtensionService,
