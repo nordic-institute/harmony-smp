@@ -19,7 +19,6 @@ import {SearchTableComponent} from "../common/search-table/search-table.componen
 import {SecurityService} from "../security/security.service";
 import {ObjectPropertiesDialogComponent} from "../common/dialogs/object-properties-dialog/object-properties-dialog.component";
 
-
 @Component({
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css']
@@ -34,7 +33,6 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
   @ViewChild('credentialType') credentialType: TemplateRef<any>;
   @ViewChild('forUser') forUser: TemplateRef<any>;
 
-
   readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
   readonly dateFormat: string = SmpConstants.DATE_FORMAT;
 
@@ -43,7 +41,6 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
   alertController: AlertController;
   filter: any = {};
   isSMPIntegrationOn: boolean = false;
-
 
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
@@ -68,7 +65,7 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
         title: "Alert date",
         prop: 'reportingTime',
         showInitially: true,
-        maxWidth: 100,
+        maxWidth: 250,
         cellTemplate: this.dateTimeColumn,
       },
       {

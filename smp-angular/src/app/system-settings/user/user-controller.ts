@@ -23,25 +23,23 @@ export class UserController implements SearchTableController {
     this.nullCert = this.newCertificateRo();
   }
 
-  public showDetails(row: any) {
-    /*let dialogRef: MatDialogRef<UserDetailsDialogComponent> = this.dialog.open(UserDetailsDialogComponent);
-    dialogRef.afterClosed().subscribe(result => {
-      //Todo:
-    });
-     */
+  public showDetails(row): MatDialogRef<any> {
+    return null;
   }
 
-  public edit(row: any) {
+  public edit(row): MatDialogRef<any> {
+    return null;
   }
 
   public delete(row: any) {
   }
-
-  public newDialog(config?: MatDialogConfig): MatDialogRef<any> {
-    //return this.dialog.open(UserDetailsDialogComponent, this.convertWithMode(config));
-    return null;
+  newDialog(config): MatDialogRef<any> {
+    if (config && config.data && config.data.edit) {
+      return this.edit(config.data);
+    } else {
+      return this.showDetails(config.data);
+    }
   }
-
   public changePasswordDialog(config?: MatDialogConfig): MatDialogRef<PasswordChangeDialogComponent> {
     return this.dialog.open(PasswordChangeDialogComponent, this.convertWithMode(config));
   }

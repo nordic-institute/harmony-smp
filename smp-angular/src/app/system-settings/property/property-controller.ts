@@ -35,21 +35,23 @@ export class PropertyController implements SearchTableController {
     return true;
   }
 
-  public showDetails(row: any) {
-    let dialogRef: MatDialogRef<PropertyDetailsDialogComponent> = this.dialog.open(PropertyDetailsDialogComponent);
-    dialogRef.afterClosed().subscribe(result => {
-      console.log("Property dialog is closed!");
-    });
+  public showDetails(row: any): MatDialogRef<any> {
+    return this.dialog.open(PropertyDetailsDialogComponent);
   }
 
-  public edit(row: any) {
+  public edit(row: any): MatDialogRef<any> {
+    return this.dialog.open(PropertyDetailsDialogComponent, row);
   }
 
   public delete(row: any) {
   }
 
-  newDialog(config?: MatDialogConfig): MatDialogRef<any> {
-    return this.dialog.open(PropertyDetailsDialogComponent, config);
+  newDialog(config): MatDialogRef<any> {
+    if (config && config.data && config.data.edit) {
+      return this.edit(config.data);
+    } else {
+      return this.showDetails(config.data);
+    }
   }
 
   isEqual(val1, val2): boolean {

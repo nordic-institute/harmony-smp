@@ -1,5 +1,5 @@
 import {SearchTableController} from '../common/search-table/search-table-controller';
-import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {ServiceGroupSearchRo} from './service-group-search-ro.model';
 import {of} from "rxjs/internal/observable/of";
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
@@ -9,18 +9,25 @@ export class ServiceGroupSearchController implements SearchTableController {
 
   constructor(public dialog: MatDialog) { }
 
-  public showDetails(row: any) {
+  public showDetails(row): MatDialogRef<any> {
+    return null;
   }
 
   public showExtension(row: any) {
   }
 
-  public edit(row: any) { }
+  public edit(row): MatDialogRef<any> {
+    return null;
+  }
 
   public delete(row: any) { }
 
-  public newDialog(config?: MatDialogConfig) {
-    return null;
+  newDialog(config): MatDialogRef<any> {
+    if (config && config.data && config.data.edit) {
+      return this.edit(config.data);
+    } else {
+      return this.showDetails(config.data);
+    }
   }
 
   public newRow(): ServiceGroupSearchRo {
