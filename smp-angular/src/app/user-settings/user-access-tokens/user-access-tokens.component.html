@@ -3,7 +3,7 @@
               text="You can generate a access token for each application you use that needs access to the DomiSMP API."
               [labelColumnContent]="commonToolbar">
 
-    <table mat-table id="access-token-table" [dataSource]="dataSource" class="panel smp-data-panel" >
+    <table mat-table id="user-access-token-table" [dataSource]="dataSource" class="panel smp-data-panel" >
       <ng-container matColumnDef="accessTokens">
         <th mat-header-cell *matHeaderCellDef> Access Tokens </th>
         <td mat-cell *matCellDef="let token"
@@ -14,8 +14,8 @@
                               [credential]="token"></access-token-panel>
 
         </td>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let myRowData; columns: displayedColumns"></tr>
+        <tr mat-header-row class="user-access-token-table-header" *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row class="user-access-token-table-data" *matRowDef="let myRowData; columns: displayedColumns"></tr>
       </ng-container>
     </table>
 
