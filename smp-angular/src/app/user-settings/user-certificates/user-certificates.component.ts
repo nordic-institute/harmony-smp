@@ -83,7 +83,7 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
     this.dialog.open(CredentialDialogComponent, {
       data: {
         credentialType: CredentialDialogComponent.CERTIFICATE_TYPE,
-        formTitle: "Import certificate dialog"
+        formTitle: "Import Certificate"
       }
     }).afterClosed();
 
@@ -108,7 +108,7 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Update Certificate data",
+        title: "Update Certificate",
         description: "Action will update Certificate data:<br />" + credential.name + "!<br /><br />Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {

@@ -9,7 +9,6 @@ import {CertificateRo} from "../../../system-settings/user/certificate-ro.model"
 import {CertificateService} from "../../../system-settings/user/certificate.service";
 import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
 
-
 @Component({
   templateUrl: './credential-dialog.component.html',
   styleUrls: ['./credential-dialog.component.css']
@@ -19,7 +18,7 @@ export class CredentialDialogComponent {
   public static ACCESS_TOKEN_TYPE: string = "ACCESS_TOKEN";
 
   dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
-  formTitle = "Access token generation dialog";
+  formTitle: string = "New Access token created";
   credentialForm: FormGroup;
   certificateForm: FormGroup;
 
@@ -31,7 +30,7 @@ export class CredentialDialogComponent {
   // certificate specific data
   newCertFile: File = null;
   enableCertificateImport: boolean = true;
-
+  accessTokenValue: string;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private userService: UserService,
@@ -157,7 +156,7 @@ export class CredentialDialogComponent {
       },
       err => {
         this.clearCertificateData()
-        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
           this.closeDialog();
           return;
         }
@@ -174,15 +173,17 @@ export class CredentialDialogComponent {
 
 
   generatedAccessToken() {
-
     this.clearAlert();
     this.userService.generateUserAccessTokenCredential(this.initCredential).subscribe((response: AccessTokenRo) => {
-      this.showSuccessMessage("Token with ID: \"" + response.identifier + "\" and value: \"" + response.value + "\" was generated!" +
-        "<br \><br \>Copy the access token's value and save it in a safe space. <br \><b>You won't be able to see your token's value once you click Close.</b>")
+      this.accessTokenValue = response.value;
+      this.showSuccessMessage(
+        `Token with ID: "${response.identifier}" and value: "${response.value}" was generated!
+          <br/><br/>Copy the access token's value and save it in a safe space.
+          You won't be able to see your token's value once you click <b>Close.</b>`)
       this.userService.notifyAccessTokenUpdated(response.credential);
       this.setDisabled(true);
     }, (err) => {
-      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
         this.closeDialog();
         return;
       }
@@ -229,16 +230,15 @@ export class CredentialDialogComponent {
     this.messageType = "success";
   }
 
-  showErrorMessage(value: string, errorLevel:boolean) {
+  showErrorMessage(value: string, errorLevel: boolean) {
     this.message = value;
-    this.messageType =errorLevel?"error":"warning";
+    this.messageType = errorLevel ? "error" : "warning";
   }
 
   clearAlert() {
     this.message = null;
     this.messageType = null;
   }
-
 
   closeDialog() {
     this.dialogRef.close()
