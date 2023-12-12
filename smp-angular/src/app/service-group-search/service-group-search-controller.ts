@@ -24,9 +24,9 @@ export class ServiceGroupSearchController implements SearchTableController {
 
   newDialog(config): MatDialogRef<any> {
     if (config && config.data && config.data.edit) {
-      return this.edit(config.data);
+      return this.edit(config);
     } else {
-      return this.showDetails(config.data);
+      return this.showDetails(config);
     }
   }
 
