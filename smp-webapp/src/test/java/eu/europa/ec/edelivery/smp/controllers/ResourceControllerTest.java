@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import java.io.IOException;
@@ -35,7 +34,6 @@ import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGr
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,17 +48,12 @@ public class ResourceControllerTest extends AbstractControllerTest {
 
     private static final String DOCUMENT_TYPE_URL = "smp-1";
 
-    private static final String IDENTIFIER_SCHEME = "ehealth-participantid-qns";
-    private static final String DOCUMENT_SCHEME = "doctype";
-
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
     private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
     private static final String HTTP_DOMAIN_VALUE = "domain";
 
 
     private static final String OTHER_OWNER_NAME_URL_ENCODED = "CN=utf-8_%C5%BC_SMP,O=EC,C=BE:0000000000000666";
-
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "123456");
 
     @Autowired
     ForwardedHeaderTransformer forwardedHeaderTransformer;
@@ -368,7 +361,6 @@ public class ResourceControllerTest extends AbstractControllerTest {
     public void malformedInputReturnsBadRequest() throws Exception {
 
         String participantId = UUID.randomUUID().toString();
-        String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
 
         mvc.perform(put(urlPath)
@@ -476,7 +468,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
                 .andExpect(status().isCreated());
         // add service metadata
         LOG.info("create service metadata: [{}]", docUrlPath);
-        ResultActions actions = mvc.perform(put(docUrlPath)
+        mvc.perform(put(docUrlPath)
                         .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN_VALUE)
                         .with(ADMIN_CREDENTIALS)
                         .contentType(APPLICATION_XML_VALUE)

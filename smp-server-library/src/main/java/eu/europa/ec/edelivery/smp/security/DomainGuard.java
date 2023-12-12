@@ -37,16 +37,17 @@ public class DomainGuard {
 
     /**
      * Method resolves the domain and authorize the user for the action on the domain
+     *
      * @param resourceRequest a resource request
-     * @param user a user trying to execute the action on the resource
+     * @param user            a user trying to execute the action on the resource
      * @return the DBDomain
      */
-    public DBDomain resolveAndAuthorizeForDomain(ResourceRequest resourceRequest, SMPUserDetails user){
+    public DBDomain resolveAndAuthorizeForDomain(ResourceRequest resourceRequest, SMPUserDetails user) {
         DBDomain domain = domainResolverService.resolveDomain(
                 resourceRequest.getDomainHttpParameter(),
                 resourceRequest.getUrlPathParameter(0));
 
-        if (isUserIsAuthorizedForDomainResourceAction(domain, user, resourceRequest.getAction())){
+        if (isUserIsAuthorizedForDomainResourceAction(domain, user, resourceRequest.getAction())) {
             resourceRequest.setAuthorizedDomain(domain);
             return domain;
         }
@@ -55,10 +56,11 @@ public class DomainGuard {
     }
 
     /**
-     * Purpose of the method is to guard domain resources. It validates if users has any "rights to" execute the action
-     * on the domain resources and subresources
+     * Purpose of the method is to guard domain resources and sub-resources. It validates if users has any
+     * "permission to" execute the http action on the domain resources and subresources. More accurate check is done
+     * when the resource and/or subresource are resolved.
      *
-     * @param user  user to be authorized
+     * @param user   user to be authorized
      * @param action action to be executed
      * @param domain domain to be authorized
      * @return true if user is authorized to execute the action on the domain
@@ -82,9 +84,9 @@ public class DomainGuard {
     /**
      * Method validates of the user can read resources on the domain!
      *
-     * @param user
-     * @param domain
-     * @return
+     * @param user  user to be authorized for READ action
+     * @param domain domain to be authorized
+     * @return true if user is authorized to execute the action on the domain, else it returns false
      */
     public boolean canRead(SMPUserDetails user, DBDomain domain) {
         LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is trying to read domain: [{}]", user, domain);
@@ -112,7 +114,7 @@ public class DomainGuard {
      * Method validates of the user can delete resources on the domain! Only users with group admin role can delete
      * domain resources
      *
-     * @param user    user to be authorized
+     * @param user   user to be authorized
      * @param domain domain to be authorized
      * @return true if user is authorized to execute the action on the domain
      */
@@ -124,7 +126,8 @@ public class DomainGuard {
             return false;
         }
         // to be able to delete domain resources it must be member of any group on domain
-        boolean isAuthorized =  groupMemberDao.isUserAnyDomainGroupResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN);
+        boolean isAuthorized = groupMemberDao.isUserAnyDomainGroupResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN)
+                || resourceMemberDao.isUserAnyDomainResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN);
         LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is authorized:[{}] to read resources from Domain: [{}]", user, isAuthorized, domain);
         return isAuthorized;
     }
@@ -135,7 +138,7 @@ public class DomainGuard {
      *
      * @param user   user to be authorized
      * @param domain domain to be authorized
-     * @return  true if user is authorized to execute the action on the domain
+     * @return true if user is authorized to execute the action on the domain
      */
     public boolean canCreateUpdate(SMPUserDetails user, DBDomain domain) {
         LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is trying to create/update resource from domain: [{}]", user, domain);
@@ -145,12 +148,10 @@ public class DomainGuard {
             return false;
         }
         // to be able to delete domain resources it must be member of any group on domain
-        boolean isAuthorized =  groupMemberDao.isUserAnyDomainGroupResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN)
-                 || resourceMemberDao.isUserAnyDomainResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN);
+        boolean isAuthorized = groupMemberDao.isUserAnyDomainGroupResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN)
+                || resourceMemberDao.isUserAnyDomainResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN);
 
         LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is authorized:[{}] to create/update resources from Domain: [{}]", user, isAuthorized, domain);
         return isAuthorized;
     }
-
-
 }

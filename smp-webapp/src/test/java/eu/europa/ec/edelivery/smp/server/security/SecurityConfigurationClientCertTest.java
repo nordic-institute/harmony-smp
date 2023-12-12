@@ -19,18 +19,19 @@ import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.rules.SpringClassRule;
-import org.springframework.test.context.junit4.rules.SpringMethodRule;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -50,15 +51,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by gutowpa on 20/02/2017.
  */
-
-@RunWith(Parameterized.class)
+@ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
+@DirtiesContext
 @Sql(scripts = {
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
 public class SecurityConfigurationClientCertTest {
+    public static final Logger LOG = LoggerFactory.getLogger(SecurityConfigurationClientCertTest.class);
 
     //Jul++9+23:59:00+2019+GMT"
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM  dd HH:mm:ss yyyy 'GMT'");
@@ -133,17 +135,8 @@ public class SecurityConfigurationClientCertTest {
                         "C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen, postalCode=57250, L=Netphen, street=Untere Industriestr. 20, CN=Internal Business CA 2",
                         "f71ee8b11cb3b787",
                 },
-
-
         });
     }
-
-    // because we are using Parameterized instead of SpringJUnit4ClassRunner we need to declare
-    // SpringClassRule and SpringMethodRule manually
-    @ClassRule
-    public static final SpringClassRule scr = new SpringClassRule();
-    @Rule
-    public final SpringMethodRule smr = new SpringMethodRule();
 
     @Autowired
     private WebApplicationContext context;
@@ -153,7 +146,7 @@ public class SecurityConfigurationClientCertTest {
 
     MockMvc mvc;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", "");
         configurationDao.setPropertyToDatabase(SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED_DEPRECATED, "true", "");
@@ -161,30 +154,23 @@ public class SecurityConfigurationClientCertTest {
 
         X509CertificateTestUtils.reloadKeystores();
         mvc = MockMvcUtils.initializeMockMvc(context);
-
     }
 
-    @Parameterized.Parameter()
-    public String testName;
-
-    @Parameterized.Parameter(1)
-    public String expectedCertificateId;
-
-    @Parameterized.Parameter(2)
-    public String certificateDn;
-
-    @Parameterized.Parameter(3)
-    public String serialNumber;
-
-    @Test
-    public void validClientCertHeaderAuthorizedForPutTest() throws Exception {
-        System.out.println("Test: " + testName);
+    @ParameterizedTest
+    @MethodSource("data")
+    public void validClientCertHeaderAuthorizedForPutTest(
+            String testName,
+            String expectedCertificateId,
+            String certificateDn,
+            String serialNumber
+    ) throws Exception {
+        LOG.info("Test: [{}]", testName);
         String clientCert = buildClientCert(serialNumber, certificateDn);
         System.out.println("Client-Cert: " + clientCert);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", clientCert);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers).with(csrf()))
+                        .headers(headers).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(expectedCertificateId)))
                 .andReturn().getResponse().getContentAsString();

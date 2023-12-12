@@ -7,13 +7,13 @@ package eu.europa.ec.edelivery.smp.servlet;
  * @since 4.1
  */
 public class WebConstants {
-    public static final int HTTP_RESPONSE_CODE_CREATED= 201;
-    public static final int HTTP_RESPONSE_CODE_UPDATED= 200;
-    public static final String HTTP_PARAM_DOMAIN="Domain";
-    public static final String HTTP_PARAM_RESOURCE_TYPE="Resource-Type";
-    public static final String HTTP_PARAM_OWNER="ServiceGroup-Owner";
+    public static final int HTTP_RESPONSE_CODE_CREATED = 201;
+    public static final int HTTP_RESPONSE_CODE_UPDATED = 200;
+    public static final String HTTP_PARAM_DOMAIN = "Domain";
+    public static final String HTTP_PARAM_RESOURCE_TYPE = "Resource-Type";
+    public static final String HTTP_PARAM_OWNER_OBSOLETE = "ServiceGroup-Owner";
+    public static final String HTTP_PARAM_OWNER = "Resource-Owner";
 
     private WebConstants() {
     }
-
 }

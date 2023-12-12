@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.servlet;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.services.resource.ResolvedData;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
 import java.util.List;
@@ -42,7 +43,9 @@ public class ResourceRequest {
 
     public String getOwnerHttpParameter() {
         String owner =  getHeader(WebConstants.HTTP_PARAM_OWNER);
-
+        if (StringUtils.isBlank(owner)) {
+            owner = getHeader(WebConstants.HTTP_PARAM_OWNER_OBSOLETE);
+        }
         return owner;
     }
 

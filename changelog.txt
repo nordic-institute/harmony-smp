@@ -1,3 +1,5 @@
+eDelivery SMP 5.1
+- Added the HTTP parameter 'Resource-Owner' as alternative to ServiceGroup-Owner
 eDelivery SMP 5.0
 - removed: bdmsl.participant.multidomain.enabled
 - environment properties have now 'smp.' prefix
