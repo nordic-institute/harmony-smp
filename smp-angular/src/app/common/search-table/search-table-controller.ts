@@ -2,14 +2,21 @@ import {MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {SearchTableEntity} from './search-table-entity.model';
 
 export interface SearchTableController {
-  showDetails(row);
-  edit(row);
+
+  showDetails(row): MatDialogRef<any>;
+
+  edit(row): MatDialogRef<any>;
 
   validateDeleteOperation(rows: Array<SearchTableEntity>);
+
   delete(row);
+
   newRow(): SearchTableEntity;
-  newDialog(config?: MatDialogConfig): MatDialogRef<any>;
+
+  newDialog(config): MatDialogRef<any>;
+
   dataSaved();
+
   isRecordChanged(oldModel, newModel): boolean;
 
   /**
@@ -18,7 +25,4 @@ export interface SearchTableController {
    * @param row the row for which the row expander should be disabled or not
    */
   isRowExpanderDisabled(row: SearchTableEntity): boolean;
-
-
-
 }
