@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DomainGuard {
-
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainGuard.class);
 
     final DomainResolverService domainResolverService;
@@ -97,7 +96,7 @@ public class DomainGuard {
             return true;
         }
         if (user == null || user.getUser() == null || user.getUser().getId() == null) {
-            LOG.info(SMPLogger.SECURITY_MARKER, "Anonymous user: [{}] is not authorized to read domain: [{}]", user, domain);
+            LOG.warn(SMPLogger.SECURITY_MARKER, "Anonymous user: [{}] is not authorized to read domain: [{}]", user, domain);
             return false;
         }
         // to be able to read internal(private) domain resources it must be member of domain, domain group or domain resources
@@ -144,14 +143,18 @@ public class DomainGuard {
         LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is trying to create/update resource from domain: [{}]", user, domain);
 
         if (user == null || user.getUser() == null || user.getUser().getId() == null) {
-            LOG.info(SMPLogger.SECURITY_MARKER, "Anonymous user: [{}] is not authorized to create/update resources on domain: [{}]", user, domain);
+            LOG.warn(SMPLogger.SECURITY_MARKER, "Anonymous user: [{}] is not authorized to create/update resources on domain: [{}]", user, domain);
             return false;
         }
         // to be able to delete domain resources it must be member of any group on domain
         boolean isAuthorized = groupMemberDao.isUserAnyDomainGroupResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN)
                 || resourceMemberDao.isUserAnyDomainResourceMemberWithRole(user.getUser(), domain, MembershipRoleType.ADMIN);
 
-        LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is authorized:[{}] to create/update resources from Domain: [{}]", user, isAuthorized, domain);
+        if (isAuthorized){
+            LOG.info(SMPLogger.SECURITY_MARKER, "User: [{}] is authorized to create/update resources from Domain: [{}]", user, domain);
+        } else {
+            LOG.warn(SMPLogger.SECURITY_MARKER, "User: [{}] is NOT authorized to create/update resources from Domain: [{}]", user, domain);
+        }
         return isAuthorized;
     }
 }

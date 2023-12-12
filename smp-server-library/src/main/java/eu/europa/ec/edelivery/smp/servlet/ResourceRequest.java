@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.servlet;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.resource.ResolvedData;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,7 +15,7 @@ import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.trim;
 
 public class ResourceRequest {
-
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceRequest.class);
     ResourceAction action;
 
     Map<String, String> httpHeaders;
@@ -42,9 +44,13 @@ public class ResourceRequest {
     }
 
     public String getOwnerHttpParameter() {
-        String owner =  getHeader(WebConstants.HTTP_PARAM_OWNER);
+        String owner = getHeader(WebConstants.HTTP_PARAM_OWNER);
         if (StringUtils.isBlank(owner)) {
+            LOG.debug("Try with obsolete owner parameter: 'ServiceGroup-Owner'");
             owner = getHeader(WebConstants.HTTP_PARAM_OWNER_OBSOLETE);
+            if (StringUtils.isNotBlank(owner)) {
+                LOG.debug("Using obsolete owner parameter: 'ServiceGroup-Owner'. Move to new parameter: 'Resource-Owner'");
+            }
         }
         return owner;
     }
@@ -117,15 +123,15 @@ public class ResourceRequest {
                 '}';
     }
 
-    private String headersToString(){
-        return  httpHeaders == null? null:
+    private String headersToString() {
+        return httpHeaders == null ? null :
                 httpHeaders.keySet().stream()
-                .map(key -> key + "=" + httpHeaders.get(key))
-                .collect(Collectors.joining(", ", "{", "}"));
+                        .map(key -> key + "=" + httpHeaders.get(key))
+                        .collect(Collectors.joining(", ", "{", "}"));
     }
 
-    private String pathParameterToString(){
-        return  urlPathParameters == null? null:
+    private String pathParameterToString() {
+        return urlPathParameters == null ? null :
                 urlPathParameters.stream()
                         .collect(Collectors.joining(", ", "{", "}"));
     }
