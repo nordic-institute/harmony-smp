@@ -1,5 +1,5 @@
 /*-
- * #%L
+ * #START_LICENSE#
  * DomiSMP
  * %%
  * Copyright 2017 European Commission | CEF eDelivery

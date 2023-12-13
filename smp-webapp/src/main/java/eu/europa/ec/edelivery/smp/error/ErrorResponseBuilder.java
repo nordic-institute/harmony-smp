@@ -1,8 +1,8 @@
 /*
- *  * #%L
+ * #START_LICENSE#
  * dynamic-discovery-cli
  * %%
- * #%L
+ * #START_LICENSE#
  * DomiSMP
  * %%
  * Copyright 2017 European Commission | CEF eDelivery
@@ -16,7 +16,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and limitations under the Licence.
-* #L%
+* #END_LICENSE#
  */
 
 package eu.europa.ec.edelivery.smp.error;

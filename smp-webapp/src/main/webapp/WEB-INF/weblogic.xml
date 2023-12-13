@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="windows-1252"?>
 <!--
-  #%L
+  #START_LICENSE#
   smp-webapp
   %%
   Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
@@ -15,7 +15,7 @@
   Unless required by applicable law or agreed to in writing, software distributed under the Licence is
   distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the Licence for the specific language governing permissions and limitations under the Licence.
-  #L%
+  #END_LICENSE#
   -->
 <weblogic-web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.bea.com/ns/weblogic/weblogic-web-app http://www.bea.com/ns/weblogic/weblogic-web-app/1.0/weblogic-web-app.xsd" xmlns="http://www.bea.com/ns/weblogic/weblogic-web-app">
     <container-descriptor>
