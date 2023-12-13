@@ -21,6 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -31,7 +32,9 @@ import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.getObjectFromResponse;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
+import static java.lang.String.format;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -46,6 +49,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
 abstract public class AbstractControllerTest {
+
+    // the webapp_integration_test_data data
+    public static final String IDENTIFIER_SCHEME = "ehealth-participantid-qns";
+    public static final String DOCUMENT_SCHEME = "doctype";
+
+
+    public static final String PARTICIPANT_ID = "urn:poland:ncpb";
+    public static final String DOCUMENT_ID = "invoice";
+
+    public static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("pat_smp_admin", "123456");
+
+    // Oasis SMP 1.0 URL paths
+    public static final String URL_PATH = format("/%s::%s", IDENTIFIER_SCHEME, PARTICIPANT_ID);
+    public static final String URL_DOC_PATH = format("%s/services/%s::%s", URL_PATH, DOCUMENT_SCHEME, DOCUMENT_ID);
 
     protected ObjectMapper mapper = null;
     protected MockMvc mvc;

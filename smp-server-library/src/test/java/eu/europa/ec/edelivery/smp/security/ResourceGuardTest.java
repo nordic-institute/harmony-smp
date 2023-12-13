@@ -3,11 +3,8 @@ package eu.europa.ec.edelivery.smp.security;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.servlet.ResourceAction;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,8 +19,6 @@ class ResourceGuardTest extends AbstractJunit5BaseDao {
 
     @Autowired
     ResourceGuard testInstance;
-
-    ResourceRequest resourceRequest = Mockito.mock(ResourceRequest.class);
     SMPUserDetails userDetails = Mockito.mock(SMPUserDetails.class);
 
     @BeforeEach
@@ -55,18 +50,6 @@ class ResourceGuardTest extends AbstractJunit5BaseDao {
         boolean result = testInstance.userIsAuthorizedForAction(userDetails, action, testUtilsDao.getSubresourceD1G1RD1_S1());
         // then
         assertTrue(result);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"CREATE_UPDATE"})
-    void testUserIsAuthorizedForActionNotSupported(ResourceAction action) {
-        // given - user is authorized - see  the createResourceMemberships
-        when(userDetails.getUser()).thenReturn(testUtilsDao.getUser1());
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
-                () -> testInstance.userIsAuthorizedForAction(userDetails, action, testUtilsDao.getSubresourceD1G1RD1_S1()));
-
-        // then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Action not supported"));
     }
 
     @Test

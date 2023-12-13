@@ -51,6 +51,7 @@ public class ResourceController {
     // set them to lower case for fast comparing with the  http headers
     private static final List<String> SUPPORTED_HEADERS = Arrays.asList(lowerCase(HTTP_PARAM_DOMAIN),
             lowerCase(HTTP_PARAM_OWNER),
+            lowerCase(HTTP_PARAM_OWNER_OBSOLETE),
             lowerCase(HTTP_PARAM_RESOURCE_TYPE));
     final ResourceService resourceService;
     final DomainGuard domainGuard;
@@ -131,7 +132,6 @@ public class ResourceController {
         }
         // resolve domain and test authorization for the domain.
         domainGuard.resolveAndAuthorizeForDomain(resourceRequest, user);
-
         return user;
     }
 

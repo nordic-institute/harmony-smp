@@ -44,7 +44,7 @@ public class ResourceGuard {
      * @param user     user trying to execute the action
      * @param action   resource action
      * @param resource target resource
-     * @return
+     * @return true if user is not authorized for the http action on the resource, else false.
      */
     public boolean userIsNotAuthorizedForAction(SMPUserDetails user, ResourceAction action, DBResource resource, DBDomain domain) {
         return !userIsAuthorizedForAction(user, action, resource, domain);
@@ -66,6 +66,8 @@ public class ResourceGuard {
         switch (action) {
             case READ:
                 return canRead(user, subresource);
+            case CREATE_UPDATE:
+                return canCreateUpdate(user, subresource);
             case DELETE:
                 return canDelete(user, subresource);
         }
@@ -150,6 +152,12 @@ public class ResourceGuard {
     }
 
     public boolean canDelete(SMPUserDetails user, DBSubresource subresource) {
+        LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to delete resource [{}]", user, subresource);
+        // Subresource can be created by the resource admin, the same as for update
+        return canUpdate(user, subresource);
+    }
+
+    public boolean canCreateUpdate(SMPUserDetails user, DBSubresource subresource) {
         LOG.debug(SMPLogger.SECURITY_MARKER, "User [{}] is trying to delete resource [{}]", user, subresource);
         // Subresource can be created by the resource admin, the same as for update
         return canUpdate(user, subresource);

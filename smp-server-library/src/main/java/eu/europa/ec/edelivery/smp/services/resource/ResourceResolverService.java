@@ -89,7 +89,8 @@ public class ResourceResolverService {
         // if domain code matches first parameter skip it!
         if (StringUtils.equals(currentParameter, domain.getDomainCode())) {
             if (pathParameters.size() <= ++iParameterIndex) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","), "Not enough path parameters to locate resource (The first match the domain)!");
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
+                        "Not enough path parameters to locate resource (The first match the domain)!");
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
@@ -98,7 +99,8 @@ public class ResourceResolverService {
         locationVector.setResourceDef(resourceDef);
         if (StringUtils.equals(currentParameter, resourceDef.getUrlSegment())) {
             if (pathParameters.size() <= ++iParameterIndex) {
-                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","), "Not enough path parameters to locate resource (The first two match the domain and resource type)!");
+                throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
+                        "Not enough path parameters to locate resource (The first two match the domain and resource type)!");
             }
             currentParameter = pathParameters.get(iParameterIndex);
         }
@@ -108,7 +110,7 @@ public class ResourceResolverService {
         validateResourceIdentifier(resourceId);
         DBResource resource = resolveResourceIdentifier(domain, resourceDef, resourceId);
         if (resource == null) {
-            // the resource must be found because it is not create action nor the last parameter to be resolved
+            // the resource must be found because if action is not "create" action nor the last parameter to be resolved
             if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE
                     || pathParameters.size() > iParameterIndex + 1) {
                 throw new SMPRuntimeException(ErrorCode.SG_NOT_EXISTS, resourceId.getValue(), resourceId.getScheme());
@@ -117,40 +119,51 @@ public class ResourceResolverService {
         }
 
         locationVector.setResource(resource);
-        if (resourceGuard.userIsNotAuthorizedForAction(user, resourceRequest.getAction(), resource, domain)) {
-            LOG.info(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]", getUsername(user), resourceRequest.getAction(), resource);
-            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
-        } else {
-            LOG.info(SECURITY_MARKER, "User: [{}] is authorized for action [{}] on the resource [{}]", getUsername(user), resourceRequest.getAction(), resource);
-        }
-
-        if (pathParameters.size() == ++iParameterIndex) {
-            locationVector.setResolved(true);
-            return locationVector;
-        }
-
-        if (pathParameters.size() == iParameterIndex + 2) {
-            String subResourceDefUrl = pathParameters.get(iParameterIndex);
-            // test if subresourceDef exists
-            DBSubresourceDef subresourceDef = getSubresource(resourceDef, subResourceDefUrl);
-
-            Identifier subResourceId = identifierService.normalizeDocumentIdentifier(pathParameters.get(++iParameterIndex));
-            DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId);
-            LOG.debug("Got subresource [{}]", subresource);
-            if (subresource == null) {
-                if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
-                    throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS, resource.getIdentifierValue(), resource.getIdentifierScheme(), subResourceId.getValue(), subResourceId.getScheme());
-                }
-                subresource = createNewSubResource(subResourceId, resource, subresourceDef);
+        // get ready for next url path parameter.
+        iParameterIndex++;
+        // check if resource is resolved - no more parameters to be resolved
+        locationVector.setResolved(pathParameters.size() == iParameterIndex);
+        if (locationVector.isResolved()) {
+            // validate if user is authorized for action
+            if (resourceGuard.userIsNotAuthorizedForAction(user, resourceRequest.getAction(), resource, domain)) {
+                LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the resource [{}]",
+                        getUsername(user), resourceRequest.getAction(), resource);
+                throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
             }
-
-            locationVector.setSubresource(subresource);
-            locationVector.setSubResourceDef(subresourceDef);
-            locationVector.setResolved(true);
             return locationVector;
         }
 
-        throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","), "Invalid remaining subresource parameters (expected only subresourceDef and subresource identifier)");
+        // resolve subresource - expected exactly two parameters
+        if (pathParameters.size() != iParameterIndex + 2) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, join(pathParameters, ","),
+                    "Invalid remaining subresource parameters (expected only subresourceDef and subresource identifier)");
+
+        }
+        String subResourceDefUrl = pathParameters.get(iParameterIndex);
+        // test if subresourceDef exists
+        DBSubresourceDef subresourceDef = getSubresource(resourceDef, subResourceDefUrl);
+        Identifier subResourceId = identifierService.normalizeDocumentIdentifier(pathParameters.get(++iParameterIndex));
+        DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId);
+        LOG.debug("Got subresource [{}]", subresource);
+        if (subresource == null) {
+            if (resourceRequest.getAction() != ResourceAction.CREATE_UPDATE) {
+                throw new SMPRuntimeException(ErrorCode.METADATA_NOT_EXISTS,
+                        resource.getIdentifierValue(), resource.getIdentifierScheme(),
+                        subResourceId.getValue(), subResourceId.getScheme());
+            }
+            subresource = createNewSubResource(subResourceId, resource, subresourceDef);
+        }
+
+        if (!resourceGuard.userIsAuthorizedForAction(user, resourceRequest.getAction(), subresource)) {
+            LOG.warn(SECURITY_MARKER, "User [{}] is NOT authorized for action [{}] on the subresource resource [{}]",
+                    getUsername(user), resourceRequest.getAction(), subresource);
+            throw new SMPRuntimeException(ErrorCode.UNAUTHORIZED);
+        }
+        locationVector.setSubresource(subresource);
+        locationVector.setSubResourceDef(subresourceDef);
+        locationVector.setResolved(true);
+        return locationVector;
+
     }
 
     /**
@@ -197,7 +210,6 @@ public class ResourceResolverService {
     public DBResourceDef resolveResourceType(DBDomain domain, String headerParameter, String pathParameter) {
         LOG.debug("Resolve ResourceType for domain [{}] for HTTP header [{}] and path parameter [{}]", domain.getDomainCode(), headerParameter, pathParameter);
 
-
         // get single domain
         List<DBResourceDef> resourceDefs = resourceDefinitionDao.getAllResourceDefForDomain(domain);
         if (resourceDefs.isEmpty()) {
@@ -229,11 +241,17 @@ public class ResourceResolverService {
         optResDef = resourceDefs.stream().filter(resdef ->
                 equalsIgnoreCase(resdef.getIdentifier(), domain.getDefaultResourceTypeIdentifier())).findFirst();
         if (optResDef.isPresent()) {
-            LOG.debug("Located default ResourceDef [{}] for domain [{}] by the path parameter [{}]", domain.getDefaultResourceTypeIdentifier(), domain.getDomainCode());
+            LOG.debug("Located default ResourceDef [{}] for domain [{}] by the path parameter [{}]",
+                    domain.getDefaultResourceTypeIdentifier(),
+                    domain.getDomainCode(),
+                    pathParameter);
             return optResDef.get();
         }
         // return first
-        LOG.info("Return first (default) ResourceDef [{}] for domain [{}] by the path parameter [{}]", resourceDefs.get(0).getDomainResourceDefs(), domain.getDomainCode());
+        LOG.info("Return first (default) ResourceDef [{}] for domain [{}] by the path parameter [{}]",
+                resourceDefs.get(0).getDomainResourceDefs(),
+                domain.getDomainCode(),
+                pathParameter);
         return resourceDefs.get(0);
     }
 
@@ -297,8 +315,7 @@ public class ResourceResolverService {
         }
     }
 
-    public String getUsername(UserDetails user){
-        return user ==null? "Anonymous":user.getUsername();
+    public String getUsername(UserDetails user) {
+        return user == null ? "Anonymous" : user.getUsername();
     }
-
 }
