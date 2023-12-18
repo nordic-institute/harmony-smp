@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, QueryList, ViewChild, ViewChildren,} from '@angular/core';
-import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -9,6 +8,7 @@ import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {AccessTokenPanelComponent} from "./access-token-panel/access-token-panel.component";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
+import {UserService} from "../../common/services/user.service";
 
 @Component({
   templateUrl: './user-access-tokens.component.html',

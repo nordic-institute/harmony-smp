@@ -1,4 +1,4 @@
-import {EntityStatus} from "../../common/enums/entity-status.enum";
+import {EntityStatus} from "../enums/entity-status.enum";
 
 export interface CertificateRo {
   certificateId: string;

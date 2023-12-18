@@ -4,10 +4,10 @@ import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "
 import {AdminDomainService} from "../admin-domain.service";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
-import {CertificateRo} from "../../user/certificate-ro.model";
 import {VisibilityEnum} from "../../../common/enums/visibility.enum";
 import {ResourceDefinitionRo} from "../../admin-extension/resource-definition-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
+import {CertificateRo} from "../../../common/model/certificate-ro.model";
 
 @Component({
   selector: 'domain-panel',

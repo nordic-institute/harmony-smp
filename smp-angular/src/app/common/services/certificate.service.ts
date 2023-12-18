@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CertificateRo} from './certificate-ro.model';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../../smp.constants";
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
+import {CertificateRo} from "../model/certificate-ro.model";
 
 @Injectable()
 export class CertificateService {

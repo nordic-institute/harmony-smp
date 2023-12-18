@@ -1,9 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
-import {UserService} from "../../system-settings/user/user.service";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {UserRo} from "../../system-settings/user/user-ro.model";
 import {UserProfilePanelComponent} from "../../common/panels/user-settings-panel/user-profile-panel.component";
 import {MatDialog, MatDialogConfig, MatDialogRef} from "@angular/material/dialog";
 import {
@@ -12,6 +10,8 @@ import {
 import {SecurityEventService} from "../../security/security-event.service";
 import {Subscription} from "rxjs";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
+import {UserRo} from "../../common/model/user-ro.model";
+import {UserService} from "../../common/services/user.service";
 
 
 @Component({

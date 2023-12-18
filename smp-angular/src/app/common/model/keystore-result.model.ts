@@ -1,4 +1,4 @@
-import {CertificateRo} from "../user/certificate-ro.model";
+import {CertificateRo} from "./certificate-ro.model";
 
 export interface KeystoreResult {
 

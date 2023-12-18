@@ -1,6 +1,6 @@
-import {SearchTableEntity} from '../../common/search-table/search-table-entity.model';
-import {CertificateRo} from './certificate-ro.model';
-import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
+import {SearchTableEntity} from "../search-table/search-table-entity.model";
+import {ApplicationRoleEnum} from "../enums/application-role.enum";
+import {CertificateRo} from "./certificate-ro.model";
 
 export interface UserRo extends SearchTableEntity {
   userId?: string

@@ -2,7 +2,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './login/login.component';
 import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
 import {AlertComponent} from "./alert/alert.component";
-import {PropertyComponent} from "./system-settings/property/property.component";
+import {PropertyComponent} from "./system-settings/admin-properties/property.component";
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
 import {authenticationGuard} from "./guards/authentication.guard";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";

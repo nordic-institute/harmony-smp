@@ -1,6 +1,5 @@
 import {Component, QueryList, ViewChildren,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
-import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -10,6 +9,7 @@ import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {UserCertificatePanelComponent} from "./user-certificate-panel/user-certificate-panel.component";
 import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
+import {UserService} from "../../common/services/user.service";
 
 
 @Component({

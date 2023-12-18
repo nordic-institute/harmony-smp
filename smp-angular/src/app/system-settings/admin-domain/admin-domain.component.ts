@@ -9,7 +9,6 @@ import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {AdminKeystoreService} from "../admin-keystore/admin-keystore.service";
-import {CertificateRo} from "../user/certificate-ro.model";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {ResourceDefinitionRo} from "../admin-extension/resource-definition-ro.model";
 import {ExtensionService} from "../admin-extension/extension.service";
@@ -22,6 +21,7 @@ import {DomainSmlIntegrationPanelComponent} from "./domain-sml-panel/domain-sml-
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {firstValueFrom, Subscription} from "rxjs";
 import {VisibilityEnum} from "../../common/enums/visibility.enum";
+import {CertificateRo} from "../../common/model/certificate-ro.model";
 
 
 @Component({

@@ -26,7 +26,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.PayloadValidatorService;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
-import eu.europa.ec.edelivery.smp.ui.ResourceConstants;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
@@ -40,12 +39,14 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
+
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
 @RestController
-@RequestMapping(value = ResourceConstants.CONTEXT_PATH_INTERNAL_TRUSTSTORE)
+@RequestMapping(value = CONTEXT_PATH_INTERNAL_TRUSTSTORE)
 public class TruststoreAdminController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(TruststoreAdminController.class);
@@ -61,12 +62,12 @@ public class TruststoreAdminController {
 
     @GetMapping(path = "/{user-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.isSystemAdministrator")
-    public List<CertificateRO> getSystemTruststoreCertificates(@PathVariable("user-id") String userId) {
+    public List<CertificateRO> getSystemTruststoreCertificates(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId) {
         logAdminAccess("getSystemTruststoreCertificates");
 
         List<CertificateRO> truststoreEntriesList = uiTruststoreService.getCertificateROEntriesList();
         // clear encoded value to reduce http traffic
-        truststoreEntriesList.stream().forEach(certificateRO -> {
+        truststoreEntriesList.forEach(certificateRO -> {
             certificateRO.setEncodedValue(null);
             certificateRO.setStatus(EntityROStatus.PERSISTED.getStatusNumber());
         });
@@ -75,7 +76,7 @@ public class TruststoreAdminController {
 
     @PostMapping(value = "/{user-id}/upload-certificate", consumes = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.isSystemAdministrator")
-    public CertificateRO uploadCertificate(@PathVariable("user-id") String userId,
+    public CertificateRO uploadCertificate(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
                                            @RequestBody byte[] fileBytes) {
         LOG.info("Got certificate cert size: {}", fileBytes.length);
 

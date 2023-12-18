@@ -4,8 +4,8 @@ import {FormControl, FormGroup, UntypedFormBuilder, Validators} from "@angular/f
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {HttpClient} from "@angular/common/http";
 import {SecurityService} from "../../../security/security.service";
-import {KeystoreResult} from "../../domain/keystore-result.model";
 import {AdminKeystoreService} from "../admin-keystore.service";
+import {KeystoreResult} from "../../../common/model/keystore-result.model";
 
 @Component({
   selector: 'keystore-import-dialog',

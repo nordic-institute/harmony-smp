@@ -2,8 +2,8 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {SmpConstants} from "../../smp.constants";
 import {Observable} from "rxjs";
-import {AccessTokenRo} from "../../common/model/access-token-ro.model";
-import {UserRo} from "./user-ro.model";
+import {AccessTokenRo} from "../model/access-token-ro.model";
+import {UserRo} from "../model/user-ro.model";
 
 @Injectable()
 export class UserDetailsService {
@@ -15,8 +15,9 @@ export class UserDetailsService {
 
   /**
    * Submits password to validate password
-   * @param userId
-   * @param password
+   * @param userId - user id  to validate password
+   * @param newPassword - new password to set for the user
+   * @param currentPassword - current password to validate
    */
   changePassword(userId: string, newPassword: string, currentPassword: string): Observable<boolean> {
     return this.http.put<boolean>(SmpConstants.REST_PUBLIC_USER_CHANGE_PASSWORD

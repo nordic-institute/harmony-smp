@@ -20,7 +20,6 @@ import {CancelDialogComponent} from './common/dialogs/cancel-dialog/cancel-dialo
 import {CapitalizeFirstPipe} from './common/capitalize-first.pipe';
 import {CertificateDialogComponent} from "./common/dialogs/certificate-dialog/certificate-dialog.component";
 import {CertificatePanelComponent} from "./common/panels/certificate-panel/certificate-panel.component";
-import {CertificateService} from './system-settings/user/certificate.service';
 import {ClearInvalidDirective} from './custom-date/clear-invalid.directive';
 import {ColumnPickerComponent} from './common/column-picker/column-picker.component';
 import {ConfirmationDialogComponent} from './common/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -30,8 +29,6 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} fro
 import {DatePipe} from './custom-date/date.pipe';
 import {DefaultPasswordDialogComponent} from './security/default-password-dialog/default-password-dialog.component';
 import {DialogComponent} from './common/dialogs/dialog/dialog.component';
-import {DomainComponent} from './system-settings/domain/domain.component';
-import {DomainDetailsDialogComponent} from './system-settings/domain/domain-details-dialog/domain-details-dialog.component';
 import {DomainPanelComponent} from "./system-settings/admin-domain/domain-panel/domain-panel.component";
 import {DomainResourceTypePanelComponent} from "./system-settings/admin-domain/domain-resource-type-panel/domain-resource-type-panel.component";
 import {DomainSelectorComponent} from './common/domain-selector/domain-selector.component';
@@ -51,9 +48,7 @@ import {HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/commo
 import {HttpEventService} from './http/http-event.service';
 import {InformationDialogComponent} from "./common/dialogs/information-dialog/information-dialog.component";
 import {IsAuthorized} from './security/is-authorized.directive';
-import {KeystoreEditDialogComponent} from "./system-settings/domain/keystore-edit-dialog/keystore-edit-dialog.component";
 import {KeystoreImportDialogComponent} from "./system-settings/admin-keystore/keystore-import-dialog/keystore-import-dialog.component";
-import {KeystoreService} from "./system-settings/domain/keystore.service";
 import {LoginComponent} from './login/login.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
@@ -82,17 +77,13 @@ import {NgModule} from '@angular/core';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {ObjectPropertiesDialogComponent} from "./common/dialogs/object-properties-dialog/object-properties-dialog.component";
 import {PasswordChangeDialogComponent} from "./common/dialogs/password-change-dialog/password-change-dialog.component";
-import {PropertyComponent} from "./system-settings/property/property.component";
-import {PropertyDetailsDialogComponent} from "./system-settings/property/property-details-dialog/property-details-dialog.component";
 import {ResourceDetailsDialogComponent} from "./system-settings/admin-extension/resource-details-dialog/resource-details-dialog.component";
 import {RowLimiterComponent} from './common/row-limiter/row-limiter.component';
 import {SaveDialogComponent} from './common/dialogs/save-dialog/save-dialog.component';
 import {SearchTableComponent} from './common/search-table/search-table.component';
 import {SecurityEventService} from './security/security-event.service';
 import {SecurityService} from './security/security.service';
-import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
 import {SidenavComponent} from './window/sidenav/sidenav.component';
-import {SmlIntegrationService} from "./system-settings/domain/sml-integration.service";
 import {SmpInfoService} from './app-info/smp-info.service';
 import {SpacerComponent} from "./common/components/spacer/spacer.component";
 import {SpinnerComponent} from './common/components/spinner/spinner.component';
@@ -101,9 +92,7 @@ import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {UserAccessTokensComponent} from "./user-settings/user-access-tokens/user-access-tokens.component";
 import {UserCertificatePanelComponent} from "./user-settings/user-certificates/user-certificate-panel/user-certificate-panel.component";
 import {UserCertificatesComponent} from "./user-settings/user-certificates/user-certificates.component";
-import {UserDetailsService} from './system-settings/user/user-details.service';
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
-import {UserService} from './system-settings/user/user.service';
 import {routing} from './app.routes';
 import {MAT_MOMENT_DATE_FORMATS, MatMomentDateModule, MomentDateAdapter} from "@angular/material-moment-adapter";
 import {NGX_MAT_DATE_FORMATS,NgxMatDateAdapter,NgxMatDatetimePickerModule} from "@angular-material-components/datetime-picker";
@@ -142,6 +131,14 @@ import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-
 import {ServiceGroupSearchComponent} from "./service-group-search/service-group-search.component";
 import {EditResourceController} from "./edit/edit-resources/edit-resource.controller";
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import {CertificateService} from "./common/services/certificate.service";
+import {UserDetailsService} from "./common/services/user-details.service";
+import {UserService} from "./common/services/user.service";
+import {SmlIntegrationService} from "./common/services/sml-integration.service";
+import {PropertyComponent} from "./system-settings/admin-properties/property.component";
+import {
+  PropertyDetailsDialogComponent
+} from "./system-settings/admin-properties/property-details-dialog/property-details-dialog.component";
 
 @NgModule({
   declarations: [
@@ -169,8 +166,6 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     DefaultPasswordDialogComponent,
     DialogComponent,
     DocumentWizardDialogComponent,
-    DomainComponent,
-    DomainDetailsDialogComponent,
     DomainGroupComponent,
     DomainPanelComponent,
     DomainResourceTypePanelComponent,
@@ -187,7 +182,6 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     GroupResourcePanelComponent,
     InformationDialogComponent,
     IsAuthorized,
-    KeystoreEditDialogComponent,
     KeystoreImportDialogComponent,
     LoginComponent,
     ManageMembersDialogComponent,
@@ -207,7 +201,6 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     SaveDialogComponent,
     SearchTableComponent,
     ServiceGroupSearchComponent,
-    ServiceMetadataWizardDialogComponent,
     SidenavComponent,
     SmpFieldErrorComponent,
     SmpLabelComponent,
@@ -287,7 +280,6 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     ExtensionService,
     GlobalLookups,
     HttpEventService,
-    KeystoreService,
     NavigationService,
     SecurityEventService,
     SecurityService,

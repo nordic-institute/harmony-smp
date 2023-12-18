@@ -1,8 +1,8 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {UntypedFormBuilder} from "@angular/forms";
-import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
 import {SmpConstants} from "../../../smp.constants";
+import {CertificateRo} from "../../model/certificate-ro.model";
 
 @Component({
   selector: 'keystore-certificate-dialog',

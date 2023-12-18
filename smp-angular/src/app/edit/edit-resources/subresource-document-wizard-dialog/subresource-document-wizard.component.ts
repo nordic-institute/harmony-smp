@@ -4,9 +4,9 @@ import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} fr
 import {HttpClient} from "@angular/common/http";
 import {ServiceMetadataWizardRo} from "./service-metadata-wizard-edit-ro.model";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
-import {CertificateService} from "../../../system-settings/user/certificate.service";
 import {GlobalLookups} from "../../../common/global-lookups";
-import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
+import {CertificateService} from "../../../common/services/certificate.service";
+import {CertificateRo} from "../../../common/model/certificate-ro.model";
 
 
 @Component({

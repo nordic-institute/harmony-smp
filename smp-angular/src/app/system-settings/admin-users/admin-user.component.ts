@@ -9,7 +9,6 @@ import {SearchUserRo} from "../../common/model/search-user-ro.model";
 import {AdminUserService} from "./admin-user.service";
 import {TableResult} from "../../common/model/table-result.model";
 import {finalize} from "rxjs/operators";
-import {UserRo} from "../user/user-ro.model";
 import {SecurityService} from "../../security/security.service";
 import {
   PasswordChangeDialogComponent
@@ -18,6 +17,7 @@ import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
 import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {firstValueFrom} from "rxjs";
+import {UserRo} from "../../common/model/user-ro.model";
 
 
 @Component({

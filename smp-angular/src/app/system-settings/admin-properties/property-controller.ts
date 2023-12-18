@@ -3,7 +3,6 @@ import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog
 import {GlobalLookups} from "../../common/global-lookups";
 import {SearchTableEntity} from "../../common/search-table/search-table-entity.model";
 import {HttpClient} from "@angular/common/http";
-import {DomainDetailsDialogComponent} from "../domain/domain-details-dialog/domain-details-dialog.component";
 import {PropertyDetailsDialogComponent} from "./property-details-dialog/property-details-dialog.component";
 import {PropertyRo} from "./property-ro.model";
 

@@ -4,11 +4,10 @@ import {SecurityService} from '../../security/security.service';
 import {Authority} from "../../security/authority.model";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
-import {UserService} from "../../system-settings/user/user.service";
-import {UserController} from "../../system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../common/global-lookups";
 import {NavigationService} from "../sidenav/navigation-model.service";
+import {UserController} from "../../common/services/user-controller";
 
 /**
  * Expanded side navigation panel of the DomiSMP. The component shows all tools/pages according to user role and permissions
@@ -30,7 +29,6 @@ export class ToolbarComponent {
 
   constructor(private alertService: AlertMessageService,
               private securityService: SecurityService,
-              private userService: UserService,
               private navigation: NavigationService,
               private http: HttpClient,
               private dialog: MatDialog,
