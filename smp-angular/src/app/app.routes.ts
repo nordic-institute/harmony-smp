@@ -1,7 +1,6 @@
 import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './login/login.component';
 import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
-import {AlertComponent} from "./alert/alert.component";
 import {PropertyComponent} from "./system-settings/property/property.component";
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
 import {authenticationGuard} from "./guards/authentication.guard";
@@ -20,6 +19,8 @@ import {ResourceDocumentPanelComponent} from "./edit/edit-resources/resource-doc
 import {SubresourceDocumentPanelComponent} from "./edit/edit-resources/subresource-document-panel/subresource-document-panel.component";
 import {authorizeChildSystemAdminGuard} from "./guards/authorize-child-system-admin.guard";
 import {activateChildResourceGuard} from "./guards/activate-child-document.guard";
+import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
+import {AdminAlertsComponent} from "./system-settings/admin-alerts/admin-alerts.component";
 
 
 const appRoutes: Routes = [
@@ -37,8 +38,18 @@ const appRoutes: Routes = [
         path: 'edit-resource',
         canDeactivate: [dirtyDeactivateGuard],
         children: [
-          {path: 'resource-document', canActivate: [activateChildResourceGuard], component: ResourceDocumentPanelComponent, canDeactivate: [dirtyDeactivateGuard]},
-          {path: 'subresource-document', canActivate: [activateChildResourceGuard],  component: SubresourceDocumentPanelComponent, canDeactivate: [dirtyDeactivateGuard]},
+          {
+            path: 'resource-document',
+            canActivate: [activateChildResourceGuard],
+            component: ResourceDocumentPanelComponent,
+            canDeactivate: [dirtyDeactivateGuard]
+          },
+          {
+            path: 'subresource-document',
+            canActivate: [activateChildResourceGuard],
+            component: SubresourceDocumentPanelComponent,
+            canDeactivate: [dirtyDeactivateGuard]
+          },
           {path: '', component: EditResourceComponent, canDeactivate: [dirtyDeactivateGuard]},
         ]
       }
@@ -54,7 +65,7 @@ const appRoutes: Routes = [
       {path: 'keystore', component: AdminKeystoreComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'truststore', component: AdminTruststoreComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'extension', component: ExtensionComponent, canDeactivate: [dirtyDeactivateGuard]},
-      {path: 'alert', component: AlertComponent, canDeactivate: [dirtyDeactivateGuard]},
+      {path: 'alert', component: AdminAlertsComponent, canDeactivate: [dirtyDeactivateGuard]},
     ]
   },
   {
@@ -64,6 +75,7 @@ const appRoutes: Routes = [
       {path: 'user-profile', component: UserProfileComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'user-access-token', component: UserAccessTokensComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'user-certificate', component: UserCertificatesComponent, canDeactivate: [dirtyDeactivateGuard]},
+      {path: 'user-alert', component: UserAlertsComponent, canDeactivate: [dirtyDeactivateGuard]},
       {path: 'user-membership', component: UserProfileComponent, canDeactivate: [dirtyDeactivateGuard]},
     ]
   },

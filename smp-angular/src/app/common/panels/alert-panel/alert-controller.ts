@@ -1,13 +1,12 @@
-import {SearchTableController} from '../common/search-table/search-table-controller';
+import {SearchTableController} from '../../search-table/search-table-controller';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
-import {GlobalLookups} from "../common/global-lookups";
-import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
-import {HttpClient} from "@angular/common/http";
-import {ObjectPropertiesDialogComponent} from "../common/dialogs/object-properties-dialog/object-properties-dialog.component";
+import {GlobalLookups} from "../../global-lookups";
+import {SearchTableEntity} from "../../search-table/search-table-entity.model";
+import {ObjectPropertiesDialogComponent} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
 
 export class AlertController implements SearchTableController {
 
-  constructor(protected http: HttpClient, protected lookups: GlobalLookups, public dialog: MatDialog) {
+  constructor(protected lookups: GlobalLookups, public dialog: MatDialog) {
   }
 
   validateDeleteOperation(rows: SearchTableEntity[]) {
