@@ -29,31 +29,32 @@ export class AlertController implements SearchTableController {
     return true;
   }
 
-  public showDetails(row: any) {
-    this.dialog.open(ObjectPropertiesDialogComponent, {
+  public showDetails(row: any): MatDialogRef<any> {
+    return this.dialog.open(ObjectPropertiesDialogComponent, {
       data: {
         title: "Alert details",
-        object: row.alertDetails,
-
+        object: row,
       }
     });
   }
 
-  public edit(row: any) {
-    this.dialog.open(ObjectPropertiesDialogComponent, {
+  public edit(row: any): MatDialogRef<any> {
+    return this.dialog.open(ObjectPropertiesDialogComponent, {
       data: {
-        title: "Alert details!",
-        object: row.alertDetails,
-
+        title: "Update Alert",
+        object: row,
       }
     });
   }
-
 
   public delete(row: any) {
   }
 
-  newDialog(config?: MatDialogConfig): MatDialogRef<any> {
-    return this.dialog.open(ObjectPropertiesDialogComponent, config);
+  newDialog(config): MatDialogRef<any> {
+    if (config && config.data && config.data.edit) {
+      return this.edit(config.data);
+    } else {
+      return this.showDetails(config.data);
+    }
   }
 }

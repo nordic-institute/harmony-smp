@@ -14,22 +14,23 @@ export class DomainController implements SearchTableController {
   constructor(protected http: HttpClient, protected lookups: GlobalLookups, public dialog: MatDialog) {
   }
 
-  public showDetails( row: any) {
-
-    let dialogRef: MatDialogRef<DomainDetailsDialogComponent> = this.dialog.open(DomainDetailsDialogComponent);
-    dialogRef.afterClosed().subscribe(result => {
-      console.log("Domain dialog is closed!");
-    });
+  public showDetails(row): MatDialogRef<any> {
+    return this.dialog.open(DomainDetailsDialogComponent);
   }
 
-  public edit(row: any) {
+  public edit(row): MatDialogRef<any> {
+    return this.dialog.open(DomainDetailsDialogComponent, row);
   }
 
   public delete(row: any) {
   }
 
-  public newDialog(config?: MatDialogConfig): MatDialogRef<DomainDetailsDialogComponent> {
-    return this.dialog.open(DomainDetailsDialogComponent, config);
+  newDialog(config): MatDialogRef<any> {
+    if (config && config.data && config.data.edit) {
+      return this.edit(config);
+    } else {
+      return this.showDetails(config);
+    }
   }
 
   public newRow(): DomainRo {
