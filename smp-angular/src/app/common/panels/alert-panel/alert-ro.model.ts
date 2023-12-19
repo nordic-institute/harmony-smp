@@ -1,4 +1,4 @@
-import {SearchTableEntity} from '../common/search-table/search-table-entity.model';
+import {SearchTableEntity} from '../../search-table/search-table-entity.model';
 
 export interface AlertRo extends SearchTableEntity {
   sid: string;

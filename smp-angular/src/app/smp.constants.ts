@@ -33,6 +33,7 @@ export class SmpConstants {
   public static readonly PATH_PARAM_KEYSTORE_PWD = '{keystore-pwd}';
   public static readonly PATH_PARAM_KEYSTORE_TYPE = '{keystore-type}';
 
+  public static readonly PATH_RESOURCE_TYPE_ALERT = 'alert';
   public static readonly PATH_RESOURCE_TYPE_DOMAIN = 'domain';
   public static readonly PATH_RESOURCE_TYPE_MEMBER = 'member';
   public static readonly PATH_RESOURCE_TYPE_GROUP = 'group';
@@ -136,11 +137,13 @@ export class SmpConstants {
   // user public services
   public static readonly REST_PUBLIC_USER = SmpConstants.REST_PUBLIC + 'user';
 
-  public static readonly REST_PUBLIC_USER_UPDATE = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/';
-  public static readonly REST_PUBLIC_USER_GENERATE_ACCESS_TOKEN = SmpConstants.REST_PUBLIC_USER_UPDATE + 'generate-access-token';
-  public static readonly REST_PUBLIC_USER_CHANGE_PASSWORD = SmpConstants.REST_PUBLIC_USER_UPDATE + 'change-password';
 
-  public static readonly REST_PUBLIC_USER_SEARCH = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_ACTION_SEARCH;
+  public static readonly REST_PUBLIC_USER_MANAGE = SmpConstants.REST_PUBLIC_USER + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/';
+  public static readonly REST_PUBLIC_USER_ALERT = SmpConstants.REST_PUBLIC_USER_MANAGE  +  'alert';
+  public static readonly REST_PUBLIC_USER_GENERATE_ACCESS_TOKEN = SmpConstants.REST_PUBLIC_USER_MANAGE + 'generate-access-token';
+  public static readonly REST_PUBLIC_USER_CHANGE_PASSWORD = SmpConstants.REST_PUBLIC_USER_MANAGE + 'change-password';
+
+  public static readonly REST_PUBLIC_USER_SEARCH = SmpConstants.REST_PUBLIC_USER_MANAGE + SmpConstants.PATH_ACTION_SEARCH;
   // truststore public services
   public static readonly REST_PUBLIC_TRUSTSTORE = SmpConstants.REST_PUBLIC + "truststore/" + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/';
   public static readonly REST_PUBLIC_TRUSTSTORE_CERT_VALIDATE = SmpConstants.REST_PUBLIC_TRUSTSTORE + 'validate-certificate';
@@ -171,7 +174,9 @@ export class SmpConstants {
 
   //------------------------------
   // internal endpoints
-  public static readonly REST_INTERNAL_ALERT_MANAGE = SmpConstants.REST_INTERNAL + 'alert';
+  public static readonly REST_INTERNAL_ALERT_MANAGE = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_ALERT +
+    '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
+
   public static readonly REST_INTERNAL_DOMAIN_MANAGE_DEPRECATED = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
 
   public static readonly REST_INTERNAL_DOMAIN_MANAGE = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +

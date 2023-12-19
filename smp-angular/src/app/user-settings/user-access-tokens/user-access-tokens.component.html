@@ -8,7 +8,7 @@
         <th mat-header-cell *matHeaderCellDef> Access Tokens </th>
         <td mat-cell *matCellDef="let token"
             [ngClass]="{'datatable-row-error': token.invalid}"
-            [matTooltip]="token.certificateId">
+            [matTooltip]="token.name">
           <access-token-panel (onDeleteEvent)="onDeleteItemClicked(token)"
                               (onSaveEvent)="onSaveItemClicked(token)"
                               [credential]="token"></access-token-panel>

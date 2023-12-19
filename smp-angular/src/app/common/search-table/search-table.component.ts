@@ -297,7 +297,6 @@ export class SearchTableComponent implements OnInit {
     this.editSearchTableEntity(this.rowNumber);
   }
 
-
   onSaveButtonClicked(withDownloadCSV: boolean) {
     try {
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
@@ -388,7 +387,7 @@ export class SearchTableComponent implements OnInit {
   private editSearchTableEntity(rowNumber: number) {
     const row = this.rows[rowNumber];
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
-      data: {edit: row?.status!=EntityStatus.NEW, row}
+      data: {edit: row?.status != EntityStatus.NEW, row}
     });
     if (!formRef) {
       return;

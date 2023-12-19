@@ -18,7 +18,7 @@ export class UserCertificatePanelComponent  implements  BeforeLeaveGuard {
   dateFormat: string = 'yyyy-MM-dd'
 
   _credential: CredentialRo;
-
+  _expanded: boolean = false;
   credentialForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder) {

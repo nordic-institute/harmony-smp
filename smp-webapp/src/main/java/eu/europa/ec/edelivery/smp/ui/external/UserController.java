@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -27,6 +27,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ui.UIAlertService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
@@ -48,14 +49,16 @@ import static eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils.decryptEntit
 public class UserController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserController.class);
-    protected UIUserService uiUserService;
-    protected SMPAuthorizationService authorizationService;
-    protected SMPAuthenticationService authenticationService;
+    private final UIUserService uiUserService;
+    private final UIAlertService uiAlertService;
+    private final SMPAuthorizationService authorizationService;
+    private final SMPAuthenticationService authenticationService;
 
-    public UserController(UIUserService uiUserService, SMPAuthorizationService authorizationService, SMPAuthenticationService authenticationService) {
+    public UserController(UIUserService uiUserService, SMPAuthorizationService authorizationService, SMPAuthenticationService authenticationService, UIAlertService uiAlertService) {
         this.uiUserService = uiUserService;
         this.authorizationService = authorizationService;
         this.authenticationService = authenticationService;
+        this.uiAlertService = uiAlertService;
     }
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
@@ -160,7 +163,7 @@ public class UserController {
         Long accessTokenId = decryptEntityId(encAccessTokenId);
 
         // delete user credential
-        CredentialRO result =  uiUserService.deleteUserCredentials(userId,
+        CredentialRO result = uiUserService.deleteUserCredentials(userId,
                 accessTokenId, CredentialType.ACCESS_TOKEN, CredentialTargetType.REST_API);
         // set the same encrypted id so that UI can locate and update it
         result.setCredentialId(encAccessTokenId);
@@ -177,7 +180,7 @@ public class UserController {
         Long accessTokenId = decryptEntityId(encAccessTokenId);
 
         // delete user credential
-        CredentialRO result =  uiUserService.updateUserCredentials(userId,
+        CredentialRO result = uiUserService.updateUserCredentials(userId,
                 accessTokenId,
                 CredentialType.ACCESS_TOKEN,
                 CredentialTargetType.REST_API,
@@ -215,7 +218,7 @@ public class UserController {
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
         // delete user credential
-        CredentialRO result =  uiUserService.deleteUserCredentials(userId,
+        CredentialRO result = uiUserService.deleteUserCredentials(userId,
                 credentialId, CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         // set the same encrypted credential id so that UI can remove it from the list
         result.setCredentialId(encCredentialId);
@@ -231,7 +234,7 @@ public class UserController {
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
         // delete user credential
-        CredentialRO result =  uiUserService.updateUserCredentials(userId,
+        CredentialRO result = uiUserService.updateUserCredentials(userId,
                 credentialId,
                 CredentialType.CERTIFICATE,
                 CredentialTargetType.REST_API,
@@ -261,6 +264,35 @@ public class UserController {
         return uiUserService.storeCertificateCredentialForUser(userId, credentialRO);
     }
 
+    /**
+     * Method returns Users list of alerts. To access the list user must be logged in.
+     * <p>
+     *
+     * @param encUserId - encrypted user id (from session) - used for authorization check
+     * @param page      - page number (0..n)
+     * @param pageSize  - page size (0..n) - number of results on page/max number of returned results.
+     * @param orderBy   - order by field
+     * @param orderType - order type (asc, desc)
+     * @return ServiceResult<AlertRO> - list of alerts
+     */
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
+    @GetMapping(path = "/{user-id}/alert", produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
+    public ServiceResult<AlertRO> getUserAlertList(
+            @PathVariable("user-id") String encUserId,
+            @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
+            @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
+            @RequestParam(value = PARAM_PAGINATION_ORDER_BY, defaultValue = "id", required = false) String orderBy,
+            @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "desc", required = false) String orderType
+    ) {
+        LOG.info("Search for page: {}, page size: {}", page, pageSize);
+        UserRO loggedUserData = authorizationService.getLoggedUserData();
+        // set filter to current user
+        AlertRO filter = new AlertRO();
+        filter.setUsername(loggedUserData.getUsername());
+        // return the user alert list
+        return uiAlertService.getTableList(page, pageSize, orderBy, orderType, filter);
+    }
+
 
     protected NavigationTreeNodeRO createPublicNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("search-tools", "Search", "search", "public");
@@ -274,7 +306,7 @@ public class UserController {
         node.addChild(new NavigationTreeNodeRO("user-data-profile", "Profile", "account_circle", "user-profile"));
         node.addChild(new NavigationTreeNodeRO("user-data-access-token", "Access tokens", "key", "user-access-token"));
         node.addChild(new NavigationTreeNodeRO("user-data-certificates", "Certificates", "article", "user-certificate"));
-        //      node.addChild(new NavigationTreeNodeRO("user-data-membership", "Membership", "person", "user-membership"));
+        node.addChild(new NavigationTreeNodeRO("user-data-alert", "Alerts", "notifications", "user-alert"));
         return node;
     }
 

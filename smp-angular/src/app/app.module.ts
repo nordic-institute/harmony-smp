@@ -1,12 +1,13 @@
 import 'hammerjs';
 import {AccessTokenPanelComponent} from "./user-settings/user-access-tokens/access-token-panel/access-token-panel.component";
+import {AlertPanelComponent} from "./common/panels/alert-panel/alert-panel.component";
+import {AdminAlertsComponent} from "./system-settings/admin-alerts/admin-alerts.component";
 import {AdminDomainComponent} from "./system-settings/admin-domain/admin-domain.component";
 import {AdminDomainService} from "./system-settings/admin-domain/admin-domain.service";
 import {AdminKeystoreComponent} from "./system-settings/admin-keystore/admin-keystore.component";
 import {AdminKeystoreService} from "./system-settings/admin-keystore/admin-keystore.service";
 import {AdminTruststoreComponent} from "./system-settings/admin-truststore/admin-truststore.component";
 import {AdminTruststoreService} from "./system-settings/admin-truststore/admin-truststore.service";
-import {AlertComponent} from "./alert/alert.component";
 import {AlertMessageComponent} from './common/alert-message/alert-message.component';
 import {AlertMessageService} from './common/alert-message/alert-message.service';
 import {AppComponent} from './app.component';
@@ -139,15 +140,17 @@ import {PropertyComponent} from "./system-settings/admin-properties/property.com
 import {
   PropertyDetailsDialogComponent
 } from "./system-settings/admin-properties/property-details-dialog/property-details-dialog.component";
+import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
 
 @NgModule({
   declarations: [
     AccessTokenPanelComponent,
+    AdminAlertsComponent,
     AdminDomainComponent,
     AdminKeystoreComponent,
     AdminTruststoreComponent,
     AdminUserComponent,
-    AlertComponent,
+    AlertPanelComponent,
     AlertMessageComponent,
     AppComponent,
     AutoFocusDirective,
@@ -213,6 +216,7 @@ import {
     SubresourceDocumentWizardComponent,
     SubresourcePanelComponent,
     ToolbarComponent,
+    UserAlertsComponent,
     UserAccessTokensComponent,
     UserCertificatePanelComponent,
     UserCertificatesComponent,

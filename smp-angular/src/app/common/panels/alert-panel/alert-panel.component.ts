@@ -2,29 +2,32 @@ import {
   AfterViewChecked,
   AfterViewInit,
   ChangeDetectorRef,
-  Component,
+  Component, Input,
   OnInit,
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import {ColumnPicker} from '../common/column-picker/column-picker.model';
+import {ColumnPicker} from '../../column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
 
-import {AlertMessageService} from '../common/alert-message/alert-message.service';
+import {AlertMessageService} from '../../alert-message/alert-message.service';
 import {AlertController} from './alert-controller';
 import {HttpClient} from '@angular/common/http';
-import {SmpConstants} from "../smp.constants";
-import {GlobalLookups} from "../common/global-lookups";
-import {SearchTableComponent} from "../common/search-table/search-table.component";
-import {SecurityService} from "../security/security.service";
-import {ObjectPropertiesDialogComponent} from "../common/dialogs/object-properties-dialog/object-properties-dialog.component";
+import {SmpConstants} from "../../../smp.constants";
+import {GlobalLookups} from "../../global-lookups";
+import {SearchTableComponent} from "../../search-table/search-table.component";
+import {SecurityService} from "../../../security/security.service";
+import {ObjectPropertiesDialogComponent} from "../../dialogs/object-properties-dialog/object-properties-dialog.component";
 
-
+/**
+ * This is a generic alert panel component for previewing alert list
+ */
 @Component({
-  templateUrl: './alert.component.html',
-  styleUrls: ['./alert.component.css']
+  selector: 'alert-panel',
+  templateUrl: './alert-panel.component.html',
+  styleUrls: ['./alert-panel.component.css']
 })
-export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class AlertPanelComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
@@ -34,16 +37,14 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
   @ViewChild('credentialType') credentialType: TemplateRef<any>;
   @ViewChild('forUser') forUser: TemplateRef<any>;
 
-
   readonly dateTimeFormat: string = SmpConstants.DATE_TIME_FORMAT;
   readonly dateFormat: string = SmpConstants.DATE_FORMAT;
 
-  baseUrl = SmpConstants.REST_INTERNAL_ALERT_MANAGE;
+  @Input()  baseUrl = null;
   columnPicker: ColumnPicker = new ColumnPicker();
   alertController: AlertController;
   filter: any = {};
   isSMPIntegrationOn: boolean = false;
-
 
   constructor(public securityService: SecurityService,
               protected lookups: GlobalLookups,
@@ -54,7 +55,7 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   ngOnInit() {
-    this.alertController = new AlertController(this.http, this.lookups, this.dialog);
+    this.alertController = new AlertController(this.lookups, this.dialog);
   }
 
   ngAfterViewChecked() {
@@ -68,8 +69,16 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
         title: "Alert date",
         prop: 'reportingTime',
         showInitially: true,
-        maxWidth: 100,
+        maxWidth: 250,
         cellTemplate: this.dateTimeColumn,
+      },
+      {
+        name: 'Alert level',
+        title: "Alert level.",
+        prop: 'alertLevel',
+        showInitially: true,
+        maxWidth: 100,
+
       },
       {
         name: 'For User',
@@ -109,14 +118,6 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
         showInitially: true,
 
       },
-      {
-        name: 'Alert level',
-        title: "Alert level.",
-        prop: 'alertLevel',
-        showInitially: true,
-        maxWidth: 80,
-
-      },
     ];
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => col.showInitially);
     this.searchTable.tableColumnInit();
@@ -141,6 +142,4 @@ export class AlertComponent implements OnInit, AfterViewInit, AfterViewChecked {
   isDirty(): boolean {
     return this.searchTable.isDirty();
   }
-
-
 }

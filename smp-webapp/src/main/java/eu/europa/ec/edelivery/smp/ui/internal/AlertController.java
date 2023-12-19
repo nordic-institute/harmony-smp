@@ -21,16 +21,12 @@ package eu.europa.ec.edelivery.smp.ui.internal;
 
 import eu.europa.ec.edelivery.smp.data.ui.AlertRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIAlertService;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
@@ -50,9 +46,20 @@ public class AlertController {
         this.uiAlertService = uiAlertService;
     }
 
-    @GetMapping(produces = {MimeTypeUtils.APPLICATION_JSON_VALUE})
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
+    /**
+     * Method returns list of all alerts.
+     *
+     * @param userEncId - user id (encrypted) - used for authorization
+     * @param page      - page number of the results to be returned.
+     * @param pageSize  - number of results to be returned per page.
+     * @param orderBy   - column name to order by (default: id)
+     * @param orderType - order type (default: desc)
+     * @return
+     */
+    @GetMapping(path = "/{user-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
     public ServiceResult<AlertRO> getAlertList(
+            @PathVariable("user-enc-id") String userEncId,
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
             @RequestParam(value = PARAM_PAGINATION_ORDER_BY, defaultValue = "id", required = false) String orderBy,
