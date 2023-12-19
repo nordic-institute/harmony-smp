@@ -6,6 +6,7 @@ export interface CredentialRo {
   credentialId?: string;
   name: string;
   active: boolean;
+  expired?: boolean;
   description?: string;
   updatedOn?: Date;
   expireOn?: Date;

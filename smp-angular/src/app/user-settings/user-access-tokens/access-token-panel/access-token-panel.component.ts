@@ -19,7 +19,7 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 
   _credential: CredentialRo;
   credentialForm: FormGroup;
-  _active: boolean;
+  _expanded: boolean = false;
 
   constructor(private formBuilder: FormBuilder) {
     this.credentialForm = formBuilder.group({
@@ -37,7 +37,6 @@ export class AccessTokenPanelComponent implements BeforeLeaveGuard {
 
   @Input() set credential(value: CredentialRo) {
     this._credential = value;
-    this._active = value.active;
     if (this._credential) {
       this.credentialForm.controls['active'].setValue(this._credential.active);
       this.credentialForm.controls['description'].setValue(this._credential.description);

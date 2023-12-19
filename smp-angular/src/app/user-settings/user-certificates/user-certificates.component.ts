@@ -1,5 +1,4 @@
-import {Component, QueryList, ViewChildren,} from '@angular/core';
-import {SecurityService} from "../../security/security.service";
+import {AfterViewInit, Component, QueryList, ViewChild, ViewChildren,} from '@angular/core';
 import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
@@ -10,21 +9,26 @@ import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {UserCertificatePanelComponent} from "./user-certificate-panel/user-certificate-panel.component";
 import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
+import {MatTableDataSource} from "@angular/material/table";
+import {MatPaginator} from "@angular/material/paginator";
 
 
 @Component({
   templateUrl: './user-certificates.component.html',
   styleUrls: ['./user-certificates.component.scss']
 })
-export class UserCertificatesComponent implements BeforeLeaveGuard {
+export class UserCertificatesComponent implements AfterViewInit,  BeforeLeaveGuard {
+  displayedColumns: string[] = ['certificates'];
+  dataSource: MatTableDataSource<CredentialRo> = new MatTableDataSource();
   certificates: CredentialRo[] = [];
 
+  @ViewChild(MatPaginator)
+  paginator: MatPaginator;
 
   @ViewChildren(UserCertificatePanelComponent)
   userCertificateCredentialComponents: QueryList<UserCertificatePanelComponent>;
 
-  constructor(private securityService: SecurityService,
-              private httpErrorHandlerService: HttpErrorHandlerService,
+  constructor(private httpErrorHandlerService: HttpErrorHandlerService,
               private userService: UserService,
               public dialog: MatDialog) {
 
@@ -39,8 +43,13 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
     this.userService.getUserCertificateCredentials();
   }
 
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+
   public updateCredentials(certificates: CredentialRo[]) {
     this.certificates = certificates;
+    this.dataSource.data = this.certificates;
   }
 
   public updateCredential(certificate: CredentialRo) {
@@ -60,6 +69,10 @@ export class UserCertificatesComponent implements BeforeLeaveGuard {
         ...this.certificates,
         certificate];
     }
+
+    this.dataSource.data = this.certificates;
+    // show the last page
+    this.paginator.lastPage();
   }
 
   public trackListItem(index: number, credential: CredentialRo) {
