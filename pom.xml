@@ -40,8 +40,12 @@ See the Licence for the specific language governing permissions and limitations 
     </modules>
 
     <properties>
+        <prerequisites.maven_min_version>3.5</prerequisites.maven_min_version>
+        <jacocoRemotePort />
+        <jacocoRemoteAddress />
         <!-- the root/main folder of the project used by aggregation plugins (license).
         Alternative ${session.executionRootDirectory} -->
+
         <project.root.baseUri>${maven.multiModuleProjectDirectory}</project.root.baseUri>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -50,6 +54,7 @@ See the Licence for the specific language governing permissions and limitations 
         <edelivery.dynamic-discovery-client.version>2.1.1-SNAPSHOT</edelivery.dynamic-discovery-client.version>
         <bdmsl-api.version>4.3</bdmsl-api.version>
         <!-- plugin versions -->
+        <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
         <plugin.dependency-check-maven.version>9.0.3</plugin.dependency-check-maven.version>
         <plugin.jacoco-maven-plugin.version>0.8.11</plugin.jacoco-maven-plugin.version>
         <plugin.license-maven-plugin.version>2.3.0</plugin.license-maven-plugin.version>
@@ -65,10 +70,10 @@ See the Licence for the specific language governing permissions and limitations 
         <plugin.maven-surefire-plugin.version>3.2.2</plugin.maven-surefire-plugin.version>
         <plugin.maven-war-plugin.version>3.4.0</plugin.maven-war-plugin.version>
 
-        <aspectj.version>1.9.20.1</aspectj.version>
+        <aspectj.version>1.9.21</aspectj.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <commons-io.version>2.15.0</commons-io.version>
+        <commons-io.version>2.15.1</commons-io.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
         <commons-net.version>3.10.0</commons-net.version>
@@ -84,8 +89,7 @@ See the Licence for the specific language governing permissions and limitations 
         <hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <jackson-databind.version>2.15.3</jackson-databind.version>
-        <jackson.version>2.15.3</jackson.version>
+        <jackson.version>2.16.0</jackson.version>
         <javaee-api.version>7.0</javaee-api.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.mail.version>1.6.2</javax.mail.version>
@@ -103,11 +107,11 @@ See the Licence for the specific language governing permissions and limitations 
         <mysql.jdbc.version>8.2.0</mysql.jdbc.version>
         <metro.version>2.2.1-1</metro.version>
         <mockito.version>4.11.0</mockito.version>
-        <servlet-api.version>3.0.1</servlet-api.version>
+        <jakarta.servlet-api.version>4.0.2</jakarta.servlet-api.version>
 
         <spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-boot.tomcat.version>9.0.83</spring-boot.tomcat.version>
+        <spring-boot.tomcat.version>9.0.84</spring-boot.tomcat.version>
         <spring.security.version>5.8.8</spring.security.version>
         <spring.version>5.3.31</spring.version>
         <xmlunit.version>2.9.1</xmlunit.version>
@@ -121,7 +125,8 @@ See the Licence for the specific language governing permissions and limitations 
         <sonar.language>java</sonar.language>
         <jacoco.append>true</jacoco.append>
         <sonar.binaries>target/classes</sonar.binaries>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
 
         <sonar.exclusions>
@@ -145,9 +150,7 @@ See the Licence for the specific language governing permissions and limitations 
         </release.arguments>
         <project.scm.id>edelivery-scm</project.scm.id>
     </properties>
-    <prerequisites>
-        <maven>3.6.0</maven>
-    </prerequisites>
+
 
     <scm>
         <developerConnection>scm:git:https://ec.europa.eu/digital-building-blocks/code/scm/edelivery/smp.git
@@ -486,32 +489,7 @@ See the Licence for the specific language governing permissions and limitations 
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson-databind.version}</version>
-                <!-- exclude them and then manually include the same version! fix for the springboot
-                 (current springboot uses 2.13.4! and maven upgrade just direct dependencies and not transit
-                  dependencies with latest version!! ) >
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-annotations</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jsr310</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jdk8</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.module</groupId>
-                        <artifactId>jackson-module-parameter-names</artifactId>
-                    </exclusion>
-                </exclusions-->
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -592,9 +570,9 @@ See the Licence for the specific language governing permissions and limitations 
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>${servlet-api.version}</version>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${jakarta.servlet-api.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -682,6 +660,11 @@ See the Licence for the specific language governing permissions and limitations 
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${plugin.maven-surefire-plugin.version}</version>
                 </plugin>
@@ -759,6 +742,25 @@ See the Licence for the specific language governing permissions and limitations 
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>${prerequisites.maven_min_version}</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

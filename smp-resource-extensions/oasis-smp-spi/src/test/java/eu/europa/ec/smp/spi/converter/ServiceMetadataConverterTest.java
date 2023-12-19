@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by gutowpa on 05/01/2017.
  */
-public class ServiceMetadataConverterTest {
+class ServiceMetadataConverterTest {
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
     private static final String RES_PATH = "/examples/oasis-smp-1.0/";
