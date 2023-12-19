@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -45,7 +45,7 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALI
  * @author gutowpa
  * @since 3.0.0
  */
-public class DomUtils {
+final public class DomUtils {
 
     /**
      * Class has only static members. Is not meant to create instances  - also SONAR warning.
@@ -66,6 +66,7 @@ public class DomUtils {
      * @return w3d dom element
      */
     public static Document toSignedServiceMetadata10Document(byte[] serviceMetadataXml) throws ResourceException {
+        LOG.debug("toSignedServiceMetadata10Document");
         try {
             Document docServiceMetadata = parse(serviceMetadataXml);
             Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY.getBytes());
@@ -79,6 +80,11 @@ public class DomUtils {
 
 
     public static Document parse(byte[] serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
+        if (serviceMetadataXml == null) {
+            LOG.warn("ServiceMetadataXml bytearray is null!");
+            return null;
+        }
+        LOG.debug("Parse document with size [{}]", serviceMetadataXml.length);
         InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);
         return getDocumentBuilder().parse(inputStream);
     }
@@ -91,6 +97,7 @@ public class DomUtils {
     }
 
     public static byte[] toByteArray(Document doc) throws TransformerException {
+        LOG.debug("Convert document to byte array");
         Transformer transformer = createNewSecureTransformer();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         transformer.transform(new DOMSource(doc), new StreamResult(stream));
