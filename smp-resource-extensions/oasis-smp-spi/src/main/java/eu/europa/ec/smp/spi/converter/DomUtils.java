@@ -45,7 +45,7 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALI
  * @author gutowpa
  * @since 3.0.0
  */
-final public class DomUtils {
+public final class DomUtils {
 
     /**
      * Class has only static members. Is not meant to create instances  - also SONAR warning.
