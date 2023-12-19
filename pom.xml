@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2017 European Commission | CEF eDelivery
-  ~
-  ~ Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
-  ~ You may not use this work except in compliance with the Licence.
-  ~
-  ~ You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the Licence for the specific language governing permissions and limitations under the Licence.
-  -->
+Copyright 2017-2023 European Commission | CEF eDelivery
 
+Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+You may not use this work except in compliance with the Licence.
+
+You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
+
+Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the Licence for the specific language governing permissions and limitations under the Licence.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -20,6 +19,13 @@
     <packaging>pom</packaging>
     <name>SMP</name>
     <version>5.1-SNAPSHOT</version>
+    <licenses>
+        <license>
+            <name>EUPL-2.1</name>
+            <url>https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <modules>
         <module>smp-angular</module>
@@ -34,6 +40,9 @@
     </modules>
 
     <properties>
+        <!-- the root/main folder of the project used by aggregation plugins (license).
+        Alternative ${session.executionRootDirectory} -->
+        <project.root.baseUri>${maven.multiModuleProjectDirectory}</project.root.baseUri>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -923,6 +932,57 @@
                             </excludedLicenses>
                             <excludedGroups>eu.europa.ec.*</excludedGroups>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Update license  eupl-1.2 headers to all files which matches filter bellow.
+            Note if processStartTag, processEndTag does not match the values in plugin configuration, the license will be added
+             twice. Manually check all changed files!-->
+            <id>update-license-headers</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>update-license</id>
+                                <goals>
+                                    <goal>update-file-header</goal>
+                                </goals>
+                                <phase>process-sources</phase>
+                                <configuration>
+                                    <licenseResolver>file://${project.root.baseUri}/license</licenseResolver>
+                                    <licenseName>eupl-1.2</licenseName>
+                                    <inceptionYear>2017</inceptionYear>
+                                    <organizationName>European Commission | eDelivery | DomiSMP</organizationName>
+                                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                                    <processStartTag>#START_LICENSE#</processStartTag>
+                                    <processEndTag>#END_LICENSE#</processEndTag>
+                                    <sectionDelimiter>%%</sectionDelimiter>
+                                    <extraExtensions>
+                                        <xjb>xml</xjb>
+                                    </extraExtensions>
+                                    <includes>
+                                        <include>**/*.java</include>
+                                        <include>**/*.xml</include>
+                                        <include>**/*.xsd</include>
+                                        <include>**/*.xjb</include>
+                                        <include>**/*.properties</include>
+                                        <include>**/*.txt</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/src/main/resources/xsd/**</exclude>
+                                    </excludes>
+                                    <roots>
+                                        <root>src/main</root>
+                                        <root>src/test</root>
+                                    </roots>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
