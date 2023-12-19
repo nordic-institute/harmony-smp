@@ -58,11 +58,12 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
     /**
      * Method returns UI  resource object list for page.
      *
-     * @param page
-     * @param pageSize
-     * @param sortField
-     * @param sortOrder
-     * @return
+     * @param page    - page number (0..n)
+     * @param pageSize - page size (0..n) - if -1 return all results
+     * @param sortField - sort field name (null - sorts by id)
+     * @param sortOrder - sort order (null - sorts by acs )
+     * @param filter - filter object (null - no filter)
+     * @return ServiceResult<R> - list of UI resource objects
      */
     public ServiceResult<R> getTableList(int page, int pageSize,
                                          String sortField,
