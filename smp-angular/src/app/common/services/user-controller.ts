@@ -1,15 +1,16 @@
-import {SearchTableController} from '../../common/search-table/search-table-controller';
+import {SearchTableController} from '../search-table/search-table-controller';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
-import {UserRo} from './user-ro.model';
-import {EntityStatus} from '../../common/enums/entity-status.enum';
-import {GlobalLookups} from "../../common/global-lookups";
-import {SearchTableEntity} from "../../common/search-table/search-table-entity.model";
-import {SearchTableValidationResult} from "../../common/search-table/search-table-validation-result.model";
+import {UserRo} from '../model/user-ro.model';
+import {EntityStatus} from '../enums/entity-status.enum';
+import {GlobalLookups} from "../global-lookups";
+import {SearchTableEntity} from "../search-table/search-table-entity.model";
+import {SearchTableValidationResult} from "../search-table/search-table-validation-result.model";
 import {SmpConstants} from "../../smp.constants";
 import {HttpClient} from "@angular/common/http";
-import {CertificateRo} from "./certificate-ro.model";
-import {PasswordChangeDialogComponent} from "../../common/dialogs/password-change-dialog/password-change-dialog.component";
-import {ApplicationRoleEnum} from "../../common/enums/application-role.enum";
+
+import {PasswordChangeDialogComponent} from "../dialogs/password-change-dialog/password-change-dialog.component";
+import {ApplicationRoleEnum} from "../enums/application-role.enum";
+import {CertificateRo} from "../model/certificate-ro.model";
 
 
 export class UserController implements SearchTableController {
@@ -33,6 +34,7 @@ export class UserController implements SearchTableController {
 
   public delete(row: any) {
   }
+
   newDialog(config): MatDialogRef<any> {
     if (config && config.data && config.data.edit) {
       return this.edit(config);

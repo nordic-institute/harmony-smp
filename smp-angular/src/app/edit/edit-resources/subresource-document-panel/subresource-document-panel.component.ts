@@ -17,7 +17,7 @@ import {
 } from "../subresource-document-wizard-dialog/subresource-document-wizard.component";
 import {
   ServiceMetadataWizardRo
-} from "../../../service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-edit-ro.model";
+} from "../subresource-document-wizard-dialog/service-metadata-wizard-edit-ro.model";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 
 @Component({
@@ -329,9 +329,3 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
     return this._subresource?.subresourceTypeIdentifier === 'edelivery-oasis-smp-1.0-servicemetadata';
   }
 }
-
-
-
-
-
-

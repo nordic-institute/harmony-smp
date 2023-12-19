@@ -63,7 +63,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(path = "/{user-id}/change-password", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public boolean changePassword(@PathVariable("user-id") String userId, @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
+    public boolean changePassword(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId, @RequestBody PasswordChangeRO newPassword, HttpServletRequest request, HttpServletResponse response) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
         // when user changing password the current password must be verified even if cas authenticated
@@ -77,7 +77,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @GetMapping(path = "/{user-id}/search", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public List<SearchUserRO> lookupUsers(@PathVariable("user-id") String userId,
+    public List<SearchUserRO> lookupUsers(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
                                           @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
@@ -95,7 +95,7 @@ public class UserController {
      */
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @PutMapping(path = "/{user-id}")
-    public UserRO updateCurrentUserProfile(@PathVariable("user-id") String userId, @RequestBody UserRO user) {
+    public UserRO updateCurrentUserProfile(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId, @RequestBody UserRO user) {
         LOG.info("Update current user: {}", user);
         Long entityId = decryptEntityId(userId);
         // Update the user and mark the password as changed at this very instant of time
@@ -114,7 +114,7 @@ public class UserController {
      */
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @GetMapping(path = "/{user-id}/navigation-tree")
-    public NavigationTreeNodeRO getUserNavigationTree(@PathVariable("user-id") String userId) {
+    public NavigationTreeNodeRO getUserNavigationTree(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId) {
         LOG.info("get User Navigation tree for user ID: {}", userId);
         Long entityId = decryptEntityId(userId);
         DBUser user = uiUserService.findUser(entityId);
@@ -134,7 +134,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @GetMapping(path = "/{user-id}/username-credential-status")
-    public CredentialRO getUsernameCredentialStatus(@PathVariable("user-id") String userId) {
+    public CredentialRO getUsernameCredentialStatus(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId) {
         LOG.debug("Get user credential status for user: [{}]", userId);
         Long entityId = decryptEntityId(userId);
         // Update the user and mark the password as changed at this very instant of time
@@ -146,7 +146,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @GetMapping(path = "/{user-id}/access-token-credentials")
-    public List<CredentialRO> getAccessTokenCredentials(@PathVariable("user-id") String encUserId) {
+    public List<CredentialRO> getAccessTokenCredentials(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId) {
         LOG.debug("Get access token credential status for user:: [{}]", encUserId);
         Long userId = decryptEntityId(encUserId);
         // Update the user and mark the password as changed at this very instant of time
@@ -156,7 +156,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @DeleteMapping(path = "/{user-id}/access-token-credential/{credential-id}")
-    public CredentialRO deleteAccessTokenCredentials(@PathVariable("user-id") String encUserId,
+    public CredentialRO deleteAccessTokenCredentials(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                      @PathVariable("credential-id") String encAccessTokenId) {
         LOG.debug("Delete User [{}] access token credential: [{}]", encUserId, encAccessTokenId);
         Long userId = decryptEntityId(encUserId);
@@ -172,7 +172,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @PostMapping(path = "/{user-id}/access-token-credential/{credential-id}")
-    public CredentialRO updateAccessTokenCredentials(@PathVariable("user-id") String encUserId,
+    public CredentialRO updateAccessTokenCredentials(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                      @PathVariable("credential-id") String encAccessTokenId,
                                                      @RequestBody CredentialRO credentialRO) {
         LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encAccessTokenId);
@@ -192,7 +192,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @PutMapping(path = "/{user-id}/access-token-credential/{credential-id}")
-    public AccessTokenRO generateAccessTokenCredential(@PathVariable("user-id") String encUserId,
+    public AccessTokenRO generateAccessTokenCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                        @PathVariable("credential-id") String encAccessTokenId,
                                                        @RequestBody CredentialRO credentialRO) {
         LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encAccessTokenId);
@@ -202,7 +202,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @GetMapping(path = "/{user-id}/certificate-credentials")
-    public List<CredentialRO> getCertificateCredentials(@PathVariable("user-id") String encUserId) {
+    public List<CredentialRO> getCertificateCredentials(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId) {
         LOG.debug("get User credential status: [{}]", encUserId);
         Long userId = decryptEntityId(encUserId);
         // Update the user and mark the password as changed at this very instant of time
@@ -212,7 +212,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @DeleteMapping(path = "/{user-id}/certificate-credential/{credential-id}")
-    public CredentialRO deleteCertificateCredential(@PathVariable("user-id") String encUserId,
+    public CredentialRO deleteCertificateCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                     @PathVariable("credential-id") String encCredentialId) {
         LOG.debug("Delete User [{}] access certificate credential: [{}]", encUserId, encCredentialId);
         Long userId = decryptEntityId(encUserId);
@@ -227,7 +227,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @PostMapping(path = "/{user-id}/certificate-credential/{credential-id}")
-    public CredentialRO updateCertificateCredential(@PathVariable("user-id") String encUserId,
+    public CredentialRO updateCertificateCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                     @PathVariable("credential-id") String encCredentialId,
                                                     @RequestBody CredentialRO credentialRO) {
         LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encCredentialId);
@@ -246,7 +246,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @GetMapping(path = "/{user-id}/certificate-credential/{credential-id}")
-    public CredentialRO getCertificateCredential(@PathVariable("user-id") String encUserId,
+    public CredentialRO getCertificateCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                  @PathVariable("credential-id") String encCredentialId) {
         LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encCredentialId);
         Long userId = decryptEntityId(encUserId);
@@ -256,7 +256,7 @@ public class UserController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#encUserId)")
     @PutMapping(path = "/{user-id}/certificate-credential/{credential-id}")
-    public CredentialRO storeCertificateCredential(@PathVariable("user-id") String encUserId,
+    public CredentialRO storeCertificateCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                    @PathVariable("credential-id") String credentialId,
                                                    @RequestBody CredentialRO credentialRO) {
         LOG.debug("Store credential for user [{}] certificate  credential: [{}]", encUserId, credentialId);

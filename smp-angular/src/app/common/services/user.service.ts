@@ -2,12 +2,12 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../../smp.constants";
 import {User} from "../../security/user.model";
-import {AlertMessageService} from "../../common/alert-message/alert-message.service";
+import {AlertMessageService} from "../alert-message/alert-message.service";
 import {SecurityService} from "../../security/security.service";
 import {Observable, Subject} from "rxjs";
 import {CredentialRo} from "../../security/credential.model";
-import {AccessTokenRo} from "../../common/model/access-token-ro.model";
-import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
+import {AccessTokenRo} from "../model/access-token-ro.model";
+import {HttpErrorHandlerService} from "../error/http-error-handler.service";
 
 /**
  * Class handle current user settings such-as profile, credentials, DomiSMP settings... ,

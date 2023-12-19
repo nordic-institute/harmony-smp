@@ -58,7 +58,6 @@ public class ResourceConstants {
     public static final String PATH_PARAM_CERT_ALIAS = "cert-alias";
     public static final String PATH_PARAM_ENC_CREDENTIAL_ID = "credential-id";
     public static final String PATH_PARAM_ENC_MANAGED_USER_ID = "managed-user-id";
-    public static final String PATH_PARAM_SRV_GROUP_ID = "service-group-id";
 
     public static final String PATH_PARAM_KEYSTORE_TOKEN = "keystore-token";
     public static final String PATH_PARAM_KEYSTORE_TYPE = "keystore-type";
@@ -133,8 +132,6 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_PUBLIC_USER = CONTEXT_PATH_PUBLIC + "user";
     public static final String CONTEXT_PATH_PUBLIC_TRUSTSTORE = CONTEXT_PATH_PUBLIC + "truststore";
 
-    public static final String CONTEXT_PATH_PUBLIC_SERVICE_GROUP = CONTEXT_PATH_PUBLIC + "service-group";
-    public static final String CONTEXT_PATH_PUBLIC_SERVICE_METADATA = CONTEXT_PATH_PUBLIC + "service-metadata";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY = CONTEXT_PATH_PUBLIC + "security";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION = CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER = CONTEXT_PATH_PUBLIC_SECURITY + "/user";
@@ -157,13 +154,9 @@ public class ResourceConstants {
     public static final String PARAM_PAGINATION_FILTER = "filter";
     public static final String PARAM_PAGINATION_ORDER_BY = "orderBy";
     public static final String PARAM_PAGINATION_ORDER_TYPE = "orderType";
-
     public static final String PARAM_NAME_TYPE = "type";
     public static final String PARAM_NAME_VERSION = "version";
-
-
     public static final String PARAM_ROLE = "role";
-
     public static final String PARAM_QUERY_PARTC_ID = "participantIdentifier";
     public static final String PARAM_QUERY_PARTC_SCHEME = "participantScheme";
     public static final String PARAM_QUERY_DOMAIN_CODE = "domainCode";

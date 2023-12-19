@@ -5,7 +5,7 @@ import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../../smp.constants";
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
-import {SMLResult} from "./sml-result.model";
+import {SMLResult} from "../model/sml-result.model";
 
 @Injectable()
 export class SmlIntegrationService {

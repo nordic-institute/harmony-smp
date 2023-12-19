@@ -1,19 +1,16 @@
 import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
 import {SmpConstants} from "../../../smp.constants";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {CredentialRo} from "../../../security/credential.model";
-import {UserController} from "../../../system-settings/user/user-controller";
 import {SecurityService} from "../../../security/security.service";
 import {ThemeService} from "../../theme-service/theme.service";
-import {AlertMessageService} from "../../alert-message/alert-message.service";
-import {UserService} from "../../../system-settings/user/user.service";
 import {MatDialog} from "@angular/material/dialog";
 import {HttpClient} from "@angular/common/http";
 import {GlobalLookups} from "../../global-lookups";
 import {DateAdapter} from "@angular/material/core";
 import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
-import {UserRo} from "../../../system-settings/user/user-ro.model";
 import {ApplicationRoleEnum} from "../../enums/application-role.enum";
+import {UserRo} from "../../model/user-ro.model";
+import {UserController} from "../../services/user-controller";
 
 
 @Component({
@@ -53,9 +50,7 @@ export class UserProfilePanelComponent {
   constructor(
     private securityService: SecurityService,
     private themeService: ThemeService,
-    private alertService: AlertMessageService,
     private formBuilder: FormBuilder,
-    private userService: UserService,
     private dialog: MatDialog,
     private http: HttpClient,
     private lookups: GlobalLookups,
@@ -65,7 +60,7 @@ export class UserProfilePanelComponent {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
 
     // set empty form ! do not bind it to current object !
-    this.userForm = formBuilder.group({
+    this.userForm = this.formBuilder.group({
       // common values
       'username': new FormControl({value: '', disabled: true}),
       'role': new FormControl({value: '', disabled: true}),

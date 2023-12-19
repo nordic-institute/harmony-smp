@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 
 /**
  * DomainAdminResource provides admin services for managing the domains configured in SMP. The services defined in path
@@ -59,16 +59,16 @@ public class DomainAdminController {
 
     }
 
-    @GetMapping(path = "/{user-enc-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{user-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public List<DomainRO> getAllDomainList(@PathVariable("user-enc-id") String userEncId) {
+    public List<DomainRO> getAllDomainList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId) {
         logAdminAccess("getAllDomainList");
         return uiDomainService.getAllDomains();
     }
 
-    @DeleteMapping(path = "/{user-enc-id}/{domain-enc-id}/delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/{user-id}/{domain-enc-id}/delete", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public DomainRO deleteDomain(@PathVariable("user-enc-id") String userEncId,
+    public DomainRO deleteDomain(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                  @PathVariable("domain-enc-id") String domainEncId) {
         logAdminAccess("deleteDomain:" + domainEncId);
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
@@ -78,9 +78,9 @@ public class DomainAdminController {
         return domainRO;
     }
 
-    @PutMapping(path = "/{user-enc-id}/create", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{user-id}/create", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public DomainRO createBasicDomainData(@PathVariable("user-enc-id") String userEncId,
+    public DomainRO createBasicDomainData(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                           @RequestBody DomainRO domainData) {
         logAdminAccess("createBasicDomainData" );
 
@@ -90,9 +90,9 @@ public class DomainAdminController {
         domainRO.setStatus(EntityROStatus.NEW.getStatusNumber());
         return domainRO;
     }
-    @PostMapping(path = "/{user-enc-id}/{domain-enc-id}/update", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{user-id}/{domain-enc-id}/update", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public DomainRO updateBasicDomainData(@PathVariable("user-enc-id") String userEncId,
+    public DomainRO updateBasicDomainData(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                      @PathVariable("domain-enc-id") String domainEncId,
                                      @RequestBody DomainRO domainData) {
         logAdminAccess("updateBasicDomainData:" + domainEncId);
@@ -106,9 +106,9 @@ public class DomainAdminController {
         return domainRO;
     }
 
-    @PostMapping(path = "/{user-enc-id}/{domain-enc-id}/update-resource-types", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{user-id}/{domain-enc-id}/update-resource-types", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public DomainRO updateResourceDefDomainList(@PathVariable("user-enc-id") String userEncId,
+    public DomainRO updateResourceDefDomainList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                           @PathVariable("domain-enc-id") String domainEncId,
                                           @RequestBody List<String> resourceDefs) {
         logAdminAccess("updateResourceDefDomainList:" + domainEncId);
@@ -121,9 +121,9 @@ public class DomainAdminController {
         return domainRO;
     }
 
-    @PostMapping(path = "/{user-enc-id}/{domain-enc-id}/update-sml-integration-data", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{user-id}/{domain-enc-id}/update-sml-integration-data", produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isSystemAdministrator")
-    public DomainRO updateSmlIntegrationData(@PathVariable("user-enc-id") String userEncId,
+    public DomainRO updateSmlIntegrationData(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                 @PathVariable("domain-enc-id") String domainEncId,
                                                 @RequestBody DomainRO domainData) {
         logAdminAccess("updateSmlIntegrationData:" + domainEncId);
@@ -138,7 +138,7 @@ public class DomainAdminController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.systemAdministrator")
     @PutMapping(value = "/{user-id}/sml-register/{domain-code}")
-    public SMLIntegrationResult registerDomainAndParticipants(@PathVariable("user-id") String userId,
+    public SMLIntegrationResult registerDomainAndParticipants(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
                                                               @PathVariable("domain-code") String domainCode
     ) {
         LOG.info("SML register domain code: {}, user user-id {}", domainCode, userId);
@@ -157,7 +157,7 @@ public class DomainAdminController {
 
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.systemAdministrator")
     @PutMapping(value = "/{user-id}/sml-unregister/{domain-code}")
-    public SMLIntegrationResult unregisterDomainAndParticipants(@PathVariable("user-id") String userId,
+    public SMLIntegrationResult unregisterDomainAndParticipants(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
                                                                 @PathVariable("domain-code") String domainCode) {
         LOG.info("SML unregister domain code: {}, user id {}", domainCode, userId);
         // try to open keystore

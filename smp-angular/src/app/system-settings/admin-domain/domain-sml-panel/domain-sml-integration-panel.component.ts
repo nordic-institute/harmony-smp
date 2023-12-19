@@ -4,13 +4,13 @@ import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "
 import {AdminDomainService} from "../admin-domain.service";
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
-import {CertificateRo} from "../../user/certificate-ro.model";
 import {BeforeLeaveGuard} from "../../../window/sidenav/navigation-on-leave-guard";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
-import {SMLResult} from "../../domain/sml-result.model";
-import {SmlIntegrationService} from "../../domain/sml-integration.service";
 import {GlobalLookups} from "../../../common/global-lookups";
 import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.service";
+import {CertificateRo} from "../../../common/model/certificate-ro.model";
+import {SmlIntegrationService} from "../../../common/services/sml-integration.service";
+import {SMLResult} from "../../../common/model/sml-result.model";
 
 
 @Component({

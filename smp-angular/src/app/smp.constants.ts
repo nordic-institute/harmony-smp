@@ -108,8 +108,6 @@ export class SmpConstants {
   public static readonly REST_EDIT_RESOURCE_MEMBER_DELETE = SmpConstants.REST_EDIT_RESOURCE_MEMBER + '/' + SmpConstants.PATH_PARAM_ENC_MEMBER_ID
     + '/' + SmpConstants.PATH_ACTION_DELETE;
 
-
-
   // legacy
   public static readonly REST_PUBLIC_GROUP_EDIT = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_GROUP + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID;
   public static readonly REST_PUBLIC_GROUP_DOMAIN = SmpConstants.REST_PUBLIC_GROUP_EDIT + '/' +
@@ -155,7 +153,6 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_SECURITY_AUTHENTICATION = SmpConstants.REST_PUBLIC_SECURITY + 'authentication';
   public static readonly REST_PUBLIC_SECURITY_USER = SmpConstants.REST_PUBLIC_SECURITY + 'user';
 
-
   public static readonly REST_PUBLIC_RESOURCE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE;
   public static readonly REST_PUBLIC_RESOURCE_EDIT = SmpConstants.REST_PUBLIC_RESOURCE + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID
     + '/' + SmpConstants.PATH_RESOURCE_TYPE_GROUP + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID;
@@ -194,10 +191,8 @@ export class SmpConstants {
   public static readonly REST_INTERNAL_DOMAIN_MANAGE_CREATE = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_ACTION_CREATE;
 
-
   public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_SML_INTEGRATION = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE_SML_INTEGRATION;
-
 
   public static readonly REST_INTERNAL_DOMAIN_MANAGE_UPDATE_RESOURCE_TYPES = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN +
     '/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID + '/' + SmpConstants.PATH_ACTION_UPDATE_RESOURCE_TYPES;
@@ -257,6 +252,5 @@ export class SmpConstants {
     + SmpConstants.PATH_PARAM_ENC_USER_ID + '/'
     + 'certificate-credential' + '/'
     + SmpConstants.PATH_PARAM_ENC_CREDENTIAL_ID
-
 
 }

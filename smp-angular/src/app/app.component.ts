@@ -5,7 +5,6 @@ import {Authority} from "./security/authority.model";
 import {AlertMessageService} from "./common/alert-message/alert-message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {GlobalLookups} from "./common/global-lookups";
-import {UserController} from "./system-settings/user/user-controller";
 import {HttpClient} from "@angular/common/http";
 import {SidenavComponent} from "./window/sidenav/sidenav.component";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
@@ -15,6 +14,7 @@ import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/properties/properties';
+import {UserController} from "./common/services/user-controller";
 
 
 @Component({

@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, QueryList, ViewChild, ViewChildren,} from '@angular/core';
-import {UserService} from "../../system-settings/user/user.service";
 import {CredentialRo} from "../../security/credential.model";
 import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -9,6 +8,7 @@ import {CredentialDialogComponent} from "../../common/dialogs/credential-dialog/
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
 import {UserCertificatePanelComponent} from "./user-certificate-panel/user-certificate-panel.component";
 import {HttpErrorHandlerService} from "../../common/error/http-error-handler.service";
+import {UserService} from "../../common/services/user.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 
@@ -17,7 +17,7 @@ import {MatPaginator} from "@angular/material/paginator";
   templateUrl: './user-certificates.component.html',
   styleUrls: ['./user-certificates.component.scss']
 })
-export class UserCertificatesComponent implements AfterViewInit,  BeforeLeaveGuard {
+export class UserCertificatesComponent implements AfterViewInit, BeforeLeaveGuard {
   displayedColumns: string[] = ['certificates'];
   dataSource: MatTableDataSource<CredentialRo> = new MatTableDataSource();
   certificates: CredentialRo[] = [];

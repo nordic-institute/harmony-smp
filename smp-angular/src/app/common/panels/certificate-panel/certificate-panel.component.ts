@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
+import {CertificateRo} from "../../model/certificate-ro.model";
 
 @Component({
   selector: 'certificate-panel',

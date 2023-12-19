@@ -1,13 +1,13 @@
 import {Component, OnDestroy, OnInit,} from '@angular/core';
 import {SecurityService} from "../../security/security.service";
 import {User} from "../../security/user.model";
-import {UserService} from "../../system-settings/user/user.service";
-import {UserRo} from "../../system-settings/user/user-ro.model";
 import {MatDialog} from "@angular/material/dialog";
 import {SecurityEventService} from "../../security/security-event.service";
 import {Subscription} from "rxjs";
 import {SmpConstants} from "../../smp.constants";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
+import {UserRo} from "../../common/model/user-ro.model";
+import {UserService} from "../../common/services/user.service";
 
 
 @Component({

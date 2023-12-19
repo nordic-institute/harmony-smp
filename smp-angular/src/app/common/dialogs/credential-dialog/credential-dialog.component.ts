@@ -3,11 +3,11 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {SmpConstants} from "../../../smp.constants";
 import {AccessTokenRo} from "../../model/access-token-ro.model";
-import {UserService} from "../../../system-settings/user/user.service";
 import {CredentialRo} from "../../../security/credential.model";
-import {CertificateRo} from "../../../system-settings/user/certificate-ro.model";
-import {CertificateService} from "../../../system-settings/user/certificate.service";
 import {HttpErrorHandlerService} from "../../error/http-error-handler.service";
+import {CertificateService} from "../../services/certificate.service";
+import {CertificateRo} from "../../model/certificate-ro.model";
+import {UserService} from "../../services/user.service";
 
 @Component({
   templateUrl: './credential-dialog.component.html',

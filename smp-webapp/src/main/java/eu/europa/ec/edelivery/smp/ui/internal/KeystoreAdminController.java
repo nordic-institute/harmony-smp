@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -40,7 +40,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_KEYSTORE;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE;
 
@@ -64,12 +64,12 @@ public class KeystoreAdminController {
 
     @GetMapping(path = "/{user-id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId) and @smpAuthorizationService.isSystemAdministrator")
-    public List<CertificateRO> getSystemKeystoreCertificates(@PathVariable("user-id") String userId) {
+    public List<CertificateRO> getSystemKeystoreCertificates(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId) {
         logAdminAccess("getSystemKeystoreCertificates");
 
         List<CertificateRO> keystoreEntriesList = uiKeystoreService.getKeystoreEntriesList();
         // clear encoded value to reduce http traffic
-        keystoreEntriesList.stream().forEach(certificateRO -> {
+        keystoreEntriesList.forEach(certificateRO -> {
             certificateRO.setEncodedValue(null);
             certificateRO.setStatus(EntityROStatus.PERSISTED.getStatusNumber());
         });
@@ -77,8 +77,8 @@ public class KeystoreAdminController {
     }
 
     @PreAuthorize("@smpAuthorizationService.systemAdministrator AND @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
-    @PostMapping(path = "/{user-enc-id}/upload/{keystoreType}/{password}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_OCTET_STREAM_VALUE)
-    public KeystoreImportResult uploadKeystore(@PathVariable("user-enc-id") String userEncId,
+    @PostMapping(path = "/{user-id}/upload/{keystoreType}/{password}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_OCTET_STREAM_VALUE)
+    public KeystoreImportResult uploadKeystore(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                @PathVariable("keystoreType") String keystoreType,
                                                @PathVariable("password") String password,
                                                @RequestBody byte[] fileBytes) {
@@ -103,9 +103,9 @@ public class KeystoreAdminController {
     }
 
     @PreAuthorize("@smpAuthorizationService.systemAdministrator AND @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")
-    @DeleteMapping(value = "/{user-enc-id}/delete/{alias}", produces = APPLICATION_JSON_VALUE)
-    public CertificateRO deleteCertificate(@PathVariable("user-enc-id") String userEncId,
-                                           @PathVariable("alias") String alias) {
+    @DeleteMapping(value = "/{user-id}/delete/{cert-alias}", produces = APPLICATION_JSON_VALUE)
+    public CertificateRO deleteCertificate(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                           @PathVariable(PATH_PARAM_CERT_ALIAS) String alias) {
         LOG.info("Remove alias by user id {}, alias {}.", userEncId, alias);
         CertificateRO response;
         try {

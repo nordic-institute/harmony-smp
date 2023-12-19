@@ -37,7 +37,7 @@ import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.PARAM_PAGINATION_FILTER;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -74,7 +74,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     public void testSearch() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, session);
-        MvcResult result = mvc.perform(get(PATH_INTERNAL + "/{user-enc-id}/search", userROAdmin.getUserId())
+        MvcResult result = mvc.perform(get(PATH_INTERNAL + "/{user-id}/search", userROAdmin.getUserId())
                         .session(session)
                         .with(csrf()))
                 .andExpect(status().isOk()).andReturn();
@@ -93,7 +93,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     public void testSearchFilterNoMatch() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, session);
-        MvcResult result = mvc.perform(get(PATH_INTERNAL + "/{user-enc-id}/search", userROAdmin.getUserId())
+        MvcResult result = mvc.perform(get(PATH_INTERNAL + "/{user-id}/search", userROAdmin.getUserId())
                         .session(session)
                         .param(PARAM_PAGINATION_FILTER, "no-user-matches-this-filter")
                         .with(csrf()))
