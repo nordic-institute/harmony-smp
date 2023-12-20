@@ -115,7 +115,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
     }
 
     @Transactional
-    public void createResource(DBUser user, ResourceRequest resourceRequest,
+    public void createResource(List<DBUser> owners, ResourceRequest resourceRequest,
                                ResourceResponse resourceResponse) {
 
         LOG.debug("Handle the CREATE action for resource request [{}]", resourceRequest);
@@ -170,7 +170,9 @@ public class ResourceHandlerService extends AbstractResourceHandler {
         DBResource managedResource = resourceStorage.addDocumentVersionForResource(resource, documentVersion);
 
         if (isNewResource) {
-            resourceMemberDao.setAdminMemberShip(user, managedResource);
+            // associate owners to new resource
+            owners.forEach(owner -> resourceMemberDao.setAdminMemberShip(owner, managedResource));
+
             if (managedResource.getGroup() == null) {
 
                 if (resolvedData.getGroup() != null) {
@@ -223,7 +225,7 @@ public class ResourceHandlerService extends AbstractResourceHandler {
             }
         }
         // set headers to response
-        responseData.getHttpHeaders().forEach((key, value) -> resourceResponse.setHttpHeader(key, value));
+        responseData.getHttpHeaders().forEach(resourceResponse::setHttpHeader);
         // determinate status before resource is stored to database!
         resourceResponse.setHttpStatus(getHttpStatusForCreateUpdate(isNewResource, responseData));
 

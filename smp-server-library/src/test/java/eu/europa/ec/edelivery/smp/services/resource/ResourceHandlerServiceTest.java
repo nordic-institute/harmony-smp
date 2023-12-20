@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -27,6 +27,7 @@ import eu.europa.ec.smp.spi.def.OasisSMPServiceMetadata10;
 import eu.europa.ec.smp.spi.handler.OasisSMPServiceGroup10Handler;
 import eu.europa.ec.smp.spi.handler.OasisSMPServiceMetadata10Handler;
 import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,8 +39,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 // add SPI examples to the context
 @ContextConfiguration(classes = {OasisSMPServiceGroup10.class,
@@ -47,7 +50,7 @@ import static org.junit.Assert.assertTrue;
         OasisSMPServiceGroup10Handler.class,
         OasisSMPServiceMetadata10Handler.class,
         ServiceMetadata10Validator.class})
-class ResourceHandlerServiceTest extends AbstractJunit5BaseDao  {
+class ResourceHandlerServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired
     private ConfigurationDao configurationDao;
@@ -126,7 +129,7 @@ class ResourceHandlerServiceTest extends AbstractJunit5BaseDao  {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Mockito.doReturn(baos).when(responseData).getOutputStream();
 
-        testInstance.createResource(testUtilsDao.getUser1(), requestData, responseData);
+        testInstance.createResource(Collections.singletonList(testUtilsDao.getUser1()), requestData, responseData);
     }
 
     @Test

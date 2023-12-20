@@ -104,7 +104,7 @@ public class ResourceControllerSubResourceTest extends AbstractControllerTest {
             "'Set owner is same group admin: OK', 200, pat_smp_admin, 123456, pat_smp_admin, 123456,'pat_smp_admin'",
             "'Set resource owner user: OK', 200, test_pat_hashed_pass, 123456, test_pat_hashed_pass, 123456,'test_pat_hashed_pass'",
             "'Set resource owner user: OK', 200, test_pat_hashed_pass, 123456, test_pat_hashed_pass, 123456,'test_user_hashed_pass'",
-            "'Set owner user, but admin deletets: Fail', 400, test_pat_hashed_pass, 123456, pat_smp_admin, 123456, 'test_pat_hashed_pass'",
+            "'Legacy: Set owner user, but default admin owner deletes: OK', 200, test_pat_hashed_pass, 123456, pat_smp_admin, 123456, 'test_pat_hashed_pass'",
     })
     void deleteSubResourcePermissions(String desc, int expectedStatus,
                                       String resourceAdminCreateATId, String resourceCreateATSecret,

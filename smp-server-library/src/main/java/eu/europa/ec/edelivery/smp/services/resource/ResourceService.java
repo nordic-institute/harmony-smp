@@ -34,6 +34,7 @@ import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -134,19 +135,24 @@ public class ResourceService {
     public void createOrUpdateResource(SMPUserDetails user, ResourceRequest resourceRequest,
                                        ResourceResponse resourceResponse) {
         LOG.debug("Validate owner for CREATE_UPDATE!");
-        DBUser ownerUser = user.getUser();
         ResolvedData resolvedData = resourceRequest.getResolvedData();
         boolean isNewResource = resolvedData.getResource().getId() == null;
         String owner = resourceRequest.getOwnerHttpParameter();
 
         LOG.debug("Resource is new [{}] and owner header is [{}]", isNewResource, owner);
         // the owner can be set via http owner parameter
+        List<DBUser> owners = new ArrayList<>();
+        // legacy behaviour where requestor is the default owner
+        owners.add( user.getUser());
+
         if (isNewResource && isNotBlank(owner)) {
-            ownerUser = findOwner(owner);
+            LOG.debug("Assign Owner [{}] for new resource.", owner);
+            DBUser ownerUser = findOwner(owner);
+            owners.add(ownerUser);
         } else if (isNotBlank(owner)) {
             LOG.warn("Owner [{}] is given for existing resource [{}]. The owner parameter is ignored!", owner, resolvedData.getResource());
         }
-        resourceHandlerService.createResource(ownerUser, resourceRequest, resourceResponse);
+        resourceHandlerService.createResource(owners, resourceRequest, resourceResponse);
     }
 
     protected DBUser findOwner(final String ownerName) {
