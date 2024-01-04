@@ -1,8 +1,7 @@
-version: "3.0"
+version: "3.8"
 services:
-  tomcat-mysql-sml:
-    image: smp-sml-tomcat-mysql:${SMP_VERSION}
-    container_name: smp-sml-tomcat-mysql
+  domismp-service:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}
     hostname: eulogin.protected.smp.local
     environment:
       - SMP_INIT_PROPERTIES=smp.passwordPolicy.expired.forceChange=false
@@ -37,9 +36,8 @@ services:
 #      - "8953:53"
 #      - "5005:5005"
 
-  eulogin-mock-server:
+  eulogin-service:
     image: edelivery-docker.devops.tech.ec.europa.eu/eulogin/mockserver:6.2.7
-    container_name: eulogin
     hostname: eulogin-mock-server
     volumes:
         - ./eulogin/init-data:/resources/ecas-mock-server

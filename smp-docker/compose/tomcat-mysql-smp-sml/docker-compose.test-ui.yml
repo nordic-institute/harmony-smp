@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  ##
+  ## UI Tests
+  ##
+  testui:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TEST_UI}:${SMP_VERSION}
+    environment:
+      - TZ=CEST # set timezone CEST because of hardoced date UI test assertions
+    networks:
+      - test-network
+networks:
+  test-network:
+    external:
+      name: ${DOCKER_NETWORK_NAME:-test-smp-tomcat-mysql_default}

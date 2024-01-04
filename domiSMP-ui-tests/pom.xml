@@ -4,14 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>eu.europa.ec.edelivery</groupId>
     <artifactId>domiSMP-ui-tests</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <properties>
         <!-- configuration example-->
         <test.properties.path>./src/main/resources/myLocal.properties</test.properties.path>
-
         <commons-csv_version>1.10.0</commons-csv_version>
         <selenium-chrome-driver_version>4.15.0</selenium-chrome-driver_version>
         <selenium-java_version>4.15.0</selenium-java_version>
@@ -30,7 +28,6 @@
         <extentreports_version>5.1.1</extentreports_version>
         <commons-lang3_version>3.13.0</commons-lang3_version>
         <commons-io_version>2.15.0</commons-io_version>
-
     </properties>
 
     <build>
@@ -194,7 +191,6 @@
         </dependency>
         <!-- *********************************************************************************** -->
 
-
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
@@ -238,6 +234,4 @@
             <version>2.12.2</version>
         </dependency>
     </dependencies>
-
-
 </project>

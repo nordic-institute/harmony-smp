@@ -25,6 +25,7 @@ public class DomainModel {
     private String smlSubdomain;
     private String smlParticipantIdentifierRegExp;
     private boolean smlClientCertAuth;
+    private long adminMemberCount = -1;
     private Object actionMessage;
     private Object defaultResourceTypeIdentifier;
     private List<Object> groups;
@@ -79,6 +80,14 @@ public class DomainModel {
 
     public void setResourceDefinitions(List<String> resourceDefinitions) {
         this.resourceDefinitions = resourceDefinitions;
+    }
+
+    public long getAdminMemberCount() {
+        return adminMemberCount;
+    }
+
+    public void setAdminMemberCount(long adminMemberCount) {
+        this.adminMemberCount = adminMemberCount;
     }
 
     public void setSmlSmpId(String smlSmpId) {

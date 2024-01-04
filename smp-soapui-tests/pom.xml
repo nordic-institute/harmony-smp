@@ -11,7 +11,6 @@
     <name>smp-soapui-tests</name>
     <description>Interaction tests suit for SMP</description>
 
-
     <properties>
         <!-- Only selected modules are deployed -->
         <maven.deploy.skip>false</maven.deploy.skip>
@@ -30,8 +29,6 @@
         <httpcore.version>4.4.3</httpcore.version>
         <apache.http4.client.version>4.5.14</apache.http4.client.version>
     </properties>
-
-
     <pluginRepositories>
         <pluginRepository>
             <id>SmartBearPluginRepository</id>
@@ -55,8 +52,6 @@
             </snapshots>
         </repository>
     </repositories>
-
-
     <dependencies>
         <!-- for development purposes only. The soapui
 has its own groovy library -->
@@ -70,7 +65,9 @@ has its own groovy library -->
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
                 </configuration>
