@@ -18,7 +18,7 @@ services:
     depends_on:
       - smp-oracle-db
     command: [bash, -c, "rm -rf /u01/status/wls-admin.started;for i in `seq 150`; do timeout 1  bash -c 'echo \" $$(ls /u01/status/)\"'; if [ -f '/u01/status/database.status' ] && [ \"$$( cat /u01/status/database.status )\" == 'DATABASE IS READY TO USE!' ] ; then break;fi; echo \"$$i. Wait for database!\"; sleep 10;  done;   /u01/oracle/startAdminServer.sh"]
-    image:  ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION:-5.0-SNAPSHOT}
+    image:  ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}
     hostname: smp-wls-admin
     environment:
       - JAVA_OPTIONS="-Dweblogic.webservice.i18n.charset=utf-8"
@@ -39,7 +39,7 @@ services:
     environment:
       - WL_ADMIN_HOST=smp-wls-admin
       - WL_MANAGED_SERV_NAME=smp-node-1
-    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION:-5.0-SNAPSHOT}
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}
     #    ports:
     #      - "18453:8453"
     #      - "18001:8001"
@@ -55,7 +55,7 @@ services:
       - WL_ADMIN_HOST=smp-wls-admin
       - WL_MANAGED_SERV_NAME=smp-node-2
       - WL_DELAY_STARTUP_IN_S=20 # delay startup to allow node 01 to initialize the database, truststore and keystore
-    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION:-5.0-SNAPSHOT}
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}
     #    ports:
     #      - "18453:8453"
     #      - "18001:8001"
@@ -67,7 +67,7 @@ services:
     depends_on:
       - smp-node-01
       - smp-node-02
-    image: smp-httpd:${SMP_VERSION:-5.0-SNAPSHOT}
+    image: ${IMAGE_TAG:-edeliverytest}/smp-httpd:${SMP_VERSION}
     environment:
       - VHOST_CORNER_HOSTNAME=smp.edelivery.eu
       - NODES_COUNT=2
