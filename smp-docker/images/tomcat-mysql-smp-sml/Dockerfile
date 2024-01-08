@@ -141,5 +141,8 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && chmod u+x /sbin/entrypoint.sh
 
 
+HEALTHCHECK --interval=20s --timeout=5s \
+  CMD curl -f http://localhost:8080/smp/ || exit 1
+
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+################################################################
+# The file provides docker compose functions to start, execute
+# tests and stop the docker compose containers.
+################################################################
+
+################################################################
+# Function exports the logs to file and stop and clear containers
+function stopAndClearTestContainers() {
+  echo "Save docker log to docker-file"
+  docker logs "${PLAN_PREFIX}" > smp-container.log 2>&1
+  echo "Clear containers and volumes"
+  docker-compose -p "${PLAN_PREFIX}" rm -s -f -v
+}
+
+################################################################
+# Function exports the logs to file and stop and clear containers
+function startTestContainers() {
+  echo "Save docker log to docker-file"
+  docker compose -p "${PLAN_PREFIX}" up -d --force-recreate --wait --wait-timeout 300
+}
+

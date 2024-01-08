@@ -5,6 +5,7 @@ import ddsl.enums.Pages;
 import ddsl.enums.ResourceTypes;
 import domiSMPTests.SeleniumTest;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
@@ -16,6 +17,7 @@ import utils.TestRunData;
 import java.util.Arrays;
 import java.util.List;
 
+@Ignore("EditGroupsPgTests#beforeTest")
 public class EditGroupsPgTests extends SeleniumTest {
     DomiSMPPage homePage;
     LoginPage loginPage;

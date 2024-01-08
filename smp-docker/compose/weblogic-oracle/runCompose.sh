@@ -1,16 +1,20 @@
 #!/bin/bash
 
-#WORKING_DIR="$(dirname $0)"
-WORKING_DIR="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+WORKDIR="$(cd -P $(dirname ${BASH_SOURCE[0]} ) && pwd)"
+cd "${WORKDIR}" || exit 100
+echo "Working Directory: ${WORKDIR}"
+# project folder
+SMP_PROJECT_FOLDER=$(readlink -e "${WORKDIR}/../../..")
+#load common functions
+source "${SMP_PROJECT_FOLDER}/smp-docker/functions/common.functions"
+source "${SMP_PROJECT_FOLDER}/smp-docker/functions/run-test.functions"
+[ -f "${WORKDIR}/.env" ] && source "${WORKDIR}/.env"
+initializeCommonVariables
 
-SMP_INIT_DATABASE="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
-#SMP_INIT_DATABASE="/cef/test/smp-migration/smp-5.0/smp-4.2/database-scripts/mig/oracle10g.ddl"
-
-#SMP_INIT_DATABASE_DATA="../../../smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
-SMP_INIT_DATABASE_DATA="../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql"
-#SMP_INIT_DATABASE_DATA="/cef/test/smp-migration/smp-5.0/smp-4.2/database-scripts/mig/data-mig.ddl"
+SMP_INIT_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
+#SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
+SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql"
 # soap ui data
-PREFIX="smp-wls12-orcl"
 SMP_VERSION=
 
 
@@ -36,19 +40,14 @@ do
   esac
 done
 
-
-if [  -z "${SMP_VERSION}" ]
-then
-  # get version from POM file 
-  SMP_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)"
-fi
+discoverApplicationVersion
 
 echo "*************************************************************************"
 echo "SMP version: $SMP_VERSION"
 echo "Init sql data: ${SMP_INIT_DATABASE_DATA}"
-echo "Working Directory: ${WORKING_DIR}"
+echo "Working Directory: ${WORKDIR}"
 echo "*************************************************************************"
-cd "$WORKING_DIR"
+cd "$WORKDIR"
 
 echo "Create folder (if not exist) for database scripts ${SMP_DB_SCRIPTS}"
 [ -d  ${SMP_DB_SCRIPTS}  ] || mkdir -p "${SMP_DB_SCRIPTS}"
@@ -75,15 +74,13 @@ function createDatabaseSchemaForUser() {
 }
 
 function clearOldContainers {
-  echo "Clear containers and volumes"
-  docker-compose -p "${PREFIX}" rm -s -f -v
-  echo "Clear container data ${WORKING_DIR}/data/"
-  rm -rf ${WORKING_DIR}/data/upload/*.*
-  rm -rf ${WORKING_DIR}/data/smp/config/*.*
-  rm -rf ${WORKING_DIR}/data/smp/security/*.*
-  rm -rf ${WORKING_DIR}/data/weblogic/keystores/*.*
-  rm -rf ${WORKING_DIR}/data/weblogic/security.properties
-  rm -rf ${WORKING_DIR}/data/*.*
+  echo "Clear container data ${WORKDIR}/data/"
+  rm -rf ${WORKDIR}/data/upload/*.*
+  rm -rf ${WORKDIR}/data/smp/config/*.*
+  rm -rf ${WORKDIR}/data/smp/security/*.*
+  rm -rf ${WORKDIR}/data/weblogic/keystores/*.*
+  rm -rf ${WORKDIR}/data/weblogic/security.properties
+  rm -rf ${WORKDIR}/data/*.*
 }
 
 createDatabaseSchemaForUser $SMP_DB_USERNAME $SMP_DB_PASSWORD "${SMP_DB_SCRIPTS}/01_create_user.sql"
@@ -114,8 +111,13 @@ clearOldContainers
 export SMP_VERSION
 export ORA_VERSION
 export ORA_EDITION
+export SMP_VERSION
 
-docker-compose -p ${PREFIX} up -d --force-recreate
+echo "Clear old containers"
+stopAndClearTestContainers
+# start "
+echo "Start containers"
+startTestContainers
 
 
 # wait until service is up

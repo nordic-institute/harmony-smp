@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+WORKDIR="$(cd -P $( dirname ${BASH_SOURCE[0]} ) && pwd)"
+cd ${WORKDIR} || exit 100
+echo "Working Directory: ${WORKDIR}"
+#load common functions
+source "${WORKDIR}/../functions/common.functions"
+initializeCommonVariables
+exportBuildArtefactNames
+
 # Script builds docker images for SMP oracle/weblogic environment. Docker images for database and weblogic are from
 # https://github.com/oracle/docker-images
 
@@ -23,21 +31,13 @@ ORA_VERSION="11.2.0.2"
 ORA_EDITION="xe"
 ORA_SERVICE="xe"
 
-ORACLE_DB11_FILE="oracle-xe-11.2.0-1.0.x86_64.rpm.zip"
-ORACLE_DB19_FILE="LINUX.X64_193000_db_home.zip"
-ORACLE_DOCKERFILE="Dockerfile.xe"
-
-ORACLE_DB_FILE="${ORACLE_DB11_FILE}"
-SERVER_JDK_FILE="server-jre-8u391-linux-x64.tar.gz"
-SERVER_JDK11_FILE="jdk-11.0.21_linux-x64_bin.tar.gz"
-WEBLOGIC_122_QUICK_FILE="fmw_12.2.1.4.0_wls_quick_Disk1_1of1.zip"
-WEBLOGIC_14_FILE="fmw_14.1.1.0.0_wls_lite_Disk1_1of1.zip"
 SMP_VERSION=
 ORACLE_ARTEFACTS="/CEF/repo"
 
-SMP_ARTEFACTS="../../smp-webapp/target/"
-SMP_SPRINGBOOT_ARTEFACTS="../../smp-springboot/target/"
-SMP_PLUGIN_EXAMPLE="../../smp-examples/smp-spi-payload-validation-example/target/"
+SMP_PROJECT_FOLDER=$(readlink -e "${WORKDIR}/../..")
+SMP_ARTEFACTS="${SMP_PROJECT_FOLDER}/smp-webapp/target"
+SMP_SPRINGBOOT_ARTEFACTS="${SMP_PROJECT_FOLDER}/smp-springboot/target"
+SMP_PLUGIN_EXAMPLE="${SMP_PROJECT_FOLDER}/smp-examples/smp-spi-payload-validation-example/target"
 SMP_ARTEFACTS_CLEAR="false"
 
 SMP_IMAGE_PUBLISH="false"
@@ -59,21 +59,9 @@ while getopts v:o:a:s:c:p: option; do
   esac
 done
 
-if [[ -z "${SMP_VERSION}" ]]; then
-  # get version from setup file
-  echo "Get version from the pom: $(pwd)"
-  SMP_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout)"
-  # go back to dirname
-  if [[ -z "${SMP_VERSION}" ]]; then
-    echo "Try to get version from artefacts: $(ls -ltr $SMP_ARTEFACTS)"
-    SMP_VERSION="$(ls ${SMP_ARTEFACTS}/smp-*-setup.zip | sed -e 's/.*smp-//g' | sed -e 's/-setup\.zip$//g')"
-  fi
-fi
+# discover SMP  version
+discoverApplicationVersion
 
-
-DIRNAME=$(dirname "$0")
-cd "$DIRNAME"
-DIRNAME="$(pwd -P)"
 echo "*****************************************************************"
 echo "* SMP artefact folders: $SMP_ARTEFACTS, (Clear folder after build: $SMP_ARTEFACTS_CLEAR )"
 echo "* SMP artefact springboot folders: $SMP_SPRINGBOOT_ARTEFACTS"
@@ -208,6 +196,11 @@ validateAndPrepareArtefacts() {
   else
     cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-payload-validation-example-$SMP_VERSION.jar" ./tomcat-mysql-smp-sml/artefacts/smp-spi-payload-validation-example.jar
   fi
+
+  # copy artefact to docker build folder
+  [[ -d  ./smp-test-ui/artefacts/domiSMP-ui-tests ]] && rm -rf ./smp-test-ui/artefacts/domiSMP-ui-tests
+  mkdir -p ./smp-test-ui/artefacts
+  cp -r "${SMP_PROJECT_FOLDER}/domiSMP-ui-tests" ./smp-test-ui/artefacts/
 }
 
 
@@ -221,21 +214,32 @@ buildImages() {
   buildTomcatMysqlImages
   buildSpringbootMysqlImages
   buildUtils
+  buildTestUIImages
 }
+
+buildTestUIImages() {
+  # build tomcat mysql image deployment.
+   docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TEST_UI}:${SMP_VERSION}" ./smp-test-ui/
+    if [ $? -ne 0 ]; then
+      echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TEST_UI}:${SMP_VERSION}]!"
+      exit 10
+    fi
+}
+
 buildSpringbootMysqlImages() {
     # build tomcat mysql image deployment.
-  docker build -t "smp-springboot-mysql:${SMP_VERSION}" ./smp-springboot-mysql/ --build-arg SMP_VERSION=${SMP_VERSION}
+  docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_SPRINGBOOT_MYSQL}:${SMP_VERSION}" ./smp-springboot-mysql/ --build-arg SMP_VERSION=${SMP_VERSION}
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [smp-springboot-mysql:${SMP_VERSION}]!"
+    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_SPRINGBOOT_MYSQL}:${SMP_VERSION}]!"
     exit 10
   fi
 }
 
 buildTomcatMysqlImages() {
     # build tomcat mysql image deployment.
-  docker build -t "smp-sml-tomcat-mysql:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
+  docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}" ./tomcat-mysql-smp-sml/ --build-arg SMP_VERSION=${SMP_VERSION}
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [smp-sml-tomcat-mysql:${SMP_VERSION}]!"
+    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}]!"
     exit 10
   fi
 }
@@ -245,9 +249,9 @@ buildOracleDatabaseImage(){
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
   # oracle 1.2.0.2-xe (https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance/dockerfiles/11.2.0.2)
-  docker build -f ./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DOCKERFILE} -t "smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}" --build-arg DB_EDITION=${ORA_EDITION} ./oracle/oracle-db-${ORA_VERSION}/
+  docker build -f ./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DOCKERFILE} -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_BD_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}" --build-arg DB_EDITION=${ORA_EDITION} ./oracle/oracle-db-${ORA_VERSION}/
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [smp-oradb-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}]!"
+    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_BD_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}]!"
     exit 10
   fi
 }
@@ -271,9 +275,9 @@ buildWebLogicOracleImages12(){
   fi
 
   # build SMP deployment.
-  docker build -t "smp-weblogic-122:${SMP_VERSION}" ./weblogic-12.2-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
+  docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}" ./weblogic-12.2-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [smp-weblogic-122:${SMP_VERSION}]!"
+    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}]!"
     exit 10
   fi
 
@@ -282,7 +286,7 @@ buildWebLogicOracleImages12(){
 buildUtils(){
  # build the httpd image for LB. The Http is configured to allow encoded characters which
   # are not decoded!
-  docker build -t "smp-httpd:${SMP_VERSION}" ./smp-httpd/
+  docker build -t "${IMAGE_TAG:-edeliverytest}/smp-httpd:${SMP_VERSION}" ./smp-httpd/
    if [ $? -ne 0 ]; then
      echo "Error occurred while building image [smp-httpd:${SMP_VERSION}]!"
      exit 10
@@ -308,16 +312,9 @@ buildWebLogicOracleImages14(){
   fi
 
   # build SMP deployment.
-  docker build -t "smp-weblogic-141:${SMP_VERSION}" ./weblogic-14.1-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
+  docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC14}:${SMP_VERSION}" ./weblogic-14.1-smp/ --build-arg SMP_VERSION="$SMP_VERSION"
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [smp-weblogic-141:${SMP_VERSION}]!"
-    exit 10
-  fi
- # build the httpd image for LB. The Http is configured to allow encoded characters which
- # are not decoded!
- docker build -t "smp-httpd:${SMP_VERSION}" ./smp-httpd/
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [smp-httpd:${SMP_VERSION}]!"
+    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC14}:${SMP_VERSION}]!"
     exit 10
   fi
 }
@@ -328,9 +325,10 @@ function pushImageToDockerhub() {
     # login to docker
     docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}" "${DOCKER_REGISTRY_HOST}"
     # push images
-    pushImageIfExisting "smp-sml-tomcat-mysql:${SMP_VERSION}"
-    pushImageIfExisting "smp-weblogic-122:${SMP_VERSION}"
-    pushImageIfExisting "smp-oradb-11.2.0.2-xe:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_BD_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}"
   fi
 }
 
@@ -361,7 +359,6 @@ cleanArtefacts() {
     rm -rf "${SMP_ARTEFACTS}/smp-setup.zip"
     rm -rf "${SMP_ARTEFACTS}/smp.war"
   fi
-
 }
 
 validateAndPrepareArtefacts
