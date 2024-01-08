@@ -1,17 +1,13 @@
 #!/bin/bash
 
 WORKDIR="$(dirname $0)"
-source "${WORKDIR}/../../functions/common.functions"
+SMP_PROJECT_FOLDER=$(readlink -e "${WORKDIR}/../../..")
+source "${SMP_PROJECT_FOLDER}/functions/common.functions"
+source "${SMP_PROJECT_FOLDER}/smp-docker/functions/run-test.functions"
 [ -f "${WORKDIR}/.env" ] && source "${WORKDIR}/.env"
+cd "${WORKDIR}" || exit 100
 initializeCommonVariables
+discoverApplicationVersion
 
-# clear volume and containers - to run  restart from scratch
-function clearOldContainers {
-  echo "Save docker log to docker-file"
-  docker logs > smp-container.log 2>&1
-  echo "Clear containers and volumes"
-  docker-compose -p "${PLAN_PREFIX}" rm -s -f -v
-}
-
-# stop and clear
-clearOldContainers
+echo "Clear old containers"
+stopAndClearTestContainers

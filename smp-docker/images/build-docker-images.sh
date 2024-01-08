@@ -63,11 +63,11 @@ done
 discoverApplicationVersion
 
 echo "*****************************************************************"
-echo "* SMP artefact folders: $SMP_ARTEFACTS, (Clear folder after build: $SMP_ARTEFACTS_CLEAR )"
-echo "* SMP artefact springboot folders: $SMP_SPRINGBOOT_ARTEFACTS"
-echo "* SMP Plugin example: $SMP_PLUGIN_EXAMPLE "
-echo "* Build SMP image for version $SMP_VERSION"
-echo "* Oracle artefact folders: $ORACLE_ARTEFACTS"
+echo "* SMP artefact folders: [$SMP_ARTEFACTS], (Clear folder after build: [$SMP_ARTEFACTS_CLEAR] )"
+echo "* SMP artefact springboot folders: [$SMP_SPRINGBOOT_ARTEFACTS]"
+echo "* SMP Plugin example: [$SMP_PLUGIN_EXAMPLE] "
+echo "* Build SMP image for version [$SMP_VERSION]"
+echo "* Oracle artefact folders: [$ORACLE_ARTEFACTS]"
 echo "*****************************************************************"
 echo ""
 

@@ -33,11 +33,11 @@ done
 discoverApplicationVersion
 
 echo "*************************************************************************"
-echo "SMP version: $SMP_VERSION"
-echo "Init sql data: ${SMP_INIT_DATABASE_DATA}"
-echo "Working Directory: ${WORKDIR}"
+echo "SMP version: [${SMP_VERSION}]"
+echo "Init sql data: [${SMP_INIT_DATABASE_DATA}]"
+echo "Working Directory: [${WORKDIR}]"
 echo "*************************************************************************"
-cd "$WORKDIR"
+
 export SMP_VERSION
 
 

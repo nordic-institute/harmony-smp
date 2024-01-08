@@ -29,9 +29,9 @@ done
 discoverApplicationVersion
 
 echo "*****************************************************************"
-echo "* Start SMP image for version: $SMP_VERSION"
-echo "* Plan prefix: ${PLAN_PREFIX}"
-echo "* WORKDIR: ${WORKDIR}"
+echo "* Start SMP image for version: [$SMP_VERSION]"
+echo "* Plan prefix: [${PLAN_PREFIX}]"
+echo "* WORKDIR: [${WORKDIR}]"
 echo "*****************************************************************"
 echo ""
 # export plan variables

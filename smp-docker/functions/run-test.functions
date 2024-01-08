@@ -16,7 +16,7 @@ function stopAndClearTestContainers() {
 ################################################################
 # Function exports the logs to file and stop and clear containers
 function startTestContainers() {
-  echo "Save docker log to docker-file"
+  echo "Start containers with prefix ${PLAN_PREFIX}"
   docker compose -p "${PLAN_PREFIX}" up -d --force-recreate --wait --wait-timeout 300
 }
 
