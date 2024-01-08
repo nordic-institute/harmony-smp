@@ -22,6 +22,4 @@ export DOCKER_NETWORK_NAME
 
 # Starting Docker Compose TEST (in specific project to avoid orphan container warning)
 docker-compose -f docker-compose.test-ui.yml -p "run-${PLAN_PREFIX}" up
-
-docker cp "run-${PLAN_PREFIX}-testui-1:/results/surefire-reports" ./results
-docker cp ${PLAN_PREFIX}-domismp-service-1:/opt/smp/apache-tomcat-9.0.73/logs/*.* ./results/tomcat-logs/
+docker cp "run-${PLAN_PREFIX}_testui_1:/results/surefire-reports" ./results
