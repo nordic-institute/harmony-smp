@@ -2,7 +2,7 @@
 
 echo '[INFO] start execution of the tests'
 cd /home/${SEL_USER}/domiSMP-ui-tests
-mvn clean install -Dtest.properties.path=./src/main/resources/docker-firefox.properties
+mvn clean verify -Dtest.properties.path=./src/main/resources/docker-firefox.properties
 EXIT_CODE=$?
 echo '[INFO] finished execution of the tests'
 cp -R /home/${SEL_USER}/domiSMP-ui-tests/target/surefire-reports /results
