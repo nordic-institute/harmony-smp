@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentPage;
 
 /**
  * Page object Resource details tab of Edit Resource page. This contains the locators of the page and the methods for the behaviour of the page

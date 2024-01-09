@@ -12,5 +12,10 @@ public class SMPRestException extends Exception {
                 message,
                 "STATUS = " + response.getStatus(),
                 "CONTENT = " + response.getEntity(String.class)));
+        log.error(String.format("%s \n %s \n %s \n",
+                message,
+                "STATUS = " + response.getStatus(),
+                "CONTENT = " + response.getEntity(String.class)));
     }
+
 }

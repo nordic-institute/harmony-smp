@@ -1,17 +1,19 @@
 package domiSMPTests.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ddsl.DomiSMPPage;
 import ddsl.enums.Pages;
 import ddsl.enums.ResourceTypes;
 import domiSMPTests.SeleniumTest;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
-import pages.administration.editResourcesPage.EditResourceDocumentPage;
 import pages.administration.editResourcesPage.EditResourcePage;
+import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentPage;
+import pages.administration.editResourcesPage.editResourceDocumentPage.EditResourceDocumentWizardDialog;
 import rest.models.*;
+import utils.Generator;
 import utils.TestRunData;
 import utils.XMLUtils;
 
@@ -19,7 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.Arrays;
 import java.util.List;
 
-@Ignore("All tests fails with java.util.NoSuchElementException: Value [ ... ] was not found in the grid")
 public class EditResourcePgTests extends SeleniumTest {
     DomiSMPPage homePage;
     LoginPage loginPage;
@@ -196,18 +197,72 @@ public class EditResourcePgTests extends SeleniumTest {
         soft.assertAll();
     }
 
-    @Ignore //TODO: continue test with select version
-    @Test(description = "EDTRES-04 Resource admins are able to add generated document", priority = 1)
-    public void resourceAdminsAreAbleToAddGeneratedDocument2() throws ParserConfigurationException {
+    @Test(description = "EDTRES-04 Resource admins are able to add document using Document wizard for Oasis 1.0", priority = 1)
+    public void resourceAdminsAreAbleToAddDocimentUsingDocumentWizardOasis1() throws ParserConfigurationException, JsonProcessingException {
+
+        ResourceModel resourceModelOasis1 = ResourceModel.generatePublicResource(ResourceTypes.OASIS1);
+
+
+        //add resource to group
+        resourceModelOasis1 = rest.resources().createResourceForGroup(domainModel, groupModel, resourceModelOasis1);
+        rest.resources().addMembersToResource(domainModel, groupModel, resourceModelOasis1, adminMember);
+
+        editResourcePage.refreshPage();
+        editResourcePage.selectDomain(domainModel, groupModel, resourceModelOasis1);
 
         editResourcePage.goToTab("Resource details");
         EditResourceDocumentPage editResourceDocumentPage = editResourcePage.getResourceDetailsTab().clickOnEditDocument();
         editResourceDocumentPage.clickOnGenerate();
         editResourceDocumentPage.clickOnSave();
         editResourceDocumentPage.getAlertArea().closeAlert();
-        XMLUtils document1 = new XMLUtils(editResourceDocumentPage.getDocumentValue());
+        editResourceDocumentPage.clickOnValidate();
+        soft.assertEquals(editResourceDocumentPage.getAlertArea().getAlertMessage(), "Document is Valid.");
 
+        EditResourceDocumentWizardDialog editResourceDocumentWizardDialog = editResourceDocumentPage.clickOnDocumentWizard();
+
+        String generatedExtensionIdvalue = Generator.randomAlphaNumericValue(8);
+        String generatedExtensionNamevalue = Generator.randomAlphaNumericValue(8);
+        String generatedExtensionAgencyIdvalue = Generator.randomAlphaNumericValue(8);
+        String generatedExtensionAgencyNamevalue = Generator.randomAlphaNumericValue(8);
+        String generatedExtensionAgencyURIvalue = "www." + Generator.randomAlphaNumericValue(8) + ".com";
+        String generatedExtensionVersionIdvalue = Generator.randomAlphaNumericValue(8);
+        String generatedExtensionURIvalue = "www." + Generator.randomAlphaNumericValue(8) + ".com";
+        String generatedExtensionReasonCodevalue = Generator.randomAlphaNumericValue(8);
+        String generatedExtensionReasonvalue = Generator.randomAlphaNumericValue(8);
+
+
+        editResourceDocumentWizardDialog.getExtensionIdInput().fill(generatedExtensionIdvalue);
+        editResourceDocumentWizardDialog.getExtensionNamenput().fill(generatedExtensionNamevalue);
+        editResourceDocumentWizardDialog.getExtensionAgencyIdnput().fill(generatedExtensionAgencyIdvalue);
+        editResourceDocumentWizardDialog.getExtensionAgencyNameInput().fill(generatedExtensionAgencyNamevalue);
+        editResourceDocumentWizardDialog.getExtensionAgencyURIInput().fill(generatedExtensionAgencyURIvalue);
+        editResourceDocumentWizardDialog.getExtensionVersionIDInput().fill(generatedExtensionVersionIdvalue);
+        editResourceDocumentWizardDialog.getExtensionURIInput().fill(generatedExtensionURIvalue);
+        editResourceDocumentWizardDialog.getExtensionReasonCodeInput().fill(generatedExtensionReasonCodevalue);
+        editResourceDocumentWizardDialog.getExtensionReasonInput().fill(generatedExtensionReasonvalue);
+
+        editResourceDocumentWizardDialog.clickOK();
+        editResourceDocumentPage.clickOnSave();
+        editResourceDocumentPage.clickOnValidate();
+
+        String document = editResourceDocumentPage.getDocumentValue();
+        XMLUtils documentXML = new XMLUtils(document);
+
+
+        soft.assertEquals(documentXML.getNodeValue("ExtensionID"), generatedExtensionIdvalue, "Wrong ExtensionId value");
+        soft.assertEquals(documentXML.getNodeValue("ExtensionName"), generatedExtensionNamevalue, "Wrong ExtensionName value");
+        soft.assertEquals(documentXML.getNodeValue("ExtensionAgencyID"), generatedExtensionAgencyIdvalue, "Wrong ExtensionAgencyID value");
+        soft.assertEquals(documentXML.getNodeValue("ExtensionAgencyName"), generatedExtensionAgencyNamevalue, "Wrong ExtensionAgencyName value");
+        soft.assertEquals(documentXML.getNodeValue("ExtensionAgencyURI"), generatedExtensionAgencyURIvalue, "Wrong ExtensionAgencyURI value");
+        soft.assertEquals(documentXML.getNodeValue("ExtensionVersionID"), generatedExtensionVersionIdvalue, "Wrong ExtensionVersionID value");
+        soft.assertEquals(documentXML.getNodeValue("ExtensionURI"), generatedExtensionURIvalue, "Wrong ExtensionURI value");
+        soft.assertEquals(documentXML.getNodeValue("ExtensionReasonCode"), generatedExtensionReasonCodevalue, "Wrong ExtensionReasonCode value");
+        soft.assertEquals(documentXML.getNodeValue("ExtensionReason"), generatedExtensionReasonvalue, "Wrong ExtensionReason value");
+
+        soft.assertAll();
     }
+
+
 }
 
 
