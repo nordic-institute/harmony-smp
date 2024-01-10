@@ -5,6 +5,7 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -47,14 +48,17 @@ public class XMLUtils {
         return nList.getLength() != 0;
     }
 
-//    public boolean isNodeContaingValue(String nodeName) {
-//
-//        NodeList nList = doc.getChildNodes();
-//        for(Integer i=0; i = nList.getLength()){
-//
-//        }
-//
-//
-//    }
+    public void setContextValueForNode(String nodeName, String attributeName, String attributeValue) {
+        NodeList nList = doc.getElementsByTagName(nodeName);
+        Node nNode = nList.item(0);
+        nNode.setTextContent(attributeValue);
+    }
 
+    public String getNodeValue(String nodeName) {
+        NodeList nList = doc.getElementsByTagName(nodeName);
+        if (nList.getLength() > 0) {
+            return nList.item(0).getTextContent();
+        }
+        return null;
+    }
 }

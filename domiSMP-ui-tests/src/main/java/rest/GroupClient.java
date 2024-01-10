@@ -3,6 +3,8 @@ package rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rest.models.DomainModel;
 import rest.models.GroupModel;
 import rest.models.MemberModel;
@@ -12,6 +14,7 @@ import utils.TestRunData;
  * Rest client for group actions
  */
 public class GroupClient extends BaseRestClient {
+    private final static Logger LOG = LoggerFactory.getLogger(GroupClient.class);
 
     public GroupClient() {
         super();
@@ -31,7 +34,7 @@ public class GroupClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Member: " + groupMember.getUsername() + " has been added!");
+        LOG.debug("Member: " + groupMember.getUsername() + " has been added!");
         return response.getEntity(MemberModel.class);
     }
 }

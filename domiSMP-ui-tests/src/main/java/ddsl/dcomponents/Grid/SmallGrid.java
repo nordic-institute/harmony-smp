@@ -157,9 +157,10 @@ public class SmallGrid extends DComponent {
         }
         if (columnIndex == -1) {
             LOG.error("No element found");
+            throw new NoSuchElementException("Column not found");
         }
         boolean isElementPresent = false;
-        for (int pageNr = 1; pageNr < numOfPages + 1; pageNr++) {
+        for (int pageNr = 0; pageNr < numOfPages + 1; pageNr++) {
 
             List<WebElement> rows = getRows();
             for (WebElement row : rows) {

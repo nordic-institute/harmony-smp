@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rest.models.DomainModel;
 import rest.models.GroupModel;
 import rest.models.MemberModel;
@@ -14,6 +16,8 @@ import utils.TestRunData;
  * Rest client for group actions
  */
 public class ResourceClient extends BaseRestClient {
+    private final static Logger LOG = LoggerFactory.getLogger(ResourceClient.class);
+
     public ResourceModel createResourceForGroup(DomainModel domainModel, GroupModel groupModel, ResourceModel resourceModelToBeCreated) {
         JSONObject resourceJson = new JSONObject(resourceModelToBeCreated);
         String createResourcePath = RestServicePaths.getCreateResourcePath(TestRunData.getInstance().getUserId(), domainModel.getDomainId(), groupModel.getGroupId());
@@ -25,7 +29,7 @@ public class ResourceClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Resource have been added!");
+        LOG.debug("Resource have been added!");
         return response.getEntity(ResourceModel.class);
     }
 
@@ -43,7 +47,7 @@ public class ResourceClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Member: " + groupMember.getUsername() + " has been added!");
+        LOG.debug("Member: " + groupMember.getUsername() + " has been added!");
         return response.getEntity(MemberModel.class);
     }
 }

@@ -5,7 +5,6 @@ import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pages.LoginPage;
@@ -18,10 +17,10 @@ import rest.models.UserModel;
 /**
  * This class has the tests against Domains Page
  */
-@Ignore("DomainsPgTests:beforeTest Failing tests: org.openqa.selenium.ElementClickInterceptedException: Element <select id=\"signatureKeyAlias_id\" " +
-        "class=\"mat-mdc-input-element mat-mdc-tooltip-trigger ng-tns-c1205077789-11 ng-untouched ng-pristine ng-valid " +
-        "mat-mdc-form-field-input-control mdc-text-field__input cdk-text-field-autofill-monitored cdk-focused cdk-program-focused\"> " +
-        "is not clickable at point (1014,364) because another element <mat-label class=\"ng-tns-c1205077789-11\"> obscures it" )
+//@Ignore("DomainsPgTests:beforeTest Failing tests: org.openqa.selenium.ElementClickInterceptedException: Element <select id=\"signatureKeyAlias_id\" " +
+//        "class=\"mat-mdc-input-element mat-mdc-tooltip-trigger ng-tns-c1205077789-11 ng-untouched ng-pristine ng-valid " +
+//        "mat-mdc-form-field-input-control mdc-text-field__input cdk-text-field-autofill-monitored cdk-focused cdk-program-focused\"> " +
+//        "is not clickable at point (1014,364) because another element <mat-label class=\"ng-tns-c1205077789-11\"> obscures it" )
 public class DomainsPgTests extends SeleniumTest {
     DomiSMPPage homePage;
     LoginPage loginPage;
@@ -51,7 +50,9 @@ public class DomainsPgTests extends SeleniumTest {
         domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
         soft.assertEquals(domainModel.getSignatureKeyAlias(), domainsPage.getDomainTab().getResponseSignatureCertificateSelectedValue());
         soft.assertEquals(domainModel.getVisibility(), domainsPage.getDomainTab().getVisibilityOfDomainSelectedValue());
-        soft.assertEquals("To complete domain configuration, please select at least one resource type from the Resource Types tab", domainsPage.getDomainWarningMessage());
+        soft.assertEquals(domainsPage.getDomainWarningMessage(), "To complete domain configuration, please:\n" +
+                "select at least one resource type from the Resource Types tab\n" +
+                "add a domain member with 'ADMIN' role from the Members tab!");
         soft.assertAll();
     }
 

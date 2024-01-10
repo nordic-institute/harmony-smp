@@ -172,7 +172,6 @@ public class TestRunData {
 
     public String getUiBaseUrl() {
         String url = getPropertyValue(TestEnvironmentProperty.APPLICATION_UI_URL);
-        LOG.debug("UI URL [{}]", url);
         return url;
     }
 

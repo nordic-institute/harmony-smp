@@ -1,4 +1,4 @@
-package pages.administration.editResourcesPage;
+package pages.administration.editResourcesPage.editResourceDocumentPage;
 
 import ddsl.DomiSMPPage;
 import org.openqa.selenium.WebDriver;
@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Page object for the Edit resource document page. This contains the locators of the page and the methods for the behaviour of the page
@@ -20,6 +21,8 @@ public class EditResourceDocumentPage extends DomiSMPPage {
     private WebElement generateBtn;
     @FindBy(id = "validateResource_id")
     private WebElement validateBtn;
+    @FindBy(id = "documentWizard_id")
+    private WebElement documentWizardBtn;
     @FindBy(css = "smp-titled-label[title=\"Resource identifier:\"] div.smp-tl-value")
     private WebElement resourceIdentifierLbl;
     @FindBy(css = "smp-titled-label[title=\"Resource scheme:\"] div.smp-tl-value")
@@ -44,7 +47,7 @@ public class EditResourceDocumentPage extends DomiSMPPage {
     private List<WebElement> codeEditorReadValueElement;
 
 
-    protected EditResourceDocumentPage(WebDriver driver) {
+    public EditResourceDocumentPage(WebDriver driver) {
         super(driver);
         LOG.debug("Loading Edit resource document page.");
     }
@@ -75,7 +78,13 @@ public class EditResourceDocumentPage extends DomiSMPPage {
         weToDButton(validateBtn).click();
     }
 
-    public void selectDocumentVersion(int version) {
-        weToDSelect(versionDdl).selectValue(String.valueOf(version));
+    public EditResourceDocumentWizardDialog clickOnDocumentWizard() {
+        if (documentNameLbl.getText().contains("1.0")) {
+            weToDButton(documentWizardBtn).click();
+            return new EditResourceDocumentWizardDialog(driver);
+
+        }
+        LOG.error("Document type {%d} doesn't have wizard", documentNameLbl.getText());
+        throw new NoSuchElementException("Document wizard button is not present");
     }
 }

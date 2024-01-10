@@ -75,13 +75,13 @@ public class BaseRestClient {
     protected WebResource.Builder decorateBuilder(WebResource resource) {
 
         WebResource.Builder builder = resource.getRequestBuilder();
-        cookies = TestRunData.getInstance().getCookies();;
+        cookies = TestRunData.getInstance().getCookies();
         if (null != cookies) {
-            log.debug("");
             for (NewCookie cookie : cookies) {
                 builder = builder.cookie(new Cookie(cookie.getName(), cookie.getValue(), "/", ""));
-                log.debug("cookie " + cookie + " is added to the builder");
             }
+        } else {
+            log.error("No cookie are present in the builder");
         }
         if (null != TestRunData.getInstance().getXSRFToken()) {
             builder = builder.header("X-XSRF-TOKEN", TestRunData.getInstance().getXSRFToken());
@@ -136,7 +136,11 @@ public class BaseRestClient {
 
         WebResource.Builder builder = decorateBuilder(resource.path(RestServicePaths.CONNECTED));
         int response = builder.get(ClientResponse.class).getStatus();
-        log.debug("Connected endpoint returns: " + response);
+
+        if (response != 200) {
+            log.debug("Connected endpoint returns " + response);
+
+        }
         return (!(response == 401));
     }
 

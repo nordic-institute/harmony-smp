@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import ddsl.enums.ResourceTypes;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rest.models.DomainModel;
 import rest.models.GroupModel;
 import rest.models.MemberModel;
@@ -18,6 +20,9 @@ public class DomainClient extends BaseRestClient {
     /**
      * Rest client for domain actions
      */
+
+    private final static Logger LOG = LoggerFactory.getLogger(DomainClient.class);
+
     public DomainClient() {
         super();
     }
@@ -34,7 +39,7 @@ public class DomainClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Domain: " + domainModel.getDomainCode() + "  has been created successfully!");
+        LOG.debug("Domain: " + domainModel.getDomainCode() + "  has been created successfully!");
         return response.getEntity(DomainModel.class);
     }
 
@@ -51,7 +56,7 @@ public class DomainClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Member: " + domainMember.getUsername() + " has been added!");
+        LOG.debug("Member: " + domainMember.getUsername() + " has been added!");
         return response.getEntity(MemberModel.class);
     }
 
@@ -72,7 +77,7 @@ public class DomainClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Resources have been added!");
+        LOG.debug("Resources have been added!");
         return response.getEntity(DomainModel.class);
     }
 
@@ -87,7 +92,7 @@ public class DomainClient extends BaseRestClient {
                 throw new RuntimeException(e);
             }
         }
-        log.debug("Group have been added!");
+        LOG.debug("Group have been added!");
         return response.getEntity(GroupModel.class);
     }
 }

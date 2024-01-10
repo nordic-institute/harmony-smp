@@ -40,7 +40,7 @@
     <logger name="domiSMPTests" level="DEBUG"/>
     <logger name="ddsl" level="DEBUG"/>
     <logger name="pages" level="DEBUG"/>
-    <logger name="res" level="DEBUG"/>
+    <logger name="rest" level="DEBUG"/>
     <logger name="utils" level="DEBUG"/>
     <root level="WARN">
         <appender-ref ref="file"/>
