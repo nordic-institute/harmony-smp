@@ -34,14 +34,14 @@
     </mat-form-field>
     <mat-form-field style="width:100%">
       <mat-label>Response signature Certificate (Signature CertAlias)</mat-label>
-      <select matNativeControl matInput formControlName="signatureKeyAlias"
+      <mat-select formControlName="signatureKeyAlias"
                   matTooltip="Certificate is used for signing REST responses for the domain."
                   id="signatureKeyAlias_id">
-        <option [value]="''" ></option>
-        <option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
+        <mat-option [value]="''" ></mat-option>
+        <mat-option *ngFor="let cert of keystoreCertificates" [value]="cert.alias">
           {{cert.alias}} ({{cert.certificateId}})
-        </option>
-      </select>
+        </mat-option>
+      </mat-select>
       <mat-hint align="end">Empty value will cause that Resource responses will not be signed by SMP!
       </mat-hint>
     </mat-form-field>

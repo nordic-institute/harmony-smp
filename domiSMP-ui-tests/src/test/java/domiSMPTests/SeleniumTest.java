@@ -58,6 +58,7 @@ public class SeleniumTest {
         try {
             driver.get(data.getUiBaseUrl());
         } catch (Exception e) {
+            LOG.warn("Driver is not initialized, try to reninitialize it");
             driver = DriverManager.getDriver();
             driver.get(data.getUiBaseUrl());
         }

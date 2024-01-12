@@ -44,6 +44,11 @@ td , th {
   padding: 10px !important;
 }
 
+.mat-select {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .text-select {
   -webkit-user-select: text;
   -moz-user-select: text;

@@ -11,8 +11,8 @@
         <!-- configuration example-->
         <test.properties.path>./src/main/resources/myLocal.properties</test.properties.path>
         <commons-csv_version>1.10.0</commons-csv_version>
-        <selenium-chrome-driver_version>4.15.0</selenium-chrome-driver_version>
-        <selenium-java_version>4.15.0</selenium-java_version>
+        <selenium-chrome-driver_version>4.16.1</selenium-chrome-driver_version>
+        <selenium-java_version>4.16.1</selenium-java_version>
         <poi-ooxml_version>5.2.4</poi-ooxml_version>
         <reflections_version>0.10.2</reflections_version>
         <jersey-client_version>1.19.4</jersey-client_version>
