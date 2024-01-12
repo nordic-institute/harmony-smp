@@ -27,13 +27,6 @@ public class MatSelect extends DObject {
         option.click();
     }
 
-    public void selectByValue(String value) {
-        element.click();
-        WebElement option = element.findElement(By.xpath("//mat-option/span[contains(text(),'" + value + "')]"));
-        wait.forElementToBeVisible(option);
-        option.click();
-    }
-
     /**
      * Method returns the current selected text!
      *
