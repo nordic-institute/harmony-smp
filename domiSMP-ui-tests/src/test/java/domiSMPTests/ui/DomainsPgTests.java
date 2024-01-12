@@ -2,6 +2,7 @@ package domiSMPTests.ui;
 
 import ddsl.DomiSMPPage;
 import ddsl.enums.Pages;
+import ddsl.enums.ResponseCertificates;
 import domiSMPTests.SeleniumTest;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
@@ -48,7 +49,7 @@ public class DomainsPgTests extends SeleniumTest {
         soft.assertEquals(alert, "Domain: [" + domainModel.getDomainCode() + "] was created!");
 
         domainsPage.getLeftSideGrid().searchAndGetElementInColumn("Domain code", domainModel.getDomainCode()).click();
-        soft.assertEquals(domainModel.getSignatureKeyAlias(), domainsPage.getDomainTab().getResponseSignatureCertificateSelectedValue());
+        soft.assertEquals(ResponseCertificates.getTextForAlias(domainModel.getSignatureKeyAlias()), domainsPage.getDomainTab().getResponseSignatureCertificateSelectedValue());
         soft.assertEquals(domainModel.getVisibility(), domainsPage.getDomainTab().getVisibilityOfDomainSelectedValue());
         soft.assertEquals(domainsPage.getDomainWarningMessage(), "To complete domain configuration, please:\n" +
                 "select at least one resource type from the Resource Types tab\n" +

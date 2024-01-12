@@ -26,4 +26,14 @@ public class MatSelect extends DObject {
         wait.forElementToBeVisible(option);
         option.click();
     }
+
+    /**
+     * Method returns the current selected text!
+     *
+     * @return the text displayed in the select
+     */
+    public String getCurrentText() {
+        return element.getText();
+
+    }
 }

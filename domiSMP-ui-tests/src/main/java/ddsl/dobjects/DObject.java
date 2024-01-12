@@ -60,9 +60,9 @@ public class DObject {
         throw new Exception();
     }
 
-    public String getText() throws Exception {
+    public String getText() {
         if (!isPresent()) {
-            throw new Exception();
+            throw new ElementNotInteractableException("Element: ["+ element.getAccessibleName() +"] not present");
         }
         scrollIntoView();
         String text = ((JavascriptExecutor) driver).executeScript("return arguments[0].innerText;", element).toString();
@@ -73,7 +73,7 @@ public class DObject {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
     }
 
-    public void click() throws ElementNotInteractableException {
+    public void click()  {
         if (isEnabled()) {
             wait.forElementToBeClickable(element).click();
         } else {

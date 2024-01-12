@@ -2,6 +2,8 @@ package pages.systemSettings.domainsPage;
 
 import ddsl.dcomponents.ConfirmationDialog;
 import ddsl.dcomponents.DComponent;
+import ddsl.enums.ResponseCertificates;
+import org.apache.poi.util.StringUtil;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -39,11 +41,19 @@ public class SMLIntegrationTab extends DComponent {
     }
 
     public void fillSMLIntegrationTab(DomainModel domainModel) {
+        ResponseCertificates responseCertificates = ResponseCertificates
+                .getByAlias(domainModel.getSignatureKeyAlias());
+        if (StringUtil.isNotBlank(domainModel.getSignatureKeyAlias()) &&  responseCertificates== null) {
+            LOG.warn("Cannot find signature key for alias [{}]", domainModel.getSignatureKeyAlias());
+        }
         try {
+
             weToDInput(smlDomainInput).fill(domainModel.getSmlSubdomain());
             weToDInput(smlsmpIdentifierInput).fill(domainModel.getSmlSmpId());
-            //TODO : check of clientcertificatealias is changed from mat-select to select
-            weToDSelect(smlClientCertificateAliasDdl).selectByVisibleText(domainModel.getSignatureKeyAlias(), true);
+            if (responseCertificates != null) {
+                weToDSelect(smlClientCertificateAliasDdl)
+                        .selectByVisibleText(responseCertificates.getText(), true);
+            }
             weToDButton(useClientCertBtn).click();
 
         } catch (Exception e) {

@@ -1,6 +1,8 @@
 package pages.systemSettings.domainsPage;
 
 import ddsl.dcomponents.DComponent;
+import ddsl.enums.ResponseCertificates;
+import org.apache.poi.util.StringUtil;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -22,6 +24,7 @@ public class DomainTab extends DComponent {
     private WebElement visibilityOfDomainDdl;
     @FindBy(id = "saveButton")
     private WebElement saveBtn;
+
     public DomainTab(WebDriver driver) {
         super(driver);
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, data.getWaitTimeShort()), this);
@@ -33,7 +36,7 @@ public class DomainTab extends DComponent {
     }
 
     public String getResponseSignatureCertificateSelectedValue() {
-        return weToDSelect(responseSignatureCertificateDdl).getCurrentValue();
+        return weToMatSelect(responseSignatureCertificateDdl).getCurrentText();
     }
 
     public String getVisibilityOfDomainSelectedValue() {
@@ -41,9 +44,18 @@ public class DomainTab extends DComponent {
     }
 
     public void fillDomainData(DomainModel domainModel) {
+        ResponseCertificates responseCertificates = ResponseCertificates
+                .getByAlias(domainModel.getSignatureKeyAlias());
+        if (StringUtil.isNotBlank(domainModel.getSignatureKeyAlias()) && responseCertificates == null) {
+            LOG.warn("Cannot find signature key for alias [{}]", domainModel.getSignatureKeyAlias());
+        }
+
         domainIdInput.sendKeys(domainModel.getDomainCode());
 
-        weToDSelect(responseSignatureCertificateDdl).selectByVisibleText(domainModel.getSignatureKeyAlias(), true);
+        if (responseCertificates != null) {
+            weToMatSelect(responseSignatureCertificateDdl)
+                    .selectByVisibleText(responseCertificates.getText());
+        }
         weToDSelect(visibilityOfDomainDdl).selectValue(domainModel.getVisibility());
     }
 

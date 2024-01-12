@@ -1,7 +1,6 @@
 package rest.models;
 
 import ddsl.enums.ResponseCertificates;
-import org.apache.commons.lang3.StringUtils;
 import utils.Generator;
 import utils.Utils;
 
@@ -149,19 +148,19 @@ public class DomainModel {
     public static DomainModel generatePublicDomainModelWithSML() {
         DomainModel domainModel = new DomainModel();
         domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumericValue(6);
-        domainModel.signatureKeyAlias = Utils.randomEnum(new ResponseCertificates[]{SMP_DOMAIN_01, SMP_DOMAIN_02}).getName();
+        domainModel.signatureKeyAlias = Utils.randomEnum(new ResponseCertificates[]{SMP_DOMAIN_01, SMP_DOMAIN_02}).getAlias();
         domainModel.visibility = "PUBLIC";
         domainModel.smlClientCertAuth = true;
         domainModel.smlSubdomain = "AUTDomSML" + Generator.randomAlphaNumericValue(6);
         domainModel.smlSmpId = "AUTSMLSMP" + Generator.randomAlphaNumericValue(4);
-        domainModel.smlClientKeyAlias = StringUtils.lowerCase(Utils.randomEnum(new ResponseCertificates[]{SMP_DOMAIN_01, SMP_DOMAIN_02}).toString());
+        domainModel.smlClientKeyAlias = Utils.randomEnum(new ResponseCertificates[]{SMP_DOMAIN_01, SMP_DOMAIN_02}).getAlias();
         return domainModel;
     }
 
     public static DomainModel generatePublicDomainModelWithoutSML() {
         DomainModel domainModel = new DomainModel();
         domainModel.domainCode = "AUTDom" + Generator.randomAlphaNumericValue(6);
-        domainModel.signatureKeyAlias = Utils.randomEnum(ResponseCertificates.values()).getName();
+        domainModel.signatureKeyAlias = Utils.randomEnum(ResponseCertificates.values()).getAlias();
         domainModel.visibility = "PUBLIC";
         return domainModel;
     }
