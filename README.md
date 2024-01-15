@@ -20,7 +20,7 @@ Harmony SMP is based on upon the [SMP](https://ec.europa.eu/digital-building-blo
 
 The official Harmony documentation is available in a separate repository that can be found [here](https://github.com/nordic-institute/harmony-common/).
 
-In addition, the following documents that are available on the [SMP release page](https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/SMP) are applicable for the Harmony SMP too:
+In addition, the following documents that are available on the [SMP release page](https://ec.europa.eu/digital-building-blocks/sites/display/DIGITAL/SMP) are applicable for the Harmony SMP too:
 
  * Administration Guide 
  * Interface Control Documents
