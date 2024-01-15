@@ -1,0 +1,35 @@
+version: "3.0"
+services:
+  smp-springboot:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_SPRINGBOOT_MYSQL}:${SMP_VERSION}
+    hostname: smp-springboot-mysql.local
+    environment:
+      - SMP_INIT_PROPERTIES=smp.passwordPolicy.expired.forceChange=false
+        ||smp.automation.authentication.external.tls.SSLClientCert.enabled=true
+        ||smp.cluster.enabled=false
+        ||smp.mode.development=true
+        ||smp.ui.authentication.types=PASSWORD
+        ||bdmsl.integration.enabled=false
+        ||mail.smtp.host=mail-server.smp.local
+        ||mail.smtp.port=2500
+        ||smp.alert.user.login_failure.enabled=true
+        ||smp.alert.user.suspended.enabled=true
+        ||smp.alert.password.imminent_expiration.enabled=true
+        ||smp.alert.password.expired.enabled=true
+        ||smp.alert.accessToken.imminent_expiration.enabled=true
+        ||smp.alert.accessToken.expired.enabled=true
+        ||smp.alert.certificate.imminent_expiration.enabled=true
+        ||smp.alert.certificate.expired.enabled=true
+        ||smp.alert.accessToken.expired.enabled=true
+    volumes:
+      - ./properties/db-scripts:/tmp/custom-data/
+      - ./properties/keystores:/tmp/keystores/
+#    ports:
+#      - "8282:8084"
+#      - "3208:3306"
+#      - "5005:5005"
+  mail-service:
+    image: inbucket/inbucket:3.0.0
+    hostname: mail-server.smp.local
+#    ports:
+#      - "9205:9000"

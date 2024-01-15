@@ -1,0 +1,225 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.europa.ec.edelivery</groupId>
+    <artifactId>domismp-tests-api</artifactId>
+    <version>5.1-SNAPSHOT</version>
+    <name>domismp-tests-api</name>
+    <description>Integration tests suit for DomiSMP API (WebService) testing using SOAPUI framework</description>
+
+    <properties>
+        <!-- Only selected modules are deployed -->
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <url>http://localhost:8080/smp</url>
+        <SMPAdminUser/>
+        <SMPAdminPassword/>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- the soap ui specific dependencies -->
+        <plugin.soapui-maven-plugin.version>5.7.2</plugin.soapui-maven-plugin.version>
+
+        <org.codehaus.groovy.version>2.9.2-01</org.codehaus.groovy.version>
+        <org.codehaus.groovy.eclipse-batch.version>2.5.13-01</org.codehaus.groovy.eclipse-batch.version>
+
+        <com.jgoodies.version>1.0.7</com.jgoodies.version>
+        <http-builder.version>0.7.1</http-builder.version>
+        <reflection.version>0.9.11</reflection.version>
+        <httpcore.version>4.4.3</httpcore.version>
+        <apache.http4.client.version>4.5.14</apache.http4.client.version>
+    </properties>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>SmartBearPluginRepository</id>
+            <url>https://www.soapui.org/repository/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <repositories>
+        <repository>
+            <id>SmartBearDependencyRepository</id>
+            <url>https://www.soapui.org/repository/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+
+    </repositories>
+    <dependencies>
+        <!-- for development purposes only. The soapui
+        has its own groovy library -->
+        <dependency>
+            <groupId>com.smartbear.soapui</groupId>
+            <artifactId>soapui</artifactId>
+            <version>${plugin.soapui-maven-plugin.version}</version>
+        </dependency>
+
+    </dependencies>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.smartbear.soapui</groupId>
+                    <artifactId>soapui-maven-plugin</artifactId>
+                    <version>${plugin.soapui-maven-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <compilerId>groovy-eclipse-compiler</compilerId>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-compiler</artifactId>
+                        <version>${org.codehaus.groovy.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-batch</artifactId>
+                        <version>${org.codehaus.groovy.eclipse-batch.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-eclipse-compiler</artifactId>
+                <version>${org.codehaus.groovy.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <!-- soap ui -->
+        <profile>
+            <id>run-soapui</id>
+            <build>
+                <defaultGoal>test</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>com.smartbear.soapui</groupId>
+                        <artifactId>soapui-maven-plugin</artifactId>
+                        <configuration>
+                            <outputFolder>${project.build.directory}/soapui-reports/</outputFolder>
+                            <junitReport>true</junitReport>
+                            <printReport>true</printReport>
+                            <settingsFile>${basedir}/soapui/soapui-settings.xml</settingsFile>
+                            <soapuiProperties>
+                                <property>
+                                    <name>soapui.scripting.library</name>
+                                    <value>${basedir}/src/main/java</value>
+                                </property>
+                                <property>
+                                    <name>soapui.logroot</name>
+                                    <value>${project.build.directory}/soapui/logs/</value>
+                                </property>
+                                <property>
+                                    <name>http.nonProxyHosts</name>
+                                    <value>localhost|127.*|[::1]</value>
+                                </property>
+                            </soapuiProperties>
+                            <testFailIgnore>true</testFailIgnore>
+                            <projectFile>${basedir}/soapui/SMP4.0-Generic-soapui-project.xml
+                            </projectFile>
+                            <testSuite>PASSING_AUTO_BAMBOO</testSuite>
+                            <!--If you want to execute single test case -->
+                            <!-- testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase -->
+                            <!-- testCase>SMP063-EDELIVERY-364 slash encoding-Tomcat</testCase -->
+                            <!-- testCase>SMP022-Create ServiceMetadata-Basic Flow</testCase -->
+                            <projectProperties>
+                                <value>url=${url}</value>
+                                <value>SMPAdminUser=${SMPAdminUser}</value>
+                                <value>SMPAdminPassword=${SMPAdminPassword}</value>
+                            </projectProperties>
+                        </configuration>
+                        <dependencies>
+                            <!-- add build groovy test library as plugin dependency!
+This lib must be added because non-pro maven version can not take groovy scripts as path!-->
+                            <dependency>
+                                <groupId>eu.europa.ec.edelivery</groupId>
+                                <artifactId>domismp-tests-api</artifactId>
+                                <version>${project.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>com.jgoodies</groupId>
+                                <artifactId>forms</artifactId>
+                                <version>${com.jgoodies.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.reflections</groupId>
+                                <artifactId>reflections</artifactId>
+                                <version>${reflection.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.codehaus.groovy.modules.http-builder</groupId>
+                                <artifactId>http-builder</artifactId>
+                                <version>${http-builder.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.httpcomponents</groupId>
+                                <artifactId>httpcore</artifactId>
+                                <version>${httpcore.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.httpcomponents</groupId>
+                                <artifactId>httpclient</artifactId>
+                                <version>${apache.http4.client.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+        <!-- soap ui -->
+        <profile>
+            <id>dump-code-coverage</id>
+            <build>
+                <defaultGoal>test</defaultGoal>
+                <plugins>
+                    <!-- dump jacoco report from remote agent and generate report  -->
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.maven.plugin.version}</version>
+
+                        <configuration>
+                            <classDumpDir>${project.build.outputDirectory}</classDumpDir>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>dump</goal>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- dataFile>${project.build.directory}/jacoco.exec</dataFile -->
+                                    <address>${sonar.jacoco.remoteAddress}</address>
+                                    <port>${sonar.jacoco.remotePort}</port>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
