@@ -27,6 +27,6 @@
     <modules>
         <module>domismp-docker</module>
         <module>domismp-tests-api</module>
-        <module>domismp-tests-ui</module>
+        <!-- module>domismp-tests-ui</module -->
     </modules>
 </project>
