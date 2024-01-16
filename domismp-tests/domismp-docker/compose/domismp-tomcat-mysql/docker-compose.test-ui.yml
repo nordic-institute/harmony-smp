@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  ##
+  ## UI Tests
+  ##
+  testui:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TESTS}:${SMP_VERSION}
+    environment:
+      - TEST_PLAN=ui
+      - TEST_APPLICATION_UI_URL=http://eulogin.protected.smp.local:8080/smp/ui/
+      - TEST_SML_URL=http://eulogin.protected.smp.local:8080/edelivery-sml/listDNS
+    networks:
+      - test-network
+networks:
+  test-network:
+    external:
+      name: ${DOCKER_NETWORK_NAME:-domismp-tomcat-mysql_default}

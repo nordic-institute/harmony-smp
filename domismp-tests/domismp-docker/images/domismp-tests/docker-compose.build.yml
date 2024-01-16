@@ -1,0 +1,12 @@
+#
+# Docker compose project used to build the domibus soapui docker image.
+#
+version: '3.2'
+services:
+  domismp-tests:
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TESTS}:${SMP_VERSION}
+    build:
+      context: .
+      args:
+        - SMP_VERSION
+

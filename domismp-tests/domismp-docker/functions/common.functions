@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+################################################################
+# The file provides common functions to help setup, building or
+# running Docker images for the integration tests.
+################################################################
+
+################################################################
+# Function exports the DomiSMP build specific artefact names.
+exportBuildArtefactNames() {
+    export ORACLE_DB_FILE="oracle-xe-11.2.0-1.0.x86_64.rpm.zip"
+    export SERVER_JDK_FILE="server-jre-8u391-linux-x64.tar.gz"
+    export SERVER_JDK11_FILE="jdk-11.0.21_linux-x64_bin.tar.gz"
+    export WEBLOGIC_122_QUICK_FILE="fmw_12.2.1.4.0_wls_quick_Disk1_1of1.zip"
+    export WEBLOGIC_14_FILE="fmw_14.1.1.0.0_wls_lite_Disk1_1of1.zip"
+    export ORACLE_DB11_FILE="oracle-xe-11.2.0-1.0.x86_64.rpm.zip"
+    export ORACLE_DB19_FILE="LINUX.X64_193000_db_home.zip"
+    export ORACLE_DOCKERFILE="Dockerfile.xe"
+}
+
+################################################################
+# Function exports the DomiSMP base image names
+function exportImageNames() {
+    export IMAGE_SMP_SPRINGBOOT_MYSQL=domismp-springboot-mysql
+    export IMAGE_SMP_TOMCAT_MYSQL=domismp-tomcat-mysql
+    export IMAGE_SMP_WEBLOGIC122=domismp-weblogic122
+    export IMAGE_SMP_WEBLOGIC14=domismp-weblogic141
+    export IMAGE_SMP_BD_ORACLE=domismp-oradb
+    export IMAGE_SMP_TESTS=domismp-tests
+}
+
+################################################################
+# Function export base image names and initialize common
+# variables as BUILD_KEY, IMAGE_TAG, PLAN_PREFIX, ...
+function initializeCommonVariables() {
+    echo "initialize common variables"
+    exportImageNames
+
+    BUILD_KEY=$(echo "${bamboo_buildResultKey:-test}" | tr '[:upper:]' '[:lower:]')
+    PLAN_PREFIX="${COMPOSE_PROJECT_NAME}"-${BUILD_KEY}
+
+    # by default image tag is edeliverytest but on bamboo is tagged as build unique plan key in the form PROJECT-PLAN,
+    # e.g. BAM-MAIN ( we use this because it must be the same for all plan jobs)
+    export IMAGE_TAG=$(echo "${bamboo_planKey:-$bamboo_DOCKER_USER}" | tr '[:upper:]' '[:lower:]')
+}
+
+################################################################
+# Method tries to discover the SMP version from the given parameters.
+# if the variable SMP_VERSION is set the method returns exits without any action.
+# If the variable SMP_PROJECT_FOLDER is set, the method tries to get the version from pom.xml.
+# If the variable SMP_ARTEFACTS is set, the method tries to get the version from artefact name smp-[VERSION]-setup.zip.
+discoverApplicationVersion(){
+
+  # check if SMP_VERSION is already set
+  if [[ -n "${SMP_VERSION}" ]]; then
+    echo "SMP version is: ${SMP_VERSION}"
+    return;
+  fi
+
+  # check if SMP_PROJECT_FOLDER and get version from pom.xml
+  if [[ -f "${SMP_PROJECT_FOLDER}/pom.xml" ]]; then
+    echo "Extract the DomiSMP version ${SMP_PROJECT_FOLDER}/pom.xml"
+    SMP_VERSION="$(mvn -f ${SMP_PROJECT_FOLDER}/pom.xml org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout)" \
+      || SMP_VERSION=$(grep -Eom1 "<version>[^<]+" < "${SMP_PROJECT_FOLDER}/pom.xml" | sed "s/<version>//")
+  fi
+
+  # go back to dirname
+   if [[ -z "${SMP_VERSION}" && -d "${SMP_ARTEFACTS}" ]]; then
+    echo "Try to get version from artefacts smp-[VERSION]-setup.zip: $(find "${SMP_ARTEFACTS}"/smp-*-setup.zip)"
+    SMP_VERSION="$(find "${SMP_ARTEFACTS}/"smp-*-setup.zip | sed -e 's/.*smp-//g' | sed -e 's/-setup\.zip$//g')"
+  fi
+
+	: "${SMP_VERSION:?SMP version can not be discovered!}"
+  export SMP_VERSION
+}
