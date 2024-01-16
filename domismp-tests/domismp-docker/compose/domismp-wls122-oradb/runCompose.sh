@@ -1,15 +1,9 @@
 #!/bin/bash
 
+# init plan variables
 WORKDIR="$(cd -P $(dirname ${BASH_SOURCE[0]} ) && pwd)"
-cd "${WORKDIR}" || exit 100
-echo "Working Directory: ${WORKDIR}"
-# project folder
-SMP_PROJECT_FOLDER=$(readlink -e "${WORKDIR}/../../..")
-#load common functions
-source "${SMP_PROJECT_FOLDER}/smp-docker/functions/common.functions"
-source "${SMP_PROJECT_FOLDER}/smp-docker/functions/run-test.functions"
-[ -f "${WORKDIR}/.env" ] && source "${WORKDIR}/.env"
-initializeCommonVariables
+source "${WORKDIR}/../../functions/run-test.functions"
+initializeVariables
 
 SMP_INIT_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle10g.ddl"
 #SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/oracle10g-data.sql"
