@@ -1,9 +1,9 @@
 version: '3.8'
 services:
   ##
-  ## UI Tests
+  ## API Tests
   ##
-  testui:
+  testapi:
     image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TESTS}:${SMP_VERSION}
     environment:
       - TEST_PLAN=api
