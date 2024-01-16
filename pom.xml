@@ -34,7 +34,7 @@ See the Licence for the specific language governing permissions and limitations 
         <module>smp-resource-extensions</module>
         <module>smp-webapp</module>
         <module>smp-springboot</module>
-        <module>smp-soapui-tests</module>
+        <module>domismp-tests</module>
         <module>smp-examples</module>
         <module>smp-aggregator</module>
     </modules>
@@ -47,6 +47,8 @@ See the Licence for the specific language governing permissions and limitations 
         Alternative ${session.executionRootDirectory} -->
 
         <project.root.baseUri>${maven.multiModuleProjectDirectory}</project.root.baseUri>
+        <!-- Note: domismp application target is JDK 8, but minimal build JDK version must be Java 11 due to domismp-tests modules
+        -->
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -258,11 +260,6 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>eu.europa.ec.cipa</groupId>
-                <artifactId>cipa-edelivery-common</artifactId>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>

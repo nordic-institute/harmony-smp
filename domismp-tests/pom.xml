@@ -26,7 +26,7 @@
     <description>The sub-modules contains DomiSMP artefacts/plans for integration/end-to-end testing.</description>
     <modules>
         <module>domismp-docker</module>
-        <module>domismp-soapui</module>
-        <module>domismp-ui</module>
+        <module>domismp-tests-api</module>
+        <module>domismp-tests-ui</module>
     </modules>
 </project>

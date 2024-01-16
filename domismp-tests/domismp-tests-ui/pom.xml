@@ -12,6 +12,9 @@
     <properties>
         <!-- configuration example-->
         <test.properties.path>./src/main/resources/myLocal.properties</test.properties.path>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <!-- dependencies versions-->
         <commons-csv_version>1.10.0</commons-csv_version>
         <selenium-chrome-driver_version>4.16.1</selenium-chrome-driver_version>
         <selenium-java_version>4.16.1</selenium-java_version>
@@ -24,12 +27,14 @@
         <javax.ws.rs-api_version>2.1.1</javax.ws.rs-api_version>
         <javax.ws.rs-api_version>2.1.1</javax.ws.rs-api_version>
         <xmlunit_version>1.6</xmlunit_version>
-        <maven-surefire-plugin_version>3.2.2</maven-surefire-plugin_version>
         <testng_version>7.8.0</testng_version>
         <logback-classic_version>1.4.11</logback-classic_version>
         <extentreports_version>5.1.1</extentreports_version>
         <commons-lang3_version>3.13.0</commons-lang3_version>
         <commons-io_version>2.15.0</commons-io_version>
+        <!-- plugin versions-->
+        <maven-surefire-plugin_version>3.2.2</maven-surefire-plugin_version>
+        <maven-compiler-plugin>3.11.0</maven-compiler-plugin>
     </properties>
 
     <build>
@@ -37,13 +42,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.0</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
+                <version>${maven-compiler-plugin}</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin_version}</version>
                 <configuration>
