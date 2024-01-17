@@ -103,7 +103,7 @@ WORKDIR $WL_DOMAIN_HOME
 # Expose ports for admin, managed server, and debug
 EXPOSE $WL_ADMIN_PORT $WL_ADMIN_HTTPS_PORT $WL_MANAGED_SERVER_PORT $WL_DEBUG_PORT
 
-HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=20 \
+HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=30 \
       CMD ${ORACLE_HOME}/healtcheck.sh || exit 1
 
 # Define default command to start bash.
