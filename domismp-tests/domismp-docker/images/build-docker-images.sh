@@ -108,50 +108,6 @@ validateAndPrepareArtefacts() {
     cp "${ORACLE_ARTEFACTS}/Oracle/OracleDatabase/${ORA_VERSION}/${ORACLE_DB_FILE}" ./oracle/oracle-db-${ORA_VERSION}/
   fi
 
-  # check server JDK for weblogic 12c
-  if [[ ! -f "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}" ]]; then
-    echo "Server JDK artefacts '${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}' not found."
-    exit 1
-  else
-    # copy artefact to build java for weblogic 12c
-    cp "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}" ./oracle/OracleJava/java-8/
-  fi
-
-  # check weblogic 12c
-  if [[ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ]]; then
-    echo "Weblogic artefacts '${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}' not found."
-    exit 1
-  else
-    # copy artefact to docker build folder
-    cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ./oracle/weblogic-12.2.1.4/
-  fi
-
-
-  if [[ ! -d "./${IMAGE_SMP_WEBLOGIC122}/artefacts" ]]; then
-    mkdir -p "./${IMAGE_SMP_WEBLOGIC122}/artefacts"
-  fi
-
-  # SMP artefacts
-  if [[ ! -f "${SMP_ARTEFACTS}/smp.war" ]]; then
-    echo "SMP artefact '${SMP_ARTEFACTS}/smp.war' not found. Was project built?"
-    exit 1
-  else
-    # copy artefact to docker build folder
-    cp -r shared-artefacts "./${IMAGE_SMP_WEBLOGIC122}/artefacts/"
-    # for weblogic
-    cp "${SMP_ARTEFACTS}/smp.war" "./${IMAGE_SMP_WEBLOGIC122}/artefacts/smp.war"
-  fi
-
-
-  # SMP setup zip
-  if [[ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]]; then
-    echo "SMP setup bundle '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found. Was project built!"
-    exit 1
-  else
-    # copy artefact to docker build folder
-    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" "./${IMAGE_SMP_WEBLOGIC122}/artefacts/smp-setup.zip"
-  fi
-
 }
 
 
@@ -159,13 +115,13 @@ validateAndPrepareArtefacts() {
 # build docker images
 # -----------------------------------------------------------------------------
 buildImages() {
-  buildOracleDatabaseImage
-  buildWebLogicOracleImages12
-  buildUtils
-  buildImage "${IMAGE_SMP_WEBLOGIC141}"
-  buildImage "${IMAGE_SMP_TOMCAT_MYSQL}"
-  buildImage "${IMAGE_SMP_SPRINGBOOT_MYSQL}"
-  buildImage "${IMAGE_SMP_TESTS}"
+  #buildOracleDatabaseImage
+  #buildUtils
+  buildImage "${IMAGE_SMP_WEBLOGIC122}"
+  #buildImage "${IMAGE_SMP_WEBLOGIC141}"
+  #buildImage "${IMAGE_SMP_TOMCAT_MYSQL}"
+  #buildImage "${IMAGE_SMP_SPRINGBOOT_MYSQL}"
+  #buildImage "${IMAGE_SMP_TESTS}"
 }
 
 buildImage(){
@@ -189,32 +145,7 @@ buildOracleDatabaseImage(){
   fi
 }
 
-buildWebLogicOracleImages12(){
-  # -----------------------------------------------------------------------------
-  # build docker image for oracle database
-  # -----------------------------------------------------------------------------
-  # create docker OS image with java (https://github.com/oracle/docker-images/tree/master/OracleJava/java-8)
-  docker build -t oracle/serverjre:8 ./oracle/OracleJava/java-8/
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while building image for oracle server-java!"
-    exit 10
-  fi
 
-  # create weblogic basic (https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.4)
-  docker build -f ./oracle/weblogic-12.2.1.4/Dockerfile.developer -t oracle/weblogic:12.2.1.4-developer ./oracle/weblogic-12.2.1.4/
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while building image for oracle weblogic:12.2.1.4 server!"
-    exit 10
-  fi
-
-  # build SMP deployment.
-  docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}" ./"${IMAGE_SMP_WEBLOGIC122}"/ --build-arg SMP_VERSION="$SMP_VERSION"
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}]!"
-    exit 10
-  fi
-
-}
 
 buildUtils(){
  # build the httpd image for LB. The Http is configured to allow encoded characters which
@@ -224,32 +155,6 @@ buildUtils(){
      echo "Error occurred while building image [smp-httpd:${SMP_VERSION}]!"
      exit 10
    fi
-}
-
-buildWebLogicOracleImages14(){
-  # -----------------------------------------------------------------------------
-  # build docker image for oracle database
-  # -----------------------------------------------------------------------------
-  # create docker OS image with java (https://github.com/oracle/docker-images/tree/master/OracleJava/java-11)
-  docker build -t oracle/jdk:11 ./oracle/OracleJava/java-11/
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while building image for oracle server-java!"
-    exit 10
-  fi
-
-  # create weblogic basic (https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/14.1.1.0)
-  docker build -f ./oracle/weblogic-14.1.1.0/Dockerfile.generic-11 -t oracle/weblogic:14.1.1.0-generic ./oracle/weblogic-14.1.1.0/
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while building image for oracle weblogic:14.1.1.0 server!"
-    exit 10
-  fi
-
-  # build SMP deployment.
-  docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}" ./${IMAGE_SMP_WEBLOGIC141}/ --build-arg SMP_VERSION="$SMP_VERSION"
-  if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}]!"
-    exit 10
-  fi
 }
 
 function pushImageToDockerhub() {
@@ -285,6 +190,7 @@ cleanArtefacts() {
   rm "./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DB_FILE}"   # clean
   rm "./oracle/OracleJava/java-8/${SERVER_JDK_FILE}"         # clean
   rm "./oracle/weblogic-12.2.1.4/${WEBLOGIC_122_QUICK_FILE}" # clean
+  rm "./oracle/weblogic-14.1.1.0/${WEBLOGIC_14_FILE}" # clean
 
   rm -rf "./${IMAGE_SMP_WEBLOGIC122}/artefacts/*.*"
 

@@ -46,6 +46,7 @@ ENV SMP_VERSION=$SMP_VERSION \
     LANGUAGE=$LANGUAGE  \
     ORACLE_HOME=$ORACLE_HOME \
     DOCKER_DATA=/data \
+    WL_START_ADMIN="true" \
     WL_INIT_PROPERTIES="/u01/init/" \
     WL_DOMAIN_NAME="${WL_DOMAIN_NAME}" \
     WL_DOMAIN_HOME="${ORACLE_HOME}/user_projects/domains/${WL_DOMAIN_NAME}" \
@@ -102,8 +103,8 @@ WORKDIR $WL_DOMAIN_HOME
 # Expose ports for admin, managed server, and debug
 EXPOSE $WL_ADMIN_PORT $WL_ADMIN_HTTPS_PORT $WL_MANAGED_SERVER_PORT $WL_DEBUG_PORT
 
-HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=5 \
-  CMD curl -f http://localhost:$WL_ADMIN_PORT/weblogic/ready || exit 1
+HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=20 \
+      CMD ${ORACLE_HOME}/healtcheck.sh || exit 1
 
 # Define default command to start bash.
 CMD ["/u01/oracle/startServer.sh"]

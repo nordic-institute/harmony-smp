@@ -59,7 +59,7 @@ Then start the docker as:
 Create a docker compose file: docker-compose.yml
 with the following content: 
 ```
-version: "3.0"
+version: '3.8'
 services:
   tomcat-mysql-sml:
     image: edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT

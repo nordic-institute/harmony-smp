@@ -1,16 +1,16 @@
 version: '3.8'
 services:
   ##
-  ## UI Tests
+  ## API Tests
   ##
   testapi:
     image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TESTS}:${SMP_VERSION}
     environment:
       - TEST_PLAN=api
-      - TEST_URL=http://smp-springboot-mysql.local:8084/smp/
+      - TEST_URL=http://smp-httpd/smp/
     networks:
       - test-network
 networks:
   test-network:
     external:
-      name: ${DOCKER_NETWORK_NAME:-domismp-springboot-mysql_default}
+      name: ${DOCKER_NETWORK_NAME:-domismp-tomcat-mysql_default}

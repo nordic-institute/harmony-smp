@@ -7,7 +7,7 @@ initializeVariables
 
 SMP_INIT_DATABASE="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb.ddl"
 #SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql"
-SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql"
+SMP_INIT_DATABASE_DATA="${SMP_PROJECT_FOLDER}/domismp-tests/domismp-tests-api/groovy/mysql-4.1_integration_test_data.sql"
 
 # READ arguments
 while getopts i:v: option
@@ -16,6 +16,7 @@ do
   in
     i) SMP_INIT_DATABASE_DATA=${OPTARG};;
     v) SMP_VERSION=${OPTARG};;
+    *) echo "Unknown option [${option}]. Usage: $0 [-i] [-v]"; exit 1;;
   esac
 done
 

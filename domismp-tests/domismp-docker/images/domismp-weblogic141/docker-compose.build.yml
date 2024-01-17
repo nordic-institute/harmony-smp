@@ -1,7 +1,7 @@
 #
 # Docker compose project used to build the smp-weblogic14 image with all the required dependencies
 #
-version: '3.2'
+version: '3.8'
 services:
   oracle-jdk11:
     image: oracle/jdk:11

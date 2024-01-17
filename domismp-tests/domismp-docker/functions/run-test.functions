@@ -40,3 +40,62 @@ function startTestContainers() {
   docker compose -p "${PLAN_PREFIX}" up -d --force-recreate --wait --wait-timeout 300
 }
 
+# method creates init scripts for application oracle database initialization from scratch!
+# - 01_create_user.sql - recreate user and schema
+# - 02_oracle10g.sql - init database script
+# - 03_oracle10g-data.sql - init database data script
+# and weblogic datasource configuration
+# - datasource.properties
+function initOracleDatabaseConfiguration() {
+  : "${1?"Need to set Database user as first parameter non-empty!"}"
+  : "${2?"Need to set Database user password as second parameter non-empty!"}"
+  : "${3?"Need to set Database script folder as third parameter non-empty!"}"
+  : "${4?"Need to set WebLogic init script folder as third parameter non-empty!"}"
+  : "${SMP_INIT_DATABASE?"Need to set init Database script SMP_INIT_DATABASE as variable non-empty!"}"
+  : "${SMP_INIT_DATABASE_DATA?"Need to set init-data Database script SMP_INIT_DATABASE as variable non-empty!"}"
+  : "${SMP_JDBC_URL?"Need to set SMP_JDBC_URL as variable non-empty!"}"
+
+
+  echo "Create file [$3]/01_create_user.sql to recreate schema/user [$1]!"
+  {
+    if [ -n "$ORACLE_PDB" ]; then
+        echo "ALTER SESSION SET CONTAINER=$ORACLE_PDB;"
+    fi
+    # magic with double quotes  - first end " then put '"' and then add variable to "$Var" and repeat the stuff :)
+    echo "CREATE USER $1 IDENTIFIED BY "'"'"$2"'"'" DEFAULT TABLESPACE users QUOTA UNLIMITED ON users; "
+    echo "GRANT CREATE SESSION TO $1;"
+    echo "GRANT CREATE TABLE TO $1;"
+    echo "GRANT CREATE VIEW TO $1;"
+    echo "GRANT CREATE SEQUENCE TO $1;"
+    echo "GRANT SELECT ON PENDING_TRANS$ TO $1;"
+    echo ""
+  } > "$3/01_create_user.sql"
+
+  # create  database init script from
+  echo "CONNECT ${1}/${2}@//localhost:1521/${ORA_SERVICE};" > "${3}/02_oracle10g.sql"
+  cat  "${SMP_INIT_DATABASE}" >> "${3}/02_oracle10g.sql"
+
+  # copy init database data for  SMP
+  if [ ! -f "${SMP_INIT_DATABASE_DATA}" ]
+    then
+    echo "SMP sql init data '${SMP_INIT_DATABASE_DATA} not found!!"
+    exit 1;
+  else
+    # copy artefact to docker build folder
+    echo "CONNECT ${1}/${2}@//localhost:1521/${ORA_SERVICE};" > "${3}/03_oracle10g-data.sql"
+    cat  "${SMP_INIT_DATABASE_DATA}" >>  "${3}/03_oracle10g-data.sql"
+  fi
+
+  # create  database init script from weblogic as well
+  echo "Create file [$4]/datasource.properties to recreate datasource configuration!"
+  {
+    echo "dsname=eDeliverySmpDs"
+    echo "dsdbname=eDeliverySmpDs"
+    echo "dsjndiname=jdbc/eDeliverySmpDs"
+    echo "dsdriver=oracle.jdbc.OracleDriver"
+    echo "dsurl=${SMP_JDBC_URL}"
+    echo "dsusername=${1}"
+    echo "dspassword=${2}"
+    echo "dstestquery=SQL SELECT 1 FROM DUAL"
+  }  > "$4/datasource.properties"
+}

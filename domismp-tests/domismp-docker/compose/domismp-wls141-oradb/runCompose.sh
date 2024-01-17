@@ -26,7 +26,10 @@ ORA_SERVICE="xe"
 
 SMP_DB_USERNAME="smp"
 SMP_DB_PASSWORD="test"
+# this is JDBC URL for SMP application, the hostname must match the one from docker-compose.yml for database service
+SMP_JDBC_URL="jdbc:oracle:thin:@//smp-oracle-db:1521/${ORA_SERVICE}"
 SMP_DB_SCRIPTS=./properties/db-scripts
+SMP_WLS_INIT_SCRIPTS=./properties/weblogic-init
 
 # READ arguments
 while getopts i:v: option
@@ -35,9 +38,9 @@ do
   in
     i) SMP_INIT_DATABASE_DATA=${OPTARG};;
     v) SMP_VERSION=${OPTARG};;
+    *) echo "Unknown option [${option}]. Usage: $0 [-i] [-v]"; exit 1;;
   esac
 done
-
 
 echo "*************************************************************************"
 echo "SMP version: $SMP_VERSION"
@@ -61,50 +64,6 @@ function clearMoundDataVolume() {
   mkdir -p "${SMP_DB_SCRIPTS}"
 }
 
-# method creates init scripts for application oracle database initialization from scratch!
-# - 01_create_user.sql - recreate user and schema
-# - 02_oracle10g.sql - init database script
-# - 03_oracle10g-data.sql - init database data script
-function createDatabaseSchemaForUser() {
-  : "${1?"Need to set Database user as first parameter non-empty!"}"
-  : "${2?"Need to set Database user password as second parameter non-empty!"}"
-  : "${3?"Need to set Database script folder as third parameter non-empty!"}"
-  : "${SMP_INIT_DATABASE?"Need to set init Database script SMP_INIT_DATABASE as variable non-empty!"}"
-  : "${SMP_INIT_DATABASE_DATA?"Need to set init-data Database script SMP_INIT_DATABASE as variable non-empty!"}"
-
-  echo "Create file [$3]/01_create_user.sql to recreate schema/user [$1]!"
-  {
-    if [ -n "$ORACLE_PDB" ]; then
-        echo "ALTER SESSION SET CONTAINER=$ORACLE_PDB;"
-    fi
-    # magic with double quotes  - first end " then put '"' and then add variable to "$Var" and repeat the stuff :)
-    echo "CREATE USER $1 IDENTIFIED BY "'"'"$2"'"'" DEFAULT TABLESPACE users QUOTA UNLIMITED ON users; "
-    echo "GRANT CREATE SESSION TO $1;"
-    echo "GRANT CREATE TABLE TO $1;"
-    echo "GRANT CREATE VIEW TO $1;"
-    echo "GRANT CREATE SEQUENCE TO $1;"
-    echo "GRANT SELECT ON PENDING_TRANS$ TO $1;"
-    echo ""
-  } > "$3/01_create_user.sql"
-
-
-  # create  database init script from
-  echo "CONNECT ${1}/${2}@//localhost:1521/${ORA_SERVICE};" > "${3}/02_oracle10g.sql"
-  cat  "${SMP_INIT_DATABASE}" >> "${3}/02_oracle10g.sql"
-
-  # copy init database data for  SMP
-  if [ ! -f "${SMP_INIT_DATABASE_DATA}" ]
-    then
-    echo "SMP sql init data '${SMP_INIT_DATABASE_DATA} not found!!"
-    exit 1;
-  else
-    # copy artefact to docker build folder
-    echo "CONNECT ${1}/${2}@//localhost:1521/${ORA_SERVICE};" > "${3}/03_oracle10g-data.sql"
-    cat  "${SMP_INIT_DATABASE_DATA}" >>  "${3}/03_oracle10g-data.sql"
-  fi
-
-}
-
 # start
 export SMP_VERSION
 export ORA_VERSION
@@ -114,7 +73,7 @@ export SMP_VERSION
 echo "Clear old containers"
 stopAndClearTestContainers
 clearMoundDataVolume
-createDatabaseSchemaForUser $SMP_DB_USERNAME $SMP_DB_PASSWORD "${SMP_DB_SCRIPTS}"
+initOracleDatabaseConfiguration $SMP_DB_USERNAME $SMP_DB_PASSWORD "${SMP_DB_SCRIPTS}" "${SMP_WLS_INIT_SCRIPTS}"
 
 # start "
 echo "Start containers"
