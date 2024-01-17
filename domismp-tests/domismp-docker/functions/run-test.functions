@@ -9,7 +9,7 @@
 function initializeVariables() {
   : "${WORKDIR?"Need to set WORKDIR"}"
 
-  FUNCTION_FOLDER="$(cd -P $(dirname ${BASH_SOURCE[0]} ) && pwd)"
+  FUNCTION_FOLDER="$(cd -P $(dirname "${BASH_SOURCE[0]}" ) && pwd)"
   # project folder
   SMP_PROJECT_FOLDER=$(readlink -e "${FUNCTION_FOLDER}/../../..")
   #load common functions
@@ -35,7 +35,8 @@ function stopAndClearTestContainers() {
 ################################################################
 # Function exports the logs to file and stop and clear containers
 function startTestContainers() {
-  echo "Start containers with prefix ${PLAN_PREFIX}"
+  : "${SMP_VERSION?"Need to set SMP_VERSION non-empty!"}"
+  echo "Start containers with prefix ${PLAN_PREFIX} for version ${SMP_VERSION}"
   docker compose -p "${PLAN_PREFIX}" up -d --force-recreate --wait --wait-timeout 300
 }
 

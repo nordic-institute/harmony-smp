@@ -102,5 +102,8 @@ WORKDIR $WL_DOMAIN_HOME
 # Expose ports for admin, managed server, and debug
 EXPOSE $WL_ADMIN_PORT $WL_ADMIN_HTTPS_PORT $WL_MANAGED_SERVER_PORT $WL_DEBUG_PORT
 
+HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=5 \
+  CMD curl -f http://localhost:$WL_ADMIN_PORT/weblogic/ready || exit 1
+
 # Define default command to start bash.
-CMD ["startManagedServer.sh"]
+CMD ["/u01/oracle/startServer.sh"]

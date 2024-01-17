@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-WORKDIR="$(cd -P $( dirname ${BASH_SOURCE[0]} ) && pwd)"
+WORKDIR="$(cd -P $( dirname "${BASH_SOURCE[0]}" ) && pwd)"
 cd ${WORKDIR} || exit 100
 echo "Working Directory: ${WORKDIR}"
 #load common functions
@@ -56,6 +56,8 @@ while getopts v:o:a:s:c:p: option; do
   s) SMP_SPRINGBOOT_ARTEFACTS=${OPTARG} ;;
   c) SMP_ARTEFACTS_CLEAR=${OPTARG} ;;
   p) SMP_IMAGE_PUBLISH=${OPTARG} ;;
+  *) echo "Unknown option: $option. Use [-v version] [-o oracle_artefact_folder] [-a smp_artefact_folder] [-s smp_springboot_artefact_folder] [-c clear_smp_artefact_folder] [-p publish_image]"
+    exit 1 ;;
   esac
 done
 
@@ -76,6 +78,7 @@ export SMP_PROJECT_FOLDER
 export SMP_ARTEFACTS
 export SMP_PLUGIN_EXAMPLE
 export SMP_SPRINGBOOT_ARTEFACTS
+export ORACLE_ARTEFACTS
 
 # -----------------------------------------------------------------------------
 # validate all necessary artefacts and prepare files to build images
@@ -114,15 +117,6 @@ validateAndPrepareArtefacts() {
     cp "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK_FILE}" ./oracle/OracleJava/java-8/
   fi
 
-  # check server JDK for weblogic 14c
-    if [[ ! -f "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK11_FILE}" ]]; then
-      echo "Server JDK artefacts '${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK11_FILE}' not found."
-      exit 1
-    else
-      # copy artefact to build java for weblogic 12c
-      cp "${ORACLE_ARTEFACTS}/Oracle/Java/${SERVER_JDK11_FILE}" ./oracle/OracleJava/java-11/
-    fi
-
   # check weblogic 12c
   if [[ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ]]; then
     echo "Weblogic artefacts '${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}' not found."
@@ -132,18 +126,6 @@ validateAndPrepareArtefacts() {
     cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_122_QUICK_FILE}" ./oracle/weblogic-12.2.1.4/
   fi
 
-  # WeblLogic 14c
-  if [[ ! -f "${ORACLE_ARTEFACTS}/${WEBLOGIC_14_FILE}" ]]; then
-      echo "Weblogic artefacts '${ORACLE_ARTEFACTS}/${WEBLOGIC_14_FILE}' not found."
-      exit 1
-    else
-      # copy artefact to docker build folder
-      cp "${ORACLE_ARTEFACTS}/${WEBLOGIC_14_FILE}" ./oracle/weblogic-14.1.1.0/
-    fi
-
-  if [[ ! -d "./${IMAGE_SMP_WEBLOGIC14}/artefacts/" ]]; then
-      mkdir -p "./${IMAGE_SMP_WEBLOGIC14}/artefacts"
-    fi
 
   if [[ ! -d "./${IMAGE_SMP_WEBLOGIC122}/artefacts" ]]; then
     mkdir -p "./${IMAGE_SMP_WEBLOGIC122}/artefacts"
@@ -156,10 +138,8 @@ validateAndPrepareArtefacts() {
   else
     # copy artefact to docker build folder
     cp -r shared-artefacts "./${IMAGE_SMP_WEBLOGIC122}/artefacts/"
-    cp -r shared-artefacts "./${IMAGE_SMP_WEBLOGIC14}/artefacts/"
     # for weblogic
     cp "${SMP_ARTEFACTS}/smp.war" "./${IMAGE_SMP_WEBLOGIC122}/artefacts/smp.war"
-    cp "${SMP_ARTEFACTS}/smp.war" "./${IMAGE_SMP_WEBLOGIC14}/artefacts/smp.war"
   fi
 
 
@@ -170,7 +150,6 @@ validateAndPrepareArtefacts() {
   else
     # copy artefact to docker build folder
     cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" "./${IMAGE_SMP_WEBLOGIC122}/artefacts/smp-setup.zip"
-    cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" "./${IMAGE_SMP_WEBLOGIC14}/artefacts/smp-setup.zip"
   fi
 
 }
@@ -182,34 +161,30 @@ validateAndPrepareArtefacts() {
 buildImages() {
   buildOracleDatabaseImage
   buildWebLogicOracleImages12
-  buildWebLogicOracleImages14
   buildUtils
-
+  buildImage "${IMAGE_SMP_WEBLOGIC141}"
   buildImage "${IMAGE_SMP_TOMCAT_MYSQL}"
   buildImage "${IMAGE_SMP_SPRINGBOOT_MYSQL}"
   buildImage "${IMAGE_SMP_TESTS}"
-
-
 }
+
 buildImage(){
   echo "Build image [${IMAGE_TAG:-edeliverytest}/$1:${SMP_VERSION}]."
   ./"$1"/build.sh
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/$0:${SMP_VERSION}]!"
+    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/$1:${SMP_VERSION}]!"
     exit 10
   fi
 }
-
-
 
 buildOracleDatabaseImage(){
   # -----------------------------------------------------------------------------
   # build docker image for oracle database
   # -----------------------------------------------------------------------------
   # oracle 1.2.0.2-xe (https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance/dockerfiles/11.2.0.2)
-  docker build -f ./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DOCKERFILE} -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_BD_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}" --build-arg DB_EDITION=${ORA_EDITION} ./oracle/oracle-db-${ORA_VERSION}/
+  docker build -f ./oracle/oracle-db-${ORA_VERSION}/${ORACLE_DOCKERFILE} -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}" --build-arg DB_EDITION=${ORA_EDITION} ./oracle/oracle-db-${ORA_VERSION}/
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_BD_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}]!"
+    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}]!"
     exit 10
   fi
 }
@@ -270,9 +245,9 @@ buildWebLogicOracleImages14(){
   fi
 
   # build SMP deployment.
-  docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC14}:${SMP_VERSION}" ./${IMAGE_SMP_WEBLOGIC14}/ --build-arg SMP_VERSION="$SMP_VERSION"
+  docker build -t "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}" ./${IMAGE_SMP_WEBLOGIC141}/ --build-arg SMP_VERSION="$SMP_VERSION"
   if [ $? -ne 0 ]; then
-    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC14}:${SMP_VERSION}]!"
+    echo "Error occurred while building image [${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}]!"
     exit 10
   fi
 }
@@ -283,17 +258,18 @@ function pushImageToDockerhub() {
     # login to docker
     docker login --username="${DOCKER_USER}" --password="${DOCKER_PASSWORD}" "${DOCKER_REGISTRY_HOST}"
     # push images
-    pushImageIfExisting "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}"
-    pushImageIfExisting "${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_BD_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_SMP_WEBLOGIC122}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}"
+    pushImageIfExisting "${IMAGE_SMP_TESTS}:${SMP_VERSION}"
   fi
 }
 
 function pushImageIfExisting() {
   if [[ "x$(docker images -q "${1}")" != "x" ]]; then
     local TAGGED_IMAGE="${DOCKER_REGISTRY_HOST:+$DOCKER_REGISTRY_HOST/}${DOCKER_FOLDER:+$DOCKER_FOLDER/}${1}"
-    docker tag "${1}" "${TAGGED_IMAGE}"
+    docker tag "${IMAGE_TAG:-edeliverytest}/${1}" "${TAGGED_IMAGE}"
     echo "Pushing image ${1} as ${TAGGED_IMAGE}"
     docker push "${TAGGED_IMAGE}"
   else

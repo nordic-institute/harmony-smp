@@ -46,6 +46,7 @@ ENV SMP_VERSION=$SMP_VERSION \
     LANGUAGE=$LANGUAGE  \
     ORACLE_HOME=$ORACLE_HOME \
     DOCKER_DATA=/data \
+    WL_START_ADMIN="true" \
     WL_INIT_PROPERTIES="/u01/init/" \
     WL_DOMAIN_NAME="${WL_DOMAIN_NAME}" \
     WL_DOMAIN_HOME="${ORACLE_HOME}/user_projects/domains/${WL_DOMAIN_NAME}" \
@@ -75,17 +76,16 @@ ENV SMP_VERSION=$SMP_VERSION \
     WL_DELAY_STARTUP_IN_S="${WL_DELAY_STARTUP_IN_S:-0}" \
     ENABLE_JACOCO="${ENABLE_JACOCO:-false}"
 
-
 # Add files required to build this image
 COPY container-scripts/* ${ORACLE_HOME}/
 COPY container-scripts/init-scripts ${ORACLE_HOME}/init/scripts/
 COPY properties/init  ${ORACLE_HOME}/init/properties/
 COPY artefacts/smp.war ${ORACLE_HOME}/init/
 
-
-#Create directory where domain will be written to
 USER root
+#Create directory where domain will be written to
 WORKDIR  $ORACLE_HOME
+
 RUN mkdir -p $WL_DOMAIN_HOME && \
     mkdir -p $DOCKER_DATA && \
     chown -R oracle:oracle $ORACLE_HOME && \
@@ -102,5 +102,8 @@ WORKDIR $WL_DOMAIN_HOME
 # Expose ports for admin, managed server, and debug
 EXPOSE $WL_ADMIN_PORT $WL_ADMIN_HTTPS_PORT $WL_MANAGED_SERVER_PORT $WL_DEBUG_PORT
 
+HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=20 \
+      CMD ${ORACLE_HOME}/healtcheck.sh || exit 1
+
 # Define default command to start bash.
-CMD ["startManagedServer.sh"]
+CMD ["/u01/oracle/startServer.sh"]

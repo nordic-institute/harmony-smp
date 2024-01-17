@@ -23,8 +23,8 @@ function exportImageNames() {
     export IMAGE_SMP_SPRINGBOOT_MYSQL=domismp-springboot-mysql
     export IMAGE_SMP_TOMCAT_MYSQL=domismp-tomcat-mysql
     export IMAGE_SMP_WEBLOGIC122=domismp-weblogic122
-    export IMAGE_SMP_WEBLOGIC14=domismp-weblogic141
-    export IMAGE_SMP_BD_ORACLE=domismp-oradb
+    export IMAGE_SMP_WEBLOGIC141=domismp-weblogic141
+    export IMAGE_SMP_DB_ORACLE=domismp-oradb
     export IMAGE_SMP_TESTS=domismp-tests
 }
 
@@ -40,7 +40,9 @@ function initializeCommonVariables() {
 
     # by default image tag is edeliverytest but on bamboo is tagged as build unique plan key in the form PROJECT-PLAN,
     # e.g. BAM-MAIN ( we use this because it must be the same for all plan jobs)
-    export IMAGE_TAG=$(echo "${bamboo_planKey:-$bamboo_DOCKER_USER}" | tr '[:upper:]' '[:lower:]')
+    IMAGE_TAG=$(echo "${bamboo_planKey:-$bamboo_DOCKER_USER}" | tr '[:upper:]' '[:lower:]')
+    export IMAGE_TAG
+    export PLAN_PREFIX
 }
 
 ################################################################
@@ -71,4 +73,37 @@ discoverApplicationVersion(){
 
 	: "${SMP_VERSION:?SMP version can not be discovered!}"
   export SMP_VERSION
+}
+
+################################################################
+# Method copies the external resources to build artefact folder
+buildPrepareSMPArtefacts(){
+  : "${1:?Need to set build artefact folder as first variable non-empty!}"
+  : "${SMP_VERSION:?Need to set SMP version non-empty!}"
+  : "${SMP_ARTEFACTS:?Need to set SMP_ARTEFACTS non-empty!}"
+
+  echo "Copy SMP artefacts to build artefact folder ${1}"
+
+   if [[ ! -d "${SMP_PLUGIN_EXAMPLE}" ]]; then
+      echo "SMP SPI plugin '${SMP_PLUGIN_EXAMPLE}' not found. copy from artefacts ${SMP_ARTEFACTS}!"
+      cp "${SMP_ARTEFACTS}/smp-spi-payload-validation-example-$SMP_VERSION.jar" "${1}"/smp-spi-payload-validation-example.jar
+    else
+      cp "${SMP_PLUGIN_EXAMPLE}/smp-spi-payload-validation-example-$SMP_VERSION.jar" "${1}"/smp-spi-payload-validation-example.jar
+    fi
+
+    if [[ ! -f "${SMP_ARTEFACTS}/smp.war" ]]; then
+      echo "SMP artefact '${SMP_ARTEFACTS}/smp.war' not found. Was project built?"
+      exit 1
+    else
+      # for mysql tomcat
+      cp "${SMP_ARTEFACTS}/smp.war" "${1}"/smp.war
+    fi
+
+    if [[ ! -f "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" ]]; then
+      echo "SMP bundle artefact  '${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip' not found!"
+      exit 1
+    else
+      # for mysql data
+      cp "${SMP_ARTEFACTS}/smp-${SMP_VERSION}-setup.zip" "${1}"/smp-setup.zip
+    fi
 }

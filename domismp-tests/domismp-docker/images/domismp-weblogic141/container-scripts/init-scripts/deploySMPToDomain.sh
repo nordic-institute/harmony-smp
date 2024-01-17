@@ -7,7 +7,7 @@ echo "Scripts folder is: $INIT_SCRIPTS"
 
 # set datasource property
 DATA_SOURCE_PROPERTY_FILE="${INIT_SCRIPTS}/../properties/datasource.properties"
-if [  -f "${WL_INIT_PROPERTIES}/datasource.properties" ]; then
+if [ -f "${WL_INIT_PROPERTIES}/datasource.properties" ]; then
   DATA_SOURCE_PROPERTY_FILE="${WL_INIT_PROPERTIES}/datasource.properties"
 fi
 

@@ -2,7 +2,7 @@ version: "3.0"
 services:
   smp-oracle-db:
 #    image: container-registry.oracle.com/database/express:21.3.0-xe
-    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_BD_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
     hostname: smp-database.local
     environment:
       - ORACLE_CHARACTERSET=AL32UTF8 # set database encoding

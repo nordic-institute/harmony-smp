@@ -1,7 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# This is build script clean starting the docker compose containers for weblogic and oracle db integration tests.
+# The script is used for local development and CI integration testing only.
+#
+# IMPORTANT NOTE: The script clears all old containers, volumes and bind volumes and then starts the docker compose containers.
+
 
 # init plan variables
-WORKDIR="$(cd -P $(dirname ${BASH_SOURCE[0]} ) && pwd)"
+WORKDIR="$(cd -P $(dirname "${BASH_SOURCE[0]}" ) && pwd)"
 source "${WORKDIR}/../../functions/run-test.functions"
 initializeVariables
 
@@ -20,8 +26,8 @@ ORA_VERSION="11.2.0.2"
 ORA_EDITION="xe"
 ORA_SERVICE="xe"
 
-SMP_DB_USERNAME=smp;
-SMP_DB_PASSWORD=test;
+SMP_DB_USERNAME="smp"
+SMP_DB_PASSWORD="test"
 SMP_DB_SCRIPTS=./properties/db-scripts
 
 # READ arguments
@@ -31,6 +37,7 @@ do
   in
     i) SMP_INIT_DATABASE_DATA=${OPTARG};;
     v) SMP_VERSION=${OPTARG};;
+    *) echo "Unknown option [${option}].\nUsage: $0 [-i] [-v]"; exit 1;;
   esac
 done
 
@@ -41,11 +48,10 @@ echo "SMP version: $SMP_VERSION"
 echo "Init sql data: ${SMP_INIT_DATABASE_DATA}"
 echo "Working Directory: ${WORKDIR}"
 echo "*************************************************************************"
-cd "$WORKDIR"
+cd "$WORKDIR" || exit 1
 
 echo "Create folder (if not exist) for database scripts ${SMP_DB_SCRIPTS}"
 [ -d  ${SMP_DB_SCRIPTS}  ] || mkdir -p "${SMP_DB_SCRIPTS}"
-
 
 function createDatabaseSchemaForUser() {
 
@@ -67,23 +73,23 @@ function createDatabaseSchemaForUser() {
   } >>"$3"
 }
 
-function clearOldContainers {
+# clear old containers mounted volume ./data
+function clearMoundDataVolume() {
+  : "${$WORKDIR?"Need to set $WORKDIR non-empty!"}"
   echo "Clear container data ${WORKDIR}/data/"
-  rm -rf ${WORKDIR}/data/upload/*.*
-  rm -rf ${WORKDIR}/data/smp/config/*.*
-  rm -rf ${WORKDIR}/data/smp/security/*.*
-  rm -rf ${WORKDIR}/data/weblogic/keystores/*.*
-  rm -rf ${WORKDIR}/data/weblogic/security.properties
-  rm -rf ${WORKDIR}/data/*.*
+  rm -rf ${WORKDIR}/data
+  mkdir -p ${WORKDIR}/data/upload
+  mkdir -p ${WORKDIR}/data/smp/config
+  mkdir -p ${WORKDIR}/data/smp/security
+  mkdir -p ${WORKDIR}/data/weblogic/keystores
 }
 
+clearMoundDataVolume
 createDatabaseSchemaForUser $SMP_DB_USERNAME $SMP_DB_PASSWORD "${SMP_DB_SCRIPTS}/01_create_user.sql"
 
 # create  database init script from 
 echo "CONNECT ${SMP_DB_USERNAME}/${SMP_DB_PASSWORD}@//localhost:1521/${ORA_SERVICE};" > "${SMP_DB_SCRIPTS}/02_oracle10g.sql"
 cat  "${SMP_INIT_DATABASE}" >> "${SMP_DB_SCRIPTS}/02_oracle10g.sql"
-
-
 
 # copy init database data for  SMP    
 if [ ! -f "${SMP_INIT_DATABASE_DATA}" ]
