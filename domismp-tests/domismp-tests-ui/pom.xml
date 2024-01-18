@@ -14,6 +14,8 @@
         <test.properties.path>./src/main/resources/myLocal.properties</test.properties.path>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
+        <!-- Only selected modules are deployed -->
+        <maven.deploy.skip>false</maven.deploy.skip>
         <!-- dependencies versions-->
         <commons-csv_version>1.10.0</commons-csv_version>
         <selenium-chrome-driver_version>4.16.1</selenium-chrome-driver_version>

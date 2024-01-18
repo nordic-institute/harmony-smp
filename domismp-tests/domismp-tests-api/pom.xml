@@ -9,7 +9,7 @@
 
     <properties>
         <!-- Only selected modules are deployed -->
-        <maven.deploy.skip>false</maven.deploy.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
         <url>http://localhost:8080/smp</url>
         <SMPAdminUser/>
         <SMPAdminPassword/>
