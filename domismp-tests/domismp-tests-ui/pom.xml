@@ -36,11 +36,22 @@
         <commons-io_version>2.15.0</commons-io_version>
         <!-- plugin versions-->
         <maven-surefire-plugin_version>3.2.2</maven-surefire-plugin_version>
+        <plugin.dependency-check-maven.version>9.0.7</plugin.dependency-check-maven.version>
         <maven-compiler-plugin>3.11.0</maven-compiler-plugin>
+
     </properties>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${plugin.dependency-check-maven.version}</version>
+                <configuration>
+                    <!-- skip running the plugin because it's a test module to avoid cluttering the smp results -->
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

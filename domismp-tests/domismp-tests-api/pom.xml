@@ -17,6 +17,8 @@
 
         <!-- the soap ui specific dependencies -->
         <plugin.soapui-maven-plugin.version>5.7.2</plugin.soapui-maven-plugin.version>
+        <plugin.maven-compiler-plugin.version>3.11.0</plugin.maven-compiler-plugin.version>
+        <plugin.dependency-check-maven.version>9.0.7</plugin.dependency-check-maven.version>
 
         <org.codehaus.groovy.version>2.9.2-01</org.codehaus.groovy.version>
         <org.codehaus.groovy.eclipse-batch.version>2.5.13-01</org.codehaus.groovy.eclipse-batch.version>
@@ -71,9 +73,18 @@
         </pluginManagement>
         <plugins>
             <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${plugin.dependency-check-maven.version}</version>
+                <configuration>
+                    <!-- skip running the plugin because it's a test module to avoid cluttering the smp results -->
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>${plugin.maven-compiler-plugin.version}</version>
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
                 </configuration>
