@@ -128,19 +128,15 @@ export class PasswordChangeDialogComponent {
     }
   }
 
-  showPassChangeDialog() {
-    this.dialog.open(InformationDialogComponent, {
-      data: {
-        title: "Password set/changed",
-        description: "Password has been successfully set/changed." +
-          (!this.adminUser ? " Login again to the application with the new password!" : "")
-      }
-    }).afterClosed().subscribe(result => {
-      if (!this.adminUser) {
-        // logout if changed for itself
-        this.securityService.finalizeLogout(result);
-      }
-    })
+  async showPassChangeDialog() {
+    this.alertService.success("Password has been successfully set/changed." +
+      (!this.adminUser ? " Login again to the application with the new password!" : ""), true);
+
+
+    if (!this.adminUser) {
+      // logout if changed for itself
+      this.securityService.finalizeLogout({});
+    }
   }
 
   showSuccessMessage(value: string) {

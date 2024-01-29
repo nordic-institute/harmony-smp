@@ -1,5 +1,7 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AlertMessageService} from './alert-message.service';
+import {AlertComponent} from "../../alert/alert.component";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'alert',
@@ -7,41 +9,35 @@ import {AlertMessageService} from './alert-message.service';
   styleUrls: ['./alert-message.component.css']
 })
 
-export class AlertMessageComponent implements OnInit {
-  @ViewChild('alertMessage') alertMessage;
-  showSticky:boolean = false;
-  message: any=null;
+export class AlertMessageComponent implements OnInit, OnDestroy {
 
   readonly successTimeout: number = 3000;
 
+  message: any;
 
-  constructor(private alertService: AlertMessageService) { }
+  private subscription: Subscription;
+
+  constructor(private alertService: AlertMessageService) {
+  }
 
   ngOnInit() {
-    this.alertService.getMessage().subscribe(message => { this.showMessage(message); });
+    this.subscription = this.alertService.getMessage().subscribe(message => { this.showMessage(message); });
   }
 
-  clearAlert():void {
-    this.alertService.clearAlert();
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
-  setSticky(sticky: boolean):void {
-    this.showSticky = sticky;
-  }
-
-  get messageText(){
-    if (!!this.message){
-      return this.message.text;
-    }
+  clearAlert(force = false):void {
+    this.alertService.clearAlert(force);
   }
 
   showMessage(message: any) {
     this.message = message;
-    if (message?.type==='success') {
+    if (message && message.type && message.type === 'success') {
       setTimeout(() => {
         this.clearAlert();
       }, this.successTimeout);
     }
-
   }
 }

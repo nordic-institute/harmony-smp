@@ -5,52 +5,75 @@ import {Observable, Subject} from 'rxjs';
 @Injectable()
 export class AlertMessageService {
   private subject = new Subject<any>();
-  private previousRoute: string;
 
+  private previousRoute = '';
+
+  private sticky = false;
+
+  private message: { type: string, text: string };
 
   //TODO move the logic in the ngInit block
   constructor (private router: Router) {
-    this.previousRoute = '';
     // clear alert message on route change
     router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         if (this.isRouteChanged(event.url)) {
           this.clearAlert();
         } else {
-          console.log('Alert kept when navigating from [' + this.previousRoute + '] to [' + event.url + ']');
+          console.log('Alert after when navigating from [' + this.previousRoute + '] to [' + event.url + ']');
         }
       } else if (event instanceof NavigationEnd) {
         this.previousRoute = event.url;
+        if (this.sticky) {
+          this.displayCurrentMessage();
+          this.reset();
+        }
       }
     });
   }
 
+  private reset () {
+    this.sticky = false;
+    this.message = null;
+  }
+
   getPath (url: string): string {
-    var parser = document.createElement('a');
+    const parser = document.createElement('a');
     parser.href = url;
     return parser.pathname;
   }
 
   isRouteChanged (currentRoute: string): boolean {
-    let result = false;
     let previousRoutePath = this.getPath(this.previousRoute);
     let currentRoutePath = this.getPath(currentRoute);
-    if (previousRoutePath !== currentRoutePath) {
-      result = true;
-    }
-    return result;
+    return previousRoutePath !== currentRoutePath;
   }
 
-  clearAlert (): void {
+  clearAlert (force = false): void {
+    if (!force && this.sticky) {
+      return;
+    }
     this.subject.next(null);
   }
 
+  setSticky (sticky: boolean) {
+    this.sticky = sticky;
+  }
+
+  displayCurrentMessage () {
+    this.subject.next(this.message);
+  }
+
   success (message: string, keepAfterNavigationChange = false) {
-    this.subject.next({type: 'success', text: message});
+    this.setSticky(keepAfterNavigationChange);
+    this.message = {type: 'success', text: message};
+    this.displayCurrentMessage();
   }
 
   error (message: string, keepAfterNavigationChange = false) {
-    this.subject.next({type: 'error', text: message});
+    this.setSticky(keepAfterNavigationChange);
+    this.message = {type: 'error', text: message};
+    this.displayCurrentMessage();
   }
 
   exception (message: string, error: any, keepAfterNavigationChange = false): void {

@@ -2,27 +2,26 @@
 import {Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
 import {SecurityEventService} from './security-event.service';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
 import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {Router} from "@angular/router";
 
 @Injectable()
 export class SecurityService {
 
   readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
 
-
-
   constructor(
     private http: HttpClient,
     private alertService: AlertMessageService,
     private securityEventService: SecurityEventService,
     private dialog: MatDialog,
-  ) {
-    this.securityEventService.onLogoutSuccessEvent().subscribe(() => window.location.reload());
+    private router: Router) {
+    this.securityEventService.onLogoutSuccessEvent().subscribe(() => { this.dialog.closeAll(); this.router.navigateByUrl('/'); });
     this.securityEventService.onLogoutErrorEvent().subscribe((error) => this.alertService.error(error));
   }
 
