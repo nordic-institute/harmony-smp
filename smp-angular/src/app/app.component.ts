@@ -9,7 +9,6 @@ import {HttpClient} from "@angular/common/http";
 import {SidenavComponent} from "./window/sidenav/sidenav.component";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {ThemeService} from "./common/theme-service/theme.service";
-import {AlertMessageComponent} from "./common/alert-message/alert-message.component";
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/mode/xml/xml';
@@ -23,8 +22,6 @@ import {UserController} from "./common/services/user-controller";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-
-  @ViewChild('alertMessage') alertMessage: AlertMessageComponent;
 
   @ViewChild('sidenav') sidenav: SidenavComponent;
   @ViewChild('windowToolbar') windowToolbar: ToolbarComponent;
@@ -44,9 +41,8 @@ export class AppComponent {
     private themeService: ThemeService,
   ) {
     this.userController = new UserController(this.http, this.lookups, this.dialog);
-    themeService.updateThemeFromLocalStorage();
+    this.themeService.updateThemeFromLocalStorage();
   }
-
 
   isCurrentUserSystemAdmin(): boolean {
     return this.securityService.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
@@ -59,7 +55,6 @@ export class AppComponent {
   isCurrentUserServiceGroupAdmin(): boolean {
     return this.securityService.isCurrentUserInRole([Authority.SERVICE_GROUP_ADMIN]);
   }
-
 
   get currentUser(): string {
     let user = this.securityService.getCurrentUser();
@@ -108,7 +103,7 @@ export class AppComponent {
 
   onDrawerContentScroll(scrollEvent: any){
     let scrollTop = scrollEvent.srcElement.scrollTop;
-    this.alertMessage.setSticky(scrollTop > 0)
+    this.alertService.setSticky(scrollTop > 0)
   }
 
 }
