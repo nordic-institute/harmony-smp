@@ -1,6 +1,5 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AlertMessageService} from './alert-message.service';
-import {AlertComponent} from "../../alert/alert.component";
 import {Subscription} from "rxjs";
 
 @Component({

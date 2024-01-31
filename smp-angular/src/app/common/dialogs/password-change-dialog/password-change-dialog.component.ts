@@ -4,9 +4,9 @@ import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGrou
 import {User} from "../../../security/user.model";
 import {GlobalLookups} from "../../global-lookups";
 import {SecurityService} from "../../../security/security.service";
-import {InformationDialogComponent} from "../information-dialog/information-dialog.component";
 import {UserDetailsService} from "../../services/user-details.service";
 import {UserRo} from "../../model/user-ro.model";
+import {AlertMessageService} from "../../alert-message/alert-message.service";
 
 @Component({
   selector: 'smp-password-change-dialog',
@@ -32,6 +32,7 @@ export class PasswordChangeDialogComponent {
     private lookups: GlobalLookups,
     private userDetailsService: UserDetailsService,
     private securityService: SecurityService,
+    private alertService: AlertMessageService,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder
   ) {
