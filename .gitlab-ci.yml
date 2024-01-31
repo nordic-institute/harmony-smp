@@ -20,11 +20,10 @@
 stages:          # List of stages for jobs, and their order of execution
   - build-maven
   - security-scanning
+  - build-docker
+  - test-backend
+  - test-ui
   - visualization
-#  - build-docker
-#  - test-backend
-#  - test-ui
-#  - visualization
 
 
 include:
@@ -101,6 +100,7 @@ build-maven-job:
 code-coverage-visualization:
   # Must be in a stage later than build-maven-job's stage.
   stage: visualization
+  needs: ["build-maven-job"]
   image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
   tags:
     - cq-sans-dind     # Set this job to only run on our new specialized runner
@@ -111,7 +111,6 @@ code-coverage-visualization:
     - jacoco_paths=`find * -path "**/src/main/java" -type d | sed -e 's@^@'"$CI_PROJECT_DIR"'/@'`
     - echo "jacocopaths -> $jacoco_paths"
     - python /opt/cover2cover.py smp-aggregator/target/site/jacoco-aggregate/index.html $jacoco_paths > target/site/cobertura.xml
-  needs: ["build-maven-job"]
   dependencies:
     - build-maven-job
 
@@ -130,6 +129,9 @@ code-coverage-visualization:
 build-docker-job:
   stage: build-docker
   needs: ["build-maven-job"]
+  # temporarly disable docker execution
+  rules:
+    - when: never
   variables:
     GIT_CLEAN_FLAGS: none # do not clean artefacts from build-maven-job
   script:
@@ -142,6 +144,9 @@ build-docker-job:
 # backend tests on tomcat/mysql with sml integration
 test-soapui-tomcat-mysql-sml-job:
   stage: test-backend
+  # temporarly disable docker execution
+  rules:
+    - when: never
   needs: ["build-docker-job"]
   script:
     - echo "startup containers test-soapui-tomcat-mysql-sml"
@@ -166,6 +171,9 @@ test-soapui-tomcat-mysql-sml-job:
 test-soapui-weblogic-oracle-job:
   stage: test-backend
   needs: ["build-docker-job"]
+  # temporarly disable docker execution
+  rules:
+    - when: never
   script:
     - echo "startup containers test-soapui-weblogi-oracle"
     - ./smp-docker/compose/weblogic-oracle/runCompose.sh -i ../../../smp-soapui-tests/groovy/oracle-4.1_integration_test_data.sql
@@ -183,11 +191,11 @@ test-soapui-weblogic-oracle-job:
 
 test-ui-tomcat-mysql-sml-job:
   stage: test-ui  # It only runs when *both* test jobs in the test stage complete successfully.
-  # disable stage until UI tests are  fixed
+  needs: ["build-docker-job"]
+  # temporarly disable docker execution
   rules:
     - when: never
   allow_failure: true
-  needs: ["test-soapui-tomcat-mysql-sml-job"]
   script:
     - echo "Deploying application..."
     - ./smp-docker/compose/tomcat-mysql-smp-sml/runCompose.sh -i ../../../smp-soapui-tests/groovy/mysql-4.1_integration_test_data.sql
@@ -199,4 +207,3 @@ test-ui-tomcat-mysql-sml-job:
     name: "ui-report"
     paths:
       - "*/testng-results.xml"
-
