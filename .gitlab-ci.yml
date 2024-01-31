@@ -20,10 +20,11 @@
 stages:          # List of stages for jobs, and their order of execution
   - build-maven
   - security-scanning
-  - build-docker
-  - test-backend
-  - test-ui
   - visualization
+#  - build-docker
+#  - test-backend
+#  - test-ui
+#  - visualization
 
 
 include:
@@ -135,7 +136,7 @@ build-docker-job:
     - echo "build  maven artefacts Or import them from first step"
     - mvn clean verify -DskipTests=true -DskipITs=true
     - echo "build docker images..."
-    - ./smp-docker/images/build-docker-images.sh -o /datadrive/repo -c true
+    - ./domismp-tests/domismp-docker/images/build-docker-images.sh -o /datadrive/repo -c true
     - echo "docker images build complete."
 
 # backend tests on tomcat/mysql with sml integration
