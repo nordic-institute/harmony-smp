@@ -86,11 +86,10 @@
       style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;background-color: #FCFCFCBB; border: ridge 3px #b0bec5"
       (click)="onEditPanelClick()"
     >
-      <ngx-codemirror #codemirror
-                      formControlName="payload"
-                      [options]="codemirrorOptions"
-                      ngDefaultControl
-      ></ngx-codemirror>
+      <smp-editor #smpDocumentEditor
+                  formControlName="payload"
+                  ngDefaultControl
+      ></smp-editor>
     </div>
     <mat-toolbar class="mat-elevation-z2" style="flex-grow: 0">
       <mat-toolbar-row class="smp-toolbar-row">

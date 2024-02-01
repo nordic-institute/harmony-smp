@@ -119,7 +119,6 @@ import {EditResourceComponent} from "./edit/edit-resources/edit-resource.compone
 import {EditResourceService} from "./edit/edit-resources/edit-resource.service";
 import {ResourceDetailsPanelComponent} from "./edit/edit-resources/resource-details-panel/resource-details-panel.component";
 import {ResourceDocumentPanelComponent} from "./edit/edit-resources/resource-document-panel/resource-document-panel.component";
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {DocumentWizardDialogComponent} from "./edit/edit-resources/document-wizard-dialog/document-wizard-dialog.component";
 import {SubresourcePanelComponent} from "./edit/edit-resources/subresource-panel/subresource-panel.component";
 import {SubresourceDialogComponent} from "./edit/edit-resources/subresource-panel/resource-dialog/subresource-dialog.component";
@@ -141,6 +140,8 @@ import {
   PropertyDetailsDialogComponent
 } from "./system-settings/admin-properties/property-details-dialog/property-details-dialog.component";
 import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
+import {SmpEditorComponent} from "./common/components/smp-editor/smp-editor.component";
+
 
 @NgModule({
   declarations: [
@@ -161,6 +162,7 @@ import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.compo
     CertificateDialogComponent,
     CertificatePanelComponent,
     ClearInvalidDirective,
+    SmpEditorComponent,
     ColumnPickerComponent,
     ConfirmationDialogComponent,
     CredentialDialogComponent,
@@ -261,7 +263,6 @@ import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.compo
     ReactiveFormsModule,
     routing,
     MatAutocompleteModule,
-    CodemirrorModule,
     ClipboardModule,
   ],
   providers: [

@@ -8,6 +8,7 @@ import {EditResourceService} from "./edit-resource.service";
 import {EditDomainService} from "../edit-domain/edit-domain.service";
 import {EditGroupService} from "../edit-group/edit-group.service";
 import {AlertMessageService} from "../../common/alert-message/alert-message.service";
+import {MatTableDataSource} from "@angular/material/table";
 
 /**
  * The purpose of the EditResourceController is to  control the data of edit resource components when navigating
@@ -17,11 +18,10 @@ import {AlertMessageService} from "../../common/alert-message/alert-message.serv
  * @since 5.1
  */
 @Injectable()
-export class EditResourceController {
+export class EditResourceController extends MatTableDataSource<ResourceRo>{
 
   domainList: DomainRo[] = [];
   groupList: GroupRo[] = [];
-  resourceList: ResourceRo[] = [];
 
   _selectedDomain: DomainRo;
   _selectedGroup: GroupRo;
@@ -30,7 +30,7 @@ export class EditResourceController {
 
   pageIndex: number = 0;
   pageSize: number = 10;
-  filter: any = {};
+  filterResources: any = {};
   isLoadingResults = false;
 
 
@@ -40,6 +40,7 @@ export class EditResourceController {
     private resourceService: EditResourceService,
     private alertService: AlertMessageService,
   ) {
+    super();
   }
 
   get selectedDomain(): DomainRo {
@@ -68,7 +69,7 @@ export class EditResourceController {
       this.refreshResources();
     } else {
       this.isLoadingResults = false;
-      this.resourceList = [];
+      this.data = [];
     }
   };
 
@@ -119,9 +120,8 @@ export class EditResourceController {
     }
     this.isLoadingResults = true;
     this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,
-      this.filter, this.pageIndex, this.pageSize)
+      this.filterResources, this.pageIndex, this.pageSize)
       .subscribe((result: TableResult<ResourceRo>) => {
-        console.log("got resources: " + JSON.stringify(result))
         this.updateResourceList(result.serviceEntities)
         this.isLoadingResults = false;
       }, (error: any) => {
@@ -133,7 +133,6 @@ export class EditResourceController {
   refreshDomainsResourceDefinitions() {
     this.domainService.getDomainResourceDefinitionsObservable(this.selectedDomain)
       .subscribe((result: ResourceDefinitionRo[]) => {
-        console.log("got resource definitions: " + JSON.stringify(result))
         this._selectedDomainResourceDefs = result
       }, (error: any) => {
         this.alertService.error(error.error?.errorDescription)
@@ -159,20 +158,21 @@ export class EditResourceController {
   }
 
   updateResourceList(list: ResourceRo[]) {
-    this.resourceList = list
-    if (!!this.resourceList && this.resourceList.length > 0) {
-      this.selectedResource = this.resourceList[0];
+    this.data = list;
+    // select first resource by default
+    if (!!list && list.length > 0) {
+      this.selectedResource = list[0];
     }
   }
 
   applyResourceFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.filter["filter"] = filterValue.trim().toLowerCase();
+    this.filterResources["filter"] = filterValue.trim().toLowerCase();
     this.refreshResources();
   }
 
   get filterResourceResults(): boolean {
-    return !!this.filter["filter"]
+    return !!this.filterResources["filter"]
   }
 
   get disabledResourceFilter(): boolean {

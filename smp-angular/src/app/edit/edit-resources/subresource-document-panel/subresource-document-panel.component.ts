@@ -8,7 +8,6 @@ import {DomainRo} from "../../../common/model/domain-ro.model";
 import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditResourceService} from "../edit-resource.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 import {DocumentRo} from "../../../common/model/document-ro.model";
 import {NavigationService} from "../../../window/sidenav/navigation-model.service";
 import {SubresourceRo} from "../../../common/model/subresource-ro.model";
@@ -19,6 +18,7 @@ import {
   ServiceMetadataWizardRo
 } from "../subresource-document-wizard-dialog/service-metadata-wizard-edit-ro.model";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {SmpEditorComponent} from "../../../common/components/smp-editor/smp-editor.component";
 
 @Component({
   templateUrl: './subresource-document-panel.component.html',
@@ -36,14 +36,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
 
-  @ViewChild("codemirror") codemirror: CodemirrorComponent;
-// code mirror configuration
-  codemirrorOptions = {
-    lineNumbers: true,
-    lineWrapping: true,
-    viewportMargin: Infinity,
-    mode: 'xml'
-  };
+  @ViewChild("smpDocumentEditor") documentEditor: SmpEditorComponent;
 
   resourceForm: FormGroup;
   subresourceForm: FormGroup;
@@ -54,19 +47,19 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
               private dialog: MatDialog,
               private navigationService: NavigationService,
               private formBuilder: FormBuilder) {
-    this.resourceForm = formBuilder.group({
+    this.resourceForm = this.formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
       'visibility': new FormControl({value: null}),
       'resourceTypeIdentifier': new FormControl({value: null}),
     });
-    this.subresourceForm = formBuilder.group({
+    this.subresourceForm = this.formBuilder.group({
       'identifierValue': new FormControl({value: null}),
       'identifierScheme': new FormControl({value: null}),
       'subresourceTypeIdentifier': new FormControl({value: null}),
     });
 
-    this.documentForm = formBuilder.group({
+    this.documentForm = this.formBuilder.group({
       'mimeType': new FormControl({value: null}),
       'name': new FormControl({value: null}),
       'currentResourceVersion': new FormControl({value: null}),
@@ -264,16 +257,10 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
   }
 
   public onEditPanelClick() {
-    if (this.codemirror.codeMirror.hasFocus()) {
+    if (this.documentEditor.hasFocus) {
       return;
     }
-    let endPosition: number = this._document?.payload?.length;
-    if (endPosition) {
-      // forward focus to "codeMirror"
-      this.codemirror.codeMirror.setCursor(endPosition)
-    }
-    this.codemirror.codeMirror.focus()
-
+    this.documentEditor.focusAndCursorToEnd();
   }
 
   get getDocumentVersions(): number[] {
