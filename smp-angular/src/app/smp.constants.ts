@@ -153,25 +153,6 @@ export class SmpConstants {
   public static readonly REST_PUBLIC_SECURITY_AUTHENTICATION = SmpConstants.REST_PUBLIC_SECURITY + 'authentication';
   public static readonly REST_PUBLIC_SECURITY_USER = SmpConstants.REST_PUBLIC_SECURITY + 'user';
 
-  public static readonly REST_PUBLIC_RESOURCE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE;
-  public static readonly REST_PUBLIC_RESOURCE_EDIT = SmpConstants.REST_PUBLIC_RESOURCE + '/' + SmpConstants.PATH_PARAM_ENC_USER_ID
-    + '/' + SmpConstants.PATH_RESOURCE_TYPE_GROUP + '/' + SmpConstants.PATH_PARAM_ENC_GROUP_ID;
-
-
-  public static readonly REST_PUBLIC_RESOURCE_EDIT_DELETE = SmpConstants.REST_PUBLIC_RESOURCE_EDIT +
-    '/' + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE + '/' + SmpConstants.PATH_PARAM_ENC_RESOURCE_ID + '/' + SmpConstants.PATH_ACTION_DELETE;
-
-  public static readonly REST_PUBLIC_SERVICE_GROUP = SmpConstants.REST_PUBLIC + 'service-group';
-  public static readonly REST_PUBLIC_SERVICE_GROUP_ENTITY = SmpConstants.REST_PUBLIC_SERVICE_GROUP + '/' + SmpConstants.PATH_PARAM_SRV_GROUP_ID;
-  public static readonly REST_PUBLIC_SERVICE_GROUP_ENTITY_EXTENSION = SmpConstants.REST_PUBLIC_SERVICE_GROUP_ENTITY + '/extension';
-  // service group extension tools
-  public static readonly REST_SERVICE_GROUP_EXTENSION = `${SmpConstants.REST_PUBLIC_SERVICE_GROUP}/extension`;
-  public static readonly REST_SERVICE_GROUP_EXTENSION_VALIDATE = `${SmpConstants.REST_SERVICE_GROUP_EXTENSION}/validate`;
-
-  public static readonly REST_METADATA = SmpConstants.REST_PUBLIC + 'service-metadata';
-  public static readonly REST_METADATA_VALIDATE = `${SmpConstants.REST_METADATA}/validate`;
-
-
   //------------------------------
   // internal endpoints
   public static readonly REST_INTERNAL_ALERT_MANAGE = SmpConstants.REST_INTERNAL + SmpConstants.PATH_RESOURCE_TYPE_ALERT +

@@ -134,7 +134,7 @@ export class GlobalLookups {
         .set('page', '-1')
         .set('pageSize', '-1');
 
-      // return only smp and service group admins..
+      // return only smp and resource admins...
       if (this.securityService.isCurrentUserSMPAdmin()) {
         params = params.set('roles', Role.SMP_ADMIN + "," + Role.SERVICE_GROUP_ADMIN);
       }

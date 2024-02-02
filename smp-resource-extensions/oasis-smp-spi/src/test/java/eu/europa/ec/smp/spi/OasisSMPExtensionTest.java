@@ -18,8 +18,8 @@
  */
 package eu.europa.ec.smp.spi;
 
-import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
-import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup20;
+import eu.europa.ec.smp.spi.def.OasisSMPResource10;
+import eu.europa.ec.smp.spi.def.OasisSMPResource20;
 import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OasisSMPExtensionTest {
 
-    OasisSMPServiceGroup10 mockOasisSMPServiceGroup10 = Mockito.mock(OasisSMPServiceGroup10.class);
-    OasisSMPServiceGroup20 mockOasisSMPServiceGroup20 = Mockito.mock(OasisSMPServiceGroup20.class);
+    OasisSMPResource10 mockOasisSMPResource10 = Mockito.mock(OasisSMPResource10.class);
+    OasisSMPResource20 mockOasisSMPResource20 = Mockito.mock(OasisSMPResource20.class);
 
-    OasisSMPExtension testInstance = new OasisSMPExtension(mockOasisSMPServiceGroup10, mockOasisSMPServiceGroup20);
+    OasisSMPExtension testInstance = new OasisSMPExtension(mockOasisSMPResource10, mockOasisSMPResource20);
     @Test
     void testIdentifier() {
 
@@ -64,8 +64,8 @@ class OasisSMPExtensionTest {
     void testResourceTypes() {
         List<ResourceDefinitionSpi> result = testInstance.resourceTypes();
         assertEquals(2, result.size());
-        assertEquals(mockOasisSMPServiceGroup10, result.get(0));
-        assertEquals(mockOasisSMPServiceGroup20, result.get(1));
+        assertEquals(mockOasisSMPResource10, result.get(0));
+        assertEquals(mockOasisSMPResource20, result.get(1));
     }
 
     @Test

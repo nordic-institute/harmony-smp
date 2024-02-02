@@ -18,46 +18,52 @@
  */
 package eu.europa.ec.smp.spi.def;
 
-import eu.europa.ec.smp.spi.handler.OasisSMPServiceMetadata20Handler;
+import eu.europa.ec.smp.spi.handler.OasisSMPResource10Handler;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
+import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class OasisSMPServiceMetadata20Test {
+class OasisSMPResource10Test {
 
-    OasisSMPServiceMetadata20Handler mockOasisSMPServiceMetadata20Handler = Mockito.mock(OasisSMPServiceMetadata20Handler.class);
-    OasisSMPServiceMetadata20 testInstance = new OasisSMPServiceMetadata20(mockOasisSMPServiceMetadata20Handler);
+    OasisSMPResource10Handler mockOasisSMPResource10Handler = Mockito.mock(OasisSMPResource10Handler.class);
+    OasisSMPSubresource10 mockOasisSMPSubresource10 = Mockito.mock(OasisSMPSubresource10.class);
+
+    OasisSMPResource10 testInstance = new OasisSMPResource10(mockOasisSMPResource10Handler, mockOasisSMPSubresource10);
+
 
     @Test
     void identifier() {
         String result = testInstance.identifier();
 
-        assertEquals("edelivery-oasis-smp-2.0-servicemetadata", result);
+        assertEquals("edelivery-oasis-smp-1.0-servicegroup", result);
     }
 
     @Test
-    void urlSegment() {
-        String result = testInstance.urlSegment();
+    void defaultUrlSegment() {
+        String result = testInstance.defaultUrlSegment();
 
-        assertEquals("services", result);
+        assertEquals("smp-1", result);
     }
 
     @Test
     void name() {
         String result = testInstance.name();
 
-        assertEquals("Oasis SMP 2.0 ServiceMetadata", result);
+        assertEquals("Oasis SMP 1.0 ServiceGroup", result);
     }
 
     @Test
     void description() {
         String result = testInstance.description();
 
-        assertEquals("Oasis SMP 2.0 Service Metadata resource handler", result);
+        assertEquals("Oasis SMP 1.0 Service group resource handler", result);
     }
 
     @Test
@@ -68,16 +74,24 @@ class OasisSMPServiceMetadata20Test {
     }
 
     @Test
+    void getSubresourceSpiList() {
+        List<SubresourceDefinitionSpi> result = testInstance.getSubresourceSpiList();
+
+        assertEquals(1, result.size());
+        assertEquals(mockOasisSMPSubresource10, result.get(0));
+    }
+
+    @Test
     void getResourceHandler() {
         ResourceHandlerSpi result = testInstance.getResourceHandler();
 
-        assertEquals(mockOasisSMPServiceMetadata20Handler, result);
+        assertEquals(mockOasisSMPResource10Handler, result);
     }
 
     @Test
     void testToString() {
         String result = testInstance.toString();
 
-        MatcherAssert.assertThat(result, CoreMatchers.containsString("edelivery-oasis-smp-2.0-servicemetadata"));
+        MatcherAssert.assertThat(result, CoreMatchers.containsString("edelivery-oasis-smp-1.0-servicegroup"));
     }
 }

@@ -4,7 +4,6 @@ import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular
 import {ResourceRo} from "../../../common/model/resource-ro.model";
 
 @Component({
-  selector: 'service-group-extension-wizard',
   templateUrl: './document-wizard-dialog.component.html',
   styleUrls:  ['./document-wizard-dialog.component.css']
 })

@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.smp.spi.def;
 
-import eu.europa.ec.smp.spi.handler.OasisSMPServiceGroup20Handler;
+import eu.europa.ec.smp.spi.handler.OasisSMPResource20Handler;
 import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
@@ -35,15 +35,15 @@ import java.util.List;
  * @since 5.0
  */
 @Component
-public class OasisSMPServiceGroup20 implements ResourceDefinitionSpi {
+public class OasisSMPResource20 implements ResourceDefinitionSpi {
 
 
-    OasisSMPServiceGroup20Handler serviceGroup20Handler;
-    OasisSMPServiceMetadata20 oasisSMPServiceMetadata20;
+    OasisSMPResource20Handler resource20Handler;
+    OasisSMPSubresource20 oasisSMPSubresource20;
 
-    public OasisSMPServiceGroup20(OasisSMPServiceGroup20Handler serviceGroup20Handler, OasisSMPServiceMetadata20 oasisSMPServiceMetadata20) {
-        this.serviceGroup20Handler = serviceGroup20Handler;
-        this.oasisSMPServiceMetadata20 = oasisSMPServiceMetadata20;
+    public OasisSMPResource20(OasisSMPResource20Handler resource20Handler, OasisSMPSubresource20 oasisSMPSubresource20) {
+        this.resource20Handler = resource20Handler;
+        this.oasisSMPSubresource20 = oasisSMPSubresource20;
     }
 
     @Override
@@ -73,12 +73,12 @@ public class OasisSMPServiceGroup20 implements ResourceDefinitionSpi {
 
     @Override
     public List<SubresourceDefinitionSpi> getSubresourceSpiList() {
-        return Collections.singletonList(oasisSMPServiceMetadata20);
+        return Collections.singletonList(oasisSMPSubresource20);
     }
 
     @Override
     public ResourceHandlerSpi getResourceHandler() {
-        return serviceGroup20Handler;
+        return resource20Handler;
     }
 
     @Override

@@ -1,6 +1,6 @@
 import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './login/login.component';
-import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
+import {ResourceSearchComponent} from './service-group-search/resource-search.component';
 import {PropertyComponent} from "./system-settings/admin-properties/property.component";
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
 import {authenticationGuard} from "./guards/authentication.guard";
@@ -25,7 +25,7 @@ import {AdminAlertsComponent} from "./system-settings/admin-alerts/admin-alerts.
 
 const appRoutes: Routes = [
 
-  {path: '', component: ServiceGroupSearchComponent},
+  {path: '', component: ResourceSearchComponent},
   {path: 'search', redirectTo: ''},
   {path: 'login', component: LoginComponent},
   {

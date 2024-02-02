@@ -25,11 +25,11 @@ import eu.europa.ec.edelivery.smp.data.ui.DocumentRo;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.resource.ResourceHandlerService;
-import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
-import eu.europa.ec.smp.spi.def.OasisSMPServiceMetadata10;
-import eu.europa.ec.smp.spi.handler.OasisSMPServiceGroup10Handler;
-import eu.europa.ec.smp.spi.handler.OasisSMPServiceMetadata10Handler;
-import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
+import eu.europa.ec.smp.spi.def.OasisSMPResource10;
+import eu.europa.ec.smp.spi.def.OasisSMPSubresource10;
+import eu.europa.ec.smp.spi.handler.OasisSMPResource10Handler;
+import eu.europa.ec.smp.spi.handler.OasisSMPSubresource10Handler;
+import eu.europa.ec.smp.spi.validation.Subresource10Validator;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
 @ContextConfiguration(classes = {UIDocumentService.class, ConversionTestConfig.class, ResourceHandlerService.class,
-        OasisSMPServiceGroup10.class, OasisSMPServiceGroup10Handler.class, OasisSMPServiceMetadata10.class, OasisSMPServiceMetadata10Handler.class, ServiceMetadata10Validator.class,})
+        OasisSMPResource10.class, OasisSMPResource10Handler.class, OasisSMPSubresource10.class, OasisSMPSubresource10Handler.class, Subresource10Validator.class,})
 public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired

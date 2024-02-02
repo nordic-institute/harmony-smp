@@ -18,27 +18,27 @@
  */
 package eu.europa.ec.smp.spi.def;
 
-import eu.europa.ec.smp.spi.handler.OasisSMPServiceMetadata10Handler;
+import eu.europa.ec.smp.spi.handler.OasisSMPSubresource20Handler;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import eu.europa.ec.smp.spi.resource.SubresourceDefinitionSpi;
 import org.springframework.stereotype.Component;
 
 
 /**
- * The SubresourceDefinitionSpi implementation for the Oasis SMP 1.0 ServiceMetadata document.
+ * The SubresourceDefinitionSpi implementation for the Oasis SMP 2.0 ServiceMetadata document.
  *
  * @author Joze Rihtarsic
  * @since 5.0
  */
 @Component
-public class OasisSMPServiceMetadata10 implements SubresourceDefinitionSpi {
+public class OasisSMPSubresource20 implements SubresourceDefinitionSpi {
 
-    public static final String RESOURCE_IDENTIFIER = "edelivery-oasis-smp-1.0-servicemetadata";
+    public static final String RESOURCE_IDENTIFIER = "edelivery-oasis-smp-2.0-servicemetadata";
 
-    OasisSMPServiceMetadata10Handler serviceMetadata10Handler;
+    OasisSMPSubresource20Handler subresource20Handler;
 
-    public OasisSMPServiceMetadata10(OasisSMPServiceMetadata10Handler serviceMetadata10Handler) {
-        this.serviceMetadata10Handler = serviceMetadata10Handler;
+    public OasisSMPSubresource20(OasisSMPSubresource20Handler subresource20Handler) {
+        this.subresource20Handler = subresource20Handler;
     }
 
     @Override
@@ -53,12 +53,12 @@ public class OasisSMPServiceMetadata10 implements SubresourceDefinitionSpi {
 
     @Override
     public String name() {
-        return "Oasis SMP 1.0 ServiceMetadata";
+        return "Oasis SMP 2.0 ServiceMetadata";
     }
 
     @Override
     public String description() {
-        return "Oasis SMP 1.0 Service Metadata resource handler";
+        return "Oasis SMP 2.0 Service Metadata resource handler";
     }
 
     @Override
@@ -68,12 +68,12 @@ public class OasisSMPServiceMetadata10 implements SubresourceDefinitionSpi {
 
     @Override
     public ResourceHandlerSpi getResourceHandler() {
-        return serviceMetadata10Handler;
+        return subresource20Handler;
     }
 
     @Override
     public String toString() {
-        return "OasisSMPServiceMetadata10{" +
+        return "OasisSMPServiceMetadata20{" +
                 "identifier=" + identifier() +
                 "urlSegment=" + urlSegment() +
                 "name=" + name() +

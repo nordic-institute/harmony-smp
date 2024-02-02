@@ -67,7 +67,7 @@ export class AppComponent {
     } else if (this.securityService.isCurrentUserSMPAdmin()) {
       return "SMP administrator";
     } else if (this.securityService.isCurrentUserServiceGroupAdmin()) {
-      return "Service group administrator";
+      return "Resource administrator";
     }
     return "";
   }

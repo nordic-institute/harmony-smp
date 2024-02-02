@@ -42,27 +42,27 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALI
 
 
 /**
- * Simple Service metadata validator
+ * Simple Subresource validator
  */
 @Component
-public class ServiceMetadata20Validator {
+public class Subresource20Validator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadata20Validator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Subresource20Validator.class);
 
     final SmpIdentifierServiceApi smpIdentifierApi;
 
-    public ServiceMetadata20Validator(SmpIdentifierServiceApi smpIdentifierApi) {
+    public Subresource20Validator(SmpIdentifierServiceApi smpIdentifierApi) {
         this.smpIdentifierApi = smpIdentifierApi;
     }
 
     public void validate(ResourceIdentifier participantIdentifierFromUrl,
                          ResourceIdentifier documentIdentifierFromUrl,
-                         ServiceMetadata serviceMetadata
+                         ServiceMetadata subresource
     ) throws ResourceException {
         LOG.debug("Validate service metadata for participant [{}], document [{}]", participantIdentifierFromUrl, documentIdentifierFromUrl);
 
-        final ParticipantID participantId = serviceMetadata.getParticipantID();
-        final ServiceID documentId = serviceMetadata.getServiceID();
+        final ParticipantID participantId = subresource.getParticipantID();
+        final ServiceID documentId = subresource.getServiceID();
         ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getSchemeID());
         ResourceIdentifier xmlSubresourceIdentifier = smpIdentifierApi.normalizeSubresourceIdentifier(documentId.getValue(), documentId.getSchemeID());
         if (!xmlResourceIdentifier.equals(participantIdentifierFromUrl)) {
@@ -75,11 +75,11 @@ public class ServiceMetadata20Validator {
             throw new ResourceException(INVALID_PARAMETERS, "Document identifiers don't match between URL parameter [" + documentIdentifierFromUrl + "] and XML body: [" + xmlSubresourceIdentifier + "]");
         }
 
-        List<ProcessMetadata> processMetadata = serviceMetadata.getProcessMetadatas();
+        List<ProcessMetadata> processMetadata = subresource.getProcessMetadatas();
         validateProcesses(processMetadata);
 /*
-        if (serviceInformation == null && serviceMetadata.getRedirect() != null) {
-            LOG.debug("Redirect serviceMetadata, skip document/participant identifier validation");
+        if (serviceInformation == null && subresource.getRedirect() != null) {
+            LOG.debug("Redirect subresource, skip document/participant identifier validation");
             return;
         }*/
 

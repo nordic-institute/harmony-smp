@@ -195,7 +195,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
 
     const formRef: MatDialogRef<any> = this.dialog.open(DocumentWizardDialogComponent, {
       data: {
-        title: "Service group wizard",
+        title: "Resource wizard",
         resource: this._resource,
 
       }

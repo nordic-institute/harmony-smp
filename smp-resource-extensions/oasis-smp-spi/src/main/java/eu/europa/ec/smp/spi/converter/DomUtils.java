@@ -65,8 +65,8 @@ public final class DomUtils {
      * @param serviceMetadataXml
      * @return w3d dom element
      */
-    public static Document toSignedServiceMetadata10Document(byte[] serviceMetadataXml) throws ResourceException {
-        LOG.debug("toSignedServiceMetadata10Document");
+    public static Document toSignedSubresource10Document(byte[] serviceMetadataXml) throws ResourceException {
+        LOG.debug("toSignedSubresource10Document");
         try {
             Document docServiceMetadata = parse(serviceMetadataXml);
             Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY.getBytes());
@@ -79,13 +79,13 @@ public final class DomUtils {
     }
 
 
-    public static Document parse(byte[] serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
-        if (serviceMetadataXml == null) {
+    public static Document parse(byte[] subresourceXml) throws SAXException, IOException, ParserConfigurationException {
+        if (subresourceXml == null) {
             LOG.warn("ServiceMetadataXml bytearray is null!");
             return null;
         }
-        LOG.debug("Parse document with size [{}]", serviceMetadataXml.length);
-        InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);
+        LOG.debug("Parse document with size [{}]", subresourceXml.length);
+        InputStream inputStream = new ByteArrayInputStream(subresourceXml);
         return getDocumentBuilder().parse(inputStream);
     }
 

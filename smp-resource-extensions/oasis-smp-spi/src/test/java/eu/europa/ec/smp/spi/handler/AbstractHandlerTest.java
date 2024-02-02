@@ -24,7 +24,7 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
+import eu.europa.ec.smp.spi.def.OasisSMPResource10;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import org.mockito.Mockito;
 
@@ -51,7 +51,7 @@ abstract class AbstractHandlerTest {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Mockito.doReturn(baos).when(responseData).getOutputStream();
-        Mockito.doReturn(OasisSMPServiceGroup10.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
+        Mockito.doReturn(OasisSMPResource10.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
         Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
         if (subresourceIdentifier != null) {
             Mockito.doReturn(subresourceIdentifier).when(requestData).getSubresourceIdentifier();
@@ -71,7 +71,7 @@ abstract class AbstractHandlerTest {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Mockito.doReturn(baos).when(responseData).getOutputStream();
-        Mockito.doReturn(OasisSMPServiceGroup10.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
+        Mockito.doReturn(OasisSMPResource10.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
         Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
         if (subresourceIdentifier != null) {
             Mockito.doReturn(subresourceIdentifier).when(requestData).getSubresourceIdentifier();
@@ -92,7 +92,7 @@ abstract class AbstractHandlerTest {
             Mockito.doReturn(subresourceIdentifier).when(requestData).getSubresourceIdentifier();
             Mockito.when(mockSmpIdentifierServiceApi.normalizeSubresourceIdentifier(Mockito.anyString(), Mockito.anyString())).thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[0], (String) i.getArguments()[1]));
         }
-        Mockito.doReturn(OasisSMPServiceGroup10.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
+        Mockito.doReturn(OasisSMPResource10.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
         Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
         Mockito.when(mockSmpIdentifierServiceApi.normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString())).thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[0], (String) i.getArguments()[1]));
 

@@ -20,18 +20,18 @@ package eu.europa.ec.smp.spi.handler;
 
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
-import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
+import eu.europa.ec.smp.spi.validation.Subresource10Validator;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertThrows;
 
-class OasisSMPServiceMetadata10HandlerTest extends AbstractHandlerTest {
+class OasisSMPSubresource10HandlerTest extends AbstractHandlerTest {
 
 
     @Override
     public AbstractOasisSMPHandler getTestInstance() {
-        return new OasisSMPServiceMetadata10Handler(mockSmpDataApi, mockSmpIdentifierServiceApi, mockSignatureApi, new ServiceMetadata10Validator(mockSmpIdentifierServiceApi));
+        return new OasisSMPSubresource10Handler(mockSmpDataApi, mockSmpIdentifierServiceApi, mockSignatureApi, new Subresource10Validator(mockSmpIdentifierServiceApi));
     }
 
     @Test
@@ -48,7 +48,7 @@ class OasisSMPServiceMetadata10HandlerTest extends AbstractHandlerTest {
         ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:eu:ncpb:utest", "ehealth-actorid-qns");
         ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn::epsos##services:extended:epsos::107", "ehealth-resid-qns");
         // validate
-        validateResourceAction("/examples/oasis-smp-1.0/ServiceMetadataWithServiceOk.xml", resourceIdentifier, subResourceIdentifier);
+        validateResourceAction("/examples/oasis-smp-1.0/SubresourceWithServiceOk.xml", resourceIdentifier, subResourceIdentifier);
     }
 
     @Test
@@ -57,7 +57,7 @@ class OasisSMPServiceMetadata10HandlerTest extends AbstractHandlerTest {
         ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn::epsos##services:extended:epsos::107", "ehealth-resid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-1.0/ServiceMetadataWithDOCTYPE.xml", resourceIdentifier, subResourceIdentifier));
+                () -> validateResourceAction("/examples/oasis-smp-1.0/SubresourceWithDOCTYPE.xml", resourceIdentifier, subResourceIdentifier));
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("DOCTYPE is disallowed"));
     }
 
@@ -67,7 +67,7 @@ class OasisSMPServiceMetadata10HandlerTest extends AbstractHandlerTest {
         ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn::epsos##services:extended:epsos::101", "ehealth-resid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-1.0/ServiceMetadataWithServiceOk.xml", resourceIdentifier, subResourceIdentifier));
+                () -> validateResourceAction("/examples/oasis-smp-1.0/SubresourceWithServiceOk.xml", resourceIdentifier, subResourceIdentifier));
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("Participant identifiers don't match"));
     }
 
@@ -77,7 +77,7 @@ class OasisSMPServiceMetadata10HandlerTest extends AbstractHandlerTest {
         ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn::epsos##services:extended:epsos::101:invalidIdentifeir", "ehealth-resid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-1.0/ServiceMetadataWithServiceOk.xml", resourceIdentifier, subResourceIdentifier));
+                () -> validateResourceAction("/examples/oasis-smp-1.0/SubresourceWithServiceOk.xml", resourceIdentifier, subResourceIdentifier));
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("Document identifiers don't match"));
     }
 
@@ -87,13 +87,13 @@ class OasisSMPServiceMetadata10HandlerTest extends AbstractHandlerTest {
         ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn::epsos##services:extended:epsos::10", "ehealth-resid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-1.0/ServiceMetadataMissingMandatoryFields.xml", resourceIdentifier, subResourceIdentifier));
+                () -> validateResourceAction("/examples/oasis-smp-1.0/SubresourceMissingMandatoryFields.xml", resourceIdentifier, subResourceIdentifier));
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("SAXParseException"));
     }
 
     @Test
     void readResourceOK() throws ResourceException {
-        String resourceName = "/examples/oasis-smp-1.0/ServiceMetadataWithServiceOk.xml";
+        String resourceName = "/examples/oasis-smp-1.0/SubresourceWithServiceOk.xml";
         ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:eu:ncpb:utest", "ehealth-actorid-qns");
         ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn::epsos##services:extended:epsos::10", "ehealth-resid-qns");
 
@@ -103,7 +103,7 @@ class OasisSMPServiceMetadata10HandlerTest extends AbstractHandlerTest {
 
     @Test
     void storeResourceOK() throws ResourceException {
-        String resourceName = "/examples/oasis-smp-1.0/ServiceMetadataWithServiceOk.xml";
+        String resourceName = "/examples/oasis-smp-1.0/SubresourceWithServiceOk.xml";
         ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:eu:ncpb:utest", "ehealth-actorid-qns");
         ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn::epsos##services:extended:epsos::107", "ehealth-resid-qns");
 
