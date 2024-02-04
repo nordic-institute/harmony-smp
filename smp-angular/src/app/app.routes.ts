@@ -1,6 +1,6 @@
 import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './login/login.component';
-import {ResourceSearchComponent} from './service-group-search/resource-search.component';
+import {ResourceSearchComponent} from './resource-search/resource-search.component';
 import {PropertyComponent} from "./system-settings/admin-properties/property.component";
 import {UserProfileComponent} from "./user-settings/user-profile/user-profile.component";
 import {authenticationGuard} from "./guards/authentication.guard";

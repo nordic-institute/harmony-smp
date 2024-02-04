@@ -30,7 +30,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
   @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
-  serviceGroupSearchController: ResourceSearchController;
+  resourceSearchController: ResourceSearchController;
   filter: any = {};
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
   baseUrl: string;
@@ -42,11 +42,11 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
               public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef) {
 
-    this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_SERVICE_GROUP;
+    this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_RESOURCE;
   }
 
   ngOnInit(): void {
-    this.serviceGroupSearchController = new ResourceSearchController(this.dialog);
+    this.resourceSearchController = new ResourceSearchController(this.dialog);
   }
 
   initColumns(): void {
@@ -102,7 +102,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
     this.initColumns();
   }
 
-  createServiceGroupURL(row: ResourceSearchRo) {
+  createResourceURL(row: ResourceSearchRo) {
 
     return (!row?.domainCode? "" : row.domainCode+ '/')
           + (!row?.resourceDefUrlSegment?"" : row.resourceDefUrlSegment + '/')
@@ -111,7 +111,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
 
   createServiceMetadataURL(row: ResourceSearchRo, rowSMD: SubresourceSearchRo) {
 
-    return this.createServiceGroupURL(row)
+    return this.createResourceURL(row)
             + '/' + rowSMD.subresourceDefUrlSegment + '/'
             + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
@@ -119,7 +119,7 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
 
 
   details(row: any) {
-    this.serviceGroupSearchController.showDetails(row);
+    this.resourceSearchController.showDetails(row);
 
   }
 }

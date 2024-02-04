@@ -48,8 +48,8 @@ export class ResourceSearchController implements SearchTableController {
   }
 
   isRowExpanderDisabled(row: SearchTableEntity): boolean {
-    const serviceGroup = <ResourceSearchRo>row;
-    return !(serviceGroup.serviceMetadata && serviceGroup.serviceMetadata.length);
+    const resource = <ResourceSearchRo>row;
+    return !(resource.serviceMetadata && resource.serviceMetadata.length);
   }
 
   isRecordChanged(oldModel, newModel): boolean {

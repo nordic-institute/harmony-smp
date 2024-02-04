@@ -28,7 +28,6 @@ export class SmpConstants {
   public static readonly PATH_PARAM_CERT_ALIAS = '{cert-alias}';
   public static readonly PATH_PARAM_ENC_CREDENTIAL_ID = '{credential-id}';
   public static readonly PATH_PARAM_ENC_MANAGED_USER_ID = '{managed-user-id}';
-  public static readonly PATH_PARAM_SRV_GROUP_ID = '{service-group-id}';
 
   public static readonly PATH_PARAM_KEYSTORE_PWD = '{keystore-pwd}';
   public static readonly PATH_PARAM_KEYSTORE_TYPE = '{keystore-type}';
@@ -70,7 +69,7 @@ export class SmpConstants {
   public static readonly REST_EDIT_SUBRESOURCE_CREATE = SmpConstants.REST_EDIT_SUBRESOURCE  + '/' + SmpConstants.PATH_ACTION_CREATE;
 
   /* Public services */
-  public static readonly REST_PUBLIC_SEARCH_SERVICE_GROUP = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
+  public static readonly REST_PUBLIC_SEARCH_RESOURCE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
 
   public static readonly REST_PUBLIC_DOMAIN = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
   /* Public edit services */

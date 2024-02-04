@@ -129,7 +129,7 @@ import {SmpWarningPanelComponent} from "./common/components/smp-warning-panel/sm
 import {ManageMembersDialogComponent} from "./common/dialogs/manage-members-dialog/manage-members-dialog.component";
 import {HttpErrorHandlerService} from "./common/error/http-error-handler.service";
 import {SmpTitledLabelComponent} from "./common/components/smp-titled-label/smp-titled-label.component";
-import {ResourceSearchComponent} from "./service-group-search/resource-search.component";
+import {ResourceSearchComponent} from "./resource-search/resource-search.component";
 import {EditResourceController} from "./edit/edit-resources/edit-resource.controller";
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import {CertificateService} from "./common/services/certificate.service";
