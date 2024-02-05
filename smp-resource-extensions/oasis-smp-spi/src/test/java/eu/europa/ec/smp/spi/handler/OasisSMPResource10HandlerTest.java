@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertThrows;
 
-class OasisSMPServiceGroup20HandlerTest extends AbstractHandlerTest {
+class OasisSMPResource10HandlerTest extends AbstractHandlerTest {
     @Override
     public AbstractOasisSMPHandler getTestInstance() {
-        return new OasisSMPServiceGroup20Handler(mockSmpDataApi, mockSmpIdentifierServiceApi, mockSignatureApi);
+        return new OasisSMPResource10Handler(mockSmpDataApi, mockSmpIdentifierServiceApi);
     }
 
     @Test
@@ -41,50 +41,51 @@ class OasisSMPServiceGroup20HandlerTest extends AbstractHandlerTest {
 
     @Test
     void validateResourceOK() throws ResourceException {
-        ResourceIdentifier resourceIdentifier = new ResourceIdentifier( "9925:0367302178", "iso6523-actorid-upis");
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:eu:ncpb:utest", "ehealth-actorid-qns");
         // validate
-        validateResourceAction("/examples/oasis-smp-2.0/service_group_unsigned_valid_iso6523.xml", resourceIdentifier);
+        validateResourceAction("/examples/oasis-smp-1.0/ResourceOK.xml", resourceIdentifier);
     }
 
     @Test
     void validateResourceDisallowedDocType() {
-        ResourceIdentifier resourceIdentifier = new ResourceIdentifier( "9925:0367302178", "iso6523-actorid-upis");
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:eu:ncpb:utest", "ehealth-actorid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-2.0/service_group_unsigned_invalid_iso6523_DTD.xml", resourceIdentifier));
-        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("accessExternalDTD"));
+                () -> validateResourceAction("/examples/oasis-smp-1.0/ResourceWithDOCTYPE.xml", resourceIdentifier));
+        MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("DOCTYPE is disallowed"));
     }
 
     @Test
     void validateResourceInvalidIdentifier() {
-        ResourceIdentifier resourceIdentifier = new ResourceIdentifier( "9925:0367302178:invalid", "iso6523-actorid-upis");
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:poland:ncpb:InvalidIdentifier", "ehealth-actorid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-2.0/service_group_unsigned_valid_iso6523.xml", resourceIdentifier));
+                () -> validateResourceAction("/examples/oasis-smp-1.0/ResourceOK.xml", resourceIdentifier));
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("Participant identifiers don't match"));
     }
 
     @Test
     void validateResourceInvalidScheme() {
-        ResourceIdentifier resourceIdentifier = new ResourceIdentifier( "9925:0367302178", "iso6523-actorid-upis");
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:poland:ncpb:utestt", "ehealth-actorid-qns");
         // validate
         ResourceException result = assertThrows(ResourceException.class,
-                () -> validateResourceAction("/examples/oasis-smp-2.0/service_group_unsigned_invalid_iso6523.xml", resourceIdentifier));
+                () -> validateResourceAction("/examples/oasis-smp-1.0/ResourceInvalidScheme.xml", resourceIdentifier));
         MatcherAssert.assertThat(result.getMessage(), org.hamcrest.Matchers.containsString("SAXParseException"));
     }
 
     @Test
     void readResourceOK() throws ResourceException {
-        String resourceName = "/examples/oasis-smp-2.0/service_group_unsigned_valid_iso6523.xml";
-        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("iso6523-actorid-upis", "9925:0367302178");
+        String resourceName = "/examples/oasis-smp-1.0/ResourceOK.xml";
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:eu:ncpb:utest", "ehealth-actorid-qns");
 
         readResourceAction(resourceName, resourceIdentifier);
     }
 
+
     @Test
     void storeResourceOK() throws ResourceException {
-        String resourceName = "/examples/oasis-smp-2.0/service_group_unsigned_valid_iso6523-no-references.xml";
-        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("9925:0367302178", "iso6523-actorid-upis");
+        String resourceName = "/examples/oasis-smp-1.0/ResourceOK.xml";
+        ResourceIdentifier resourceIdentifier = new ResourceIdentifier("urn:eu:ncpb:utest", "ehealth-actorid-qns");
 
         storeResourceAction(resourceName, resourceIdentifier);
     }

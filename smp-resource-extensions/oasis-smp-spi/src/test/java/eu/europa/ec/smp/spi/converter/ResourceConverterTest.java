@@ -34,7 +34,7 @@ import java.io.ByteArrayInputStream;
 /**
  * Created by gutowpa on 11/04/2017.
  */
-class ServiceGroupConverterTest {
+class ResourceConverterTest {
 
     OasisSMP10ServiceGroupReader testInstance = new OasisSMP10ServiceGroupReader();
 
@@ -42,23 +42,23 @@ class ServiceGroupConverterTest {
 
 
     @Test
-    void testUnmashallingServiceGroup() throws Exception {
+    void testUnmashallingResource() throws Exception {
 
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupOK.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ResourceOK.xml");
 
         //when
-        ServiceGroup serviceGroup = testInstance.parseNative(new ByteArrayInputStream(inputDoc));
+        ServiceGroup resource = testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
-        Assertions.assertNotNull(serviceGroup);
+        Assertions.assertNotNull(resource);
     }
 
 
     @Test
     void testVulnerabilityParsingDTD() throws Exception {
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceGroupWithDOCTYPE.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ResourceWithDOCTYPE.xml");
         //when then
         BindException result = Assertions.assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
         MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("DOCTYPE is disallowed"));

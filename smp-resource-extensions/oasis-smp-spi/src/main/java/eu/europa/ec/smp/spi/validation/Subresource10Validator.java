@@ -37,32 +37,32 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALI
 
 
 /**
- * Simple Service metadata validator
+ * Simple Subresource validator
  *
  * @author gutowpa
  * @since 3.0.0.
  */
 @Component
-public class ServiceMetadata10Validator {
+public class Subresource10Validator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadata10Validator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Subresource10Validator.class);
 
     final SmpIdentifierServiceApi smpIdentifierApi;
 
-    public ServiceMetadata10Validator(SmpIdentifierServiceApi smpIdentifierApi) {
+    public Subresource10Validator(SmpIdentifierServiceApi smpIdentifierApi) {
         this.smpIdentifierApi = smpIdentifierApi;
     }
 
     public void validate(ResourceIdentifier participantIdentifierFromUrl,
                          ResourceIdentifier documentIdentifierFromUrl,
-                         ServiceMetadata serviceMetadata
+                         ServiceMetadata subresource
     ) throws ResourceException {
         LOG.debug("Validate service metadata for participant [{}], document [{}]", participantIdentifierFromUrl, documentIdentifierFromUrl);
 
-        ServiceInformationType serviceInformation = serviceMetadata.getServiceInformation();
+        ServiceInformationType serviceInformation = subresource.getServiceInformation();
 
-        if (serviceInformation == null && serviceMetadata.getRedirect() != null) {
-            LOG.debug("Redirect serviceMetadata, skip document/participant identifier validation");
+        if (serviceInformation == null && subresource.getRedirect() != null) {
+            LOG.debug("Redirect subresource, skip document/participant identifier validation");
             return;
         }
 

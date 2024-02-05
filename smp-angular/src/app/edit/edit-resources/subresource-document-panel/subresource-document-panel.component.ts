@@ -16,8 +16,8 @@ import {
   SubresourceDocumentWizardComponent
 } from "../subresource-document-wizard-dialog/subresource-document-wizard.component";
 import {
-  ServiceMetadataWizardRo
-} from "../subresource-document-wizard-dialog/service-metadata-wizard-edit-ro.model";
+  SubresourceWizardRo
+} from "../subresource-document-wizard-dialog/subresource-wizard-edit-ro.model";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 
 @Component({
@@ -205,8 +205,8 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
 
   onShowDocumentWizardDialog() {
 
-    let serviceMetadataWizard: ServiceMetadataWizardRo = {
-      isNewServiceMetadata: false,
+    let serviceMetadataWizard: SubresourceWizardRo = {
+      isNewSubresource: false,
       participantIdentifier: this._resource.identifierValue,
       participantScheme: this._resource.identifierScheme,
       documentIdentifier: this._subresource.identifierValue,
@@ -228,7 +228,7 @@ export class SubresourceDocumentPanelComponent implements AfterViewInit, BeforeL
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        let smw: ServiceMetadataWizardRo = formRef.componentInstance.getCurrent();
+        let smw: SubresourceWizardRo = formRef.componentInstance.getCurrent();
         this.documentForm.controls['payload'].setValue(smw.contentXML);
         this.documentForm.controls['payload'].markAsDirty();
       }

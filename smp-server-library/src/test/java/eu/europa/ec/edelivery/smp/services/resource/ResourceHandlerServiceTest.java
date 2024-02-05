@@ -22,12 +22,11 @@ import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.servlet.ResourceRequest;
 import eu.europa.ec.edelivery.smp.servlet.ResourceResponse;
-import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
-import eu.europa.ec.smp.spi.def.OasisSMPServiceMetadata10;
-import eu.europa.ec.smp.spi.handler.OasisSMPServiceGroup10Handler;
-import eu.europa.ec.smp.spi.handler.OasisSMPServiceMetadata10Handler;
-import eu.europa.ec.smp.spi.validation.ServiceMetadata10Validator;
-import org.junit.jupiter.api.Assertions;
+import eu.europa.ec.smp.spi.def.OasisSMPResource10;
+import eu.europa.ec.smp.spi.def.OasisSMPSubresource10;
+import eu.europa.ec.smp.spi.handler.OasisSMPResource10Handler;
+import eu.europa.ec.smp.spi.handler.OasisSMPSubresource10Handler;
+import eu.europa.ec.smp.spi.validation.Subresource10Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,11 +44,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 // add SPI examples to the context
-@ContextConfiguration(classes = {OasisSMPServiceGroup10.class,
-        OasisSMPServiceMetadata10.class,
-        OasisSMPServiceGroup10Handler.class,
-        OasisSMPServiceMetadata10Handler.class,
-        ServiceMetadata10Validator.class})
+@ContextConfiguration(classes = {OasisSMPResource10.class,
+        OasisSMPSubresource10.class,
+        OasisSMPResource10Handler.class,
+        OasisSMPSubresource10Handler.class,
+        Subresource10Validator.class})
 class ResourceHandlerServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired

@@ -11,26 +11,26 @@ import {
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog} from '@angular/material/dialog';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
-import {ServiceGroupSearchController} from './service-group-search-controller';
+import {ResourceSearchController} from './resource-search-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
-import {ServiceGroupSearchRo} from "./service-group-search-ro.model";
-import {ServiceMetadataSearchRo} from "./service-metadata-search-ro.model";
+import {ResourceSearchRo} from "./resource-search-ro.model";
+import {SubresourceSearchRo} from "./subresource-search-ro.model";
 
 @Component({
-  templateUrl: './service-group-search.component.html',
-  styleUrls: ['./service-group-search.component.css']
+  templateUrl: './resource-search.component.html',
+  styleUrls: ['./resource-search.component.css']
 })
-export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowSMPUrlLinkAction', {static: true}) rowSMPUrlLinkAction: TemplateRef<any>
   @ViewChild('rowActions', {static: true}) rowActions: TemplateRef<any>;
   @ViewChild('searchTable', {static: true}) searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
-  serviceGroupSearchController: ServiceGroupSearchController;
+  resourceSearchController: ResourceSearchController;
   filter: any = {};
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
   baseUrl: string;
@@ -42,11 +42,11 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
               public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef) {
 
-    this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_SERVICE_GROUP;
+    this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_RESOURCE;
   }
 
   ngOnInit(): void {
-    this.serviceGroupSearchController = new ServiceGroupSearchController(this.dialog);
+    this.resourceSearchController = new ResourceSearchController(this.dialog);
   }
 
   initColumns(): void {
@@ -102,16 +102,16 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
     this.initColumns();
   }
 
-  createServiceGroupURL(row: ServiceGroupSearchRo) {
+  createResourceURL(row: ResourceSearchRo) {
 
     return (!row?.domainCode? "" : row.domainCode+ '/')
           + (!row?.resourceDefUrlSegment?"" : row.resourceDefUrlSegment + '/')
           + encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
   }
 
-  createServiceMetadataURL(row: ServiceGroupSearchRo, rowSMD: ServiceMetadataSearchRo) {
+  createServiceMetadataURL(row: ResourceSearchRo, rowSMD: SubresourceSearchRo) {
 
-    return this.createServiceGroupURL(row)
+    return this.createResourceURL(row)
             + '/' + rowSMD.subresourceDefUrlSegment + '/'
             + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
@@ -119,7 +119,7 @@ export class ServiceGroupSearchComponent implements OnInit, AfterViewInit, After
 
 
   details(row: any) {
-    this.serviceGroupSearchController.showDetails(row);
+    this.resourceSearchController.showDetails(row);
 
   }
 }

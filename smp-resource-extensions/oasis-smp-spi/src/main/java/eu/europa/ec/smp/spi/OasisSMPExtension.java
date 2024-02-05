@@ -18,8 +18,8 @@
  */
 package eu.europa.ec.smp.spi;
 
-import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup10;
-import eu.europa.ec.smp.spi.def.OasisSMPServiceGroup20;
+import eu.europa.ec.smp.spi.def.OasisSMPResource10;
+import eu.europa.ec.smp.spi.def.OasisSMPResource20;
 import eu.europa.ec.smp.spi.resource.ResourceDefinitionSpi;
 import org.springframework.stereotype.Service;
 
@@ -36,13 +36,13 @@ import java.util.List;
 @Service
 public class OasisSMPExtension implements ExtensionInfo {
 
-    final OasisSMPServiceGroup10 oasisSMPServiceGroup10;
+    final OasisSMPResource10 oasisSMPResource10;
 
-    final OasisSMPServiceGroup20 oasisSMPServiceGroup20;
+    final OasisSMPResource20 oasisSMPResource20;
 
-    public OasisSMPExtension(OasisSMPServiceGroup10 oasisSMPServiceGroup10, OasisSMPServiceGroup20 oasisSMPServiceGroup20) {
-        this.oasisSMPServiceGroup10 = oasisSMPServiceGroup10;
-        this.oasisSMPServiceGroup20 = oasisSMPServiceGroup20;
+    public OasisSMPExtension(OasisSMPResource10 oasisSMPResource10, OasisSMPResource20 oasisSMPResource20) {
+        this.oasisSMPResource10 = oasisSMPResource10;
+        this.oasisSMPResource20 = oasisSMPResource20;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class OasisSMPExtension implements ExtensionInfo {
 
     @Override
     public List<ResourceDefinitionSpi> resourceTypes() {
-        return Arrays.asList(oasisSMPServiceGroup10, oasisSMPServiceGroup20);
+        return Arrays.asList(oasisSMPResource10, oasisSMPResource20);
     }
 
     @Override

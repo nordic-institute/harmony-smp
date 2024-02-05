@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by gutowpa on 05/01/2017.
  */
-class ServiceMetadataConverterTest {
+class SubresourceConverterTest {
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
     private static final String RES_PATH = "/examples/oasis-smp-1.0/";
@@ -52,15 +52,15 @@ class ServiceMetadataConverterTest {
     @Test
     void testUnmarshalServiceInformation() throws Exception {
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceOk.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceWithServiceOk.xml");
 
         //when
-        ServiceMetadata serviceMetadata = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
+        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
-        assertNotNull(serviceMetadata);
-        assertNull(serviceMetadata.getRedirect());
-        ServiceInformationType serviceInformation = serviceMetadata.getServiceInformation();
+        assertNotNull(subresource);
+        assertNull(subresource.getRedirect());
+        ServiceInformationType serviceInformation = subresource.getServiceInformation();
         assertNotNull(serviceInformation);
         ServiceEndpointList serviceEndpointList = serviceInformation.getProcessList().getProcesses().get(0).getServiceEndpointList();
         String serviceDescription1 = serviceEndpointList.getEndpoints().get(0).getServiceDescription();
@@ -72,13 +72,13 @@ class ServiceMetadataConverterTest {
     @Test
     void testUnmarshalServiceInformationUtf8() throws Exception {
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceInformationUtf8.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceWithServiceInformationUtf8.xml");
 
         //when
-        ServiceMetadata serviceMetadata = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
+        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
-        String serviceDescription = serviceMetadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0).getServiceDescription();
+        String serviceDescription = subresource.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0).getServiceDescription();
         assertEquals("--ö--ẞßÄäPLżółćNOÆæØøÅå", serviceDescription);
 
     }
@@ -86,15 +86,15 @@ class ServiceMetadataConverterTest {
     @Test
     void testUnmarshalRedirect() throws Exception {
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithRedirect.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceWithRedirect.xml");
 
         //when
-        ServiceMetadata serviceMetadata = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
+        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
 
         //then
-        assertNotNull(serviceMetadata);
-        assertNull(serviceMetadata.getServiceInformation());
-        RedirectType redirect = serviceMetadata.getRedirect();
+        assertNotNull(subresource);
+        assertNull(subresource.getServiceInformation());
+        RedirectType redirect = subresource.getRedirect();
         assertNotNull(redirect);
         assertEquals("http://poland.pl", redirect.getHref());
         assertEquals("SAMPLE CERTIFICATE VALUE", redirect.getCertificateUID());
@@ -113,19 +113,19 @@ class ServiceMetadataConverterTest {
     @Test
     void testInvalidDocumentNamespace() throws Exception {
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataMissingMandatoryFields.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceMissingMandatoryFields.xml");
         //when then
         BindException result = assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
         MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("unexpected element "));
     }
 
     @Test
-    void testToSignedServiceMetadataDocument() throws Exception {
+    void testToSignedSubresourceDocument() throws Exception {
         //given
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithServiceOk.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceWithServiceOk.xml");
 
         //when
-        Document signedServiceMetadataDoc = DomUtils.toSignedServiceMetadata10Document(inputDoc);
+        Document signedServiceMetadataDoc = DomUtils.toSignedSubresource10Document(inputDoc);
 
         //then
         Element root = signedServiceMetadataDoc.getDocumentElement();
@@ -142,7 +142,7 @@ class ServiceMetadataConverterTest {
     @Test
     void testVulnerabilityParsingDTD() throws Exception {
 
-        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "ServiceMetadataWithDOCTYPE.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceWithDOCTYPE.xml");
 
         //when then
         BindException result = assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));

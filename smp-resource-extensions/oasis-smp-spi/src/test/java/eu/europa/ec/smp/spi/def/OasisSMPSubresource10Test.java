@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.smp.spi.def;
 
-import eu.europa.ec.smp.spi.handler.OasisSMPServiceMetadata10Handler;
+import eu.europa.ec.smp.spi.handler.OasisSMPSubresource10Handler;
 import eu.europa.ec.smp.spi.resource.ResourceHandlerSpi;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
@@ -27,10 +27,10 @@ import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class OasisSMPServiceMetadata10Test {
+class OasisSMPSubresource10Test {
 
-    OasisSMPServiceMetadata10Handler mockOasisSMPServiceMetadata10Handler = Mockito.mock(OasisSMPServiceMetadata10Handler.class);
-    OasisSMPServiceMetadata10 testInstance = new OasisSMPServiceMetadata10(mockOasisSMPServiceMetadata10Handler);
+    OasisSMPSubresource10Handler mockOasisSMPSubresource10Handler = Mockito.mock(OasisSMPSubresource10Handler.class);
+    OasisSMPSubresource10 testInstance = new OasisSMPSubresource10(mockOasisSMPSubresource10Handler);
 
     @Test
     void identifier() {
@@ -71,7 +71,7 @@ class OasisSMPServiceMetadata10Test {
     void getResourceHandler() {
         ResourceHandlerSpi result = testInstance.getResourceHandler();
 
-        assertEquals(mockOasisSMPServiceMetadata10Handler, result);
+        assertEquals(mockOasisSMPSubresource10Handler, result);
     }
 
     @Test

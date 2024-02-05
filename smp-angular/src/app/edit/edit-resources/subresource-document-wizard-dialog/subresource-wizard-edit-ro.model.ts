@@ -1,6 +1,6 @@
 
-export interface ServiceMetadataWizardRo  {
-  isNewServiceMetadata: boolean;
+export interface SubresourceWizardRo {
+  isNewSubresource: boolean;
   participantScheme: string;
   participantIdentifier: string;
   documentIdentifierScheme: string;
