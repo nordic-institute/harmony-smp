@@ -65,6 +65,22 @@ public class SMLIntegrationService {
     @Autowired
     private IdentifierService identifierService;
 
+    /**
+     * Checks whether the participant exists in SML or not.
+     *
+     * @param resource the resource entity
+     * @param domain the domain entity
+     * @return {@code true} if the participant exists in SML; otherwise, {@code false} (also when SML integration is disabled).
+     */
+    public boolean participantExists(DBResource resource, DBDomain domain) {
+        if (!isSMLIntegrationEnabled()) {
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
+        }
+        Identifier normalizedParticipantId = identifierService
+                .normalizeParticipant(resource.getIdentifierScheme(), resource.getIdentifierValue());
+
+        return smlConnector.participantExists(normalizedParticipantId, domain);
+    }
 
     /**
      * Method in transaction update domain status and registers domain to SML.
@@ -82,6 +98,19 @@ public class SMLIntegrationService {
         smlConnector.registerDomain(domain);
     }
 
+    /**
+     * Checks whether the domain is valid by trying to read it from SML.
+     *
+     * @param domain the domain entity to verify whether it's valid or not.
+     *
+     * @return {@code true} if the domain can be successfully read from SML; otherwise, {@code false} (also when SML integration is disabled).
+     */
+    public boolean isDomainValid(DBDomain domain) {
+        if (!isSMLIntegrationEnabled()) {
+            throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
+        }
+        return smlConnector.isDomainValid(domain);
+    }
 
     /**
      * Method in transaction update domain status and registers domain to SML.
@@ -171,7 +200,7 @@ public class SMLIntegrationService {
             return;
         }
 
-        // unregister only  registered participants
+        // unregister only registered participants
         if (resource.isSmlRegistered()) {
             // update value
             resource.setSmlRegistered(false);

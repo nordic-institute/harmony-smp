@@ -94,8 +94,8 @@ public class DomainService {
     }
 
     /**
-     * If domain is not yet registered and sml integration is on. Than it tries to register domain and  all participants
-     * on that domain. If integration is off it return an configuration exception.
+     * If domain is not yet registered and SML integration is on, it tries to register a domain and all participants
+     * on that domain. If integration is off, it returns a configuration exception.
      * <p>
      * Method is not in transaction - but sub-methods are. if registering domain or particular serviceGroup succeed
      * then the database flag (SML_REGISTERED) is turned on ( if method fails

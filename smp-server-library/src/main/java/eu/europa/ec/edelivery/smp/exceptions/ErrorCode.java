@@ -75,7 +75,7 @@ public enum ErrorCode {
     ILLEGAL_STATE_SMD_ON_MULTIPLE_SGD (500,"SMP:144",ErrorBusinessCode.TECHNICAL,"Found than one service group domain for metadata id [%s] and user id [%s]!"),
 
     // SML integration
-    SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),
+    SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"SML integration error! Error: %s "),
     //
     XML_SIGNING_EXCEPTION (500,"SMP:500",ErrorBusinessCode.TECHNICAL,"Error occurred while signing response!"),
     JAXB_INITIALIZATION (500,"SMP:511",ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class [%s]!"),
