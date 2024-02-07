@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -37,10 +37,12 @@ import gen.eu.europa.ec.ddc.api.smp20.aggregate.ServiceReference;
 import gen.eu.europa.ec.ddc.api.smp20.basic.ID;
 import gen.eu.europa.ec.ddc.api.smp20.basic.ParticipantID;
 import gen.eu.europa.ec.ddc.api.smp20.basic.SMPVersionID;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.w3c.dom.Document;
 
 import javax.xml.transform.TransformerException;
@@ -79,7 +81,6 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
 
     public void generateResource(RequestData resourceData, ResponseData responseData, List<String> fields) throws ResourceException {
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
-
 
         ServiceGroup resource = new ServiceGroup();
         resource.setSMPVersionID(new SMPVersionID());
@@ -145,6 +146,7 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
 
     @Override
     public void storeResource(RequestData resourceData, ResponseData responseData) throws ResourceException {
+        LOG.info("Store resource for identifier [{}].", resourceData.getResourceIdentifier());
         InputStream inputStream = resourceData.getResourceInputStream();
         // reading resource multiple time make sure it can be rest
         if (!inputStream.markSupported()) {
@@ -154,18 +156,34 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
         ServiceGroup resource = validateAndParse(resourceData);
 
         // ServiceMetadataReferenceCollection must be empty because they are automatically generated
-        if (!resource.getServiceReferences().isEmpty()) {
-            throw new ResourceException(INVALID_PARAMETERS, "ServiceReferences must be empty!");
+        if (resource.getServiceReferences() != null
+                && !resource.getServiceReferences().isEmpty()) {
+            throw new ResourceException(INVALID_PARAMETERS, "Service references must be empty!");
         }
-        // set participant to "lowercase" to match it as is saved in the database
-        // this is just for back-compatibility issue!
-        resource.getParticipantID().setValue(resourceData.getResourceIdentifier().getValue());
-        resource.getParticipantID().setSchemeID(resourceData.getResourceIdentifier().getScheme());
+        // back-compatibility issue: set participant to "lowercase" to match it as is saved in the database
+        ParticipantID orgResourceId = resource.getParticipantID();
+        ResourceIdentifier nrmResourceId = resourceData.getResourceIdentifier();
+        boolean isSame = StringUtils.equals(orgResourceId.getValue(), nrmResourceId.getValue())
+                && StringUtils.equals(orgResourceId.getSchemeID(), nrmResourceId.getScheme());
 
-        try {
-            reader.serializeNative(resource, responseData.getOutputStream(), false);
-        } catch (TechnicalException e) {
-            throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
+        if (isSame) {
+            try {
+                inputStream.reset();
+                StreamUtils.copy(inputStream, responseData.getOutputStream());
+            } catch (IOException e) {
+                throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
+            }
+
+        } else {
+            LOG.info("Update ServiceGroup identifier before saving. Old: [{}], New: [{}]", orgResourceId, nrmResourceId);
+            orgResourceId.setValue(nrmResourceId.getValue());
+            orgResourceId.setSchemeID(nrmResourceId.getScheme());
+            try {
+                // need to save resource because of the update on the resource identifier values
+                reader.serializeNative(resource, responseData.getOutputStream(), true);
+            } catch (TechnicalException e) {
+                throw new ResourceException(PARSE_ERROR, "Error occurred while copying the ServiceGroup", e);
+            }
         }
     }
 
