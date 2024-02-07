@@ -2,6 +2,7 @@ package domiSMPTests.ui;
 
 import ddsl.DomiSMPPage;
 import ddsl.dcomponents.SetChangePasswordDialog;
+import ddsl.enums.Messages;
 import ddsl.enums.Pages;
 import domiSMPTests.SeleniumTest;
 import org.testng.Assert;
@@ -136,14 +137,17 @@ public class ProfilePgTests extends SeleniumTest {
         setChangePasswordDialog.fillChangePassword(data.getNewPassword(), new40CharactersPasswordValue);
         List<String> errors = setChangePasswordDialog.getFieldErrorMessage();
         DomiSMPPage homepage = setChangePasswordDialog.TryClickOnChangePassword();
+        String sucesfullMessage = homepage.getAlertArea().getAlertMessage();
+        soft.assertEquals(sucesfullMessage, Messages.PASSWORD_SUCCESSFULL_PASSWORD_CHANGED);
         soft.assertEquals(errors.size(), 0, "Could not change the password of the user");
-        soft.assertNotNull(homepage, "Could not change the password of the user");
+        soft.assertNotNull(homepage, "Homepage is not loaded. Could not change the password of the user");
         soft.assertAll();
 
     }
 
     @Test(description = "PROF-04 User should be able to change his password")
-    public void userShouldBeAbleToChangeHisPassword() throws Exception {
+    public void
+    userShouldBeAbleToChangeHisPassword() throws Exception {
         UserModel adminUser = UserModel.generateUserWithADMINrole();
         rest.users().createUser(adminUser);
 
@@ -155,10 +159,11 @@ public class ProfilePgTests extends SeleniumTest {
 
         String newPass = "Edeltest!23456789Edelt" + Generator.randomAlphaNumericValue(4);
         SetChangePasswordDialog setChangePasswordDialog = profilePage.profileData.clickOnChangePassword();
-        setChangePasswordDialog.fillChangePassword(data.getNewPassword(), newPass);
+        setChangePasswordDialog.fillChangePassword(data.getNewPassword(),
+                newPass);
         homePage = setChangePasswordDialog.TryClickOnChangePassword();
-
-        soft.assertNotNull(homePage, "Could not change the password of the user");
+        String sucesfullMessage = homePage.getAlertArea().getAlertMessage();
+        soft.assertEquals(sucesfullMessage, Messages.PASSWORD_SUCCESSFULL_PASSWORD_CHANGED);
 
         homePage.goToLoginPage();
         loginPage.login(adminUser.getUsername(), newPass);
