@@ -81,14 +81,13 @@
 
   <div [formGroup]="documentForm" style="width: 100%; display: flex; flex-direction: column; flex:1; gap:0.5em ">
     <div
-      style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;background-color: #FCFCFCBB; border: ridge 3px #b0bec5"
+      style="display:block; overflow: auto;flex: 2;align-self: stretch; flex-direction: column;border: ridge 3px #b0bec5"
       (click)="onEditPanelClick()"
     >
-      <ngx-codemirror #codemirror
+      <smp-editor #smpDocumentEditor
                       formControlName="payload"
-                      [options]="codemirrorOptions"
-                      ngDefaultControl
-      ></ngx-codemirror>
+                  ngDefaultControl
+      ></smp-editor>
     </div>
     <mat-toolbar class="mat-elevation-z2" style="flex-grow: 0">
       <mat-toolbar-row class="smp-toolbar-row">

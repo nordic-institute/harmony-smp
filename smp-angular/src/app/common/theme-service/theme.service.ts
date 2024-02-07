@@ -1,4 +1,4 @@
-﻿import {Injectable} from '@angular/core';
+﻿import {EventEmitter, Injectable} from '@angular/core';
 import {SecurityEventService} from "../../security/security-event.service";
 
 
@@ -43,6 +43,8 @@ export interface ThemeItem {
  */
 @Injectable()
 export class ThemeService {
+
+  selectedTheme: EventEmitter<string> = new EventEmitter<string>();
   private static THEME_STORAGE_NAME = "smp-theme";
   private static DEFAULT_THEME_NAME = "default_theme";
 
@@ -61,6 +63,10 @@ export class ThemeService {
 
   }
 
+  getThemeChangedEventEmitter(): EventEmitter<string> {
+    return this.selectedTheme;
+  }
+
   get themes(): ThemeItem[] {
     return SMP_THEME_ITEMS;
   }
@@ -70,12 +76,12 @@ export class ThemeService {
    * @param theme
    */
   setTheme(theme: string) {
-    console.log("set theme" + theme)
     this.resetTheme();
     if (!!theme) {
       let body = document.getElementsByTagName('body')[0]
       body.classList.add(theme)
     }
+    this.selectedTheme.emit(theme);
   };
 
   /**

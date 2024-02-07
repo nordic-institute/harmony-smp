@@ -5,7 +5,7 @@
               [labelColumnContent]="searchGroupPanel">
 
     <mat-tab-group #domainTabs
-                   *ngIf="!!resourceList && resourceList.length>0;else noUserAdminGroupsDataFound"
+                   *ngIf="hasResources;else noUserAdminGroupsDataFound"
                    style="height: 100%">
       <mat-tab>
         <ng-template mat-tab-label>
@@ -55,7 +55,7 @@
 
 <ng-template #searchGroupPanel>
   <div
-    *ngIf="!!resourceList &&  resourceList.length>0 || filterResourceResults "
+    *ngIf="hasResources || filterResourceResults "
   >
     <mat-form-field style="width:100%">
       <mat-label>Selected domain</mat-label>
@@ -101,7 +101,7 @@
                  #inputDomainMemberFilter>
         </mat-form-field>
 
-        <table class="mat-elevation-z2" mat-table [dataSource]="resourceList">
+        <table class="mat-elevation-z2" mat-table [dataSource]="dataSource">
 
           <ng-container matColumnDef="identifierScheme">
             <th mat-header-cell *matHeaderCellDef>Scheme</th>
@@ -135,7 +135,6 @@
       <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
                      (page)="onPageChanged($event)"
                      [hidePageSize]="true"
-                     [showFirstLastButtons]="true"
                      [pageSize]="5"
                      aria-label="Select pages"></mat-paginator>
     </div>

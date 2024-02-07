@@ -8,11 +8,11 @@ import {DomainRo} from "../../../common/model/domain-ro.model";
 import {ResourceDefinitionRo} from "../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditResourceService} from "../edit-resource.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 import {DocumentRo} from "../../../common/model/document-ro.model";
 import {NavigationService} from "../../../window/sidenav/navigation-model.service";
 import {DocumentWizardDialogComponent} from "../document-wizard-dialog/document-wizard-dialog.component";
 import {ConfirmationDialogComponent} from "../../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {SmpEditorComponent} from "../../../common/components/smp-editor/smp-editor.component";
 
 @Component({
   templateUrl: './resource-document-panel.component.html',
@@ -28,14 +28,8 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   @Input() domain: DomainRo;
   @Input() domainResourceDefs: ResourceDefinitionRo[];
 
-  @ViewChild("codemirror") codemirror: CodemirrorComponent;
-// code mirror configuration
-  codemirrorOptions = {
-    lineNumbers: true,
-    lineWrapping: true,
-    viewportMargin: Infinity,
-    mode: 'xml'
-  };
+  @ViewChild("smpDocumentEditor") documentEditor: SmpEditorComponent;
+
 
   resourceForm: FormGroup;
   documentForm: FormGroup;
@@ -104,7 +98,7 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     this._document = value;
     this.documentForm.disable();
     if (!!value) {
-      this.codemirror.setOptionIfChanged("mode", value.mimeType);
+      this.documentEditor.mimeType = value.mimeType;
       this.documentForm.controls['mimeType'].setValue(value.mimeType);
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
@@ -238,16 +232,11 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
   }
 
   public onEditPanelClick() {
-    if (this.codemirror.codeMirror.hasFocus()) {
+
+    if (this.documentEditor.hasFocus) {
       return;
     }
-    let endPosition: number = this._document?.payload?.length;
-    if (endPosition) {
-      // forward focus to "codeMirror"
-      this.codemirror.codeMirror.setCursor(endPosition)
-    }
-    this.codemirror.codeMirror.focus()
-
+    this.documentEditor.focusAndCursorToEnd();
   }
 
   get getDocumentVersions(): number[] {

@@ -9,10 +9,6 @@ import {HttpClient} from "@angular/common/http";
 import {SidenavComponent} from "./window/sidenav/sidenav.component";
 import {ToolbarComponent} from "./window/toolbar/toolbar.component";
 import {ThemeService} from "./common/theme-service/theme.service";
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/mode/markdown/markdown';
-import 'codemirror/mode/xml/xml';
-import 'codemirror/mode/properties/properties';
 import {UserController} from "./common/services/user-controller";
 
 

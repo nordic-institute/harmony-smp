@@ -7,6 +7,7 @@ import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {ResourceDefinitionRo} from "../../system-settings/admin-extension/resource-definition-ro.model";
 import {ResourceRo} from "../../common/model/resource-ro.model";
 import {EditResourceController} from "./edit-resource.controller";
+import {MatTableDataSource} from "@angular/material/table";
 
 
 @Component({
@@ -15,19 +16,17 @@ import {EditResourceController} from "./edit-resource.controller";
 })
 export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
-
-
   displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
-
   selected: ResourceRo;
   filter: any = {};
   resultsLength = 0;
   isLoadingResults = false;
 
+  dataSource: MatTableDataSource<ResourceRo>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private editResourceController: EditResourceController) {
-
+    this.dataSource  = editResourceController;
   }
 
   ngOnInit() {
@@ -37,16 +36,21 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
     }
   }
 
+  ngAfterViewInit():void {
+    // bind data to resource controller
+    this.dataSource.paginator = this.paginator;
+  }
+
+
   applyResourceFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.editResourceController.filter["filter"] = filterValue.trim().toLowerCase();
     this.editResourceController.refreshResources();
   }
 
-  get resourceList(): ResourceRo[] {
-    return this.editResourceController.resourceList;
-  };
-
+  get hasResources(): boolean {
+    return this.editResourceController.data?.length > 0;
+  }
   get domainList(): DomainRo[] {
     return this.editResourceController.domainList;
   };

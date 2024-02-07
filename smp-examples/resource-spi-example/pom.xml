@@ -29,7 +29,6 @@
     <name>resource-spi-example</name>
     <packaging>jar</packaging>
     <description>Various resource examples.</description>
-
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.edelivery</groupId>
