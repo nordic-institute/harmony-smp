@@ -30,7 +30,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
 
   pageIndex: number = 0;
   pageSize: number = 10;
-  filterResources: any = {};
+  resourcesFilter: any = {};
   isLoadingResults = false;
 
 
@@ -120,7 +120,7 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
     }
     this.isLoadingResults = true;
     this.resourceService.getGroupResourcesForResourceAdminObservable(this.selectedGroup, this.selectedDomain,
-      this.filterResources, this.pageIndex, this.pageSize)
+      this.resourcesFilter, this.pageIndex, this.pageSize)
       .subscribe((result: TableResult<ResourceRo>) => {
         this.updateResourceList(result.serviceEntities)
         this.isLoadingResults = false;
@@ -167,16 +167,8 @@ export class EditResourceController extends MatTableDataSource<ResourceRo>{
 
   applyResourceFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.filterResources["filter"] = filterValue.trim().toLowerCase();
+    this.resourcesFilter["filter"] = filterValue.trim().toLowerCase();
     this.refreshResources();
-  }
-
-  get filterResourceResults(): boolean {
-    return !!this.filterResources["filter"]
-  }
-
-  get disabledResourceFilter(): boolean {
-    return !this._selectedGroup;
   }
 
   get selectedResourceDefinition(): ResourceDefinitionRo {

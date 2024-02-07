@@ -4,7 +4,7 @@
               text="Edit resource administration panel is a tool for resource administrators to administer the resource"
               [labelColumnContent]="searchGroupPanel">
 
-    <mat-tab-group #domainTabs
+    <mat-tab-group #resourceTabs
                    *ngIf="hasResources;else noUserAdminGroupsDataFound"
                    style="height: 100%">
       <mat-tab>
@@ -132,7 +132,7 @@
         </table>
       </div>
 
-      <mat-paginator class="mat-elevation-z2" [length]="resultsLength"
+      <mat-paginator  #resourcePaginator class="mat-elevation-z2"
                      (page)="onPageChanged($event)"
                      [hidePageSize]="true"
                      [pageSize]="5"

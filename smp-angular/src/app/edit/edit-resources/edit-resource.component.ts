@@ -18,12 +18,10 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   groupMembershipType: MemberTypeEnum = MemberTypeEnum.RESOURCE;
   displayedColumns: string[] = ['identifierValue', 'identifierScheme'];
   selected: ResourceRo;
-  filter: any = {};
-  resultsLength = 0;
   isLoadingResults = false;
 
   dataSource: MatTableDataSource<ResourceRo>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild("resourcePaginator") paginator: MatPaginator;
 
   constructor(private editResourceController: EditResourceController) {
     this.dataSource  = editResourceController;
@@ -43,9 +41,7 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
 
 
   applyResourceFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.editResourceController.filter["filter"] = filterValue.trim().toLowerCase();
-    this.editResourceController.refreshResources();
+    this.editResourceController.applyResourceFilter(event);
   }
 
   get hasResources(): boolean {
@@ -92,11 +88,11 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
   }
 
   get filterResourceResults(): boolean {
-    return !!this.filter["filter"]
+    return !!this.editResourceController.resourcesFilter;
   }
 
   get disabledResourceFilter(): boolean {
-    return !this.editResourceController.selectedGroup;
+    return !this.editResourceController.filteredData;
   }
 
   isDirty(): boolean {
@@ -105,10 +101,6 @@ export class EditResourceComponent implements OnInit, BeforeLeaveGuard {
 
   onPageChanged(page: PageEvent) {
     this.editResourceController.refreshResources();
-  }
-
-  get disabledResourcePagination(): boolean {
-    return !this.editResourceController.selectedGroup;
   }
 
   get hasSubResources(): boolean {
