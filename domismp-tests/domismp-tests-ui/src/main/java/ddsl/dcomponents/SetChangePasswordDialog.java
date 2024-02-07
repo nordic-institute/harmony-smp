@@ -46,8 +46,6 @@ public class SetChangePasswordDialog extends DComponent {
         //wait.forElementToBeClickable(setPasswordBtn);
         if (weToDButton(setPasswordBtn).isEnabled()) {
             weToDButton(setPasswordBtn).click();
-            SuccesfullPasswordChangedPopup popup = new SuccesfullPasswordChangedPopup(driver);
-            popup.closePopup();
             return new DomiSMPPage(driver);
         } else {
             return null;
