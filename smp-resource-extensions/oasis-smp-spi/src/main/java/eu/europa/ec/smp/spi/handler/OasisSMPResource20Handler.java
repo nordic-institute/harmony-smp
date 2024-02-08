@@ -175,7 +175,7 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
             }
 
         } else {
-            LOG.info("Update ServiceGroup identifier before saving. Old: [{}], New: [{}]", orgResourceId, nrmResourceId);
+            LOG.info("Update Resource/ServiceGroup identifier before saving. Old: [{}], New: [{}]", orgResourceId, nrmResourceId);
             orgResourceId.setValue(nrmResourceId.getValue());
             orgResourceId.setSchemeID(nrmResourceId.getScheme());
             try {
