@@ -82,6 +82,9 @@ public class ApplicationController {
             info.setSsoAuthenticationURI(configurationService.getCasSMPLoginRelativePath());
         }
         info.setContextPath(getRootContext());
+        // set additional public info
+        info.setPasswordValidationRegExp(configurationService.getPasswordPolicyRexExpPattern());
+        info.setPasswordValidationRegExpMessage(configurationService.getPasswordPolicyValidationMessage());
         return info;
     }
 

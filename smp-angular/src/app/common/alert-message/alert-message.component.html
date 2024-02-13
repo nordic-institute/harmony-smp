@@ -1,6 +1,8 @@
 <div #alertMessage class="mat-elevation-z8"
   *ngIf="message" [ngClass]="{ 'alert-message': message,
   'alert-success': message.type === 'success',
+  'alert-info': message.type === 'info',
+  'alert-warning': message.type === 'warning',
   'alert-error': message.type === 'error'}"
      id="alertmessage_id">
   <span class="closebtn" (click)="clearAlert(true)">&times;</span>

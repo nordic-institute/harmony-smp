@@ -324,6 +324,7 @@ public class TestDBUtils {
     public static DBUser createDBUserByUsername(String userName) {
         DBUser dbuser = new DBUser();
         dbuser.setUsername(userName);
+        dbuser.setSmpLocale("en");
         dbuser.setEmailAddress(userName + "@test.eu");
         dbuser.setActive(true);
         dbuser.setApplicationRole(ApplicationRoleType.USER);

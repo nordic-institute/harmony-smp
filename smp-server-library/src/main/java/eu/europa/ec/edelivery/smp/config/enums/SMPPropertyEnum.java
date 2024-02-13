@@ -383,10 +383,20 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     SMP_ALERT_MAIL_FROM("smp.alert.mail.from", "test@alert-send-mail.eu", "Alert send mail",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, EMAIL),
+
+
+    SMP_INSTANCE_NAME("smp.instance.name", "Test DomiSMP Instance", "The name of the SMP instance",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
+
+    CREDENTIALS_RESET_URL("smp.credentials.reset_request.url", null, "If null then the reset url is created using the the proxy headers.",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),
+
+    CREDENTIALS_RESET_POLICY_VALID_DAYS("smp.credentials.reset_request.url.validMinutes", "90", "Number of minutes token is valid",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
+
     // deprecated properties
     CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-
     PARTC_EBCOREPARTYID_CONCATENATE("identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate", "false",
             "Concatenate ebCore party id in XML responses <ParticipantIdentifier>urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
@@ -394,16 +404,15 @@ public enum SMPPropertyEnum {
     ;
 
 
-    String property;
-    String defValue;
-    String desc;
-    Pattern valuePattern;
-    String errorValueMessage;
-
-    boolean isEncrypted;
-    boolean isMandatory;
-    boolean restartNeeded;
-    SMPPropertyTypeEnum propertyType;
+    private final String property;
+    private final String defValue;
+    private final String desc;
+    private final Pattern valuePattern;
+    private final String errorValueMessage;
+    private final boolean isEncrypted;
+    private final boolean isMandatory;
+    private final boolean restartNeeded;
+    private final SMPPropertyTypeEnum propertyType;
 
     SMPPropertyEnum(String property, String defValue, String desc, boolean isMandatory, boolean isEncrypted, boolean restartNeeded,
                     SMPPropertyTypeEnum propertyType, String valuePattern, String errorValueMessage) {

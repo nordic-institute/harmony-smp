@@ -24,6 +24,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -190,7 +191,6 @@ public abstract class BaseDao<E extends BaseEntity> {
             }
         }
 
-
         // set order by
         if (searchParams != null) {
             List<Predicate> lstPredicate = createPredicates(searchParams, om, cb);
@@ -250,7 +250,8 @@ public abstract class BaseDao<E extends BaseEntity> {
                         cls.getMethod("set" + fieldName, m.getReturnType());
                     } catch (NoSuchMethodException | SecurityException ex) {
                         // method does not have setter // ignore other methods
-                        LOG.error("Field '" + fieldName + "' does not have a setter!", ex);
+                        LOG.warn("Can not set value [{}] to entity [{}]! Search parameter is ignored!. Root cause: [{}]",
+                                fieldName, om.getModel(), ExceptionUtils.getRootCauseMessage(ex));
                         continue;
                     }
 

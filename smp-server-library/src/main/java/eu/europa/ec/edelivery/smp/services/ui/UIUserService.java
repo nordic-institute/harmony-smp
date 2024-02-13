@@ -39,6 +39,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
 import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,19 +72,21 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     CredentialDao credentialDao;
     private final ConfigurationService configurationService;
     private final ConversionService conversionService;
-
+    private final CredentialsAlertService alertService;
     private final UITruststoreService truststoreService;
 
     public UIUserService(UserDao userDao,
                          CredentialDao credentialDao,
                          ConfigurationService configurationService,
                          ConversionService conversionService,
-                         UITruststoreService truststoreService) {
+                         UITruststoreService truststoreService,
+                         CredentialsAlertService alertService) {
         this.userDao = userDao;
         this.credentialDao = credentialDao;
         this.configurationService = configurationService;
         this.conversionService = conversionService;
         this.truststoreService = truststoreService;
+        this.alertService = alertService;
     }
 
     @Override
@@ -258,6 +261,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         if (dbCredential.getId() == null) {
             credentialDao.persist(dbCredential);
         }
+        // submit mail with reset token
+        alertService.alertCredentialChanged(dbCredential);
         return dbCredential.getUser();
     }
 
@@ -491,6 +496,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             credentialResultRO = conversionService.convert(credential, CredentialRO.class);
         }
         credentialResultRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
+
+        alertService.alertCredentialChanged(credential);
 
         return credentialResultRO;
     }

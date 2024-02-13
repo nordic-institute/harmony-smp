@@ -23,6 +23,9 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.auth.UILoginAuthenticationToken;
+import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
+import eu.europa.ec.edelivery.smp.data.ui.CredentialRequestResetRO;
+import eu.europa.ec.edelivery.smp.data.ui.CredentialResetRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -47,6 +50,9 @@ import static eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority.S_AUTHORITY_T
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
 
 /**
+ * The AuthenticationController class is a REST controller that provides endpoints for user authentication actions as
+ * login, logout, logged user data retrieval, request credential reset.
+ *
  * @author Sebastian-Ion TINCU
  * @since 4.0
  */
@@ -81,7 +87,7 @@ public class AuthenticationController {
         this.csrfTokenRepository = csrfTokenRepository;
     }
 
-    @PostMapping(value = "authentication")
+    @PostMapping(value = ResourceConstants.PATH_ACTION_AUTHENTICATION)
     @Transactional(noRollbackFor = BadCredentialsException.class)
     public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletRequest request, HttpServletResponse response) {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
@@ -98,7 +104,46 @@ public class AuthenticationController {
         return authorizationService.getUserData(user.getUser());
     }
 
-    @DeleteMapping(value = "authentication")
+    /**
+     * Request reset of the credentials. The method generates a reset token and sends an email to the user.
+     *
+     * @param requestResetRO - the request object containing the credential name and type
+     */
+    @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL_REQUEST )
+    public void requestResetCredentials(@RequestBody CredentialRequestResetRO requestResetRO) {
+        LOG.debug("credentialRequestResetRO  [{}]", requestResetRO.getCredentialName());
+        if (requestResetRO.getCredentialType() == CredentialType.USERNAME_PASSWORD) {
+            authenticationService.requestResetUsername(requestResetRO.getCredentialName());
+        } else {
+            LOG.warn("Invalid or null credential type [{}] not supported for reset!",
+                    requestResetRO.getCredentialType());
+            throw new IllegalArgumentException("Invalid request!");
+
+        }
+    }
+
+    /**
+     * Reset the credentials. The method validates the reset token and updates the credentials.
+     *
+     * @param resetRO - the reset object containing the credential name, type, reset token and new credential value
+     */
+    @PostMapping(value = ResourceConstants.PATH_ACTION_RESET_CREDENTIAL )
+    public void resetCredentials(@RequestBody CredentialResetRO resetRO) {
+        LOG.debug("credentialResetRO  [{}]", resetRO.getCredentialName());
+        if (resetRO.getCredentialType() == CredentialType.USERNAME_PASSWORD) {
+
+            authenticationService.resetUsernamePassword(resetRO.getCredentialName(),
+                    resetRO.getResetToken(),
+                    resetRO.getCredentialValue());
+        } else {
+            LOG.warn("Invalid or null credential type [{}] not supported for reset!",
+                    resetRO.getCredentialType());
+            throw new IllegalArgumentException("Invalid request!");
+
+        }
+    }
+
+    @DeleteMapping(value = ResourceConstants.PATH_ACTION_AUTHENTICATION)
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         LOG.info("Logging out user for the session");
         authenticationService.logout(request, response);

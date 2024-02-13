@@ -99,7 +99,7 @@ export class AppComponent {
 
   onDrawerContentScroll(scrollEvent: any){
     let scrollTop = scrollEvent.srcElement.scrollTop;
-    this.alertService.setSticky(scrollTop > 0)
+    this.alertService.setKeepAfterNavigationChange(scrollTop > 0)
   }
 
 }

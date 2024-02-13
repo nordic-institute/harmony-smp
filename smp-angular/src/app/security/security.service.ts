@@ -33,13 +33,51 @@ export class SecurityService {
         password: password
       }),
       {headers})
-      .subscribe((response: User) => {
+      .subscribe({
+        next: (response: User) => {
           this.updateUserDetails(response);
           this.securityEventService.notifyLoginSuccessEvent(response);
         },
-        (error: any) => {
+        error: (error: any) => {
+          this.alertService.error(error.error?.errorDescription)
           this.securityEventService.notifyLoginErrorEvent(error);
-        });
+        }
+      });
+  }
+
+  requestCredentialReset(userid: string) {
+    let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.post<User>(SmpConstants.REST_PUBLIC_SECURITY_RESET_CREDENTIALS_REQUEST,
+      JSON.stringify({
+        credentialName: userid,
+        credentialType: 'USERNAME_PASSWORD',
+      }),
+      {headers})
+      .subscribe({
+        complete: () => {  }, // completeHandler
+        error: (error: any) => {this.alertService.error(error) },    // errorHandler
+        next: () => { this.alertService.success("A confirmation email has been sent to your registered email address for user ["+userid+"]. " +
+          "Please follow the instructions in the email to complete the account reset process. " +
+          "If you did not receive mail try later or contact administrator  ", true, -1);
+          this.router.navigate(['/search']);}
+      });
+  }
+
+  credentialReset(userid: string, token: string, newPassword: string) {
+    let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.post<User>(SmpConstants.REST_PUBLIC_SECURITY_RESET_CREDENTIALS,
+      JSON.stringify({
+        credentialName: userid,
+        credentialValue: newPassword,
+        credentialType: 'USERNAME_PASSWORD',
+        resetToken: token,
+      }),
+      {headers})
+      .subscribe({
+        complete: () => { this.router.navigate(['/login']); }, // completeHandler
+        error: (error: any) => {this.alertService.error(error);this.router.navigate(['/login']); },    // errorHandler
+        next: () => { this.alertService.success("Password has been reset successfully. Please login with new password", true, -1);}
+      });
   }
 
   refreshLoggedUserFromServer() {

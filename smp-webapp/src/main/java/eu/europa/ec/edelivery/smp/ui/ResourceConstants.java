@@ -68,6 +68,9 @@ public class ResourceConstants {
     public static final String PATH_ACTION_PUT = "put";
     public static final String PATH_ACTION_VALIDATE = "validate";
     public static final String PATH_ACTION_GENERATE = "generate";
+    public static final String PATH_ACTION_RESET_CREDENTIAL_REQUEST = "request-reset-credential";
+    public static final String PATH_ACTION_RESET_CREDENTIAL = "reset-credential";
+    public static final String PATH_ACTION_AUTHENTICATION = "authentication";
 
     public static final String PATH_ACTION_RETRIEVE = "retrieve";
     public static final String PATH_ACTION_SEARCH = "search";

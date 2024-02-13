@@ -25,11 +25,13 @@ package eu.europa.ec.edelivery.smp.data.ui.enums;
  * @since 4.2
  */
 public enum AlertTypeEnum {
-    TEST_ALERT("test_mail.ftl"),
-    CREDENTIAL_IMMINENT_EXPIRATION("credential_imminent_expiration.ftl"),
-    CREDENTIAL_EXPIRED("credential_expired.ftl"),
-    CREDENTIAL_SUSPENDED("credential_suspended.ftl"),
-    CREDENTIAL_VERIFICATION_FAILED("credential_verification_failed.ftl"),
+    TEST_ALERT("test_mail"),
+    CREDENTIAL_IMMINENT_EXPIRATION("credential_imminent_expiration"),
+    CREDENTIAL_EXPIRED("credential_expired"),
+    CREDENTIAL_SUSPENDED("credential_suspended"),
+    CREDENTIAL_VERIFICATION_FAILED("credential_verification_failed"),
+    CREDENTIAL_REQUEST_RESET("credential_request_reset"),
+    CREDENTIAL_CHANGED("credential_changed"),
     ;
 
     private final String template;

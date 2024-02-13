@@ -1,5 +1,5 @@
 ﻿import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {SecurityService} from '../security/security.service';
 import {AlertMessageService} from '../common/alert-message/alert-message.service';
 import {SecurityEventService} from '../security/security-event.service';
@@ -7,12 +7,15 @@ import {User} from '../security/user.model';
 import {MatDialog} from '@angular/material/dialog';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
 import {Subscription} from 'rxjs';
-import {ExpiredPasswordDialogComponent} from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
+import {
+  ExpiredPasswordDialogComponent
+} from '../common/dialogs/expired-password-dialog/expired-password-dialog.component';
 import {GlobalLookups} from "../common/global-lookups";
 import {PasswordChangeDialogComponent} from "../common/dialogs/password-change-dialog/password-change-dialog.component";
 import {InformationDialogComponent} from "../common/dialogs/information-dialog/information-dialog.component";
 import {formatDate} from "@angular/common";
 import {EntityStatus} from "../common/enums/entity-status.enum";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   templateUrl: './login.component.html',
@@ -20,7 +23,8 @@ import {EntityStatus} from "../common/enums/entity-status.enum";
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
-  model: any = {};
+  loginForm: FormGroup;
+  resetForm: FormGroup;
   loading = false;
   returnUrl: string;
   sub: Subscription;
@@ -35,14 +39,21 @@ export class LoginComponent implements OnInit, OnDestroy {
               private dialog: MatDialog) {
   }
 
+
   ngOnInit() {
+    this.initForm();
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
     this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(
       user => {
         if (user && user.passwordExpired) {
           if (user.forceChangeExpiredPassword) {
-            this.dialog.open(PasswordChangeDialogComponent, {data: {user:user,adminUser:false}}).afterClosed().subscribe(res =>
+            this.dialog.open(PasswordChangeDialogComponent, {
+              data: {
+                user: user,
+                adminUser: false
+              }
+            }).afterClosed().subscribe(res =>
               this.securityService.finalizeLogout(res)
             );
           } else {
@@ -66,7 +77,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         switch (error.status) {
           case HTTP_UNAUTHORIZED:
             message = error.error.errorDescription;
-            this.model.password = '';
+            this.loginForm['password'].setValue('');
             break;
           case HTTP_FORBIDDEN:
             const forbiddenCode = error.message;
@@ -77,7 +88,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               default:
                 message = error.status + ' The username/password combination you provided are not valid. Please try again or contact your administrator.';
                 // clear the password
-                this.model.password = '';
+                this.loginForm['password'].setValue('');
                 break;
             }
             break;
@@ -93,38 +104,48 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
   }
 
+  private initForm() {
+    this.loginForm = new FormGroup({
+      username: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
+    });
+
+    this.resetForm = new FormGroup({
+      resetUsername: new FormControl('', Validators.required),
+    });
+
+  }
+
   login() {
-    // clear alerts
     this.alertService.clearAlert();
-    this.securityService.login(this.model.username, this.model.password);
+    if (this.loginForm.valid) {
+      this.securityService.login(
+        this.loginForm.get('username').value,
+        this.loginForm.get('password').value
+      );
+    } else {
+      this.alertService.error('Please enter a valid username and password.');
+    }
+  }
+
+  requestCredentialReset() {
+    this.alertService.clearAlert();
+    if (this.resetForm.valid) {
+      this.securityService.requestCredentialReset(
+        this.resetForm.get('resetUsername').value
+      );
+    } else {
+      this.alertService.error('Please enter a valid username.');
+    }
   }
 
   showWarningBeforeExpire(user: User) {
     this.dialog.open(InformationDialogComponent, {
       data: {
         title: "Warning! Your password is about to expire",
-        description: "Your password is about to expire on " + formatDate(user.passwordExpireOn,"longDate","en-US")+"! Please change the password before the expiration date!"
+        description: "Your password is about to expire on " + formatDate(user.passwordExpireOn, "longDate", "en-US") + "! Please change the password before the expiration date!"
       }
     }).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
-  }
-
-  verifyDefaultLoginUsed() {
-    const currentUser: User = this.securityService.getCurrentUser();
-    if (currentUser.defaultPasswordUsed) {
-      this.dialog.open(DefaultPasswordDialogComponent);
-    }
-  }
-
-  private convertWithMode(config) {
-    return (config && config.data)
-      ? {
-        ...config,
-        data: {
-          ...config.data,
-          mode: config.data.mode || (config.data.edit ? EntityStatus.PERSISTED :EntityStatus.NEW)
-        }
-      }
-      : config;
   }
 
   ngOnDestroy(): void {

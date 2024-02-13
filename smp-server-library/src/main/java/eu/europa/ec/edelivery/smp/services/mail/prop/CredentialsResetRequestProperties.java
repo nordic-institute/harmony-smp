@@ -16,23 +16,13 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-package eu.europa.ec.edelivery.smp.services.mail;
+package eu.europa.ec.edelivery.smp.services.mail.prop;
 
-/**
- * Mail model for constitution of the mail content using freemaker template. The class was heavily inspired by Domibus
- * mail implementation
- *
- * @author Thomas Dussart
- * @author Joze Rihtarsic
- *
- * @since 4.2
- */
-public interface MailModel<T> {
-
-    T getModel();
-
-    String getTemplatePath();
-
-    String getSubject();
+public enum CredentialsResetRequestProperties {
+    CREDENTIAL_TYPE,
+    CREDENTIAL_ID,
+    RESET_URL,
+    REPORTING_DATETIME,
+    ALERT_LEVEL,
+    SERVER_NAME,
 }
-

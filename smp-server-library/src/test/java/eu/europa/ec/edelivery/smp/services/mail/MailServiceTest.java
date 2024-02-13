@@ -30,6 +30,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
+import java.util.Map;
 
 @ContextConfiguration(classes = {MockAlertBeans.class, MailService.class})
 public class MailServiceTest extends AbstractServiceIntegrationTest {
@@ -45,12 +47,15 @@ public class MailServiceTest extends AbstractServiceIntegrationTest {
     public void testSendMail() {
 
         Mockito.doNothing().when(mockJavaMailSender).send((MimeMessage) Mockito.any());
+        Map<String, String> props = new HashMap<>();
 
-        PropertiesMailModel props = new PropertiesMailModel(AlertTypeEnum.TEST_ALERT.getTemplate(), "testMail");
-        props.setProperty(TestMailProperties.SERVER_NAME.name(), "server name");
-        props.setProperty(TestMailProperties.USERNAME.name(), "username");
-        props.setProperty(TestMailProperties.USER_MAIL.name(), "test@test-receiver-mail.eu");
-        testInstance.sendMail(props, "test@test-sender-mail.eu", "test@test-receiver-mail.eu");
+        props.put(TestMailProperties.SERVER_NAME.name(), "server name");
+        props.put(TestMailProperties.USERNAME.name(), "username");
+        props.put(TestMailProperties.USER_MAIL.name(), "test@test-receiver-mail.eu");
+
+        MailDataModel data = new MailDataModel("en", AlertTypeEnum.TEST_ALERT, props);
+
+        testInstance.sendMail(data, "test@test-sender-mail.eu", "test@test-receiver-mail.eu");
 
         Mockito.verify(mockJavaMailSender, Mockito.times(1)).send((MimeMessage) Mockito.any());
     }

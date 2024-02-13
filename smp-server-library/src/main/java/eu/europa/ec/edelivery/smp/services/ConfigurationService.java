@@ -564,6 +564,17 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(ALERT_CERTIFICATE_EXPIRED_MAIL_SUBJECT);
     }
 
+    public String getSMPInstanceName() {
+        return configurationDAO.getCachedPropertyValue(SMP_INSTANCE_NAME);
+    }
+    // ----
+    public java.net.URL getCredentialsResetUrl() {
+        return configurationDAO.getCachedPropertyValue(CREDENTIALS_RESET_URL);
+    }
+
+    public Integer getCredentialsResetPolicyValidMinutes() {
+        return configurationDAO.getCachedPropertyValue(CREDENTIALS_RESET_POLICY_VALID_DAYS);
+    }
 
     public Integer getAlertCredentialsBatchSize() {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_BATCH_SIZE);
