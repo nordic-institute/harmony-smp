@@ -1,19 +1,18 @@
 ﻿<div id="page" class="login-page" [style]="'justify-content:center; align-items:center; height:100%'">
   <div fxLayout="row" [style]="'justify-content:center; align-items:center; height:100%'">
-    <mat-card *ngIf="isUserAuthSSOEnabled()  == true" fxFlex="400px" [style]="'width:400px;height:240px;margin:10px'">
+    <mat-card *ngIf="isUserAuthSSOEnabled()  == true" fxFlex="400px" class="login-panel" >
       <mat-card-title class="title-panel">SSO Login: {{ lookups.cachedApplicationInfo.ssoAuthenticationLabel }}
       </mat-card-title>
-      <mat-card-content style="align-items: center;justify-content: center;display: flex;height: 200px;">
-        <a mat-raised-button color="primary" href="{{lookups.cachedApplicationInfo.ssoAuthenticationURI}}"
-           [style]="'width:150px'">
+      <mat-card-content class="login-panel-content">
+        <a mat-raised-button color="primary" href="{{lookups.cachedApplicationInfo.ssoAuthenticationURI}}">
           <mat-icon>input</mat-icon>
           <span> SSO Login</span>
         </a>
       </mat-card-content>
     </mat-card>
-    <mat-card *ngIf="isUserAuthPasswdEnabled() == true">
+    <mat-card *ngIf="isUserAuthPasswdEnabled() == true"  class="login-panel">
       <mat-card-title class="title-panel">SMP Login</mat-card-title>
-      <mat-card-content style="width:380px; height: 260px;margin: 15px">
+      <mat-card-content class="login-panel-content">
         <mat-tab-group>
           <mat-tab label="Login">
             <ng-container *ngTemplateOutlet="loginFormContainer"></ng-container>
@@ -44,8 +43,7 @@
              formControlName="password" required>
     </mat-form-field>
     <button mat-raised-button color="primary" id="loginbutton_id" [disabled]="!loginForm.valid"
-            (click)="login()"
-            [style]="'width:250px'">
+            (click)="login()">
       <mat-icon>input</mat-icon>
       <span> Login</span>
     </button>

@@ -36,7 +36,7 @@ class MailTemplateTest {
     @Test
     void getMailContent() {
 
-        Map<String, String> props = new HashMap<>();
+        Map<String, Object> props = new HashMap<>();
         props.put(CredentialsExpirationProperties.ALERT_LEVEL.name(), "alert level");
         props.put(CredentialsExpirationProperties.CREDENTIAL_ID.name(), "credential id");
         props.put(CredentialsExpirationProperties.CREDENTIAL_TYPE.name(), "credential name");

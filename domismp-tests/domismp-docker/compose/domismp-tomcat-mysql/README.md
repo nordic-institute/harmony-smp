@@ -7,7 +7,36 @@ Purpose of compose plan is to startup fully functional SMP environment for demo 
 
 
 # Run environment
-docker-compose -f docker-compose.yml up -d 
+
+The environment can be started with the following command. ()
+
+    docker compose -f docker-compose.yml up -d
+
+To start the environment with local configuration (for development and testing). 
+
+    docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+
+# Stop environment
+docker-compose -f docker-compose.yml down
+
+
+## Start/Stop environment with provides bash scripts
+
+To start the environment the bash scripts can be used. Scripts configures the environment variables and starts the services.
+The command: 
+
+    ./runCompose.sh 
+
+The compose scripts has the following options:
+
+- i: path to the database data initialization script, default: SMP_PROJECT_FOLDER/smp-webapp/src/main/smp-setup/database-scripts/mysql5innodb-data.sql
+- v: version of the SMP to start. If not provided, the version will defined by maven project version
+- l: start with local compose file docker-compose.localhost.yml, default: false. The compose file is used to start  the SMP with local configuration (e.g. exporting ports, etc.)
+
+The command:
+
+    ./runCompose.sh local -i /path/to/your/data.sql -v 1.0.0 -l true
+ 
 
 
 ## SMP 

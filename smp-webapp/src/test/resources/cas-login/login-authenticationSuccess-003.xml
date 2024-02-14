@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The following snippet is the eu-login example -->
+<cas:serviceResponse xmlns:cas="https://ecas.ec.europa.eu/cas/schemas"
+                     server="EU Login MOCKUP version 6.2.7.LOCAL - 05/04/2019 - 18:15"
+                     date="2024-02-14T07:13:49.051+01:00"
+                     version="5.8">
+    <cas:authenticationSuccess>
+        <cas:user>user</cas:user>
+        <cas:authenticationFactors >
+            <cas:moniker>moniker1</cas:moniker>
+            <cas:moniker>moniker2</cas:moniker>
+            <cas:moniker>moniker3</cas:moniker>
+        </cas:authenticationFactors>
+    </cas:authenticationSuccess>
+</cas:serviceResponse>
+

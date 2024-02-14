@@ -341,6 +341,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setFullName(user.getFullName());
         dbUser.setSmpTheme(user.getSmpTheme());
         dbUser.setSmpLocale(user.getSmpLocale());
+        alertService.alertUserUpdated(dbUser);
     }
 
     @Transactional
@@ -358,8 +359,17 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dbUser.setFullName(user.getFullName());
         dbUser.setSmpTheme(user.getSmpTheme());
         dbUser.setSmpLocale(user.getSmpLocale());
+        return createDBUser(dbUser);
+    }
+
+    @Transactional
+    public UserRO createDBUser(DBUser dbUser) {
         userDao.persistFlushDetach(dbUser);
-        return conversionService.convert(dbUser, UserRO.class);
+        UserRO userRO =  conversionService.convert(dbUser, UserRO.class);
+        if (StringUtils.isNotBlank(userRO.getEmailAddress())){
+            alertService.alertUserCreated(dbUser);
+        }
+        return userRO;
     }
 
     @Transactional
@@ -555,7 +565,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         dev.setStringMessage(sw.toString());
         return dev;
     }
-
 
     @Override
     public DBUser convertFromRo(UserRO d) {

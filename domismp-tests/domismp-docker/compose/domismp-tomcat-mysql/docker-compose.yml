@@ -29,9 +29,9 @@ services:
     volumes:
       - ./properties/db-scripts:/tmp/custom-data/
       - ./properties/keystores:/tmp/keystores/
-    ports:
+#    ports:
 #      - "3908:3306"
-      - "8982:8080"
+#      - "8982:8080"
 #      - "6902:6901"
 #      - "8953:53"
 #      - "5005:5005"
@@ -43,11 +43,11 @@ services:
         - ./eulogin/init-data:/resources/ecas-mock-server
 # Map this folder to host to be able to change runtime data for manual testing!
 #       - ./eulogin/ecas-mock-server:/data/ecas-mock-server
-    ports:
-      - "7102:7102"
+#    ports:
+#      - "7102:7102"
 
   mail-service:
     image: inbucket/inbucket:3.0.0
     hostname: mail-server.smp.local
-    ports:
-      - "9005:9000"
+#    ports:
+#      - "9005:9000"

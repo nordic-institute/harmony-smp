@@ -25,11 +25,11 @@
 		<lastName>Stark</lastName>
 		<objectStatus>a</objectStatus>
 		<organisation>eu.europa.ec</organisation>
-		<organisationUsername>smp</organisationUsername>
+		<organisationUsername>user01</organisationUsername>
 		<passwordChangeDn>uid=smp,ou=people,dc=commission,dc=europa,dc=eu</passwordChangeDn>
 		<strongPasswordHash>123456</strongPasswordHash>
 		<passwordLastChangedTime></passwordLastChangedTime>
-		<uid>user-02</uid>
+		<uid>user01</uid>
 		<cudGroups>DIGIT_SMP_ADMIN</cudGroups>
 	</user>
 

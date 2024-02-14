@@ -1,0 +1,20 @@
+#
+# The intention of the compose file is to override the default configuration of the docker-compose.yml file,
+#  such as the ports to be exposed, to be used in the local development/test environment.
+version: "3.8"
+services:
+  domismp-service:
+    ports:
+#      - "3908:3306"
+      - "8982:8080"
+#      - "6902:6901"
+#      - "8953:53"
+      - "5005:5005"
+
+  eulogin-service:
+    ports:
+      - "7102:7102"
+
+  mail-service:
+    ports:
+      - "9005:9000"
