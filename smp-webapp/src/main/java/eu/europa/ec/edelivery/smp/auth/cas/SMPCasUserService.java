@@ -20,10 +20,13 @@ package eu.europa.ec.edelivery.smp.auth.cas;
 
 import eu.europa.ec.edelivery.security.utils.SecurityUtils;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
+import eu.europa.ec.edelivery.smp.data.enums.ApplicationRoleType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
+import eu.europa.ec.edelivery.smp.utils.StringNamedSubstitutor;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +50,31 @@ import java.util.Map;
  */
 @Component
 public class SMPCasUserService implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
+	enum MappingData {
+		EMAIL("${email}"),
+		FULL_NAME("${firstName} ${lastName}");
+
+		private final String defaultValue;
+
+		MappingData(String defaultValue) {
+			this.defaultValue = defaultValue;
+		}
+
+		public String getDefaultValue() {
+			return defaultValue;
+		}
+	}
 
 	private static final Logger LOG = LoggerFactory.getLogger(SMPCasUserService.class);
 
-	final UIUserService uiUserService;
+	private final UIUserService uiUserService;
+	private final ConfigurationService configurationService;
 
 	@Autowired
-	public SMPCasUserService(UIUserService uiUserService) {
+	public SMPCasUserService(UIUserService uiUserService,
+							 ConfigurationService configurationService) {
 		this.uiUserService = uiUserService;
+		this.configurationService = configurationService;
 	}
 
 	/**
@@ -67,18 +87,18 @@ public class SMPCasUserService implements AuthenticationUserDetailsService<CasAs
 		
 		AttributePrincipal principal = token.getAssertion().getPrincipal();
 		// the cas id must match with username
-		String username = principal.getName();
-		LOG.debug("Got CAS user with principal name: [{}]", username);
-		Map<String, Object> attributes = principal.getAttributes();
-		for(Map.Entry<String, Object> attribute : attributes.entrySet()) {
-			LOG.debug("Principal attribute [{}]=[{}] ", attribute.getKey(), attribute.getValue());
-		}
 
-		DBUser dbuser;
+		String username = principal.getName();
+		LOG.info("Got CAS user with principal name: [{}]", username);
+        DBUser dbuser;
 		try {
 			dbuser = uiUserService.findUserByUsername(username);
 		} catch (SMPRuntimeException ex) {
-			throw new UsernameNotFoundException("User with the username ["+username+"] is not registered in SMP", ex);
+			if (configurationService.isCasAutomaticRegistrationEnabledForUserAuthentication()) {
+				dbuser = registerNewCasUser(principal);
+			}else {
+				throw new UsernameNotFoundException("User with the username ["+username+"] is not registered in SMP", ex);
+			}
 		}
 
 		SMPAuthority authority = SMPAuthority.getAuthorityByApplicationRole(dbuser.getApplicationRole());
@@ -87,5 +107,25 @@ public class SMPCasUserService implements AuthenticationUserDetailsService<CasAs
 		smpUserDetails.setCasAuthenticated(true);
 		LOG.info("Return authenticated user details for username: [{}]", username);
 		return smpUserDetails;
+	}
+
+	public DBUser registerNewCasUser(AttributePrincipal principal){
+		Map<String, Object> attributes = principal.getAttributes();
+		Map<String, String> attributesMap = configurationService.getCasAutomaticRegistrationDataMapping();
+
+		DBUser dbUser = new DBUser();
+		// update user data by admin
+		dbUser.setUsername(principal.getName());
+		dbUser.setApplicationRole(ApplicationRoleType.USER);
+		dbUser.setActive(!configurationService.isCasAutomaticRegistrationConfirmation());
+		dbUser.setEmailAddress(getValueFromCasPrincipal(MappingData.EMAIL, attributes, attributesMap));
+		dbUser.setFullName(getValueFromCasPrincipal(MappingData.FULL_NAME, attributes, attributesMap));
+		uiUserService.createDBUser(dbUser);
+		return dbUser;
+	}
+
+	public String getValueFromCasPrincipal(MappingData data, Map<String, Object> attributes, Map<String,String> mapping){
+		String template = mapping.getOrDefault(data.name(), data.getDefaultValue());
+		return StringNamedSubstitutor.resolve(template, attributes);
 	}
 }

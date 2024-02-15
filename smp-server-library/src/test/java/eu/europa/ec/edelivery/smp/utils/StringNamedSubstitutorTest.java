@@ -43,7 +43,7 @@ class StringNamedSubstitutorTest {
                     "'The quick red fox jumps over the ${DOG_MODE} dog'",
     })
     void resolve(String testString, String values, String expected) {
-        Map<String, String> mapVal = Stream.of(values.split("\\s*;\\s*"))
+        Map<String, Object> mapVal = Stream.of(values.split("\\s*;\\s*"))
                 .map(s -> s.split("\\s*=\\s*"))
                 .collect(HashMap::new, (m, v) -> m.put(v[0], v[1]), Map::putAll);
 

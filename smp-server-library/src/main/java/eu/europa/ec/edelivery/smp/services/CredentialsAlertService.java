@@ -305,6 +305,53 @@ public class CredentialsAlertService {
     /**
      * Method generates request reset alert for credentials and submit mail to the user
      *
+     * @param user created
+     */
+    public void alertUserCreated(DBUser user) {
+
+        String mailTo = user.getEmailAddress();
+        String mailSubject = "New user created";
+        AlertLevelEnum alertLevel = AlertLevelEnum.HIGH;
+        AlertTypeEnum alertType = AlertTypeEnum.USER_CREATED;
+
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+
+        alert.addProperty(UserCreatedProperties.USERNAME.name(), user.getUsername());
+        alert.addProperty(UserCreatedProperties.EMAIL.name(), user.getEmailAddress());
+        alert.addProperty(UserCreatedProperties.FULL_NAME.name(), user.getFullName());
+        alert.addProperty(UserCreatedProperties.ACTIVATED.name(), Boolean.toString(user.isActive()));
+
+        alertDao.persistFlushDetach(alert);
+        // submit alerts
+        submitAlertMail(alert, user);
+    }
+
+    /**
+     * Method generates request reset alert for credentials and submit mail to the user
+     *
+     * @param user created
+     */
+    public void alertUserUpdated(DBUser user) {
+
+        String mailTo = user.getEmailAddress();
+        String mailSubject = "User data updated";
+        AlertLevelEnum alertLevel = AlertLevelEnum.HIGH;
+        AlertTypeEnum alertType = AlertTypeEnum.USER_UPDATED;
+
+        DBAlert alert = createAlert(user.getUsername(), mailSubject, mailTo, alertLevel, alertType);
+
+        alert.addProperty(UserUpdatedProperties.USERNAME.name(), user.getUsername());
+        alert.addProperty(UserUpdatedProperties.EMAIL.name(), user.getEmailAddress());
+        alert.addProperty(UserUpdatedProperties.FULL_NAME.name(), user.getFullName());
+        alert.addProperty(UserUpdatedProperties.ACTIVATED.name(), Boolean.toString(user.isActive()));
+        alertDao.persistFlushDetach(alert);
+        // submit alerts
+        submitAlertMail(alert, user);
+    }
+
+    /**
+     * Method generates request reset alert for credentials and submit mail to the user
+     *
      * @param credential credential to reset
      */
     public void alertCredentialRequestReset(DBCredential credential) {
@@ -321,7 +368,7 @@ public class CredentialsAlertService {
                 alert,
                 credential.getCredentialType(),
                 credential.getName(),
-                 user);
+                user);
     }
 
     public void alertCredentialRequestReset(String token,
@@ -375,8 +422,8 @@ public class CredentialsAlertService {
     }
 
     public void alertCredentialChanged(DBUser user, DBAlert alert,
-                                            CredentialType credentialType,
-                                            String credentialId) {
+                                       CredentialType credentialType,
+                                       String credentialId) {
 
         String serverName = HttpUtils.getServerAddress();
         // add alert properties

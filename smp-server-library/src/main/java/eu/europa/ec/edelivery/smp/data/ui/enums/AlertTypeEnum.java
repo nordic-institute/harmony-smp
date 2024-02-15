@@ -32,6 +32,9 @@ public enum AlertTypeEnum {
     CREDENTIAL_VERIFICATION_FAILED("credential_verification_failed"),
     CREDENTIAL_REQUEST_RESET("credential_request_reset"),
     CREDENTIAL_CHANGED("credential_changed"),
+    USER_CREATED_CONFIRMATION("user_created_confirmation"),
+    USER_CREATED("user_created"),
+    USER_UPDATED("user_updated"),
     ;
 
     private final String template;

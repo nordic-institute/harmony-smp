@@ -340,6 +340,20 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_CALLBACK_URL);
     }
 
+    public boolean isCasAutomaticRegistrationEnabledForUserAuthentication() {
+        Boolean value = configurationDAO.getCachedPropertyValue(SSO_CAS_AUTOMATIC_REGISTRATION_ENABLED);
+        return value != null && value;
+    }
+
+    public boolean isCasAutomaticRegistrationConfirmation() {
+        Boolean value = configurationDAO.getCachedPropertyValue(SSO_CAS_AUTOMATIC_REGISTRATION_CONFIRMATION);
+        return value != null && value;
+    }
+
+    public Map<String, String> getCasAutomaticRegistrationDataMapping() {
+        return configurationDAO.getCachedPropertyValue(SSO_CAS_AUTOMATIC_REGISTRATION_PROPERTY_MAPPING);
+    }
+
     public String getCasSMPLoginRelativePath() {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_SMP_LOGIN_URI);
     }

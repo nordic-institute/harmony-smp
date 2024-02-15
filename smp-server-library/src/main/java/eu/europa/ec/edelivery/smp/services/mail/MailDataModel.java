@@ -31,10 +31,10 @@ public class MailDataModel {
     }
     private final String language;
     private final AlertTypeEnum alertType;
-    Map<String, String> model = new HashMap<>();
+    Map<String, Object> model = new HashMap<>();
 
 
-    public MailDataModel(String language, AlertTypeEnum alertType, Map<String, String> model) {
+    public MailDataModel(String language, AlertTypeEnum alertType, Map<String, Object> model) {
         this.language = language;
         this.alertType = alertType;
         this.model.putAll(model);
@@ -54,7 +54,7 @@ public class MailDataModel {
         return alertType;
     }
 
-    public Map<String, String> getModel() {
+    public Map<String, Object> getModel() {
         return model;
     }
 }

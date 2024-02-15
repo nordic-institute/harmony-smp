@@ -47,7 +47,7 @@ public class MailServiceTest extends AbstractServiceIntegrationTest {
     public void testSendMail() {
 
         Mockito.doNothing().when(mockJavaMailSender).send((MimeMessage) Mockito.any());
-        Map<String, String> props = new HashMap<>();
+        Map<String, Object> props = new HashMap<>();
 
         props.put(TestMailProperties.SERVER_NAME.name(), "server name");
         props.put(TestMailProperties.USERNAME.name(), "username");

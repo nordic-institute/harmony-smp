@@ -6,7 +6,7 @@
 # and finally it cleans the external resources
 WORKING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${WORKING_DIR}"
-e
+
 source "${WORKING_DIR}/../../functions/common.functions"
 initializeCommonVariables
 

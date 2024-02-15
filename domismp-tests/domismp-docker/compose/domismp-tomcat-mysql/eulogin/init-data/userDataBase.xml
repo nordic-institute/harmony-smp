@@ -25,14 +25,29 @@
 		<lastName>Stark</lastName>
 		<objectStatus>a</objectStatus>
 		<organisation>eu.europa.ec</organisation>
-		<organisationUsername>smp</organisationUsername>
+		<organisationUsername>user01</organisationUsername>
 		<passwordChangeDn>uid=smp,ou=people,dc=commission,dc=europa,dc=eu</passwordChangeDn>
 		<strongPasswordHash>123456</strongPasswordHash>
 		<passwordLastChangedTime></passwordLastChangedTime>
-		<uid>user-02</uid>
-		<cudGroups>DIGIT_SMP_ADMIN</cudGroups>
+		<uid>user01</uid>
+		<cudGroups>DIGIT_SMP_USER</cudGroups>
 	</user>
-
+	<user>
+		<authenticationCount>1</authenticationCount>
+		<badAuthenticationCount>0</badAuthenticationCount>
+		<email>Wade.WILSON@dummy-mail-not-exists.eu</email>
+		<firstName>Wade</firstName>
+		<goodAuthenticationCount>1</goodAuthenticationCount>
+		<lastName>Wilson</lastName>
+		<objectStatus>a</objectStatus>
+		<organisation>eu.europa.ec</organisation>
+		<organisationUsername>user02</organisationUsername>
+		<passwordChangeDn>uid=smp,ou=people,dc=commission,dc=europa,dc=eu</passwordChangeDn>
+		<strongPasswordHash>123456</strongPasswordHash>
+		<passwordLastChangedTime></passwordLastChangedTime>
+		<uid>user02</uid>
+		<cudGroups>DIGIT_SMP_USER</cudGroups>
+	</user>
 	<user>
 		<authenticationCount>1</authenticationCount>
 		<badAuthenticationCount>0</badAuthenticationCount>

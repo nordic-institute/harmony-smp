@@ -4,6 +4,9 @@ eDelivery SMP 5.1
     smp.instance.name: The SMP instance name
     smp.credentials.reset_request.url: The URL to reset the user password
     smp.credentials.reset_request.url.validMinutes: The time in minutes the reset request is valid
+    smp.sso.cas.registration.enabled: Enable/Disable automatic user registration from CAS at first login.
+    smp.sso.cas.registration.confirmation.mandatory: Enable/Disable user confirmation after registration from CAS at first login.
+    smp.sso.cas.registration.mapping: The CAS property mapping to user data. Ex: 'EMAIL:${email}|FULL_NAME:${firstName} ${lastName}'
 
 eDelivery SMP 5.0
 - removed: bdmsl.participant.multidomain.enabled

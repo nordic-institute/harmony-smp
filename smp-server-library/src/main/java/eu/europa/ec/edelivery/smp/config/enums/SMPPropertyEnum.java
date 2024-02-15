@@ -224,6 +224,13 @@ public enum SMPPropertyEnum {
     SSO_CAS_TOKEN_VALIDATION_PARAMS("smp.sso.cas.token.validation.params", "acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP", "The CAS token validation key:value properties separated with '|'.Ex: 'acceptStrengths:BASIC,CLIENT_CERT|assuranceLevel:TOP'",
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, MAP_STRING),
 
+    SSO_CAS_AUTOMATIC_REGISTRATION_ENABLED("smp.sso.cas.registration.enabled", "true", "Register user if missing in db and it was successfully authenticated by CAS",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    SSO_CAS_AUTOMATIC_REGISTRATION_CONFIRMATION("smp.sso.cas.registration.confirmation.mandatory", "false", "If true - user must be activated by system administrator. If false - user is activated automatically",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    SSO_CAS_AUTOMATIC_REGISTRATION_PROPERTY_MAPPING("smp.sso.cas.registration.mapping", "EMAIL:${email}|FULL_NAME:${firstName} ${lastName}","The CAS property mapping to user data. Ex: 'EMAIL:${email}|FULL_NAME:${firstName} ${lastName}'",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
+
     SSO_CAS_TOKEN_VALIDATION_GROUPS("smp.sso.cas.token.validation.groups", "DIGIT_SMP|DIGIT_ADMIN", "'|' separated CAS groups user must belong to.",
             OPTIONAL, NOT_ENCRYPTED, RESTART_NEEDED, LIST_STRING),
 

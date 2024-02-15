@@ -50,7 +50,7 @@ public class MailTemplateService {
     public String getMailHtmlContent(MailDataModel model) {
         InputStream templateIS = MailTemplateService.class.getResourceAsStream(MAIL_TEMPLATE);
         try {
-            Map<String, String> modelData = new HashMap<>();
+            Map<String, Object> modelData = new HashMap<>();
             modelData.put(MAIL_HEADER, getMailHeader(model));
             modelData.put(MAIL_FOOTER, getMailFooter(model));
             modelData.put(MAIL_TITLE, getMailTitle(model));

@@ -44,8 +44,8 @@ public class StringNamedSubstitutor {
      * @param config     the config to use
      * @return the resolved string
      */
-    public static String resolve(InputStream templateIS, Map<String, String> config) throws IOException {
-        Map<String, String> lowerCase = config.entrySet().stream()
+    public static String resolve(InputStream templateIS, Map<String, Object> config) throws IOException {
+        Map<String, Object> lowerCaseMap = config.entrySet().stream()
                 .collect(Collectors.toMap(e -> StringUtils.lowerCase(e.getKey()), Map.Entry::getValue));
         StringBuilder builder = new StringBuilder();
 
@@ -59,7 +59,9 @@ public class StringNamedSubstitutor {
                     builder.append(START_NAME);
                 } else {
                     String key = StringUtils.lowerCase(name);
-                    String value = lowerCase.get(key);
+                    Object objValue = lowerCaseMap.get(key);
+                    String value  = objValue!=null? String.valueOf(lowerCaseMap.get(key)): null;
+
                     if (value != null) {
                         builder.append(value);
                     } else {
@@ -128,7 +130,7 @@ public class StringNamedSubstitutor {
      * @param config the config to use
      * @return the resolved string
      */
-    public static String resolve(String string, Map<String, String> config) {
+    public static String resolve(String string, Map<String, Object> config) {
         try {
             return resolve(new ByteArrayInputStream(string.getBytes()), config);
         } catch (IOException e) {
