@@ -130,18 +130,20 @@ public class DBCredential extends BaseEntity {
     @Column(name = "LAST_FAILED_LOGIN_ON")
     @ColumnDescription(comment = "Last failed login attempt")
     private OffsetDateTime lastFailedLoginAttempt;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "CREDENTIAL_TYPE", nullable = false)
     @ColumnDescription(comment = "Credential type:  USERNAME, ACCESS_TOKEN, CERTIFICATE, CAS")
     private CredentialType credentialType = CredentialType.USERNAME_PASSWORD;
-
-
     @Enumerated(EnumType.STRING)
     @Column(name = "CREDENTIAL_TARGET", nullable = false)
     @ColumnDescription(comment = "Credential target UI, API")
     private CredentialTargetType credentialTarget = CredentialTargetType.UI;
-
+    @Column(name = "RESET_TOKEN", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
+    @ColumnDescription(comment = "Reset token for credential reset")
+    private String resetToken;
+    @Column(name = "RESET_EXPIRE_ON")
+    @ColumnDescription(comment = "Date time when reset token will expire")
+    private OffsetDateTime resetExpireOn;
 
     @OneToOne(mappedBy = "credential",
             cascade = CascadeType.ALL,
@@ -260,6 +262,22 @@ public class DBCredential extends BaseEntity {
 
     public void setCredentialTarget(CredentialTargetType credentialTarget) {
         this.credentialTarget = credentialTarget;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public OffsetDateTime getResetExpireOn() {
+        return resetExpireOn;
+    }
+
+    public void setResetExpireOn(OffsetDateTime resetExpireOn) {
+        this.resetExpireOn = resetExpireOn;
     }
 
     public DBCertificate getCertificate() {

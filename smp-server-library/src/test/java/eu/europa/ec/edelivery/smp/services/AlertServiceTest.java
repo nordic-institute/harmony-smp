@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -28,12 +28,13 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
-import eu.europa.ec.edelivery.smp.services.mail.MailModel;
+import eu.europa.ec.edelivery.smp.services.mail.MailDataModel;
 import eu.europa.ec.edelivery.smp.services.mail.MailService;
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialSuspendedProperties;
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialVerificationFailedProperties;
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProperties;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -41,7 +42,6 @@ import org.mockito.Mockito;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -54,10 +54,17 @@ public class AlertServiceTest {
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     UserDao userDao = Mockito.mock(UserDao.class);
     CredentialDao credentialDao = Mockito.mock(CredentialDao.class);
+    SmpUrlBuilder smpUrlBuilder = Mockito.mock(SmpUrlBuilder.class);
     SMPDynamicCronTrigger alertCronTrigger = Mockito.mock(SMPDynamicCronTrigger.class);
 
 
-    CredentialsAlertService testInstance = new CredentialsAlertService(alertDao, mailService, configurationService, userDao, credentialDao, alertCronTrigger);
+    CredentialsAlertService testInstance = new CredentialsAlertService(alertDao,
+            mailService,
+            configurationService,
+            userDao,
+            credentialDao,
+            smpUrlBuilder,
+            alertCronTrigger);
 
     @Test
     public void testCreateAlert() {
@@ -85,8 +92,9 @@ public class AlertServiceTest {
     public void testSubmitAlertMailNoMail() {
 
         DBAlert alert = new DBAlert();
+        DBUser user = Mockito.mock(DBUser.class);
 
-        testInstance.submitAlertMail(alert);
+        testInstance.submitAlertMail(alert, user);
 
         verify(mailService, Mockito.never()).sendMail(Mockito.any(), Mockito.anyString(), Mockito.anyString());
     }
@@ -105,7 +113,7 @@ public class AlertServiceTest {
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
 
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialsExpirationProperties.values())
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
         testInstance.alertBeforeCredentialExpire(credential);
@@ -132,7 +140,7 @@ public class AlertServiceTest {
         doReturn(alertLevel).when(configurationService).getAlertExpiredPasswordLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialsExpirationProperties.values())
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
         testInstance.alertCredentialExpired(credential);
@@ -159,7 +167,7 @@ public class AlertServiceTest {
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
 
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialsExpirationProperties.values())
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
         testInstance.alertBeforeCredentialExpire(credential);
@@ -185,7 +193,7 @@ public class AlertServiceTest {
         doReturn(alertLevel).when(configurationService).getAlertExpiredAccessTokenLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialsExpirationProperties.values())
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
         testInstance.alertCredentialExpired(credential);
@@ -210,7 +218,7 @@ public class AlertServiceTest {
         doReturn(alertLevel).when(configurationService).getAlertBeforeExpireCertificateLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialsExpirationProperties.values())
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
         // when
         testInstance.alertBeforeCredentialExpire(credential);
@@ -235,7 +243,7 @@ public class AlertServiceTest {
         doReturn(alertLevel).when(configurationService).getAlertExpiredCertificateLevel();
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_EXPIRED;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialsExpirationProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialsExpirationProperties.values())
                 .map(CredentialsExpirationProperties::name).collect(Collectors.toList());
 
         // when
@@ -254,7 +262,10 @@ public class AlertServiceTest {
         String mailTo = "test.mail@domain.eu";
         String mailFrom = "test.mail@domain.eu";
         String mailSubject = "mailSubject";
+        String language = "en";
         AlertTypeEnum template = AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION;
+        DBUser user = Mockito.mock(DBUser.class);
+        doReturn(language).when(user).getSmpLocale();
         DBAlert alert = new DBAlert();
         alert.setAlertType(template);
         alert.setMailTo(mailTo);
@@ -262,9 +273,9 @@ public class AlertServiceTest {
         alert.addProperty("test", "testValue");
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
 
-        testInstance.submitAlertMail(alert);
+        testInstance.submitAlertMail(alert, user);
 
-        ArgumentCaptor<MailModel<Properties>> argModel = ArgumentCaptor.forClass(MailModel.class);
+        ArgumentCaptor<MailDataModel> argModel = ArgumentCaptor.forClass(MailDataModel.class);
         ArgumentCaptor<String> argMailTo = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> argFrom = ArgumentCaptor.forClass(String.class);
 
@@ -274,9 +285,9 @@ public class AlertServiceTest {
 
         assertEquals(mailTo, argMailTo.getValue());
         assertEquals(mailFrom, argFrom.getValue());
-        assertEquals(mailSubject, argModel.getValue().getSubject());
-        assertEquals(template.getTemplate(), argModel.getValue().getTemplatePath());
-        assertEquals(1, argModel.getValue().getModel().size());
+        assertEquals(AlertTypeEnum.CREDENTIAL_IMMINENT_EXPIRATION, argModel.getValue().getMailType());
+        assertEquals(language, argModel.getValue().getLanguage());
+        assertEquals(3, argModel.getValue().getModel().size());
     }
 
     @Test
@@ -297,7 +308,7 @@ public class AlertServiceTest {
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
 
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_VERIFICATION_FAILED;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialVerificationFailedProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialVerificationFailedProperties.values())
                 .map(CredentialVerificationFailedProperties::name).collect(Collectors.toList());
 
         // when
@@ -329,7 +340,7 @@ public class AlertServiceTest {
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         //doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_VERIFICATION_FAILED;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialVerificationFailedProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialVerificationFailedProperties.values())
                 .map(CredentialVerificationFailedProperties::name).collect(Collectors.toList());
 
         // when
@@ -361,7 +372,7 @@ public class AlertServiceTest {
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_SUSPENDED;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialSuspendedProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialSuspendedProperties.values())
                 .map(CredentialSuspendedProperties::name).collect(Collectors.toList());
 
         // when
@@ -394,7 +405,7 @@ public class AlertServiceTest {
         doReturn(mailFrom).when(configurationService).getAlertEmailFrom();
         doReturn(123456).when(configurationService).getLoginSuspensionTimeInSeconds();
         AlertTypeEnum alertType = AlertTypeEnum.CREDENTIAL_SUSPENDED;
-        List<String> expectedTemplateProperties = Arrays.asList(CredentialSuspendedProperties.values()).stream()
+        List<String> expectedTemplateProperties = Arrays.stream(CredentialSuspendedProperties.values())
                 .map(CredentialSuspendedProperties::name).collect(Collectors.toList());
 
         // when
@@ -412,7 +423,7 @@ public class AlertServiceTest {
     public void assertAlertSend(AlertTypeEnum alertType, String mailTo, String mailFrom, String mailSubject,
                                 List<String> templateProperties) {
 
-        ArgumentCaptor<MailModel<Properties>> argModel = ArgumentCaptor.forClass(MailModel.class);
+        ArgumentCaptor<MailDataModel> argModel = ArgumentCaptor.forClass(MailDataModel.class);
         ArgumentCaptor<String> argMailFrom = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> argMailTo = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<DBAlert> argAlert = ArgumentCaptor.forClass(DBAlert.class);
@@ -429,16 +440,16 @@ public class AlertServiceTest {
         assertEquals(mailFrom, argMailFrom.getValue());
 
 
-        MailModel<Properties> model = argModel.getValue();
-        assertEquals(alertType.getTemplate(), model.getTemplatePath());
-        assertEquals(mailSubject, model.getSubject());
+        MailDataModel model = argModel.getValue();
+        assertEquals(alertType, model.getMailType());
+        assertEquals("en", model.getLanguage());
 
         // test to contain all properties
         for (String prop : templateProperties) {
-
             assertTrue(prop, model.getModel().containsKey(prop));
         }
-        assertEquals(templateProperties.size(), model.getModel().size());
+        // add two common properties: CURRENT_DATETIME, SMP_INSTANCE_NAME
+        assertEquals(templateProperties.size() + 2, model.getModel().size());
     }
 
 

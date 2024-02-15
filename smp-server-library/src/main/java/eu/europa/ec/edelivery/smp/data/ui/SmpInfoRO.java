@@ -34,6 +34,10 @@ public class SmpInfoRO implements Serializable {
     private String ssoAuthenticationLabel;
     private String ssoAuthenticationURI;
     private String contextPath;
+
+    private String passwordValidationRegExp;
+    private String passwordValidationRegExpMessage;
+
     private final List<String> authTypes = new ArrayList<>();
 
     public String getVersion() {
@@ -74,5 +78,21 @@ public class SmpInfoRO implements Serializable {
 
     public void addAuthTypes(List<String> authTypes) {
         this.authTypes.addAll(authTypes);
+    }
+
+    public String getPasswordValidationRegExp() {
+        return passwordValidationRegExp;
+    }
+
+    public void setPasswordValidationRegExp(String passwordValidationRegExp) {
+        this.passwordValidationRegExp = passwordValidationRegExp;
+    }
+
+    public String getPasswordValidationRegExpMessage() {
+        return passwordValidationRegExpMessage;
+    }
+
+    public void setPasswordValidationRegExpMessage(String passwordValidationRegExpMessage) {
+        this.passwordValidationRegExpMessage = passwordValidationRegExpMessage;
     }
 }

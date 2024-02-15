@@ -1,5 +1,10 @@
 eDelivery SMP 5.1
 - Added the HTTP parameter 'Resource-Owner' as alternative to ServiceGroup-Owner
+- added new properties:
+    smp.instance.name: The SMP instance name
+    smp.credentials.reset_request.url: The URL to reset the user password
+    smp.credentials.reset_request.url.validMinutes: The time in minutes the reset request is valid
+
 eDelivery SMP 5.0
 - removed: bdmsl.participant.multidomain.enabled
 - environment properties have now 'smp.' prefix

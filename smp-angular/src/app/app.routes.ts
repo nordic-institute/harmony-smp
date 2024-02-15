@@ -21,6 +21,7 @@ import {authorizeChildSystemAdminGuard} from "./guards/authorize-child-system-ad
 import {activateChildResourceGuard} from "./guards/activate-child-document.guard";
 import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
 import {AdminAlertsComponent} from "./system-settings/admin-alerts/admin-alerts.component";
+import {ResetCredentialComponent} from "./security/reset-credential/reset-credential.component";
 
 
 const appRoutes: Routes = [
@@ -28,6 +29,7 @@ const appRoutes: Routes = [
   {path: '', component: ResourceSearchComponent},
   {path: 'search', redirectTo: ''},
   {path: 'login', component: LoginComponent},
+  {path: 'reset-credential/:resetToken', component: ResetCredentialComponent},
   {
     path: 'edit',
     canActivateChild: [authenticationGuard],

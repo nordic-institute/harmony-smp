@@ -149,7 +149,10 @@ export class SmpConstants {
 
   // public authentication services
   public static readonly REST_PUBLIC_SECURITY = SmpConstants.REST_PUBLIC + 'security/';
-  public static readonly REST_PUBLIC_SECURITY_AUTHENTICATION = SmpConstants.REST_PUBLIC_SECURITY + 'authentication';
+  public static readonly REST_PUBLIC_SECURITY_AUTHENTICATION = SmpConstants.REST_PUBLIC_SECURITY + 'authentication'
+  public static readonly REST_PUBLIC_SECURITY_RESET_CREDENTIALS_REQUEST = SmpConstants.REST_PUBLIC_SECURITY + 'request-reset-credential';
+  public static readonly REST_PUBLIC_SECURITY_RESET_CREDENTIALS = SmpConstants.REST_PUBLIC_SECURITY + 'reset-credential';
+
   public static readonly REST_PUBLIC_SECURITY_USER = SmpConstants.REST_PUBLIC_SECURITY + 'user';
 
   //------------------------------

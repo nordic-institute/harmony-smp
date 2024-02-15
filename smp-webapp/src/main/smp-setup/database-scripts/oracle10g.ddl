@@ -194,6 +194,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         EXPIRE_ON timestamp,
         LAST_FAILED_LOGIN_ON timestamp,
         CREDENTIAL_NAME varchar2(256 char) not null,
+        RESET_EXPIRE_ON timestamp,
+        RESET_TOKEN varchar2(256 char),
         LOGIN_FAILURE_COUNT number(10,0),
         CREDENTIAL_VALUE varchar2(256 char),
         FK_USER_ID number(19,0) not null,
@@ -236,6 +238,12 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
     comment on column SMP_CREDENTIAL.CREDENTIAL_NAME is
         'Unique username identifier. The Username must not be null';
 
+    comment on column SMP_CREDENTIAL.RESET_EXPIRE_ON is
+        'Date time when reset token will expire';
+
+    comment on column SMP_CREDENTIAL.RESET_TOKEN is
+        'Reset token for credential reset';
+
     comment on column SMP_CREDENTIAL.LOGIN_FAILURE_COUNT is
         'Sequential login failure count';
 
@@ -258,6 +266,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         EXPIRE_ON timestamp,
         LAST_FAILED_LOGIN_ON timestamp,
         CREDENTIAL_NAME varchar2(256 char),
+        RESET_EXPIRE_ON timestamp,
+        RESET_TOKEN varchar2(256 char),
         LOGIN_FAILURE_COUNT number(10,0),
         CREDENTIAL_VALUE varchar2(256 char),
         FK_USER_ID number(19,0),

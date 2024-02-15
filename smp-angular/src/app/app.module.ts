@@ -141,6 +141,7 @@ import {
 } from "./system-settings/admin-properties/property-details-dialog/property-details-dialog.component";
 import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
 import {SmpEditorComponent} from "./common/components/smp-editor/smp-editor.component";
+import {ResetCredentialComponent} from "./security/reset-credential/reset-credential.component";
 
 
 @NgModule({
@@ -198,6 +199,7 @@ import {SmpEditorComponent} from "./common/components/smp-editor/smp-editor.comp
     PasswordChangeDialogComponent,
     PropertyComponent,
     PropertyDetailsDialogComponent,
+    ResetCredentialComponent,
     ResourceDetailsDialogComponent,
     ResourceDetailsPanelComponent,
     ResourceDialogComponent,

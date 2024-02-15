@@ -83,7 +83,6 @@ See the Licence for the specific language governing permissions and limitations 
         <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
         <cxf.version>3.5.7</cxf.version>
         <ehcache.version>2.10.9.2</ehcache.version>
-        <freemarker.version>2.3.32</freemarker.version>
         <h2.version>2.2.224</h2.version>
         <hamcrest-junit.version>2.0.0.0</hamcrest-junit.version>
         <hamcrest.version>2.2</hamcrest.version>
@@ -255,11 +254,6 @@ See the Licence for the specific language governing permissions and limitations 
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${httpclient.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.freemarker</groupId>
-                <artifactId>freemarker</artifactId>
-                <version>${freemarker.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>

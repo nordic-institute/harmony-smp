@@ -4,6 +4,13 @@
 # running Docker images for the integration tests.
 ################################################################
 
+FUNCTION_FOLDER="$(cd -P $( dirname "${BASH_SOURCE[0]}" ) && pwd)"
+SMP_PROJECT_FOLDER=$(readlink -e "${FUNCTION_FOLDER}/../../..")
+SMP_ARTEFACTS="${SMP_PROJECT_FOLDER}/smp-webapp/target"
+SMP_SPRINGBOOT_ARTEFACTS="${SMP_PROJECT_FOLDER}/smp-springboot/target"
+SMP_PLUGIN_EXAMPLE="${SMP_PROJECT_FOLDER}/smp-examples/smp-spi-payload-validation-example/target"
+SMP_ARTEFACTS_CLEAR="false"
+
 ################################################################
 # Function exports the DomiSMP build specific artefact names.
 exportBuildArtefactNames() {
@@ -34,6 +41,7 @@ function exportImageNames() {
 function initializeCommonVariables() {
     echo "initialize common variables"
     exportImageNames
+    discoverApplicationVersion
 
     BUILD_KEY=$(echo "${bamboo_buildResultKey:-test}" | tr '[:upper:]' '[:lower:]')
     PLAN_PREFIX="${COMPOSE_PROJECT_NAME}"-${BUILD_KEY}

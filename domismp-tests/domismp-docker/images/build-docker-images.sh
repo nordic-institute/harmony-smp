@@ -31,7 +31,6 @@ ORA_VERSION="11.2.0.2"
 ORA_EDITION="xe"
 ORA_SERVICE="xe"
 
-SMP_VERSION=
 ORACLE_ARTEFACTS="/CEF/repo"
 
 SMP_PROJECT_FOLDER=$(readlink -e "${WORKDIR}/../../..")
@@ -61,8 +60,6 @@ while getopts v:o:a:s:c:p: option; do
   esac
 done
 
-# discover SMP  version
-discoverApplicationVersion
 
 echo "*****************************************************************"
 echo "* SMP artefact folders: [$SMP_ARTEFACTS], (Clear folder after build: [$SMP_ARTEFACTS_CLEAR] )"
