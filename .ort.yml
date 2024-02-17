@@ -1,6 +1,10 @@
 ---
 excludes:
   paths:
+  - pattern: ".mvn/**"
+    reason: "BUILD_TOOL_OF"
+    comment: "This directory contains Maven build tool."
+
   - pattern: "smp-docker/**"
     reason: "OPTIONAL_COMPONENT_OF"
     comment: "Not included in distributed build artifacts."
@@ -12,6 +16,10 @@ excludes:
   - pattern: "smp-ui-tests/**"
     reason: "TEST_OF"
     comment: "This directory contains tests."
+
+  - pattern: "smp-wls-deploy/**"
+    reason: "OPTIONAL_COMPONENT_OF"
+    comment: "Not included in distributed build artifacts."
 
   scopes:
   - pattern: "checkstyle"
