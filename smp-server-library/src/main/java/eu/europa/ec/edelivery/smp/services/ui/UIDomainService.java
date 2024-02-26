@@ -74,7 +74,8 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
                            ResourceDefDao resourceDefDao,
                            DomainResourceDefDao domainResourceDefDao,
                            GroupDao groupDao,
-                           GroupMemberDao groupMemberDao, SMLIntegrationService smlIntegrationService) {
+                           GroupMemberDao groupMemberDao,
+                           SMLIntegrationService smlIntegrationService) {
         this.conversionService = conversionService;
         this.domainDao = domainDao;
         this.resourceDao = resourceDao;

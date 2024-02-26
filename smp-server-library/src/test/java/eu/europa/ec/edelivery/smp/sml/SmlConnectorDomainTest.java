@@ -21,22 +21,23 @@
 package eu.europa.ec.edelivery.smp.sml;
 
 import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
+import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
-import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
@@ -44,6 +45,8 @@ import java.util.UUID;
 import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -52,174 +55,251 @@ import static org.mockito.Mockito.verify;
  */
 public class SmlConnectorDomainTest extends AbstractServiceTest {
 
-    @Autowired
-    protected ConfigurationService configurationService;
+    // Beans
+    @SpyBean
+    private ConfigurationService configurationService;
+    @MockBean
+    private IManageServiceMetadataWS iManageServiceMetadataWS;
+    @SpyBean
+    private SmlConnector testInstance;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
-    @Autowired
-    protected SmlConnector testInstance;
-    @Autowired
-    SmlIntegrationConfiguration mockSml;
+    // Mocks
+    @Mock
+    private DBDomain domain;
 
     @Before
     public void setup() {
-
-        configurationService = Mockito.spy(configurationService);
-        testInstance = Mockito.spy(testInstance);
         // default behaviour
         Mockito.doNothing().when(testInstance).configureClient(any(), any(), any());
-        ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
-        mockSml.reset();
+
+        ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
     }
 
     @Test
-    public void testRegisterDomainInDns() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
+    public void testRegisterDomainInDns() throws Exception {
         //when
-
         boolean result = testInstance.registerDomain(DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
-        assertEquals(1, mockSml.getSmpManagerClientMocks().size());
-        verify(mockSml.getSmpManagerClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getSmpManagerClientMocks().toArray());
+        verify(iManageServiceMetadataWS, times(1)).create(any(ServiceMetadataPublisherServiceType.class));
     }
 
     @Test
-    public void testRegisterDomainInDnsAlreadyExists() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
+    public void testRegisterDomainInDnsAlreadyExists() throws Exception {
+        //given
+        Mockito.doThrow(new BadRequestFault(ERROR_SMP_ALREADY_EXISTS)).when(iManageServiceMetadataWS).create(any(ServiceMetadataPublisherServiceType.class));
+
         //when
-        BadRequestFault ex = new BadRequestFault(ERROR_SMP_ALREADY_EXISTS);
-        mockSml.setThrowException(ex);
         boolean result = testInstance.registerDomain(DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
-        assertEquals(1, mockSml.getSmpManagerClientMocks().size());
-        verify(mockSml.getSmpManagerClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getSmpManagerClientMocks().toArray());
+        verify(iManageServiceMetadataWS, times(1)).create(any(ServiceMetadataPublisherServiceType.class));
     }
 
     @Test
-    public void testRegisterDomainInDnsUnknownException() {
-        //when
+    public void testRegisterDomainInDnsUnknownException() throws Exception {
+        //given
         String message = "something unexpected";
-        Exception ex = new Exception(message);
-        mockSml.setThrowException(ex);
-        expectedException.expectMessage(message);
-        expectedException.expect(SMPRuntimeException.class);
+        Mockito.doThrow(new InternalErrorFault(message)).when(iManageServiceMetadataWS).create(any(ServiceMetadataPublisherServiceType.class));
 
-        testInstance.registerDomain(DEFAULT_DOMAIN);
+        //when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.registerDomain(DEFAULT_DOMAIN));
+
+        //then
+        Assert.assertEquals("SML integration error! Error: InternalErrorFault: " + message, smpRuntimeException.getMessage().trim());
+        verify(iManageServiceMetadataWS, times(1)).create(any(ServiceMetadataPublisherServiceType.class));
     }
 
     @Test
-    public void testRegisterDomainInDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testRegisterDomainInDnsNewClientIsAlwaysCreated() throws Exception {
         //when
         testInstance.registerDomain(DEFAULT_DOMAIN);
         testInstance.registerDomain(DEFAULT_DOMAIN);
 
         //then
-        assertEquals(2, mockSml.getSmpManagerClientMocks().size());
-        verify(mockSml.getSmpManagerClientMocks().get(0)).create(any());
-        verify(mockSml.getSmpManagerClientMocks().get(1)).create(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getSmpManagerClientMocks().toArray());
+        verify(iManageServiceMetadataWS, times(2)).create(any(ServiceMetadataPublisherServiceType.class));
     }
 
     @Test
-    public void testDomainUnregisterFromDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testDomainUnregisterFromDns() throws Exception {
         //when
         testInstance.unregisterDomain(DEFAULT_DOMAIN);
 
         //then
-        assertEquals(1, mockSml.getSmpManagerClientMocks().size());
-        verify(mockSml.getSmpManagerClientMocks().get(0)).delete(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getSmpManagerClientMocks().toArray());
+        verify(iManageServiceMetadataWS, times(1)).delete(anyString());
     }
 
     @Test
-    public void testUnregisterDomainFromDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testUnregisterDomainFromDnsNewClientIsAlwaysCreated() throws Exception {
         //when
         testInstance.unregisterDomain(DEFAULT_DOMAIN);
         testInstance.unregisterDomain(DEFAULT_DOMAIN);
 
         //then
-        assertEquals(2, mockSml.getSmpManagerClientMocks().size());
-        verify(mockSml.getSmpManagerClientMocks().get(0)).delete(any());
-        verify(mockSml.getSmpManagerClientMocks().get(1)).delete(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getSmpManagerClientMocks().toArray());
+        verify(iManageServiceMetadataWS, times(2)).delete(anyString());
     }
 
     @Test
-    public void testUnregisterDomainFromDnsThrowUnknownBadRequestFault() {
-        //when
-        BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
-        mockSml.setThrowException(ex);
-        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedException.expect(SMPRuntimeException.class);
+    public void testUnregisterDomainFromDnsThrowUnknownBadRequestFault() throws Exception {
+        // given
+        Mockito.doThrow(new BadRequestFault(ERROR_UNEXPECTED_MESSAGE)).when(iManageServiceMetadataWS).delete(anyString());
 
-        testInstance.unregisterDomain(DEFAULT_DOMAIN);
+        //when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.unregisterDomain(DEFAULT_DOMAIN));
+
+        //then
+        Assert.assertEquals("SML integration error! Error: BadRequestFault: " + ERROR_UNEXPECTED_MESSAGE, smpRuntimeException.getMessage().trim());
+        verify(iManageServiceMetadataWS, times(1)).delete(anyString());
+
     }
 
     @Test
-    public void testUnregisterDomainFromDnsThrowUnknownException() {
-        //when
-        String message = "something unexpected";
-        Exception ex = new Exception(message);
-        mockSml.setThrowException(ex);
-        expectedException.expectMessage(message);
-        expectedException.expect(SMPRuntimeException.class);
+    public void testUnregisterDomainFromDnsThrowUnknownException() throws Exception {
+        //given
+        Mockito.doThrow(new InternalErrorFault("something unexpected")).when(iManageServiceMetadataWS).delete(anyString());
 
-        testInstance.unregisterDomain(DEFAULT_DOMAIN);
+        //when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.unregisterDomain(DEFAULT_DOMAIN));
+
+        //then
+        Assert.assertEquals("SML integration error! Error: InternalErrorFault: something unexpected", smpRuntimeException.getMessage().trim());
+        verify(iManageServiceMetadataWS, times(1)).delete(anyString());
     }
 
     @Test
-    public void testUnregisterDomainFromDnsNotExists() {
-        //when
-        BadRequestFault ex = new BadRequestFault(ERROR_SMP_NOT_EXISTS);
-        mockSml.setThrowException(ex);
+    public void testUnregisterDomainFromDnsNotExists() throws Exception {
+        //given
+        Mockito.doThrow(new BadRequestFault(ERROR_SMP_NOT_EXISTS)).when(iManageServiceMetadataWS).delete(anyString());
 
+        //when
         Assertions.assertDoesNotThrow(() -> testInstance.unregisterDomain(DEFAULT_DOMAIN));
     }
 
     @Test
     public void testIsOkMessageForDomainNull() {
+        //when
         boolean suc = testInstance.isOkMessage(DEFAULT_DOMAIN, null);
 
+        //then
         assertFalse(suc);
     }
 
     @Test
     public void testIsOkMessageForDomainFalse() {
-
+        //when
         boolean suc = testInstance.isOkMessage(DEFAULT_DOMAIN, ERROR_UNEXPECTED_MESSAGE);
 
+        //then
         assertFalse(suc);
     }
 
     @Test
     public void testGetSmlClientKeyAliasForDomain() {
-
+        //given
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(UUID.randomUUID().toString());
         domain.setSmlClientCertAuth(false);
 
+        //when
         String alias = testInstance.getSmlClientKeyAliasForDomain(domain);
 
+        //then
         assertEquals(domain.getSmlClientKeyAlias(), alias);
     }
 
     @Test
     @Ignore("Randomly fails on bamboo ")
     public void testGetSmlClientKeyAliasForDomainNulForSingleKey() {
-
+        //given
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
         domain.setSmlClientCertAuth(false);
 
+        //when
         String alias = testInstance.getSmlClientKeyAliasForDomain(domain);
 
+        //then
         assertEquals("single_domain_key", alias);
+    }
+
+    @Test
+    public void isDomainValid() throws Exception {
+        //given
+        ServiceMetadataPublisherServiceType existingDomain = new ServiceMetadataPublisherServiceType();
+        Mockito.when(iManageServiceMetadataWS.read(any(ServiceMetadataPublisherServiceType.class))).thenReturn(existingDomain);
+
+        //when
+        boolean result = testInstance.isDomainValid(domain);
+
+        //then
+        Assert.assertTrue("Should have returned true when the participant exists", result);
+    }
+
+    @Test
+    public void isDomainValid_wrapsBadRequestFaultIntoSmpRuntimeException() throws Exception {
+        //given
+        String errorMessage = UUID.randomUUID().toString();
+        Mockito.when(iManageServiceMetadataWS.read(any(ServiceMetadataPublisherServiceType.class))).thenThrow(new BadRequestFault(errorMessage));
+
+        //when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.isDomainValid(domain));
+
+        //then
+        Assert.assertEquals("Should have returned an SMPRuntimeException wrapping the original BadRequestFault when thrown while reading a domain",
+                "SML integration error! Error: BadRequestFault: " + errorMessage,
+                smpRuntimeException.getMessage().trim());
+    }
+
+    @Test
+    public void isDomainValid_wrapsNotFoundFaultIntoSmpRuntimeException() throws Exception {
+        //given
+        String errorMessage = UUID.randomUUID().toString();
+        Mockito.when(iManageServiceMetadataWS.read(any(ServiceMetadataPublisherServiceType.class))).thenThrow(new NotFoundFault(errorMessage));
+
+        //when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.isDomainValid(domain));
+
+        //then
+        Assert.assertEquals("Should have returned an SMPRuntimeException wrapping the original NotFoundFault when thrown while reading a domain",
+                "SML integration error! Error: NotFoundFault: " + errorMessage,
+                smpRuntimeException.getMessage().trim());
+    }
+
+    @Test
+    public void isDomainValid_wrapsCheckedExceptionsIntoSmpRuntimeException() throws Exception {
+        //given
+        String errorMessage = UUID.randomUUID().toString();
+        // We need to match one of the checked exceptions present in the method signature, so we throw InternalErrorFault which will be handled aside
+        Mockito.when(iManageServiceMetadataWS.read(any(ServiceMetadataPublisherServiceType.class))).thenThrow(new InternalErrorFault(errorMessage));
+
+        //when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.isDomainValid(domain));
+
+        //then
+        Assert.assertEquals("Should have returned an SMPRuntimeException wrapping the original Exception when thrown while reading a domain",
+                "SML integration error! Error: InternalErrorFault: " + errorMessage,
+                smpRuntimeException.getMessage().trim());
+    }
+
+    @Test
+    public void isDomainValid_smlIntegrationDisabled() {
+        //given
+        Mockito.doReturn(false).when(configurationService).isSMLIntegrationEnabled();
+
+        //when
+        boolean result = testInstance.isDomainValid(domain);
+
+        //then
+        Assert.assertFalse("Should have returned the domain as not valid when the SML integration is not enabled", result);
+        Mockito.verifyNoMoreInteractions(iManageServiceMetadataWS);
     }
 }

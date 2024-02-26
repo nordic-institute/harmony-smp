@@ -104,7 +104,7 @@ public class SmlConnector implements ApplicationContextAware {
         }
         String normalizedParticipantString = identifierService.formatParticipant(normalizedParticipantId);
         if (!domain.isSmlRegistered()) {
-            LOG.warn("Participant {} is not registered to SML because domain {} is not registered!",
+            LOG.info("Participant {} is not registered to SML because domain {} is not registered!",
                     normalizedParticipantString, domain.getDomainCode());
             return false;
         }
@@ -144,7 +144,7 @@ public class SmlConnector implements ApplicationContextAware {
 
         String normalizedParticipantString = identifierService.formatParticipant(normalizedParticipantId);
         if (!domain.isSmlRegistered()) {
-            LOG.warn("Cannot check if Participant {} exists when domain {} is not registered!",
+            LOG.info("Cannot check if Participant {} exists when domain {} is not registered!",
                     normalizedParticipantString, domain.getDomainCode());
             return false;
         }
@@ -154,9 +154,7 @@ public class SmlConnector implements ApplicationContextAware {
             ParticipantsType smlRequest = toParticipantsType(normalizedParticipantId, domain.getSmlSmpId());
             ExistsParticipantResponseType existsParticipantResponseType = getBDMSLWSClient(domain).existsParticipantIdentifier(smlRequest);
             return existsParticipantResponseType.isExist();
-        } catch (BadRequestFault e) {
-            return processSMLErrorMessage(e, normalizedParticipantId);
-        } catch (NotFoundFault e) {
+        } catch (BadRequestFault | NotFoundFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
@@ -176,16 +174,7 @@ public class SmlConnector implements ApplicationContextAware {
         getBDMSLWSClient(domain).createParticipantIdentifier(smlRequest);
     }
 
-    protected boolean processSMLErrorMessage(BadRequestFault e, Identifier participantIdentifierType) {
-        if (!isOkMessage(participantIdentifierType, e.getMessage())) {
-            LOG.error(e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
-        }
-        LOG.warn(e.getMessage(), e);
-        return true;
-    }
-
-    protected boolean processSMLErrorMessage(NotFoundFault e, Identifier participantIdentifierType) {
+    protected boolean processSMLErrorMessage(Exception e, Identifier participantIdentifierType) {
         if (!isOkMessage(participantIdentifierType, e.getMessage())) {
             LOG.error(e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
@@ -249,9 +238,7 @@ public class SmlConnector implements ApplicationContextAware {
         try {
             ServiceMetadataPublisherServiceType smlSmpRequest = getServiceMetadataPublisherServiceType(smlSmpId);
             getSMPManagerWSClient(domain).read(smlSmpRequest);
-        } catch (BadRequestFault e) {
-            processSMLErrorMessage(e, domain);
-        } catch (NotFoundFault e) {
+        } catch (BadRequestFault | NotFoundFault e) {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
@@ -274,15 +261,7 @@ public class SmlConnector implements ApplicationContextAware {
         return smlSmpRequest;
     }
 
-    private void processSMLErrorMessage(BadRequestFault e, DBDomain domain) {
-        if (!isOkMessage(domain, e.getMessage())) {
-            LOG.error(e.getMessage(), e);
-            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
-        }
-        LOG.warn(e.getMessage(), e);
-    }
-
-    private void processSMLErrorMessage(NotFoundFault e, DBDomain domain) {
+    private void processSMLErrorMessage(Exception e, DBDomain domain) {
         if (!isOkMessage(domain, e.getMessage())) {
             LOG.error(e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));

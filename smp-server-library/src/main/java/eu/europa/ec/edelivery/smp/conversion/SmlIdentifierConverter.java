@@ -23,6 +23,7 @@ import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
 import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
+import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -34,11 +35,10 @@ public class SmlIdentifierConverter {
     public static ServiceMetadataPublisherServiceForParticipantType toBusdoxParticipantId(Identifier participantId, String smpId) {
         validate(participantId, smpId);
 
+        ParticipantIdentifierType parId = toParticipantIdentifierType(participantId);
+
         ServiceMetadataPublisherServiceForParticipantType busdoxIdentifier = new ServiceMetadataPublisherServiceForParticipantType();
         busdoxIdentifier.setServiceMetadataPublisherID(smpId);
-        org.busdox.transport.identifiers._1.ParticipantIdentifierType parId = new org.busdox.transport.identifiers._1.ParticipantIdentifierType();
-        parId.setScheme(participantId.getScheme());
-        parId.setValue(participantId.getValue());
         busdoxIdentifier.setParticipantIdentifier(parId);
         return busdoxIdentifier;
     }
@@ -46,10 +46,9 @@ public class SmlIdentifierConverter {
     public static ParticipantsType toParticipantsType(Identifier participantId, String smpId) {
         validate(participantId, smpId);
 
+        ParticipantIdentifierType parId = toParticipantIdentifierType(participantId);
+
         ParticipantsType participantsType = new ParticipantsType();
-        org.busdox.transport.identifiers._1.ParticipantIdentifierType parId = new org.busdox.transport.identifiers._1.ParticipantIdentifierType();
-        parId.setScheme(participantId.getScheme());
-        parId.setValue(participantId.getValue());
         participantsType.setParticipantIdentifier(parId);
         participantsType.setServiceMetadataPublisherID(smpId);
         return participantsType;
@@ -59,20 +58,28 @@ public class SmlIdentifierConverter {
     public static SMPAdvancedServiceForParticipantType toBDMSLAdvancedParticipantId(Identifier participantId, String smpId, String serviceMetadata) {
         validate(participantId, smpId);
 
+        ServiceMetadataPublisherServiceForParticipantType busdoxIdentifier = toBusdoxParticipantId(participantId, smpId);
+
         SMPAdvancedServiceForParticipantType bdmslRequest = new SMPAdvancedServiceForParticipantType();
         bdmslRequest.setServiceName(serviceMetadata);
-        ServiceMetadataPublisherServiceForParticipantType bdxlRequest = toBusdoxParticipantId(participantId, smpId);
-        bdmslRequest.setCreateParticipantIdentifier(bdxlRequest);
+        bdmslRequest.setCreateParticipantIdentifier(busdoxIdentifier);
 
         return bdmslRequest;
     }
 
-    private static void validate(Identifier participantId, String smpId) {
+    protected static void validate(Identifier participantId, String smpId) {
         if (isBlank(smpId)) {
             throw new IllegalStateException("SMP ID is null or empty");
         }
         if (participantId == null || isBlank(participantId.getValue())) {
             throw new IllegalStateException("Participant Scheme or Id is null or empty");
         }
+    }
+
+    private static ParticipantIdentifierType toParticipantIdentifierType(Identifier participantId) {
+        ParticipantIdentifierType parId = new ParticipantIdentifierType();
+        parId.setScheme(participantId.getScheme());
+        parId.setValue(participantId.getValue());
+        return parId;
     }
 }

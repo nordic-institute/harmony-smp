@@ -19,6 +19,8 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
+import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.junit.Test;
@@ -31,12 +33,13 @@ import static org.junit.Assert.assertNull;
  */
 public class SmlIdentifierConverterTest {
 
-    public static final String SMP_ID = "SMP-ID";
-    public static final String ID_VALUE = "sample:value";
-    public static final String ID_SCHEME = "sample:scheme";
+    private static final String SMP_ID = "SMP-ID";
+    private static final String ID_VALUE = "sample:value";
+    private static final String ID_SCHEME = "sample:scheme";
+    private static final String SERVICE_NAME = "naptrService";
 
     @Test
-    public void positiveCase() {
+    public void toBusdoxParticipantId() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
@@ -49,17 +52,8 @@ public class SmlIdentifierConverterTest {
         assertEquals(ID_VALUE, result.getParticipantIdentifier().getValue());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void negativeCaseMissingSmpId() {
-        //given
-        Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
-
-        //when
-        SmlIdentifierConverter.toBusdoxParticipantId(participantId, null);
-    }
-
     @Test
-    public void positiveCaseWithNullScheme() {
+    public void toBusdoxParticipantId_NullScheme() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, null);
 
@@ -71,12 +65,75 @@ public class SmlIdentifierConverterTest {
         assertEquals(ID_VALUE, result.getParticipantIdentifier().getValue());
     }
 
+    @Test
+    public void toBDMSLAdvancedParticipantId() {
+        //given
+        Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
+
+        //when
+        SMPAdvancedServiceForParticipantType result = SmlIdentifierConverter.toBDMSLAdvancedParticipantId(participantId, SMP_ID, SERVICE_NAME);
+
+        //then
+        assertEquals(SERVICE_NAME, result.getServiceName());
+        assertEquals(ID_SCHEME, result.getCreateParticipantIdentifier().getParticipantIdentifier().getScheme());
+        assertEquals(ID_VALUE, result.getCreateParticipantIdentifier().getParticipantIdentifier().getValue());
+    }
+
+    @Test
+    public void toBDMSLAdvancedParticipantId_NullScheme() {
+        //given
+        Identifier participantId = new Identifier(ID_VALUE, null);
+
+        //when
+        SMPAdvancedServiceForParticipantType result = SmlIdentifierConverter.toBDMSLAdvancedParticipantId(participantId, SMP_ID, SERVICE_NAME);
+        //then
+        assertEquals(SERVICE_NAME, result.getServiceName());
+        assertNull(result.getCreateParticipantIdentifier().getParticipantIdentifier().getScheme());
+        assertEquals(ID_VALUE, result.getCreateParticipantIdentifier().getParticipantIdentifier().getValue());
+    }
+
+    @Test
+    public void toParticipantsType() {
+        //given
+        Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
+
+        //when
+        ParticipantsType result = SmlIdentifierConverter.toParticipantsType(participantId, SMP_ID);
+
+        //then
+        assertEquals(SMP_ID, result.getServiceMetadataPublisherID());
+        assertEquals(ID_SCHEME, result.getParticipantIdentifier().getScheme());
+        assertEquals(ID_VALUE, result.getParticipantIdentifier().getValue());
+    }
+
+    @Test
+    public void toParticipantsType_NullScheme() {
+        //given
+        Identifier participantId = new Identifier(ID_VALUE, null);
+
+        //when
+        ParticipantsType result = SmlIdentifierConverter.toParticipantsType(participantId, SMP_ID);
+        //then
+        assertEquals(SMP_ID, result.getServiceMetadataPublisherID());
+        assertNull(result.getParticipantIdentifier().getScheme());
+        assertEquals(ID_VALUE, result.getParticipantIdentifier().getValue());
+    }
+
     @Test(expected = IllegalStateException.class)
-    public void negativeCaseMissingValue() {
+    public void validate_negativeCaseMissingSmpId() {
+        //given
+        Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
+
+        //when
+        SmlIdentifierConverter.validate(participantId, null);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void validate_negativeCaseMissingValue() {
         //given
         Identifier participantId = new Identifier(null, ID_SCHEME);
 
         //when
-        SmlIdentifierConverter.toBusdoxParticipantId(participantId, SMP_ID);
+        SmlIdentifierConverter.validate(participantId, SMP_ID);
     }
 }

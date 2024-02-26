@@ -19,7 +19,8 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
+import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
+import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
@@ -39,6 +40,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
@@ -59,21 +61,19 @@ import static org.mockito.ArgumentMatchers.any;
 public class DomainServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired
-    IdentifierService identifierService;
+    private IdentifierService identifierService;
     @Autowired
-    SmlIntegrationConfiguration integrationMock;
-    @Autowired
-    SmlConnector smlConnector;
+    private SmlConnector smlConnector;
     @Autowired
     private SMLIntegrationService smlIntegrationService;
-
-
     @Autowired
-    protected DomainDao domainDao;
-
+    private DomainDao domainDao;
     @Autowired
-    protected DomainService testInstance;
-
+    private DomainService testInstance;
+    @MockBean
+    private IManageParticipantIdentifierWS iManageParticipantIdentifierWS;
+    @MockBean
+    private IManageServiceMetadataWS iManageServiceMetadataWS;
 
     @BeforeEach
     public void prepareDatabase() throws IOException {
@@ -91,17 +91,12 @@ public class DomainServiceTest extends AbstractJunit5BaseDao {
         setDatabaseProperty(SMPPropertyEnum.SML_LOGICAL_ADDRESS, "http://localhost/smp");
         setDatabaseProperty(SMPPropertyEnum.SML_URL, "http://localhost/edelivery-sml");
         setDatabaseProperty(SMPPropertyEnum.SML_ENABLED, "true");
-
-        integrationMock.reset();
-
-
     }
 
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"", " "})
     public void getDomainForBlankCodeForSingleDomain(String searchCode) {
-
         // given
         DBDomain testDomain01 = testUtilsDao.createDomain(TEST_DOMAIN_CODE_1);
         assertEquals(1, domainDao.getAllDomains().size());
