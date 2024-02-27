@@ -50,7 +50,7 @@ class UIDomainPublicServiceTest   extends AbstractJunit5BaseDao {
     @Test
     public void testGetTableList() {
         ServiceResult<DomainPublicRO>  result = testInstance.getTableList(-1, -1, null, null, null);
-        assertEquals(2, result.getCount().intValue());
+        assertEquals(3, result.getCount().intValue());
     }
 
     @Test

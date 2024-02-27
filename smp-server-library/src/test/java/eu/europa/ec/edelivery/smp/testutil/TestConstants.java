@@ -36,6 +36,7 @@ public class TestConstants {
 
     public static final String TEST_DOMAIN_CODE_1 = "utestPeppol01";
     public static final String TEST_DOMAIN_CODE_2 = "utestEHhealth02";
+    public static final String TEST_DOMAIN_CODE_3 = "utestRegistered03";
 
     public static final String TEST_SML_SUBDOMAIN_CODE_1 = ""; // peppol subdomain is empty string
     public static final String TEST_SML_SUBDOMAIN_CODE_2 = "ehealth";

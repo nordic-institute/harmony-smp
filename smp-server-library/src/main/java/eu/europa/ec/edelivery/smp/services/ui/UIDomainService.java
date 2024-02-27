@@ -35,6 +35,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     private final ConversionService conversionService;
     private final GroupDao groupDao;
     private final GroupMemberDao groupMemberDao;
-
+    private final SMLIntegrationService smlIntegrationService;
 
     public UIDomainService(ConversionService conversionService,
                            DomainDao domainDao,
@@ -73,7 +74,8 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
                            ResourceDefDao resourceDefDao,
                            DomainResourceDefDao domainResourceDefDao,
                            GroupDao groupDao,
-                           GroupMemberDao groupMemberDao) {
+                           GroupMemberDao groupMemberDao,
+                           SMLIntegrationService smlIntegrationService) {
         this.conversionService = conversionService;
         this.domainDao = domainDao;
         this.resourceDao = resourceDao;
@@ -82,6 +84,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         this.domainMemberDao = domainMemberDao;
         this.groupDao = groupDao;
         this.groupMemberDao = groupMemberDao;
+        this.smlIntegrationService = smlIntegrationService;
     }
 
     @Override
@@ -175,6 +178,12 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         domain.setSmlSmpId(StringUtils.trim(data.getSmlSmpId()));
         domain.setSmlClientKeyAlias(data.getSmlClientKeyAlias());
         domain.setSmlClientCertAuth(data.isSmlClientCertAuth());
+
+        // if registered, validate the updated domain to ensure its SML integration certificate is valid
+        if(domain.isSmlRegistered() && !smlIntegrationService.isDomainValid(domain)) {
+            String msg = "The SML-SMP certificate for domain [" + domain.getDomainCode() + "] is not valid!";
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
+        }
     }
 
     @Transactional

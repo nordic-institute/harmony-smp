@@ -68,6 +68,7 @@ public class TestUtilsDao {
 
     DBDomain d1;
     DBDomain d2;
+    DBDomain d3;
     DBResourceDef resourceDefSmp;
     DBSubresourceDef subresourceDefSmp;
     DBResourceDef resourceDefCpp;
@@ -115,9 +116,10 @@ public class TestUtilsDao {
     /**
      * Database can be cleaned by script before the next test; clean also the objects
      */
-    public void clearData(){
+    public void clearData() {
         d1 = null;
         d2 = null;
+        d3 = null;
         resourceDefSmp = null;
         subresourceDefSmp = null;
         resourceDefCpp = null;
@@ -223,9 +225,11 @@ public class TestUtilsDao {
         }
         d1 = createDomain(TEST_DOMAIN_CODE_1);
         d2 = createDomain(TEST_DOMAIN_CODE_2);
+        d3 = createRegisteredDomain(TEST_DOMAIN_CODE_3);
 
         assertNotNull(d1.getId());
-        assertNotNull(d1.getId());
+        assertNotNull(d2.getId());
+        assertNotNull(d3.getId());
     }
 
     @Transactional
@@ -588,6 +592,14 @@ public class TestUtilsDao {
     }
 
     @Transactional
+    public DBDomain createRegisteredDomain(String domainCode) {
+        DBDomain d = TestDBUtils.createDBDomain(domainCode);
+        d.setSmlRegistered(true);
+        persistFlushDetach(d);
+        return d;
+    }
+
+    @Transactional
     public DBDomain createDomain(String domainCode, VisibilityType visibility) {
         DBDomain d = TestDBUtils.createDBDomain(domainCode);
         d.setVisibility(visibility);
@@ -652,6 +664,10 @@ public class TestUtilsDao {
 
     public DBDomain getD2() {
         return d2;
+    }
+
+    public DBDomain getD3() {
+        return d3;
     }
 
     public DBResourceDef getResourceDefSmp() {

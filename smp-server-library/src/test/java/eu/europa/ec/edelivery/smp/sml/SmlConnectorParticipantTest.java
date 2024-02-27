@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,230 +19,348 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
-import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
-import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
-import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
+import ec.services.wsdl.bdmsl.data._1.ExistsParticipantResponseType;
+import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
+import eu.europa.ec.bdmsl.ws.soap.*;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by JRC
  * since 4.1.
  */
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class})
 public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
 
+    // Beans
+    @SpyBean
+    private ConfigurationService configurationService;
+    @MockBean
+    private IBDMSLServiceWS ibdmslServiceWS;
+    @MockBean
+    private IManageParticipantIdentifierWS iManageParticipantIdentifierWS;
+    @SpyBean
+    private SmlConnector testInstance;
 
-    @Autowired
-    protected ConfigurationService configurationService;
-
-    @Autowired
-    protected SmlConnector testInstance;
-
-    @Autowired
-    SmlIntegrationConfiguration mockSml;
+    // Mocks
+    @Mock
+    private DBDomain domain;
+    @Mock
+    private Identifier identifier;
 
     @Before
     public void setup() {
-        testInstance = Mockito.spy(testInstance);
         // default behaviour
         Mockito.doNothing().when(testInstance).configureClient(any(), any(), any());
-
-
-        configurationService = Mockito.spy(configurationService);
-        ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
+
+        ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         DEFAULT_DOMAIN.setSmlRegistered(true);
-        mockSml.reset();
     }
 
     @Test
-    public void testRegisterInDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testRegisterInDns() throws Exception {
         //when
         boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
         //then
         assertTrue(result);
-        assertEquals(1, mockSml.getParticipantManagmentClientMocks().size());
-        verify(mockSml.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
+        verify(iManageParticipantIdentifierWS, times(1)).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
+        Mockito.verifyNoMoreInteractions(iManageParticipantIdentifierWS);
     }
 
     @Test
-    public void testRegisterInDnsAlreadyExists() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testRegisterInDnsAlreadyExists() throws Exception {
+        //given
+        Mockito.doThrow(new BadRequestFault(ERROR_PI_ALREADY_EXISTS)).when(iManageParticipantIdentifierWS).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
+
         //when
-        BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
-        mockSml.setThrowException(ex);
         boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
         //then
         assertTrue(result);
-        assertEquals(1, mockSml.getParticipantManagmentClientMocks().size());
-        verify(mockSml.getParticipantManagmentClientMocks().get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
+        verify(iManageParticipantIdentifierWS, times(1)).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
+        Mockito.verifyNoMoreInteractions(iManageParticipantIdentifierWS);
     }
 
     @Test
-    public void testRegisterInDnsUnknownException() {
-        //when
+    public void testRegisterInDnsUnknownException() throws Exception {
+        //given
         String message = "something unexpected";
-        Exception ex = new Exception(message);
-        mockSml.setThrowException(ex);
+        Mockito.doThrow(new InternalErrorFault(message)).when(iManageParticipantIdentifierWS).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
 
+        //when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(message));
+
+        //then
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsStringIgnoringCase(message));
     }
 
     @Test
-    public void testRegisterInDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testRegisterInDnsNewClientIsAlwaysCreated() throws Exception {
         //when
         testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
         testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
         //then
-        assertEquals(2, mockSml.getParticipantManagmentClientMocks().size());
-        verify(mockSml.getParticipantManagmentClientMocks().get(0)).create(any());
-        verify(mockSml.getParticipantManagmentClientMocks().get(1)).create(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
+        verify(iManageParticipantIdentifierWS, times(2)).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
+        Mockito.verifyNoMoreInteractions(iManageParticipantIdentifierWS);
     }
 
     @Test
-    public void testUnregisterFromDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testUnregisterFromDns() throws Exception {
         //when
         boolean result = testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertTrue(result);
-        assertEquals(1, mockSml.getParticipantManagmentClientMocks().size());
-        verify(mockSml.getParticipantManagmentClientMocks().get(0)).delete(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
+        verify(iManageParticipantIdentifierWS, times(1)).delete(any(ServiceMetadataPublisherServiceForParticipantType.class));
+        Mockito.verifyNoMoreInteractions(iManageParticipantIdentifierWS);
     }
 
     @Test
-    public void testUnregisterFromDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+    public void testUnregisterFromDnsNewClientIsAlwaysCreated() throws Exception {
         //when
         testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
         testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
-        assertEquals(2, mockSml.getParticipantManagmentClientMocks().size());
-        verify(mockSml.getParticipantManagmentClientMocks().get(0)).delete(any());
-        verify(mockSml.getParticipantManagmentClientMocks().get(1)).delete(any());
-        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
+        verify(iManageParticipantIdentifierWS, times(2)).delete(any(ServiceMetadataPublisherServiceForParticipantType.class));
+        Mockito.verifyNoMoreInteractions(iManageParticipantIdentifierWS);
     }
 
     @Test
-    public void testUnregisterFromDnsThrowUnknownBadRequestFault() {
-        //when
-        BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
-        mockSml.setThrowException(ex);
+    public void testUnregisterFromDnsThrowUnknownBadRequestFault() throws Exception {
+        doThrow(new BadRequestFault(ERROR_UNEXPECTED_MESSAGE)).when(iManageParticipantIdentifierWS).delete(any(ServiceMetadataPublisherServiceForParticipantType.class));
 
+        //when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(ERROR_UNEXPECTED_MESSAGE));
-
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsStringIgnoringCase(ERROR_UNEXPECTED_MESSAGE));
     }
 
     @Test
-    public void testUnregisterFromDnsThrowUnknownException() {
-        //when
+    public void testUnregisterFromDnsThrowUnknownException() throws Exception {
         String message = "something unexpected";
-        Exception ex = new Exception(message);
-        mockSml.setThrowException(ex);
+        doThrow(new InternalErrorFault(ERROR_UNEXPECTED_MESSAGE)).when(iManageParticipantIdentifierWS).delete(any(ServiceMetadataPublisherServiceForParticipantType.class));
 
+        //when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(message));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsStringIgnoringCase(message));
     }
 
     @Test
-    public void testUnregisterFromDnsNotExists() {
+    public void testUnregisterFromDnsNotExists() throws Exception {
+        //given
+        Mockito.doThrow(new BadRequestFault(ERROR_PI_NO_EXISTS)).when(iManageParticipantIdentifierWS).delete(any(ServiceMetadataPublisherServiceForParticipantType.class));
+
         //when
-        BadRequestFault ex = new BadRequestFault(ERROR_PI_NO_EXISTS);
-        mockSml.setThrowException(ex);
         boolean suc = testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
+        //then
         assertTrue(suc);
     }
 
-
     @Test
     public void testIsOkMessageForParticipantNull() {
-
+        //when
         boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, null);
 
+        //then
         assertFalse(suc);
     }
 
     @Test
     public void testIsOkMessageForParticipantOk() {
+        //when
         boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, ERROR_PI_ALREADY_EXISTS);
 
+        //then
         assertTrue(suc);
     }
 
     @Test
     public void testIsOkMessageForParticipantFalse() {
+        //when
         boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, ERROR_UNEXPECTED_MESSAGE);
 
+        //then
         assertFalse(suc);
     }
 
-
     @Test
     public void testProcessSMLErrorMessageBadRequestFaultIgnore() {
-
+        //given
         BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
+
+        //when
         boolean suc = testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
 
+        //then
         assertTrue(suc);
     }
 
     @Test
     public void testProcessSMLErrorMessageBadRequestFaultFailed() {
-
+        //given
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
 
+        //when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(ERROR_UNEXPECTED_MESSAGE));
-    }
 
+        //then
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsStringIgnoringCase(ERROR_UNEXPECTED_MESSAGE));
+    }
 
     @Test
     public void testProcessSMLErrorMessageNoFoundFaultFailed() {
-
+        //given
         NotFoundFault ex = new NotFoundFault(ERROR_UNEXPECTED_MESSAGE);
 
+        //when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString(ERROR_UNEXPECTED_MESSAGE));
 
-
+        //then
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsStringIgnoringCase(ERROR_UNEXPECTED_MESSAGE));
     }
 
     @Test
     public void testProcessSMLErrorMessageNoFoundFaultOk() {
-
+        //given
         NotFoundFault ex = new NotFoundFault(ERROR_PI_NO_EXISTS);
 
+        //when
         testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
     }
 
+    @Test
+    public void participantExists() throws Exception {
+        // given
+        ExistsParticipantResponseType existingParticipant = new ExistsParticipantResponseType();
+        existingParticipant.setExist(true);
+        Mockito.when(domain.isSmlRegistered()).thenReturn(true);
+        Mockito.when(domain.getSmlSmpId()).thenReturn("smlSmpId");
+        Mockito.when(identifier.getValue()).thenReturn("identifierValue");
+        Mockito.when(identifier.getScheme()).thenReturn("identifierScheme");
+        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ParticipantsType.class))).thenReturn(existingParticipant);
 
+        Mockito.doNothing().when(testInstance).configureClient(anyString(), any(), any(DBDomain.class));
+
+        // when
+        boolean result = testInstance.participantExists(identifier, domain);
+
+        // then
+        Assert.assertTrue("Should have returned true when the participant exists", result);
+    }
+
+    @Test
+    public void participantExists_wrapsBadRequestFaultIntoSmpRuntimeException() throws Exception {
+        // given
+        String errorMessage = UUID.randomUUID().toString();
+        Mockito.when(domain.isSmlRegistered()).thenReturn(true);
+        Mockito.when(domain.getSmlSmpId()).thenReturn("smlSmpId");
+        Mockito.when(identifier.getValue()).thenReturn("identifierValue");
+        Mockito.when(identifier.getScheme()).thenReturn("identifierScheme");
+        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ParticipantsType.class))).thenThrow(new BadRequestFault(errorMessage));
+
+        Mockito.doNothing().when(testInstance).configureClient(anyString(), any(), any(DBDomain.class));
+
+        // when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.participantExists(identifier, domain));
+
+        // then
+        Assert.assertEquals("Should have returned an SMPRuntimeException wrapping the original BadRequestFault when thrown while looking up whether a participant exists or not",
+                "SML integration error! Error: BadRequestFault: " + errorMessage,
+                smpRuntimeException.getMessage().trim());
+    }
+
+    @Test
+    public void participantExists_wrapsNotFoundFaultIntoSmpRuntimeException() throws Exception {
+        // given
+        String errorMessage = UUID.randomUUID().toString();
+        Mockito.when(domain.isSmlRegistered()).thenReturn(true);
+        Mockito.when(domain.getSmlSmpId()).thenReturn("smlSmpId");
+        Mockito.when(identifier.getValue()).thenReturn("identifierValue");
+        Mockito.when(identifier.getScheme()).thenReturn("identifierScheme");
+        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ParticipantsType.class))).thenThrow(new NotFoundFault(errorMessage));
+
+        Mockito.doNothing().when(testInstance).configureClient(anyString(), any(), any(DBDomain.class));
+
+        // when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.participantExists(identifier, domain));
+
+        // then
+        Assert.assertEquals("Should have returned an SMPRuntimeException wrapping the original NotFoundFault when thrown while looking up whether a participant exists or not",
+                "SML integration error! Error: NotFoundFault: " + errorMessage,
+                smpRuntimeException.getMessage().trim());
+    }
+
+    @Test
+    public void participantExists_wrapsCheckedExceptionsIntoSmpRuntimeException() throws Exception {
+        // given
+        String errorMessage = UUID.randomUUID().toString();
+        Mockito.when(domain.isSmlRegistered()).thenReturn(true);
+        Mockito.when(domain.getSmlSmpId()).thenReturn("smlSmpId");
+        Mockito.when(identifier.getValue()).thenReturn("identifierValue");
+        Mockito.when(identifier.getScheme()).thenReturn("identifierScheme");
+        // We need to match one of the checked exceptions present in the method signature, so we throw InternalErrorFault which will be handled aside
+        Mockito.when(ibdmslServiceWS.existsParticipantIdentifier(any(ParticipantsType.class))).thenThrow(new InternalErrorFault(errorMessage));
+
+        Mockito.doNothing().when(testInstance).configureClient(anyString(), any(), any(DBDomain.class));
+
+        // when
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
+                testInstance.participantExists(identifier, domain));
+
+        // then
+        Assert.assertEquals("Should have returned an SMPRuntimeException wrapping the original Exception when thrown while looking up whether a participant exists or not",
+                "SML integration error! Error: InternalErrorFault: " + errorMessage,
+                smpRuntimeException.getMessage().trim());
+    }
+
+    @Test
+    public void participantExists_smlIntegrationDisabled() {
+        // given
+        Mockito.doReturn(false).when(configurationService).isSMLIntegrationEnabled();
+
+        // when
+        boolean result = testInstance.participantExists(identifier, domain);
+
+        // then
+        Assert.assertFalse("The participant should have been returned as non-existing when the SML integration is not enabled", result);
+    }
+
+    @Test
+    public void participantExists_unregisteredDomain() {
+        // given
+        Mockito.when(domain.isSmlRegistered()).thenReturn(false);
+
+        // when
+        boolean result = testInstance.participantExists(identifier, domain);
+
+        // then
+        Assert.assertFalse("The participant should have been returned as non-existing when the domain is not registered in SML", result);
+    }
 }

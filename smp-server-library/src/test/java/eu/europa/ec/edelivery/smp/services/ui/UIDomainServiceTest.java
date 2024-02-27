@@ -22,10 +22,17 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
+import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,25 +42,30 @@ import static org.junit.Assert.*;
 public class UIDomainServiceTest extends AbstractServiceTest {
 
     @Autowired
-    UIDomainService testInstance;
+    private UIDomainService testInstance;
     @Autowired
-    DomainDao domainDao;
+    private DomainDao domainDao;
+//     @Autowired
+    @SpyBean
+    private SMLIntegrationService smlIntegrationService;
 
     @Before
     public void prepareDatabase() {
         testUtilsDao.clearData();
         testUtilsDao.createResourceDefinitionsForDomains();
+
+//        smlIntegrationService = Mockito.spy(smlIntegrationService);
+        ReflectionTestUtils.setField(testInstance, "smlIntegrationService", smlIntegrationService);
     }
 
     @Test
     public void getAllDomains() {
         List<DomainRO> domainROS = testInstance.getAllDomains();
-        assertEquals(2, domainROS.size());
+        assertEquals(3, domainROS.size());
     }
 
     @Test
     public void updateDomainData() {
-
         DomainRO domainRO = new DomainRO();
         domainRO.setDomainCode("NewCode");
         domainRO.setVisibility(VisibilityType.INTERNAL);
@@ -71,20 +83,58 @@ public class UIDomainServiceTest extends AbstractServiceTest {
 
     @Test
     public void updateSMLDomainData() {
-
         DomainRO domainRO = new DomainRO();
         domainRO.setSmlSubdomain("New SmlSubdomain");
         domainRO.setSmlSmpId("NewSmlSmpId");
         domainRO.setSmlClientKeyAlias("NewClientKeyAlias");
         domainRO.setSmlClientCertAuth(false);
         DBDomain domain = testUtilsDao.getD1();
-        testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO);
-        DBDomain result = domainDao.find(domain.getId());
 
+        testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO);
+
+        DBDomain result = domainDao.find(domain.getId());
         assertEquals(domainRO.getSmlSubdomain(), result.getSmlSubdomain());
         assertEquals(domainRO.getSmlSmpId(), result.getSmlSmpId());
         assertEquals(domainRO.getSmlClientKeyAlias(), result.getSmlClientKeyAlias());
         assertEquals(domainRO.isSmlClientCertAuth(), result.isSmlClientCertAuth());
+    }
+
+    @Test
+    public void updateSMLDomainData_domainNotFound() {
+        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+                testInstance.updateDomainSmlIntegrationData(-1l, new DomainRO()));
+        Assert.assertEquals("Domain does not exist in database!", result.getMessage());
+    }
+
+    @Test
+    public void updateSMLDomainData_registeredDomainSmpIdChangeNotAllowed() {
+        DBDomain domain = testUtilsDao.getD3();
+
+        DomainRO domainRO = new DomainRO();
+        domainRO.setSmlSmpId("utestRegistered03");
+
+        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+                    testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
+        Assert.assertEquals("SMP-SML identifier must not change for registered domain [utestRegistered03]!", result.getMessage());
+    }
+
+    @Test
+    public void updateSMLDomainData_invalidSmlIntegrationCertificate() {
+        DBDomain domain = testUtilsDao.getD3();
+
+        // Ensure domain DTO doesn't update domain existing values or #isDomainValid(domain) below won't match
+        // As a workaround, we can use #isDomainValid(Mockito.any()) but this would be less clean
+        DomainRO domainRO = new DomainRO();
+        domainRO.setSmlSmpId(StringUtils.trim(domain.getSmlSmpId()));
+        domainRO.setSmlSubdomain(domain.getSmlSubdomain());
+        domainRO.setSmlClientKeyAlias(domain.getSmlClientKeyAlias());
+        domainRO.setSmlClientCertAuth(domain.isSmlClientCertAuth());
+
+        Mockito.doReturn(false).when(smlIntegrationService).isDomainValid(domain);
+
+        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+                testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
+        Assert.assertEquals("The SML-SMP certificate for domain [utestRegistered03] is not valid!", result.getMessage());
     }
 
     @Test
