@@ -50,7 +50,8 @@ EXPOSE 3306 8080 6901 53 5005
 VOLUME ["/data"]
 
 # install utils, java, mysql   \
-RUN apt-get update \
+RUN apt-get update -qqy \
+    && apt-get upgrade -qqy \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         mysql-server \
         openjdk-8-jdk \
@@ -145,4 +146,5 @@ HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=5 \
   CMD curl -f http://localhost:8080/smp/ || exit 1
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
+
 

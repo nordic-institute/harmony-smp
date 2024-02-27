@@ -30,7 +30,8 @@ EXPOSE 3306 8084 5005
 VOLUME ["/data"]
 
 # install utils, java, mysql   \
-RUN apt-get -y update \
+RUN apt-get update -qqy \
+    && apt-get upgrade -qqy \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         mysql-server \
         openjdk-8-jdk \
