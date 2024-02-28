@@ -28,7 +28,6 @@
    The data serialized by the application are from authenticated users and trusted
    NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.
    ]]></notes>
-        <sha1>368e76f732a3c331b970f69cafec1525d27b34d3</sha1>
         <cve>CVE-2016-1000027</cve>
     </suppress>
     <suppress>
