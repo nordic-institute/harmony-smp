@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -27,9 +27,8 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -40,7 +39,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class SMPAuthorizationServiceTest {
@@ -59,7 +60,7 @@ public class SMPAuthorizationServiceTest {
             configurationService);
 
 
-    @Before
+    @BeforeEach
     public void setup() {
 
         user = new UserRO();
@@ -107,16 +108,18 @@ public class SMPAuthorizationServiceTest {
         assertTrue(bVal);
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test
     public void isCurrentlyLoggedInNotLoggedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
 
-        testInstance.isCurrentlyLoggedIn("Invalid or Expired session! Please login again.");
+        BadCredentialsException result = assertThrows(BadCredentialsException.class,
+                () -> testInstance.isCurrentlyLoggedIn("InvalidUserId."));
+        assertThat(result.getMessage(), containsString("Invalid user id"));
     }
 
     @Test
-    public void isCurrentlyLoggedIn() throws Exception {
+    public void isCurrentlyLoggedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
         // when then
@@ -133,9 +136,9 @@ public class SMPAuthorizationServiceTest {
 
         user = testInstance.getUpdatedUserData(user);
 
-        Assert.assertTrue(user.isShowPasswordExpirationWarning());
-        Assert.assertFalse(user.isForceChangeExpiredPassword());
-        Assert.assertFalse(user.isPasswordExpired());
+        assertTrue(user.isShowPasswordExpirationWarning());
+        assertFalse(user.isForceChangeExpiredPassword());
+        assertFalse(user.isPasswordExpired());
     }
 
     @Test
@@ -148,9 +151,9 @@ public class SMPAuthorizationServiceTest {
 
         user = testInstance.getUpdatedUserData(user);
 
-        Assert.assertFalse(user.isShowPasswordExpirationWarning());
-        Assert.assertFalse(user.isForceChangeExpiredPassword());
-        Assert.assertFalse(user.isPasswordExpired());
+        assertFalse(user.isShowPasswordExpirationWarning());
+        assertFalse(user.isForceChangeExpiredPassword());
+        assertFalse(user.isPasswordExpired());
     }
 
     @Test
@@ -163,9 +166,9 @@ public class SMPAuthorizationServiceTest {
 
         user = testInstance.getUpdatedUserData(user);
 
-        Assert.assertTrue(user.isShowPasswordExpirationWarning());
-        Assert.assertFalse(user.isForceChangeExpiredPassword());
-        Assert.assertFalse(user.isPasswordExpired());
+        assertTrue(user.isShowPasswordExpirationWarning());
+        assertFalse(user.isForceChangeExpiredPassword());
+        assertFalse(user.isPasswordExpired());
     }
 
     @Test
@@ -178,8 +181,8 @@ public class SMPAuthorizationServiceTest {
 
         user = testInstance.getUpdatedUserData(user);
 
-        Assert.assertTrue(user.isForceChangeExpiredPassword());
-        Assert.assertTrue(user.isPasswordExpired());
+        assertTrue(user.isForceChangeExpiredPassword());
+        assertTrue(user.isPasswordExpired());
     }
 
     @Test
@@ -192,8 +195,8 @@ public class SMPAuthorizationServiceTest {
 
         user = testInstance.getUpdatedUserData(user);
 
-        Assert.assertFalse(user.isForceChangeExpiredPassword());
-        Assert.assertTrue(user.isPasswordExpired());
+        assertFalse(user.isForceChangeExpiredPassword());
+        assertTrue(user.isPasswordExpired());
     }
 
 }

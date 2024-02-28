@@ -24,7 +24,7 @@ import eu.europa.ec.smp.spi.validation.Subresource20Validator;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class OasisSMPSubresource20HandlerTest extends AbstractHandlerTest {
 

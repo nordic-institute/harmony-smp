@@ -35,7 +35,7 @@ import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialVerificationFaile
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProperties;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -44,7 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AlertServiceTest {
@@ -446,7 +446,7 @@ public class AlertServiceTest {
 
         // test to contain all properties
         for (String prop : templateProperties) {
-            assertTrue(prop, model.getModel().containsKey(prop));
+            assertTrue(model.getModel().containsKey(prop), prop);
         }
         // add two common properties: CURRENT_DATETIME, SMP_INSTANCE_NAME
         assertEquals(templateProperties.size() + 2, model.getModel().size());

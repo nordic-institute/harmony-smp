@@ -19,14 +19,14 @@
 package eu.europa.ec.edelivery.smp.cron;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.support.CronExpression;
 
 import java.time.Clock;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SMPDynamicCronTriggerTest {
 

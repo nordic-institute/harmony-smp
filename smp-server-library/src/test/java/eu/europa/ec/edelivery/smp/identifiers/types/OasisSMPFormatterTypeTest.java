@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -21,25 +21,23 @@ package eu.europa.ec.edelivery.smp.identifiers.types;
 import eu.europa.ec.dynamicdiscovery.model.identifiers.types.OasisSMPFormatterType;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.apache.commons.lang3.StringUtils.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-@RunWith(Parameterized.class)
+
 public class OasisSMPFormatterTypeTest {
 
 
-    @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection<Object> participantIdentifierPositiveCases() {
         return Arrays.asList(new Object[][]{
                 {
@@ -71,39 +69,43 @@ public class OasisSMPFormatterTypeTest {
     OasisSMPFormatterType testInstance = new OasisSMPFormatterType();
 
 
-    // input parameters
-    @Parameterized.Parameter
-    public String testName;
-    @Parameterized.Parameter(1)
-    public boolean isValidPartyId;
-    @Parameterized.Parameter(2)
-    public String toParseIdentifier;
-    @Parameterized.Parameter(3)
-    public String schemaPart;
-    @Parameterized.Parameter(4)
-    public String idPart;
-    @Parameterized.Parameter(5)
-    public Class errorClass;
-    @Parameterized.Parameter(6)
-    public String containsErrorMessage;
-
-
-    @Test
-    public void isSchemeValid() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    public void isSchemeValid(String testName,
+                              boolean isValidPartyId,
+                              String toParseIdentifier,
+                              String schemaPart,
+                              String idPart,
+                              Class errorClass,
+                              String containsErrorMessage) {
 
         boolean result = testInstance.isSchemeValid(schemaPart);
         assertEquals(isValidPartyId, result);
     }
 
-    @Test
-    public void isType() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    public void isType(String testName,
+                       boolean isValidPartyId,
+                       String toParseIdentifier,
+                       String schemaPart,
+                       String idPart,
+                       Class errorClass,
+                       String containsErrorMessage) {
 
         boolean result = testInstance.isType(toParseIdentifier);
         assertEquals(isValidPartyId, result);
     }
 
-    @Test
-    public void format() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    public void format(String testName,
+                       boolean isValidPartyId,
+                       String toParseIdentifier,
+                       String schemaPart,
+                       String idPart,
+                       Class errorClass,
+                       String containsErrorMessage) {
         // skip format for not ebcore party ids
         if (!isValidPartyId) {
             return;
@@ -115,11 +117,18 @@ public class OasisSMPFormatterTypeTest {
         String schema = trimToEmpty(schemaPart);
         assertEquals(schema + "::" + trim(idPart), result);
 
-        assertEquals((isEmpty(schema)?"":schema + "::") + trim(idPart), resultNoDelimiterForNullSchema);
+        assertEquals((isEmpty(schema) ? "" : schema + "::") + trim(idPart), resultNoDelimiterForNullSchema);
     }
 
-    @Test
-    public void parse() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    public void parse(String testName,
+                      boolean isValidPartyId,
+                      String toParseIdentifier,
+                      String schemaPart,
+                      String idPart,
+                      Class errorClass,
+                      String containsErrorMessage) {
         // skip parse not ebcore party ids
         if (!isValidPartyId) {
             IllegalArgumentException result = assertThrows(IllegalArgumentException.class, () -> testInstance.parse(toParseIdentifier));

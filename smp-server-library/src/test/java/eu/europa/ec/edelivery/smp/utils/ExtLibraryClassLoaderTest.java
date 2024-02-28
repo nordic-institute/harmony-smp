@@ -18,14 +18,14 @@
  */
 package eu.europa.ec.edelivery.smp.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ExtLibraryClassLoaderTest {
 

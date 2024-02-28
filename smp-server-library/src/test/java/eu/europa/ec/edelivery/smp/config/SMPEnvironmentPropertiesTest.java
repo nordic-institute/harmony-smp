@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,7 +31,7 @@ import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.CLIENT_CERT_HEADER_ENABLED_DEPRECATED;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SMPEnvironmentPropertiesTest {
 
@@ -61,7 +61,7 @@ public class SMPEnvironmentPropertiesTest {
     }
 
     @Test
-    public void readPropertiesFromClasspath() throws IOException {
+    public void readPropertiesFromClasspath() {
         String classpath = "/test-smp.config.properties";
         SMPEnvironmentProperties testInstance = SMPEnvironmentProperties.getInstance();
         // when

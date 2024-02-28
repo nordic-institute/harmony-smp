@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 

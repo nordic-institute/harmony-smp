@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -18,21 +18,18 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao.utils;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(JUnitParamsRunner.class)
 public class SMPSchemaGeneratorTest {
 
     private static final String DIALECT_ORACLE = "org.hibernate.dialect.Oracle10gDialect";
@@ -41,7 +38,7 @@ public class SMPSchemaGeneratorTest {
     protected static String ENTITY_PACKAGES = "eu.europa.ec.edelivery.smp.data.model,eu.europa.ec.edelivery.smp.data.model.user,eu.europa.ec.edelivery.smp.data.model.doc,eu.europa.ec.edelivery.smp.data.model.ext";
 
 
-    private static final Object[] dialectTestCases() {
+    private static Object[] dialectTestCases() {
         return new Object[][]{
                 {DIALECT_MYSQL_INNO5, "eu.europa.ec.edelivery.smp.data.dao.utils.SMPMySQL5InnoDBDialect"},
                 {DIALECT_ORACLE, DIALECT_ORACLE},
@@ -50,9 +47,6 @@ public class SMPSchemaGeneratorTest {
 
         };
     }
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
 
     SMPSchemaGenerator testInstance = new SMPSchemaGenerator();
@@ -119,8 +113,9 @@ public class SMPSchemaGeneratorTest {
         assertEquals("mysql5innodb-drop.ddl", fileName);
     }
 
-    @Test
-    @Parameters(method = "dialectTestCases")
+
+    @ParameterizedTest
+    @MethodSource("dialectTestCases")
     public void getDialect(String input, String output) {
 
         //when
@@ -130,11 +125,10 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void getAllEntityClassesNotFound() throws ClassNotFoundException {
+    public void getAllEntityClassesNotFound() {
 
-        expectedEx.expect(ClassNotFoundException.class);
+        assertThrows(ClassNotFoundException.class, () -> testInstance.getAllEntityClasses("eu.not.exists"));
 
-        testInstance.getAllEntityClasses("eu.not.exists");
     }
 
     @Test

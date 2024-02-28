@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -22,13 +22,15 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Purpose of class is to test all resource methods with database.
@@ -41,8 +43,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     @Autowired
     DomainDao testInstance;
 
-
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
     }
@@ -63,7 +64,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         assertEquals(d, res.get()); // test equal method
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void persistDuplicateDomain() {
         // set
         DBDomain d = new DBDomain();
@@ -73,7 +74,8 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         d2.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
 
         // execute
-        testInstance.persistFlushDetach(d2);
+        Exception exception = assertThrows(Exception.class, () -> testInstance.persistFlushDetach(d2));
+        assertThat(exception.getMessage(), CoreMatchers.containsString("ConstraintViolationException"));
     }
 
     @Test

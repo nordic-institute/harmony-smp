@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -25,16 +25,15 @@ import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -43,6 +42,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -52,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by gutowpa on 20/02/2017.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class})
 @Sql(scripts = {
@@ -80,10 +81,10 @@ public class SecurityConfigurationTest {
 
     MockMvc mvc;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
-        configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED,"true", null);
+        configurationDao.setPropertyToDatabase(SMPPropertyEnum.EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", null);
         configurationDao.reloadPropertiesFromDatabase();
         mvc = MockMvcUtils.initializeMockMvc(context);
         configurationDao.contextRefreshedEvent();
@@ -92,7 +93,7 @@ public class SecurityConfigurationTest {
     @Test
     public void getMethodAccessiblePubliclyTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get(RETURN_LOGGED_USER_PATH)
-                .with(csrf()))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("anonymousUser")));
     }
@@ -100,22 +101,22 @@ public class SecurityConfigurationTest {
     @Test
     public void notAuthenticatedUserCannotCallPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(csrf()))
+                        .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void notAuthenticatedUserCannotCallDeleteTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete(RETURN_LOGGED_USER_PATH)
-                .with(csrf()))
+                        .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
-                .with(csrf()))
+                        .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(TEST_USERNAME_DB_HASHED_PASS)));
     }
@@ -124,29 +125,29 @@ public class SecurityConfigurationTest {
     public void userStoredWithUpperCaseUsernameIsAuthorizedForPutTestIdCaseSensitive() throws Exception {
         String upperCaseUsername = TEST_USERNAME_DB_HASHED_PASS.toUpperCase();
         // test that is not the same
-        Assert.assertNotEquals(upperCaseUsername, TEST_USERNAME_DB_HASHED_PASS);
+        assertNotEquals(upperCaseUsername, TEST_USERNAME_DB_HASHED_PASS);
 
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(httpBasic(upperCaseUsername, PASSWORD))
-                .with(csrf()))
+                        .with(httpBasic(upperCaseUsername, PASSWORD))
+                        .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void userStoredWithClearPassIsNotAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .with(httpBasic(TEST_USERNAME_DB_CLEAR_PASS, PASSWORD)).with(csrf()))
+                        .with(httpBasic(TEST_USERNAME_DB_CLEAR_PASS, PASSWORD)).with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
 
-    @Test(expected = ClientCertParseException.class)
-    public void malformedClientCertHeaderNotAuthorizedTest() throws Exception {
+    @Test
+    public void malformedClientCertHeaderNotAuthorizedTest() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", "malformed header value");
-        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers).with(csrf()))
-                .andExpect(status().isUnauthorized());
+        assertThrows(ClientCertParseException.class, () -> mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
+                        .headers(headers).with(csrf()))
+                .andExpect(status().isUnauthorized()));
     }
 
     @Test
@@ -154,8 +155,8 @@ public class SecurityConfigurationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER);
         String result = mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers)
-                .with(csrf()))
+                        .headers(headers)
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT)))
                 .andReturn().getResponse().getContentAsString();
@@ -167,62 +168,60 @@ public class SecurityConfigurationTest {
         headers.add("Client-Cert", CLIENT_CERT_NOT_AUTHORIZED_HEADER);
 
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers).with(csrf()))
+                        .headers(headers).with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
-                .with(csrf()))
+                        .headers(headers)
+                        .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT)));
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpper() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
-                .with(csrf()))
+                        .headers(headers)
+                        .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT)));
     }
 
 
     @Test
-    @Ignore
+    @Disabled
     public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestDBUpperSN() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
-                .with(csrf()))
+                        .headers(headers)
+                        .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT_DB_UPPER_SN))).toString();
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpperDBUpperSN() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
-                .headers(headers)
-                .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
-                .with(csrf()))
+                        .headers(headers)
+                        .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(TEST_USERNAME_CLIENT_CERT_DB_UPPER_SN)));
     }
-
-
 }

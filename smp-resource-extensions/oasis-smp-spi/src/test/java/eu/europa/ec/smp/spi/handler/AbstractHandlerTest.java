@@ -32,7 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractHandlerTest {
     protected SmpDataServiceApi mockSmpDataApi = Mockito.mock(SmpDataServiceApi.class);

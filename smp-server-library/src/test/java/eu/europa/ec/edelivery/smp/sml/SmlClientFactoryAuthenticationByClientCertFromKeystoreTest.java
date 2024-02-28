@@ -32,8 +32,8 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -49,7 +49,7 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by gutowpa on 08/01/2018.
@@ -73,7 +73,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     private SmlConnector testInstance;
 
 
-    @Before
+    @BeforeEach
     public void before() throws MalformedURLException {
 
         ReflectionTestUtils.setField(keystoreService, "configurationService", configurationService);

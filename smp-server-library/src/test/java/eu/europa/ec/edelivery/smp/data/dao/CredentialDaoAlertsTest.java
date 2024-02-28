@@ -21,8 +21,8 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.OffsetDateTime;
@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class CredentialDaoAlertsTest extends AbstractBaseDao {
 
@@ -69,7 +69,7 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
     @Autowired
     UserDao userDao;
 
-    @Before
+    @BeforeEach
     public void setupData() {
         // persist users to database
         userDao.persistFlushDetach(okUser);

@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.properties.SMPSecurityPropertyUpdateListener;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
@@ -31,7 +31,7 @@ import java.util.Map;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SMPSecurityPropertyUpdateListenerTest {
 

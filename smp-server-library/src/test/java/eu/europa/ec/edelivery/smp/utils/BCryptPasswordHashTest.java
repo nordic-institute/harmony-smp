@@ -19,14 +19,14 @@
 
 package eu.europa.ec.edelivery.smp.utils;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by gutowpa on 22/02/2017.
@@ -39,7 +39,7 @@ public class BCryptPasswordHashTest {
     private PrintStream initialPrintStream=null;
 
 
-    @After
+    @AfterEach
     public void cleanUpStreams() {
         if (initialPrintStream!=null){
             System.setOut(initialPrintStream);

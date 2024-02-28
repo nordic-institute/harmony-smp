@@ -26,9 +26,8 @@ import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -37,7 +36,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UIDomainServiceTest extends AbstractServiceTest {
 
@@ -49,7 +48,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     @SpyBean
     private SMLIntegrationService smlIntegrationService;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
         testUtilsDao.createResourceDefinitionsForDomains();
@@ -101,9 +100,9 @@ public class UIDomainServiceTest extends AbstractServiceTest {
 
     @Test
     public void updateSMLDomainData_domainNotFound() {
-        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+        BadRequestException result =  assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(-1l, new DomainRO()));
-        Assert.assertEquals("Domain does not exist in database!", result.getMessage());
+         assertEquals("Domain does not exist in database!", result.getMessage());
     }
 
     @Test
@@ -113,9 +112,9 @@ public class UIDomainServiceTest extends AbstractServiceTest {
         DomainRO domainRO = new DomainRO();
         domainRO.setSmlSmpId("utestRegistered03");
 
-        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+        BadRequestException result =  assertThrows(BadRequestException.class, () ->
                     testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
-        Assert.assertEquals("SMP-SML identifier must not change for registered domain [utestRegistered03]!", result.getMessage());
+         assertEquals("SMP-SML identifier must not change for registered domain [utestRegistered03]!", result.getMessage());
     }
 
     @Test
@@ -132,9 +131,9 @@ public class UIDomainServiceTest extends AbstractServiceTest {
 
         Mockito.doReturn(false).when(smlIntegrationService).isDomainValid(domain);
 
-        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+        BadRequestException result =  assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
-        Assert.assertEquals("The SML-SMP certificate for domain [utestRegistered03] is not valid!", result.getMessage());
+         assertEquals("The SML-SMP certificate for domain [utestRegistered03] is not valid!", result.getMessage());
     }
 
     @Test

@@ -23,10 +23,9 @@ import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
 import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by gutowpa on 08/01/2018.
@@ -119,21 +118,25 @@ public class SmlIdentifierConverterTest {
         assertEquals(ID_VALUE, result.getParticipantIdentifier().getValue());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void validate_negativeCaseMissingSmpId() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
-
         //when
-        SmlIdentifierConverter.validate(participantId, null);
+        IllegalStateException result = assertThrows(IllegalStateException.class,
+                () -> SmlIdentifierConverter.validate(participantId, null));
+        //then
+        assertEquals("SMP ID is null or empty", result.getMessage());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void validate_negativeCaseMissingValue() {
         //given
         Identifier participantId = new Identifier(null, ID_SCHEME);
-
         //when
-        SmlIdentifierConverter.validate(participantId, SMP_ID);
+        IllegalStateException result = assertThrows(IllegalStateException.class,
+                () -> SmlIdentifierConverter.validate(participantId, SMP_ID));
+        //then
+        assertEquals("Participant Scheme or Id is null or empty", result.getMessage());
     }
 }

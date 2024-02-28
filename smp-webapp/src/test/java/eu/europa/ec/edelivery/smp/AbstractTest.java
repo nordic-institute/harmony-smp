@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp;
 
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 
@@ -29,10 +29,8 @@ import java.io.IOException;
  */
 public abstract class AbstractTest {
     
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         X509CertificateTestUtils.reloadKeystores();
     }
-
-
 }

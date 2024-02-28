@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOMAIN_CODE_1;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOMAIN_CODE_2;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 /**

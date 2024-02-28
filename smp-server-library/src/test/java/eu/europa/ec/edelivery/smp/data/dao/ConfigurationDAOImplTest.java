@@ -44,8 +44,8 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
@@ -67,7 +67,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     @Autowired
     private ConfigurationDao configurationDao;
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         resetKeystore();
 

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -29,14 +29,11 @@ import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.security.auth.x500.X500Principal;
@@ -50,9 +47,9 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     public static final String CERTIFICATE_POLICY_ANY = "2.5.29.32.0";
@@ -80,7 +77,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
     @Autowired
     protected CRLVerifierService crlVerifierService;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         configurationService = Mockito.spy(configurationService);
         crlVerifierService = Mockito.spy(crlVerifierService);
@@ -371,7 +368,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         CertificateNotTrustedException result = assertThrows(CertificateNotTrustedException.class, () ->
                 testInstance.checkFullCertificateValidity(certificate));
         //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate is not trusted!"));
+        assertThat(result.getMessage(), CoreMatchers.containsString("Certificate is not trusted!"));
     }
 
 
@@ -398,7 +395,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
         CertificateRevokedException result = assertThrows(CertificateRevokedException.class, () ->
                 testInstance.checkFullCertificateValidity(certificate));
         //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate has been revoked"));
+        assertThat(result.getMessage(), CoreMatchers.containsString("Certificate has been revoked"));
     }
 
     @Test
@@ -419,7 +416,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
                 testInstance.checkFullCertificateValidity(certificate));
 
         //then
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Certificate does not have allowed key algorithm type!"));
+        assertThat(result.getMessage(), CoreMatchers.containsString("Certificate does not have allowed key algorithm type!"));
     }
 
     @Test
@@ -509,7 +506,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
 
         CertificateException result = assertThrows(CertificateException.class,
                 () -> testInstance.validateCertificatePolicyMatchLegacy(certificate));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate has empty CertificatePolicy extension. Certificate:"));
+        assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate has empty CertificatePolicy extension. Certificate:"));
     }
 
     @Test
@@ -520,7 +517,7 @@ public class UITruststoreServiceIntegrationTest extends AbstractServiceIntegrati
 
         CertificateException result = assertThrows(CertificateException.class,
                 () -> testInstance.validateCertificatePolicyMatchLegacy(certificate));
-        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate policy verification failed."));
+        assertThat(result.getMessage(), CoreMatchers.startsWith("Certificate policy verification failed."));
     }
 
     @Test

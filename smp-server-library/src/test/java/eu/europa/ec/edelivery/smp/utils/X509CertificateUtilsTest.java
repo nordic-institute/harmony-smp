@@ -35,12 +35,11 @@ package eu.europa.ec.edelivery.smp.utils;
 
 
 import eu.europa.ec.edelivery.security.utils.X509CertificateUtils;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.apache.commons.io.IOUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 
 import java.io.IOException;
 import java.security.Security;
@@ -51,18 +50,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@RunWith(JUnitParamsRunner.class)
+
 public class X509CertificateUtilsTest {
 
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
@@ -95,8 +94,8 @@ public class X509CertificateUtilsTest {
         };
     }
 
-    @Test
-    @Parameters(method = "parseTestCases")
+    @ParameterizedTest
+    @MethodSource("parseTestCases")
     public void parseCertificateTest(String certificateFileName) throws CertificateException, IOException {
         //given
         byte[] buff = getBytes(certificateFileName);
@@ -107,9 +106,8 @@ public class X509CertificateUtilsTest {
 
     }
 
-
-    @Test
-    @Parameters(method = "crlTestListCases")
+    @ParameterizedTest
+    @MethodSource("crlTestListCases")
     public void getCrlDistributionPointsTest(String certificatFileName, String clrLists) throws CertificateException {
         //given
         X509Certificate certificate = loadCertificate(certificatFileName);
@@ -123,9 +121,8 @@ public class X509CertificateUtilsTest {
         });
     }
 
-
-    @Test
-    @Parameters(method = "crlExtractHTTPSTestListCases")
+    @ParameterizedTest
+    @MethodSource("crlExtractHTTPSTestListCases")
     public void extractHttpCrlDistributionPoints(String clrLists, String value) {
         //given
         List<String> urlList = clrLists == null ? Collections.emptyList() : Arrays.asList(clrLists.split(","));
@@ -134,7 +131,6 @@ public class X509CertificateUtilsTest {
         // then
         assertEquals(value, url);
     }
-
 
     public static X509Certificate loadCertificate(String filename) throws CertificateException {
         CertificateFactory fact = CertificateFactory.getInstance("X.509");
@@ -147,6 +143,4 @@ public class X509CertificateUtilsTest {
     public static byte[] getBytes(String filename) throws CertificateException, IOException {
         return IOUtils.toByteArray(X509CertificateUtilsTest.class.getResourceAsStream("/certificates/" + filename));
     }
-
-
 }

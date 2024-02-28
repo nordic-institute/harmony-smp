@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -32,13 +32,14 @@ import eu.europa.ec.smp.spi.handler.OasisSMPSubresource10Handler;
 import eu.europa.ec.smp.spi.validation.Subresource10Validator;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 @ContextConfiguration(classes = {UIDocumentService.class, ConversionTestConfig.class, ResourceHandlerService.class,
         OasisSMPResource10.class, OasisSMPResource10Handler.class, OasisSMPSubresource10.class, OasisSMPSubresource10Handler.class, Subresource10Validator.class,})
@@ -47,7 +48,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     @Autowired
     protected UIDocumentService testInstance;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         // setup initial data!
         testUtilsDao.clearData();
@@ -55,7 +56,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGenerateDocumentForResource(){
+    public void testGenerateDocumentForResource() {
 
         DocumentRo result = testInstance.generateDocumentForResource(testUtilsDao.getResourceD1G1RD1().getId(), null);
         assertNotNull(result);
@@ -63,7 +64,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGenerateDocumentForSubResource(){
+    public void testGenerateDocumentForSubResource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
 
         DocumentRo result = testInstance.generateDocumentForSubresource(subresource.getId(),
@@ -122,21 +123,21 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGetDocumentForResource(){
+    public void testGetDocumentForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRo testDoc = testInstance.getDocumentForResource(resource.getId(), 1);
         assertNotNull(testDoc.getPayload());
     }
 
     @Test
-    public void testGetDocumentForSubResource(){
+    public void testGetDocumentForSubResource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
         DocumentRo testDoc = testInstance.getDocumentForSubResource(subresource.getId(), subresource.getResource().getId(), 1);
         assertNotNull(testDoc.getPayload());
     }
 
     @Test
-    public void testSaveDocumentForResource(){
+    public void testSaveDocumentForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRo testDoc = testInstance.generateDocumentForResource(resource.getId(), null);
         assertNotNull(testDoc.getPayload());
@@ -147,7 +148,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testSaveSubresourceDocumentForResource(){
+    public void testSaveSubresourceDocumentForResource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
         DocumentRo testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId(),

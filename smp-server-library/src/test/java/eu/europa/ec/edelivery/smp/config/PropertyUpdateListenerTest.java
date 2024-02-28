@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PropertyUpdateListenerTest {
 

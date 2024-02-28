@@ -20,21 +20,21 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocumentVersion;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentDaoTest extends AbstractBaseDao {
 
     @Autowired
     DocumentDao testInstance;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
         testUtilsDao.createSubresources();

@@ -21,7 +21,7 @@ package eu.europa.ec.edelivery.smp.error;
 
 import eu.europa.ec.edelivery.smp.error.xml.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.xml.sax.SAXException;
 
@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -141,7 +141,7 @@ public class ErrorResponseBuilderTest {
         assertEquals(INTERNAL_SERVER_ERROR.value(), result2.getStatusCodeValue());
     }
 
-    private String checkXmlError(ErrorResponse errorResponse, ErrorBusinessCode errorBusinessCode, String errorDescription) throws ParserConfigurationException, IOException, SAXException {
+    private String checkXmlError(ErrorResponse errorResponse, ErrorBusinessCode errorBusinessCode, String errorDescription) {
         assertNotNull(errorResponse);
 
         assertEquals(errorBusinessCode.toString(), errorResponse.getBusinessCode());

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,23 +20,20 @@ package eu.europa.ec.edelivery.smp.identifiers;
 
 
 import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-@RunWith(Parameterized.class)
 public class ParticipantIdentifierFormatterParseTests {
 
-
-    @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection participantIdentifierPositiveCases() {
         return Arrays.asList(new Object[][]{
                 {"ebCore unregistered", false, "urn:oasis:names:tc:ebcore:partyid-type:unregistered:domain:ec.europa.eu", "urn:oasis:names:tc:ebcore:partyid-type:unregistered:domain", "ec.europa.eu"},
@@ -66,34 +63,28 @@ public class ParticipantIdentifierFormatterParseTests {
         });
     }
 
-    // input parameters
-    @Parameterized.Parameter
-    public String name;
-    @Parameterized.Parameter(1)
-    public boolean throwError;
-    @Parameterized.Parameter(2)
-    public String identifier;
-    @Parameterized.Parameter(3)
-    public String schemaPart;
-    @Parameterized.Parameter(4)
-    public String idPart;
 
     IdentifierFormatter testInstance = IdentifierFormatter.Builder.create().addFormatterTypes(new EBCorePartyIdFormatterType()).build();
 
-    @Test
-    public void testPartyIdentifierParse() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    public void testPartyIdentifierParse(String name,
+                                         boolean throwError,
+                                         String identifier,
+                                         String schemaPart,
+                                         String idPart) {
         IllegalArgumentException exception = null;
         Identifier result = null;
         if (throwError) {
-            exception = Assert.assertThrows(IllegalArgumentException.class, () -> testInstance.parse(identifier));
+            exception = assertThrows(IllegalArgumentException.class, () -> testInstance.parse(identifier));
         } else {
             result = testInstance.parse(identifier);
         }
 
-        Assert.assertNotNull(throwError ? exception : result);
+        assertNotNull(throwError ? exception : result);
         if (!throwError) {
-            Assert.assertEquals(schemaPart, result.getScheme());
-            Assert.assertEquals(idPart, result.getValue());
+            assertEquals(schemaPart, result.getScheme());
+            assertEquals(idPart, result.getValue());
         }
     }
 

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,8 +19,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -32,9 +31,11 @@ import javax.persistence.criteria.Root;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
- *  Purpose of class is to test implemented methods of BaseDao on DomainDao instance.
+ * Purpose of class is to test implemented methods of BaseDao on DomainDao instance.
  *
  * @author Joze Rihtarsic
  * @since 4.1
@@ -56,15 +57,15 @@ public class BaseDaoTest extends AbstractBaseDao {
         // when
         CriteriaQuery res = testInstance.createSearchCriteria(filter, cls, false, null, null);
         //Then
-        Assert.assertNotNull(res);
-        Assert.assertNull(res.getSelection());
+        assertNotNull(res);
+        assertNull(res.getSelection());
 
         // when
         res = testInstance.createSearchCriteria(filter, cls, true, null, null);
         //Then
-        Assert.assertNotNull(res);
-        Assert.assertNotNull(res.getSelection());
-        Assert.assertEquals(java.lang.Long.class, res.getSelection().getJavaType());
+        assertNotNull(res);
+        assertNotNull(res.getSelection());
+        assertEquals(java.lang.Long.class, res.getSelection().getJavaType());
     }
 
     @Test
@@ -75,8 +76,8 @@ public class BaseDaoTest extends AbstractBaseDao {
         // when
         CriteriaQuery res = testInstance.createSearchCriteria(filter, cls, false, null, null);
         //Then
-        Assert.assertNotNull(res);
-        Assert.assertEquals(0,res.getParameters().size() );
+        assertNotNull(res);
+        assertEquals(0, res.getParameters().size());
     }
 
     @Test
@@ -92,18 +93,18 @@ public class BaseDaoTest extends AbstractBaseDao {
         Predicate expected = cb.equal(testInstance.getPath(om, "DomainCode"), filterValue);
 
         // when
-        List<Predicate> lst = testInstance.createPredicates(filter,om,cb );
+        List<Predicate> lst = testInstance.createPredicates(filter, om, cb);
 
         //Then
-        Assert.assertNotNull(lst);
-        Assert.assertEquals(1,lst.size() );
+        assertNotNull(lst);
+        assertEquals(1, lst.size());
     }
 
     @Test
     public void testPredicatesStringListValue() {
         // given
         TestFilter filter = new TestFilter();
-        List<String > filterValue  = Collections.singletonList("TestValue");
+        List<String> filterValue = Collections.singletonList("TestValue");
         filter.setDomainCodeList(filterValue);
 
         CriteriaBuilder cb = memEManager.getCriteriaBuilder();
@@ -112,11 +113,11 @@ public class BaseDaoTest extends AbstractBaseDao {
         Predicate expected = cb.equal(testInstance.getPath(om, "DomainCodeList", "List"), filterValue);
 
         // when
-        List<Predicate> lst = testInstance.createPredicates(filter,om,cb );
+        List<Predicate> lst = testInstance.createPredicates(filter, om, cb);
 
         //Then
-        Assert.assertNotNull(lst);
-        Assert.assertEquals(1,lst.size() );
+        assertNotNull(lst);
+        assertEquals(1, lst.size());
     }
 
     @Test
@@ -132,18 +133,18 @@ public class BaseDaoTest extends AbstractBaseDao {
         Predicate expected = cb.equal(testInstance.getPath(om, "DomainCodeLike", "Like"), filterValue);
 
         // when
-        List<Predicate> lst = testInstance.createPredicates(filter,om,cb );
+        List<Predicate> lst = testInstance.createPredicates(filter, om, cb);
 
         //Then
-        Assert.assertNotNull(lst);
-        Assert.assertEquals(1,lst.size() );
+        assertNotNull(lst);
+        assertEquals(1, lst.size());
     }
 
     @Test
     public void testPredicatesLong() {
         // given
         TestFilter filter = new TestFilter();
-        Long filterValue = (long)10;
+        Long filterValue = (long) 10;
         filter.setId(filterValue);
 
         CriteriaBuilder cb = memEManager.getCriteriaBuilder();
@@ -152,21 +153,20 @@ public class BaseDaoTest extends AbstractBaseDao {
         Predicate expected = cb.equal(testInstance.getPath(om, "Id"), filterValue);
 
         // when
-        List<Predicate> lst = testInstance.createPredicates(filter,om,cb );
+        List<Predicate> lst = testInstance.createPredicates(filter, om, cb);
 
         //Then
-        Assert.assertNotNull(lst);
-        Assert.assertEquals(1,lst.size() );
+        assertNotNull(lst);
+        assertEquals(1, lst.size());
     }
 
 
-
-
 }
+
 class TestFilter {
     String domainCode;
     String domainCodeLike;
-    Long  id;
+    Long id;
     Long idFrom;
     Long idTo;
     List<String> domainCodeList;

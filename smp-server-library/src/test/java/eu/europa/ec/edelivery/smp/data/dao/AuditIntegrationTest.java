@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -32,8 +32,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertStatusEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -47,7 +46,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Purpose of class is to test all Audit classes and  methods with database.
@@ -55,7 +55,7 @@ import static org.junit.Assert.assertTrue;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class AuditIntegrationTest extends AbstractBaseDao{
+public class AuditIntegrationTest extends AbstractBaseDao {
     private static final Logger LOG = LoggerFactory.getLogger(AuditIntegrationTest.class);
 
     // because envers creates audit on commit we use PersistenceUnit to control commit...
@@ -118,7 +118,6 @@ public class AuditIntegrationTest extends AbstractBaseDao{
         alterVal.put("value", UUID.randomUUID().toString());
         alterVal.put("credentialType", CredentialType.CAS);
         alterVal.put("credentialTarget", CredentialTargetType.REST_API);
-        alterVal.put("activeFrom", OffsetDateTime.now().plusMinutes(30));
         alterVal.put("changedOn", OffsetDateTime.now().plusMinutes(30));
         alterVal.put("expireAlertOn", OffsetDateTime.now().plusMinutes(30));
         alterVal.put("activeFrom", OffsetDateTime.now().plusMinutes(30));
@@ -155,6 +154,7 @@ public class AuditIntegrationTest extends AbstractBaseDao{
         testAuditEntity(resource,  alterVal);
     }
 */
+
     /**
      * Method updates value in Map, then checks if revision increased. Last test in removing the entity.
      *
@@ -187,11 +187,11 @@ public class AuditIntegrationTest extends AbstractBaseDao{
                 ReflectionTestUtils.setField(subEntity, prop, val, val.getClass());
             });
             update(em, entity); // master
-            Assert.assertEquals(++iRevSize, ar.getRevisions(subEntity.getClass(), dbId).size());
+            assertEquals(++iRevSize, ar.getRevisions(subEntity.getClass(), dbId).size());
         }
         // remove master
         remove(em, entity.getClass(), entity.getId());
-        Assert.assertEquals(++iRevSize, ar.getRevisions(subEntity.getClass(), dbId).size());
+        assertEquals(++iRevSize, ar.getRevisions(subEntity.getClass(), dbId).size());
         em.close();
     }
 

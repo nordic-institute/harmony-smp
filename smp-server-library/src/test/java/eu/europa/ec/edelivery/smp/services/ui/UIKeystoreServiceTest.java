@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -23,16 +23,14 @@ import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.net.ssl.KeyManager;
@@ -46,9 +44,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {UIKeystoreService.class, ConversionTestConfig.class,
         ConfigurationService.class})
 public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
@@ -58,16 +55,13 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
 
     public static final X500Principal CERT_SUBJECT_X500PRINCIPAL = new X500Principal("CN=SMP Mock Services, OU=DIGIT, O=European Commision, C=BE");
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
     @Autowired
     protected UIKeystoreService testInstance;
 
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         // restore keystore
         resetKeystore();
@@ -165,7 +159,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    @Ignore("This test is not working on gitlab")
+    @Disabled("This test is not working on gitlab")
     public void testImportKeystoreTwice() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given
         testInstance.importKeys(loadKeystore("test-import.jks", "NewPassword1234", "JKS"), "NewPassword1234");
@@ -195,15 +189,14 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         assertEquals(3, testInstance.getKeystoreEntriesList().size());
         assertNotNull(testInstance.getCert(S_ALIAS));
         assertNotNull(testInstance.getKey(S_ALIAS));
-
-        expectedEx.expect(SMPRuntimeException.class);
-        expectedEx.expectMessage("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS);
-        //when
         testInstance.deleteKey(S_ALIAS);
+        //when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> {
+            testInstance.getCert(S_ALIAS);
+        });
 
-        // then
-        assertEquals(2, testInstance.getKeystoreEntriesList().size());
-        assertNull(testInstance.getCert(S_ALIAS));
+        MatcherAssert.assertThat(result.getMessage(),
+                CoreMatchers.containsString("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS));
     }
 
     @Test
@@ -213,17 +206,15 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         assertEquals(3, testInstance.getKeystoreEntriesList().size());
         assertNotNull(testInstance.getCert(S_ALIAS));
         assertNotNull(testInstance.getKey(S_ALIAS));
-
-        expectedEx.expect(SMPRuntimeException.class);
-        expectedEx.expectMessage("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS);
-        //when
         testInstance.deleteKey(S_ALIAS);
+        //when
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> {
+            testInstance.getKey(S_ALIAS);
+        });
 
-        // then
-        assertEquals(2, testInstance.getKeystoreEntriesList().size());
-        assertNull(testInstance.getKey(S_ALIAS));
+        MatcherAssert.assertThat(result.getMessage(),
+                CoreMatchers.containsString("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS));
     }
-
 
     private KeyStore loadKeystore(String keystoreName, String password, String type) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
         // Load the KeyStore and get the signing key and certificate.

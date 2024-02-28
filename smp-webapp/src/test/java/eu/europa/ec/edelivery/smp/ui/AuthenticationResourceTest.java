@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -24,8 +24,7 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.utils.SMPCookieWriter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.servlet.view.RedirectView;
@@ -35,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NAME;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AuthenticationResourceTest {
 
@@ -66,8 +67,8 @@ public class AuthenticationResourceTest {
     public void authenticateCAS() {
 
         RedirectView result = testInstance.authenticateCAS();
-        Assert.assertNotNull(result);
-        Assert.assertEquals("../../../#/", result.getUrl());
+        assertNotNull(result);
+        assertEquals("../../../#/", result.getUrl());
     }
 
     @Test
@@ -75,7 +76,7 @@ public class AuthenticationResourceTest {
         UserRO user = new UserRO();
         Mockito.doReturn(user).when(authorizationService).getLoggedUserData();
         UserRO result = testInstance.getUser();
-        Assert.assertEquals(user, result);
+        assertEquals(user, result);
     }
 
     @Test

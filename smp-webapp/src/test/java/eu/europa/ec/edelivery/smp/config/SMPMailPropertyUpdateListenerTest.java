@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.config;
 
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.properties.SMPMailPropertyUpdateListener;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SMPMailPropertyUpdateListenerTest {
 
