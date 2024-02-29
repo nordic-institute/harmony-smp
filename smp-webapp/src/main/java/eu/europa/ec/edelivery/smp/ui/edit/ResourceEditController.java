@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIResourceService;
@@ -76,7 +77,7 @@ public class ResourceEditController {
                                                           @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
                                                           @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
                                                           @RequestParam(value = PARAM_NAME_TYPE, defaultValue = "", required = false) String forRole,
-                                                          @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
+                                                          @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) @Filter String filter) {
         logAdminAccess("getResourcesForGroup and type: " + forRole);
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
@@ -146,7 +147,7 @@ public class ResourceEditController {
                                                       @PathVariable(PATH_PARAM_ENC_RESOURCE_ID) String resourceEncId,
                                                       @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
                                                       @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
-                                                      @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
+                                                      @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) @Filter String filter) {
 
         LOG.info("Search for group members with filter  [{}], paging: [{}/{}], user: {}", filter, page, pageSize, userEncId);
         Long groupId = SessionSecurityUtils.decryptEntityId(groupEncId);
