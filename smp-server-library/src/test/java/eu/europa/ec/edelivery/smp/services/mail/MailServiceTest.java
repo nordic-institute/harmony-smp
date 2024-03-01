@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ContextConfiguration(classes = {MockAlertBeans.class, MailService.class})
-public class MailServiceTest extends AbstractServiceIntegrationTest {
+class MailServiceTest extends AbstractServiceIntegrationTest {
 
 
     @Autowired
@@ -44,7 +44,7 @@ public class MailServiceTest extends AbstractServiceIntegrationTest {
     MailService testInstance;
 
     @Test
-    public void testSendMail() {
+    void testSendMail() {
 
         Mockito.doNothing().when(mockJavaMailSender).send((MimeMessage) Mockito.any());
         Map<String, Object> props = new HashMap<>();

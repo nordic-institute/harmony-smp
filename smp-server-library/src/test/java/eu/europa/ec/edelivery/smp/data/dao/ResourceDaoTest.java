@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 5.0
  */
 
-public class ResourceDaoTest extends AbstractBaseDao {
+class ResourceDaoTest extends AbstractBaseDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceDaoTest.class);
     @Autowired
@@ -63,7 +63,7 @@ public class ResourceDaoTest extends AbstractBaseDao {
 
     @Test
     @Transactional
-    public void persistNewResourceWithDocument() {
+    void persistNewResourceWithDocument() {
         String testIdValue = "test-resource-id";
         String testIdSchema = "test-resource-scheme";
         DBResource testData = TestDBUtils.createDBResource(testIdValue, testIdSchema);
@@ -89,7 +89,7 @@ public class ResourceDaoTest extends AbstractBaseDao {
 
     @Test
     @Transactional
-    public void persistNewVersionToResourceWithDocument() {
+    void persistNewVersionToResourceWithDocument() {
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1,
                 testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
         assertTrue(optResource.isPresent());
@@ -112,39 +112,39 @@ public class ResourceDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getResourceOK() {
+    void getResourceOK() {
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
         assertTrue(optResource.isPresent());
         assertEquals(testUtilsDao.getResourceD1G1RD1().getId(), optResource.get().getId());
     }
 
     @Test
-    public void getResourceOKNullSchema() {
+    void getResourceOKNullSchema() {
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_2, null, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD2());
         assertTrue(optResource.isPresent());
         assertEquals(testUtilsDao.getResourceD2G1RD1().getId(), optResource.get().getId());
     }
 
     @Test
-    public void getResourceNotExists() {
+    void getResourceNotExists() {
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, "WrongSchema", testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
         assertFalse(optResource.isPresent());
     }
 
     @Test
-    public void getResourceWrongDomain() {
+    void getResourceWrongDomain() {
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD2());
         assertFalse(optResource.isPresent());
     }
 
     @Test
-    public void getResourceWrongResourceDef() {
+    void getResourceWrongResourceDef() {
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefCpp(), testUtilsDao.getD1());
         assertFalse(optResource.isPresent());
     }
 
     @Test
-    public void deleteResourceSimpleOK() {
+    void deleteResourceSimpleOK() {
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
         assertTrue(optResource.isPresent());
         // then
@@ -154,7 +154,7 @@ public class ResourceDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void deleteResourceJoinTableOK() {
+    void deleteResourceJoinTableOK() {
         testUtilsDao.createSubresources();
         Optional<DBResource> optResource = testInstance.getResource(TEST_SG_ID_1, TEST_SG_SCHEMA_1, testUtilsDao.getResourceDefSmp(), testUtilsDao.getD1());
         assertTrue(optResource.isPresent());
@@ -166,7 +166,7 @@ public class ResourceDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void getAllPublicResources() {
+    void getAllPublicResources() {
         List<DBResource> result = testInstance.getResourcesForFilter(-1, -1, creatResourceFilter(null, null, null));
         //System.out.println(result.get(0));
         assertEquals(2, result.size());
@@ -216,7 +216,7 @@ public class ResourceDaoTest extends AbstractBaseDao {
      * test filter. - TODO when moving to JUNIT5 parametrize this method!
      */
     @Test
-    public void getAllResourcesCount() {
+    void getAllResourcesCount() {
 
         Long result = testInstance.getResourcesForFilterCount(creatResourceFilter(null, null, null));
         assertEquals(2, result.intValue());

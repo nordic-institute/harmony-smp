@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class UserAdminControllerIT extends AbstractControllerTest {
+class UserAdminControllerIT extends AbstractControllerTest {
 
     private static final String PATH_INTERNAL = ResourceConstants.CONTEXT_PATH_INTERNAL_USER;
 
@@ -53,7 +53,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void getUsers() throws Exception {
+    void getUsers() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         MvcResult result = mvc.perform(get(PATH_INTERNAL)
                         .session(session)
@@ -71,7 +71,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testSearch() throws Exception {
+    void testSearch() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, session);
         MvcResult result = mvc.perform(get(PATH_INTERNAL + "/{user-id}/search", userROAdmin.getUserId())
@@ -90,7 +90,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testSearchFilterNoMatch() throws Exception {
+    void testSearchFilterNoMatch() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, session);
         MvcResult result = mvc.perform(get(PATH_INTERNAL + "/{user-id}/search", userROAdmin.getUserId())
@@ -105,7 +105,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testValidateDeleteUserOK() throws Exception {
+    void testValidateDeleteUserOK() throws Exception {
 
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -133,7 +133,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testValidateDeleteLoggedUserNotOK() throws Exception {
+    void testValidateDeleteLoggedUserNotOK() throws Exception {
 
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -160,7 +160,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void changePasswordForUser() throws Exception {
+    void changePasswordForUser() throws Exception {
         MockHttpSession sessionAdmin = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, sessionAdmin);
 
@@ -178,7 +178,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
         newPass.setUsername(SG_USER2_USERNAME);
         newPass.setCurrentPassword(SYS_ADMIN_PASSWD);
         newPass.setNewPassword(newPassword);
-        assertNotEquals(newPassword, SG_USER2_PASSWD);
+        assertNotEquals(SG_USER2_PASSWD, newPassword);
 
         mvc.perform(put(PATH_INTERNAL + "/" + userROAdmin.getUserId() + "/change-password-for/" + userROToUpdate.get("userId"))
                 .with(csrf())
@@ -193,7 +193,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetUserData() throws Exception {
+    void testGetUserData() throws Exception {
         MockHttpSession sessionAdmin = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, sessionAdmin);
 
@@ -218,7 +218,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testUpdateUserData() throws Exception {
+    void testUpdateUserData() throws Exception {
         MockHttpSession sessionAdmin = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, sessionAdmin);
 
@@ -250,7 +250,7 @@ public class UserAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testUDeleteUserData() throws Exception {
+    void testUDeleteUserData() throws Exception {
         MockHttpSession sessionAdmin = loginWithSystemAdmin(mvc);
         UserRO userROAdmin = getLoggedUserData(mvc, sessionAdmin);
 

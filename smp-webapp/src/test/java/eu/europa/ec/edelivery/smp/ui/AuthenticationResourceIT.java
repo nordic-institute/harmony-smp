@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-public class AuthenticationResourceIT {
+class AuthenticationResourceIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationResourceIT.class);
 
@@ -81,7 +81,7 @@ public class AuthenticationResourceIT {
     }
 
     @Test
-    public void authenticateSuccessTest() throws Exception {
+    void authenticateSuccessTest() throws Exception {
         // given when
         HttpSession session = mvc.perform(post(PATH)
                         .header("Content-Type", "application/json")
@@ -95,7 +95,7 @@ public class AuthenticationResourceIT {
 
 
     @Test
-    public void authenticateInvalidPasswordTest() throws Exception {
+    void authenticateInvalidPasswordTest() throws Exception {
         // given when then
         mvc.perform(post(PATH)
                         .header("Content-Type", "application/json")
@@ -106,7 +106,7 @@ public class AuthenticationResourceIT {
     }
 
     @Test
-    public void authenticateInvalidUsernameTest() throws Exception {
+    void authenticateInvalidUsernameTest() throws Exception {
 
         // given when
         mvc.perform(post(PATH)

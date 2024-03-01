@@ -68,7 +68,7 @@ public class ParticipantIdentifierFormatterParseTests {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void testPartyIdentifierParse(String name,
+    void testPartyIdentifierParse(String name,
                                          boolean throwError,
                                          String identifier,
                                          String schemaPart,

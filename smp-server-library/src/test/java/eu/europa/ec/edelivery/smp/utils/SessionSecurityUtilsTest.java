@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 4.2q
  */
-public class SessionSecurityUtilsTest {
+class SessionSecurityUtilsTest {
 
     @AfterEach
     public void afterUnitTest() {
@@ -49,7 +49,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void encryptedEntityId() {
+    void encryptedEntityId() {
         SMPAuthenticationToken token = setTestSMPAuthenticationToken();
         Long value = 12332L;
         String result = SessionSecurityUtils.encryptedEntityId(value);
@@ -60,7 +60,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void decryptEntityId() {
+    void decryptEntityId() {
         SMPAuthenticationToken token = setTestSMPAuthenticationToken();
         Long value = 12332L;
         String encValue = SecurityUtils.encryptURLSafe(token.getSecret(), value.toString());
@@ -72,7 +72,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getAuthenticationSecretFromSMPAuthenticationToken() {
+    void getAuthenticationSecretFromSMPAuthenticationToken() {
         // given
         SMPAuthenticationToken token = setTestSMPAuthenticationToken();
 
@@ -82,7 +82,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getAuthenticationSecretFromCasAuthenticationToken() {
+    void getAuthenticationSecretFromCasAuthenticationToken() {
         // given
         CasAuthenticationToken token = setTestCasAuthenticationToken();
 
@@ -93,7 +93,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getAuthenticationSecretNotSupported() {
+    void getAuthenticationSecretNotSupported() {
         // given
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(null, null);
         SecurityContextHolder.getContext().setAuthentication(token);
@@ -104,7 +104,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getAuthenticationName() {
+    void getAuthenticationName() {
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String testName = "testName";
@@ -117,7 +117,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getSessionAuthenticationClasses() {
+    void getSessionAuthenticationClasses() {
         List<Class> list = SessionSecurityUtils.getSessionAuthenticationClasses();
         assertEquals(4, list.size());
         assertTrue(list.contains(SMPAuthenticationToken.class));

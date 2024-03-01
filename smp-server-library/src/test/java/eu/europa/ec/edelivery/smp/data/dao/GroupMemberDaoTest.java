@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class GroupMemberDaoTest extends AbstractBaseDao {
+class GroupMemberDaoTest extends AbstractBaseDao {
 
     @Autowired
     GroupMemberDao testInstance;
@@ -50,7 +50,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserGroupMember() {
+    void testIsUserGroupMember() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -66,7 +66,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserGroupMemberFalse() {
+    void testIsUserGroupMemberFalse() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -77,7 +77,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserGroupMemberWithRole() {
+    void testIsUserGroupMemberWithRole() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -94,7 +94,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void isUserAnyDomainGroupResourceMember() {
+    void isUserAnyDomainGroupResourceMember() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -112,7 +112,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void isUserAnyDomainGroupResourceMemberWithRole() {
+    void isUserAnyDomainGroupResourceMemberWithRole() {
         DBUser user = testUtilsDao.getUser1();
         DBGroup group = testUtilsDao.getGroupD1G1();
 
@@ -129,7 +129,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetGroupMembersOne() {
+    void testGetGroupMembersOne() {
         DBGroup group = testUtilsDao.getGroupD1G1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToGroup(user, group, MembershipRoleType.ADMIN);
@@ -141,7 +141,7 @@ public class GroupMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetDomainMembersOneFilter() {
+    void testGetDomainMembersOneFilter() {
         DBGroup group = testUtilsDao.getGroupD1G1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToGroup(user, group, MembershipRoleType.ADMIN);

@@ -37,11 +37,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTest {
+class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTest {
 
     @Test
     @Transactional
-    public void persistNewResourceWithMember() {
+    void persistNewResourceWithMember() {
         DBResource resource = createResourceWithMembers(TestConstants.USERNAME_1);
 
         Optional<DBResource> res = testInstance.findServiceGroup(resource.getIdentifierValue(), resource.getIdentifierScheme());
@@ -54,7 +54,7 @@ public class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTes
 
     @Test
     @Transactional
-    public void addTwoMembersToServiceGroup() {
+    void addTwoMembersToServiceGroup() {
         DBResource resource = createResourceWithMembers(TestConstants.USERNAME_1, TestConstants.USERNAME_3);
 
         Optional<DBResource> res = testInstance.findServiceGroup(resource.getIdentifierValue(), resource.getIdentifierScheme());
@@ -64,7 +64,7 @@ public class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTes
 
     @Test
     @Transactional
-    public void removeMemberFromResource() {
+    void removeMemberFromResource() {
         DBResource resource = createResourceWithMembers(TestConstants.USERNAME_1, TestConstants.USERNAME_3);
         assertEquals(2, resource.getMembers().size());
 

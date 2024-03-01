@@ -122,7 +122,7 @@ public class EBCorePartyIdFormatterTypeTest {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void isSchemeValid(String testName,
+    void isSchemeValid(String testName,
                               boolean isEBCorePartyId,
                               String toParseIdentifier,
                               String schemaPart,
@@ -136,7 +136,7 @@ public class EBCorePartyIdFormatterTypeTest {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void isType(String testName,
+    void isType(String testName,
                        boolean isEBCorePartyId,
                        String toParseIdentifier,
                        String schemaPart,
@@ -150,7 +150,7 @@ public class EBCorePartyIdFormatterTypeTest {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void format(String testName,
+    void format(String testName,
                        boolean isEBCorePartyId,
                        String toParseIdentifier,
                        String schemaPart,
@@ -170,7 +170,7 @@ public class EBCorePartyIdFormatterTypeTest {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void parse(String testName,
+    void parse(String testName,
                       boolean isEBCorePartyId,
                       String toParseIdentifier,
                       String schemaPart,

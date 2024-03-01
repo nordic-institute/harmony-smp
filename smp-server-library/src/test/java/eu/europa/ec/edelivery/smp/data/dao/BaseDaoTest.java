@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class BaseDaoTest extends AbstractBaseDao {
+class BaseDaoTest extends AbstractBaseDao {
 
 
     @Autowired
@@ -50,7 +50,7 @@ public class BaseDaoTest extends AbstractBaseDao {
     protected EntityManager memEManager;
 
     @Test
-    public void testSelectAndCountResult() {
+    void testSelectAndCountResult() {
         // given
         TestFilter filter = null;
         Class cls = DBDomain.class;
@@ -69,7 +69,7 @@ public class BaseDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testFilterEmpty() {
+    void testFilterEmpty() {
         // given
         TestFilter filter = new TestFilter();
         Class cls = DBDomain.class;
@@ -81,7 +81,7 @@ public class BaseDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testPredicatesStringValue() {
+    void testPredicatesStringValue() {
         // given
         TestFilter filter = new TestFilter();
         String filterValue = "TestValue";
@@ -101,7 +101,7 @@ public class BaseDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testPredicatesStringListValue() {
+    void testPredicatesStringListValue() {
         // given
         TestFilter filter = new TestFilter();
         List<String> filterValue = Collections.singletonList("TestValue");
@@ -121,7 +121,7 @@ public class BaseDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testPredicatesStringLikeValue() {
+    void testPredicatesStringLikeValue() {
         // given
         TestFilter filter = new TestFilter();
         String filterValue = "TestValue";
@@ -141,7 +141,7 @@ public class BaseDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testPredicatesLong() {
+    void testPredicatesLong() {
         // given
         TestFilter filter = new TestFilter();
         Long filterValue = (long) 10;

@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class DomainEditControllerTest extends AbstractControllerTest {
+class DomainEditControllerTest extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_EDIT_DOMAIN;
 
     @Autowired
@@ -65,7 +65,7 @@ public class DomainEditControllerTest extends AbstractControllerTest {
             "group-admin, 1",
             "resource-admin, 1",
     })
-    public void testGetDomains(String roleType, int values) throws Exception {
+    void testGetDomains(String roleType, int values) throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -87,7 +87,7 @@ public class DomainEditControllerTest extends AbstractControllerTest {
 
 
     @Test
-    public void testGetDomainMembers() throws Exception {
+    void testGetDomainMembers() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -112,7 +112,7 @@ public class DomainEditControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testAddDomainMember() throws Exception {
+    void testAddDomainMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -128,7 +128,7 @@ public class DomainEditControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testDeleteDomainMember() throws Exception {
+    void testDeleteDomainMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -150,7 +150,7 @@ public class DomainEditControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testUpdateDomainMember() throws Exception {
+    void testUpdateDomainMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);

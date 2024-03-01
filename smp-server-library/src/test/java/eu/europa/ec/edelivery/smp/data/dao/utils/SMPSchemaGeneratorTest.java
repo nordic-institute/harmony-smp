@@ -30,7 +30,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPSchemaGeneratorTest {
+class SMPSchemaGeneratorTest {
 
     private static final String DIALECT_ORACLE = "org.hibernate.dialect.Oracle10gDialect";
     private static final String DIALECT_MYSQL_INNO5 = "org.hibernate.dialect.MySQL5InnoDBDialect";
@@ -53,7 +53,7 @@ public class SMPSchemaGeneratorTest {
 
 
     @Test
-    public void createDDLScript() throws ClassNotFoundException, IOException {
+    void createDDLScript() throws ClassNotFoundException, IOException {
         // given
         String folder = "target";
         String dialect = DIALECT_ORACLE;
@@ -76,7 +76,7 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void createFileNameOracleDialect() {
+    void createFileNameOracleDialect() {
         String dialect = DIALECT_ORACLE;
         //when
         String filaName = testInstance.createFileName(dialect, SMPSchemaGenerator.filenameTemplate);
@@ -85,7 +85,7 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void createFileNameMySQLDialect() {
+    void createFileNameMySQLDialect() {
         // given
         String dialect = DIALECT_MYSQL_INNO5;
         //when
@@ -95,7 +95,7 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void createDropFileNameOracleDialect() {
+    void createDropFileNameOracleDialect() {
         String dialect = DIALECT_ORACLE;
         //when
         String fileName = testInstance.createFileName(dialect, SMPSchemaGenerator.filenameDropTemplate);
@@ -104,7 +104,7 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void createDropFileNameMySQLDialect() {
+    void createDropFileNameMySQLDialect() {
         // given
         String dialect = DIALECT_MYSQL_INNO5;
         //when
@@ -116,7 +116,7 @@ public class SMPSchemaGeneratorTest {
 
     @ParameterizedTest
     @MethodSource("dialectTestCases")
-    public void getDialect(String input, String output) {
+    void getDialect(String input, String output) {
 
         //when
         String result = testInstance.getDialect(input);
@@ -125,14 +125,14 @@ public class SMPSchemaGeneratorTest {
     }
 
     @Test
-    public void getAllEntityClassesNotFound() {
+    void getAllEntityClassesNotFound() {
 
         assertThrows(ClassNotFoundException.class, () -> testInstance.getAllEntityClasses("eu.not.exists"));
 
     }
 
     @Test
-    public void getAllEntityClasses() throws ClassNotFoundException {
+    void getAllEntityClasses() throws ClassNotFoundException {
 
         // given when
         List<Class> result = testInstance.getAllEntityClasses("eu.europa.ec.edelivery.smp.data.model");

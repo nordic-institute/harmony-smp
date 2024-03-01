@@ -48,7 +48,7 @@ import java.nio.file.Paths;
 
  */
 @ContextConfiguration(classes = { SmpXmlSignatureService.class})
-public class ServiceMetadataSignerTest extends AbstractJunit5BaseDao{
+class ServiceMetadataSignerTest extends AbstractJunit5BaseDao{
 
     Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
 
@@ -97,13 +97,13 @@ public class ServiceMetadataSignerTest extends AbstractJunit5BaseDao{
             "smp_ecdsa_nist-b409",
             "smp_eddsa_25519",
             "smp_eddsa_448"})
-    public void testSignatureAndDefaultAlgorithmeDefinitionOk(String alias) throws Exception {
+    void testSignatureAndDefaultAlgorithmeDefinitionOk(String alias) throws Exception {
         Document document = loadAndSignDocumentForDefault(alias);
         validateSignatureForDefault(document);
     }
 
     @Test
-    public void testAdminSignatureOk() throws Exception {
+    void testAdminSignatureOk() throws Exception {
         Element adminSignature = loadAndSignDocumentForAdmin("/expected_output/PUT_ServiceMetadata_request.xml");
         SignatureUtil.validateSignature(adminSignature);
     }

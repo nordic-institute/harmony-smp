@@ -56,7 +56,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetDocumentForNewResource() throws Exception {
+    void testGetDocumentForNewResource() throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -83,7 +83,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetDocumentForResource() throws Exception {
+    void testGetDocumentForResource() throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -113,7 +113,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testValidateDocumentOk() throws Exception {
+    void testValidateDocumentOk() throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -144,7 +144,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testValidateDocumentInvalid() throws Exception {
+    void testValidateDocumentInvalid() throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -180,7 +180,7 @@ class DocumentEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGenerateDocument() throws Exception {
+    void testGenerateDocument() throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);

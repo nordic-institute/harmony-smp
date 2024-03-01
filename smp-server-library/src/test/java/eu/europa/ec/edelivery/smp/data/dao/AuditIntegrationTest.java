@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class AuditIntegrationTest extends AbstractBaseDao {
+class AuditIntegrationTest extends AbstractBaseDao {
     private static final Logger LOG = LoggerFactory.getLogger(AuditIntegrationTest.class);
 
     // because envers creates audit on commit we use PersistenceUnit to control commit...
@@ -64,7 +64,7 @@ public class AuditIntegrationTest extends AbstractBaseDao {
     EntityManagerFactory emf;
 
     @Test
-    public void testClassesForAudit() {
+    void testClassesForAudit() {
         AuditReader ar = AuditReaderFactory.get(emf.createEntityManager());
         assertTrue(ar.isEntityClassAudited(DBResource.class));
         assertTrue(ar.isEntityClassAudited(DBSubresource.class));
@@ -75,7 +75,7 @@ public class AuditIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testAuditDBDomain() {
+    void testAuditDBDomain() {
 
         DBDomain domain = createDBDomain();
         Map<String, Object> alterVal = new HashMap<>();
@@ -87,7 +87,7 @@ public class AuditIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testAuditDBAlert() {
+    void testAuditDBAlert() {
 
         DBAlert dbAlert = createDBAlert();
         Map<String, Object> alterVal = new HashMap<>();
@@ -97,7 +97,7 @@ public class AuditIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testAuditDBUser() {
+    void testAuditDBUser() {
 
         DBUser dbuser = createDBUser(UUID.randomUUID().toString());
         Map<String, Object> alterVal = new HashMap<>();
@@ -107,7 +107,7 @@ public class AuditIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testAuditDBCredentials() {
+    void testAuditDBCredentials() {
         DBUser user = createDBUser("Credential-test");
         persist(user);
 
@@ -127,7 +127,7 @@ public class AuditIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testAuditDBCredentialsWithCertificate() {
+    void testAuditDBCredentialsWithCertificate() {
         DBUser dbuser = createDBUser(UUID.randomUUID().toString());
         persist(dbuser);
 
@@ -145,7 +145,7 @@ public class AuditIntegrationTest extends AbstractBaseDao {
 
 
     @Test
-    public void testAuditDBResource() {
+    void testAuditDBResource() {
         DBResource resource = createDBResource();
         resource.setDocument(createDBDocument());
         Map<String, Object> alterVal = new HashMap<>();

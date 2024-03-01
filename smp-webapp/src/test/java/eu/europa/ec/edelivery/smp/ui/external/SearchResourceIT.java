@@ -59,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-public class SearchResourceIT {
+class SearchResourceIT {
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -82,7 +82,7 @@ public class SearchResourceIT {
     }
 
     @Test
-    public void testSearchByAnonymous() throws Exception {
+    void testSearchByAnonymous() throws Exception {
         // given when
         MvcResult result = mvc.perform(get(CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)).andExpect(status().isOk()).andReturn();
 

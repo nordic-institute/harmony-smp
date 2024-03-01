@@ -67,7 +67,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "smp.artifact.version=TestApplicationVersion",
         "smp.artifact.build.time=2018-11-27 00:00:00",
 })
-public class ApplicationResourceIT {
+class ApplicationResourceIT {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_PUBLIC_APPLICATION;
 
     @Autowired
@@ -93,7 +93,7 @@ public class ApplicationResourceIT {
     }
 
     @Test
-    public void testGetName() throws Exception {
+    void testGetName() throws Exception {
         String value = mvc.perform(get(PATH + "/name"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -104,13 +104,13 @@ public class ApplicationResourceIT {
     }
 
     @Test
-    public void getDisplayName() throws Exception {
+    void getDisplayName() throws Exception {
         String value = applicationResource.getDisplayVersion();
         MatcherAssert.assertThat(value, startsWith("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00"));
     }
 
     @Test
-    public void getApplicationInfoTest() throws Exception {
+    void getApplicationInfoTest() throws Exception {
         String value = mvc.perform(get(PATH + "/info"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -124,7 +124,7 @@ public class ApplicationResourceIT {
     }
 
     @Test
-    public void testGetApplicationConfigNotAuthorized() throws Exception {
+    void testGetApplicationConfigNotAuthorized() throws Exception {
         // when
         mvc.perform(get(PATH + "/config")
                         .with(csrf()))
@@ -134,7 +134,7 @@ public class ApplicationResourceIT {
     }
 
     @Test
-    public void testGetApplicationConfigAuthorized() throws Exception {
+    void testGetApplicationConfigAuthorized() throws Exception {
 
         //  User
         MockHttpSession sessionUser = loginWithUserGroupAdmin(mvc);
@@ -159,7 +159,7 @@ public class ApplicationResourceIT {
     }
 
     @Test
-    public void testGetApplicationConfigUser() throws Exception {
+    void testGetApplicationConfigUser() throws Exception {
         // when
         MockHttpSession session = loginWithUserGroupAdmin(mvc);
         String value = mvc.perform(get(PATH + "/config")

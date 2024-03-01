@@ -28,10 +28,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPUserDetailsTest {
+class SMPUserDetailsTest {
 
     @Test
-    public void testInitSMPUserDetailsTest() {
+    void testInitSMPUserDetailsTest() {
         DBUser user = new DBUser();
         SecurityUtils.Secret secret = SecurityUtils.generatePrivateSymmetricKey(true);
         List<SMPAuthority> authorityList = Collections.singletonList(SMPAuthority.S_AUTHORITY_USER);

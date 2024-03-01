@@ -31,7 +31,7 @@ import org.springframework.core.convert.ConversionService;
  * @author Sebastian-Ion TINCU
  */
 @ExtendWith(MockitoExtension.class)
-public class UserROToDBUserConverterTest {
+class UserROToDBUserConverterTest {
 
     private UserRO source;
 
@@ -44,7 +44,7 @@ public class UserROToDBUserConverterTest {
     private UserROToDBUserConverter converter = new UserROToDBUserConverter();
 
     @Test
-    public void doesNotSetPasswordChangedWhenConvertingUser() {
+    void doesNotSetPasswordChangedWhenConvertingUser() {
         givenUser();
 
         whenConvertingTheUserRoSource();

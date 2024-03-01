@@ -54,14 +54,14 @@ public class SMPDatabaseConfigTest {
     }
 
     @Test
-    public void getDataSourceMissingConfiguration() {
+    void getDataSourceMissingConfiguration() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
 
         assertEquals("Configuration error: [Invalid datasource configuration. Both jndi or jdbc url are empty]!", result.getMessage());
     }
 
     @Test
-    public void getJNDIForDataSourceMissing() {
+    void getJNDIForDataSourceMissing() {
         Mockito.doReturn("jdbc/eDeliverySmpDs").when(environmentProperties).getDatabaseJNDI();
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
@@ -70,7 +70,7 @@ public class SMPDatabaseConfigTest {
     }
 
     @Test
-    public void getDataSource() {
+    void getDataSource() {
         setJdbcProperties();
 
         DataSource result = testInstance.getDataSource();
@@ -80,7 +80,7 @@ public class SMPDatabaseConfigTest {
     }
 
     @Test
-    public void jpaVendorAdapter() {
+    void jpaVendorAdapter() {
         setHibernateDatabaseDialect();
         JpaVendorAdapter result = testInstance.jpaVendorAdapter();
 
@@ -88,7 +88,7 @@ public class SMPDatabaseConfigTest {
     }
 
     @Test
-    public void smpEntityManagerFactory() {
+    void smpEntityManagerFactory() {
         setJdbcProperties();
         setHibernateDatabaseDialect();
 
@@ -97,7 +97,7 @@ public class SMPDatabaseConfigTest {
     }
 
     @Test
-    public void smpTransactionManager() {
+    void smpTransactionManager() {
         setJdbcProperties();
         setHibernateDatabaseDialect();
 

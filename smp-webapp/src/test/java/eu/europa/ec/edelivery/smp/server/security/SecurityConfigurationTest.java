@@ -91,7 +91,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void getMethodAccessiblePubliclyTest() throws Exception {
+    void getMethodAccessiblePubliclyTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get(RETURN_LOGGED_USER_PATH)
                         .with(csrf()))
                 .andExpect(status().isOk())
@@ -99,21 +99,21 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void notAuthenticatedUserCannotCallPutTest() throws Exception {
+    void notAuthenticatedUserCannotCallPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void notAuthenticatedUserCannotCallDeleteTest() throws Exception {
+    void notAuthenticatedUserCannotCallDeleteTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete(RETURN_LOGGED_USER_PATH)
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
+    void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                         .with(httpBasic(TEST_USERNAME_DB_HASHED_PASS, PASSWORD))
                         .with(csrf()))
@@ -122,7 +122,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void userStoredWithUpperCaseUsernameIsAuthorizedForPutTestIdCaseSensitive() throws Exception {
+    void userStoredWithUpperCaseUsernameIsAuthorizedForPutTestIdCaseSensitive() throws Exception {
         String upperCaseUsername = TEST_USERNAME_DB_HASHED_PASS.toUpperCase();
         // test that is not the same
         assertNotEquals(upperCaseUsername, TEST_USERNAME_DB_HASHED_PASS);
@@ -134,7 +134,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void userStoredWithClearPassIsNotAuthorizedForPutTest() throws Exception {
+    void userStoredWithClearPassIsNotAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                         .with(httpBasic(TEST_USERNAME_DB_CLEAR_PASS, PASSWORD)).with(csrf()))
                 .andExpect(status().isUnauthorized());
@@ -142,7 +142,7 @@ public class SecurityConfigurationTest {
 
 
     @Test
-    public void malformedClientCertHeaderNotAuthorizedTest() {
+    void malformedClientCertHeaderNotAuthorizedTest() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", "malformed header value");
         assertThrows(ClientCertParseException.class, () -> mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
@@ -151,7 +151,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void validClientCertHeaderAuthorizedForPutTest() throws Exception {
+    void validClientCertHeaderAuthorizedForPutTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER);
         String result = mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
@@ -163,7 +163,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void ClientCertHeaderNotAuthorizedForPutTest() throws Exception {
+    void ClientCertHeaderNotAuthorizedForPutTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_NOT_AUTHORIZED_HEADER);
 
@@ -174,7 +174,7 @@ public class SecurityConfigurationTest {
 
     @Test
     @Disabled
-    public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTest() throws Exception {
+    void validClientCertHeaderAuthorizedBeforeValidBasicAuthTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
@@ -187,7 +187,7 @@ public class SecurityConfigurationTest {
 
     @Test
     @Disabled
-    public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpper() throws Exception {
+    void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpper() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
@@ -201,7 +201,7 @@ public class SecurityConfigurationTest {
 
     @Test
     @Disabled
-    public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestDBUpperSN() throws Exception {
+    void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestDBUpperSN() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
@@ -214,7 +214,7 @@ public class SecurityConfigurationTest {
 
     @Test
     @Disabled
-    public void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpperDBUpperSN() throws Exception {
+    void validClientCertHeaderAuthorizedBeforeValidBasicAuthTestUpperDBUpperSN() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Client-Cert", CLIENT_CERT_VALID_HEADER_DB_UPPER_SN);
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)

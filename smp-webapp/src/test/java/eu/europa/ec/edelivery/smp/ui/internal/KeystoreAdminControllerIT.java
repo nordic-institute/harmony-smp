@@ -45,7 +45,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class KeystoreAdminControllerIT extends AbstractControllerTest {
+class KeystoreAdminControllerIT extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_KEYSTORE;
     Path keystore = Paths.get("src", "test", "resources", "keystores", "smp-keystore.jks");
 
@@ -59,7 +59,7 @@ public class KeystoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void getKeyCertificateList() throws Exception {
+    void getKeyCertificateList() throws Exception {
         // given when
         int countStart = uiKeystoreService.getKeystoreEntriesList().size();
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -86,7 +86,7 @@ public class KeystoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void uploadKeystoreFailed() throws Exception {
+    void uploadKeystoreFailed() throws Exception {
         // given when
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -105,7 +105,7 @@ public class KeystoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void uploadKeystoreInvalidPassword() throws Exception {
+    void uploadKeystoreInvalidPassword() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = (UserRO) session.getAttribute(MOCK_LOGGED_USER);
@@ -123,7 +123,7 @@ public class KeystoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void uploadKeystoreOK() throws Exception {
+    void uploadKeystoreOK() throws Exception {
 
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -144,7 +144,7 @@ public class KeystoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteCertificateOK() throws Exception {
+    void deleteCertificateOK() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         String alias = "second_domain_alias";
@@ -166,7 +166,7 @@ public class KeystoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteCertificateNotExists() throws Exception {
+    void deleteCertificateNotExists() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         String alias = "alias-not-exists";

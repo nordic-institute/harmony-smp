@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 
 @ExtendWith(MockitoExtension.class)
-public class DBUserToUserROConverterTest {
+class DBUserToUserROConverterTest {
 
     private DBUser source;
 
@@ -58,7 +58,7 @@ public class DBUserToUserROConverterTest {
     private DBUserToUserROConverter converter = new DBUserToUserROConverter(credentialDao, configurationService);
 
     @Test
-    public void returnsThePasswordAsNotExpiredForCertificateOnlyUsers() {
+    void returnsThePasswordAsNotExpiredForCertificateOnlyUsers() {
         givenAnExistingCertificateOnlyUser();
 
         whenConvertingTheExistingUser();
@@ -67,7 +67,7 @@ public class DBUserToUserROConverterTest {
     }
 
     @Test
-    public void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordThatHasBeenRecentlyReset() {
+    void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordThatHasBeenRecentlyReset() {
         givenAnExistingUserHavingAPasswordThatHasJustBeenReset();
         List<DBCredential> credentialList = source.getUserCredentials();
         Mockito.doReturn(credentialList).when(credentialDao).findUserCredentialForByUserIdTypeAndTarget(Mockito.any(),
@@ -81,7 +81,7 @@ public class DBUserToUserROConverterTest {
     }
 
     @Test
-    public void returnsThePasswordAsNotExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedNoLongerThanThreeMonthsAgo() {
+    void returnsThePasswordAsNotExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedNoLongerThanThreeMonthsAgo() {
         givenAnExistingUserHavingAPasswordThatChangedNoLongerThanThreeMonthsAgo();
 
         whenConvertingTheExistingUser();
@@ -90,7 +90,7 @@ public class DBUserToUserROConverterTest {
     }
 
     @Test
-    public void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedMoreThanThreeMonthsAgo() {
+    void returnsThePasswordAsExpiredWhenConvertingAnExistingUserThatHasAPasswordChangedMoreThanThreeMonthsAgo() {
         givenAnExistingUserHavingAPasswordThatChangedMoreThanThreeMonthsAgo();
         List<DBCredential> credentialList = source.getUserCredentials();
         Mockito.doReturn(credentialList).when(credentialDao).findUserCredentialForByUserIdTypeAndTarget(Mockito.any(),

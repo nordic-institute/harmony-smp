@@ -30,12 +30,12 @@ import org.springframework.security.core.AuthenticationException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
-public class ServiceErrorControllerAdviceTest {
+class ServiceErrorControllerAdviceTest {
 
     ServiceErrorControllerAdvice testIntance = new ServiceErrorControllerAdvice();
 
     @Test
-    public void handleRuntimeException() {
+    void handleRuntimeException() {
         ResponseEntity re = testIntance.handleRuntimeException(new RuntimeException("RuntimeExceptionMessage"));
 
         assertEquals(INTERNAL_SERVER_ERROR, re.getStatusCode());
@@ -45,7 +45,7 @@ public class ServiceErrorControllerAdviceTest {
     }
 
     @Test
-    public void handleBadRequestException() {
+    void handleBadRequestException() {
 
         ResponseEntity re = testIntance.handleBadRequestException(new BadRequestException(ErrorBusinessCode.WRONG_FIELD, "BadRequestExceptionMessage"));
 
@@ -55,7 +55,7 @@ public class ServiceErrorControllerAdviceTest {
 
 
     @Test
-    public void handleMalformedIdentifierException() {
+    void handleMalformedIdentifierException() {
         ResponseEntity re = testIntance.handleMalformedIdentifierException(new MalformedIdentifierException("MalformedIdentifierExceptionMessage", null));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
@@ -63,7 +63,7 @@ public class ServiceErrorControllerAdviceTest {
     }
 
     @Test
-    public void handleAuthenticationException() {
+    void handleAuthenticationException() {
 
         ResponseEntity re = testIntance.handleRuntimeException(new AuthenticationException("AuthenticationException") {
             @Override
@@ -77,7 +77,7 @@ public class ServiceErrorControllerAdviceTest {
     }
 
     @Test
-    public void handleAccessDeniedException() {
+    void handleAccessDeniedException() {
         ResponseEntity re = testIntance.handleAccessDeniedException(new AccessDeniedException("AccessDeniedExceptionMessage"));
 
         assertEquals(UNAUTHORIZED, re.getStatusCode());
@@ -86,7 +86,7 @@ public class ServiceErrorControllerAdviceTest {
 
 /*
     @Test
-    public void handleXmlInvalidAgainstSchemaException() {
+    void handleXmlInvalidAgainstSchemaException() {
         ResponseEntity re = testIntance.handleXmlInvalidAgainstSchemaException(
                 new XmlInvalidAgainstSchemaException("XmlInvalidAgainstSchemaExceptionMessage", null));
 

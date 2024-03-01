@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class DomainMemberDaoTest extends AbstractBaseDao {
+class DomainMemberDaoTest extends AbstractBaseDao {
 
     @Autowired
     UserDao userDao;
@@ -54,7 +54,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void testIsUserDomainsMember() {
+    void testIsUserDomainsMember() {
         DBDomain domain = testUtilsDao.getD1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToDomain(user, domain, MembershipRoleType.ADMIN);
@@ -65,7 +65,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserDomainsMemberFalse() {
+    void testIsUserDomainsMemberFalse() {
 
         // then
         boolean result = testInstance.isUserDomainsMember(testUtilsDao.getUser1(), Collections.singletonList(testUtilsDao.getD1()));
@@ -74,7 +74,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserDomainsMemberWithRoleTrue() {
+    void testIsUserDomainsMemberWithRoleTrue() {
         DBDomain domain = testUtilsDao.getD1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToDomain(user, domain, MembershipRoleType.ADMIN);
@@ -86,7 +86,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetDomainMembersEmpty() {
+    void testGetDomainMembersEmpty() {
         DBDomain domain = testUtilsDao.getD1();
         // then
         Long resultCount = testInstance.getDomainMemberCount(domain.getId(), null);
@@ -96,7 +96,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetDomainMembersOne() {
+    void testGetDomainMembersOne() {
         DBDomain domain = testUtilsDao.getD1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToDomain(user, domain, MembershipRoleType.ADMIN);
@@ -108,7 +108,7 @@ public class DomainMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetDomainMembersOneFilter() {
+    void testGetDomainMembersOneFilter() {
         DBDomain domain = testUtilsDao.getD1();
         DBUser user = testUtilsDao.getUser1();
         addMemberToDomain(user, domain, MembershipRoleType.ADMIN);

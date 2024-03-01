@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class DomainAdminControllerIT extends AbstractControllerTest {
+class DomainAdminControllerIT extends AbstractControllerTest {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_INTERNAL_DOMAIN;
 
     @Autowired
@@ -62,7 +62,7 @@ public class DomainAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetAllDomains() throws Exception {
+    void testGetAllDomains() throws Exception {
 
         List<DBDomain> domain = domainDao.getAllDomains();
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -79,7 +79,7 @@ public class DomainAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testCreateBasicDomainData() throws Exception {
+    void testCreateBasicDomainData() throws Exception {
         DomainRO testDomain = TestROUtils.createDomain();
 
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -99,7 +99,7 @@ public class DomainAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testCreateDomainWithEmptyCode() throws Exception {
+    void testCreateDomainWithEmptyCode() throws Exception {
         DomainRO testDomain = TestROUtils.createDomain("");
 
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -119,7 +119,7 @@ public class DomainAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testUpdateResourceDefDomainList() throws Exception {
+    void testUpdateResourceDefDomainList() throws Exception {
         String domainCode = "domainTwo";
         String documentType = "edelivery-oasis-cppa";
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -142,7 +142,7 @@ public class DomainAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testDeleteDomainOK() throws Exception {
+    void testDeleteDomainOK() throws Exception {
         // given - delete domain two :)
         String domainCode = "domainTwo";
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -163,7 +163,7 @@ public class DomainAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void updateDomainData() throws Exception {
+    void updateDomainData() throws Exception {
         String domainCode = "domainTwo";
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
@@ -185,7 +185,7 @@ public class DomainAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void updateDomainSmlIntegrationData() throws Exception {
+    void updateDomainSmlIntegrationData() throws Exception {
         String domainCode = "domainTwo";
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = (UserRO) session.getAttribute(MOCK_LOGGED_USER);
@@ -208,7 +208,7 @@ public class DomainAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void updateDomainDataAddNewResourceDef() throws Exception {
+    void updateDomainDataAddNewResourceDef() throws Exception {
         // set the webapp_integration_test_data.sql for resourceDefID
         String resourceDefID = "edelivery-oasis-cppa";
         String domainCode = "domainTwo";

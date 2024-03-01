@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class DomainDaoTest extends AbstractBaseDao {
+class DomainDaoTest extends AbstractBaseDao {
 
     @Autowired
     DomainDao testInstance;
@@ -52,7 +52,7 @@ public class DomainDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainsByUserIdAndRolesCount() {
+    void getDomainsByUserIdAndRolesCount() {
         // one for domain 1
         Long cnt = testInstance.getDomainsByUserIdAndDomainRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, cnt.intValue());
@@ -71,7 +71,7 @@ public class DomainDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainsByUserIdAndRoles() {
+    void getDomainsByUserIdAndRoles() {
         // one for domain 1
         List<DBDomain> result = testInstance.getDomainsByUserIdAndDomainRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, result.size());
@@ -93,7 +93,7 @@ public class DomainDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainsByUserIdAndGroupRolesCount() {
+    void getDomainsByUserIdAndGroupRolesCount() {
         // one for domain 1
         Long cnt = testInstance.getDomainsByUserIdAndGroupRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, cnt.intValue());
@@ -112,7 +112,7 @@ public class DomainDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainsByUserIdAndGroupRoles() {
+    void getDomainsByUserIdAndGroupRoles() {
         // one for domain 1
         List<DBDomain> result = testInstance.getDomainsByUserIdAndGroupRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, result.size());
@@ -134,7 +134,7 @@ public class DomainDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainsByUserIdAndResourceRolesCount() {
+    void getDomainsByUserIdAndResourceRolesCount() {
         // one for domain 1
         Long cnt = testInstance.getDomainsByUserIdAndResourceRolesCount(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, cnt.intValue());
@@ -153,7 +153,7 @@ public class DomainDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainsByUserIdAndResourceRoles() {
+    void getDomainsByUserIdAndResourceRoles() {
         // one for domain 1
         List<DBDomain> result = testInstance.getDomainsByUserIdAndResourceRoles(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, result.size());

@@ -102,7 +102,7 @@ public class PropertyUtilsTest {
 
     @ParameterizedTest
     @MethodSource("testParsePropertiesToType")
-    public void testParsePropertiesToType(SMPPropertyEnum property, String value, Class cls) {
+    void testParsePropertiesToType(SMPPropertyEnum property, String value, Class cls) {
         //when then
         Object obj = PropertyUtils.parseProperty(property, value, ROOT_FOLDER);
         assertTrue(cls.isInstance(obj));
@@ -111,7 +111,7 @@ public class PropertyUtilsTest {
 
     @ParameterizedTest
     @MethodSource("testTypeValues")
-    public void testIsValidPropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expected) {
+    void testIsValidPropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expected) {
         //when
         boolean result = PropertyUtils.isValidPropertyType(propertyType, value, ROOT_FOLDER);
 
@@ -121,7 +121,7 @@ public class PropertyUtilsTest {
 
 
     @Test
-    public void testDefaultValues() {
+    void testDefaultValues() {
 
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
             assertTrue(PropertyUtils.isValidProperty(prop, prop.getDefValue(), ROOT_FOLDER));
@@ -129,7 +129,7 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void testParseDefaultValues() {
+    void testParseDefaultValues() {
 
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
             Object obj = PropertyUtils.parseProperty(prop, prop.getDefValue(), ROOT_FOLDER);
@@ -138,7 +138,7 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void testSubjectRegExpLength() {
+    void testSubjectRegExpLength() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 PropertyUtils.isValidProperty(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT,
                         "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", ROOT_FOLDER));
@@ -148,7 +148,7 @@ public class PropertyUtilsTest {
 
 
     @Test
-    public void testSubjectRegExpValue() {
+    void testSubjectRegExpValue() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 PropertyUtils.isValidProperty(ALERT_USER_SUSPENDED_LEVEL,
                         "value", ROOT_FOLDER));
@@ -158,7 +158,7 @@ public class PropertyUtilsTest {
 
 
     @Test
-    public void testParseMapPropertiesToType() {
+    void testParseMapPropertiesToType() {
         //when then
         String value = "test1:val1|test2:val2|test3:val:with:colon|test4: val-no-spaces";
 
@@ -179,7 +179,7 @@ public class PropertyUtilsTest {
 
     @ParameterizedTest
     @MethodSource("testTypeValues")
-    public void testParsePropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expectParseOk) {
+    void testParsePropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expectParseOk) {
         if (expectParseOk) {
             Object result = PropertyUtils.parsePropertyType(propertyType, value, ROOT_FOLDER);
             assertNotNull(result);
@@ -239,14 +239,14 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void testIsSensitiveData() {
+    void testIsSensitiveData() {
         for (SMPPropertyEnum smpPropertyEnum : SMPPropertyEnum.values()) {
             assertEquals(SENSITIVE_PROPERTIES.contains(smpPropertyEnum), PropertyUtils.isSensitiveData(smpPropertyEnum.getProperty()));
         }
     }
 
     @Test
-    public void getMaskedData() {
+    void getMaskedData() {
         String testValue = "TestValue";
         for (SMPPropertyEnum smpPropertyEnum : SMPPropertyEnum.values()) {
             String expectedValue = SENSITIVE_PROPERTIES.contains(smpPropertyEnum) ? "*******" : testValue;
@@ -255,7 +255,7 @@ public class PropertyUtilsTest {
     }
 /*
     @Test
-    public void matchAllValues(){
+    void matchAllValues(){
         System.out.println("Contains in values");
 
         List<String> enumList =  Arrays.stream(SMPPropertyEnum.values()).map(val-> val.getProperty()).collect(Collectors.toList());

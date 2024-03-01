@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 5.0
  */
 
-public class ResourceDaoSearchTest extends AbstractBaseDao {
+class ResourceDaoSearchTest extends AbstractBaseDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceDaoSearchTest.class);
     @Autowired
@@ -57,7 +57,7 @@ public class ResourceDaoSearchTest extends AbstractBaseDao {
 
     @Test
     @Transactional
-    public void getAllPublicResources() {
+    void getAllPublicResources() {
         List<DBResource> allResources = testInstance.getResourcesForFilter(-1, -1, DBResourceFilter.createBuilder().build());
         assertEquals(8, allResources.size());
 
@@ -105,7 +105,7 @@ public class ResourceDaoSearchTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getAllPublicResourcesCount() {
+    void getAllPublicResourcesCount() {
         List<DBResource> allResources = testInstance.getResourcesForFilter(-1, -1, DBResourceFilter.createBuilder().build());
         assertEquals(8, allResources.size());
 

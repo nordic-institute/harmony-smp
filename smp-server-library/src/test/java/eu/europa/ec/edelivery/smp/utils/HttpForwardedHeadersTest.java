@@ -51,7 +51,7 @@ public class HttpForwardedHeadersTest {
 
     @ParameterizedTest
     @MethodSource("cookieWriterTestParameters")
-    public void getReadForwardHeadersFromRequest(
+    void getReadForwardHeadersFromRequest(
             String hostName,
             String port,
             String scheme,

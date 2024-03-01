@@ -29,7 +29,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DocumentDaoTest extends AbstractBaseDao {
+class DocumentDaoTest extends AbstractBaseDao {
 
     @Autowired
     DocumentDao testInstance;
@@ -41,7 +41,7 @@ public class DocumentDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testPersistDocument() {
+    void testPersistDocument() {
 
         DBDocument document = testUtilsDao.createAndPersistDocument(2, "value1", "schema1");
 
@@ -52,7 +52,7 @@ public class DocumentDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void getDocumentForResource() {
+    void getDocumentForResource() {
         Optional<DBDocument> result = testInstance.getDocumentForResource(testUtilsDao.getResourceD1G1RD1());
 
         assertTrue(result.isPresent());
@@ -63,14 +63,14 @@ public class DocumentDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void getDocumentVersionsForResource() {
+    void getDocumentVersionsForResource() {
         List<DBDocumentVersion> result = testInstance.getDocumentVersionsForResource(testUtilsDao.getResourceD1G1RD1());
 
         assertEquals(2, result.size());
     }
 
     @Test
-    public void getCurrentDocumentVersionForResource() {
+    void getCurrentDocumentVersionForResource() {
 
         Optional<DBDocumentVersion> result = testInstance.getCurrentDocumentVersionForResource(testUtilsDao.getResourceD1G1RD1());
 
@@ -82,14 +82,14 @@ public class DocumentDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void getDocumentVersionsForSubresource() {
+    void getDocumentVersionsForSubresource() {
         List<DBDocumentVersion> result = testInstance.getDocumentVersionsForSubresource(testUtilsDao.getSubresourceD1G1RD1_S1());
 
         assertEquals(2, result.size());
     }
 
     @Test
-    public void getCurrentDocumentVersionForSubresource() {
+    void getCurrentDocumentVersionForSubresource() {
 
         Optional<DBDocumentVersion> result = testInstance.getCurrentDocumentVersionForSubresource(testUtilsDao.getSubresourceD1G1RD1_S1());
 

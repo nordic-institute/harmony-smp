@@ -78,14 +78,14 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGetKeystoreEntriesList() {
+    void testGetKeystoreEntriesList() {
         List<CertificateRO> lst = testInstance.getKeystoreEntriesList();
         assertEquals(1, lst.size());
         assertEquals(S_ALIAS, lst.get(0).getAlias());
     }
 
     @Test
-    public void testGetSingleKey() {
+    void testGetSingleKey() {
         // given when
         assertEquals(1, testInstance.getKeystoreEntriesList().size());
         Key key = testInstance.getKey(S_ALIAS);
@@ -95,7 +95,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGetSingleCertificate() {
+    void testGetSingleCertificate() {
         // given when
         assertEquals(1, testInstance.getKeystoreEntriesList().size());
         X509Certificate certificate = testInstance.getCert(S_ALIAS);
@@ -105,7 +105,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGetSingleKeyNullAlias() {
+    void testGetSingleKeyNullAlias() {
         // given when
         assertEquals(1, testInstance.getKeystoreEntriesList().size());
         Key key = testInstance.getKey(null);
@@ -115,7 +115,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGetSingleCertificateNullAlias() {
+    void testGetSingleCertificateNullAlias() {
         // given when
         assertEquals(1, testInstance.getKeystoreEntriesList().size());
         X509Certificate certificate = testInstance.getCert(null);
@@ -126,7 +126,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGetKey() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testGetKey() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given when
         testInstance.importKeys(loadKeystore("test-import.jks", "NewPassword1234", "JKS"), "NewPassword1234");
         assertEquals(3, testInstance.getKeystoreEntriesList().size());
@@ -137,7 +137,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGetCertificate() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testGetCertificate() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given when
         testInstance.importKeys(loadKeystore("test-import.jks", "NewPassword1234", "JKS"), "NewPassword1234");
         assertEquals(3, testInstance.getKeystoreEntriesList().size());
@@ -148,7 +148,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testImportPCKSKeystore() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testImportPCKSKeystore() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given
         KeyStore keystore = loadKeystore("test-import.p12", "NewPassword1234", "PKCS12");
         assertEquals(1, testInstance.getKeystoreEntriesList().size());
@@ -160,7 +160,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
 
     @Test
     @Disabled("This test is not working on gitlab")
-    public void testImportKeystoreTwice() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testImportKeystoreTwice() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given
         testInstance.importKeys(loadKeystore("test-import.jks", "NewPassword1234", "JKS"), "NewPassword1234");
         assertEquals(3, testInstance.getKeystoreEntriesList().size());
@@ -171,7 +171,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testImportJKSKeystore() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testImportJKSKeystore() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given
         KeyStore keystore = loadKeystore("test-import.jks", "NewPassword1234", "JKS");
         assertEquals(1, testInstance.getKeystoreEntriesList().size());
@@ -183,7 +183,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
 
 
     @Test
-    public void testDeleteKeyTestCertificate() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testDeleteKeyTestCertificate() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given
         testInstance.importKeys(loadKeystore("test-import.jks", "NewPassword1234", "JKS"), "NewPassword1234");
         assertEquals(3, testInstance.getKeystoreEntriesList().size());
@@ -200,7 +200,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testDeleteKeyTestKey() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testDeleteKeyTestKey() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given
         testInstance.importKeys(loadKeystore("test-import.jks", "NewPassword1234", "JKS"), "NewPassword1234");
         assertEquals(3, testInstance.getKeystoreEntriesList().size());
@@ -229,7 +229,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testDetectKeystoreChangeForEntryList() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testDetectKeystoreChangeForEntryList() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given
         testInstance.importKeys(loadKeystore("test-import.jks", "NewPassword1234", "JKS"), "NewPassword1234");
         assertEquals(3, testInstance.getKeystoreEntriesList().size());
@@ -242,7 +242,7 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testDetectKeystoreChangeForKeyManagers() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+    void testDetectKeystoreChangeForKeyManagers() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
         // given
         KeyManager km = testInstance.getKeyManagers()[0];
         testInstance.importKeys(loadKeystore("test-import.jks", "NewPassword1234", "JKS"), "NewPassword1234");

@@ -58,7 +58,7 @@ import static org.mockito.ArgumentMatchers.any;
  * @since 4.1
  */
 
-public class DomainServiceTest extends AbstractJunit5BaseDao {
+class DomainServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired
     private IdentifierService identifierService;
@@ -96,7 +96,7 @@ public class DomainServiceTest extends AbstractJunit5BaseDao {
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"", " "})
-    public void getDomainForBlankCodeForSingleDomain(String searchCode) {
+    void getDomainForBlankCodeForSingleDomain(String searchCode) {
         // given
         DBDomain testDomain01 = testUtilsDao.createDomain(TEST_DOMAIN_CODE_1);
         assertEquals(1, domainDao.getAllDomains().size());
@@ -107,7 +107,7 @@ public class DomainServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void getDomainForBlankCodeForMultipleDomain() {
+    void getDomainForBlankCodeForMultipleDomain() {
         // given
         DBDomain testDomain01 = testUtilsDao.createDomain(TEST_DOMAIN_CODE_1);
         DBDomain testDomain02 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
@@ -123,7 +123,7 @@ public class DomainServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void getDomainForBlankCodeForMultipleDomainNotExists() {
+    void getDomainForBlankCodeForMultipleDomainNotExists() {
         // given
         DBDomain testDomain01 = testUtilsDao.createDomain(TEST_DOMAIN_CODE_1);
         DBDomain testDomain02 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
@@ -139,7 +139,7 @@ public class DomainServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void getDomainForInvalidCode() {
+    void getDomainForInvalidCode() {
         // given
         DBDomain testDomain01 = testUtilsDao.createDomain(TEST_DOMAIN_CODE_1);
         DBDomain testDomain02 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
@@ -157,7 +157,7 @@ public class DomainServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testRegisterDomainAndParticipantsOK() {
+    void testRegisterDomainAndParticipantsOK() {
         // given
         testUtilsDao.clearData();
         testUtilsDao.createResources();
@@ -178,7 +178,7 @@ public class DomainServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUnRegisterDomainAndParticipantsOK() {
+    void testUnRegisterDomainAndParticipantsOK() {
         // given
         testUtilsDao.clearData();
         testUtilsDao.createResources();

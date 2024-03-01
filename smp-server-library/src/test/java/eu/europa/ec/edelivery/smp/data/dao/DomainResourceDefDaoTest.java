@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class DomainResourceDefDaoTest extends AbstractBaseDao {
+class DomainResourceDefDaoTest extends AbstractBaseDao {
     @Autowired
     DomainResourceDefDao testInstance;
 
@@ -46,18 +46,18 @@ public class DomainResourceDefDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getResourceDefConfigurationForDomain() {
+    void getResourceDefConfigurationForDomain() {
         // when
         List<DBDomainResourceDef> result = testInstance.getResourceDefConfigurationsForDomain(testUtilsDao.getD1());
 
-        assertEquals(result.size(), 2);
+        assertEquals(2, result.size());
         // definitions are sorted by id!
         assertEquals(testUtilsDao.getDomainResourceDefD1R1().getId(), result.get(0).getId());
         assertEquals(testUtilsDao.getDomainResourceDefD1R2().getId(), result.get(1).getId());
     }
 
     @Test
-    public void getResourceDefConfigurationForDomainAndResourceDef() {
+    void getResourceDefConfigurationForDomainAndResourceDef() {
 
         Optional<DBDomainResourceDef> result = testInstance.getResourceDefConfigurationForDomainCodeAndResourceDefCtx(TEST_DOMAIN_CODE_2, TEST_RESOURCE_DEF_SMP10_URL);
 
@@ -66,7 +66,7 @@ public class DomainResourceDefDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getResourceDefConfigurationForDomainAndResourceDefNotExist() {
+    void getResourceDefConfigurationForDomainAndResourceDefNotExist() {
 
         Optional<DBDomainResourceDef> result = testInstance.getResourceDefConfigurationForDomainCodeAndResourceDefCtx(TEST_DOMAIN_CODE_2, TEST_RESOURCE_DEF_CPP);
 

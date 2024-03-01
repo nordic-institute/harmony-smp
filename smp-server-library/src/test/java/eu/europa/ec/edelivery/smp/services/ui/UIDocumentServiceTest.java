@@ -56,7 +56,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGenerateDocumentForResource() {
+    void testGenerateDocumentForResource() {
 
         DocumentRo result = testInstance.generateDocumentForResource(testUtilsDao.getResourceD1G1RD1().getId(), null);
         assertNotNull(result);
@@ -64,7 +64,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testGenerateDocumentForSubResource() {
+    void testGenerateDocumentForSubResource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
 
         DocumentRo result = testInstance.generateDocumentForSubresource(subresource.getId(),
@@ -75,7 +75,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testValidateForResource() {
+    void testValidateForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRo testDoc = testInstance.generateDocumentForResource(resource.getId(), null);
         assertNotNull(testDoc.getPayload());
@@ -84,21 +84,20 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testValidateForResourceError() {
+    void testValidateForResourceError() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRo testDoc = new DocumentRo();
         testDoc.setPayload("test");
 
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> {
-            testInstance.validateDocumentForResource(resource.getId(), testDoc);
-        });
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
+            testInstance.validateDocumentForResource(resource.getId(), testDoc));
 
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [ResourceValidation]"));
     }
 
 
     @Test
-    public void testValidateForSubresource() {
+    void testValidateForSubresource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
         DocumentRo testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId(),
@@ -110,34 +109,33 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testValidateForSubresourceError() {
+    void testValidateForSubresourceError() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
         DocumentRo testDoc = new DocumentRo();
         testDoc.setPayload("test");
 
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> {
-            testInstance.validateDocumentForSubresource(subresource.getId(), subresource.getResource().getId(), testDoc);
-        });
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
+            testInstance.validateDocumentForSubresource(subresource.getId(), subresource.getResource().getId(), testDoc));
 
         MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Invalid request [ResourceValidation]"));
     }
 
     @Test
-    public void testGetDocumentForResource() {
+    void testGetDocumentForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRo testDoc = testInstance.getDocumentForResource(resource.getId(), 1);
         assertNotNull(testDoc.getPayload());
     }
 
     @Test
-    public void testGetDocumentForSubResource() {
+    void testGetDocumentForSubResource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
         DocumentRo testDoc = testInstance.getDocumentForSubResource(subresource.getId(), subresource.getResource().getId(), 1);
         assertNotNull(testDoc.getPayload());
     }
 
     @Test
-    public void testSaveDocumentForResource() {
+    void testSaveDocumentForResource() {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         DocumentRo testDoc = testInstance.generateDocumentForResource(resource.getId(), null);
         assertNotNull(testDoc.getPayload());
@@ -148,7 +146,7 @@ public class UIDocumentServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void testSaveSubresourceDocumentForResource() {
+    void testSaveSubresourceDocumentForResource() {
         DBSubresource subresource = testUtilsDao.getSubresourceD1G1RD1_S1();
         DocumentRo testDoc = testInstance.generateDocumentForSubresource(subresource.getId(),
                 subresource.getResource().getId(),

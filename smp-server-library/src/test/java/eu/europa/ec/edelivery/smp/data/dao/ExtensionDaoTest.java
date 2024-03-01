@@ -33,14 +33,14 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class ExtensionDaoTest extends AbstractBaseDao {
+class ExtensionDaoTest extends AbstractBaseDao {
 
     @Autowired
     ExtensionDao testInstance;
 
 
     @Test
-    public void persistTest() {
+    void persistTest() {
         // set
         String testName = "TestClassName";
         DBExtension testData = TestDBUtils.createDBExtension(testName);
@@ -54,7 +54,7 @@ public class ExtensionDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void persistDuplicate() {
+    void persistDuplicate() {
         // set
         String testName = "TestClassName";
         DBExtension testData = TestDBUtils.createDBExtension(testName);
@@ -66,7 +66,7 @@ public class ExtensionDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByIdentifier() {
+    void getDomainByIdentifier() {
         String testName = "TestClassNameIdentifier";
         DBExtension testData = TestDBUtils.createDBExtension(testName);
         testInstance.persistFlushDetach(testData);

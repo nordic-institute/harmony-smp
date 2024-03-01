@@ -39,7 +39,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 
-public class CRLVerifierServiceTest {
+class CRLVerifierServiceTest {
 
     ConfigurationService mockConfigurationService = Mockito.mock(ConfigurationService.class);
 
@@ -54,7 +54,7 @@ public class CRLVerifierServiceTest {
 
 
     @Test
-    public void verifyCertificateCRLsTest() throws CertificateException, CRLException, IOException {
+    void verifyCertificateCRLsTest() throws CertificateException, CRLException, IOException {
         // given
         X509Certificate certificate = loadCertificate("smp-crl-test-all.pem");
 
@@ -69,7 +69,7 @@ public class CRLVerifierServiceTest {
     }
 
     @Test
-    public void verifyCertificateCRLRevokedTest() throws CertificateException, CRLException {
+    void verifyCertificateCRLRevokedTest() throws CertificateException, CRLException {
         // given
         X509Certificate certificate = loadCertificate("smp-crl-revoked.pem");
 
@@ -84,7 +84,7 @@ public class CRLVerifierServiceTest {
     }
 
     @Test
-    public void verifyCertificateCRLsX509FailsToConnectTest() throws CertificateException {
+    void verifyCertificateCRLsX509FailsToConnectTest() throws CertificateException {
         // given
         X509Certificate certificate = loadCertificate("smp-crl-test-all.pem");
         // when
@@ -96,7 +96,7 @@ public class CRLVerifierServiceTest {
     }
 
     @Test
-    public void downloadCRLWrongUrlSchemeTest()  {
+    void downloadCRLWrongUrlSchemeTest()  {
 
         X509CRL crl = testInstance.downloadCRL("wrong://localhost/crl", true);
 
@@ -104,7 +104,7 @@ public class CRLVerifierServiceTest {
     }
 
     @Test
-    public void downloadCRLUrlSchemeLdapTest()  {
+    void downloadCRLUrlSchemeLdapTest()  {
 
         X509CRL crl = testInstance.downloadCRL("ldap://localhost/crl", true);
 
@@ -112,7 +112,7 @@ public class CRLVerifierServiceTest {
     }
 
     @Test
-    public void verifyCertificateCRLsRevokedSerialTest() throws CertificateException, CRLException {
+    void verifyCertificateCRLsRevokedSerialTest() throws CertificateException, CRLException {
 
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509CRL crl = (X509CRL) cf.generateCRL(getClass().getResourceAsStream("/certificates/smp-crl-test.crl"));
@@ -124,7 +124,7 @@ public class CRLVerifierServiceTest {
     }
 
     @Test
-    public void verifyCertificateCRLsRevokedSerialTestThrowIOExceptionHttps() {
+    void verifyCertificateCRLsRevokedSerialTestThrowIOExceptionHttps() {
         String crlURL = "https://localhost/crl";
 
         doThrow(new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "Can not download CRL '" + crlURL + "'", "IOException: Can not access URL"))
@@ -144,7 +144,7 @@ public class CRLVerifierServiceTest {
             "' |test', false",
             "test| |test, false",
     })
-    public void testIsValidParameter(String values, boolean expectedResult) {
+    void testIsValidParameter(String values, boolean expectedResult) {
         //given
         String[] parameters = StringUtils.split(values, '|');
         //when
@@ -154,7 +154,7 @@ public class CRLVerifierServiceTest {
     }
 
     @Test
-    public void testDownloadURLViaProxy() throws IOException {
+    void testDownloadURLViaProxy() throws IOException {
         //given
         String url = "https://localhost/crl";
         String proxy = "localhost";

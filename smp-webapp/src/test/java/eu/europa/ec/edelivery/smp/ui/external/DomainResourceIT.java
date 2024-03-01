@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = {
         "/cleanup-database.sql",
         "/webapp_integration_test_data.sql"})
-public class DomainResourceIT {
+class DomainResourceIT {
     private static final String PATH = ResourceConstants.CONTEXT_PATH_PUBLIC_DOMAIN;
 
     @Autowired
@@ -77,7 +77,7 @@ public class DomainResourceIT {
     }
 
     @Test
-    public void geDomainPublicList() throws Exception {
+    void geDomainPublicList() throws Exception {
 
         // given when
         MvcResult result = mvc.perform(get(PATH)

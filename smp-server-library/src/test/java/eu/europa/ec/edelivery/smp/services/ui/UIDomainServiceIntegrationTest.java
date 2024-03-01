@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 4.1
  */
 @ContextConfiguration(classes = UIDomainService.class)
-public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
+class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     protected UIDomainService testInstance;
@@ -51,7 +51,7 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
     }
 
     @Test
-    public void testGetTableListEmpty() {
+    void testGetTableListEmpty() {
         // given when
         ServiceResult<DomainRO> res = testInstance.getTableList(-1, -1, null, null, null);
         // then
@@ -64,7 +64,7 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
     }
 
     @Test
-    public void testGetTableList15() {
+    void testGetTableList15() {
 
         // given
         insertDataObjects(15);

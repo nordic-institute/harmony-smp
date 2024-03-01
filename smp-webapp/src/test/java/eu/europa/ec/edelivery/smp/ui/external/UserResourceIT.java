@@ -61,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "classpath:/cleanup-database.sql",
         "classpath:/webapp_integration_test_data.sql"},
         executionPhase = BEFORE_TEST_METHOD)
-public class UserResourceIT {
+class UserResourceIT {
 
     private static final String PATH_PUBLIC = ResourceConstants.CONTEXT_PATH_PUBLIC_USER;
 
@@ -81,7 +81,7 @@ public class UserResourceIT {
     }
 
     @Test
-    public void testUpdateCurrentUserOK() throws Exception {
+    void testUpdateCurrentUserOK() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
@@ -98,7 +98,7 @@ public class UserResourceIT {
     }
 
     @Test
-    public void testUpdateCurrentUserNotAuthenticatedUser() throws Exception {
+    void testUpdateCurrentUserNotAuthenticatedUser() throws Exception {
 
         // given when - log as SMP admin
         // then change values and list uses for changed value
@@ -120,7 +120,7 @@ public class UserResourceIT {
 
     @Test
     @Disabled
-    public void generateAccessTokenForUser() throws Exception {
+    void generateAccessTokenForUser() throws Exception {
         MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         assertNotNull(userRO);
@@ -144,7 +144,7 @@ public class UserResourceIT {
     }
 
     @Test
-    public void changePassword() throws Exception {
+    void changePassword() throws Exception {
         String newPassword = "TESTtest1234!@#$";
 
         MockHttpSession session = loginWithUser2(mvc);

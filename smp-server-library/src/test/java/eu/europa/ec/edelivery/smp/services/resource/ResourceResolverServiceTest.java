@@ -61,7 +61,7 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void tesValidateRequestDataInvalid() {
+    void tesValidateRequestDataInvalid() {
 
         List<Object[]> faileTestData = Arrays.asList(
                 new Object[]{new ResourceRequest(null, null, null, null), "Resource Location vector coordinates must not be null"},
@@ -80,7 +80,7 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testResolveAndAuthorizeRequestForResource() {
+    void testResolveAndAuthorizeRequestForResource() {
         // given
         SMPUserDetails user = new SMPUserDetails(null, null, null);
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
@@ -96,7 +96,7 @@ public class ResourceResolverServiceTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testResolveAndAuthorizeRequestForSubresource() {
+    void testResolveAndAuthorizeRequestForSubresource() {
         // given
         SMPUserDetails user = new SMPUserDetails(null, null, null);
         DBResource resource = testUtilsDao.getResourceD1G1RD1();

@@ -28,10 +28,10 @@ import java.time.Clock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPDynamicCronTriggerTest {
+class SMPDynamicCronTriggerTest {
 
     @Test
-    public void nextExecutionTime() {
+    void nextExecutionTime() {
         SMPPropertyEnum propertyEnum = SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
         SMPDynamicCronTrigger testInstance = new SMPDynamicCronTrigger(propertyEnum.getDefValue(), propertyEnum);
         // not yet triggered
@@ -45,7 +45,7 @@ public class SMPDynamicCronTriggerTest {
     }
 
     @Test
-    public void getExpression() {
+    void getExpression() {
         SMPPropertyEnum propertyEnum = SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
         SMPDynamicCronTrigger testInstance = new SMPDynamicCronTrigger(propertyEnum.getDefValue(), propertyEnum);
 
@@ -53,7 +53,7 @@ public class SMPDynamicCronTriggerTest {
     }
 
     @Test
-    public void updateCronExpression() {
+    void updateCronExpression() {
         String newCronExpression = "0 */10 * * * *";
         SMPPropertyEnum propertyEnum = SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
         SMPDynamicCronTrigger testInstance = new SMPDynamicCronTrigger(propertyEnum.getDefValue(), propertyEnum);
@@ -66,7 +66,7 @@ public class SMPDynamicCronTriggerTest {
     }
 
     @Test
-    public void getCronExpressionProperty() {
+    void getCronExpressionProperty() {
         SMPPropertyEnum propertyEnum = SMPPropertyEnum.SMP_ALERT_CREDENTIALS_CRON;
         SMPDynamicCronTrigger testInstance = new SMPDynamicCronTrigger(propertyEnum.getDefValue(), propertyEnum);
 

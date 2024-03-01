@@ -49,7 +49,7 @@ import static eu.europa.ec.edelivery.smp.services.ui.UITruststoreServiceIntegrat
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class CredentialServiceTest extends AbstractJunit5BaseDao {
+class CredentialServiceTest extends AbstractJunit5BaseDao {
 
     @Autowired
     CredentialService testInstance;
@@ -72,7 +72,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByUsernamePasswordTestBadUsername() {
+    void authenticateByUsernamePasswordTestBadUsername() {
         // given
         String username = "usernameNotExists";
         String password = "password";
@@ -82,7 +82,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByUsernamePasswordTestOk() {
+    void authenticateByUsernamePasswordTestOk() {
         // given
         String username = TestConstants.USERNAME_1;
         String password = TestConstants.USERNAME_1_PASSWORD;
@@ -96,7 +96,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByUsernamePasswordTestBadPassword() {
+    void authenticateByUsernamePasswordTestBadPassword() {
         // given
         String username = TestConstants.USERNAME_1;
         String password = "password";
@@ -106,7 +106,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByUsernamePasswordInactive() {
+    void authenticateByUsernamePasswordInactive() {
         testUtilsDao.deactivateUser(TestConstants.USERNAME_1);
 
         // given
@@ -118,7 +118,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByUsernameCredentialsInactive() {
+    void authenticateByUsernameCredentialsInactive() {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setActive(false);
         testUtilsDao.merge(credential);
@@ -132,7 +132,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByUsernameCredentialsSuspended() {
+    void authenticateByUsernameCredentialsSuspended() {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         credential.setSequentialLoginFailureCount(100);
@@ -147,7 +147,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByUsernameCredentialsNotSuspendedAnymore() {
+    void authenticateByUsernameCredentialsNotSuspendedAnymore() {
         DBCredential credential = testUtilsDao.getUser1().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now().minusDays(100));
         credential.setSequentialLoginFailureCount(100);
@@ -165,7 +165,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void authenticateByAccessTokenBadUsername() {
+    void authenticateByAccessTokenBadUsername() {
         // given
         String accessTokenName = "usernameNotExists";
         String accessTokenValue = "password";
@@ -175,7 +175,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByAccessTokenTestOk() {
+    void authenticateByAccessTokenTestOk() {
         // given
         String accessTokenName = TestConstants.USERNAME_3_AT;
         String accessTokenValue = TestConstants.USERNAME_3_AT_PASSWORD;
@@ -189,7 +189,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByAccessTokenBadPassword() {
+    void authenticateByAccessTokenBadPassword() {
         // given
         String accessTokenName = TestConstants.USERNAME_3_AT;
         String accessTokenValue = "badPassword";
@@ -200,7 +200,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByAccessTokenInactive() {
+    void authenticateByAccessTokenInactive() {
         testUtilsDao.deactivateUser(TestConstants.USERNAME_3);
 
         String accessTokenName = TestConstants.USERNAME_3_AT;
@@ -213,7 +213,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByAccessTokenCredentialsInactive() {
+    void authenticateByAccessTokenCredentialsInactive() {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setActive(false);
         testUtilsDao.merge(credential);
@@ -229,7 +229,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByAccessTokenSuspended() {
+    void authenticateByAccessTokenSuspended() {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now());
         credential.setSequentialLoginFailureCount(100);
@@ -245,7 +245,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByAccessTokenCredentialsNotSuspendedAnymore() {
+    void authenticateByAccessTokenCredentialsNotSuspendedAnymore() {
         DBCredential credential = testUtilsDao.getUser3().getUserCredentials().get(0);
         credential.setLastFailedLoginAttempt(OffsetDateTime.now().minusDays(100));
         credential.setSequentialLoginFailureCount(100);
@@ -262,7 +262,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void authenticateByCertificateTokenOkWithRole() throws Exception {
+    void authenticateByCertificateTokenOkWithRole() throws Exception {
         // given
 
         // must match the TestConstants.USER_CERT_3
@@ -281,7 +281,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void authenticateByCertificateTokenNotTrusted() throws Exception {
+    void authenticateByCertificateTokenNotTrusted() throws Exception {
         // given
         X509Certificate cert = X509CertificateTestUtils.createX509CertificateForTest("CN=NotRegistered,O=European Commission,C=BE",
                 new BigInteger("111111", 16), Collections.emptyList());
@@ -296,7 +296,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void testValidateCertificatePolicyLegacyMatchOk() {
+    void testValidateCertificatePolicyLegacyMatchOk() {
         String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
         Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
                 .when(spyConfigurationService).getAllowedCertificatePolicies();
@@ -305,7 +305,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testValidateCertificatePolicyLegacyMatchMatchEmpty() {
+    void testValidateCertificatePolicyLegacyMatchMatchEmpty() {
         String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
         Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
                 .when(spyConfigurationService).getAllowedCertificatePolicies();
@@ -317,7 +317,7 @@ public class CredentialServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testValidateCertificatePolicyLegacyMatchMismatch() {
+    void testValidateCertificatePolicyLegacyMatchMismatch() {
         String certID = "CN=SMP Test,OU=eDelivery,O=DIGITAL,C=BE:000111";
         Mockito.doReturn(Arrays.asList(CERTIFICATE_POLICY_QCP_LEGAL, CERTIFICATE_POLICY_QCP_NATURAL))
                 .when(spyConfigurationService).getAllowedCertificatePolicies();

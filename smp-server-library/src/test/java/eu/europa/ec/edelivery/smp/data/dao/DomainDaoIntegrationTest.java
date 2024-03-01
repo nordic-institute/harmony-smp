@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class DomainDaoIntegrationTest extends AbstractBaseDao {
+class DomainDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     DomainDao testInstance;
@@ -50,7 +50,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
 
 
     @Test
-    public void persistDomain() {
+    void persistDomain() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -65,7 +65,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void persistDuplicateDomain() {
+    void persistDuplicateDomain() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -79,7 +79,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getTheOnlyDomainNoDomain() {
+    void getTheOnlyDomainNoDomain() {
 
         // execute
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testInstance.getTheOnlyDomain());
@@ -87,7 +87,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getTheOnlyDomainMultipleDomain() {
+    void getTheOnlyDomainMultipleDomain() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -104,7 +104,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByCodeExists() {
+    void getDomainByCodeExists() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -118,14 +118,14 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByCodeNotExists() {
+    void getDomainByCodeNotExists() {
         // test
         Optional<DBDomain> res = testInstance.getDomainByCode(TestConstants.TEST_DOMAIN_CODE_1);
         assertFalse(res.isPresent());
     }
 
     @Test
-    public void removeByDomainCodeExists() {
+    void removeByDomainCodeExists() {
         // set
 
         DBDomain d = new DBDomain();
@@ -143,7 +143,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void removeByDomainCodeNotExists() {
+    void removeByDomainCodeNotExists() {
         // set
 
         // test
@@ -152,7 +152,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void removeByDomainById() {
+    void removeByDomainById() {
         // set
         DBDomain d = new DBDomain();
         d.setDomainCode(TestConstants.TEST_DOMAIN_CODE_1);
@@ -170,7 +170,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testValidateDeleteOKScenario() {
+    void testValidateDeleteOKScenario() {
         // set
         DBDomain d = TestDBUtils.createDBDomain();
         testInstance.persistFlushDetach(d);
@@ -181,7 +181,7 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testValidateDeleteHasResources() {
+    void testValidateDeleteHasResources() {
         // set
         testUtilsDao.createSubresources();
         DBDomain d = testUtilsDao.getD1();

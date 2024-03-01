@@ -76,7 +76,7 @@ public class TemplateFormatterTypeTest {
     // input parameters
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void isSchemeValid(String testName,
+    void isSchemeValid(String testName,
                               boolean isValidPartyId,
                               String toParseIdentifier,
                               String schemaPart,
@@ -90,7 +90,7 @@ public class TemplateFormatterTypeTest {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void isType(String testName,
+    void isType(String testName,
                        boolean isValidPartyId,
                        String toParseIdentifier,
                        String schemaPart,
@@ -104,7 +104,7 @@ public class TemplateFormatterTypeTest {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void format(String testName,
+    void format(String testName,
                        boolean isValidPartyId,
                        String toParseIdentifier,
                        String schemaPart,
@@ -122,7 +122,7 @@ public class TemplateFormatterTypeTest {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierPositiveCases")
-    public void parse(String testName,
+    void parse(String testName,
                       boolean isValidPartyId,
                       String toParseIdentifier,
                       String schemaPart,

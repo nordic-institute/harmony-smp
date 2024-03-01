@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class SMPAuthorizationServiceTest {
+class SMPAuthorizationServiceTest {
 
     UserRO user = null;
     SecurityContext mockSecurityContextSystemAdmin = null;
@@ -100,7 +100,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void isSystemAdministratorLoggedIn() {
+    void isSystemAdministratorLoggedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
         // when then
@@ -109,7 +109,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void isCurrentlyLoggedInNotLoggedIn() {
+    void isCurrentlyLoggedInNotLoggedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
 
@@ -119,7 +119,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void isCurrentlyLoggedIn() {
+    void isCurrentlyLoggedIn() {
         // given
         SecurityContextHolder.setContext(mockSecurityContextSystemAdmin);
         // when then
@@ -128,7 +128,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void testGetUpdatedUserData() {
+    void testGetUpdatedUserData() {
         UserRO user = new UserRO();
         user.setPasswordExpireOn(OffsetDateTime.now().minusDays(1));
         Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
@@ -142,7 +142,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void testGetUpdatedUserDataAboutToExpireNoWarning() {
+    void testGetUpdatedUserDataAboutToExpireNoWarning() {
         UserRO user = new UserRO();
         // password will expire in 11 days. But the warning is 10 days before expire
         user.setPasswordExpireOn(OffsetDateTime.now().plusDays(11));
@@ -157,7 +157,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void testGetUpdatedUserDataAboutToExpireShowWarning() {
+    void testGetUpdatedUserDataAboutToExpireShowWarning() {
         UserRO user = new UserRO();
         // password will expire in 9 days. Warning is 10 days before expire
         user.setPasswordExpireOn(OffsetDateTime.now().plusDays(9));
@@ -172,7 +172,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void testGetUpdatedUserDataForceChange() {
+    void testGetUpdatedUserDataForceChange() {
         UserRO user = new UserRO();
         user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
         user.setPasswordExpired(true);
@@ -186,7 +186,7 @@ public class SMPAuthorizationServiceTest {
     }
 
     @Test
-    public void testGetUpdatedUserDataForceChangeFalse() {
+    void testGetUpdatedUserDataForceChangeFalse() {
         UserRO user = new UserRO();
         user.setPasswordExpireOn(OffsetDateTime.now().plusDays(1));
         user.setPasswordExpired(true);

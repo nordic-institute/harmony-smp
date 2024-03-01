@@ -60,7 +60,7 @@ public class SMPCookieWriterGenerateHeaderTest {
 
     @ParameterizedTest
     @MethodSource("cookieWriterTestParameters")
-    public void generateSetCookieHeader(String description, boolean isSecure,
+    void generateSetCookieHeader(String description, boolean isSecure,
                                         Integer maxAge, String path,
                                         String sameSite, String expectedResultContains,
                                         String expectedResultNotContains) {

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ContextConfiguration(classes = UIAlertService.class)
-public class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTest {
+class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     protected UIAlertService testInstance;
@@ -52,7 +52,7 @@ public class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTes
 
 
     @Test
-    public void getTableList() {
+    void getTableList() {
         ServiceResult<AlertRO> before = testInstance.getTableList(-1, -1, null, null, null);
         int newAddedValuesCount = 10;
         insertDataObjects(newAddedValuesCount);
@@ -64,7 +64,7 @@ public class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTes
 
 
     @Test
-    public void convertToRo() {
+    void convertToRo() {
         DBAlert alert = TestDBUtils.createDBAlert("test");
         AlertRO alertRO = testInstance.convertToRo(alert);
 

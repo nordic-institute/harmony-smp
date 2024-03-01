@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-public class UIResourceSearchServiceTest extends AbstractJunit5BaseDao {
+class UIResourceSearchServiceTest extends AbstractJunit5BaseDao {
 
 
     @Autowired
@@ -44,7 +44,7 @@ public class UIResourceSearchServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetTableList() {
+    void testGetTableList() {
         ResourceFilter filter = new ResourceFilter();
         ServiceResult<ServiceGroupSearchRO> result = testInstance.getTableList(-1, -1, null, null, filter);
         assertNotNull(result);
@@ -52,7 +52,7 @@ public class UIResourceSearchServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetTableListWithFilter() {
+    void testGetTableListWithFilter() {
         ResourceFilter filter = new ResourceFilter();
         filter.setIdentifierValueLike(testUtilsDao.getResourceD1G1RD1().getIdentifierValue());
 

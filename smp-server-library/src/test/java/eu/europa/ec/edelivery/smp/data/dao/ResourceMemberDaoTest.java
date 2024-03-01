@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class ResourceMemberDaoTest extends AbstractBaseDao {
+class ResourceMemberDaoTest extends AbstractBaseDao {
 
     @Autowired
     UserDao userDao;
@@ -52,7 +52,7 @@ public class ResourceMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserDomainsMember() {
+    void testIsUserDomainsMember() {
         DBUser user = testUtilsDao.getUser1();
         DBResource resource = testUtilsDao.getResourceD2G1RD1();
 
@@ -68,7 +68,7 @@ public class ResourceMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserDomainsMemberFalse() {
+    void testIsUserDomainsMemberFalse() {
         // user is not member to resource D2G1RD1 by default
         DBUser user = testUtilsDao.getUser1();
         DBResource resource = testUtilsDao.getResourceD2G1RD1();
@@ -79,7 +79,7 @@ public class ResourceMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testIsUserDomainsMemberWithRole() {
+    void testIsUserDomainsMemberWithRole() {
         DBUser user = testUtilsDao.getUser1();
         DBResource resource = testUtilsDao.getResourceD2G1RD1();
         DBResourceMember resourceMember = new DBResourceMember();
@@ -97,7 +97,7 @@ public class ResourceMemberDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void isUserAnyDomainResourceMember() {
+    void isUserAnyDomainResourceMember() {
         DBUser user = testUtilsDao.getUser1();
         DBResource resource = testUtilsDao.getResourceD2G1RD1();
         DBResourceMember resourceMember = new DBResourceMember();
@@ -117,7 +117,7 @@ public class ResourceMemberDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void isUserAnyDomainResourceMemberWithRole() {
+    void isUserAnyDomainResourceMemberWithRole() {
         DBUser user = testUtilsDao.getUser1();
         DBResource resource = testUtilsDao.getResourceD2G1RD1();
         DBResourceMember resourceMember = new DBResourceMember();

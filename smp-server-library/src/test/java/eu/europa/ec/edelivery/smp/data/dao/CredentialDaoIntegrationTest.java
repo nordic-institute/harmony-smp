@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class CredentialDaoIntegrationTest extends AbstractBaseDao {
+class CredentialDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     UserDao userDao;
@@ -47,7 +47,7 @@ public class CredentialDaoIntegrationTest extends AbstractBaseDao {
     CredentialDao testInstance;
 
     @Test
-    public void findUsernameCredentialForUsername() {
+    void findUsernameCredentialForUsername() {
         DBCredential credential = TestDBUtils.createDBCredential(TestConstants.USERNAME_1, "TEST", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
         // execute
@@ -69,7 +69,7 @@ public class CredentialDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void findUsernameCredentialForUsernameCaseInsensitive() {
+    void findUsernameCredentialForUsernameCaseInsensitive() {
         String username = lowerCase(TestConstants.USERNAME_1);
         DBCredential credential = TestDBUtils.createDBCredential(username, "TEST", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
         DBUser u = TestDBUtils.createDBUserByUsername(username);
@@ -92,7 +92,7 @@ public class CredentialDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void findCertificateCredential() {
+    void findCertificateCredential() {
         String username = lowerCase(TestConstants.USERNAME_1);
         DBCredential credential = TestDBUtils.createDBCredential(username, "TEST", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         DBCertificate certificate = TestDBUtils.createDBCertificate();

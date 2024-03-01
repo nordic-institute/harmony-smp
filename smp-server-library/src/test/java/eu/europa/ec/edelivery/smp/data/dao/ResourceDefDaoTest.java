@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class ResourceDefDaoTest extends AbstractBaseDao {
+class ResourceDefDaoTest extends AbstractBaseDao {
 
     @Autowired
     ResourceDefDao testInstance;
@@ -47,7 +47,7 @@ public class ResourceDefDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void persistTest() {
+    void persistTest() {
         // set
         String testName = "TestClassName";
         DBResourceDef testData = TestDBUtils.createDBResourceDef(testName);
@@ -62,7 +62,7 @@ public class ResourceDefDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void persistDuplicateUrlError() {
+    void persistDuplicateUrlError() {
         // set
         String testURL = "TestClassName";
         DBResourceDef testData1 = TestDBUtils.createDBResourceDef("resourceDef1");
@@ -80,7 +80,7 @@ public class ResourceDefDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getExtensionByImplementationName() {
+    void getExtensionByImplementationName() {
         String testName = "TestClassName";
         DBResourceDef testData = TestDBUtils.createDBResourceDef(testName);
         testData.setExtension(testUtilsDao.getExtension());
@@ -93,7 +93,7 @@ public class ResourceDefDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getResourceDefByURLSegment() {
+    void getResourceDefByURLSegment() {
         String testUrlSegment = "testUrlSegment";
         DBResourceDef testData = TestDBUtils.createDBResourceDef("Code");
         testData.setUrlSegment(testUrlSegment);

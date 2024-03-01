@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Created by gutowpa on 08/01/2018.
  */
 @ContextConfiguration(classes = {SmlClientFactory.class, SmlConnector.class})
-public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends AbstractServiceIntegrationTest {
+class SmlClientFactoryAuthenticationByClientCertHttpHeader extends AbstractServiceIntegrationTest {
 
     public static final String CLIENT_CERT_HTTP_HEADER = "value_of_ClientCert_HTTP_header";
 
@@ -69,7 +69,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
     }
 
     @Test
-    public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
+    void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
         //given
         IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
@@ -90,7 +90,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
 
 
     @Test
-    public void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
+    void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
 
         //given
         IManageServiceMetadataWS client = smlClientFactory.createSmp();
@@ -112,7 +112,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeader extends Abstra
 
 
     @Test
-    public void factoryProducesSMPClientNoDefinedAlias() {
+    void factoryProducesSMPClientNoDefinedAlias() {
 
         //given
         IManageServiceMetadataWS client = smlClientFactory.createSmp();

@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
+class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     IdentifierService identifierService;
@@ -83,7 +83,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void registerDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
+    void registerDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(false);
@@ -98,7 +98,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void unregisterDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault, NotFoundFault {
+    void unregisterDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault, NotFoundFault {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
@@ -113,7 +113,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void registerParticipant() throws Exception {
+    void registerParticipant() throws Exception {
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
@@ -128,7 +128,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void participantExists() {
+    void participantExists() {
         // given
         DBDomain domain = testUtilsDao.getD1();
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
@@ -145,7 +145,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void registerOnlyDomainToSml_smlIntegrationDisabled() {
+    void registerOnlyDomainToSml_smlIntegrationDisabled() {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(false);
@@ -158,7 +158,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void unregisterOnlyDomainToSml_smlIntegrationDisabled() {
+    void unregisterOnlyDomainToSml_smlIntegrationDisabled() {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
@@ -171,7 +171,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void registerParticipant_smlIntegrationDisabled() {
+    void registerParticipant_smlIntegrationDisabled() {
         DBDomain testDomain01 = testUtilsDao.getD1();
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
 
@@ -182,7 +182,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void unregisterParticipant_smlIntegrationDisabled() {
+    void unregisterParticipant_smlIntegrationDisabled() {
         DBDomain testDomain01 = testUtilsDao.getD1();
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
 
@@ -193,7 +193,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void participantExists_smlIntegrationDisabled() {
+    void participantExists_smlIntegrationDisabled() {
         DBDomain domain = testUtilsDao.getD1();
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
 
@@ -204,7 +204,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void isDomainValid_smlIntegrationDisabled() {
+    void isDomainValid_smlIntegrationDisabled() {
         DBDomain domain = testUtilsDao.getD1();
 
         givenSmlIntegrationEnabled(false);

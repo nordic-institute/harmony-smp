@@ -140,7 +140,7 @@ public class DocumentIdentifierFormatterTest {
 
     @ParameterizedTest
     @MethodSource("documentIdentifierCases")
-    public void testFormat(String name,
+    void testFormat(String name,
                            Identifier identifierType,
                            String formattedIdentifier,
                            String uriFormattedIdentifier,
@@ -156,7 +156,7 @@ public class DocumentIdentifierFormatterTest {
 
     @ParameterizedTest
     @MethodSource("documentIdentifierCases")
-    public void testParse(String name,
+    void testParse(String name,
                           Identifier identifierType,
                           String formattedIdentifier,
                           String uriFormattedIdentifier,

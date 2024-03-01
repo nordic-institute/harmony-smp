@@ -34,10 +34,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PayloadValidatorServiceTest {
+class PayloadValidatorServiceTest {
 
     @Test
-    public void validateUploadedContentNoValidatorsMostNotFail() {
+    void validateUploadedContentNoValidatorsMostNotFail() {
         PayloadValidatorService testInstance = new PayloadValidatorService(Optional.empty());
         InputStream inputStream = Mockito.mock(InputStream.class);
 
@@ -46,7 +46,7 @@ public class PayloadValidatorServiceTest {
     }
 
     @Test
-    public void validateUploadedContentNoValidatorsMostNotFailEmpty() {
+    void validateUploadedContentNoValidatorsMostNotFailEmpty() {
         PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Collections.emptyList()));
         InputStream inputStream = Mockito.mock(InputStream.class);
 
@@ -55,7 +55,7 @@ public class PayloadValidatorServiceTest {
     }
 
     @Test
-    public void validateUploadedContent() throws PayloadValidatorSpiException {
+    void validateUploadedContent() throws PayloadValidatorSpiException {
         PayloadValidatorSpi validatorSpi1 = Mockito.mock(PayloadValidatorSpi.class);
         PayloadValidatorSpi validatorSpi2 = Mockito.mock(PayloadValidatorSpi.class);
         PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Arrays.asList(validatorSpi1, validatorSpi2)));
@@ -79,7 +79,7 @@ public class PayloadValidatorServiceTest {
     }
 
     @Test
-    public void validateUploadedContentThrowException() throws PayloadValidatorSpiException {
+    void validateUploadedContentThrowException() throws PayloadValidatorSpiException {
         PayloadValidatorSpi validatorSpi1 = Mockito.mock(PayloadValidatorSpi.class);
         PayloadValidatorService testInstance = new PayloadValidatorService(Optional.of(Collections.singletonList(validatorSpi1)));
         InputStream inputStream = Mockito.mock(InputStream.class);

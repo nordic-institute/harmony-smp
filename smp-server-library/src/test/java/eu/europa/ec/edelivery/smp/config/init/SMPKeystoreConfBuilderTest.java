@@ -30,10 +30,10 @@ import java.security.KeyStore;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class SMPKeystoreConfBuilderTest {
+class SMPKeystoreConfBuilderTest {
 
     @Test
-    public void testBuild(){
+    void testBuild(){
         File outputFolder = Paths.get("target").toFile();
 
         SecurityUtils.Secret secret = SecurityUtils.generatePrivateSymmetricKey(true);

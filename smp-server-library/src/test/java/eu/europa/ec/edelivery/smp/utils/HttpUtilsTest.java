@@ -26,9 +26,10 @@ import java.net.URL;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HttpUtilsTest {
+class HttpUtilsTest {
+
     @Test
-    public void testDoesTargetMatchNonProxyLocalhostTrue() throws MalformedURLException {
+    void testDoesTargetMatchNonProxyLocalhostTrue() throws MalformedURLException {
         String crlURL = "http://localhost/url";
         URL targetUrl = new URL(crlURL);
         boolean val = HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), "localhost|127.0.0.1");
@@ -36,7 +37,7 @@ public class HttpUtilsTest {
     }
 
     @Test
-    public void testDoesTargetMatchNonProxyDomainWithPortTrue() throws MalformedURLException {
+    void testDoesTargetMatchNonProxyDomainWithPortTrue() throws MalformedURLException {
         String crlURL = "https://test.ec.europa.eu:8443/url";
         URL targetUrl = new URL(crlURL);
         boolean val = HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), "localhost|127.0.0.1|test.ec.europa.eu");
@@ -44,7 +45,7 @@ public class HttpUtilsTest {
     }
 
     @Test
-    public void testDoesTargetMatchNonProxyDomainWithPortAndAsterixTrue() throws MalformedURLException {
+    void testDoesTargetMatchNonProxyDomainWithPortAndAsterixTrue() throws MalformedURLException {
         String crlURL = "https://test.ec.europa.eu:8443/url";
         URL targetUrl = new URL(crlURL);
         boolean val = HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), "localhost|127.0.0.1|*.ec.europa.eu");
@@ -52,7 +53,7 @@ public class HttpUtilsTest {
     }
 
     @Test
-    public void testDoesTargetMatchNonProxyDomainWithPortFalse() throws MalformedURLException {
+    void testDoesTargetMatchNonProxyDomainWithPortFalse() throws MalformedURLException {
         String crlURL = "https://test.ec.europa.eu:8443/url";
         URL targetUrl = new URL(crlURL);
         boolean val = HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), "localhost|127.0.0.1|ec.test.eu");
@@ -60,7 +61,7 @@ public class HttpUtilsTest {
     }
 
     @Test
-    public void testDoesTargetMatchNonProxyIPWithPortFalse() throws MalformedURLException {
+    void testDoesTargetMatchNonProxyIPWithPortFalse() throws MalformedURLException {
         String crlURL = "https://192.168.5.4:8443/url";
         URL targetUrl = new URL(crlURL);
         boolean val = HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), "localhost|127.0.0.1|ec.test.eu");
@@ -68,7 +69,7 @@ public class HttpUtilsTest {
     }
 
     @Test
-    public void testDoesTargetMatchNonProxyIPWithPortTrue() throws MalformedURLException {
+    void testDoesTargetMatchNonProxyIPWithPortTrue() throws MalformedURLException {
         String crlURL = "https://192.168.5.4:8443/url";
         URL targetUrl = new URL(crlURL);
         boolean val = HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), "localhost|127.0.0.1|192.168.5.4|ec.test.eu");
@@ -76,7 +77,7 @@ public class HttpUtilsTest {
     }
 
     @Test
-    public void testDoesTargetMatchNonProxyIPMaskWithPortTrue() throws MalformedURLException {
+    void testDoesTargetMatchNonProxyIPMaskWithPortTrue() throws MalformedURLException {
         String crlURL = "https://192.168.5.4:8443/url";
         URL targetUrl = new URL(crlURL);
         boolean val = HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), "localhost|127.0.0.1|192.168.*|ec.test.eu");
@@ -84,7 +85,7 @@ public class HttpUtilsTest {
     }
 
     @Test
-    public void testDoesTargetMatchNonProxyIPMaskWithPortFalse() throws MalformedURLException {
+    void testDoesTargetMatchNonProxyIPMaskWithPortFalse() throws MalformedURLException {
         String crlURL = "https://192.168.5.4:8443/url";
         URL targetUrl = new URL(crlURL);
         boolean val = HttpUtils.doesTargetMatchNonProxy(targetUrl.getHost(), "localhost|127.0.0.1|192.168.4.*|ec.test.eu");

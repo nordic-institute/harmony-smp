@@ -48,62 +48,62 @@ class UIDomainPublicServiceTest   extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetTableList() {
+    void testGetTableList() {
         ServiceResult<DomainPublicRO>  result = testInstance.getTableList(-1, -1, null, null, null);
         assertEquals(3, result.getCount().intValue());
     }
 
     @Test
-    public void testGetAllDomainsForDomainAdminUser() {
+    void testGetAllDomainsForDomainAdminUser() {
         List<DomainRO> result = testInstance.getAllDomainsForDomainAdminUser(testUtilsDao.getUser1().getId());
         assertEquals(1, result.size());
     }
 
     @Test
-    public void testGetAllDomainsForDomainAdminUser3() {
+    void testGetAllDomainsForDomainAdminUser3() {
         List<DomainRO> result = testInstance.getAllDomainsForDomainAdminUser(testUtilsDao.getUser3().getId());
         assertEquals(0, result.size());
     }
 
     @Test
-    public void testGetAllDomainsForGroupAdminUser() {
+    void testGetAllDomainsForGroupAdminUser() {
         List<DomainRO> result = testInstance.getAllDomainsForGroupAdminUser(testUtilsDao.getUser1().getId());
         assertEquals(1, result.size());
     }
 
     @Test
-    public void testGetAllDomainsForGroupAdminUser3() {
+    void testGetAllDomainsForGroupAdminUser3() {
         List<DomainRO> result = testInstance.getAllDomainsForGroupAdminUser(testUtilsDao.getUser3().getId());
         assertEquals(0, result.size());
     }
 
     @Test
-    public void testGetAllDomainsForResourceAdminUser() {
+    void testGetAllDomainsForResourceAdminUser() {
         List<DomainRO> result = testInstance.getAllDomainsForResourceAdminUser(testUtilsDao.getUser1().getId());
         assertEquals(1, result.size());
     }
 
     @Test
-    public void testGetAllDomainsForResourceAdminUser3() {
+    void testGetAllDomainsForResourceAdminUser3() {
         List<DomainRO> result = testInstance.getAllDomainsForResourceAdminUser(testUtilsDao.getUser3().getId());
         assertEquals(0, result.size());
     }
 
     @Test
-    public void testGetDomainMembers() {
+    void testGetDomainMembers() {
         ServiceResult<MemberRO>  result = testInstance.getDomainMembers(testUtilsDao.getD1().getId(), -1, -1, null);
         assertEquals(1, result.getCount().intValue());
         assertEquals(1, result.getServiceEntities().size());
     }
 
     @Test
-    public void testGetResourceDefDomainList() {
+    void testGetResourceDefDomainList() {
         List<ResourceDefinitionRO>  result = testInstance.getResourceDefDomainList(testUtilsDao.getD1().getId());
         assertEquals(2, result.size());
     }
 
     @Test
-    public void testGetResourceDefDomainListFal() {
+    void testGetResourceDefDomainListFal() {
         BadRequestException result = assertThrows(BadRequestException.class, () ->
             testInstance.getResourceDefDomainList(-100L));
 

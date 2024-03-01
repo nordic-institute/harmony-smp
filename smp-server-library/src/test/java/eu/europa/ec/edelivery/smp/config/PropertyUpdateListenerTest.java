@@ -31,7 +31,7 @@ import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.ACCESS_TOK
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PropertyUpdateListenerTest {
+class PropertyUpdateListenerTest {
 
     PropertyUpdateListener testInstance = Mockito.spy(new PropertyUpdateListener() {
         @Override
@@ -45,13 +45,13 @@ public class PropertyUpdateListenerTest {
     });
 
     @Test
-    public void handlesProperty() {
+    void handlesProperty() {
         assertTrue(testInstance.handlesProperty(ACCESS_TOKEN_FAIL_DELAY));
         assertFalse(testInstance.handlesProperty(SMP_PROPERTY_REFRESH_CRON));
     }
 
     @Test
-    public void updateProperty() {
+    void updateProperty() {
         Mockito.doNothing().when(testInstance).updateProperties(Mockito.anyMap());
         SMPPropertyEnum property = ACCESS_TOKEN_FAIL_DELAY;
         String testValue = "test";

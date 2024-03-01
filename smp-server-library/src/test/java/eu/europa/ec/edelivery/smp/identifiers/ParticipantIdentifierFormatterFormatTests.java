@@ -71,7 +71,7 @@ public class ParticipantIdentifierFormatterFormatTests {
 
     @ParameterizedTest
     @MethodSource("participantIdentifierCases")
-    public void testFormat(String name,
+    void testFormat(String name,
                            Identifier participantIdentifierType,
                            String formattedIdentifier,
                            String uriFormattedIdentifier) {

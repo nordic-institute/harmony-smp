@@ -37,14 +37,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-public class SMPCasConfigurerTest {
+class SMPCasConfigurerTest {
     ConfigurationService mockConfigService = Mockito.mock(ConfigurationService.class);
     SmpUrlBuilder mockSmpUrlBuilder = Mockito.mock(SmpUrlBuilder.class);
 
     SMPCasConfigurer testInstance = new SMPCasConfigurer(mockSmpUrlBuilder, mockConfigService);
 
     @Test
-    public void serviceProperties() throws MalformedURLException {
+    void serviceProperties() throws MalformedURLException {
         String callbackString = "http://callback.local/smp";
         URL callBackURL = new  URL(callbackString);
         doReturn(callBackURL).when(mockConfigService).getCasCallbackUrl();
@@ -57,7 +57,7 @@ public class SMPCasConfigurerTest {
     }
 
     @Test
-    public void casAuthenticationEntryPoint() throws MalformedURLException {
+    void casAuthenticationEntryPoint() throws MalformedURLException {
         String casUrl = "http://cas-server.local/cas";
         String casLoginPath = "login";
         doReturn(true).when(mockConfigService).isSSOEnabledForUserAuthentication();
@@ -72,7 +72,7 @@ public class SMPCasConfigurerTest {
     }
 
     @Test
-    public void ecasServiceTicketValidator() throws MalformedURLException {
+    void ecasServiceTicketValidator() throws MalformedURLException {
         String casUrl = "http://cas-server.local/cas";
         String tokenValidator = "laxValidate";
 
@@ -86,7 +86,7 @@ public class SMPCasConfigurerTest {
     }
 
     @Test
-    public void getCustomParameters() {
+    void getCustomParameters() {
         Map<String, String> testMap = new HashMap<>();
         testMap.put("key1","val1");
         testMap.put("key2","val2");
@@ -104,7 +104,7 @@ public class SMPCasConfigurerTest {
     }
 
     @Test
-    public void casAuthenticationProvider() {
+    void casAuthenticationProvider() {
         ServiceProperties serviceProperties = mock(ServiceProperties.class);
         SMPCas20ServiceTicketValidator smpCas20ServiceTicketValidator = mock(SMPCas20ServiceTicketValidator.class);
         SMPCasUserService smpCasUserService = mock(SMPCasUserService.class);

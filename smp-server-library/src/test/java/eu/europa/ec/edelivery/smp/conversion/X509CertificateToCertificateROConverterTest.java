@@ -33,11 +33,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-public class X509CertificateToCertificateROConverterTest {
+class X509CertificateToCertificateROConverterTest {
     static {
         Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
     }
-
 
     private static Object[] testCases() {
         return new Object[][]{
@@ -132,7 +131,7 @@ public class X509CertificateToCertificateROConverterTest {
 
     @ParameterizedTest
     @MethodSource("testCases")
-    public void testConvert(String filename,
+    void testConvert(String filename,
                             String subject,
                             String issuer,
                             String serialNumber,

@@ -50,7 +50,7 @@ import static org.mockito.Mockito.doReturn;
  * @author Joze Rihtarsic
  * @since 4.2
  */
-public class SMPAuthenticationProviderTest {
+class SMPAuthenticationProviderTest {
 
 
     CredentialDao mockCredentialDao = Mockito.mock(CredentialDao.class);
@@ -68,7 +68,7 @@ public class SMPAuthenticationProviderTest {
 
     // response time for existing and nonexistent user should be "approx. equal"
     @Test
-    public void authenticateByAccessTokenResponseTime() {
+    void authenticateByAccessTokenResponseTime() {
 
         UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken("User", "User");
         int count = 10;

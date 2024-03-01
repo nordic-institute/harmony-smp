@@ -31,13 +31,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-public class ConfigurationServiceTest {
+class ConfigurationServiceTest {
 
     ConfigurationDao configurationDaoMock = mock(ConfigurationDao.class);
     ConfigurationService testInstance = new ConfigurationService(configurationDaoMock);
 
     @Test
-    public void testGetCasUserDataURL() throws MalformedURLException {
+    void testGetCasUserDataURL() throws MalformedURLException {
         String casUrl = "http://test:123/path";
         String casUserDataPath = "userdata/data.hsp";
         doReturn(new URL(casUrl)).when(configurationDaoMock).getCachedPropertyValue(SSO_CAS_URL);

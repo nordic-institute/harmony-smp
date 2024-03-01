@@ -112,7 +112,7 @@ public class SignatureValidatorTest {
     }
 
     @Test
-    public void validateSignature() throws Throwable {
+    void validateSignature() throws Throwable {
         String serviceGroupId = "ehealth-actorid-qns::urn:australia:ncpb";
         Principal principal = generateMockValidPrincipal();
 
@@ -124,7 +124,7 @@ public class SignatureValidatorTest {
     }
 
     @Test
-    public void validateLinearizedSignature() throws Throwable {
+    void validateLinearizedSignature() throws Throwable {
         String serviceGroupId = "ehealth-actorid-qns::urn:brazil:ncpb";
         Principal principal = generateMockValidPrincipal();
         String filePathToLoad = "/input/ServiceMetadata_linarized.xml";

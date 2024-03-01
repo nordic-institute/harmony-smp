@@ -38,7 +38,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UIDomainServiceTest extends AbstractServiceTest {
+class UIDomainServiceTest extends AbstractServiceTest {
 
     @Autowired
     private UIDomainService testInstance;
@@ -58,13 +58,13 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void getAllDomains() {
+    void getAllDomains() {
         List<DomainRO> domainROS = testInstance.getAllDomains();
         assertEquals(3, domainROS.size());
     }
 
     @Test
-    public void updateDomainData() {
+    void updateDomainData() {
         DomainRO domainRO = new DomainRO();
         domainRO.setDomainCode("NewCode");
         domainRO.setVisibility(VisibilityType.INTERNAL);
@@ -81,7 +81,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void updateSMLDomainData() {
+    void updateSMLDomainData() {
         DomainRO domainRO = new DomainRO();
         domainRO.setSmlSubdomain("New SmlSubdomain");
         domainRO.setSmlSmpId("NewSmlSmpId");
@@ -99,14 +99,14 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void updateSMLDomainData_domainNotFound() {
+    void updateSMLDomainData_domainNotFound() {
         BadRequestException result =  assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(-1l, new DomainRO()));
          assertEquals("Domain does not exist in database!", result.getMessage());
     }
 
     @Test
-    public void updateSMLDomainData_registeredDomainSmpIdChangeNotAllowed() {
+    void updateSMLDomainData_registeredDomainSmpIdChangeNotAllowed() {
         DBDomain domain = testUtilsDao.getD3();
 
         DomainRO domainRO = new DomainRO();
@@ -118,7 +118,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void updateSMLDomainData_invalidSmlIntegrationCertificate() {
+    void updateSMLDomainData_invalidSmlIntegrationCertificate() {
         DBDomain domain = testUtilsDao.getD3();
 
         // Ensure domain DTO doesn't update domain existing values or #isDomainValid(domain) below won't match
@@ -137,7 +137,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void updateDomainResourceListClear() {
+    void updateDomainResourceListClear() {
         DBDomain testDomain = testUtilsDao.getD1();
         DomainRO domainRO = testInstance.getDomainData(testDomain.getId());
         assertFalse(domainRO.getResourceDefinitions().isEmpty());
@@ -148,7 +148,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void updateDomainResourceListAddNew() {
+    void updateDomainResourceListAddNew() {
         DBDomain testDomain = testUtilsDao.getD2();
         DomainRO domainRO = testInstance.getDomainData(testDomain.getId());
         String restDef2 = testUtilsDao.getResourceDefCpp().getIdentifier();
@@ -163,7 +163,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void deleteDomain() {
+    void deleteDomain() {
         DBDomain domain = testUtilsDao.getD1();
         DBDomain test = domainDao.find(domain.getId());
         assertNotNull(test);

@@ -25,13 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AlertDaoIntegrationTest extends AbstractBaseDao {
+class AlertDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     AlertDao testInstance;
 
     @Test
-    public void persistAlert() {
+    void persistAlert() {
         // given
         long initCount = testInstance.getDataListCount(null);
         DBAlert entity = TestDBUtils.createDBAlert();

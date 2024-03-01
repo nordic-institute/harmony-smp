@@ -160,7 +160,7 @@ public class SecurityConfigurationClientCertTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void validClientCertHeaderAuthorizedForPutTest(
+    void validClientCertHeaderAuthorizedForPutTest(
             String testName,
             String expectedCertificateId,
             String certificateDn,

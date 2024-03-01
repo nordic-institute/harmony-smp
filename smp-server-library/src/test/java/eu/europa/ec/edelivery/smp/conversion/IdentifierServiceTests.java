@@ -61,7 +61,7 @@ public class IdentifierServiceTests {
 
     @ParameterizedTest
     @MethodSource("testCases")
-    public void testParticipantIdsCaseNormalization(String inputScheme,
+    void testParticipantIdsCaseNormalization(String inputScheme,
                                                     String inputValue,
                                                     String expectedScheme,
                                                     String expectedValue) {
@@ -83,7 +83,7 @@ public class IdentifierServiceTests {
 
     @ParameterizedTest
     @MethodSource("testCases")
-    public void testDocumentIdsCaseNormalization(String inputScheme,
+    void testDocumentIdsCaseNormalization(String inputScheme,
                                                  String inputValue,
                                                  String expectedScheme,
                                                  String expectedValue) {

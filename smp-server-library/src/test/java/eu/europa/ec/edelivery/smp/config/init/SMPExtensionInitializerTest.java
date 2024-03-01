@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ContextConfiguration( classes = {SMPExtensionInitializerTest.OasisSMPExtensionConfig.class}
 )
-public class SMPExtensionInitializerTest extends AbstractJunit5BaseDao {
+class SMPExtensionInitializerTest extends AbstractJunit5BaseDao {
     @Configuration
     @ComponentScan({"eu.europa.ec.smp.spi"})
     public static class OasisSMPExtensionConfig {
@@ -47,7 +47,7 @@ public class SMPExtensionInitializerTest extends AbstractJunit5BaseDao {
 
     @Test
     @Transactional
-    public void testValidateExtensionData() {
+    void testValidateExtensionData() {
         int extensionCount = extensionDao.getAllExtensions().size();
         testInstance.validateExtensionData();
         // added OasisSMP extension

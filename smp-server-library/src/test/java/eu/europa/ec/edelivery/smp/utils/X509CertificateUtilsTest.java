@@ -96,7 +96,7 @@ public class X509CertificateUtilsTest {
 
     @ParameterizedTest
     @MethodSource("parseTestCases")
-    public void parseCertificateTest(String certificateFileName) throws CertificateException, IOException {
+    void parseCertificateTest(String certificateFileName) throws CertificateException, IOException {
         //given
         byte[] buff = getBytes(certificateFileName);
 
@@ -108,7 +108,7 @@ public class X509CertificateUtilsTest {
 
     @ParameterizedTest
     @MethodSource("crlTestListCases")
-    public void getCrlDistributionPointsTest(String certificatFileName, String clrLists) throws CertificateException {
+    void getCrlDistributionPointsTest(String certificatFileName, String clrLists) throws CertificateException {
         //given
         X509Certificate certificate = loadCertificate(certificatFileName);
         List<String> lstExpected = clrLists == null ? Collections.emptyList() : Arrays.asList(clrLists.split(","));
@@ -123,7 +123,7 @@ public class X509CertificateUtilsTest {
 
     @ParameterizedTest
     @MethodSource("crlExtractHTTPSTestListCases")
-    public void extractHttpCrlDistributionPoints(String clrLists, String value) {
+    void extractHttpCrlDistributionPoints(String clrLists, String value) {
         //given
         List<String> urlList = clrLists == null ? Collections.emptyList() : Arrays.asList(clrLists.split(","));
         // when

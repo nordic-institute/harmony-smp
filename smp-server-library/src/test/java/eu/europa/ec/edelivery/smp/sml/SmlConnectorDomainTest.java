@@ -54,7 +54,7 @@ import static org.mockito.Mockito.verify;
  * Created by JRC
  * since 4.1.
  */
-public class SmlConnectorDomainTest extends AbstractServiceTest {
+class SmlConnectorDomainTest extends AbstractServiceTest {
 
     // Beans
     @SpyBean
@@ -78,7 +78,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testRegisterDomainInDns() throws Exception {
+    void testRegisterDomainInDns() throws Exception {
         //when
         boolean result = testInstance.registerDomain(DEFAULT_DOMAIN);
 
@@ -88,7 +88,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testRegisterDomainInDnsAlreadyExists() throws Exception {
+    void testRegisterDomainInDnsAlreadyExists() throws Exception {
         //given
         Mockito.doThrow(new BadRequestFault(ERROR_SMP_ALREADY_EXISTS)).when(iManageServiceMetadataWS).create(any(ServiceMetadataPublisherServiceType.class));
 
@@ -101,7 +101,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testRegisterDomainInDnsUnknownException() throws Exception {
+    void testRegisterDomainInDnsUnknownException() throws Exception {
         //given
         String message = "something unexpected";
         Mockito.doThrow(new InternalErrorFault(message)).when(iManageServiceMetadataWS).create(any(ServiceMetadataPublisherServiceType.class));
@@ -116,7 +116,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testRegisterDomainInDnsNewClientIsAlwaysCreated() throws Exception {
+    void testRegisterDomainInDnsNewClientIsAlwaysCreated() throws Exception {
         //when
         testInstance.registerDomain(DEFAULT_DOMAIN);
         testInstance.registerDomain(DEFAULT_DOMAIN);
@@ -126,7 +126,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testDomainUnregisterFromDns() throws Exception {
+    void testDomainUnregisterFromDns() throws Exception {
         //when
         testInstance.unregisterDomain(DEFAULT_DOMAIN);
 
@@ -135,7 +135,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testUnregisterDomainFromDnsNewClientIsAlwaysCreated() throws Exception {
+    void testUnregisterDomainFromDnsNewClientIsAlwaysCreated() throws Exception {
         //when
         testInstance.unregisterDomain(DEFAULT_DOMAIN);
         testInstance.unregisterDomain(DEFAULT_DOMAIN);
@@ -145,7 +145,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testUnregisterDomainFromDnsThrowUnknownBadRequestFault() throws Exception {
+    void testUnregisterDomainFromDnsThrowUnknownBadRequestFault() throws Exception {
         // given
         Mockito.doThrow(new BadRequestFault(ERROR_UNEXPECTED_MESSAGE)).when(iManageServiceMetadataWS).delete(anyString());
 
@@ -160,7 +160,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testUnregisterDomainFromDnsThrowUnknownException() throws Exception {
+    void testUnregisterDomainFromDnsThrowUnknownException() throws Exception {
         //given
         Mockito.doThrow(new InternalErrorFault("something unexpected")).when(iManageServiceMetadataWS).delete(anyString());
 
@@ -174,7 +174,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testUnregisterDomainFromDnsNotExists() throws Exception {
+    void testUnregisterDomainFromDnsNotExists() throws Exception {
         //given
         Mockito.doThrow(new BadRequestFault(ERROR_SMP_NOT_EXISTS)).when(iManageServiceMetadataWS).delete(anyString());
 
@@ -183,7 +183,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testIsOkMessageForDomainNull() {
+    void testIsOkMessageForDomainNull() {
         //when
         boolean suc = testInstance.isOkMessage(DEFAULT_DOMAIN, null);
 
@@ -192,7 +192,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testIsOkMessageForDomainFalse() {
+    void testIsOkMessageForDomainFalse() {
         //when
         boolean suc = testInstance.isOkMessage(DEFAULT_DOMAIN, ERROR_UNEXPECTED_MESSAGE);
 
@@ -201,7 +201,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetSmlClientKeyAliasForDomain() {
+    void testGetSmlClientKeyAliasForDomain() {
         //given
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(UUID.randomUUID().toString());
@@ -216,7 +216,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
 
     @Test
     @Disabled("Randomly fails on bamboo ")
-    public void testGetSmlClientKeyAliasForDomainNulForSingleKey() {
+    void testGetSmlClientKeyAliasForDomainNulForSingleKey() {
         //given
         DBDomain domain = new DBDomain();
         domain.setSmlClientKeyAlias(null);
@@ -230,7 +230,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void isDomainValid() throws Exception {
+    void isDomainValid() throws Exception {
         //given
         ServiceMetadataPublisherServiceType existingDomain = new ServiceMetadataPublisherServiceType();
         Mockito.when(iManageServiceMetadataWS.read(any(ServiceMetadataPublisherServiceType.class))).thenReturn(existingDomain);
@@ -243,7 +243,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void isDomainValid_wrapsBadRequestFaultIntoSmpRuntimeException() throws Exception {
+    void isDomainValid_wrapsBadRequestFaultIntoSmpRuntimeException() throws Exception {
         //given
         String errorMessage = UUID.randomUUID().toString();
         Mockito.when(iManageServiceMetadataWS.read(any(ServiceMetadataPublisherServiceType.class))).thenThrow(new BadRequestFault(errorMessage));
@@ -258,7 +258,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void isDomainValid_wrapsNotFoundFaultIntoSmpRuntimeException() throws Exception {
+    void isDomainValid_wrapsNotFoundFaultIntoSmpRuntimeException() throws Exception {
         //given
         String errorMessage = UUID.randomUUID().toString();
         Mockito.when(iManageServiceMetadataWS.read(any(ServiceMetadataPublisherServiceType.class))).thenThrow(new NotFoundFault(errorMessage));
@@ -273,7 +273,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void isDomainValid_wrapsCheckedExceptionsIntoSmpRuntimeException() throws Exception {
+    void isDomainValid_wrapsCheckedExceptionsIntoSmpRuntimeException() throws Exception {
         //given
         String errorMessage = UUID.randomUUID().toString();
         // We need to match one of the checked exceptions present in the method signature, so we throw InternalErrorFault which will be handled aside
@@ -290,7 +290,7 @@ public class SmlConnectorDomainTest extends AbstractServiceTest {
     }
 
     @Test
-    public void isDomainValid_smlIntegrationDisabled() {
+    void isDomainValid_smlIntegrationDisabled() {
         //given
         Mockito.doReturn(false).when(configurationService).isSMLIntegrationEnabled();
 

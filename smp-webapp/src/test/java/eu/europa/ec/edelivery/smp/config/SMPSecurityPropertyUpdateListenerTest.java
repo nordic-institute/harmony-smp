@@ -33,15 +33,14 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPSecurityPropertyUpdateListenerTest {
-
+class SMPSecurityPropertyUpdateListenerTest {
 
     WSSecurityConfigurerAdapter wsSecurityConfigurerAdapter = Mockito.mock(WSSecurityConfigurerAdapter.class);
     ForwardedHeaderTransformer forwardedHeaderTransformer = Mockito.mock(ForwardedHeaderTransformer.class);
     SMPSecurityPropertyUpdateListener testInstance = new SMPSecurityPropertyUpdateListener(wsSecurityConfigurerAdapter, forwardedHeaderTransformer);
 
     @Test
-    public void testPropertiesUpdateClientCertTrue() {
+    void testPropertiesUpdateClientCertTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, TRUE);
         testInstance.updateProperties(prop);
@@ -51,7 +50,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testPropertiesUpdateSSLClientCertTrue() {
+    void testPropertiesUpdateSSLClientCertTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, TRUE);
         testInstance.updateProperties(prop);
@@ -61,7 +60,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testPropertiesUpdateForwardedHeadersTrue() {
+    void testPropertiesUpdateForwardedHeadersTrue() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(HTTP_FORWARDED_HEADERS_ENABLED, FALSE);
         testInstance.updateProperties(prop);
@@ -71,7 +70,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testPropertiesUpdateFalse() {
+    void testPropertiesUpdateFalse() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, FALSE);
         prop.put(EXTERNAL_TLS_AUTHENTICATION_CERTIFICATE_HEADER_ENABLED, FALSE);
@@ -83,7 +82,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testHandledProperties() {
+    void testHandledProperties() {
         Map<SMPPropertyEnum, Object> prop = new HashMap();
         List<SMPPropertyEnum> result = testInstance.handledProperties();
         assertEquals(3, result.size());
@@ -93,7 +92,7 @@ public class SMPSecurityPropertyUpdateListenerTest {
     }
 
     @Test
-    public void testHandleProperty() {
+    void testHandleProperty() {
         boolean resultTrue = testInstance.handlesProperty(HTTP_FORWARDED_HEADERS_ENABLED);
         assertTrue(resultTrue);
         boolean resultFalse = testInstance.handlesProperty(HTTP_PROXY_HOST);

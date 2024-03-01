@@ -30,12 +30,12 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPWebApplicationInitializerTest {
+class SMPWebApplicationInitializerTest {
 
     SMPWebApplicationInitializer testInstance = new SMPWebApplicationInitializer();
 
     @Test
-    public void logBuildProperties() {
+    void logBuildProperties() {
         Logger log = Mockito.mock(Logger.class);
         testInstance.logBuildProperties(log, "/test-application.properties");
 
@@ -57,19 +57,19 @@ public class SMPWebApplicationInitializerTest {
     }
 
     @Test
-    public void createLibraryClassLoaderNotExists() {
+    void createLibraryClassLoaderNotExists() {
         ExtLibraryClassLoader loader= testInstance.createLibraryClassLoader(new File("FileNotExists"));
         assertNull(loader);
     }
 
     @Test
-    public void createLibraryClassLoaderIsNotFolder() {
+    void createLibraryClassLoaderIsNotFolder() {
         ExtLibraryClassLoader loader= testInstance.createLibraryClassLoader(new File("./pom.xml"));
         assertNull(loader);
     }
 
     @Test
-    public void createLibraryClassLoader() {
+    void createLibraryClassLoader() {
         // folder contains one library jar simple-extension.jar with the resource logback-test.xml
         Path path = Paths.get("src","test","resources", "test-libs");
         ExtLibraryClassLoader loader= testInstance.createLibraryClassLoader(path.toFile());

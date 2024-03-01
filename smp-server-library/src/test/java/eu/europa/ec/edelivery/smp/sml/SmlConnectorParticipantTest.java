@@ -52,7 +52,7 @@ import static org.mockito.Mockito.*;
  * Created by JRC
  * since 4.1.
  */
-public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
+class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
 
     // Beans
     @SpyBean
@@ -81,7 +81,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testRegisterInDns() throws Exception {
+    void testRegisterInDns() throws Exception {
         //when
         boolean result = testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
 
@@ -92,7 +92,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testRegisterInDnsAlreadyExists() throws Exception {
+    void testRegisterInDnsAlreadyExists() throws Exception {
         //given
         Mockito.doThrow(new BadRequestFault(ERROR_PI_ALREADY_EXISTS)).when(iManageParticipantIdentifierWS).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
 
@@ -106,7 +106,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testRegisterInDnsUnknownException() throws Exception {
+    void testRegisterInDnsUnknownException() throws Exception {
         //given
         String message = "something unexpected";
         Mockito.doThrow(new InternalErrorFault(message)).when(iManageParticipantIdentifierWS).create(any(ServiceMetadataPublisherServiceForParticipantType.class));
@@ -119,7 +119,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testRegisterInDnsNewClientIsAlwaysCreated() throws Exception {
+    void testRegisterInDnsNewClientIsAlwaysCreated() throws Exception {
         //when
         testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
         testInstance.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN, null);
@@ -130,7 +130,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testUnregisterFromDns() throws Exception {
+    void testUnregisterFromDns() throws Exception {
         //when
         boolean result = testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
@@ -141,7 +141,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testUnregisterFromDnsNewClientIsAlwaysCreated() throws Exception {
+    void testUnregisterFromDnsNewClientIsAlwaysCreated() throws Exception {
         //when
         testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
         testInstance.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
@@ -152,7 +152,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testUnregisterFromDnsThrowUnknownBadRequestFault() throws Exception {
+    void testUnregisterFromDnsThrowUnknownBadRequestFault() throws Exception {
         doThrow(new BadRequestFault(ERROR_UNEXPECTED_MESSAGE)).when(iManageParticipantIdentifierWS).delete(any(ServiceMetadataPublisherServiceForParticipantType.class));
 
         //when
@@ -161,7 +161,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testUnregisterFromDnsThrowUnknownException() throws Exception {
+    void testUnregisterFromDnsThrowUnknownException() throws Exception {
         String message = "something unexpected";
         doThrow(new InternalErrorFault(ERROR_UNEXPECTED_MESSAGE)).when(iManageParticipantIdentifierWS).delete(any(ServiceMetadataPublisherServiceForParticipantType.class));
 
@@ -171,7 +171,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testUnregisterFromDnsNotExists() throws Exception {
+    void testUnregisterFromDnsNotExists() throws Exception {
         //given
         Mockito.doThrow(new BadRequestFault(ERROR_PI_NO_EXISTS)).when(iManageParticipantIdentifierWS).delete(any(ServiceMetadataPublisherServiceForParticipantType.class));
 
@@ -183,7 +183,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testIsOkMessageForParticipantNull() {
+    void testIsOkMessageForParticipantNull() {
         //when
         boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, null);
 
@@ -192,7 +192,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testIsOkMessageForParticipantOk() {
+    void testIsOkMessageForParticipantOk() {
         //when
         boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, ERROR_PI_ALREADY_EXISTS);
 
@@ -201,7 +201,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testIsOkMessageForParticipantFalse() {
+    void testIsOkMessageForParticipantFalse() {
         //when
         boolean suc = testInstance.isOkMessage(PARTICIPANT_ID, ERROR_UNEXPECTED_MESSAGE);
 
@@ -210,7 +210,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testProcessSMLErrorMessageBadRequestFaultIgnore() {
+    void testProcessSMLErrorMessageBadRequestFaultIgnore() {
         //given
         BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
 
@@ -222,7 +222,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testProcessSMLErrorMessageBadRequestFaultFailed() {
+    void testProcessSMLErrorMessageBadRequestFaultFailed() {
         //given
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
 
@@ -234,7 +234,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testProcessSMLErrorMessageNoFoundFaultFailed() {
+    void testProcessSMLErrorMessageNoFoundFaultFailed() {
         //given
         NotFoundFault ex = new NotFoundFault(ERROR_UNEXPECTED_MESSAGE);
 
@@ -246,7 +246,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void testProcessSMLErrorMessageNoFoundFaultOk() {
+    void testProcessSMLErrorMessageNoFoundFaultOk() {
         //given
         NotFoundFault ex = new NotFoundFault(ERROR_PI_NO_EXISTS);
 
@@ -255,7 +255,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void participantExists() throws Exception {
+    void participantExists() throws Exception {
         // given
         ExistsParticipantResponseType existingParticipant = new ExistsParticipantResponseType();
         existingParticipant.setExist(true);
@@ -275,7 +275,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void participantExists_wrapsBadRequestFaultIntoSmpRuntimeException() throws Exception {
+    void participantExists_wrapsBadRequestFaultIntoSmpRuntimeException() throws Exception {
         // given
         String errorMessage = UUID.randomUUID().toString();
         Mockito.when(domain.isSmlRegistered()).thenReturn(true);
@@ -296,7 +296,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void participantExists_wrapsNotFoundFaultIntoSmpRuntimeException() throws Exception {
+    void participantExists_wrapsNotFoundFaultIntoSmpRuntimeException() throws Exception {
         // given
         String errorMessage = UUID.randomUUID().toString();
         Mockito.when(domain.isSmlRegistered()).thenReturn(true);
@@ -317,7 +317,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void participantExists_wrapsCheckedExceptionsIntoSmpRuntimeException() throws Exception {
+    void participantExists_wrapsCheckedExceptionsIntoSmpRuntimeException() throws Exception {
         // given
         String errorMessage = UUID.randomUUID().toString();
         Mockito.when(domain.isSmlRegistered()).thenReturn(true);
@@ -339,7 +339,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void participantExists_smlIntegrationDisabled() {
+    void participantExists_smlIntegrationDisabled() {
         // given
         Mockito.doReturn(false).when(configurationService).isSMLIntegrationEnabled();
 
@@ -351,7 +351,7 @@ public class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest 
     }
 
     @Test
-    public void participantExists_unregisteredDomain() {
+    void participantExists_unregisteredDomain() {
         // given
         Mockito.when(domain.isSmlRegistered()).thenReturn(false);
 

@@ -46,7 +46,7 @@ public class URLCsrfMatcherTest {
 
     @ParameterizedTest
     @MethodSource("cookieWriterTestParameters")
-    public void matches(String patInfo,
+    void matches(String patInfo,
                         boolean notMatchResult,
                         List<String> regExp,
                         List<HttpMethod> httpMethods) {

@@ -37,7 +37,7 @@ import static eu.europa.ec.edelivery.smp.utils.SMPCookieWriter.SESSION_COOKIE_NA
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class AuthenticationResourceTest {
+class AuthenticationResourceTest {
 
     SMPAuthenticationService authenticationService = Mockito.mock(SMPAuthenticationService.class);
     SMPAuthorizationService authorizationService = Mockito.mock(SMPAuthorizationService.class);
@@ -54,7 +54,7 @@ public class AuthenticationResourceTest {
             uiUserService);
 
     @Test
-    public void logout() {
+    void logout() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         Mockito.doNothing().when(authenticationService).logout(Mockito.any(), Mockito.any());
@@ -64,7 +64,7 @@ public class AuthenticationResourceTest {
     }
 
     @Test
-    public void authenticateCAS() {
+    void authenticateCAS() {
 
         RedirectView result = testInstance.authenticateCAS();
         assertNotNull(result);
@@ -72,7 +72,7 @@ public class AuthenticationResourceTest {
     }
 
     @Test
-    public void getUser() {
+    void getUser() {
         UserRO user = new UserRO();
         Mockito.doReturn(user).when(authorizationService).getLoggedUserData();
         UserRO result = testInstance.getUser();
@@ -80,7 +80,7 @@ public class AuthenticationResourceTest {
     }
 
     @Test
-    public void recreatedSessionCookie() {
+    void recreatedSessionCookie() {
         String cookieName = SESSION_COOKIE_NAME;
         String cookieValue = "CookieValue";
         boolean sessionCookieSecure = true;

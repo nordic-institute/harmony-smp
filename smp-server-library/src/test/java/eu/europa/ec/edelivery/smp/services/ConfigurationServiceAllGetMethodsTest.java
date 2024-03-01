@@ -176,7 +176,7 @@ public class ConfigurationServiceAllGetMethodsTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void testProperty(SMPPropertyEnum property, Object value, String methodName, boolean fromValue) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    void testProperty(SMPPropertyEnum property, Object value, String methodName, boolean fromValue) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
         if (fromValue) {
             doReturn(value instanceof AlertLevelEnum ? value.toString() : value).when(configurationDaoMock).getCachedPropertyValue(property);

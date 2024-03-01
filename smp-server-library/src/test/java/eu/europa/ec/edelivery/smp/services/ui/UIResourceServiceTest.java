@@ -46,7 +46,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(classes = {UIResourceService.class, ConversionTestConfig.class})
-public class UIResourceServiceTest extends AbstractJunit5BaseDao {
+class UIResourceServiceTest extends AbstractJunit5BaseDao {
     @Autowired
     protected UIResourceService testInstance;
 
@@ -65,7 +65,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetGroupResources() {
+    void testGetGroupResources() {
         ServiceResult<ResourceRO> result = testInstance.getGroupResources(testUtilsDao.getGroupD1G1().getId(), -1, -1, null);
         // one resource is expected  - see the data in testUtilsDao.createResources()
         assertNotNull(result);
@@ -73,7 +73,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetResourcesForUserAndGroup() {
+    void testGetResourcesForUserAndGroup() {
         ServiceResult<ResourceRO> resultAdmin = testInstance.getResourcesForUserAndGroup(testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN,
                 testUtilsDao.getGroupD1G1().getId(), -1, -1, null);
 
@@ -85,7 +85,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testCreateResourceForGroup() {
+    void testCreateResourceForGroup() {
         // given
         ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
                 testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
@@ -100,7 +100,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testCreateResourceForGroupFailsGroupNotExists() {
+    void testCreateResourceForGroupFailsGroupNotExists() {
         // given
         ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
                 testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
@@ -116,7 +116,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testCreateResourceForGroupFailsGroupNotForDomain() {
+    void testCreateResourceForGroupFailsGroupNotForDomain() {
         // given
         ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
                 testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
@@ -132,7 +132,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testCreateResourceForGroupFailInvalidResourceDef() {
+    void testCreateResourceForGroupFailInvalidResourceDef() {
         // given
         ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
                 UUID.randomUUID().toString());
@@ -148,7 +148,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testCreateResourceForGroupFailAlreadyExists() {
+    void testCreateResourceForGroupFailAlreadyExists() {
         // given
         DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
         ResourceRO testResource = TestROUtils.createResource(dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(),
@@ -165,7 +165,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateResourceForGroup() {
+    void testUpdateResourceForGroup() {
         // given
         DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
         ResourceRO testResource = TestROUtils.createResource(dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), dbResource.getDomainResourceDef().getResourceDef().getIdentifier());
@@ -184,7 +184,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void testUpdateResourceForGroupGroupNotFound() {
+    void testUpdateResourceForGroupGroupNotFound() {
         // given
         DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
         ResourceRO testResource = TestROUtils.createResource(dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), dbResource.getDomainResourceDef().getResourceDef().getIdentifier());
@@ -201,7 +201,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateResourceForGroupNotBelongToDomain() {
+    void testUpdateResourceForGroupNotBelongToDomain() {
         // given
         DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
         ResourceRO testResource = TestROUtils.createResource(dbResource.getIdentifierValue(), dbResource.getIdentifierScheme(), dbResource.getDomainResourceDef().getResourceDef().getIdentifier());
@@ -219,7 +219,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void testUpdateResourceForGroupResourceDefNotFound() {
+    void testUpdateResourceForGroupResourceDefNotFound() {
         // given
         String defIdNotExist = UUID.randomUUID().toString();
         DBResource dbResource = testUtilsDao.getResourceD1G1RD1();
@@ -237,7 +237,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testDeleteResourceFromGroupOK() {
+    void testDeleteResourceFromGroupOK() {
         // given
         ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
                 testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
@@ -253,7 +253,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void testDeleteResourceFromGroupResourceNotExists() {
+    void testDeleteResourceFromGroupResourceNotExists() {
         // given
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
@@ -265,7 +265,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void testDeleteResourceFromGroupResourceNotBelongToGroup() {
+    void testDeleteResourceFromGroupResourceNotBelongToGroup() {
         // given
         // when
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
@@ -276,7 +276,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testDeleteResourceFromGroup() {
+    void testDeleteResourceFromGroup() {
         // given
         ResourceRO testResource = TestROUtils.createResource(UUID.randomUUID().toString(), TEST_SG_SCHEMA_1,
                 testUtilsDao.getDomainResourceDefD1R1().getResourceDef().getIdentifier());
@@ -293,7 +293,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetResourceMembers() {
+    void testGetResourceMembers() {
         // given
         // see the data in testUtilsDao.createResourceMemberships()
         // when
@@ -305,7 +305,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testAddUpdateMemberToResourceUpdate() {
+    void testAddUpdateMemberToResourceUpdate() {
         // given
         // see the data in testUtilsDao.createResourceMemberships()
         DBResourceMember resourceMember = testUtilsDao.getResourceMemberU1R1_D2G1RD1_Admin();
@@ -320,7 +320,7 @@ public class UIResourceServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testAddUpdateMemberToResourceUAdd() {
+    void testAddUpdateMemberToResourceUAdd() {
         // given
         int memberCount = testInstance.getResourceMembers(testUtilsDao.getResourceD1G1RD1().getId(), testUtilsDao.getGroupD1G1().getId(), -1, -1, null).getCount().intValue();
         DBResourceMember dbMember = new DBResourceMember();

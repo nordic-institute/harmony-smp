@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by gutowpa on 08/01/2018.
  */
-public class SmlIdentifierConverterTest {
+class SmlIdentifierConverterTest {
 
     private static final String SMP_ID = "SMP-ID";
     private static final String ID_VALUE = "sample:value";
@@ -38,7 +38,7 @@ public class SmlIdentifierConverterTest {
     private static final String SERVICE_NAME = "naptrService";
 
     @Test
-    public void toBusdoxParticipantId() {
+    void toBusdoxParticipantId() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
@@ -52,7 +52,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toBusdoxParticipantId_NullScheme() {
+    void toBusdoxParticipantId_NullScheme() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, null);
 
@@ -65,7 +65,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toBDMSLAdvancedParticipantId() {
+    void toBDMSLAdvancedParticipantId() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
@@ -79,7 +79,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toBDMSLAdvancedParticipantId_NullScheme() {
+    void toBDMSLAdvancedParticipantId_NullScheme() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, null);
 
@@ -92,7 +92,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toParticipantsType() {
+    void toParticipantsType() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
@@ -106,7 +106,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toParticipantsType_NullScheme() {
+    void toParticipantsType_NullScheme() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, null);
 
@@ -119,7 +119,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void validate_negativeCaseMissingSmpId() {
+    void validate_negativeCaseMissingSmpId() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
         //when
@@ -130,7 +130,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void validate_negativeCaseMissingValue() {
+    void validate_negativeCaseMissingValue() {
         //given
         Identifier participantId = new Identifier(null, ID_SCHEME);
         //when

@@ -64,7 +64,7 @@ import static org.mockito.Mockito.when;
  * @since 4.1
  */
 @ContextConfiguration(classes = {UIUserService.class, ConversionTestConfig.class})
-public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
+class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
 
     @Autowired
     protected UIUserService testInstance;
@@ -84,7 +84,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetTableListEmpty() {
+    void testGetTableListEmpty() {
         // given
 
         //when
@@ -100,7 +100,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetTableList15() {
+    void testGetTableList15() {
         // given
         insertDataObjects(15);
 
@@ -124,7 +124,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testAddUser() {
+    void testAddUser() {
         // given
         insertDataObjects(15);
         long iCnt = userDao.getDataListCount(null);
@@ -149,7 +149,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testDeleteUser() {
+    void testDeleteUser() {
         // given
         insertDataObjects(15);
         ServiceResult<UserRO> urTest = testInstance.getTableList(-1, -1, null, null, null);
@@ -170,7 +170,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testValidateDeleteRequest() {
+    void testValidateDeleteRequest() {
         // given
         insertDataObjects(15);
         ServiceResult<UserRO> urTest = testInstance.getTableList(-1, -1, null, null, null);
@@ -187,7 +187,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateUserPasswordNotMatchReqExpression() {
+    void testUpdateUserPasswordNotMatchReqExpression() {
         long authorizedUserId = 1L;
         long userToUpdateId = 1L;
         String authorizedPassword = "testPass";
@@ -200,7 +200,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateUserPasswordUserNotExists() {
+    void testUpdateUserPasswordUserNotExists() {
 
         long authorizedUserId = 1L;
         long userToUpdateId = 1L;
@@ -214,7 +214,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateUserPasswordUserNotAuthorized() {
+    void testUpdateUserPasswordUserNotAuthorized() {
 
 
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
@@ -235,7 +235,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateUserPasswordOK() {
+    void testUpdateUserPasswordOK() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
         credential.setValue(BCrypt.hashpw("userPassword", BCrypt.gensalt()));
@@ -251,7 +251,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateUserPasswordByAdminUserNotExists() {
+    void testUpdateUserPasswordByAdminUserNotExists() {
         // system admin
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         user.setApplicationRole(ApplicationRoleType.SYSTEM_ADMIN);
@@ -272,7 +272,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testAdminUpdateUserdataOK() {
+    void testAdminUpdateUserdataOK() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
 
@@ -294,7 +294,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void testCreateAccessTokenForUser() {
+    void testCreateAccessTokenForUser() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
         CredentialRO credentialRO = new CredentialRO();
@@ -317,7 +317,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testCreateAccessTokenForUserUserNotExists() {
+    void testCreateAccessTokenForUserUserNotExists() {
         CredentialRO credentialRO = new CredentialRO();
         credentialRO.setCredentialType(CredentialType.ACCESS_TOKEN);
         credentialRO.setDescription("test description");
@@ -329,7 +329,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testStoreCertificateCredentialForUser() throws Exception {
+    void testStoreCertificateCredentialForUser() throws Exception {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
         CertificateRO certificateRO = TestROUtils.createCertificateRO("CN=Test,OU=Test,O=Test,L=Test,ST=Test,C=EU", BigInteger.TEN);
@@ -350,7 +350,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testStoreCertificateCredentialForUserUserNotExists() throws Exception {
+    void testStoreCertificateCredentialForUserUserNotExists() throws Exception {
         CertificateRO certificateRO = TestROUtils.createCertificateRO("CN=Test,OU=Test,O=Test,L=Test,ST=Test,C=EU", BigInteger.TEN);
 
         CredentialRO credentialRO = new CredentialRO();
@@ -365,7 +365,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateUserProfile() {
+    void testUpdateUserProfile() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
         UserRO userRO = new UserRO();
@@ -392,7 +392,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetUserCredentials() {
+    void testGetUserCredentials() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
         CredentialRO credentialRO = new CredentialRO();
@@ -411,7 +411,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetUserCertificateCredential() throws Exception {
+    void testGetUserCertificateCredential() throws Exception {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
 
@@ -432,7 +432,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testDeleteUserCredentials() {
+    void testDeleteUserCredentials() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
         CredentialRO credentialRO = new CredentialRO();
@@ -453,7 +453,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testUpdateUserCredentials() {
+    void testUpdateUserCredentials() {
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
         CredentialRO credentialRO = new CredentialRO();
@@ -479,7 +479,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testSearchUsers() {
+    void testSearchUsers() {
         long count = testInstance.searchUsers(-1, -1, null).getCount();
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         userDao.persistFlushDetach(user);
@@ -492,7 +492,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testSearchUsersFilter() {
+    void testSearchUsersFilter() {
         long count = testInstance.searchUsers(-1, -1, null).getCount();
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
         DBUser user2 = TestDBUtils.createDBUserByUsername("TESTuser_" + UUID.randomUUID());
@@ -514,7 +514,7 @@ public class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
             "1, USERNAME_PASSWORD, UI, 2, USERNAME_PASSWORD, UI,  'User is not owner of the credential'",
             "1, USERNAME_PASSWORD, UI, 1, ACCESS_TOKEN, UI,  'Credentials are not expected credential type!'",
             "1, USERNAME_PASSWORD, UI, 1, USERNAME_PASSWORD, REST_API,  'Credentials are not expected target type!'"})
-    public void testValidateCredentialsFails(Long credentialUserId, CredentialType credentialType, CredentialTargetType credentialTargetType, Long testUserId, CredentialType testCredentialType, CredentialTargetType testCredentialTargetType, String errorMessage){
+    void testValidateCredentialsFails(Long credentialUserId, CredentialType credentialType, CredentialTargetType credentialTargetType, Long testUserId, CredentialType testCredentialType, CredentialTargetType testCredentialTargetType, String errorMessage){
         DBCredential credential = credentialUserId == null? null:Mockito.mock(DBCredential.class);
         if (credential!= null){
             DBUser user = Mockito.mock(DBUser.class);
