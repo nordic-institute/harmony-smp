@@ -25,6 +25,7 @@ import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
+import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIAlertService;
@@ -78,7 +79,7 @@ public class UserController {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userId)")
     @GetMapping(path = "/{user-id}/search", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public List<SearchUserRO> lookupUsers(@PathVariable(PATH_PARAM_ENC_USER_ID) String userId,
-                                          @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
+                                          @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) @Filter String filter) {
         Long entityId = decryptEntityId(userId);
         LOG.info("Validating the password of the currently logged in user:[{}] with id:[{}] ", userId, entityId);
 

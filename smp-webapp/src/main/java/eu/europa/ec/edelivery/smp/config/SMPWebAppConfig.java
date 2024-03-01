@@ -23,12 +23,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import eu.europa.ec.edelivery.smp.filter.FilterHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.*;
@@ -92,6 +94,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = SMPWebAppConfig.class)})
 @PropertySource(value = "classpath:/application.properties", ignoreResourceNotFound = true)
 public class SMPWebAppConfig implements WebMvcConfigurer {
+
     private static final Logger LOG = LoggerFactory.getLogger(SMPWebAppConfig.class);
 
     @Override
@@ -103,7 +106,6 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
         registry.setOrder(HIGHEST_PRECEDENCE)
                 .addResourceHandler("/index.html", "/favicon.png", "/favicon.ico").addResourceLocations("/html/");
 
@@ -127,7 +129,7 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // Configure Object Mapper with format date as: "2021-12-01T14:52:00Z"
-        LOG.debug("Register MappingJackson2HttpMessageConverter.");
+        LOG.debug("Register MappingJackson2HttpMessageConverter");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         ObjectMapper objectMapper = JsonMapper.builder()
                 .findAndAddModules()
@@ -142,5 +144,11 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
         objectMapper.setDateFormat(dateFormat);
 
         converters.add(0, converter);
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        LOG.debug("Register FilterHandler");
+        registry.addFormatterForFieldAnnotation(new FilterHandler());
     }
 }

@@ -23,6 +23,7 @@ import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
@@ -84,7 +85,7 @@ public class UserAdminController {
             @PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
-            @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) String filter) {
+            @RequestParam(value = PARAM_PAGINATION_FILTER, defaultValue = "", required = false) @Filter String filter) {
 
         LOG.info("Search user with filter  [{}], paging: [{}/{}], user: {}",filter,  page, pageSize, userEncId);
         return uiUserService.searchUsers(page, pageSize,  filter);

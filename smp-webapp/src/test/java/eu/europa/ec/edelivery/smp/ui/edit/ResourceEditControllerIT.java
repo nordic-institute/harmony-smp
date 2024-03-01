@@ -21,24 +21,30 @@ package eu.europa.ec.edelivery.smp.ui.edit;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.services.ui.UIResourceSearchService;
+import eu.europa.ec.edelivery.smp.services.ui.UIResourceService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.UUID;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,10 +58,16 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
 
     @Autowired
     protected UIResourceSearchService uiResourceSearchService;
+    @SpyBean
+    private UIResourceService uiResourceService;
+    @Autowired
+    private ResourceEditController resourceEditController;
 
     @BeforeEach
     public void setup() throws IOException {
         super.setup();
+
+        ReflectionTestUtils.setField(resourceEditController, "uiResourceService", uiResourceService);
     }
 
     // test must match the webapp_integration_test_data.sql file!
@@ -290,8 +302,32 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
         assertEquals(member.getRoleType(), response.getRoleType());
     }
 
-
     public int getResourceCount() {
         return uiResourceSearchService.getTableList(-1, -1, null, null, new ResourceFilter()).getCount().intValue();
+    }
+
+    @Test
+    public void testFilter() throws Exception {
+        // given when
+        final String filter = ":%#^&$-_=asd.<>/\\";
+        String filterParam = URLEncoder.encode(filter);
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = getLoggedUserData(mvc, session);
+        List<DomainRO> domainsForUser = geUserDomainsForRole(mvc, session, userRO, null);
+        assertEquals(1, domainsForUser.size());
+        DomainRO domainRO = domainsForUser.get(0);
+        GroupRO groupRO = addGroupToDomain(session, domainRO, userRO);
+
+        // when
+        mvc.perform(get(PATH, userRO.getUserId(),
+                        domainRO.getDomainId(),
+                        groupRO.getGroupId())
+                        .session(session)
+                        .param(PARAM_PAGINATION_FILTER, filterParam)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        //then
+        Mockito.verify(uiResourceService).getGroupResources(anyLong(), anyInt(), anyInt(), eq(filter));
     }
 }
