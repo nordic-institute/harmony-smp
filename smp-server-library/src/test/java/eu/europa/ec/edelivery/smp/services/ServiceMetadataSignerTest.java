@@ -29,6 +29,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Document;
@@ -48,13 +49,13 @@ import java.nio.file.Paths;
 
  */
 @ContextConfiguration(classes = { SmpXmlSignatureService.class})
-class ServiceMetadataSignerTest extends AbstractJunit5BaseDao{
+class ServiceMetadataSignerTest extends AbstractJunit5BaseDao {
 
     Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
 
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
-    @Autowired
+    @SpyBean
     UIKeystoreService uiKeystoreService;
 
     @Autowired
@@ -62,7 +63,7 @@ class ServiceMetadataSignerTest extends AbstractJunit5BaseDao{
 
     @BeforeEach
     public void setup(){
-        configurationService = Mockito.spy(configurationService);
+
         ReflectionTestUtils.setField(uiKeystoreService,"configurationService",configurationService);
         ReflectionTestUtils.setField(signer,"uiKeystoreService",uiKeystoreService);
 
@@ -88,8 +89,7 @@ class ServiceMetadataSignerTest extends AbstractJunit5BaseDao{
 
     private Element loadAndSignDocumentForAdmin(String filePath) throws Exception {
         Document response = SignatureUtil.loadDocument(filePath);
-        Element adminSignature = SignatureUtil.findServiceInfoSig(response);
-        return adminSignature;
+        return SignatureUtil.findServiceInfoSig(response);
     }
 
     @ParameterizedTest

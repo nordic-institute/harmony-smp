@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -65,8 +66,6 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
     public void setup() throws IOException {
         // restore keystore
         resetKeystore();
-
-        configurationService = Mockito.spy(configurationService);
         ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
 
         // set keystore properties
@@ -191,9 +190,8 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         assertNotNull(testInstance.getKey(S_ALIAS));
         testInstance.deleteKey(S_ALIAS);
         //when
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> {
-            testInstance.getCert(S_ALIAS);
-        });
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.getCert(S_ALIAS));
 
         MatcherAssert.assertThat(result.getMessage(),
                 CoreMatchers.containsString("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS));
@@ -208,9 +206,8 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         assertNotNull(testInstance.getKey(S_ALIAS));
         testInstance.deleteKey(S_ALIAS);
         //when
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> {
-            testInstance.getKey(S_ALIAS);
-        });
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.getKey(S_ALIAS));
 
         MatcherAssert.assertThat(result.getMessage(),
                 CoreMatchers.containsString("Wrong configuration, missing key pair from keystore or wrong alias: " + S_ALIAS));
@@ -220,8 +217,8 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         // Load the KeyStore and get the signing key and certificate.
         File keystoreFilePath = new File(resourceDirectory.toFile(), keystoreName);
 
-        KeyStore keyStore = null;
-        try (InputStream keystoreInputStream = new FileInputStream(keystoreFilePath)) {
+        KeyStore keyStore;
+        try (InputStream keystoreInputStream = Files.newInputStream(keystoreFilePath.toPath())) {
             keyStore = KeyStore.getInstance(type);
             keyStore.load(keystoreInputStream, password.toCharArray());
         }
