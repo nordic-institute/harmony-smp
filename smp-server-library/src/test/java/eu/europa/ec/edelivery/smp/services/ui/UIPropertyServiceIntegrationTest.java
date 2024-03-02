@@ -28,7 +28,7 @@ import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -39,11 +39,11 @@ import java.util.Map;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_CLUSTER_ENABLED;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SMP_PROPERTY_REFRESH_CRON;
 import static eu.europa.ec.edelivery.smp.cron.CronTriggerConfig.TRIGGER_BEAN_PROPERTY_REFRESH;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @ContextConfiguration(classes = {UIPropertyService.class})
-public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
+class UIPropertyServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     protected UIPropertyService testInstance;
@@ -53,7 +53,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
 
 
     @Test
-    public void getTableListAll() {
+    void getTableListAll() {
 
         //when
         ServiceResultProperties res = testInstance.getTableList(-1, -1, null, null, null);
@@ -67,7 +67,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
     }
 
     @Test
-    public void getTableListFilterByCas() {
+    void getTableListFilterByCas() {
 
         //when
         String filter = ".cas";
@@ -84,7 +84,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
     }
 
     @Test
-    public void createPropertyPendingToUpdate() {
+    void createPropertyPendingToUpdate() {
         SMPPropertyEnum propertyType = SMP_PROPERTY_REFRESH_CRON;
         DBConfiguration dbConfiguration = new DBConfiguration();
         dbConfiguration.setProperty(propertyType.getProperty());
@@ -106,7 +106,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
     }
 
     @Test
-    public void updatePropertyList() {
+    void updatePropertyList() {
         configurationDao.setPropertyToDatabase(SMP_PROPERTY_REFRESH_CRON.getProperty(), SMP_PROPERTY_REFRESH_CRON.getDefValue());
         // set non cluster - to enable instant refresh
         configurationDao.setPropertyToDatabase(SMP_CLUSTER_ENABLED.getProperty(), "false");
@@ -122,7 +122,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
     }
 
     @Test
-    public void validatePropertyNotExists() {
+    void validatePropertyNotExists() {
         String propertyName = "DoesNotExist";
         String propertyValue = "DoesNotExistValue";
         PropertyRO property = new PropertyRO(propertyName, propertyValue);
@@ -136,7 +136,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
     }
 
     @Test
-    public void validatePropertyInvalidValue() {
+    void validatePropertyInvalidValue() {
         String propertyName = SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY.getProperty();
         String propertyValue = "NotANumber";
         PropertyRO property = new PropertyRO(propertyName, propertyValue);
@@ -150,7 +150,7 @@ public class UIPropertyServiceIntegrationTest extends AbstractServiceIntegration
     }
 
     @Test
-    public void validatePropertyOK() {
+    void validatePropertyOK() {
         String propertyName = SMPPropertyEnum.ACCESS_TOKEN_FAIL_DELAY.getProperty();
         String propertyValue = "1223232";
         PropertyRO property = new PropertyRO(propertyName, propertyValue);

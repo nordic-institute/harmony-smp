@@ -23,15 +23,14 @@ import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
 import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by gutowpa on 08/01/2018.
  */
-public class SmlIdentifierConverterTest {
+class SmlIdentifierConverterTest {
 
     private static final String SMP_ID = "SMP-ID";
     private static final String ID_VALUE = "sample:value";
@@ -39,7 +38,7 @@ public class SmlIdentifierConverterTest {
     private static final String SERVICE_NAME = "naptrService";
 
     @Test
-    public void toBusdoxParticipantId() {
+    void toBusdoxParticipantId() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
@@ -53,7 +52,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toBusdoxParticipantId_NullScheme() {
+    void toBusdoxParticipantId_NullScheme() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, null);
 
@@ -66,7 +65,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toBDMSLAdvancedParticipantId() {
+    void toBDMSLAdvancedParticipantId() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
@@ -80,7 +79,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toBDMSLAdvancedParticipantId_NullScheme() {
+    void toBDMSLAdvancedParticipantId_NullScheme() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, null);
 
@@ -93,7 +92,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toParticipantsType() {
+    void toParticipantsType() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
 
@@ -107,7 +106,7 @@ public class SmlIdentifierConverterTest {
     }
 
     @Test
-    public void toParticipantsType_NullScheme() {
+    void toParticipantsType_NullScheme() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, null);
 
@@ -119,21 +118,25 @@ public class SmlIdentifierConverterTest {
         assertEquals(ID_VALUE, result.getParticipantIdentifier().getValue());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void validate_negativeCaseMissingSmpId() {
+    @Test
+    void validate_negativeCaseMissingSmpId() {
         //given
         Identifier participantId = new Identifier(ID_VALUE, ID_SCHEME);
-
         //when
-        SmlIdentifierConverter.validate(participantId, null);
+        IllegalStateException result = assertThrows(IllegalStateException.class,
+                () -> SmlIdentifierConverter.validate(participantId, null));
+        //then
+        assertEquals("SMP ID is null or empty", result.getMessage());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void validate_negativeCaseMissingValue() {
+    @Test
+    void validate_negativeCaseMissingValue() {
         //given
         Identifier participantId = new Identifier(null, ID_SCHEME);
-
         //when
-        SmlIdentifierConverter.validate(participantId, SMP_ID);
+        IllegalStateException result = assertThrows(IllegalStateException.class,
+                () -> SmlIdentifierConverter.validate(participantId, SMP_ID));
+        //then
+        assertEquals("Participant Scheme or Id is null or empty", result.getMessage());
     }
 }

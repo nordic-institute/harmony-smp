@@ -23,7 +23,8 @@ import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 class OasisSMPResource10HandlerTest extends AbstractHandlerTest {
     @Override

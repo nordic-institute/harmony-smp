@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class UserControllerIT extends AbstractControllerTest {
+class UserControllerIT extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_PUBLIC_USER;
 
     @Autowired
@@ -56,7 +56,7 @@ public class UserControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetUserNavigationTreeForSystemAdmin() throws Exception {
+    void testGetUserNavigationTreeForSystemAdmin() throws Exception {
 
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -74,7 +74,7 @@ public class UserControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetUserNavigationTreeForUser() throws Exception {
+    void testGetUserNavigationTreeForUser() throws Exception {
 
         MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -92,7 +92,7 @@ public class UserControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testLookupUsers() throws Exception {
+    void testLookupUsers() throws Exception {
         MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         MvcResult response = mvc.perform(get(PATH + "/{user-id}/search", userRO.getUserId())
@@ -107,7 +107,7 @@ public class UserControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testLookupUsersFilter() throws Exception {
+    void testLookupUsersFilter() throws Exception {
         MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         MvcResult response = mvc.perform(get(PATH + "/{user-id}/search", userRO.getUserId()).param("filter", userRO.getUsername())
@@ -123,7 +123,7 @@ public class UserControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetUserCredentialStatus() throws Exception {
+    void testGetUserCredentialStatus() throws Exception {
         MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         MvcResult response = mvc.perform(get(PATH + "/{user-id}/username-credential-status", userRO.getUserId())
@@ -142,7 +142,7 @@ public class UserControllerIT extends AbstractControllerTest {
 
 
     @Test
-    public void testGetAccessTokenCredentials() throws Exception {
+    void testGetAccessTokenCredentials() throws Exception {
         MockHttpSession session = loginWithUser2(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
         MvcResult response = mvc.perform(get(PATH + "/{user-id}/access-token-credentials", userRO.getUserId())

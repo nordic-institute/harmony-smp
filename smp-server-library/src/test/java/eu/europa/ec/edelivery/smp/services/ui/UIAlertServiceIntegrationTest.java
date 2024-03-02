@@ -24,15 +24,15 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.CredentialsAlertService;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @ContextConfiguration(classes = UIAlertService.class)
-public class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTest {
+class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     protected UIAlertService testInstance;
@@ -52,7 +52,7 @@ public class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTes
 
 
     @Test
-    public void getTableList() {
+    void getTableList() {
         ServiceResult<AlertRO> before = testInstance.getTableList(-1, -1, null, null, null);
         int newAddedValuesCount = 10;
         insertDataObjects(newAddedValuesCount);
@@ -64,7 +64,7 @@ public class UIAlertServiceIntegrationTest extends AbstractServiceIntegrationTes
 
 
     @Test
-    public void convertToRo() {
+    void convertToRo() {
         DBAlert alert = TestDBUtils.createDBAlert("test");
         AlertRO alertRO = testInstance.convertToRo(alert);
 

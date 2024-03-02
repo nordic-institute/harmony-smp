@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * For the test configuration see the webapp_integration_test_data.sql file.
  * The system admin user is admin member of domain '1' and group '1'.
  */
-public class GroupEditControllerIT extends AbstractControllerTest {
+class GroupEditControllerIT extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_EDIT_GROUP;
 
     @Autowired
@@ -69,7 +69,7 @@ public class GroupEditControllerIT extends AbstractControllerTest {
             "group-viewer, 0",
             "all-roles, 1"
     })
-    public void testGetGroup(String roleType, int values) throws Exception {
+    void testGetGroup(String roleType, int values) throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -90,7 +90,7 @@ public class GroupEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testPutGroup() throws Exception {
+    void testPutGroup() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -121,7 +121,7 @@ public class GroupEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testDeleteGroup() throws Exception {
+    void testDeleteGroup() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -148,7 +148,7 @@ public class GroupEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testUpdateGroup() throws Exception {
+    void testUpdateGroup() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -179,7 +179,7 @@ public class GroupEditControllerIT extends AbstractControllerTest {
 
 
     @Test
-    public void testGetGroupMembers() throws Exception {
+    void testGetGroupMembers() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -206,7 +206,7 @@ public class GroupEditControllerIT extends AbstractControllerTest {
 
 
     @Test
-    public void testAddGroupMember() throws Exception {
+    void testAddGroupMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -223,7 +223,7 @@ public class GroupEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testDeleteGroupMember() throws Exception {
+    void testDeleteGroupMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -245,7 +245,7 @@ public class GroupEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testUpdateGroupMember() throws Exception {
+    void testUpdateGroupMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);

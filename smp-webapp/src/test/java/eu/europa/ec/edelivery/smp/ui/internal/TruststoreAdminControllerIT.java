@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -27,11 +27,10 @@ import eu.europa.ec.edelivery.smp.services.ui.UITruststoreService;
 import eu.europa.ec.edelivery.smp.test.SmpTestWebAppConfig;
 import eu.europa.ec.edelivery.smp.test.testutils.X509CertificateTestUtils;
 import eu.europa.ec.edelivery.smp.ui.AbstractControllerTest;
-import eu.europa.ec.edelivery.smp.ui.external.UserResourceIT;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
@@ -47,14 +46,14 @@ import java.util.List;
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_TRUSTSTORE;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_PUBLIC_TRUSTSTORE;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ContextConfiguration(classes = {SmpTestWebAppConfig.class, UITruststoreService.class})
-public class TruststoreAdminControllerIT extends AbstractControllerTest {
+class TruststoreAdminControllerIT extends AbstractControllerTest {
     private static final String PATH_INTERNAL = CONTEXT_PATH_INTERNAL_TRUSTSTORE;
     private static final String PATH_PUBLIC = CONTEXT_PATH_PUBLIC_TRUSTSTORE;
 
@@ -76,7 +75,7 @@ public class TruststoreAdminControllerIT extends AbstractControllerTest {
 
 
     @Test
-    public void validateInvalidCertificate() throws Exception {
+    void validateInvalidCertificate() throws Exception {
         byte[] buff = "Not a certificate :) ".getBytes();
 
         // login
@@ -94,8 +93,8 @@ public class TruststoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void validateCertificateSystemAdmin() throws Exception {
-        byte[] buff = IOUtils.toByteArray(UserResourceIT.class.getResourceAsStream("/SMPtest.crt"));
+    void validateCertificateSystemAdmin() throws Exception {
+        byte[] buff = IOUtils.toByteArray(TruststoreAdminControllerIT.class.getResourceAsStream("/SMPtest.crt"));
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
@@ -121,7 +120,7 @@ public class TruststoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void validateCertificateIdWithEmailSerialNumberInSubjectCertIdTest() throws Exception {
+    void validateCertificateIdWithEmailSerialNumberInSubjectCertIdTest() throws Exception {
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
         // when update data
@@ -146,8 +145,8 @@ public class TruststoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void uploadCertificateInvalidUser() throws Exception {
-        byte[] buff = IOUtils.toByteArray(UserResourceIT.class.getResourceAsStream("/SMPtest.crt"));
+    void uploadCertificateInvalidUser() throws Exception {
+        byte[] buff = IOUtils.toByteArray(TruststoreAdminControllerIT.class.getResourceAsStream("/SMPtest.crt"));
         // id and logged user not match
         // given when
         mvc.perform(post(PATH_PUBLIC + "/34556655/validate-certificate")
@@ -158,7 +157,7 @@ public class TruststoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void getCertificateList() throws Exception {
+    void getCertificateList() throws Exception {
         // given when
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -188,13 +187,13 @@ public class TruststoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    @Ignore("Fails on CITNET bamboo")
-    public void deleteCertificateSystemAdmin() throws Exception {
+    @Disabled("Fails on CITNET bamboo")
+    void deleteCertificateSystemAdmin() throws Exception {
 
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
 
-        byte[] buff = IOUtils.toByteArray(UserResourceIT.class.getResourceAsStream("/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(TruststoreAdminControllerIT.class.getResourceAsStream("/SMPtest.crt"));
 
         int countStart = uiTruststoreService.getNormalizedTrustedList().size();
         MvcResult prepRes = mvc.perform(post(PATH_INTERNAL + "/" + userRO.getUserId() + "/upload-certificate")

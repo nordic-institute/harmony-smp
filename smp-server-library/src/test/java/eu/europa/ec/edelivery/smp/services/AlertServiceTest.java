@@ -35,7 +35,7 @@ import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialVerificationFaile
 import eu.europa.ec.edelivery.smp.services.mail.prop.CredentialsExpirationProperties;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.utils.SmpUrlBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -44,10 +44,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class AlertServiceTest {
+class AlertServiceTest {
 
     AlertDao alertDao = Mockito.mock(AlertDao.class);
     MailService mailService = Mockito.mock(MailService.class);
@@ -67,7 +67,7 @@ public class AlertServiceTest {
             alertCronTrigger);
 
     @Test
-    public void testCreateAlert() {
+    void testCreateAlert() {
         String mailSubject = "mailSubject";
         String mailTo = "mailTo";
         String username = "username";
@@ -89,7 +89,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void testSubmitAlertMailNoMail() {
+    void testSubmitAlertMailNoMail() {
 
         DBAlert alert = new DBAlert();
         DBUser user = Mockito.mock(DBUser.class);
@@ -100,7 +100,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertBeforeUsernamePasswordExpire() {
+    void alertBeforeUsernamePasswordExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertBeforeUsernamePasswordExpire");
         DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
@@ -127,7 +127,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertUsernamePasswordExpired() {
+    void alertUsernamePasswordExpired() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertUsernamePasswordExpired");
         String mailSubject = "mail subject";
@@ -154,7 +154,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertBeforeAccessTokenExpire() {
+    void alertBeforeAccessTokenExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertBeforeAccessTokenExpire");
         DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
@@ -182,7 +182,7 @@ public class AlertServiceTest {
 
 
     @Test
-    public void alertAccessTokenExpired() {
+    void alertAccessTokenExpired() {
         // given
         DBUser user = TestDBUtils.createDBUser("alertAccessTokenExpired");
         DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(-1), null);
@@ -207,7 +207,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertBeforeCertificateExpire() {
+    void alertBeforeCertificateExpire() {
         // given
         DBUser user = TestDBUtils.createDBUser("user", "alertBeforeCertificateExpire");
         DBCredential credential = TestDBUtils.createDBCredentialForUserCertificate(user, null, OffsetDateTime.now().plusDays(1), null);
@@ -232,7 +232,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertCertificateExpired() {
+    void alertCertificateExpired() {
         // given
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
         DBCredential credential = TestDBUtils.createDBCredentialForUserCertificate(user, null, OffsetDateTime.now().plusDays(1), null);
@@ -258,7 +258,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void submitAlertMail() {
+    void submitAlertMail() {
         String mailTo = "test.mail@domain.eu";
         String mailFrom = "test.mail@domain.eu";
         String mailSubject = "mailSubject";
@@ -291,7 +291,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertUsernameCredentialVerificationFailed() {
+    void alertUsernameCredentialVerificationFailed() {
         DBUser user = TestDBUtils.createDBUser("user");
         DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
         credential.setSequentialLoginFailureCount(5);
@@ -324,7 +324,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertTokenCredentialVerificationFailed() {
+    void alertTokenCredentialVerificationFailed() {
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
         DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
         credential.setSequentialLoginFailureCount(5);
@@ -356,7 +356,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertUsernameCredentialsSuspended() {
+    void alertUsernameCredentialsSuspended() {
         DBUser user = TestDBUtils.createDBUser("user", "alertUsernameCredentialsSuspended");
         DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, OffsetDateTime.now().plusDays(1), null);
         credential.setSequentialLoginFailureCount(5);
@@ -388,7 +388,7 @@ public class AlertServiceTest {
     }
 
     @Test
-    public void alertTokenCredentialsSuspended() {
+    void alertTokenCredentialsSuspended() {
         DBUser user = TestDBUtils.createDBUser("user", "alertCertificateExpired");
         DBCredential credential = TestDBUtils.createDBCredentialForUserAccessToken(user, null, OffsetDateTime.now().plusDays(1), null);
         credential.setSequentialLoginFailureCount(5);
@@ -446,7 +446,7 @@ public class AlertServiceTest {
 
         // test to contain all properties
         for (String prop : templateProperties) {
-            assertTrue(prop, model.getModel().containsKey(prop));
+            assertTrue(model.getModel().containsKey(prop), prop);
         }
         // add two common properties: CURRENT_DATETIME, SMP_INSTANCE_NAME
         assertEquals(templateProperties.size() + 2, model.getModel().size());

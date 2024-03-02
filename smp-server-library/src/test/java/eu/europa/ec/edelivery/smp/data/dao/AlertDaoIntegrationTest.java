@@ -20,18 +20,18 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBAlert;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class AlertDaoIntegrationTest extends AbstractBaseDao {
+class AlertDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     AlertDao testInstance;
 
     @Test
-    public void persistAlert() {
+    void persistAlert() {
         // given
         long initCount = testInstance.getDataListCount(null);
         DBAlert entity = TestDBUtils.createDBAlert();

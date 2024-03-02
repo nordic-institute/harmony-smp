@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class TruststoreAdminControllerTest extends AbstractControllerTest {
+class TruststoreAdminControllerTest extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_INTERNAL_TRUSTSTORE;
 
     @Autowired
@@ -59,7 +59,7 @@ public class TruststoreAdminControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetSystemTruststoreCertificates() throws Exception {
+    void testGetSystemTruststoreCertificates() throws Exception {
         // given when
         int countStart = uiTruststoreService.getCertificateROEntriesList().size();
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -86,7 +86,7 @@ public class TruststoreAdminControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testUploadCertificateFailed() throws Exception {
+    void testUploadCertificateFailed() throws Exception {
         // given when
         // login
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -107,7 +107,7 @@ public class TruststoreAdminControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testUploadCertificateOK() throws Exception {
+    void testUploadCertificateOK() throws Exception {
 
         X509Certificate cert = X509CertificateTestUtils.createX509CertificateForTest("123456", "cn=test,o=test,c=eu");
         MockHttpSession session = loginWithSystemAdmin(mvc);
@@ -128,7 +128,7 @@ public class TruststoreAdminControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testDeleteCertificateFailed() throws Exception {
+    void testDeleteCertificateFailed() throws Exception {
 
         String alias = UUID.randomUUID().toString();
 
@@ -152,7 +152,7 @@ public class TruststoreAdminControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testDeleteCertificateOK() throws Exception {
+    void testDeleteCertificateOK() throws Exception {
 
         X509Certificate cert = X509CertificateTestUtils.createX509CertificateForTest("123456", "cn=test,o=test,c=eu");
         String alias = UUID.randomUUID().toString();

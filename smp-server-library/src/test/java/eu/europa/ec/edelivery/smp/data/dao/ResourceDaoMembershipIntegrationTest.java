@@ -23,12 +23,12 @@ import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -37,11 +37,11 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTest {
+class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTest {
 
     @Test
     @Transactional
-    public void persistNewResourceWithMember() {
+    void persistNewResourceWithMember() {
         DBResource resource = createResourceWithMembers(TestConstants.USERNAME_1);
 
         Optional<DBResource> res = testInstance.findServiceGroup(resource.getIdentifierValue(), resource.getIdentifierScheme());
@@ -54,7 +54,7 @@ public class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTes
 
     @Test
     @Transactional
-    public void addTwoMembersToServiceGroup() {
+    void addTwoMembersToServiceGroup() {
         DBResource resource = createResourceWithMembers(TestConstants.USERNAME_1, TestConstants.USERNAME_3);
 
         Optional<DBResource> res = testInstance.findServiceGroup(resource.getIdentifierValue(), resource.getIdentifierScheme());
@@ -64,7 +64,7 @@ public class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTes
 
     @Test
     @Transactional
-    public void removeMemberFromResource() {
+    void removeMemberFromResource() {
         DBResource resource = createResourceWithMembers(TestConstants.USERNAME_1, TestConstants.USERNAME_3);
         assertEquals(2, resource.getMembers().size());
 
@@ -89,5 +89,4 @@ public class ResourceDaoMembershipIntegrationTest extends AbstractResourceDaoTes
         testInstance.clearPersistenceContext();
         return resource;
     }
-
 }

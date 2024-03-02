@@ -44,8 +44,8 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
@@ -67,7 +67,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     @Autowired
     private ConfigurationDao configurationDao;
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         resetKeystore();
 
@@ -76,14 +76,14 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetSecurityFolder() {
+    void testGetSecurityFolder() {
         File folder = configurationDao.getSecurityFolder();
 
         assertEquals("target/smp", folder.getPath());
     }
 
     @Test
-    public void testFindConfigurationPropertyNotFound() {
+    void testFindConfigurationPropertyNotFound() {
         //GIVE - WHEN
         Optional<DBConfiguration> resultBO = configurationDao.findConfigurationProperty("NotFoundProperty");
 
@@ -92,7 +92,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testLastUpdateOK() {
+    void testLastUpdateOK() {
         //GIVE - WHEN
         OffsetDateTime lastUpdate = configurationDao.getLastUpdate();
 
@@ -102,7 +102,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testSetNewProperty() {
+    void testSetNewProperty() {
         // given
         OffsetDateTime lastUpdate = configurationDao.getLastUpdate();
         String propertyValue = "TestUser";
@@ -120,7 +120,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testSetPropertyByStringOk() {
+    void testSetPropertyByStringOk() {
         // given
         OffsetDateTime lastUpdate = configurationDao.getLastUpdate();
         String propertyValue = "localhost";
@@ -137,7 +137,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testSetPropertyByStringNotExists() {
+    void testSetPropertyByStringNotExists() {
         // given
         OffsetDateTime lastUpdate = configurationDao.getLastUpdate();
         String propertyValue = "localhost";
@@ -150,7 +150,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testUpdatePropertyInvalid() {
+    void testUpdatePropertyInvalid() {
         //WHEN
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
                 () -> configurationDao.setPropertyToDatabase(SMPPropertyEnum.HTTP_FORWARDED_HEADERS_ENABLED,
@@ -162,7 +162,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testUpdateProperty() {
+    void testUpdateProperty() {
         // given
         OffsetDateTime lastUpdate = configurationDao.getLastUpdate();
         String propertyValue = "TestUser";
@@ -184,8 +184,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-
-    public void testDeleteProperty() {
+    void testDeleteProperty() {
         // given
         String propertyValue = "TestUser";
         String propertyDesc = "Test description";
@@ -204,14 +203,14 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetCachedProperty() {
+    void testGetCachedProperty() {
         String value = configurationDao.getCachedProperty(SMPPropertyEnum.ALERT_ACCESS_TOKEN_EXPIRED_PERIOD);
 
         assertEquals("30", value);
     }
 
     @Test
-    public void testGetCachedPropertyValue() {
+    void testGetCachedPropertyValue() {
         Object objPath = configurationDao.getCachedPropertyValue(SMPPropertyEnum.ALERT_ACCESS_TOKEN_EXPIRED_PERIOD);
 
         assertNotNull(objPath);
@@ -219,7 +218,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testReloadPropertiesFromDatabase() {
+    void testReloadPropertiesFromDatabase() {
 
         // give
         configurationDao.setPropertyToDatabase(SMP_CLUSTER_ENABLED, "true", null);
@@ -245,7 +244,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
 
     @Test
-    public void testRefreshPropertiesWithReload() {
+    void testRefreshPropertiesWithReload() {
 
         // give
         String testValue = configurationDao.getCachedProperty(SMPPropertyEnum.UI_COOKIE_SESSION_IDLE_TIMEOUT_ADMIN);
@@ -270,7 +269,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testRefreshEncryptProperties() {
+    void testRefreshEncryptProperties() {
 
         // give
         String newTestPassword = UUID.randomUUID().toString();
@@ -306,7 +305,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void encryptDefault() throws IOException {
+    void encryptDefault() throws IOException {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
@@ -319,7 +318,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void encryptDefaultError() throws IOException {
+    void encryptDefaultError() throws IOException {
         // given
         File f = new File("no.key");
         String password = "TEST11002password1@!." + System.currentTimeMillis();
@@ -332,7 +331,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void decryptDefault() throws IOException {
+    void decryptDefault() throws IOException {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
@@ -346,7 +345,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void decryptDefaultError() throws IOException {
+    void decryptDefaultError() throws IOException {
         // given
         File f = generateRandomPrivateKey();
         File fErr = new File("no.key");
@@ -362,7 +361,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void encryptWithSetupKeyWithoutIV() {
+    void encryptWithSetupKeyWithoutIV() {
         // given
         File keyFile = resourceDirectory.resolve("encryptionKey.key").toFile();
         String password = "test123";
@@ -377,7 +376,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void encryptWithSetupKeyWitIV() {
+    void encryptWithSetupKeyWitIV() {
         // given
         File keyFile = resourceDirectory.resolve("masterKeyWithIV.key").toFile();
         String password = "test123";
@@ -392,7 +391,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testRetrieveNonEncryptedPassword() {
+    void testRetrieveNonEncryptedPassword() {
         // given
         String newTestPassword = UUID.randomUUID().toString();
         String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
@@ -412,7 +411,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetNonEncryptedValue() {
+    void testGetNonEncryptedValue() {
         // given
         String newTestPassword = UUID.randomUUID().toString();
         String newDBTestPassword = SecurityUtils.DECRYPTED_TOKEN_PREFIX + newTestPassword + "}";
@@ -427,7 +426,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
     @Test
     @Transactional
-    public void testUpdateEncryptedValues() {
+    void testUpdateEncryptedValues() {
         // given
         String newTestPassword = UUID.randomUUID().toString();
         String newDBTestPassword = newTestPassword;
@@ -465,7 +464,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testContextRefreshedEvent() {
+    void testContextRefreshedEvent() {
 
         configurationDao.setInitializedTime(null);
         assertFalse(configurationDao.isApplicationInitialized());
@@ -479,7 +478,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
 
 
     @Test
-    public void testContextStopEvent() {
+    void testContextStopEvent() {
         configurationDao.setInitializedTime(OffsetDateTime.now());
         // when
         configurationDao.contextStopEvent();
@@ -489,7 +488,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testGetPendingRestartProperties() {
+    void testGetPendingRestartProperties() {
         // set start  "yesterday" - but all properties have update today!
         configurationDao.setInitializedTime(OffsetDateTime.now().minusDays(1));
         // when
@@ -499,7 +498,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    public void testUpdateListener() {
+    void testUpdateListener() {
 
         configurationDao.contextRefreshedEvent();
         PropertyUpdateListener listener = Mockito.mock(PropertyUpdateListener.class);

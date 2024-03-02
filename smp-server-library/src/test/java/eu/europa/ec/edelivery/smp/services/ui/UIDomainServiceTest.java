@@ -26,9 +26,8 @@ import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
 import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -37,9 +36,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class UIDomainServiceTest extends AbstractServiceTest {
+class UIDomainServiceTest extends AbstractServiceTest {
 
     @Autowired
     private UIDomainService testInstance;
@@ -49,7 +48,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     @SpyBean
     private SMLIntegrationService smlIntegrationService;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
         testUtilsDao.createResourceDefinitionsForDomains();
@@ -59,13 +58,13 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void getAllDomains() {
+    void getAllDomains() {
         List<DomainRO> domainROS = testInstance.getAllDomains();
         assertEquals(3, domainROS.size());
     }
 
     @Test
-    public void updateDomainData() {
+    void updateDomainData() {
         DomainRO domainRO = new DomainRO();
         domainRO.setDomainCode("NewCode");
         domainRO.setVisibility(VisibilityType.INTERNAL);
@@ -82,7 +81,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void updateSMLDomainData() {
+    void updateSMLDomainData() {
         DomainRO domainRO = new DomainRO();
         domainRO.setSmlSubdomain("New SmlSubdomain");
         domainRO.setSmlSmpId("NewSmlSmpId");
@@ -100,26 +99,26 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void updateSMLDomainData_domainNotFound() {
-        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+    void updateSMLDomainData_domainNotFound() {
+        BadRequestException result =  assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(-1l, new DomainRO()));
-        Assert.assertEquals("Domain does not exist in database!", result.getMessage());
+         assertEquals("Domain does not exist in database!", result.getMessage());
     }
 
     @Test
-    public void updateSMLDomainData_registeredDomainSmpIdChangeNotAllowed() {
+    void updateSMLDomainData_registeredDomainSmpIdChangeNotAllowed() {
         DBDomain domain = testUtilsDao.getD3();
 
         DomainRO domainRO = new DomainRO();
         domainRO.setSmlSmpId("utestRegistered03");
 
-        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+        BadRequestException result =  assertThrows(BadRequestException.class, () ->
                     testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
-        Assert.assertEquals("SMP-SML identifier must not change for registered domain [utestRegistered03]!", result.getMessage());
+         assertEquals("SMP-SML identifier must not change for registered domain [utestRegistered03]!", result.getMessage());
     }
 
     @Test
-    public void updateSMLDomainData_invalidSmlIntegrationCertificate() {
+    void updateSMLDomainData_invalidSmlIntegrationCertificate() {
         DBDomain domain = testUtilsDao.getD3();
 
         // Ensure domain DTO doesn't update domain existing values or #isDomainValid(domain) below won't match
@@ -132,13 +131,13 @@ public class UIDomainServiceTest extends AbstractServiceTest {
 
         Mockito.doReturn(false).when(smlIntegrationService).isDomainValid(domain);
 
-        BadRequestException result = Assert.assertThrows(BadRequestException.class, () ->
+        BadRequestException result =  assertThrows(BadRequestException.class, () ->
                 testInstance.updateDomainSmlIntegrationData(domain.getId(), domainRO));
-        Assert.assertEquals("The SML-SMP certificate for domain [utestRegistered03] is not valid!", result.getMessage());
+         assertEquals("The SML-SMP certificate for domain [utestRegistered03] is not valid!", result.getMessage());
     }
 
     @Test
-    public void updateDomainResourceListClear() {
+    void updateDomainResourceListClear() {
         DBDomain testDomain = testUtilsDao.getD1();
         DomainRO domainRO = testInstance.getDomainData(testDomain.getId());
         assertFalse(domainRO.getResourceDefinitions().isEmpty());
@@ -149,7 +148,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void updateDomainResourceListAddNew() {
+    void updateDomainResourceListAddNew() {
         DBDomain testDomain = testUtilsDao.getD2();
         DomainRO domainRO = testInstance.getDomainData(testDomain.getId());
         String restDef2 = testUtilsDao.getResourceDefCpp().getIdentifier();
@@ -164,7 +163,7 @@ public class UIDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void deleteDomain() {
+    void deleteDomain() {
         DBDomain domain = testUtilsDao.getD1();
         DBDomain test = domainDao.find(domain.getId());
         assertNotNull(test);

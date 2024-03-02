@@ -23,9 +23,8 @@ import eu.europa.ec.edelivery.smp.config.init.DatabaseConnectionProperties;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -36,8 +35,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SMPDatabaseConfigTest {
 
@@ -50,20 +48,20 @@ public class SMPDatabaseConfigTest {
     DatabaseConnectionProperties environmentProperties = Mockito.mock(DatabaseConnectionProperties.class);
 
     SMPDatabaseConfig testInstance = new SMPDatabaseConfig();
-    @Before
+    @BeforeEach
     public void init(){
         ReflectionTestUtils.setField(testInstance, "databaseConnectionBeanCreator", new DatabaseConnectionBeanCreator(environmentProperties));
     }
 
     @Test
-    public void getDataSourceMissingConfiguration() {
+    void getDataSourceMissingConfiguration() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
 
         assertEquals("Configuration error: [Invalid datasource configuration. Both jndi or jdbc url are empty]!", result.getMessage());
     }
 
     @Test
-    public void getJNDIForDataSourceMissing() {
+    void getJNDIForDataSourceMissing() {
         Mockito.doReturn("jdbc/eDeliverySmpDs").when(environmentProperties).getDatabaseJNDI();
 
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.getDataSource());
@@ -72,40 +70,40 @@ public class SMPDatabaseConfigTest {
     }
 
     @Test
-    public void getDataSource() {
+    void getDataSource() {
         setJdbcProperties();
 
         DataSource result = testInstance.getDataSource();
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(DriverManagerDataSource.class, result.getClass());
+        assertNotNull(result);
+        assertEquals(DriverManagerDataSource.class, result.getClass());
     }
 
     @Test
-    public void jpaVendorAdapter() {
+    void jpaVendorAdapter() {
         setHibernateDatabaseDialect();
         JpaVendorAdapter result = testInstance.jpaVendorAdapter();
 
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
     @Test
-    public void smpEntityManagerFactory() {
+    void smpEntityManagerFactory() {
         setJdbcProperties();
         setHibernateDatabaseDialect();
 
         LocalContainerEntityManagerFactoryBean result = testInstance.smpEntityManagerFactory(testInstance.getDataSource(), testInstance.jpaVendorAdapter());
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
     @Test
-    public void smpTransactionManager() {
+    void smpTransactionManager() {
         setJdbcProperties();
         setHibernateDatabaseDialect();
 
         EntityManagerFactory entityManagerFactory = testInstance.smpEntityManagerFactory(testInstance.getDataSource(), testInstance.jpaVendorAdapter()).getObject();
         PlatformTransactionManager result = testInstance.smpTransactionManager(entityManagerFactory);
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
 

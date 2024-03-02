@@ -23,26 +23,26 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class GroupDaoTest extends AbstractBaseDao {
+class GroupDaoTest extends AbstractBaseDao {
 
     @Autowired
     GroupDao testInstance;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         // setup initial data!
         testUtilsDao.clearData();
@@ -53,7 +53,7 @@ public class GroupDaoTest extends AbstractBaseDao {
 
 
     @Test
-    public void persistTest() {
+    void persistTest() {
         DBDomain domain = testUtilsDao.getD1();
         int initSize = testInstance.getAllGroupsForDomain(domain).size();
 
@@ -68,7 +68,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void persistDuplicate() {
+    void persistDuplicate() {
         // set
         DBDomain domain = testUtilsDao.getD1();
 
@@ -81,7 +81,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByCodeExists() {
+    void getDomainByCodeExists() {
         // set
         DBDomain domain = testUtilsDao.getD1();
 
@@ -92,7 +92,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getDomainByCodeNotExists() {
+    void getDomainByCodeNotExists() {
         // set
         DBDomain domain = testUtilsDao.getD1();
         // test
@@ -101,7 +101,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void removeByDomainCodeExists() {
+    void removeByDomainCodeExists() {
         // set
         DBDomain domain = testUtilsDao.getD1();
 
@@ -116,7 +116,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getGroupsByDomainUserIdAndGroupRolesExists() {
+    void getGroupsByDomainUserIdAndGroupRolesExists() {
 
         List<DBGroup> groups = testInstance.getGroupsByDomainUserIdAndGroupRoles(
                 testUtilsDao.getD1().getId(),
@@ -148,7 +148,7 @@ public class GroupDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getGroupsByDomainUserIdAndResourceRoles() {
+    void getGroupsByDomainUserIdAndResourceRoles() {
 
         List<DBGroup> groups = testInstance.getGroupsByDomainUserIdAndResourceRoles(
                 testUtilsDao.getD1().getId(),

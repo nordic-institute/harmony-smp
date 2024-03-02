@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -21,11 +21,9 @@ package eu.europa.ec.edelivery.smp.utils;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.scheduling.support.CronExpression;
 
 import java.io.File;
@@ -38,9 +36,8 @@ import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyTypeEnum.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(JUnitParamsRunner.class)
 public class PropertyUtilsTest {
 
 
@@ -54,7 +51,7 @@ public class PropertyUtilsTest {
     private static final File ROOT_FOLDER = Paths.get("target").toFile();
 
 
-    private static final Object[] testTypeValues() {
+    private static Object[] testTypeValues() {
         return new Object[][]{
                 {STRING, "this is a string", true},
                 {INTEGER, "1345", true},
@@ -74,7 +71,7 @@ public class PropertyUtilsTest {
         };
     }
 
-    private static final Object[] testParsePropertiesToType() {
+    private static Object[] testParsePropertiesToType() {
         return new Object[][]{
 
                 {EXTERNAL_TLS_AUTHENTICATION_CLIENT_CERT_HEADER_ENABLED, "true", Boolean.class},
@@ -103,18 +100,18 @@ public class PropertyUtilsTest {
     }
 
 
-    @Test
-    @Parameters(method = "testParsePropertiesToType")
-    public void testParsePropertiesToType(SMPPropertyEnum property, String value, Class cls) {
+    @ParameterizedTest
+    @MethodSource("testParsePropertiesToType")
+    void testParsePropertiesToType(SMPPropertyEnum property, String value, Class cls) {
         //when then
         Object obj = PropertyUtils.parseProperty(property, value, ROOT_FOLDER);
-        Assert.assertTrue(cls.isInstance(obj));
+        assertTrue(cls.isInstance(obj));
 
     }
 
-    @Test
-    @Parameters(method = "testTypeValues")
-    public void testIsValidPropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expected) {
+    @ParameterizedTest
+    @MethodSource("testTypeValues")
+    void testIsValidPropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expected) {
         //when
         boolean result = PropertyUtils.isValidPropertyType(propertyType, value, ROOT_FOLDER);
 
@@ -124,15 +121,15 @@ public class PropertyUtilsTest {
 
 
     @Test
-    public void testDefaultValues() {
+    void testDefaultValues() {
 
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
-            assertTrue( PropertyUtils.isValidProperty(prop, prop.getDefValue(), ROOT_FOLDER));
+            assertTrue(PropertyUtils.isValidProperty(prop, prop.getDefValue(), ROOT_FOLDER));
         }
     }
 
     @Test
-    public void testParseDefaultValues() {
+    void testParseDefaultValues() {
 
         for (SMPPropertyEnum prop : SMPPropertyEnum.values()) {
             Object obj = PropertyUtils.parseProperty(prop, prop.getDefValue(), ROOT_FOLDER);
@@ -141,17 +138,17 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void testSubjectRegExpLength() {
+    void testSubjectRegExpLength() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
-            PropertyUtils.isValidProperty(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT,
-                    "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", ROOT_FOLDER));
+                PropertyUtils.isValidProperty(ALERT_USER_LOGIN_FAILURE_MAIL_SUBJECT,
+                        "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", ROOT_FOLDER));
 
         assertEquals("Configuration error: [Subject must have less than 256 character]!", result.getMessage());
     }
 
 
     @Test
-    public void testSubjectRegExpValue() {
+    void testSubjectRegExpValue() {
         SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () ->
                 PropertyUtils.isValidProperty(ALERT_USER_SUSPENDED_LEVEL,
                         "value", ROOT_FOLDER));
@@ -161,13 +158,13 @@ public class PropertyUtilsTest {
 
 
     @Test
-    public void testParseMapPropertiesToType() {
+    void testParseMapPropertiesToType() {
         //when then
-        String value= "test1:val1|test2:val2|test3:val:with:colon|test4: val-no-spaces";
+        String value = "test1:val1|test2:val2|test3:val:with:colon|test4: val-no-spaces";
 
         Object obj = PropertyUtils.parseProperty(SML_CUSTOM_NAPTR_SERVICE_PARAMS, value, ROOT_FOLDER);
         assertEquals(HashMap.class, obj.getClass());
-        Map<String, String> maRes= (Map<String, String>)obj;
+        Map<String, String> maRes = (Map<String, String>) obj;
 
         assertTrue(maRes.containsKey("test1"));
         assertEquals("val1", maRes.get("test1"));
@@ -180,51 +177,51 @@ public class PropertyUtilsTest {
     }
 
 
-    @Test
-    @Parameters(method = "testTypeValues")
-    public void testParsePropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expectParseOk) {
+    @ParameterizedTest
+    @MethodSource("testTypeValues")
+    void testParsePropertyType(SMPPropertyTypeEnum propertyType, String value, boolean expectParseOk) {
         if (expectParseOk) {
             Object result = PropertyUtils.parsePropertyType(propertyType, value, ROOT_FOLDER);
             assertNotNull(result);
             assertType(propertyType, result);
-        }
-        else {
-            SMPRuntimeException exception = assertThrows(SMPRuntimeException.class, ()->PropertyUtils.parsePropertyType(propertyType, value, ROOT_FOLDER));
+        } else {
+            SMPRuntimeException exception = assertThrows(SMPRuntimeException.class, () -> PropertyUtils.parsePropertyType(propertyType, value, ROOT_FOLDER));
             assertNotNull(exception.getErrorCode());
         }
     }
+
     public static void assertType(SMPPropertyTypeEnum prop, Object value) {
         switch (prop) {
             case BOOLEAN:
-                Assert.assertEquals(Boolean.class, value.getClass());
+                assertEquals(Boolean.class, value.getClass());
                 break;
             case EMAIL:
-                Assert.assertEquals(String.class, value.getClass());
+                assertEquals(String.class, value.getClass());
                 break;
             case REGEXP:
-                Assert.assertEquals(Pattern.class, value.getClass());
+                assertEquals(Pattern.class, value.getClass());
                 break;
             case INTEGER:
-                Assert.assertEquals(Integer.class, value.getClass());
+                assertEquals(Integer.class, value.getClass());
                 break;
             case LIST_STRING:
-                Assert.assertTrue(value instanceof List);
+                assertTrue(value instanceof List);
                 break;
             case MAP_STRING:
-                Assert.assertTrue(value instanceof Map);
+                assertTrue(value instanceof Map);
                 break;
             case PATH:
             case FILENAME:
-                Assert.assertEquals(File.class, value.getClass());
+                assertEquals(File.class, value.getClass());
                 break;
             case URL:
-                Assert.assertEquals(java.net.URL.class, value.getClass());
+                assertEquals(java.net.URL.class, value.getClass());
                 break;
             case STRING:
-                Assert.assertEquals(String.class, value.getClass());
+                assertEquals(String.class, value.getClass());
                 break;
             case CRON_EXPRESSION:
-                Assert.assertEquals(CronExpression.class, value.getClass());
+                assertEquals(CronExpression.class, value.getClass());
                 break;
             default:
                 fail("Unknown property type");
@@ -234,7 +231,7 @@ public class PropertyUtilsTest {
     public static void assertType(SMPPropertyEnum prop, Object value) {
         if (value == null) {
             if (prop.isMandatory()) {
-                Assert.fail("Default value for property: " + prop.getProperty() + " must not be empty!");
+                fail("Default value for property: " + prop.getProperty() + " must not be empty!");
             }
             return;
         }
@@ -242,23 +239,23 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void testIsSensitiveData() {
-        for (SMPPropertyEnum smpPropertyEnum: SMPPropertyEnum.values()){
-            Assert.assertEquals(SENSITIVE_PROPERTIES.contains(smpPropertyEnum), PropertyUtils.isSensitiveData(smpPropertyEnum.getProperty()));
+    void testIsSensitiveData() {
+        for (SMPPropertyEnum smpPropertyEnum : SMPPropertyEnum.values()) {
+            assertEquals(SENSITIVE_PROPERTIES.contains(smpPropertyEnum), PropertyUtils.isSensitiveData(smpPropertyEnum.getProperty()));
         }
     }
 
     @Test
-    public void getMaskedData() {
+    void getMaskedData() {
         String testValue = "TestValue";
-        for (SMPPropertyEnum smpPropertyEnum: SMPPropertyEnum.values()){
-            String expectedValue = SENSITIVE_PROPERTIES.contains(smpPropertyEnum)?"*******":testValue;
-            Assert.assertEquals(expectedValue, PropertyUtils.getMaskedData(smpPropertyEnum.getProperty(),testValue));
+        for (SMPPropertyEnum smpPropertyEnum : SMPPropertyEnum.values()) {
+            String expectedValue = SENSITIVE_PROPERTIES.contains(smpPropertyEnum) ? "*******" : testValue;
+            assertEquals(expectedValue, PropertyUtils.getMaskedData(smpPropertyEnum.getProperty(), testValue));
         }
     }
 /*
     @Test
-    public void matchAllValues(){
+    void matchAllValues(){
         System.out.println("Contains in values");
 
         List<String> enumList =  Arrays.stream(SMPPropertyEnum.values()).map(val-> val.getProperty()).collect(Collectors.toList());

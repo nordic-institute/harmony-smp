@@ -23,7 +23,7 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.AlertTypeEnum;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.services.mail.prop.TestMailProperties;
 import eu.europa.ec.edelivery.smp.testutil.MockAlertBeans;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ContextConfiguration(classes = {MockAlertBeans.class, MailService.class})
-public class MailServiceTest extends AbstractServiceIntegrationTest {
+class MailServiceTest extends AbstractServiceIntegrationTest {
 
 
     @Autowired
@@ -44,7 +44,7 @@ public class MailServiceTest extends AbstractServiceIntegrationTest {
     MailService testInstance;
 
     @Test
-    public void testSendMail() {
+    void testSendMail() {
 
         Mockito.doNothing().when(mockJavaMailSender).send((MimeMessage) Mockito.any());
         Map<String, Object> props = new HashMap<>();

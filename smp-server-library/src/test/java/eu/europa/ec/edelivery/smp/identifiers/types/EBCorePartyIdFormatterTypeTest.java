@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -22,25 +22,21 @@ import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
 import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-@RunWith(Parameterized.class)
 public class EBCorePartyIdFormatterTypeTest {
 
-
-    @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection participantIdentifierPositiveCases() {
         return Arrays.asList(new Object[][]{
                 {
@@ -124,39 +120,43 @@ public class EBCorePartyIdFormatterTypeTest {
 
     EBCorePartyIdFormatterType testInstance = new EBCorePartyIdFormatterType();
 
-    // input parameters
-    @Parameterized.Parameter
-    public String testName;
-    @Parameterized.Parameter(1)
-    public boolean isEBCorePartyId;
-    @Parameterized.Parameter(2)
-    public String toParseIdentifier;
-    @Parameterized.Parameter(3)
-    public String schemaPart;
-    @Parameterized.Parameter(4)
-    public String idPart;
-    @Parameterized.Parameter(5)
-    public Class errorClass;
-    @Parameterized.Parameter(6)
-    public String containsErrorMessage;
-
-
-    @Test
-    public void isSchemeValid() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    void isSchemeValid(String testName,
+                              boolean isEBCorePartyId,
+                              String toParseIdentifier,
+                              String schemaPart,
+                              String idPart,
+                              Class errorClass,
+                              String containsErrorMessage) {
 
         boolean result = testInstance.isSchemeValid(schemaPart);
         assertEquals(isEBCorePartyId, result);
     }
 
-    @Test
-    public void isType() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    void isType(String testName,
+                       boolean isEBCorePartyId,
+                       String toParseIdentifier,
+                       String schemaPart,
+                       String idPart,
+                       Class errorClass,
+                       String containsErrorMessage) {
 
         boolean result = testInstance.isType(toParseIdentifier);
         assertEquals(isEBCorePartyId, result);
     }
 
-    @Test
-    public void format() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    void format(String testName,
+                       boolean isEBCorePartyId,
+                       String toParseIdentifier,
+                       String schemaPart,
+                       String idPart,
+                       Class errorClass,
+                       String containsErrorMessage) {
         // skip format for not ebcore party ids
         if (!isEBCorePartyId) {
             return;
@@ -168,8 +168,15 @@ public class EBCorePartyIdFormatterTypeTest {
         assertEquals(schema + ":" + trimToEmpty(idPart), result);
     }
 
-    @Test
-    public void parse() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierPositiveCases")
+    void parse(String testName,
+                      boolean isEBCorePartyId,
+                      String toParseIdentifier,
+                      String schemaPart,
+                      String idPart,
+                      Class errorClass,
+                      String containsErrorMessage) {
         // skip parse not ebcore party ids
         if (!isEBCorePartyId) {
             IllegalArgumentException result = assertThrows(IllegalArgumentException.class, () -> testInstance.parse(toParseIdentifier));

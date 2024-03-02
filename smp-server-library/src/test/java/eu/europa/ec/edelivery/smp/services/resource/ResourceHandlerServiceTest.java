@@ -81,10 +81,6 @@ class ResourceHandlerServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    void createResource() {
-    }
-
-    @Test
     void testReadResource() {
         Mockito.doReturn(resolvedData).when(requestData).getResolvedData();
         Mockito.doReturn(testUtilsDao.getResourceDefSmp()).when(resolvedData).getResourceDef();

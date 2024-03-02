@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UITruststoreServiceTest {
+class UITruststoreServiceTest {
     // test data
     protected Path resourceDirectory = Paths.get("src", "test", "resources", "truststore");
     protected Path targetDirectory = Paths.get("target", "test-uitruststoreservice");
@@ -73,7 +73,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateCertificateNotUsedOk() throws CertificateException {
+    void validateCertificateNotUsedOk() throws CertificateException {
         String certId = "cn=test" + UUID.randomUUID() + ",o=test,c=eu:123456";
         CertificateRO certificateRO = new CertificateRO();
         certificateRO.setCertificateId(certId);
@@ -88,7 +88,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateCertificateNotUsedIsUsed() {
+    void validateCertificateNotUsedIsUsed() {
         String certId = "cn=test" + UUID.randomUUID() + ",o=test,c=eu:123456";
         CertificateRO certificateRO = new CertificateRO();
         certificateRO.setCertificateId(certId);
@@ -99,7 +99,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateOk() throws CertificateException {
+    void validateNewCertificateOk() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doNothing().when(testInstance).checkFullCertificateValidity(cert);
@@ -112,7 +112,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateExpiredException() throws CertificateException {
+    void validateNewCertificateCertificateExpiredException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateExpiredException("Expired")).when(testInstance).checkFullCertificateValidity(cert);
@@ -124,7 +124,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateCertificateNotYetValidException() throws CertificateException {
+    void validateNewCertificateCertificateCertificateNotYetValidException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateNotYetValidException("Error")).when(testInstance).checkFullCertificateValidity(cert);
@@ -136,7 +136,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateCertificateRevokedException() throws CertificateException {
+    void validateNewCertificateCertificateCertificateRevokedException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(Mockito.mock(CertificateRevokedException.class)).when(testInstance).checkFullCertificateValidity(cert);
@@ -148,7 +148,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateCertificateNotTrustedException() throws CertificateException {
+    void validateNewCertificateCertificateCertificateNotTrustedException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(Mockito.mock(CertificateNotTrustedException.class)).when(testInstance).checkFullCertificateValidity(cert);
@@ -160,7 +160,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertPathValidatorException() throws CertificateException {
+    void validateNewCertificateCertPathValidatorException() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
         doThrow(new CertificateException(Mockito.mock(CertPathValidatorException.class))).when(testInstance).checkFullCertificateValidity(cert);
@@ -172,7 +172,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateNewCertificateCertificateException() throws CertificateException {
+    void validateNewCertificateCertificateException() throws CertificateException {
         String errorMessage = "Error Message";
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         CertificateRO certData = new CertificateRO();
@@ -185,14 +185,14 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void validateCertificateSubjectExpressionLegacyIfNullSkip() throws CertificateException {
+    void validateCertificateSubjectExpressionLegacyIfNullSkip() throws CertificateException {
         X509Certificate cert = Mockito.mock(X509Certificate.class);
         doReturn(null).when(configurationService).getCertificateSubjectRegularExpression();
         testInstance.validateCertificateSubjectExpressionLegacy(cert);
     }
 
     @Test
-    public void validateCertificateSubjectExpressionLegacyValidatedNotMatch() throws Exception {
+    void validateCertificateSubjectExpressionLegacyValidatedNotMatch() throws Exception {
         String regularExpression = ".*CN=SomethingNotExists.*";
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
@@ -207,7 +207,7 @@ public class UITruststoreServiceTest {
 
 
     @Test
-    public void validateCertificateSubjectExpressionLegacyValidatedMatch() throws Exception {
+    void validateCertificateSubjectExpressionLegacyValidatedMatch() throws Exception {
         String regularExpression = ".*CN=Something.*";
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
@@ -218,7 +218,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void loadTruststoreDoNotThrowError() {
+    void loadTruststoreDoNotThrowError() {
         // test for null file
         KeyStore result = testInstance.loadTruststore(null);
         assertNull(result);
@@ -234,14 +234,14 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testTruststoreNotConfiguredNotConfigured() {
+    void testTruststoreNotConfiguredNotConfigured() {
         doReturn(null).when(configurationService).getTruststoreFile();
         boolean result = testInstance.truststoreNotConfigured();
         assertTrue(result);
     }
 
     @Test
-    public void testTruststoreNotConfiguredConfigured() {
+    void testTruststoreNotConfiguredConfigured() {
 
         doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
         boolean result = testInstance.truststoreNotConfigured();
@@ -249,7 +249,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testRefreshDataNoConfiguration() {
+    void testRefreshDataNoConfiguration() {
 
         doReturn(null).when(configurationService).getTruststoreFile();
         // must not throw error
@@ -261,7 +261,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testRefreshDataOk() {
+    void testRefreshDataOk() {
 
         doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
         doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
@@ -274,7 +274,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void getCertificateDataNullEmpty() {
+    void getCertificateDataNullEmpty() {
 
         // must not throw error
         CertificateRO certificateRO = testInstance.getCertificateData(null);
@@ -286,7 +286,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void getCertificateDataInvalidCertificate() {
+    void getCertificateDataInvalidCertificate() {
 
         // must not throw error
         CertificateRO certificateRO = testInstance.getCertificateData("notACertificate".getBytes());
@@ -298,7 +298,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void getCertificateDataNoValidationOK() throws Exception {
+    void getCertificateDataNoValidationOK() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
         CertificateRO convertedCert = Mockito.mock(CertificateRO.class);
@@ -311,7 +311,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void getCertificateDataNoValidationBase64OK() throws Exception {
+    void getCertificateDataNoValidationBase64OK() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
         String base64Cert = Base64.getEncoder().encodeToString(certificate.getEncoded());
@@ -326,7 +326,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void getCertificateDataValidateOK() throws Exception {
+    void getCertificateDataValidateOK() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
         CertificateRO convertedCert = Mockito.mock(CertificateRO.class);
@@ -339,7 +339,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testValidateCertificateWithTruststoreNull() {
+    void testValidateCertificateWithTruststoreNull() {
         // when
         CertificateException result = assertThrows(CertificateException.class, () -> testInstance.validateCertificateWithTruststore(null));
         // then
@@ -347,7 +347,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testValidateCertificateWithTruststoreNoTruststoreConfigured() throws Exception {
+    void testValidateCertificateWithTruststoreNoTruststoreConfigured() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
         doReturn(null).when(configurationService).getTruststoreFile();
@@ -360,7 +360,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testValidateCertificateWithTruststoreNotTrusted() throws Exception {
+    void testValidateCertificateWithTruststoreNotTrusted() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
         doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
@@ -374,7 +374,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testValidateAllowedCertificateKeyTypes() throws Exception {
+    void testValidateAllowedCertificateKeyTypes() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
         doReturn(Collections.singletonList("FutureKeyAlgorithm")).when(configurationService).getAllowedCertificateKeyTypes();
@@ -387,7 +387,7 @@ public class UITruststoreServiceTest {
 
 
     @Test
-    public void testAddCertificate() throws Exception {
+    void testAddCertificate() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
 
@@ -402,7 +402,7 @@ public class UITruststoreServiceTest {
     }
 
     @Test
-    public void testDeleteCertificate() throws Exception {
+    void testDeleteCertificate() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
         doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();

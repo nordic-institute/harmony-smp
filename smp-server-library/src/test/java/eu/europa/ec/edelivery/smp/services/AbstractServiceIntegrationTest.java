@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -39,13 +39,13 @@ import eu.europa.ec.edelivery.smp.testutil.DBAssertion;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -60,7 +60,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  * @since 4.1
  */
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {IdentifierService.class, SmlConnector.class, SmpXmlSignatureService.class, MailService.class,
         DomainService.class,
         ResourceDao.class, SubresourceDao.class, DomainDao.class, UserDao.class, DBAssertion.class, ConfigurationDao.class, AlertDao.class, CredentialDao.class,
@@ -106,7 +106,7 @@ public abstract class AbstractServiceIntegrationTest extends AbstractBaseDao {
     DBAssertion dbAssertion;
 
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         resetKeystore();
     }

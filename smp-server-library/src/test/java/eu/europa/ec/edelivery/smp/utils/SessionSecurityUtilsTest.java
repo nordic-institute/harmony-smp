@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -23,9 +23,8 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import org.jasig.cas.client.validation.Assertion;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -35,35 +34,35 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
- * @since 4.2
+ * @since 4.2q
  */
-public class SessionSecurityUtilsTest {
+class SessionSecurityUtilsTest {
 
-    @After
+    @AfterEach
     public void afterUnitTest() {
         // clear authentication
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Test
-    public void encryptedEntityId() {
+    void encryptedEntityId() {
         SMPAuthenticationToken token = setTestSMPAuthenticationToken();
-        Long value = Long.valueOf(12332L);
+        Long value = 12332L;
         String result = SessionSecurityUtils.encryptedEntityId(value);
 
         assertNotNull(result);
         String decResult = SecurityUtils.decryptUrlSafe(token.getSecret(), result);
-        assertEquals(value, Long.valueOf(decResult.substring(0, decResult.indexOf('#')) ));
+        assertEquals(value, Long.valueOf(decResult.substring(0, decResult.indexOf('#'))));
     }
 
     @Test
-    public void decryptEntityId() {
+    void decryptEntityId() {
         SMPAuthenticationToken token = setTestSMPAuthenticationToken();
-        Long value = Long.valueOf(12332L);
+        Long value = 12332L;
         String encValue = SecurityUtils.encryptURLSafe(token.getSecret(), value.toString());
 
         Long result = SessionSecurityUtils.decryptEntityId(encValue);
@@ -73,7 +72,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getAuthenticationSecretFromSMPAuthenticationToken() {
+    void getAuthenticationSecretFromSMPAuthenticationToken() {
         // given
         SMPAuthenticationToken token = setTestSMPAuthenticationToken();
 
@@ -83,7 +82,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getAuthenticationSecretFromCasAuthenticationToken() {
+    void getAuthenticationSecretFromCasAuthenticationToken() {
         // given
         CasAuthenticationToken token = setTestCasAuthenticationToken();
 
@@ -94,7 +93,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getAuthenticationSecretNotSupported() {
+    void getAuthenticationSecretNotSupported() {
         // given
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(null, null);
         SecurityContextHolder.getContext().setAuthentication(token);
@@ -105,7 +104,7 @@ public class SessionSecurityUtilsTest {
     }
 
     @Test
-    public void getAuthenticationName() {
+    void getAuthenticationName() {
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String testName = "testName";
@@ -113,16 +112,16 @@ public class SessionSecurityUtilsTest {
 
         String result = SessionSecurityUtils.getAuthenticationName();
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(testName, result);
+        assertNotNull(result);
+        assertEquals(testName, result);
     }
 
     @Test
-    public void getSessionAuthenticationClasses() {
+    void getSessionAuthenticationClasses() {
         List<Class> list = SessionSecurityUtils.getSessionAuthenticationClasses();
-        Assert.assertEquals(4, list.size());
-        Assert.assertTrue(list.contains(SMPAuthenticationToken.class));
-        Assert.assertTrue(list.contains(CasAuthenticationToken.class));
+        assertEquals(4, list.size());
+        assertTrue(list.contains(SMPAuthenticationToken.class));
+        assertTrue(list.contains(CasAuthenticationToken.class));
     }
 
     public SMPAuthenticationToken setTestSMPAuthenticationToken() {

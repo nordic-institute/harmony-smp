@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * For the test configuration see the webapp_integration_test_data.sql file.
  * The system admin user is admin member of domain '1' and group '1'.
  */
-public class ResourceEditControllerIT extends AbstractControllerTest {
+class ResourceEditControllerIT extends AbstractControllerTest {
     private static final String PATH = CONTEXT_PATH_EDIT_RESOURCE;
 
     @Autowired
@@ -81,7 +81,7 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
             "'No match at all','', 0",
             "australia,'', 1", // filter by value match
     })
-    public void testGetResourcesForGroup(String filter, String roleType, int expectedResults) throws Exception {
+    void testGetResourcesForGroup(String filter, String roleType, int expectedResults) throws Exception {
         // given when
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -107,7 +107,7 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testPutResource() throws Exception {
+    void testPutResource() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -145,7 +145,7 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testDeleteResource() throws Exception {
+    void testDeleteResource() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -171,7 +171,7 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testUpdateResource() throws Exception {
+    void testUpdateResource() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -200,7 +200,7 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetGroupMembers() throws Exception {
+    void testGetGroupMembers() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -230,7 +230,7 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
 
 
     @Test
-    public void testAddGroupMember() throws Exception {
+    void testAddGroupMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -249,7 +249,7 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testDeleteGroupMember() throws Exception {
+    void testDeleteGroupMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -274,7 +274,7 @@ public class ResourceEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testUpdateGroupMember() throws Exception {
+    void testUpdateGroupMember() throws Exception {
         // given
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);

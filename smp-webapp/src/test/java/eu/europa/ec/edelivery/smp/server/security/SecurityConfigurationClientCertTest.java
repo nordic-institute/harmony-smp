@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +75,6 @@ public class SecurityConfigurationClientCertTest {
 
     public static final String RETURN_LOGGED_USER_PATH = "/getLoggedUsername";
 
-    @Parameterized.Parameters
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {
@@ -162,7 +160,7 @@ public class SecurityConfigurationClientCertTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void validClientCertHeaderAuthorizedForPutTest(
+    void validClientCertHeaderAuthorizedForPutTest(
             String testName,
             String expectedCertificateId,
             String certificateDn,

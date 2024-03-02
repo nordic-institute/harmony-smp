@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -20,10 +20,9 @@ package eu.europa.ec.edelivery.smp.identifiers;
 
 
 import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,10 +31,8 @@ import java.util.Collection;
  * @author Joze Rihtarsic
  * @since 5.0
  */
-@RunWith(Parameterized.class)
 public class ParticipantIdentifierFormatterFormatTests {
 
-    @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection participantIdentifierCases() {
         return Arrays.asList(new Object[][]{
                 {"ebCore unregistered",
@@ -69,24 +66,20 @@ public class ParticipantIdentifierFormatterFormatTests {
     }
 
     // input parameters
-    @Parameterized.Parameter
-    public String name;
-    @Parameterized.Parameter(1)
-    public Identifier participantIdentifierType;
-    @Parameterized.Parameter(2)
-    public String formattedIdentifier;
-    @Parameterized.Parameter(3)
-    public String uriFormattedIdentifier;
 
     IdentifierFormatter testInstance = IdentifierFormatter.Builder.create().addFormatterTypes(new EBCorePartyIdFormatterType()).build();
 
-    @Test
-    public void testFormat() {
+    @ParameterizedTest
+    @MethodSource("participantIdentifierCases")
+    void testFormat(String name,
+                           Identifier participantIdentifierType,
+                           String formattedIdentifier,
+                           String uriFormattedIdentifier) {
 
         String result = testInstance.format(participantIdentifierType);
         String uriResult = testInstance.urlEncodedFormat(participantIdentifierType);
 
-        Assert.assertEquals(formattedIdentifier, result);
-        Assert.assertEquals(uriFormattedIdentifier, uriResult);
+        Assertions.assertEquals(formattedIdentifier, result);
+        Assertions.assertEquals(uriFormattedIdentifier, uriResult);
     }
 }

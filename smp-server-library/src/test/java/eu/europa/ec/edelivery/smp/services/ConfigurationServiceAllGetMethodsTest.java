@@ -23,9 +23,9 @@ import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -34,12 +34,10 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-@RunWith(Parameterized.class)
 public class ConfigurationServiceAllGetMethodsTest {
     private static final String TEST_STRING = "TestString";
     private static final List<String> TEST_STRING_LIST = Arrays.asList("TestString1", "TestString2", "TestString3");
@@ -59,7 +57,6 @@ public class ConfigurationServiceAllGetMethodsTest {
     ConfigurationDao configurationDaoMock = mock(ConfigurationDao.class);
     ConfigurationService testInstance = new ConfigurationService(configurationDaoMock);
 
-    @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection<Object[]> data() {
         // set property values for property, set value, method name, value or property, value (true) or property (false)
         return Arrays.asList(new Object[][]{
@@ -176,20 +173,10 @@ public class ConfigurationServiceAllGetMethodsTest {
         });
     }
 
-    private final SMPPropertyEnum property;
-    private final Object value;
-    private final String methodName;
-    private final boolean fromValue;
 
-    public ConfigurationServiceAllGetMethodsTest(SMPPropertyEnum property, Object value, String methodName, boolean fromValue) {
-        this.property = property;
-        this.value = value;
-        this.methodName = methodName;
-        this.fromValue = fromValue;
-    }
-
-    @Test
-    public void testProperty() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    @ParameterizedTest
+    @MethodSource("data")
+    void testProperty(SMPPropertyEnum property, Object value, String methodName, boolean fromValue) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
         if (fromValue) {
             doReturn(value instanceof AlertLevelEnum ? value.toString() : value).when(configurationDaoMock).getCachedPropertyValue(property);

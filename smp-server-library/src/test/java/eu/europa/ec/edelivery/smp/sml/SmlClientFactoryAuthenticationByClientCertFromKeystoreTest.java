@@ -32,8 +32,8 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -49,12 +49,12 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by gutowpa on 08/01/2018.
  */
-public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends AbstractServiceTest {
+class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends AbstractServiceTest {
 
     private static final String CERTIFICATE_DN_SECOND_DOMAIN = "CN=Second Domain,OU=edelivery,O=digit,C=eu";
     private static final String CERTIFICATE_DN_FIRST_DOMAIN = "CN=SMP Mock Services,OU=DIGIT,O=European Commision,C=BE";
@@ -73,7 +73,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     private SmlConnector testInstance;
 
 
-    @Before
+    @BeforeEach
     public void before() throws MalformedURLException {
 
         ReflectionTestUtils.setField(keystoreService, "configurationService", configurationService);
@@ -91,7 +91,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     }
 
     @Test
-    public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
+    void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenCertAlias() {
         //given
         IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
@@ -116,7 +116,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
 
 
     @Test
-    public void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
+    void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
 
         //given
         IManageServiceMetadataWS client = smlClientFactory.createSmp();
@@ -140,7 +140,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     }
 
     @Test
-    public void factoryProducesClientWithAnotherCertFromKeystore() {
+    void factoryProducesClientWithAnotherCertFromKeystore() {
         //given
         IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
@@ -160,7 +160,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     }
 
     @Test
-    public void factoryProducesSMPClientWithAnotherCertFromKeystore() {
+    void factoryProducesSMPClientWithAnotherCertFromKeystore() {
 
         //given
         IManageServiceMetadataWS client = smlClientFactory.createSmp();
@@ -181,7 +181,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     }
 
     @Test
-    public void factoryProducesClientNoDefinedAlias() {
+    void factoryProducesClientNoDefinedAlias() {
         //given
         IManageParticipantIdentifierWS client = smlClientFactory.create();
         DBDomain domain = new DBDomain();
@@ -195,7 +195,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     }
 
     @Test
-    public void factoryProducesSMPClientNoDefinedAlias() {
+    void factoryProducesSMPClientNoDefinedAlias() {
 
         //given
         IManageServiceMetadataWS client = smlClientFactory.createSmp();
@@ -210,7 +210,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest extends 
     }
 
     @Test
-    public void factoryProducesClientNoDefinedAliasOneKeyInKeystore() {
+    void factoryProducesClientNoDefinedAliasOneKeyInKeystore() {
         //given
         File keystoreFile = new File(resourceDirectory.toFile(), "service_integration_signatures_single_domain.jks");
         Mockito.doReturn(keystoreFile).when(configurationService).getKeystoreFile();

@@ -24,11 +24,11 @@ import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
  * @since 4.1
  */
 @ContextConfiguration(classes = UIDomainService.class)
-public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
+class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     protected UIDomainService testInstance;
@@ -51,7 +51,7 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
     }
 
     @Test
-    public void testGetTableListEmpty() {
+    void testGetTableListEmpty() {
         // given when
         ServiceResult<DomainRO> res = testInstance.getTableList(-1, -1, null, null, null);
         // then
@@ -64,7 +64,7 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
     }
 
     @Test
-    public void testGetTableList15() {
+    void testGetTableList15() {
 
         // given
         insertDataObjects(15);

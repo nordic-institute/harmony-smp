@@ -20,21 +20,21 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.doc.DBSubresource;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SubresourceDaoTest extends AbstractBaseDao {
+class SubresourceDaoTest extends AbstractBaseDao {
     @Autowired
     SubresourceDao testInstance;
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         // setup initial data!
         testUtilsDao.clearData();
@@ -42,7 +42,7 @@ public class SubresourceDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getSubResource() {
+    void getSubResource() {
         Identifier suberesId = new Identifier(TEST_DOC_ID_1,TEST_DOC_SCHEMA_1 );
         Optional<DBSubresource> subresource = testInstance.getSubResource(suberesId,
                 testUtilsDao.getResourceD1G1RD1(), TEST_SUBRESOURCE_DEF_SMP10_URL);
@@ -51,7 +51,7 @@ public class SubresourceDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getSubResourceWrongResource() {
+    void getSubResourceWrongResource() {
         Identifier suberesId = new Identifier(TEST_DOC_ID_1,TEST_DOC_SCHEMA_1 );
         Optional<DBSubresource> subresource = testInstance.getSubResource(suberesId,
                 testUtilsDao.getResourceD2G1RD1(), TEST_SUBRESOURCE_DEF_SMP10_URL);
@@ -60,7 +60,7 @@ public class SubresourceDaoTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getSubResourcesForResource() {
+    void getSubResourcesForResource() {
         Identifier identifier = new Identifier(TEST_SG_ID_1,TEST_SG_SCHEMA_1 );
 
         List<DBSubresource> subresourceList =  testInstance.getSubResourcesForResource(identifier, TEST_SUBRESOURCE_DEF_SMP10_ID);

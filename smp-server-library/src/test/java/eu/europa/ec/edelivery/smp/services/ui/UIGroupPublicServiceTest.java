@@ -37,11 +37,11 @@ import org.springframework.core.convert.ConversionService;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class UIGroupPublicServiceTest extends AbstractJunit5BaseDao {
+class UIGroupPublicServiceTest extends AbstractJunit5BaseDao {
 
 
     @Autowired
@@ -59,49 +59,49 @@ public class UIGroupPublicServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetAllGroupsForDomainD1() {
+    void testGetAllGroupsForDomainD1() {
         List<GroupRO> groups = testInstance.getAllGroupsForDomain(testUtilsDao.getD1().getId());
         assertEquals(2, groups.size());
     }
 
 
     @Test
-    public void testGetAllGroupsForDomainD2() {
+    void testGetAllGroupsForDomainD2() {
         List<GroupRO> groups = testInstance.getAllGroupsForDomain(testUtilsDao.getD2().getId());
         assertEquals(1, groups.size());
     }
 
 
     @Test
-    public void testGetAllGroupsForDomainAndUserAndGroupRoleExpectedOneGroup() {
+    void testGetAllGroupsForDomainAndUserAndGroupRoleExpectedOneGroup() {
         List<GroupRO> groups = testInstance.getAllGroupsForDomainAndUserAndGroupRole(testUtilsDao.getD1().getId(),
                 testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, groups.size());
     }
 
     @Test
-    public void testGetAllGroupsForDomainAndUserAndGroupRoleExpectedNullGroup() {
+    void testGetAllGroupsForDomainAndUserAndGroupRoleExpectedNullGroup() {
         List<GroupRO> groups = testInstance.getAllGroupsForDomainAndUserAndGroupRole(testUtilsDao.getD1().getId(),
                 testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
         assertEquals(0, groups.size());
     }
 
     @Test
-    public void testGetAllGroupsForDomainAndUserAndResourceRoleExpectedOneGroup() {
+    void testGetAllGroupsForDomainAndUserAndResourceRoleExpectedOneGroup() {
         List<GroupRO> groups = testInstance.getAllGroupsForDomainAndUserAndGroupRole(testUtilsDao.getD1().getId(),
                 testUtilsDao.getUser1().getId(), MembershipRoleType.ADMIN);
         assertEquals(1, groups.size());
     }
 
     @Test
-    public void testGetAllGroupsForDomainAndUserAndResourceRoleExpectedNullGroup() {
+    void testGetAllGroupsForDomainAndUserAndResourceRoleExpectedNullGroup() {
         List<GroupRO> groups = testInstance.getAllGroupsForDomainAndUserAndGroupRole(testUtilsDao.getD1().getId(),
                 testUtilsDao.getUser1().getId(), MembershipRoleType.VIEWER);
         assertEquals(0, groups.size());
     }
 
     @Test
-    public void testCreateGroupForDomain() {
+    void testCreateGroupForDomain() {
         // given
         GroupRO groupRO = TestROUtils.createGroup(UUID.randomUUID().toString(), VisibilityType.PUBLIC);
         DBDomain domain = testUtilsDao.getD1();
@@ -117,7 +117,7 @@ public class UIGroupPublicServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testSaveGroupForDomain() {
+    void testSaveGroupForDomain() {
         // given
         DBDomain domain = testUtilsDao.getD1();
         DBGroup group = testUtilsDao.getGroupD1G1();
@@ -137,7 +137,7 @@ public class UIGroupPublicServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testDeleteGroupForDomain() {
+    void testDeleteGroupForDomain() {
         // given
         GroupRO groupRO = TestROUtils.createGroup(UUID.randomUUID().toString(), VisibilityType.PUBLIC);
         DBDomain domain = testUtilsDao.getD1();
@@ -152,7 +152,7 @@ public class UIGroupPublicServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testGetGroupMembers() {
+    void testGetGroupMembers() {
         // given
         // see the data in testUtilsDao.createGroupMemberships()
         // when
@@ -166,7 +166,7 @@ public class UIGroupPublicServiceTest extends AbstractJunit5BaseDao {
 
 
     @Test
-    public void testAddUpdateMemberToGroupUpdate() {
+    void testAddUpdateMemberToGroupUpdate() {
         // given
         // see the data in testUtilsDao.createGroupMemberships()
         DBGroupMember dbMember = testUtilsDao.getGroupMemberU1D1G1Admin();
@@ -182,7 +182,7 @@ public class UIGroupPublicServiceTest extends AbstractJunit5BaseDao {
     }
 
     @Test
-    public void testAddUpdateMemberToGroupAdd() {
+    void testAddUpdateMemberToGroupAdd() {
         // given
         ServiceResult<MemberRO> members = testInstance.getGroupMembers(testUtilsDao.getGroupD1G1().getId(),testUtilsDao.getD1().getId(), -1, -1, null);
         int memberCount = members.getCount().intValue();

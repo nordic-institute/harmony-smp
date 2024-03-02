@@ -19,19 +19,19 @@
 
 package eu.europa.ec.edelivery.smp.utils;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by gutowpa on 22/02/2017.
  */
-public class BCryptPasswordHashTest {
+class BCryptPasswordHashTest {
 
     private static final String PASSWORD = "this_is_sample_password";
 
@@ -39,7 +39,7 @@ public class BCryptPasswordHashTest {
     private PrintStream initialPrintStream=null;
 
 
-    @After
+    @AfterEach
     public void cleanUpStreams() {
         if (initialPrintStream!=null){
             System.setOut(initialPrintStream);
@@ -47,7 +47,7 @@ public class BCryptPasswordHashTest {
     }
 
     @Test
-    public void generatedHashIsValidTest() {
+    void generatedHashIsValidTest() {
         //when
         String hash = BCryptPasswordHash.hashPassword(PASSWORD);
         //then
@@ -55,7 +55,7 @@ public class BCryptPasswordHashTest {
     }
 
     @Test
-    public void generatedHashIsAlwaysSaltedTest() {
+    void generatedHashIsAlwaysSaltedTest() {
         //when
         String hash1 = BCryptPasswordHash.hashPassword(PASSWORD);
         String hash2 = BCryptPasswordHash.hashPassword(PASSWORD);
@@ -65,7 +65,7 @@ public class BCryptPasswordHashTest {
     }
 
     @Test
-    public void mainMethodSupportsMultiplePasswordsAndPrintsThemToStandardOutputTest() {
+    void mainMethodSupportsMultiplePasswordsAndPrintsThemToStandardOutputTest() {
         //given
         initialPrintStream = System.out;
         System.setOut(new PrintStream(outContent));

@@ -26,7 +26,7 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +64,7 @@ public abstract class AbstractResourceDaoTest extends AbstractBaseDao {
     ResourceMemberDao resourceMemberDao;
 
 
-    @Before
+    @BeforeEach
     public void prepareDatabase() {
         testUtilsDao.clearData();
         // setup initial data!

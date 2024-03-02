@@ -73,13 +73,13 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void notFoundIsReturnedWhenServiceGroupDoesNotExist() throws Exception {
+    void notFoundIsReturnedWhenServiceGroupDoesNotExist() throws Exception {
         mvc.perform(get(format("/%s::%s", IDENTIFIER_SCHEME, UUID.randomUUID())))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void adminCanCreateServiceGroup() throws Exception {
+    void adminCanCreateServiceGroup() throws Exception {
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
@@ -93,7 +93,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void adminCanUpdateServiceGroup() throws Exception {
+    void adminCanUpdateServiceGroup() throws Exception {
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
@@ -115,7 +115,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void existingServiceGroupCanBeRetrievedByEverybody() throws Exception {
+    void existingServiceGroupCanBeRetrievedByEverybody() throws Exception {
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
@@ -138,7 +138,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
             "/" + HTTP_DOMAIN_VALUE,  // as domain value
             "/" + HTTP_DOMAIN_VALUE + "/" + DOCUMENT_TYPE_URL  // as domain value
     })
-    public void existingServiceGroupCanBeRetrievedByEverybodyWithSubContext(String context) throws Exception {
+    void existingServiceGroupCanBeRetrievedByEverybodyWithSubContext(String context) throws Exception {
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urPath = format("%s/%s::%s", context, IDENTIFIER_SCHEME, participantId);
@@ -160,7 +160,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
             "/" + HTTP_DOMAIN_VALUE,  // as domain value
             "/" + HTTP_DOMAIN_VALUE + "/" + DOCUMENT_TYPE_URL  // as domain value
     })
-    public void existingServiceMetadataCanBeRetrievedByEverybody(String context) throws Exception {
+    void existingServiceMetadataCanBeRetrievedByEverybody(String context) throws Exception {
 
         String participantId = UUID.randomUUID().toString();
         String documentId = UUID.randomUUID().toString();
@@ -193,7 +193,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getExistingServiceMetadataWithReverseProxyHost() throws Exception {
+    void getExistingServiceMetadataWithReverseProxyHost() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
         String documentId = UUID.randomUUID().toString();
@@ -210,7 +210,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getExistingServiceMetadataWithReverseNoProxyHost() throws Exception {
+    void getExistingServiceMetadataWithReverseNoProxyHost() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
         String documentId = UUID.randomUUID().toString();
@@ -227,7 +227,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getExistingServiceMetadataWithReverseProxyPort() throws Exception {
+    void getExistingServiceMetadataWithReverseProxyPort() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
         String documentId = UUID.randomUUID().toString();
@@ -243,7 +243,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getExistingServiceMetadataWithReverseProxySchema() throws Exception {
+    void getExistingServiceMetadataWithReverseProxySchema() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
         String documentId = UUID.randomUUID().toString();
@@ -260,7 +260,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getExistingServiceMetadataWithReverseProxySkipDefaultPortHttps() throws Exception {
+    void getExistingServiceMetadataWithReverseProxySkipDefaultPortHttps() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
         String documentId = UUID.randomUUID().toString();
@@ -279,7 +279,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getExistingServiceMetadataWithReverseProxySkipDefaultPortHttp() throws Exception {
+    void getExistingServiceMetadataWithReverseProxySkipDefaultPortHttp() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
         String documentId = UUID.randomUUID().toString();
@@ -296,7 +296,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getExistingServiceMetadataWithReverseProxyPortInHost() throws Exception {
+    void getExistingServiceMetadataWithReverseProxyPortInHost() throws Exception {
         //given
         String participantId = UUID.randomUUID().toString();
         String documentId = UUID.randomUUID().toString();
@@ -326,7 +326,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void anonymousUserCannotCreateServiceGroup() throws Exception {
+    void anonymousUserCannotCreateServiceGroup() throws Exception {
 
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
@@ -343,7 +343,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void adminCanDeleteServiceGroup() throws Exception {
+    void adminCanDeleteServiceGroup() throws Exception {
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
@@ -363,7 +363,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void malformedInputReturnsBadRequest() throws Exception {
+    void malformedInputReturnsBadRequest() throws Exception {
 
         String participantId = UUID.randomUUID().toString();
         String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
@@ -377,7 +377,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void invalidParticipantSchemeReturnsBadRequest() throws Exception {
+    void invalidParticipantSchemeReturnsBadRequest() throws Exception {
 
         String participantId = UUID.randomUUID().toString();
         String scheme = "length-exceeeeeeds-25chars";
@@ -394,7 +394,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void creatingServiceGroupUnderBadFormatedDomainReturnsBadRequest() throws Exception {
+    void creatingServiceGroupUnderBadFormatedDomainReturnsBadRequest() throws Exception {
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
@@ -410,7 +410,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void creatingServiceGroupUnderNotExistingDomainReturnsBadRequest() throws Exception {
+    void creatingServiceGroupUnderNotExistingDomainReturnsBadRequest() throws Exception {
 
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
@@ -426,7 +426,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void adminCanAssignNewServiceGroupToOtherOwner() throws Exception {
+    void adminCanAssignNewServiceGroupToOtherOwner() throws Exception {
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);
@@ -442,7 +442,7 @@ public class ResourceControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void adminCannotAssignNewServiceGroupToNotExistingOwner() throws Exception {
+    void adminCannotAssignNewServiceGroupToNotExistingOwner() throws Exception {
         String participantId = UUID.randomUUID().toString();
         String resourceExample = getSampleServiceGroupBody(IDENTIFIER_SCHEME, participantId);
         String urlPath = format("/%s::%s", IDENTIFIER_SCHEME, participantId);

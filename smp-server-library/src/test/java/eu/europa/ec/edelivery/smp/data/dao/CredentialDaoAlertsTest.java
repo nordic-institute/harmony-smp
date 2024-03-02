@@ -21,8 +21,8 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.OffsetDateTime;
@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class CredentialDaoAlertsTest extends AbstractBaseDao {
+
+class CredentialDaoAlertsTest extends AbstractBaseDao {
 
     DBUser okUser = TestDBUtils.createDBUserByUsername("okUser-" + UUID.randomUUID());
     DBUser beforePasswordExpireNoAlertSend = TestDBUtils.createDBUserByUsername("befPassExpNoAlertSend-" + UUID.randomUUID());
@@ -69,7 +69,7 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
     @Autowired
     UserDao userDao;
 
-    @Before
+    @BeforeEach
     public void setupData() {
         // persist users to database
         userDao.persistFlushDetach(okUser);
@@ -173,7 +173,7 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getPasswordImminentExpireUsers() {
+    void getPasswordImminentExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getBeforePasswordExpireUsersForAlerts(30, 5, 200);
         List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
         assertTrue(usernames.contains(beforePasswordExpireNoAlertSend.getUsername()));
@@ -181,7 +181,7 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getPasswordExpireUsers() {
+    void getPasswordExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getPasswordExpiredUsersForAlerts(30, 5, 200);
         assertEquals(2, dbUserList.size());
         List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
@@ -190,7 +190,7 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getAccessTokenImminentExpireUsers() {
+    void getAccessTokenImminentExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getBeforeAccessTokenExpireUsersForAlerts(30, 5, 200);
         List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
         System.out.println(usernames);
@@ -200,7 +200,7 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getAccessTokenExpireUsers() {
+    void getAccessTokenExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getAccessTokenExpiredUsersForAlerts(30, 5, 200);
         List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
         System.out.println(usernames);
@@ -210,7 +210,7 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getCertificateImminentExpireUsers() {
+    void getCertificateImminentExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getBeforeCertificateExpireUsersForAlerts(30, 5, 200);
         List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
         System.out.println(usernames);
@@ -220,7 +220,7 @@ public class CredentialDaoAlertsTest extends AbstractBaseDao {
     }
 
     @Test
-    public void getCertificateExpireUsers() {
+    void getCertificateExpireUsers() {
         List<DBCredential> dbUserList = testInstance.getCertificateExpiredUsersForAlerts(30, 5, 200);
         List<String> usernames = dbUserList.stream().map(DBCredential::getUser).map(DBUser::getUsername).collect(Collectors.toList());
         System.out.println(usernames);

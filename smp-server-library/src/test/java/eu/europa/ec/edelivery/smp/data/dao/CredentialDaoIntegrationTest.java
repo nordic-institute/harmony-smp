@@ -25,20 +25,20 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBCredential;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.upperCase;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Joze Rihtarsic
  * @since 5.0
  */
-public class CredentialDaoIntegrationTest extends AbstractBaseDao {
+class CredentialDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     UserDao userDao;
@@ -47,7 +47,7 @@ public class CredentialDaoIntegrationTest extends AbstractBaseDao {
     CredentialDao testInstance;
 
     @Test
-    public void findUsernameCredentialForUsername() {
+    void findUsernameCredentialForUsername() {
         DBCredential credential = TestDBUtils.createDBCredential(TestConstants.USERNAME_1, "TEST", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
         DBUser u = TestDBUtils.createDBUserByUsername(TestConstants.USERNAME_1);
         // execute
@@ -69,7 +69,7 @@ public class CredentialDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void findUsernameCredentialForUsernameCaseInsensitive() {
+    void findUsernameCredentialForUsernameCaseInsensitive() {
         String username = lowerCase(TestConstants.USERNAME_1);
         DBCredential credential = TestDBUtils.createDBCredential(username, "TEST", CredentialType.USERNAME_PASSWORD, CredentialTargetType.UI);
         DBUser u = TestDBUtils.createDBUserByUsername(username);
@@ -92,7 +92,7 @@ public class CredentialDaoIntegrationTest extends AbstractBaseDao {
     }
 
     @Test
-    public void findCertificateCredential() {
+    void findCertificateCredential() {
         String username = lowerCase(TestConstants.USERNAME_1);
         DBCredential credential = TestDBUtils.createDBCredential(username, "TEST", CredentialType.CERTIFICATE, CredentialTargetType.REST_API);
         DBCertificate certificate = TestDBUtils.createDBCertificate();

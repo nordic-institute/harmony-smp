@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -28,9 +28,8 @@ import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,8 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,7 +50,7 @@ import static org.mockito.Mockito.verify;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
+class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired
     IdentifierService identifierService;
@@ -67,7 +65,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     @SpyBean
     ConfigurationService configurationService;
 
-    @Before
+    @BeforeEach
     @Transactional
     public void prepareDatabase() {
         identifierService.configureParticipantIdentifierFormatter(null, false, Pattern.compile(".*"));
@@ -85,7 +83,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void registerDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
+    void registerDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(false);
@@ -100,7 +98,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void unregisterDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault, NotFoundFault {
+    void unregisterDomainToSml() throws UnauthorizedFault, InternalErrorFault, BadRequestFault, NotFoundFault {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
@@ -115,7 +113,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void registerParticipant() throws Exception {
+    void registerParticipant() throws Exception {
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
@@ -130,7 +128,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void participantExists() {
+    void participantExists() {
         // given
         DBDomain domain = testUtilsDao.getD1();
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
@@ -143,11 +141,11 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         boolean participantExists = testInstance.participantExists(resource, domain);
 
         // then
-        Assert.assertTrue(participantExists);
+        assertTrue(participantExists);
     }
 
     @Test
-    public void registerOnlyDomainToSml_smlIntegrationDisabled() {
+    void registerOnlyDomainToSml_smlIntegrationDisabled() {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(false);
@@ -155,12 +153,12 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         givenSmlIntegrationEnabled(false);
 
         // when
-        SMPRuntimeException result = Assert.assertThrows(SMPRuntimeException.class, () -> testInstance.registerDomain(testDomain01));
-        Assert.assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.registerDomain(testDomain01));
+        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
     }
 
     @Test
-    public void unregisterOnlyDomainToSml_smlIntegrationDisabled() {
+    void unregisterOnlyDomainToSml_smlIntegrationDisabled() {
         // given
         DBDomain testDomain01 = testUtilsDao.getD1();
         testDomain01.setSmlRegistered(true);
@@ -168,12 +166,12 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         givenSmlIntegrationEnabled(false);
 
         // when
-        SMPRuntimeException result = Assert.assertThrows(SMPRuntimeException.class, () -> testInstance.unRegisterDomain(testDomain01));
-        Assert.assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.unRegisterDomain(testDomain01));
+        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
     }
 
     @Test
-    public void registerParticipant_smlIntegrationDisabled() {
+    void registerParticipant_smlIntegrationDisabled() {
         DBDomain testDomain01 = testUtilsDao.getD1();
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
 
@@ -184,7 +182,7 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void unregisterParticipant_smlIntegrationDisabled() {
+    void unregisterParticipant_smlIntegrationDisabled() {
         DBDomain testDomain01 = testUtilsDao.getD1();
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
 
@@ -195,24 +193,24 @@ public class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     }
 
     @Test
-    public void participantExists_smlIntegrationDisabled() {
+    void participantExists_smlIntegrationDisabled() {
         DBDomain domain = testUtilsDao.getD1();
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
 
         givenSmlIntegrationEnabled(false);
 
-        SMPRuntimeException result = Assert.assertThrows(SMPRuntimeException.class, () -> testInstance.participantExists(resource, domain));
-        Assert.assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.participantExists(resource, domain));
+        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
     }
 
     @Test
-    public void isDomainValid_smlIntegrationDisabled() {
+    void isDomainValid_smlIntegrationDisabled() {
         DBDomain domain = testUtilsDao.getD1();
 
         givenSmlIntegrationEnabled(false);
 
-        SMPRuntimeException result = Assert.assertThrows(SMPRuntimeException.class, () -> testInstance.isDomainValid(domain));
-        Assert.assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class, () -> testInstance.isDomainValid(domain));
+        assertEquals("Configuration error: [SML integration is not enabled!]!", result.getMessage());
     }
 
     private void givenSmlIntegrationEnabled(boolean enabled) {

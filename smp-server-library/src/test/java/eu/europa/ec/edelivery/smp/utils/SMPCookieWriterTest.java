@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 
@@ -29,11 +29,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 
-public class SMPCookieWriterTest {
+class SMPCookieWriterTest {
     SMPCookieWriter testInstance = spy(new SMPCookieWriter());
 
     @Test
-    public void generateSetCookieHeaderForName() {
+    void generateSetCookieHeaderForName() {
         // given
         String generatedHeader = "JSESSION=this-is-test-example; HttpOnly; Max-Age=36000; Expires=Thu, 16 Sep 2021 19:41:30 +0200; Path=/path; SameSite=Strict";
         String sessionValue = "SessionValue";

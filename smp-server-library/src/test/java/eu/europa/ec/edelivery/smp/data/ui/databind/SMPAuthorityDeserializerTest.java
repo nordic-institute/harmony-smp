@@ -21,12 +21,12 @@ package eu.europa.ec.edelivery.smp.data.ui.databind;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 
 /**
@@ -35,10 +35,10 @@ import static org.junit.Assert.assertNotNull;
  * @author Joze Rihtarsic
  * @since 4.2
  */
-public class SMPAuthorityDeserializerTest {
+class SMPAuthorityDeserializerTest {
 
     @Test
-    public void deserialize() throws IOException {
+    void deserialize() throws IOException {
         String value = "{\"status\":0,\"index\":0,\"actionMessage\":null,\"userId\":\"hsAkhiqJp1o89VZ4iBtmLnEM2vkb5FJTt0vWEUIxOw\",\"username\":\"user\",\"active\":true,\"role\":\"USER\",\"emailAddress\":\"user@mail-example.local\",\"fullName\":null,\"smpTheme\":null,\"smpLocale\":null,\"casAuthenticated\":false,\"casUserDataUrl\":null,\"passwordExpireOn\":null,\"sequentialLoginFailureCount\":0,\"lastFailedLoginAttempt\":null,\"suspendedUtil\":null,\"passwordUpdatedOn\":null,\"authorities\":[\"ROLE_USER\"],\"statusPassword\":0,\"passwordExpired\":true,\"showPasswordExpirationWarning\":false,\"forceChangeExpiredPassword\":false}";
         ObjectMapper mapper = new ObjectMapper();
         UserRO userRO = mapper.readValue(value, UserRO.class);

@@ -20,7 +20,7 @@ package eu.europa.ec.edelivery.smp.auth;
 
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -28,9 +28,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SMPAuthenticationEventListenerTest {
+class SMPAuthenticationEventListenerTest {
 
     ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
     // test instance
@@ -38,7 +38,7 @@ public class SMPAuthenticationEventListenerTest {
 
 
     @Test
-    public void getSessionTimeoutForRolesSMPAdmin() {
+    void getSessionTimeoutForRolesSMPAdmin() {
         // Given
         Collection<? extends GrantedAuthority> authorities = Collections.singletonList(SMPAuthority.S_AUTHORITY_USER);
         // when then
@@ -46,7 +46,7 @@ public class SMPAuthenticationEventListenerTest {
     }
 
     @Test
-    public void getSessionTimeoutForRolesSystemAdmin() {
+    void getSessionTimeoutForRolesSystemAdmin() {
         // Given
         Collection<? extends GrantedAuthority> authorities = Collections.singletonList(SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN);
         // when then
@@ -54,7 +54,7 @@ public class SMPAuthenticationEventListenerTest {
     }
 
     @Test
-    public void getSessionTimeoutForRolesUser() {
+    void getSessionTimeoutForRolesUser() {
         // Given
         Collection<? extends GrantedAuthority> authorities = Collections.singletonList(SMPAuthority.S_AUTHORITY_USER);
         // when then
@@ -62,7 +62,7 @@ public class SMPAuthenticationEventListenerTest {
     }
 
     @Test
-    public void getSessionTimeoutForRolesUserAndSystem() {
+    void getSessionTimeoutForRolesUserAndSystem() {
         // Given
         Collection<? extends GrantedAuthority> authorities = Arrays.asList(SMPAuthority.S_AUTHORITY_USER, SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN);
         // when then
@@ -70,7 +70,7 @@ public class SMPAuthenticationEventListenerTest {
     }
 
     @Test
-    public void getSessionTimeoutForRolesUserAndSMP() {
+    void getSessionTimeoutForRolesUserAndSMP() {
         // Given
         Collection<? extends GrantedAuthority> authorities = Collections.singletonList(SMPAuthority.S_AUTHORITY_USER);
         // when then
