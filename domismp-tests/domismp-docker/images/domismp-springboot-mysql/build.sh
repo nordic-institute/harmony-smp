@@ -4,13 +4,16 @@
 # first it copies external resources to resources folder
 # then it builds the image using docker-compose.build.yml
 # and finally it cleans the external resources
+WORKING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${WORKING_DIR}"
+
+source "${WORKING_DIR}/../../functions/common.functions"
+initializeCommonVariables
+
 : "${SMP_PROJECT_FOLDER:?Need to set SMP project folder non-empty!}"
 : "${SMP_VERSION:?Need to set SMP version non-empty!}"
 : "${SMP_ARTEFACTS:?Need to set SMP_ARTEFACTS non-empty!}"
 : "${SMP_SPRINGBOOT_ARTEFACTS:?Need to set SMP_SPRINGBOOT_ARTEFACTS non-empty!}"
-
-WORKING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "${WORKING_DIR}"
 
 copyExternalImageResources() {
 		echo "Copy test project resources ..."
