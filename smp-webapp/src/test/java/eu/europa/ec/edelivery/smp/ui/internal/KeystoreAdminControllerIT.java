@@ -36,7 +36,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.CONTEXT_PATH_INTERNAL_KEYSTORE;
@@ -123,11 +126,13 @@ class KeystoreAdminControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    void uploadKeystoreOK() throws Exception {
-
+    void uploadKeystoreOK_removeDuplicateCertificates() throws Exception {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
-        int countStart = uiKeystoreService.getKeystoreEntriesList().size();
+        assertEquals(uiKeystoreService.getKeystoreEntriesList().stream()
+                .map(CertificateRO::getAlias)
+                .collect(Collectors.toSet()), new HashSet<>(Arrays.asList("second_domain_alias", "single_domain_key")));
+
         // given when
         MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/upload/JKS/test123")
                         .session(session)
@@ -140,7 +145,11 @@ class KeystoreAdminControllerIT extends AbstractControllerTest {
 
         assertNotNull(res);
         assertNull(res.getErrorMessage());
-        assertEquals(countStart + 1, uiKeystoreService.getKeystoreEntriesList().size());
+        assertTrue(res.getAddedCertificates().isEmpty());
+        assertEquals(res.getIgnoredAliases(), new HashSet(Arrays.asList("single_domain_key")));
+        assertEquals(uiKeystoreService.getKeystoreEntriesList().stream()
+                .map(CertificateRO::getAlias)
+                .collect(Collectors.toSet()), new HashSet<>(Arrays.asList("second_domain_alias", "single_domain_key")));
     }
 
     @Test

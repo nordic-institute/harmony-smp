@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.ui.internal;
 
+import eu.europa.ec.edelivery.security.utils.KeystoreUtils;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
@@ -38,7 +39,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
@@ -90,9 +93,11 @@ public class KeystoreAdminController {
         try {
             KeyStore keyStore = KeyStore.getInstance(keystoreType);
             keyStore.load(new ByteArrayInputStream(fileBytes), password.toCharArray());
+            Set<String> ignoredAliases = removeDuplicateCertificates(keyStore);
             List<CertificateRO> certificateROList = uiKeystoreService.importKeys(keyStore, password);
             certificateROList.forEach(cert -> cert.setStatus(EntityROStatus.NEW.getStatusNumber()));
             keystoreImportResult.getAddedCertificates().addAll(certificateROList);
+            keystoreImportResult.getIgnoredAliases().addAll(ignoredAliases);
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException |
                  UnrecoverableKeyException e) {
             String msg = e.getClass().getName() + " occurred while reading the keystore: " + e.getMessage();
@@ -100,6 +105,18 @@ public class KeystoreAdminController {
             keystoreImportResult.setErrorMessage(msg);
         }
         return keystoreImportResult;
+    }
+
+    private Set<String> removeDuplicateCertificates(KeyStore keyStore) throws KeyStoreException {
+        Set<String> duplicateAliases = new HashSet<>();
+
+        Set<String> duplicateCertificateAliases = uiKeystoreService.findDuplicateCertificates(keyStore);
+        for (String alias: duplicateCertificateAliases) {
+            KeystoreUtils.deleteCertificate(keyStore, alias);
+            duplicateAliases.add(alias);
+        }
+
+        return duplicateAliases;
     }
 
     @PreAuthorize("@smpAuthorizationService.systemAdministrator AND @smpAuthorizationService.isCurrentlyLoggedIn(#userEncId)")

@@ -128,6 +128,10 @@ export class AlertMessageService {
     this.showMessage(message, 'success', keepAfterNavigationChange, timeoutInSeconds);
   }
 
+  warning(message: string, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
+    this.showMessage(message, 'warning', keepAfterNavigationChange, timeoutInSeconds);
+  }
+
   error(message: any, keepAfterNavigationChange = false, timeoutInSeconds: number = null) {
     this.showMessage(message, 'error', keepAfterNavigationChange, timeoutInSeconds);
   }

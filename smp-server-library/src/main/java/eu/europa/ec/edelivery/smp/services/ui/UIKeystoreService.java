@@ -260,7 +260,6 @@ public class UIKeystoreService extends BasicKeystoreService {
      * @param password    password for new keystore file
      */
     public List<CertificateRO> importKeys(KeyStore newKeystore, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
         if (keyStore != null) {
@@ -272,6 +271,36 @@ public class UIKeystoreService extends BasicKeystoreService {
             return keystoreEntries.stream().filter(cert -> listAliases.contains(cert.getAlias())).collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Returns entries having certificates that are already present in the current keystore.
+     *
+     * @param newKeystore  new keystore file to import
+     * @return the set of duplicate certificates
+     * @throws KeyStoreException when not able to read the keystore aliases
+     */
+    public Set<String> findDuplicateCertificates(KeyStore newKeystore) throws KeyStoreException {
+        LOG.debug("Searching for entries with duplicate certificates");
+
+        String keystoreSecToken = configurationService.getKeystoreCredentialToken();
+        KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
+        if (keyStore != null) {
+            return list(newKeystore.aliases())
+                    .stream()
+                    .filter(alias -> containsCertificate(keyStore, newKeystore, alias))
+                    .peek(alias -> LOG.debug("Found entry with duplicate certificate [{}]", alias))
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean containsCertificate(KeyStore keyStore, KeyStore newKeystore, String alias) {
+        try {
+            return keyStore.getCertificateAlias(newKeystore.getCertificate(alias)) != null;
+        } catch (KeyStoreException e) {
+            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "An error occurred while loading the entry " + alias, e);
+        }
     }
 
     /**

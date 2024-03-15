@@ -22,12 +22,14 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
 import eu.europa.ec.edelivery.smp.services.ConfigurationService;
 import eu.europa.ec.edelivery.smp.testutil.X509CertificateTestUtils;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -402,6 +404,26 @@ class UITruststoreServiceTest {
     }
 
     @Test
+    void testAddCertificate_DuplicateCertificate() throws Exception {
+        String alias = "duplicate";
+        String subject = "CN=Something,O=test,C=EU";
+        X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
+
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(targetTruststore.toFile()).when(configurationService).getTruststoreFile();
+        doReturn(truststorePassword).when(configurationService).getTruststoreCredentialToken();
+        testInstance.refreshData();
+        int count = testInstance.getNormalizedTrustedList().size();
+
+        // when
+        testInstance.addCertificate(alias, certificate);
+        SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () -> testInstance.addCertificate(alias, certificate));
+
+        // then
+        Assertions.assertEquals("Certificate error [duplicate]. Error: The certificate you are trying to upload already exists under the [duplicate] entry!", smpRuntimeException.getMessage());
+    }
+
+    @Test
     void testDeleteCertificate() throws Exception {
         String subject = "CN=Something,O=test,C=EU";
         X509Certificate certificate = X509CertificateTestUtils.createX509CertificateForTest(subject);
@@ -417,7 +439,6 @@ class UITruststoreServiceTest {
         assertNotNull(result);
         assertEquals(count - 1, testInstance.getNormalizedTrustedList().size());
     }
-
 
     protected void resetKeystore() throws IOException {
         FileUtils.deleteDirectory(targetDirectory.toFile());

@@ -5,4 +5,6 @@ export interface KeystoreResult {
   errorMessage?: string;
 
   addedCertificates?: CertificateRo[];
+
+  ignoredAliases?: String[];
 }

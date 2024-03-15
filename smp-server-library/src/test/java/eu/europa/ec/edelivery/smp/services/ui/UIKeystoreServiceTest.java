@@ -36,14 +36,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 import javax.net.ssl.KeyManager;
 import javax.security.auth.x500.X500Principal;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -254,5 +256,17 @@ public class UIKeystoreServiceTest extends AbstractServiceIntegrationTest {
         assertNotEquals(km, testInstance.getKeyManagers()[0]);
     }
 
+    @Test
+    void testFindDuplicateCertificate() throws Exception {
+        // given
+        KeyStore keyStore = loadKeystore("test-import.jks", "NewPassword1234", "JKS");
+        KeyStore sameKeyStore = keyStore;
+        testInstance.importKeys(keyStore, "NewPassword1234");
 
+        // when
+        Set<String> duplicateCertificates = testInstance.findDuplicateCertificates(keyStore);
+
+        // then
+        assertEquals(new HashSet<>(Arrays.asList("testcertificatea", "testcertificateb")), duplicateCertificates);
+    }
 }
