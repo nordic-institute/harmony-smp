@@ -4,6 +4,8 @@ services:
     image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}
     hostname: eulogin.protected.smp.local
     environment:
+# example to start it with JDK 8
+#      - JDK_VERSION=8
       - SMP_INIT_PROPERTIES=smp.passwordPolicy.expired.forceChange=false
         ||smp.automation.authentication.external.tls.SSLClientCert.enabled=true
         ||smp.cluster.enabled=false

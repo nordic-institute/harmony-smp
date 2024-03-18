@@ -22,6 +22,12 @@ if [ ! -d ${DATA_DIR} ]; then
   mkdir -p ${DATA_DIR}
 fi
 
+# set java home
+if [ "${JDK_VERSION}" == "8" ]; then
+  export JAVA_HOME=/opt/java/${JAVA_8_VERSION}
+fi
+
+
 init_tomcat() {
   # add java code coverage agent to image
   if [ -e /opt/jacoco/jacoco-agent.jar ]; then
@@ -263,6 +269,7 @@ init_smp
 echo "Starting named..."
 $(which named) -u ${BIND_USER} &>$BIND_DATA_DIR/bind-console.out &
 
+echo "[INFO]  JAVA_HOME: $JAVA_HOME"
 echo '[INFO] start running SMP'
 chmod u+x $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin/*.sh
 cd $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/

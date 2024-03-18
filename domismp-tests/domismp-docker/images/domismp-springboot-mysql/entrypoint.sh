@@ -2,6 +2,10 @@
 
 #set -e
 
+# set java home
+if [ "${JDK_VERSION}" == "8" ]; then
+  export JAVA_HOME=/opt/java/${JAVA_8_VERSION}
+fi
 # parameters
 MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-"root"}
 SMP_DB_USER=${SMP_DB_USER:-"smp"}
@@ -141,7 +145,7 @@ init_mysql
 init_smp_properties
 init_smp
 
-echo '[INFO] start running SMP'
+echo '[INFO] start running SMP with JAVA version:'
 "${JAVA_HOME}/bin/java" -version
 cd $SMP_HOME/
 ls -ltr

@@ -3,7 +3,7 @@
 #
 version: '3.8'
 services:
-  domismp-springboot-mysql:
+  domismp-tomcat-mysql:
     image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}
     build:
       context: .
