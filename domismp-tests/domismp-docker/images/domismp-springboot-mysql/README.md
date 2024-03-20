@@ -3,8 +3,10 @@ DomiSMP with sprinboot and mysql database.
 
 The Image is intended for internal testing of the DomiSMP snapshots builds. The images should not
 be used in production environment.  
+The image is shipped with jdk 8 and 11. By default the jdk 11 is used, but it can be changed by setting the environment
+variable JDK_VERSION=8 to start the container with JAVA_HOME pointing to jdk 8.
 
-Image contains SMP deployed on the spring Embedded Tomcat 9 server with the MYSQL.
+Image contains SMP deployed on the spring Embedded Tomcat 9 server with the MySQL 8.
 
 # How to build
 

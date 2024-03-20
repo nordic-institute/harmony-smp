@@ -12,6 +12,12 @@ ENV SMP_HOME=/opt/smp  \
     TOMCAT_VERSION=9.0.73 \
     TOMCAT_NAVITVE_VERSION=1.2.36  \
     TOMCAT_SHA512=4deac84d6f8ff147d0060605e85fd2c0bf92b9eb622e426d4acc19d0cd4fc0d46a394e01e5664076a5e4f1c39ae14fc2238ebee53a7779bf086540f6dc4967c8 \
+    JAVA_8_VERSION="jdk8u402-b06" \
+    JAVA_8_URL_FILENAME="OpenJDK8U-jdk_x64_linux_hotspot_8u402b06.tar.gz" \
+    JAVA_8_SHA256=fcfd08abe39f18e719e391f2fc37b8ac1053075426d10efac4cbf8969e7aa55e \
+    JAVA_11_VERSION="jdk-11.0.22+7" \
+    JAVA_11_URL_FILENAME="OpenJDK11U-jdk_x64_linux_hotspot_11.0.22_7.tar.gz" \
+    JAVA_11_SHA256=25cf602cac350ef36067560a4e8042919f3be973d419eac4d839e2e0000b2cc8 \
     SMP_DB_SCHEMA=smp  \
     SMP_DB_USER=smp \
     SMP_INIT_PROPERTY_DELIMITER="||"  \
@@ -36,6 +42,9 @@ ENV SMP_HOME=/opt/smp  \
     JPDA_ADDRESS="5005" \
     JPDA_TRANSPORT="dt_socket"
 
+# set tomcat and java home environment variables
+ENV TOMCAT_HOME=/opt/apache-tomcat-$TOMCAT_VERSION  \
+    JAVA_HOME=/opt/java/${JAVA_11_VERSION}/
 
 # Exposing ports used in entrypoint.sh ..
 # - 3306 Mysql port
@@ -45,8 +54,6 @@ ENV SMP_HOME=/opt/smp  \
 # - JDPA debug port
 EXPOSE 3306 8080 6901 53 5005
 
-
-
 VOLUME ["/data"]
 
 # install utils, java, mysql   \
@@ -54,9 +61,10 @@ RUN apt-get update -qqy \
     && apt-get upgrade -qqy \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         mysql-server \
-        openjdk-8-jdk \
         locales\
 	    curl \
+        ca-certificates \
+        wget \
         unzip   \
         bind9 \
         bind9utils  \
@@ -67,7 +75,15 @@ RUN apt-get update -qqy \
 	    libssl-dev \
 	    gcc \
 	    make \
-    && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /opt/java \
+    && wget -O /opt/java/${JAVA_11_VERSION}.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/${JAVA_11_VERSION}/${JAVA_11_URL_FILENAME} \
+    && wget -O /opt/java/${JAVA_8_VERSION}.tar.gz https://github.com/adoptium/temurin8-binaries/releases/download/${JAVA_8_VERSION}/${JAVA_8_URL_FILENAME} \
+    && sha256sum /opt/java/${JAVA_11_VERSION}.tar.gz | grep ${JAVA_11_SHA256} \
+    && sha256sum /opt/java/${JAVA_8_VERSION}.tar.gz | grep ${JAVA_8_SHA256} \
+    && tar -xvf /opt/java/${JAVA_11_VERSION}.tar.gz -C /opt/java/ \
+    && tar -xvf /opt/java/${JAVA_8_VERSION}.tar.gz -C /opt/java/
+
 RUN   localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
 # set user 
     && addgroup mysql mysql   \
@@ -106,8 +122,7 @@ RUN  echo "smp.jdbc.driver=com.mysql.cj.jdbc.Driver" >  $SMP_HOME/apache-tomcat-
     && mkdir /opt/smlconf/bind 
 # enable native TLS on tomcat  
     
-RUN export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::") \
-    && cd $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin \
+RUN cd $SMP_HOME/apache-tomcat-$TOMCAT_VERSION/bin \
     && tar xfz tomcat-native.tar.gz \
     && cd tomcat-native-${TOMCAT_NAVITVE_VERSION}-src/native \
     && ./configure && make && make install 
