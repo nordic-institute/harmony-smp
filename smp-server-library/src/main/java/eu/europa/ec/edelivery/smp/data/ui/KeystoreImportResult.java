@@ -20,10 +20,15 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class KeystoreImportResult {
 
     String errorMessage;
+
+    Set<String> ignoredAliases = new TreeSet<>();
+
     List<CertificateRO> addedCertificates = new ArrayList<>();
 
     public String getErrorMessage() {
@@ -36,5 +41,9 @@ public class KeystoreImportResult {
 
     public List<CertificateRO> getAddedCertificates() {
         return addedCertificates;
+    }
+
+    public Set<String> getIgnoredAliases() {
+        return ignoredAliases;
     }
 }

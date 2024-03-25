@@ -25,6 +25,8 @@ import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateAlreadyRegisteredException;
 import eu.europa.ec.edelivery.smp.exceptions.CertificateNotTrustedException;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.CRLVerifierService;
@@ -502,9 +504,14 @@ public class UITruststoreService extends BasicKeystoreService {
     }
 
     public String addCertificate(String alias, X509Certificate certificate) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-
         KeyStore truststore = loadTruststore(getTruststoreFile());
         if (truststore != null) {
+
+            String certificateAlias = truststore.getCertificateAlias(certificate);
+            if (certificateAlias != null) {
+                throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "duplicate",  "The certificate you are trying to upload already exists under the [" + certificateAlias + "] entry");
+            }
+
             String aliasPrivate = StringUtils.isBlank(alias) ? createAliasFromCert(certificate, truststore) : alias.trim();
 
             if (truststore.containsAlias(aliasPrivate)) {
@@ -529,8 +536,6 @@ public class UITruststoreService extends BasicKeystoreService {
     }
 
     public String createAliasFromCert(X509Certificate x509cert, KeyStore truststore) {
-
-
         String dn = x509cert.getSubjectX500Principal().getName();
         String alias = null;
         try {
