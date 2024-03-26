@@ -78,7 +78,7 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
           this.resultsLength = result.count;
           this.isLoadingResults = false;
 
-          if (!!selectUsername) {
+          if (selectUsername) {
             this.userSelected(this.userData.find(user => user.username === selectUsername));
           }
         }
@@ -108,10 +108,10 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
     if (this.isDirty()) {
       firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed())
         .then((canChange: boolean) => {
-        if (canChange) {
-          this.selectAndRetrieveUserData(userSelected);
-        }
-      });
+          if (canChange) {
+            this.selectAndRetrieveUserData(userSelected);
+          }
+        });
     } else {
       console.log("set selected 1 ");
       this.selectAndRetrieveUserData(userSelected);
@@ -121,22 +121,23 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
 
   public selectAndRetrieveUserData(selectUser: SearchUserRo) {
     // clear old data
-    this.managedUserData = null;
     if (!selectUser) {
       return;
 
     }
-    this.adminUserService.getUserDataObservable(selectUser.userId).subscribe((user: UserRo) => {
-      if (user) {
-        this.managedUserData = user;
-        this.selected = selectUser;
-      }
-    }, (error) => {
-      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
-        return;
-      }
-      this.alertService.error(error.error?.errorDescription)
-    });
+    this.adminUserService.getUserDataObservable(selectUser.userId).subscribe(
+      {
+        next: (user: UserRo) => {
+          this.managedUserData = user;
+          this.selected = selectUser;
+        }, error: (error) => {
+          this.managedUserData = null;
+          if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+            return;
+          }
+          this.alertService.error(error.error?.errorDescription)
+        }
+      });
   }
 
   onSaveUserEvent(user: UserRo) {
@@ -149,36 +150,40 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
 
   updateUserData(user: UserRo) {
     // change only allowed data
-    this.adminUserService.updateManagedUser(user).subscribe(user => {
-      if (user) {
-        this.selected = null;
-        this.managedUserData = null;
-        this.loadTableData(user.username);
-        this.alertService.success("User [" + user.username + "] updated!");
+    this.adminUserService.updateManagedUser(user).subscribe({
+      next(user: UserRo) {
+        if (user) {
+          this.selected = null;
+          this.managedUserData = null;
+          this.loadTableData(user.username);
+          this.alertService.success("User [" + user.username + "] updated!");
 
+        }
+      }, error(error) {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+          return;
+        }
+        this.alertService.error(error.error?.errorDescription)
       }
-    }, (error) => {
-      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
-        return;
-      }
-      this.alertService.error(error.error?.errorDescription)
     });
   }
 
   createUserData(user: UserRo) {
     // change only allowed data
-    this.adminUserService.createManagedUser(user).subscribe(user => {
-      if (user) {
-        this.selected = null;
-        this.managedUserData = null;
-        this.loadTableData(user.username);
-        this.alertService.success("User [" + user.username + "] has been created!");
+    this.adminUserService.createManagedUser(user).subscribe({
+      next(user: UserRo) {
+        if (user) {
+          this.selected = null;
+          this.managedUserData = null;
+          this.loadTableData(user.username);
+          this.alertService.success("User [" + user.username + "] has been created!");
+        }
+      }, error(error) {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+          return;
+        }
+        this.alertService.error(error.error?.errorDescription)
       }
-    }, (error) => {
-      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
-        return;
-      }
-      this.alertService.error(error.error?.errorDescription)
     });
   }
 
@@ -199,18 +204,20 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
   deleteUser(user: UserRo) {
 
     // change only allowed data
-    this.adminUserService.deleteManagedUser(user).subscribe(user => {
-      if (user) {
-        this.selected = null;
-        this.managedUserData = null;
-        this.loadTableData();
-        this.alertService.success("User [" + user.username + "] has been deleted!");
+    this.adminUserService.deleteManagedUser(user).subscribe({
+      next(user: UserRo) {
+        if (user) {
+          this.selected = null;
+          this.managedUserData = null;
+          this.loadTableData();
+          this.alertService.success("User [" + user.username + "] has been deleted!");
+        }
+      }, error(error) {
+        if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
+          return;
+        }
+        this.alertService.error(error.error?.errorDescription)
       }
-    }, (error) => {
-      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(error)) {
-        return;
-      }
-      this.alertService.error(error.error?.errorDescription)
     });
 
   }
@@ -238,7 +245,7 @@ export class AdminUserComponent implements AfterViewInit, BeforeLeaveGuard {
 
 
   private convertConfig(config) {
-    return (config && config.data)
+    return (config?.data)
       ? {
         ...config,
         data: {
