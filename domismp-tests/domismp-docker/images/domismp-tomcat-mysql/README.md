@@ -5,6 +5,8 @@ be used in production environment.
 The image is shipped with jdk 8 and 11. By default the jdk 11 is used, but it can be changed by setting the environment 
 variable JDK_VERSION=8 to start the container with JAVA_HOME pointing to jdk 8.
 
+NOTE : that the jdk 11 JDPA_ADDRESS is by default "*:5005". To make it work with jdk 8, the JDPA_ADDRESS should be changed to "5005".
+
 # Image build
 
     docker build -t smp .
@@ -17,7 +19,7 @@ variable JDK_VERSION=8 to start the container with JAVA_HOME pointing to jdk 8.
 
 example:
 
-    docker run --name smp --rm -it -p 8180:8080 -p 3316:3306 -e JDK_VERSION=8  edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
+    docker run --name smp --rm -it -p 8180:8080 -p 3316:3306 -e JDK_VERSION=8 -e JDPA_ADDRESS=5005 edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
 
 ## SMP (param: -p 8180:8080 )
 url: http://localhost:8180/smp
