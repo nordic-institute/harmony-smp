@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.filter;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.springframework.format.AnnotationFormatterFactory;
 import org.springframework.format.Formatter;
 import org.springframework.format.Parser;
@@ -50,15 +51,15 @@ public class FilterHandler implements AnnotationFormatterFactory<Filter> {
 
     @Override
     public Printer<?> getPrinter(Filter annotation, Class<?> fieldType) {
-        return getFormatter(annotation);
+        return getFormatter();
     }
 
     @Override
     public Parser<?> getParser(Filter annotation, Class<?> fieldType) {
-        return getFormatter(annotation);
+        return getFormatter();
     }
 
-    private Formatter<String> getFormatter(Filter annotation) {
+    private Formatter<String> getFormatter() {
         return new Formatter<String>() {
             @Override
             public String print(String object, Locale locale) {
@@ -67,7 +68,10 @@ public class FilterHandler implements AnnotationFormatterFactory<Filter> {
 
             @Override
             public String parse(String encoded, Locale locale) throws ParseException {
-                return URLDecoder.decode(encoded);
+                String decoded = URLDecoder.decode(encoded);
+                // We need to escape the following characters that have special meaning when used in a LIKE statement
+                // inside an SQL query: '%', '\', '_', ''', '"', '[' and ']'
+                return RegExUtils.replaceAll(decoded, "([%\\\\_'\"\\[\\]])", "\\\\$1");
             }
         };
     }
