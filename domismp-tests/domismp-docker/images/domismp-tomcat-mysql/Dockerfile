@@ -39,7 +39,7 @@ ENV SMP_HOME=/opt/smp  \
     LANG=en_US.utf8  \
     LD_LIBRARY_PATH=/usr/local/apr/lib \
    # set debug
-    JPDA_ADDRESS="5005" \
+    JPDA_ADDRESS="*:5005" \
     JPDA_TRANSPORT="dt_socket"
 
 # set tomcat and java home environment variables
