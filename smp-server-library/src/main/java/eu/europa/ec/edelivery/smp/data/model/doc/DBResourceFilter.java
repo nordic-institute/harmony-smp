@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.trim;
-import static org.apache.commons.lang3.StringUtils.wrapIfMissing;
+import static org.apache.commons.lang3.StringUtils.wrap;
 
 public class DBResourceFilter {
     private static final List<MembershipRoleType> ALL_ROLES = Arrays.asList(MembershipRoleType.values());
@@ -145,7 +145,7 @@ public class DBResourceFilter {
         }
 
         public Builder identifierFilter(String identifierFilter) {
-            this.identifierFilter = wrapIfMissing(trim(identifierFilter), "%");
+            this.identifierFilter = wrap(trim(identifierFilter), "%");
             return this;
         }
 
