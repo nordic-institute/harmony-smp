@@ -35,8 +35,10 @@ class SMPSchemaGeneratorTest {
     private static final String DIALECT_ORACLE = "org.hibernate.dialect.Oracle10gDialect";
     private static final String DIALECT_MYSQL_INNO5 = "org.hibernate.dialect.MySQL5InnoDBDialect";
 
-    protected static String ENTITY_PACKAGES = "eu.europa.ec.edelivery.smp.data.model,eu.europa.ec.edelivery.smp.data.model.user,eu.europa.ec.edelivery.smp.data.model.doc,eu.europa.ec.edelivery.smp.data.model.ext";
-
+    protected static String ENTITY_PACKAGES = "eu.europa.ec.edelivery.smp.data.model," +
+            "eu.europa.ec.edelivery.smp.data.model.user," +
+            "eu.europa.ec.edelivery.smp.data.model.doc," +
+            "eu.europa.ec.edelivery.smp.data.model.ext";
 
     private static Object[] dialectTestCases() {
         return new Object[][]{
@@ -48,16 +50,14 @@ class SMPSchemaGeneratorTest {
         };
     }
 
-
     SMPSchemaGenerator testInstance = new SMPSchemaGenerator();
-
 
     @Test
     void createDDLScript() throws ClassNotFoundException, IOException {
         // given
         String folder = "target";
         String dialect = DIALECT_ORACLE;
-        String version = "4.1.0-SNAPSHOT";
+        String version = "5.1-SNAPSHOT";
         List<String> lstPackages = Arrays.asList(ENTITY_PACKAGES.split(","));
         File f = new File("target/oracle10g.ddl");
         File fDrop = new File("target/oracle10g-drop.ddl");
@@ -128,7 +128,6 @@ class SMPSchemaGeneratorTest {
     void getAllEntityClassesNotFound() {
 
         assertThrows(ClassNotFoundException.class, () -> testInstance.getAllEntityClasses("eu.not.exists"));
-
     }
 
     @Test
