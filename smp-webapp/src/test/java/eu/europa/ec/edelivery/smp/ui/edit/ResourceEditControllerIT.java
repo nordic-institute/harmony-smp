@@ -307,9 +307,10 @@ class ResourceEditControllerIT extends AbstractControllerTest {
     }
 
     @Test
-    public void testFilter() throws Exception {
+    void testFilter() throws Exception {
         // given when
         final String filter = ":%#^&$-_=asd.<>/\\";
+        final String expectedEscapedFilter = ":\\%#^&$-\\_=asd.<>/\\\\";
         String filterParam = URLEncoder.encode(filter);
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = getLoggedUserData(mvc, session);
@@ -328,6 +329,6 @@ class ResourceEditControllerIT extends AbstractControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        Mockito.verify(uiResourceService).getGroupResources(anyLong(), anyInt(), anyInt(), eq(filter));
+        Mockito.verify(uiResourceService).getGroupResources(anyLong(), anyInt(), anyInt(), eq(expectedEscapedFilter));
     }
 }
