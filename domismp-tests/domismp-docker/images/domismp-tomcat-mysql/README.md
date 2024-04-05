@@ -9,17 +9,17 @@ NOTE : that the jdk 11 JDPA_ADDRESS is by default "*:5005". To make it work with
 
 # Image build
 
-    docker build -t smp .
+    docker build -t domismp-tomcat-mysql .
 
 # Run container based on smp image
 
-    docker run --name smp -p 8080:8080 smp
+    docker run --name smp -p 8080:8080 domismp-tomcat-mysql
 
-    docker run --name smp -it --rm -p [http-port]:8080  edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:${SMP_VERSION}
+    docker run --name smp -it --rm -p [http-port]:8080  edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/domismp-tomcat-mysql:${SMP_VERSION}
 
 example:
 
-    docker run --name smp --rm -it -p 8180:8080 -p 3316:3306 -e JDK_VERSION=8 -e JDPA_ADDRESS=5005 edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
+    docker run --name smp --rm -it -p 8180:8080 -p 3316:3306 -e JDK_VERSION=8 -e JDPA_ADDRESS=5005 edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/domismp-tomcat-mysql:5.0-SNAPSHOT
 
 ## SMP (param: -p 8180:8080 )
 url: http://localhost:8180/smp
@@ -39,7 +39,7 @@ Password: smp
 ## Volume (-v /opt/docker-data/smp:/data)
 Mysql database files and tomcat configuration (and logs) can be externalized for experimenting with different SMP settings.
 
-    docker run --name smp --rm -it -p 8180:8080  -v /opt/docker-data/smp:/data edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
+    docker run --name smp --rm -it -p 8180:8080  -v /opt/docker-data/smp:/data edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/domismp-tomcat-mysql:5.0-SNAPSHOT
 
 # Start docker with pre-init data  
 1. copy init sql script to folder (create folder)
@@ -55,7 +55,7 @@ example:
 
 Then start the docker as:
 
-    docker run --name smp --rm -it -p 8180:8080  -v ./db-scripts:/tmp/custom-data/ edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT 
+    docker run --name smp --rm -it -p 8180:8080  -v ./db-scripts:/tmp/custom-data/ edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/domismp-tomcat-mysql:5.0-SNAPSHOT 
 
 # Start with the docker compose file
 
@@ -65,7 +65,7 @@ with the following content:
 version: '3.8'
 services:
   tomcat-mysql-sml:
-    image: edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/smp-sml-tomcat-mysql:5.0-SNAPSHOT
+    image: edelivery-docker.devops.tech.ec.europa.eu/edeliverytest/domismp-tomcat-mysql:5.0-SNAPSHOT
     ports:
       - "3316:3306"
       - "8180:8080"
