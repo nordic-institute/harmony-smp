@@ -175,8 +175,8 @@ public class UIKeystoreService extends BasicKeystoreService {
     private void loadKeyAndCert(KeyStore keyStore, String alias, String keySecurityToken, Map<String, Key> hmKeys, Map<String, X509Certificate> hmCertificates) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
         Key key = keyStore.getKey(alias, keySecurityToken.toCharArray());
         Certificate certificate = keyStore.getCertificate(alias);
-        if (key == null || certificate == null || !(certificate instanceof X509Certificate)) {
-            LOG.warn("Wrong entry type found in keystore, only certificates with keypair are accepted, entry alias: [{}]. Entry is ignored", alias);
+        if (!(certificate instanceof X509Certificate)) {
+            LOG.warn("Wrong certificate type found in keystore, entry alias: [{}]. Entry is ignored", alias);
             return;
         }
         // add to cache
@@ -196,7 +196,7 @@ public class UIKeystoreService extends BasicKeystoreService {
                 CertificateRO certificateRO = convertToRo(cert);
                 basicCertificateValidation(cert, certificateRO);
                 certificateRO.setAlias(alias);
-                certificateRO.setContainingKey(keystoreKeys.containsKey(alias));
+                certificateRO.setContainingKey(keystoreKeys.get(alias) != null);
                 certificateROList.add(certificateRO);
             });
         }
