@@ -22,12 +22,14 @@ import {activateChildResourceGuard} from "./guards/activate-child-document.guard
 import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
 import {AdminAlertsComponent} from "./system-settings/admin-alerts/admin-alerts.component";
 import {ResetCredentialComponent} from "./security/reset-credential/reset-credential.component";
+import {DnsToolsComponent} from "./tools/dns-tools/dns-tools.component";
 
 
 const appRoutes: Routes = [
 
   {path: '', component: ResourceSearchComponent},
   {path: 'search', redirectTo: ''},
+  {path: 'public/dns-tools', component: DnsToolsComponent},
   {path: 'login', component: LoginComponent},
   {path: 'reset-credential/:resetToken', component: ResetCredentialComponent},
   {

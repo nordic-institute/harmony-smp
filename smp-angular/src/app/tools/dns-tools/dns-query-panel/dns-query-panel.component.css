@@ -1,0 +1,19 @@
+.dns-query-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-right: 10px;
+  font-size: 0.8rem;
+}
+
+.dns-query-panel fieldset {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  /* adjustment */
+  position: relative;
+}

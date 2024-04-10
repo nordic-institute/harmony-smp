@@ -1,0 +1,24 @@
+﻿<div class="dns-query-panel">
+  <fieldset>
+    <legend>{{ dnsQeury?.dnsType }}</legend>
+    <smp-warning-panel *ngIf="dnsQueryNotResolved;" class="smp-warning-panel"
+                       [padding]="false"
+                       icon="error"
+                       label="DNS query not resolved">
+    </smp-warning-panel>
+    <b>DNS domain</b>
+    <pre style="font-size: 0.8em">{{ dnsQeury?.dnsQuery }}</pre>
+    <div *ngIf="!dnsQueryNotResolved;">
+      <mat-icon style="position: relative; left: 30%;">arrow_downward</mat-icon>
+      <div style="font-weight:bold;">Resolved DNS entries</div>
+      <div *ngFor="let dnsRecord of dnsQeury.dnsEntries; let i = index">
+        <mat-icon *ngIf="i!==0" style="position: relative; left: 30%">
+          arrow_downward
+        </mat-icon>
+        <pre
+          style="font-size: 0.8em"
+        >{{ dnsRecord.rawRecordResult }}</pre>
+      </div>
+    </div>
+  </fieldset>
+</div>

@@ -1,7 +1,7 @@
 export class SmpConstants {
 
-  public static EXPANDED_MENU_WIDTH: string = "180px"
-  public static COLLAPSED_MENU_WIDTH: string = "50px"
+  public static readonly EXPANDED_MENU_WIDTH: string = "180px"
+  public static readonly COLLAPSED_MENU_WIDTH: string = "50px"
   public static readonly NULL_VALUE: string = "-----------"
   public static readonly DATE_TIME_FORMAT = 'dd/MM/yyyy HH:mm:ss z';
   public static readonly DATE_FORMAT = 'dd/MM/yyyy';
@@ -18,6 +18,7 @@ export class SmpConstants {
   public static readonly PATH_ACTION_SEARCH = 'search';
   public static readonly PATH_ACTION_UPDATE_RESOURCE_TYPES = 'update-resource-types';
   public static readonly PATH_ACTION_UPDATE_SML_INTEGRATION = 'update-sml-integration-data';
+  public static readonly PATH_ACTION_GENERATE_DNS_QUERY : string = 'generate-dns-query';
   /* URL variables */
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
   public static readonly PATH_PARAM_ENC_DOMAIN_ID = '{domain-id}';
@@ -36,6 +37,7 @@ export class SmpConstants {
   public static readonly PATH_RESOURCE_TYPE_DOMAIN = 'domain';
   public static readonly PATH_RESOURCE_TYPE_MEMBER = 'member';
   public static readonly PATH_RESOURCE_TYPE_GROUP = 'group';
+  public static readonly PATH_DNS_TOOLS = 'dns-tools';
 
   public static readonly PATH_RESOURCE_TYPE_RESOURCE_DEF = 'res-def';
 
@@ -49,8 +51,8 @@ export class SmpConstants {
   // public endpoints
   public static readonly REST_PUBLIC = 'public/rest/';
   public static readonly REST_INTERNAL = 'internal/rest/';
-
   public static readonly REST_EDIT = 'edit/rest/' + SmpConstants.PATH_PARAM_ENC_USER_ID + '/';
+
 
   public static readonly REST_EDIT_RESOURCE_SHORT = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_RESOURCE + '/' +  SmpConstants.PATH_PARAM_ENC_RESOURCE_ID;
 
@@ -70,8 +72,10 @@ export class SmpConstants {
 
   /* Public services */
   public static readonly REST_PUBLIC_SEARCH_RESOURCE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
-
   public static readonly REST_PUBLIC_DOMAIN = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
+  public static readonly REST_PUBLIC_DNS_TOOLS = SmpConstants.REST_PUBLIC  + SmpConstants.PATH_DNS_TOOLS;
+  public static readonly REST_PUBLIC_DNS_TOOLS_GEN_QUERY: string = SmpConstants.REST_PUBLIC_DNS_TOOLS + '/' + SmpConstants.PATH_ACTION_GENERATE_DNS_QUERY;
+
   /* Public edit services */
   public static readonly REST_EDIT_DOMAIN = SmpConstants.REST_EDIT + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
   public static readonly REST_EDIT_DOMAIN_MANAGE = SmpConstants.REST_EDIT_DOMAIN + '/' + SmpConstants.PATH_PARAM_ENC_DOMAIN_ID;

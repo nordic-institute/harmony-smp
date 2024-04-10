@@ -12,6 +12,7 @@ import {SmpConfig} from "../app-config/smp-config.model";
 import {SecurityEventService} from "../security/security-event.service";
 import {DateAdapter} from "@angular/material/core";
 import {NgxMatDateAdapter} from "@angular-material-components/datetime-picker";
+import {DomainRo} from "./model/domain-ro.model";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -22,10 +23,8 @@ export class GlobalLookups {
 
   domainObserver: Observable<SearchTableResult>
   userObserver: Observable<SearchTableResult>
-  cachedDomainList: Array<any> = [];
+  cachedDomainList: Array<DomainRo> = [];
   cachedServiceGroupOwnerList: Array<any> = [];
-  cachedCertificateList: Array<any> = [];
-  cachedCertificateAliasList: Array<string> = [];
   cachedApplicationInfo: SmpInfo;
   cachedApplicationConfig?: SmpConfig;
 
@@ -161,8 +160,4 @@ export class GlobalLookups {
     this.cachedApplicationConfig = null;
     this.cachedDomainList = [];
   }
-
-
-
-
 }

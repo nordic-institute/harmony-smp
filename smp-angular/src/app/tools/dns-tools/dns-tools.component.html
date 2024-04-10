@@ -1,0 +1,45 @@
+<div id="dns-tool-panel">
+  <form [formGroup]="dnsToolsForm">
+    <data-panel title="DNS lookup"
+                [showTitle]="true"
+                text="Enter the DNS data to create DNS query"
+
+                [labelColumnContent]="dnsLookupData"
+    >
+      <dns-query-panel *ngFor="let dnsquery of result"
+                       [dnsQeury]="dnsquery"
+      />
+    </data-panel>
+    <ng-template #dnsLookupData>
+      <div class="panel">
+        <mat-form-field class="smp-data-panel-field">
+          <mat-label>Resource Identifier</mat-label>
+          <input matInput name="ResourceIdentifier"
+                 formControlName="resourceIdentifier"
+                 id="resource-identifier-id">
+        </mat-form-field>
+        <mat-form-field class="smp-data-panel-field">
+          <mat-label>Resource scheme</mat-label>
+          <input matInput name="ResourceScheme"
+                 formControlName="resourceScheme"
+                 id="resource-scheme-id">
+        </mat-form-field>
+        <mat-form-field class="smp-data-panel-field">
+          <mat-label>Top domain</mat-label>
+          <input matInput name="DNS top Domain"
+                 formControlName=dnsTopDomain
+                 id="dns-top-domain-id">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" id="btn-generate_id"
+                [disabled]="dnsToolsForm.invalid"
+                [style]="'width:250px'"
+                (click)="generateLookupQuery()"
+        >
+          <mat-icon>input</mat-icon>
+          <span>Generate lookup query</span>
+        </button>
+      </div>
+    </ng-template>
+  </form>
+</div>

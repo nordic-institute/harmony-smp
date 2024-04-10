@@ -196,7 +196,7 @@ public class UserController {
     public AccessTokenRO generateAccessTokenCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                        @PathVariable("credential-id") String encAccessTokenId,
                                                        @RequestBody CredentialRO credentialRO) {
-        LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encAccessTokenId);
+        LOG.debug("Generate User [{}] access token credential: [{}]", encUserId, encAccessTokenId);
         Long userId = decryptEntityId(encUserId);
         return uiUserService.createAccessTokenForUser(userId, credentialRO);
     }
@@ -231,7 +231,7 @@ public class UserController {
     public CredentialRO updateCertificateCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                     @PathVariable("credential-id") String encCredentialId,
                                                     @RequestBody CredentialRO credentialRO) {
-        LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encCredentialId);
+        LOG.debug("Update User [{}] certificate credential: [{}]", encUserId, encCredentialId);
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
         // delete user credential
@@ -249,7 +249,7 @@ public class UserController {
     @GetMapping(path = "/{user-id}/certificate-credential/{credential-id}")
     public CredentialRO getCertificateCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                  @PathVariable("credential-id") String encCredentialId) {
-        LOG.debug("Update User [{}] access token credential: [{}]", encUserId, encCredentialId);
+        LOG.debug("get User [{}] certificate credential: [{}]", encUserId, encCredentialId);
         Long userId = decryptEntityId(encUserId);
         Long credentialId = decryptEntityId(encCredentialId);
         return uiUserService.getUserCertificateCredential(userId, credentialId);
@@ -260,7 +260,7 @@ public class UserController {
     public CredentialRO storeCertificateCredential(@PathVariable(PATH_PARAM_ENC_USER_ID) String encUserId,
                                                    @PathVariable("credential-id") String credentialId,
                                                    @RequestBody CredentialRO credentialRO) {
-        LOG.debug("Store credential for user [{}] certificate  credential: [{}]", encUserId, credentialId);
+        LOG.debug("Store credential for user [{}] certificate credential: [{}]", encUserId, credentialId);
         Long userId = decryptEntityId(encUserId);
         return uiUserService.storeCertificateCredentialForUser(userId, credentialRO);
     }
@@ -298,7 +298,7 @@ public class UserController {
     protected NavigationTreeNodeRO createPublicNavigationTreeNode() {
         NavigationTreeNodeRO node = new NavigationTreeNodeRO("search-tools", "Search", "search", "public");
         node.addChild(new NavigationTreeNodeRO("search-resources", "Resources", "find_in_page", "search-resource", "Search registered resources"));
-        //node.addChild(new NavigationTreeNodeRO("search-lookup", "DNS lookup", "dns", "dns-lookup" , "DNS lookup tools"));
+        node.addChild(new NavigationTreeNodeRO("dns-tools", "DNS tools", "dns", "dns-tools" , "DNS lookup tools"));
         return node;
     }
 
