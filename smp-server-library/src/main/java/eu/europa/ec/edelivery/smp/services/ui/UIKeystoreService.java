@@ -285,22 +285,7 @@ public class UIKeystoreService extends BasicKeystoreService {
 
         String keystoreSecToken = configurationService.getKeystoreCredentialToken();
         KeyStore keyStore = loadKeystore(configurationService.getKeystoreFile(), keystoreSecToken);
-        if (keyStore != null) {
-            return list(newKeystore.aliases())
-                    .stream()
-                    .filter(alias -> containsCertificate(keyStore, newKeystore, alias))
-                    .peek(alias -> LOG.debug("Found entry with duplicate certificate [{}]", alias))
-                    .collect(Collectors.toSet());
-        }
-        return Collections.emptySet();
-    }
-
-    private boolean containsCertificate(KeyStore keyStore, KeyStore newKeystore, String alias) {
-        try {
-            return keyStore.getCertificateAlias(newKeystore.getCertificate(alias)) != null;
-        } catch (KeyStoreException e) {
-            throw new SMPRuntimeException(ErrorCode.CERTIFICATE_ERROR, "An error occurred while loading the entry " + alias, e);
-        }
+        return KeystoreUtils.findDuplicateCertificates(keyStore, newKeystore);
     }
 
     /**
