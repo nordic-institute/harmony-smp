@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-server-library
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -112,7 +112,7 @@ public class SMLIntegrationService {
     }
 
     /**
-     * Method in transaction update domain status and registers domain to SML.
+     * Method  un-registers domain from SML and updates status in database.
      * If registration fails  - transaction is rolled back
      *
      * @param domain the domain entity to un register from SML
