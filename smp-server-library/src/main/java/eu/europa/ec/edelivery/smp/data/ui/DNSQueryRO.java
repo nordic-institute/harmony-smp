@@ -28,6 +28,7 @@ import java.util.StringJoiner;
 /**
  * DNS query request object with DNS type and query string
  *
+ * @author Joze Rihtarsic
  * @since 5.1
  */
 public class DNSQueryRO implements Serializable {

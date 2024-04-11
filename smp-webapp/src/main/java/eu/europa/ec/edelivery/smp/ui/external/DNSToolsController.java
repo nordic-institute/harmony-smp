@@ -20,6 +20,7 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.PATH_ACTION_GENERA
 /**
  * Controller for the DNS tools. The dns tools help users to test, debug and troubleshoot DNS issues.
  *
+ * @author Joze Rihtarsic
  * @since 5.1
  */
 @RestController

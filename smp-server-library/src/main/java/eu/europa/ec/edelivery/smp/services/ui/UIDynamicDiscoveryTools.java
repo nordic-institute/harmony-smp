@@ -29,7 +29,7 @@ import java.util.List;
  * Class provide dynamic discovery tools for UI.
  *
  * @author Joze Rihtarsic
- * @since 5.0
+ * @since 5.1
  */
 
 @Service

@@ -26,6 +26,7 @@ import java.util.StringJoiner;
 /**
  * DNS Record  with DNS type, raw  result string
  *
+ * @author Joze Rihtarsic
  * @since 5.1
  */
 public class DNSRecord implements Serializable {
