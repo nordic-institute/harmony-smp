@@ -71,11 +71,6 @@ public class UITruststoreService extends BasicKeystoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UITruststoreService.class);
 
-
-    private static final ThreadLocal<DateFormat> dateFormatLocal = ThreadLocal.withInitial(() ->
-            new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", US)
-    );
-
     // dependent beans
     private final ConfigurationService configurationService;
     private final ConversionService conversionService;
@@ -367,50 +362,6 @@ public class UITruststoreService extends BasicKeystoreService {
         }
     }
 
-    /**
-     * The legacy certificate validation. The validation is done only certificate metadata
-     *
-     * @param cert
-     * @throws CertificateException
-     *
-    public void checkFullCertificateValidityLegacy(CertificateRO cert) throws CertificateException {
-        // trust data in database
-        if (cert.getValidFrom() != null && OffsetDateTime.now().isBefore(cert.getValidFrom())) {
-            throw new CertificateNotYetValidException("Certificate: " + cert.getCertificateId() + " is valid from: "
-                    + dateFormatLocal.get().format(cert.getValidFrom()) + ".");
-
-        }
-        if (cert.getValidTo() != null && OffsetDateTime.now().isAfter(cert.getValidTo())) {
-            throw new CertificateExpiredException("Certificate: " + cert.getCertificateId() + " was valid to: "
-                    + dateFormatLocal.get().format(cert.getValidTo()) + ".");
-        }
-        // if trusted list is not empty and exists issuer or subject then validate
-        if (!normalizedTrustedList.isEmpty() && (
-                !StringUtils.isBlank(cert.getIssuer()) || !StringUtils.isBlank(cert.getSubject()))) {
-
-            if (!isSubjectOnTrustedList(cert.getIssuer()) && !isSubjectOnTrustedList(cert.getSubject())) {
-                throw new CertificateNotTrustedException(CERT_ERROR_MSG_NOT_TRUSTED);
-            }
-        }
-
-        // Check crl list
-        String url = cert.getCrlUrl();
-        if (!StringUtils.isBlank(url) && !StringUtils.isBlank(cert.getSerialNumber())) {
-            try {
-                crlVerifierService.verifyCertificateCRLs(cert.getSerialNumber(), url);
-            } catch (CertificateRevokedException ex) {
-                String msg = "Certificate: '" + cert.getCertificateId() + "'" +
-                        " is revoked!";
-                LOG.securityWarn(SEC_USER_CERT_INVALID, cert.getCertificateId(), msg, ex);
-                throw new CertificateException(msg);
-            } catch (Throwable th) {
-                String msg = "Error occurred while validating CRL for certificate!";
-                LOG.error(SMPLogger.SECURITY_MARKER, msg + "Err: " + ExceptionUtils.getRootCauseMessage(th), th);
-                throw new CertificateException(msg);
-            }
-        }
-    }
-*/
     boolean isTruststoreChanged() {
         File file = getTruststoreFile();
         return !Objects.equals(lastUpdateTrustStoreFile, file) ||

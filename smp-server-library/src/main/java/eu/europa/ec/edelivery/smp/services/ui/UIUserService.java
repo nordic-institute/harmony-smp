@@ -67,6 +67,7 @@ import java.util.stream.Collectors;
 public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIUserService.class);
+    private static final String USER_ID_REQUEST_TYPE = "UserId";
 
     private final UserDao userDao;
     CredentialDao credentialDao;
@@ -107,8 +108,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Transactional
     @Override
     public ServiceResult<UserRO> getTableList(int page, int pageSize, String sortField, String sortOrder, Object filter) {
-        ServiceResult<UserRO> resUsers = super.getTableList(page, pageSize, sortField, sortOrder, filter);
-        return resUsers;
+        return super.getTableList(page, pageSize, sortField, sortOrder, filter);
     }
 
     public AccessTokenRO createAccessTokenForUser(Long userId, CredentialRO credInit) {
@@ -116,11 +116,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
 
-        Boolean testMode = SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode();
-
+        boolean testMode = SMPEnvironmentProperties.getInstance().isSMPStartupInDevMode();
         AccessTokenRO token = generateAccessToken(testMode);
         OffsetDateTime generatedTime = token.getGeneratedOn();
         OffsetDateTime expireOnTime = generatedTime.plusDays(configurationService.getAccessTokenPolicyValidDays());
@@ -160,7 +159,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user password because authorized user with id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
         CertificateRO certificate = credential.getCertificate();
         if (certificate == null || StringUtils.isBlank(certificate.getCertificateId())) {
@@ -211,7 +210,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         }
         Optional<DBCredential> dbCredential = credentialDao.findUsernamePasswordCredentialForUserIdAndUI(authorizedUserId);
         DBCredential dbAuthorizedCredentials = dbCredential.orElseThrow(() ->
-                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id"));
+                new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id"));
 
         DBUser authorizedUser = dbAuthorizedCredentials.getUser();
 
@@ -280,7 +279,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUserToUpdate = userDao.find(userID);
         if (dbUserToUpdate == null) {
             LOG.error("Can not update user password because user,[{}] does not exist!", userID);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id to update!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id to update!");
         }
         DBCredential credential = new DBCredential();
         credential.setUser(dbUserToUpdate);
@@ -316,7 +315,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
         LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user profile data on managed db entity. (For now Just email, name and theme)
@@ -331,7 +330,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not update user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
         LOG.debug("Update user [{}]: email [{}], fullName [{}], smp theme [{}]", user.getUsername(), user.getEmailAddress(), user.getFullName(), user.getSmpTheme());
         // update user data by admin
@@ -377,7 +376,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         DBUser dbUser = userDao.find(userId);
         if (dbUser == null) {
             LOG.error("Can not delete user because user for id [{}] does not exist!", userId);
-            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "UserId", "Can not find user id!");
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, USER_ID_REQUEST_TYPE, "Can not find user id!");
         }
         userDao.remove(dbUser);
         return conversionService.convert(dbUser, UserRO.class);
@@ -398,9 +397,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     @Transactional(readOnly = true)
     public UserRO getUserById(Long userId) {
         DBUser user = userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
-        UserRO result = convertToRo(user);
-
-        return result;
+        return convertToRo(user);
     }
 
     public List<CredentialRO> getUserCredentials(Long userId,
@@ -411,9 +408,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         List<DBCredential> credentialROs = credentialDao
                 .findUserCredentialForByUserIdTypeAndTarget(userId, credentialType, credentialTargetType);
 
-        List<CredentialRO> credentialROList = credentialROs.stream().map(this::convertAndValidateCertificateCredential)
+        return credentialROs.stream().map(this::convertAndValidateCertificateCredential)
                 .collect(Collectors.toList());
-        return credentialROList;
     }
 
     public CredentialRO convertAndValidateCertificateCredential(DBCredential credential) {
@@ -464,7 +460,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     protected void validateCredentials(DBCredential credential, Long userId, CredentialType credentialType, CredentialTargetType credentialTargetType) {
         if (credential == null) {
-            LOG.warn("Can not delete credential for ID [{}], because it does not exists!");
+            LOG.warn("Can not delete credential for ID [{}], because it does not exists!", userId);
             throw new BadRequestException(ErrorBusinessCode.UNAUTHORIZED, "Credential does not exist!");
         }
         // validate data

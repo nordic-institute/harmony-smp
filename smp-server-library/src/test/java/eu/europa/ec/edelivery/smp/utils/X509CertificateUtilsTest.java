@@ -16,21 +16,6 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-/**
- * Copyright 2017 - European Commission | CEF eDelivery
- * <p>
- * Licensed under the EUPL, Version 1.2 (the "License");
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * \BDMSL\bdmsl-parent-pom\LICENSE-EUPL-v1.2.pdf or https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/eupl_v1.2_en.pdf
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 package eu.europa.ec.edelivery.smp.utils;
 
 
@@ -66,7 +51,7 @@ public class X509CertificateUtilsTest {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
-    private static final Object[] crlTestListCases() {
+    private static Object[] crlTestListCases() {
         return new Object[][]{
                 {"smp-crl-test-all.pem", "https://localhost/clr,http://localhost/clr,ldap://localhost/clr"},
                 {"smp-crl-test-https.pem", "https://localhost/clr"},
@@ -75,7 +60,7 @@ public class X509CertificateUtilsTest {
         };
     }
 
-    private static final Object[] crlExtractHTTPSTestListCases() {
+    private static Object[] crlExtractHTTPSTestListCases() {
         return new Object[][]{
                 {"ldap://localhost/clr,https://localhost/clr,http://localhost/clr", "https://localhost/clr"},
                 {"https://localhost/clr", "https://localhost/clr"},
@@ -85,7 +70,7 @@ public class X509CertificateUtilsTest {
         };
     }
 
-    private static final Object[] parseTestCases() {
+    private static Object[] parseTestCases() {
         return new Object[][]{
                 {"certificate-pem-with-header.cer"},
                 {"PeppolTestSMP-DER-encoded.crt"},
@@ -116,9 +101,7 @@ public class X509CertificateUtilsTest {
         List<String> lstValues = X509CertificateUtils.getCrlDistributionPoints(certificate);
         // then
         assertEquals(lstExpected.size(), lstValues.size());
-        lstValues.forEach(crl -> {
-            lstExpected.contains(crl);
-        });
+        lstValues.forEach(crl -> lstExpected.contains(crl));
     }
 
     @ParameterizedTest
@@ -135,12 +118,11 @@ public class X509CertificateUtilsTest {
     public static X509Certificate loadCertificate(String filename) throws CertificateException {
         CertificateFactory fact = CertificateFactory.getInstance("X.509");
 
-        X509Certificate cer = (X509Certificate)
-                fact.generateCertificate(X509CertificateUtilsTest.class.getResourceAsStream("/certificates/" + filename));
-        return cer;
+        return (X509Certificate) fact.generateCertificate(
+                X509CertificateUtilsTest.class.getResourceAsStream("/certificates/" + filename));
     }
 
-    public static byte[] getBytes(String filename) throws CertificateException, IOException {
+    public static byte[] getBytes(String filename) throws IOException {
         return IOUtils.toByteArray(X509CertificateUtilsTest.class.getResourceAsStream("/certificates/" + filename));
     }
 }

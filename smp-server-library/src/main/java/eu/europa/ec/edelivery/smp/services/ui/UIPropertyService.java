@@ -125,7 +125,7 @@ public class UIPropertyService {
                 property.setNewValue(changedProps.get(propertyType.getProperty()).getValue());
                 property.setUpdateDate(refreshPropertiesTrigger.getNextExecutionDate());
             } else {
-                LOG.debug("Property [{}] has newer update time, but it has the same value as the current value!");
+                LOG.debug("Property [{}] has newer update time, but it has the same value as the current value!", propertyType);
             }
         }
         return property;

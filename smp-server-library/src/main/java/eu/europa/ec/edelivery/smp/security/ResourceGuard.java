@@ -19,7 +19,6 @@
 package eu.europa.ec.edelivery.smp.security;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
@@ -47,13 +46,11 @@ public class ResourceGuard {
     DomainMemberDao domainMemberDao;
     GroupMemberDao groupMemberDao;
     ResourceMemberDao resourceMemberDao;
-    IdentifierService identifierService;
 
-    public ResourceGuard(DomainMemberDao domainMemberDao, GroupMemberDao groupMemberDao, ResourceMemberDao resourceMemberDao, IdentifierService identifierService) {
+    public ResourceGuard(DomainMemberDao domainMemberDao, GroupMemberDao groupMemberDao, ResourceMemberDao resourceMemberDao) {
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
         this.resourceMemberDao = resourceMemberDao;
-        this.identifierService = identifierService;
     }
 
     /**

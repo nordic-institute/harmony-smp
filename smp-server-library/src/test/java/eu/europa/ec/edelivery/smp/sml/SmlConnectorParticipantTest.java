@@ -44,8 +44,7 @@ import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -251,7 +250,7 @@ class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
         NotFoundFault ex = new NotFoundFault(ERROR_PI_NO_EXISTS);
 
         //when
-        testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
+        assertDoesNotThrow(() -> testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID));
     }
 
     @Test

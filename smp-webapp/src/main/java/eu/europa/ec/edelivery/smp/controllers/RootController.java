@@ -72,10 +72,10 @@ public class RootController {
             return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/index.html"));
         }
 
-        if (value != null && value.endsWith("favicon.png")) {
+        if (value.endsWith("favicon.png")) {
             httpRes.setContentType(MediaType.IMAGE_PNG_VALUE);
             return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.png"));
-        } else if (value != null && value.endsWith("favicon.ico")) {
+        } else if (value.endsWith("favicon.ico")) {
             httpRes.setContentType("image/x-ico");
             return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon.ico"));
         }

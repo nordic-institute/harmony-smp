@@ -43,6 +43,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @RestControllerAdvice({"eu.europa.ec.edelivery.smp.controllers"})
 public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice {
 
+    @Override
     @ExceptionHandler({RuntimeException.class, SMPRuntimeException.class, SMPResponseStatusException.class, AuthenticationException.class,})
     public ResponseEntity handleRuntimeException(RuntimeException ex) {
         return super.handleRuntimeException(ex);
@@ -71,7 +72,7 @@ public class ServiceErrorControllerAdvice extends AbstractErrorControllerAdvice 
                 .build();
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();
-        String logMsg = format("Error unique ID: %s", errorUniqueId);
+        String logMsg = errorUniqueId == null ? "Null Error ID" : format("UI Error unique ID: %s", errorUniqueId);
 
         LOG.warn(logMsg, exception);
         return response;

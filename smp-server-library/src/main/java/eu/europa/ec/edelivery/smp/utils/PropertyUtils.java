@@ -49,8 +49,9 @@ public class PropertyUtils {
     private static final String REG_EXP_VALUE_SEPARATOR = "\\|";
     private static final String REG_EXP_MAP_SEPARATOR = ":";
 
-    private static final UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
-
+    private PropertyUtils() {
+        // private constructor
+    }
 
     public static Object parseProperty(SMPPropertyEnum prop, String value, File rootFolder) {
         if (StringUtils.isBlank(value)) {
@@ -91,7 +92,7 @@ public class PropertyUtils {
             parsePropertyType(type, value, confFolder);
             return true;
         } catch (SMPRuntimeException ex) {
-            LOG.debug("Invalid property value [{}] for type [{}]. Error: ", value, type, ExceptionUtils.getRootCauseMessage(ex));
+            LOG.debug("Invalid property value [{}] for type [{}]. Error: [{}]", value, type, ExceptionUtils.getRootCauseMessage(ex));
             return false;
         }
     }
@@ -130,7 +131,7 @@ public class PropertyUtils {
                 return Arrays.asList(value.split(REG_EXP_VALUE_SEPARATOR));
             }
             case MAP_STRING: {
-                if (!value.contains(value)) {
+                if (!value.contains(":")) {
                     throw new SMPRuntimeException(ErrorCode.CONFIGURATION_ERROR, "Invalid map: ["
                             + value + "]. Error: Map must have at least one key:value entry!");
                 }
@@ -202,8 +203,8 @@ public class PropertyUtils {
     /**
      * Method returns 'masked' value for sensitive property data
      *
-     * @param property
-     * @param value
+     * @param property - property name
+     * @param value   - property value
      * @return masked value for sensitive properties. Else it returns value!
      */
     public static String getMaskedData(String property, String value) {

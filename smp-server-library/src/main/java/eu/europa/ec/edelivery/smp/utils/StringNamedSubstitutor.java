@@ -36,6 +36,10 @@ public class StringNamedSubstitutor {
     private static final String START_NAME = "${";
     private static final char END_NAME = '}';
 
+    private StringNamedSubstitutor() {
+        // private constructor
+    }
+
     /**
      * Substitute named variables in the string with key value pairs from the map.
      * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
@@ -53,7 +57,8 @@ public class StringNamedSubstitutor {
         int read;
         while ((read = template.read()) != -1) {
             if (read == START_NAME.charAt(0) && isStartSequence(template)) {
-                template.skip(START_NAME.length() - 1);
+                //skip (START_NAME.length() - 1L)  which is 1L
+                template.skip(1L);
                 String name = readName(template, END_NAME);
                 if (name == null) {
                     builder.append(START_NAME);

@@ -121,7 +121,6 @@ public class DBSubresource extends BaseEntity {
     }
 
     @Transient
-
     public DBResource getResource() {
         return resource;
     }
@@ -132,10 +131,6 @@ public class DBSubresource extends BaseEntity {
 
     public DBDocument getDocument() {
         return document;
-    }
-
-    public byte[] getCurrentContent() {
-        return getCurrentContent();
     }
 
     public void setDocument(DBDocument document) {

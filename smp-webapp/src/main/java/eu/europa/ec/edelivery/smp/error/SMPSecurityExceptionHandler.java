@@ -92,7 +92,7 @@ public class SMPSecurityExceptionHandler extends BasicAuthenticationEntryPoint i
                 .build();
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();
-        String logMsg = format("Error unique ID: %s", errorUniqueId);
+        String logMsg = errorUniqueId == null ? "Null Error ID" : format("UI Error unique ID: %s", errorUniqueId);
         LOG.warn("Security error:[{}] with [{}].", errorMsg, logMsg);
         LOG.debug(logMsg, exception);
         return response;

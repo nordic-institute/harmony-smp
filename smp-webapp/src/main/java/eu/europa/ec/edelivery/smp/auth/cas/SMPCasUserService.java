@@ -124,7 +124,7 @@ public class SMPCasUserService implements AuthenticationUserDetailsService<CasAs
 		return dbUser;
 	}
 
-	public String getValueFromCasPrincipal(MappingData data, Map<String, Object> attributes, Map<String,String> mapping){
+	protected String getValueFromCasPrincipal(MappingData data, Map<String, Object> attributes, Map<String,String> mapping){
 		String template = mapping.getOrDefault(data.name(), data.getDefaultValue());
 		return StringNamedSubstitutor.resolve(template, attributes);
 	}

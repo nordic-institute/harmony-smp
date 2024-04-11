@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -102,19 +102,19 @@ public class SMPAuthorizationService {
 
     public boolean isGroupAdministrator(String groupEncId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        Long groupId  = getIdFromEncryptedString(groupEncId, false);
+        Long groupId = getIdFromEncryptedString(groupEncId, false);
         return groupMemberDao.isUserGroupMemberWithRole(userDetails.getUser().getId(), Collections.singletonList(groupId), MembershipRoleType.ADMIN);
     }
 
     public boolean isResourceAdministrator(String resourceEncId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        Long resourceId  = getIdFromEncryptedString(resourceEncId, false);
+        Long resourceId = getIdFromEncryptedString(resourceEncId, false);
         return resourceMemberDao.isUserResourceMemberWithRole(userDetails.getUser().getId(), resourceId, MembershipRoleType.ADMIN);
     }
 
     public boolean isResourceMember(String resourceEncId) {
         SMPUserDetails userDetails = getAndValidateUserDetails();
-        Long resourceId  = getIdFromEncryptedString(resourceEncId, false);
+        Long resourceId = getIdFromEncryptedString(resourceEncId, false);
         return resourceMemberDao.isUserResourceMember(userDetails.getUser().getId(), resourceId);
     }
 
@@ -130,6 +130,7 @@ public class SMPAuthorizationService {
 
     /**
      * Returns true if logged user is administrator for any of the domain group
+     *
      * @param domainEncId
      * @return true if logged user is group administrator in domain
      */
@@ -141,6 +142,7 @@ public class SMPAuthorizationService {
 
     /**
      * Returns true if logged user is administrator for any of the resources on group
+     *
      * @param groupEncId
      * @return true if logged user is resource administrator in the group
      */
@@ -216,7 +218,7 @@ public class SMPAuthorizationService {
 
     public UserRO getUserData(DBUser user) {
         UserRO userRO = conversionService.convert(user, UserRO.class);
-        return getUpdatedUserData(userRO);
+        return userRO == null ? null : getUpdatedUserData(userRO);
     }
 
     /**

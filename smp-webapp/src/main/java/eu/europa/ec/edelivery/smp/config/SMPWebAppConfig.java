@@ -41,8 +41,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
-
 /**
  * This is the entry point of the DomiSMP application (beans)configuration/setup.
  * <p>
@@ -94,8 +92,8 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = SMPWebAppConfig.class)})
 @PropertySource(value = "classpath:/application.properties", ignoreResourceNotFound = true)
 public class SMPWebAppConfig implements WebMvcConfigurer {
-
     private static final Logger LOG = LoggerFactory.getLogger(SMPWebAppConfig.class);
+    private static final int HIGHEST_ORDER= Integer. MAX_VALUE;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -106,12 +104,12 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.setOrder(HIGHEST_PRECEDENCE)
+        registry.setOrder(HIGHEST_ORDER)
                 .addResourceHandler("/index.html", "/favicon.png", "/favicon.ico").addResourceLocations("/html/");
 
-        registry.setOrder(HIGHEST_PRECEDENCE - 2)
+        registry.setOrder(HIGHEST_ORDER - 2)
                 .addResourceHandler("/ui/rest/").addResourceLocations("/"); // ui rest resources
-        registry.setOrder(HIGHEST_PRECEDENCE - 3)
+        registry.setOrder(HIGHEST_ORDER - 3)
                 .addResourceHandler("/ui/**").addResourceLocations("/ui/"); // angular pages
     }
 

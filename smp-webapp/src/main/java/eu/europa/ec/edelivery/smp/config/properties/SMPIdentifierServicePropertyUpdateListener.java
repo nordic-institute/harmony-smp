@@ -33,7 +33,15 @@ import java.util.regex.Pattern;
 import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.*;
 
 /**
- * Class update mail sender configuration on property update event
+ * It is used to update identifier configuration if properties are changed.
+ * It listens for changes in the following properties:
+ * <ul>
+ *     <li>{@link SMPPropertyEnum#PARTC_SCH_SPLIT_REGEXP}</li>
+ *     <li>{@link SMPPropertyEnum#PARTC_SCH_VALIDATION_REGEXP}</li>
+ *     <li>{@link SMPPropertyEnum#PARTC_SCH_MANDATORY}</li>
+ *     <li>{@link SMPPropertyEnum#CS_PARTICIPANTS}</li>
+ *     <li>{@link SMPPropertyEnum#CS_DOCUMENTS}</li>
+ * </ul>
  *
  * @author Joze Rihtarsic
  * @since 5.0

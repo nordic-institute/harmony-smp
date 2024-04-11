@@ -64,7 +64,7 @@ public class ExtensionDao extends BaseDao<DBExtension> {
      * @throws IllegalStateException if no domain is not configured
      */
     public Optional<DBExtension> getExtensionByIdentifier(String identifier) {
-        LOG.debug("Get extension [[]] all extension", identifier);
+        LOG.debug("Get extension [{}] all extension", identifier);
         try {
             TypedQuery<DBExtension> query = memEManager.createNamedQuery(QUERY_EXTENSION_BY_IDENTIFIER, DBExtension.class);
             query.setParameter(PARAM_IDENTIFIER, identifier);

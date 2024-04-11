@@ -79,10 +79,9 @@ public final class DomUtils {
     }
 
 
-    public static Document parse(byte[] subresourceXml) throws SAXException, IOException, ParserConfigurationException {
+    public static Document parse(byte[] subresourceXml) throws SAXException, IOException, ParserConfigurationException, ResourceException {
         if (subresourceXml == null) {
-            LOG.warn("ServiceMetadataXml bytearray is null!");
-            return null;
+            throw new ResourceException(INVALID_RESOURCE, "Invalid serviceMetadataXml: null");
         }
         LOG.debug("Parse document with size [{}]", subresourceXml.length);
         InputStream inputStream = new ByteArrayInputStream(subresourceXml);
