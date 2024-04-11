@@ -113,7 +113,7 @@ public class SMLIntegrationService {
 
     /**
      * Method  un-registers domain from SML and updates status in database.
-     * If registration fails  - transaction is rolled back
+     * If un-registration fails  - transaction is rolled back.
      *
      * @param domain the domain entity to un register from SML
      */
