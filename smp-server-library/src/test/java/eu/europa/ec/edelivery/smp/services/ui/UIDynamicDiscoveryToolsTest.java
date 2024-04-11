@@ -16,6 +16,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Class provide unit tests dynamic discovery tools for UI.
+ * @author Joze Rihtarsic
+ * @since 5.1
+ */
 class UIDynamicDiscoveryToolsTest {
 
     SmpIdentifierService mockIdentifierService = Mockito.mock(SmpIdentifierService.class);;
