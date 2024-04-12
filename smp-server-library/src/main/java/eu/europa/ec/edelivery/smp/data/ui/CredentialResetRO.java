@@ -30,7 +30,7 @@ import java.util.StringJoiner;
  */
 public class CredentialResetRO extends BaseRO {
 
-    private static final long serialVersionUID = 9008583888835630030L;
+    private static final long serialVersionUID = 9008583888835630031L;
 
     String credentialName;
     String credentialValue;

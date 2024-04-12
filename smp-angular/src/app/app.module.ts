@@ -142,6 +142,11 @@ import {
 import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
 import {SmpEditorComponent} from "./common/components/smp-editor/smp-editor.component";
 import {ResetCredentialComponent} from "./security/reset-credential/reset-credential.component";
+import {DnsToolsComponent} from "./tools/dns-tools/dns-tools.component";
+import {DnsToolsService} from "./tools/dns-tools/dns-tools.service";
+import {
+  DnsQueryPanelComponent
+} from "./tools/dns-tools/dns-query-panel/dns-query-panel.component";
 
 
 @NgModule({
@@ -171,6 +176,8 @@ import {ResetCredentialComponent} from "./security/reset-credential/reset-creden
     DatePipe,
     DefaultPasswordDialogComponent,
     DialogComponent,
+    DnsToolsComponent,
+    DnsQueryPanelComponent,
     DocumentWizardDialogComponent,
     DomainGroupComponent,
     DomainPanelComponent,
@@ -276,6 +283,7 @@ import {ResetCredentialComponent} from "./security/reset-credential/reset-creden
     AuthorizedGuard,
     CertificateService,
     DatePipe,
+    DnsToolsService,
     DomainService,
     MembershipService,
     DownloadService,

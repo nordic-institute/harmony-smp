@@ -100,6 +100,9 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     SML_CUSTOM_NAPTR_SERVICE_PARAMS("bdmsl.integration.naptr_service.map", "edelivery-oasis-cppa-3.0-cpp:meta:cppa3", "naptr service for resource type as key:value properties separated with '|'. Ex edelivery-oasis-cppa3-extension:meta:cppa3  ",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
+    SML_DNS_ZONE("bdmsl.integration.dns.zone", "acc.edelivery.tech.ec.europa.eu", "DBS top domain or DNS zone. Data is used for DNS lookup of SMP domain",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, MAP_STRING),
+
     // keystore truststore
     KEYSTORE_PASSWORD("smp.keystore.password", "", "Encrypted keystore (and keys) password ",
             OPTIONAL, ENCRYPTED, NO_RESTART_NEEDED, STRING),
