@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-server-library
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -23,7 +23,6 @@ import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 

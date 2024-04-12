@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-webapp
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -18,7 +18,6 @@
  */
 package eu.europa.ec.edelivery.smp.data.model.doc;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Sebastian-Ion TINCU
  * @since 5.1
  */
-public class DBResourceFilterTest {
+class DBResourceFilterTest {
 
     @Test
-    public void wrapsFilterValueHavingPercentageCharacters() {
+    void wrapsFilterValueHavingPercentageCharacters() {
         // GIVEN
         DBResourceFilter filter = DBResourceFilter
                 .createBuilder()
@@ -41,6 +40,6 @@ public class DBResourceFilterTest {
         String result = filter.getIdentifierFilter();
 
         // THEN
-        Assertions.assertEquals("%\\%%", result, "Should have wrapped the escaped '%' character around with two extra '%' characters");
+        assertEquals("%\\%%", result, "Should have wrapped the escaped '%' character around with two extra '%' characters");
     }
 }

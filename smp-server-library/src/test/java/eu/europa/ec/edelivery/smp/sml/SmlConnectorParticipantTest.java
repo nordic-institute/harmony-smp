@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-webapp
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -44,8 +44,7 @@ import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -251,7 +250,7 @@ class SmlConnectorParticipantTest extends AbstractServiceIntegrationTest {
         NotFoundFault ex = new NotFoundFault(ERROR_PI_NO_EXISTS);
 
         //when
-        testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID);
+        assertDoesNotThrow(() -> testInstance.processSMLErrorMessage(ex, PARTICIPANT_ID));
     }
 
     @Test

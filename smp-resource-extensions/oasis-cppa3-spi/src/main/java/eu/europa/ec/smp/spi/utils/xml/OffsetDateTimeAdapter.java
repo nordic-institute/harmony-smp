@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * oasis-cppa3-spi
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -16,14 +16,6 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-
-/**
- * Purpose of the class it to provide  OffsetDateTime to string and string to OffsetDateTime conversion
- *
- * @author Joze Rihtarsic
- * @since 2.0
- */
-
 package eu.europa.ec.smp.spi.utils.xml;
 
 import eu.europa.ec.smp.spi.utils.DatatypeConverter;
@@ -31,6 +23,12 @@ import eu.europa.ec.smp.spi.utils.DatatypeConverter;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.OffsetDateTime;
 
+/**
+ * Purpose of the class it to provide  OffsetDateTime to string and string to OffsetDateTime conversion
+ *
+ * @author Joze Rihtarsic
+ * @since 2.0
+ */
 public class OffsetDateTimeAdapter
     extends XmlAdapter<String, OffsetDateTime>
 {

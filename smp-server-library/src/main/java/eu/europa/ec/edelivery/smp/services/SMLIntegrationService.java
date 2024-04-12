@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-server-library
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -29,7 +29,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,17 +52,17 @@ public class SMLIntegrationService {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMLIntegrationService.class);
     private static final String ERROR_MESSAGE_DNS_NOT_ENABLED = "SML integration is not enabled!";
 
-    @Autowired
-    private ConfigurationService configurationService;
+    private final ConfigurationService configurationService;
+    private final SmlConnector smlConnector;
+    private final DomainDao domainDao;
+    private final IdentifierService identifierService;
 
-    @Autowired
-    private SmlConnector smlConnector;
-
-    @Autowired
-    private DomainDao domainDao;
-
-    @Autowired
-    private IdentifierService identifierService;
+    public SMLIntegrationService(ConfigurationService configurationService, SmlConnector smlConnector, DomainDao domainDao, IdentifierService identifierService) {
+        this.configurationService = configurationService;
+        this.smlConnector = smlConnector;
+        this.domainDao = domainDao;
+        this.identifierService = identifierService;
+    }
 
     /**
      * Checks whether the participant exists in SML or not.
@@ -86,7 +85,7 @@ public class SMLIntegrationService {
      * Method in transaction update domain status and registers domain to SML.
      * If registration fails  - transaction is rolled back
      *
-     * @param domain
+     * @param domain the domain entity to register
      */
     @Transactional
     public void registerDomain(DBDomain domain) {
@@ -113,10 +112,10 @@ public class SMLIntegrationService {
     }
 
     /**
-     * Method in transaction update domain status and registers domain to SML.
-     * If registration fails  - transaction is rolled back
+     * Method  un-registers domain from SML and updates status in database.
+     * If un-registration fails  - transaction is rolled back.
      *
-     * @param domain
+     * @param domain the domain entity to un register from SML
      */
     @Transactional
     public void unRegisterDomain(DBDomain domain) {
@@ -134,8 +133,8 @@ public class SMLIntegrationService {
      * Method in transaction update resource status and registers it to SML.
      * If registration fails  - transaction is rolled back
      *
-     * @param resource
-     * @param domain
+     * @param resource the resource entity to register
+     * @param domain the domain entity to for the resource
      */
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -143,8 +142,8 @@ public class SMLIntegrationService {
 
         LOG.businessDebug(BUS_SML_REGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
         if (!isSMLIntegrationEnabled()) {
-            String msg = "SML integration is not enabled!";
-            LOG.businessWarn(BUS_SML_REGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode(), msg);
+            LOG.businessWarn(BUS_SML_REGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(),
+                    resource.getIdentifierScheme(), domain.getDomainCode(), ERROR_MESSAGE_DNS_NOT_ENABLED);
             return;
         }
         Identifier normalizedParticipantId = identifierService
@@ -177,7 +176,7 @@ public class SMLIntegrationService {
         if (map != null && map.containsKey(resDefIdentifier)) {
             return map.get(resDefIdentifier);
         }
-        LOG.info("return null because configuration does not have document type and document type [{}]", resource, resDefIdentifier);
+        LOG.info("return null because configuration does not have document type and document type [{}]", resDefIdentifier);
         return null;
 
     }
@@ -187,16 +186,17 @@ public class SMLIntegrationService {
      * <p>
      * If registration fails  - transaction is rolled back
      *
-     * @param resource
-     * @param domain
+     * @param resource resourceIdentifier to unregister from SML
+     * @param domain for which resource belongs to
      */
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void unregisterParticipant(DBResource resource, DBDomain domain) {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
         if (!isSMLIntegrationEnabled()) {
-            String msg = "SML integration is not enabled!";
-            LOG.businessWarn(BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode(), msg);
+
+            LOG.businessWarn(BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED, resource.getIdentifierValue(), resource.getIdentifierScheme(),
+                    domain.getDomainCode(), ERROR_MESSAGE_DNS_NOT_ENABLED);
             return;
         }
 

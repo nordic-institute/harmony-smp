@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-webapp
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -79,10 +79,9 @@ public final class DomUtils {
     }
 
 
-    public static Document parse(byte[] subresourceXml) throws SAXException, IOException, ParserConfigurationException {
+    public static Document parse(byte[] subresourceXml) throws SAXException, IOException, ParserConfigurationException, ResourceException {
         if (subresourceXml == null) {
-            LOG.warn("ServiceMetadataXml bytearray is null!");
-            return null;
+            throw new ResourceException(INVALID_RESOURCE, "Invalid serviceMetadataXml: null");
         }
         LOG.debug("Parse document with size [{}]", subresourceXml.length);
         InputStream inputStream = new ByteArrayInputStream(subresourceXml);

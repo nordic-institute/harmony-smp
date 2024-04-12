@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-webapp
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -124,7 +124,7 @@ public class SMPCasUserService implements AuthenticationUserDetailsService<CasAs
 		return dbUser;
 	}
 
-	public String getValueFromCasPrincipal(MappingData data, Map<String, Object> attributes, Map<String,String> mapping){
+	protected String getValueFromCasPrincipal(MappingData data, Map<String, Object> attributes, Map<String,String> mapping){
 		String template = mapping.getOrDefault(data.name(), data.getDefaultValue());
 		return StringNamedSubstitutor.resolve(template, attributes);
 	}

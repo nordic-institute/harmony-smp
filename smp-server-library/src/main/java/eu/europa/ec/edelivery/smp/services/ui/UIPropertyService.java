@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-server-library
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -125,7 +125,7 @@ public class UIPropertyService {
                 property.setNewValue(changedProps.get(propertyType.getProperty()).getValue());
                 property.setUpdateDate(refreshPropertiesTrigger.getNextExecutionDate());
             } else {
-                LOG.debug("Property [{}] has newer update time, but it has the same value as the current value!");
+                LOG.debug("Property [{}] has newer update time, but it has the same value as the current value!", propertyType);
             }
         }
         return property;

@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-webapp
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -64,7 +64,7 @@ public class ExtensionDao extends BaseDao<DBExtension> {
      * @throws IllegalStateException if no domain is not configured
      */
     public Optional<DBExtension> getExtensionByIdentifier(String identifier) {
-        LOG.debug("Get extension [[]] all extension", identifier);
+        LOG.debug("Get extension [{}] all extension", identifier);
         try {
             TypedQuery<DBExtension> query = memEManager.createNamedQuery(QUERY_EXTENSION_BY_IDENTIFIER, DBExtension.class);
             query.setParameter(PARAM_IDENTIFIER, identifier);

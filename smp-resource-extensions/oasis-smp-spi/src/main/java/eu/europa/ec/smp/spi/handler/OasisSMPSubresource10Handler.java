@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * oasis-smp-spi
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -39,12 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -131,7 +125,7 @@ public class OasisSMPSubresource10Handler extends AbstractOasisSMPHandler {
         Document docEnvelopedMetadata;
         try {
             byte[] bytearray = readFromInputStream(resourceData.getResourceInputStream());
-            docEnvelopedMetadata = toSignedServiceMetadataDocument(bytearray);
+            docEnvelopedMetadata = DomUtils.toSignedSubresource10Document(bytearray);
         } catch (IOException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: ["
                     + resourceIdentifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
@@ -198,30 +192,6 @@ public class OasisSMPSubresource10Handler extends AbstractOasisSMPHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         serviceMetadataValidator.validate(identifier, documentIdentifier, subresource);
-    }
-
-    public static Document toSignedServiceMetadataDocument(byte[] serviceMetadataXml) throws ResourceException {
-        try {
-            Document docServiceMetadata = parse(serviceMetadataXml);
-            Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY.getBytes());
-            Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
-            root.getDocumentElement().appendChild(imported);
-            return root;
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            throw new ResourceException(INVALID_RESOURCE, "Invalid Signed serviceMetadataXml with error: " + ExceptionUtils.getRootCauseMessage(ex), ex);
-        }
-    }
-
-    private static Document parse(byte[] serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
-        InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);
-        return getDocumentBuilder().parse(inputStream);
-    }
-
-    private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        dbf.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
-        return dbf.newDocumentBuilder();
     }
 
 }

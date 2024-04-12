@@ -2,15 +2,15 @@
  * #START_LICENSE#
  * smp-webapp
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -52,7 +52,6 @@ import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -79,24 +78,27 @@ public class SmlConnector implements ApplicationContextAware {
 
     private static final String SERVICE_METADATA_CONTEXT = "manageservicemetadata";
     private static final String IDENTIFIER_VALUE_CONTEXT = "manageparticipantidentifier";
-
     private static final String BDMSL_CUSTOM_SERVICES_CONTEXT = "bdmslservice";
-
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
-    @Autowired
-    ConfigurationService configurationService;
 
-    @Autowired
-    UIKeystoreService keystoreService;
-
-    @Autowired
-    UITruststoreService truststoreService;
-
-    @Autowired
-    IdentifierService identifierService;
-
+    private final ConfigurationService configurationService;
+    private final UIKeystoreService keystoreService;
+    private final UITruststoreService truststoreService;
+    private final IdentifierService identifierService;
     private ApplicationContext ctx;
+
+    public SmlConnector(ConfigurationService configurationService, UIKeystoreService keystoreService, UITruststoreService truststoreService, IdentifierService identifierService) {
+        this.configurationService = configurationService;
+        this.keystoreService = keystoreService;
+        this.truststoreService = truststoreService;
+        this.identifierService = identifierService;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        ctx = applicationContext;
+    }
 
     public boolean registerInDns(Identifier normalizedParticipantId, DBDomain domain, String customNaptrService) {
         if (!configurationService.isSMLIntegrationEnabled()) {
@@ -116,14 +118,12 @@ public class SmlConnector implements ApplicationContextAware {
                 LOG.info("Set regular DNS record for Participant: [{}] and domain: [{}].", normalizedParticipantId, domain.getDomainCode());
             } else {
                 createCustomServiceNaptrDNSRecord(normalizedParticipantId, domain, customNaptrService);
-                LOG.info("Set custom naptr service [{}] DNS record for Participant: [{}] and domain: [{}].", customNaptrService,  normalizedParticipantId, domain.getDomainCode());
+                LOG.info("Set custom naptr service [{}] DNS record for Participant: [{}] and domain: [{}].", customNaptrService, normalizedParticipantId, domain.getDomainCode());
             }
             return true;
-        } catch (BadRequestFault e) {
+        } catch (BadRequestFault | NotFoundFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
-        } catch (NotFoundFault e) {
-            return processSMLErrorMessage(e, normalizedParticipantId);
-        } catch (Exception e) {
+        } catch (InternalErrorFault | UnauthorizedFault e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
         }
@@ -134,7 +134,7 @@ public class SmlConnector implements ApplicationContextAware {
      * disabled, it returns {@code false}.
      *
      * @param normalizedParticipantId the participant ID
-     * @param domain the domain entity
+     * @param domain                  the domain entity
      * @return {@code true} if the participant exists; otherwise, {@code false} (also when SML integration is disabled).
      */
     public boolean participantExists(Identifier normalizedParticipantId, DBDomain domain) {
@@ -195,7 +195,7 @@ public class SmlConnector implements ApplicationContextAware {
             return false;
         }
         String exp = String.format(ERR_PARTICIPANT_ALREADY_EXISTS, patId.getValue(), patId.getScheme());
-        String exp2 = String.format(ERR_PARTICIPANT_NOT_EXISTS, patId.getValue(), patId.getScheme());
+        String exp2 = ERR_PARTICIPANT_NOT_EXISTS;
         return errorMessage.startsWith(exp) || errorMessage.startsWith(exp2);
     }
 
@@ -304,9 +304,7 @@ public class SmlConnector implements ApplicationContextAware {
             getParticipantWSClient(domain).delete(smlRequest);
             LOG.info("Participant: {} removed domain: {}.", normalizedParticipantString, domain.getDomainCode());
             return true;
-        } catch (BadRequestFault e) {
-            return processSMLErrorMessage(e, normalizedParticipantId);
-        } catch (NotFoundFault e) {
+        } catch (BadRequestFault | NotFoundFault e) {
             return processSMLErrorMessage(e, normalizedParticipantId);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
@@ -321,9 +319,7 @@ public class SmlConnector implements ApplicationContextAware {
         LOG.info("Removing SMP id (Domain) from BDMSL: {} ", domain.getDomainCode());
         try {
             getSMPManagerWSClient(domain).delete(domain.getSmlSmpId());
-        } catch (BadRequestFault e) {
-            processSMLErrorMessage(e, domain);
-        } catch (NotFoundFault e) {
+        } catch (BadRequestFault | NotFoundFault e) {
             processSMLErrorMessage(e, domain);
         } catch (Exception e) {
             LOG.error(e.getClass().getName() + e.getMessage(), e);
@@ -355,11 +351,6 @@ public class SmlConnector implements ApplicationContextAware {
         configureClient(SERVICE_METADATA_CONTEXT, iManageServiceMetadataWS, domain);
 
         return iManageServiceMetadataWS;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        ctx = applicationContext;
     }
 
     protected String getSmlClientKeyAliasForDomain(DBDomain domain) {
@@ -428,7 +419,7 @@ public class SmlConnector implements ApplicationContextAware {
     public void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, CertificateRO certificateRO, boolean clientCertAuthentication, boolean useTLS) {
         LOG.info("Connect to SML (smlClientAuthentication: [{}] use Client-CertHeader: [{}])", certificateRO, clientCertAuthentication);
 
-        if (certificateRO==null) {
+        if (certificateRO == null) {
             throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
 

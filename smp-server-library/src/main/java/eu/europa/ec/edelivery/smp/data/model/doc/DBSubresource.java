@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-webapp
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -121,7 +121,6 @@ public class DBSubresource extends BaseEntity {
     }
 
     @Transient
-
     public DBResource getResource() {
         return resource;
     }
@@ -132,10 +131,6 @@ public class DBSubresource extends BaseEntity {
 
     public DBDocument getDocument() {
         return document;
-    }
-
-    public byte[] getCurrentContent() {
-        return getCurrentContent();
     }
 
     public void setDocument(DBDocument document) {

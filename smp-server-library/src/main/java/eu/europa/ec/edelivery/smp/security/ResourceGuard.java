@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-server-library
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -19,7 +19,6 @@
 package eu.europa.ec.edelivery.smp.security;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.GroupMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceMemberDao;
@@ -47,13 +46,11 @@ public class ResourceGuard {
     DomainMemberDao domainMemberDao;
     GroupMemberDao groupMemberDao;
     ResourceMemberDao resourceMemberDao;
-    IdentifierService identifierService;
 
-    public ResourceGuard(DomainMemberDao domainMemberDao, GroupMemberDao groupMemberDao, ResourceMemberDao resourceMemberDao, IdentifierService identifierService) {
+    public ResourceGuard(DomainMemberDao domainMemberDao, GroupMemberDao groupMemberDao, ResourceMemberDao resourceMemberDao) {
         this.domainMemberDao = domainMemberDao;
         this.groupMemberDao = groupMemberDao;
         this.resourceMemberDao = resourceMemberDao;
-        this.identifierService = identifierService;
     }
 
     /**

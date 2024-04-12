@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-server-library
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -16,23 +16,6 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  * #END_LICENSE#
  */
-/**
- * Copyright 2017 - European Commission | CEF eDelivery
- * <p>
- * Licensed under the EUPL, Version 1.2 (the "License");
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * \BDMSL\bdmsl-parent-pom\LICENSE-EUPL-v1.2.pdf or https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/eupl_v1.2_en.pdf
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * <p>
- * * @author Flávio W. R. Santos - CEF-EDELIVERY-SUPPORT@ec.europa.eu
- **/
 package eu.europa.ec.edelivery.smp.data.dao;
 
 
@@ -318,7 +301,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
     }
 
     @Test
-    void encryptDefaultError() throws IOException {
+    void encryptDefaultError() {
         // given
         File f = new File("no.key");
         String password = "TEST11002password1@!." + System.currentTimeMillis();
@@ -528,7 +511,7 @@ public class ConfigurationDAOImplTest extends AbstractBaseDao {
         configurationDao.update(dbProp);
     }
 
-    public static File generateRandomPrivateKey() throws IOException {
+    public static File generateRandomPrivateKey() {
         File resource = Paths.get("target", UUID.randomUUID() + ".key").toFile();
         SecurityUtils.generatePrivateSymmetricKey(resource, true);
         return resource;

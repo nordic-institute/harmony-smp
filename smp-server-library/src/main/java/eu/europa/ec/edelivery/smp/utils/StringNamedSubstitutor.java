@@ -2,7 +2,7 @@
  * #START_LICENSE#
  * smp-server-library
  * %%
- * Copyright (C) 2017 - 2023 European Commission | eDelivery | DomiSMP
+ * Copyright (C) 2017 - 2024 European Commission | eDelivery | DomiSMP
  * %%
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
@@ -36,6 +36,10 @@ public class StringNamedSubstitutor {
     private static final String START_NAME = "${";
     private static final char END_NAME = '}';
 
+    private StringNamedSubstitutor() {
+        // private constructor
+    }
+
     /**
      * Substitute named variables in the string with key value pairs from the map.
      * The variables are in the form of ${name} and are case-insensitive and can contain only letters, digits, _ and .
@@ -53,7 +57,8 @@ public class StringNamedSubstitutor {
         int read;
         while ((read = template.read()) != -1) {
             if (read == START_NAME.charAt(0) && isStartSequence(template)) {
-                template.skip(START_NAME.length() - 1);
+                //skip (START_NAME.length() - 1L)  which is 1L
+                template.skip(1L);
                 String name = readName(template, END_NAME);
                 if (name == null) {
                     builder.append(START_NAME);
