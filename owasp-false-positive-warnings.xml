@@ -81,4 +81,15 @@
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
         <cve>CVE-2023-41080</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            File name: joda-time-2.x
+            This is transitive library of the 2WaySec, WSS4J 2.4.x: Check if this is needed when using WSS4J is upgrades
+            and is not directly used by the 2waySSL library.
+            NOTE: Currently the latest version 2.12.7 still report the same issue.
+            This is disputed by multiple third parties who believe  there was not reasonable evidence to determine the existence of a vulnerability.
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/joda\-time/joda\-time@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-23080</vulnerabilityName>
+    </suppress>
 </suppressions>
