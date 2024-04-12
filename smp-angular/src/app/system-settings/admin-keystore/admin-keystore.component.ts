@@ -18,7 +18,7 @@ import {CertificateRo} from "../../common/model/certificate-ro.model";
   styleUrls: ['./admin-keystore.component.css']
 })
 export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit, BeforeLeaveGuard {
-  displayedColumns: string[] = ['alias'];
+  displayedColumns: string[] = ['alias', 'entry-type'];
   dataSource: MatTableDataSource<CertificateRo> = new MatTableDataSource();
   keystoreCertificates: CertificateRo[];
   selected?: CertificateRo;
@@ -100,9 +100,7 @@ export class AdminKeystoreComponent implements OnInit, OnDestroy, AfterViewInit,
     this.dataSource.data = this.keystoreCertificates;
     // show the last page
     this.paginator.lastPage();
-
   }
-
 
   applyKeyAliasFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
