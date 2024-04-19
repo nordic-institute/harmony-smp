@@ -106,7 +106,7 @@ public class OasisSMPSubresource10Handler extends AbstractOasisSMPHandler {
         serviceInformationType.getDocumentIdentifier().setScheme(subresourceIdentifier.getScheme());
 
         try {
-            reader.serializeNative(subresource, responseData.getOutputStream(), true);
+            reader.serializeNativeAny(subresource, responseData.getOutputStream(), true);
         } catch (TechnicalException e) {
             throw new ResourceException(PARSE_ERROR, "Can not marshal extension for service group: [" + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
@@ -187,7 +187,8 @@ public class OasisSMPSubresource10Handler extends AbstractOasisSMPHandler {
 
         ServiceMetadata subresource;
         try {
-            subresource = (ServiceMetadata) reader.parseNative(new ByteArrayInputStream(bytearray));
+
+            subresource = (ServiceMetadata) reader.parseNativeAny(new ByteArrayInputStream(bytearray));
         } catch (TechnicalException e) {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }

@@ -55,7 +55,7 @@ class SubresourceConverterTest {
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceWithServiceOk.xml");
 
         //when
-        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
+        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNativeAny(new ByteArrayInputStream(inputDoc));
 
         //then
         assertNotNull(subresource);
@@ -75,7 +75,7 @@ class SubresourceConverterTest {
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceWithServiceInformationUtf8.xml");
 
         //when
-        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
+        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNativeAny(new ByteArrayInputStream(inputDoc));
 
         //then
         String serviceDescription = subresource.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0).getServiceDescription();
@@ -89,7 +89,7 @@ class SubresourceConverterTest {
         byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "SubresourceWithRedirect.xml");
 
         //when
-        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNative(new ByteArrayInputStream(inputDoc));
+        ServiceMetadata subresource = (ServiceMetadata) testInstance.parseNativeAny(new ByteArrayInputStream(inputDoc));
 
         //then
         assertNotNull(subresource);
