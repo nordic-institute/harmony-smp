@@ -51,7 +51,7 @@ cleanExternalImageResources() {
 }
 
 composeBuildImage() {
-	echo "Build ${IMAGE_NAME_DOMIBUS_SOAPUI} image..."
+	echo "Build ${IMAGE_SMP_WEBLOGIC122} image..."
 	docker compose -f docker-compose.build.yml build
 }
 

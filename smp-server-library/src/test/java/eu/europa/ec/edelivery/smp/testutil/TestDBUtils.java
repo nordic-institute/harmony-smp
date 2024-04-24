@@ -45,11 +45,13 @@ import java.util.UUID;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.SIMPLE_EXTENSION_XML;
 
 public class TestDBUtils {
+    // valid key alias for testing from the keystore
+    public static final String TEST_KEY_ALIAS = "single_domain_key";
 
     public static DBDomain createDBDomain(String domainCode) {
         DBDomain domain = new DBDomain();
         domain.setDomainCode(domainCode);
-        domain.setSignatureKeyAlias(anyString());
+        domain.setSignatureKeyAlias(TEST_KEY_ALIAS);
         domain.setSmlClientKeyAlias(anyString());
         domain.setSmlSubdomain(anyString());
         domain.setSmlSmpId(anyString());
