@@ -18,6 +18,8 @@ import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {ResourceSearchRo} from "./resource-search-ro.model";
 import {SubresourceSearchRo} from "./subresource-search-ro.model";
+import {ResourceMetadataService} from "../common/services/resource-metadata.service";
+import {ResourceMetadataRo} from "../common/model/resource-metadata-ro.model";
 
 @Component({
   templateUrl: './resource-search.component.html',
@@ -34,19 +36,29 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
   filter: any = {};
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
   baseUrl: string;
+  domainList: string[];
+  documentTypeList: string[];
 
   constructor(protected lookups: GlobalLookups,
               protected http: HttpClient,
-              protected alertService:
-                AlertMessageService,
+              protected alertService: AlertMessageService,
               public dialog: MatDialog,
-              private changeDetector: ChangeDetectorRef) {
+              private changeDetector: ChangeDetectorRef,
+              private resourceMetadataService: ResourceMetadataService) {
 
     this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_RESOURCE;
   }
 
-  ngOnInit(): void {
-    this.resourceSearchController = new ResourceSearchController(this.dialog);
+  ngOnInit() {
+    this.resourceMetadataService.getResourceMetadata$().subscribe({
+      next: (value: ResourceMetadataRo) => {
+        this.domainList = value.availableDomains || [];
+        this.documentTypeList = value.availableDocumentTypes || [];
+
+        this.resourceSearchController = new ResourceSearchController(this.dialog);
+      },
+      error: (err) => this.alertService.exception('Error occurred while retrieving the resource metadata', err)
+    });
   }
 
   initColumns(): void {
@@ -83,6 +95,13 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
         showInitially: true,
       },
       {
+        name: 'Document type',
+        prop: 'documentType',
+        width: 450,
+        resizable: 'true',
+        showInitially: true,
+      },
+      {
         cellTemplate: this.rowSMPUrlLinkAction,
         name: 'Resource URL',
         width: 120,
@@ -103,23 +122,18 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
   }
 
   createResourceURL(row: ResourceSearchRo) {
-
     return (!row?.domainCode? "" : row.domainCode+ '/')
           + (!row?.resourceDefUrlSegment?"" : row.resourceDefUrlSegment + '/')
           + encodeURIComponent((!row.participantScheme ? '' : row.participantScheme) + '::' + row.participantIdentifier);
   }
 
   createServiceMetadataURL(row: ResourceSearchRo, rowSMD: SubresourceSearchRo) {
-
     return this.createResourceURL(row)
             + '/' + rowSMD.subresourceDefUrlSegment + '/'
             + encodeURIComponent((!rowSMD.documentIdentifierScheme ? '' : rowSMD.documentIdentifierScheme) + '::' + rowSMD.documentIdentifier);
   }
 
-
-
   details(row: any) {
     this.resourceSearchController.showDetails(row);
-
   }
 }

@@ -62,44 +62,44 @@ class ResourceDaoSearchTest extends AbstractBaseDao {
         assertEquals(8, allResources.size());
 
         // only one group is public -
-        List<DBResource> result = testInstance.getPublicResourcesSearch(-1, -1, null, null, null);
+        List<ResourceDao.DBResourceWrapper> result = testInstance.getPublicResourcesSearch(-1, -1, null, null, null, null, null);
         assertEquals(1, result.size());
         assertResources(result, "1-1-1::pubPubPub");
 
         // user1 (admin) and user2 (viewer) are members of all resources
-        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser2(), null, null);
+        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser2(), null, null, null, null);
         assertEquals(8, result.size());
 
-        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser1(), null, "pubPub");
+        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser1(), null, "pubPub", null, null);
         assertEquals(2, result.size());
-        result.forEach(resource -> assertThat(resource.getIdentifierValue(), CoreMatchers.containsString("pubPub")));
+        result.forEach(resource -> assertThat(resource.getDbResource().getIdentifierValue(), CoreMatchers.containsString("pubPub")));
 
-        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser1(), "1-1", null);
+        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser1(), "1-1", null, null, null);
         assertEquals(1, result.size());
-        result.forEach(resource -> assertThat(resource.getIdentifierScheme(), CoreMatchers.containsString("1-1")));
+        result.forEach(resource -> assertThat(resource.getDbResource().getIdentifierScheme(), CoreMatchers.containsString("1-1")));
 
-        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser1(), "1-1", "priv");
+        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser1(), "1-1", "priv", null, null);
         assertEquals(0, result.size());
 
-        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser2(), null, null);
+        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser2(), null, null, null, null);
         assertEquals(8, result.size());
 
 
         // user3 is direct member of private domain - can see only public resource on public groups
-        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser3(), null, null);
+        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser3(), null, null, null, null);
         assertResources(result, "1-1-1::pubPubPub", "5-5-5::privPubPub");
 
         // user4 is direct member of private group in private domain
-        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser4(), null, null);
+        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser4(), null, null, null, null);
         assertResources(result, "1-1-1::pubPubPub", "5-5-5::privPubPub", "7-7-7::privPrivPub");
 
         // user5 is direct member of private resource in  private group in private domain
-        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser5(), null, null);
+        result = testInstance.getPublicResourcesSearch(-1, -1, testUtilsDao.getUser5(), null, null, null, null);
         assertResources(result, "1-1-1::pubPubPub", "5-5-5::privPubPub", "7-7-7::privPrivPub", "8-8-8::privPrivPriv");
     }
 
-    public void assertResources(List<DBResource> result, String... resourceIdentifiers) {
-        List<String> resultIdentifiers = result.stream().map(val -> val.getIdentifierScheme() + "::" + val.getIdentifierValue()).collect(Collectors.toList());
+    public void assertResources(List<ResourceDao.DBResourceWrapper> result, String... resourceIdentifiers) {
+        List<String> resultIdentifiers = result.stream().map(val -> val.getDbResource().getIdentifierScheme() + "::" + val.getDbResource().getIdentifierValue()).collect(Collectors.toList());
         System.out.println(resultIdentifiers);
         assertArrayEquals(resourceIdentifiers, resultIdentifiers.stream().toArray());
     }
@@ -110,35 +110,35 @@ class ResourceDaoSearchTest extends AbstractBaseDao {
         assertEquals(8, allResources.size());
 
         // only one group is public -
-        Long result = testInstance.getPublicResourcesSearchCount(null, null, null);
+        Long result = testInstance.getPublicResourcesSearchCount(null, null, null, null, null);
         assertEquals(1, result.intValue());
 
         // user1 (admin) and user2 (viewer) are members of all resources
-        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), null, null);
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), null, null, null, null);
         assertEquals(8, result.intValue());
 
-        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), null, "pubPub");
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), null, "pubPub", null, null);
         assertEquals(2, result.intValue());
 
-        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), "1-1", null);
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), "1-1", null, null, null);
         assertEquals(1, result.intValue());
 
-        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), "1-1", "priv");
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser1(), "1-1", "priv", null, null);
         assertEquals(0, result.intValue());
 
-        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser2(), null, null);
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser2(), null, null, null, null);
         assertEquals(8, result.intValue());
 
         // user3 is direct member of private domain - can see only public resource on public groups
-        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser3(), null, null);
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser3(), null, null, null, null);
         assertEquals(2, result.intValue());
 
         // user4 is direct member of private group in private domain
-        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser4(), null, null);
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser4(), null, null, null, null);
         assertEquals(3, result.intValue());
 
         // user5 is direct member of private resource in  private group in private domain
-        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser5(), null, null);
+        result = testInstance.getPublicResourcesSearchCount(testUtilsDao.getUser5(), null, null, null, null);
         assertEquals(4, result.intValue());
 
     }

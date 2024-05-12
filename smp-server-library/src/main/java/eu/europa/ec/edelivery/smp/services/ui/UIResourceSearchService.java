@@ -18,12 +18,10 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
-import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceMetadataResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
@@ -31,7 +29,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ResourceFilter;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,14 +40,23 @@ import java.util.List;
 public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGroupSearchRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIResourceSearchService.class);
 
-    @Autowired
-    DomainDao domainDao;
+    private final DomainDao domainDao;
 
-    @Autowired
-    ResourceDao resourceDao;
+    private final ResourceDao resourceDao;
 
-    @Autowired
-    UserDao userDao;
+    private final UserDao userDao;
+
+    private final DocumentDao documentDao;
+
+    private final ConversionService conversionService;
+
+    public UIResourceSearchService(DomainDao domainDao, ResourceDao resourceDao, UserDao userDao, DocumentDao documentDao, ConversionService conversionService) {
+        this.domainDao = domainDao;
+        this.resourceDao = resourceDao;
+        this.userDao = userDao;
+        this.documentDao = documentDao;
+        this.conversionService = conversionService;
+    }
 
 
     @Override
@@ -77,7 +84,7 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
         sg.setPageSize(pageSize);
         DBUser user = SessionSecurityUtils.getSessionUserDetails() != null ? SessionSecurityUtils.getSessionUserDetails().getUser() : null;
 
-        long iCnt = resourceDao.getPublicResourcesSearchCount(user, filter.getIdentifierSchemeLike(), filter.getIdentifierValueLike());
+        long iCnt = resourceDao.getPublicResourcesSearchCount(user, filter.getIdentifierSchemeLike(), filter.getIdentifierValueLike(), filter.getDomainCode(), filter.getDocumentType());
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
@@ -87,10 +94,10 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
                 sg.setPage(page); // go back for a page
                 iStartIndex = pageSize < 0 ? -1 : page * pageSize;
             }
-            List<DBResource> lst = resourceDao.getPublicResourcesSearch(page, pageSize, user, filter.getIdentifierSchemeLike(), filter.getIdentifierValueLike());
+            List<ResourceDao.DBResourceWrapper> lst = resourceDao.getPublicResourcesSearch(page, pageSize, user, filter.getIdentifierSchemeLike(), filter.getIdentifierValueLike(), filter.getDomainCode(), filter.getDocumentType());
             List<ServiceGroupSearchRO> lstRo = new ArrayList<>();
-            for (DBResource resource : lst) {
-                ServiceGroupSearchRO serviceGroupRo = convertToRo(resource);
+            for (ResourceDao.DBResourceWrapper resource : lst) {
+                ServiceGroupSearchRO serviceGroupRo = convert(resource);
                 serviceGroupRo.setIndex(iStartIndex++);
                 lstRo.add(serviceGroupRo);
             }
@@ -102,19 +109,20 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
     /**
      * Convert Database object to Rest object for UI
      *
-     * @param resource - database  entity
+     * @param resource     - database entity wrapper
      * @return ServiceGroupRO
      */
-    public ServiceGroupSearchRO convertToRo(DBResource resource) {
+    private ServiceGroupSearchRO convert(ResourceDao.DBResourceWrapper resource) {
         ServiceGroupSearchRO serviceGroupRo = new ServiceGroupSearchRO();
 
-        serviceGroupRo.setId(resource.getId());
-        serviceGroupRo.setDomainCode(resource.getDomainResourceDef().getDomain().getDomainCode());
-        serviceGroupRo.setResourceDefUrlSegment(resource.getDomainResourceDef().getResourceDef().getUrlSegment());
-        serviceGroupRo.setParticipantIdentifier(resource.getIdentifierValue());
-        serviceGroupRo.setParticipantScheme(resource.getIdentifierScheme());
+        serviceGroupRo.setId(resource.getDbResource().getId());
+        serviceGroupRo.setDomainCode(resource.getDomainCode());
+        serviceGroupRo.setDocumentType(resource.getDocumentType());
+        serviceGroupRo.setResourceDefUrlSegment(resource.getUrlSegment());
+        serviceGroupRo.setParticipantIdentifier(resource.getDbResource().getIdentifierValue());
+        serviceGroupRo.setParticipantScheme(resource.getDbResource().getIdentifierScheme());
 
-        resource.getSubresources().forEach(subresource -> {
+        resource.getDbResource().getSubresources().forEach(subresource -> {
             ServiceMetadataRO smdro = new ServiceMetadataRO();
             smdro.setSubresourceDefUrlSegment(subresource.getSubresourceDef().getUrlSegment());
             smdro.setDocumentIdentifier(subresource.getIdentifierValue());
@@ -123,5 +131,11 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
         });
 
         return serviceGroupRo;
+    }
+
+    public ResourceMetadataResult getResourceMetadata() {
+        List<String> domainCodes = domainDao.getAllDomainCodes();
+        List<String> documentTypes = documentDao.getAllDocumentTypes();
+        return new ResourceMetadataResult(domainCodes, documentTypes);
     }
 }

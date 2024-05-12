@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_ALL_TYPES;
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_RESOURCE;
 
 /**
@@ -47,6 +48,7 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.QUERY_DOCUMENT_FOR_
 @org.hibernate.annotations.Table(appliesTo = "SMP_DOCUMENT", comment = "SMP document entity for resources and subresources")
 @NamedQueries({
         @NamedQuery(name = QUERY_DOCUMENT_FOR_RESOURCE, query = "SELECT d FROM DBResource r JOIN r.document d WHERE r.id =:resource_id"),
+        @NamedQuery(name = QUERY_DOCUMENT_ALL_TYPES, query = "SELECT DISTINCT d.name FROM DBDocument d"),
 })
 public class DBDocument extends BaseEntity {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DBDocument.class);

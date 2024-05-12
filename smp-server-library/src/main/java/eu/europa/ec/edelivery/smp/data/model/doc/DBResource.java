@@ -99,7 +99,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         " AND (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier )" +
         " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) order by r.identifierScheme, r.identifierValue"
 )
-@NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
+@NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER, query = "SELECT DISTINCT r, r.domainResourceDef.domain.domainCode as domainCode, " +
+        "   r.domainResourceDef.resourceDef.urlSegment as urlSegment, r.document.name as documentType " +
+        "FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
         " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
         " AND (:resource_scheme IS NULL OR r.identifierScheme like :resource_scheme) " +
         " AND ( :user_id IS NOT NULL AND rm.user.id = :user_id "  +
@@ -112,8 +114,10 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR  (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
-        ")))"+
-        "order by r.identifierScheme, r.identifierValue"
+        "))) " +
+        " AND (:domain_code IS NULL OR r.domainResourceDef.domain.domainCode = :domain_code) " +
+        " AND (:document_type IS NULL OR r.document.name = :document_type) " +
+        " ORDER BY r.identifierScheme, r.identifierValue"
 )
 @NamedQuery(name = QUERY_RESOURCE_ALL_FOR_USER_COUNT, query = "SELECT count(distinct r.id) FROM  DBResource r LEFT JOIN DBResourceMember rm ON r.id = rm.resource.id WHERE " +
         " (:resource_identifier IS NULL OR r.identifierValue like :resource_identifier) " +
@@ -128,7 +132,9 @@ import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
         "            OR  (select count(dm.id) from DBDomainMember dm where dm.user.id = :user_id and dm.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(gm.id) from DBGroupMember gm where gm.user.id = :user_id and gm.group.domain.id = r.group.domain.id) > 0 " +
         "            OR (select count(rm.id) from DBResourceMember rm where rm.user.id = :user_id and rm.resource.group.domain.id = r.group.domain.id) > 0 " +
-        ")))"
+        "))) " +
+        " AND (:domain_code IS NULL OR r.domainResourceDef.domain.domainCode = :domain_code) " +
+        " AND (:document_type IS NULL OR r.document.name = :document_type) "
 )
 public class DBResource extends BaseEntity {
 
