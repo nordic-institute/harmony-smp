@@ -35,6 +35,10 @@
 
     drop table SMP_DOMAIN_AUD cascade constraints;
 
+    drop table SMP_DOMAIN_CONFIGURATION cascade constraints;
+
+    drop table SMP_DOMAIN_CONFIGURATION_AUD cascade constraints;
+
     drop table SMP_DOMAIN_MEMBER cascade constraints;
 
     drop table SMP_DOMAIN_MEMBER_AUD cascade constraints;
@@ -90,6 +94,8 @@
     drop sequence SMP_DOCUMENT_SEQ;
 
     drop sequence SMP_DOCUMENT_VERSION_SEQ;
+
+    drop sequence SMP_DOMAIN_CONF_SEQ;
 
     drop sequence SMP_DOMAIN_MEMBER_SEQ;
 

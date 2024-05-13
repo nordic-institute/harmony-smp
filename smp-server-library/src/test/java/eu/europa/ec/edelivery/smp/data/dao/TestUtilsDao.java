@@ -18,11 +18,13 @@
  */
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialTargetType;
 import eu.europa.ec.edelivery.smp.data.enums.CredentialType;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
@@ -604,7 +606,32 @@ public class TestUtilsDao {
         DBDomain d = TestDBUtils.createDBDomain(domainCode);
         d.setVisibility(visibility);
         persistFlushDetach(d);
+
+        createDefaultDomainProperties(d, SMPDomainPropertyEnum.CS_PARTICIPANTS);
+        createDefaultDomainProperties(d, SMPDomainPropertyEnum.PARTC_SCH_VALIDATION_REGEXP);
         return d;
+    }
+
+    @Transactional
+    public DBDomainConfiguration createDefaultDomainProperties(DBDomain domain, SMPDomainPropertyEnum property ) {
+        DBDomainConfiguration dc = new DBDomainConfiguration();
+        dc.setDomain(domain);
+        dc.setProperty(property.getProperty());
+        dc.setValue(property.getDefValue());
+        dc.setUseSystemDefault(false);
+        persistFlushDetach(dc);
+        return dc;
+    }
+
+    @Transactional
+    public DBDomainConfiguration createDomainProperties(DBDomain domain, String property, String value) {
+        DBDomainConfiguration dc = new DBDomainConfiguration();
+        dc.setDomain(domain);
+        dc.setProperty(property);
+        dc.setValue(value);
+        dc.setUseSystemDefault(false);
+        persistFlushDetach(dc);
+        return dc;
     }
 
     @Transactional

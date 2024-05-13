@@ -70,27 +70,37 @@ public class ResourceConstants {
     public static final String PATH_ACTION_PUT = "put";
     public static final String PATH_ACTION_VALIDATE = "validate";
     public static final String PATH_ACTION_GENERATE = "generate";
+    public static final String PATH_ACTION_UPDATE_RESOURCE_TYPES = "update-resource-types";
+    public static final String PATH_ACTION_UPDATE_SML_DATA = "update-sml-integration-data";
     public static final String PATH_ACTION_RESET_CREDENTIAL_REQUEST = "request-reset-credential";
     public static final String PATH_ACTION_RESET_CREDENTIAL = "reset-credential";
     public static final String PATH_ACTION_AUTHENTICATION = "authentication";
     public static final String PATH_ACTION_GENERATE_DNS_QUERY = "generate-dns-query";
     public static final String PATH_ACTION_RETRIEVE = "retrieve";
     public static final String PATH_ACTION_SEARCH = "search";
+
+    public static final String PATH_ACTION_SML_REGISTER = "sml-register";
+    public static final String PATH_ACTION_SML_UNREGISTER = "sml-unregister";
+
     // --------------------------------------
     // context paths
     public static final String CONTEXT_PATH_PUBLIC = "/ui/public/rest/";
     public static final String CONTEXT_PATH_INTERNAL = "/ui/internal/rest/";
+    public static final String CONTEXT_PATH_INTERNAL_USERID = CONTEXT_PATH_INTERNAL+ "{" + PATH_PARAM_ENC_USER_ID + "}/";
 
     public static final String CONTEXT_PATH_EDIT = "/ui/edit/rest/" + "{" + PATH_PARAM_ENC_USER_ID + "}";
+    // edit domain data paths
     public static final String CONTEXT_PATH_EDIT_DOMAIN = CONTEXT_PATH_EDIT + URL_PATH_SEPARATOR + PATH_RESOURCE_TYPE_DOMAIN;
     public static final String SUB_CONTEXT_PATH_EDIT_DOMAIN_ADMIN = "{" + PATH_PARAM_ENC_DOMAIN_ID + "}";
     public static final String SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER = SUB_CONTEXT_PATH_EDIT_DOMAIN_ADMIN + URL_PATH_SEPARATOR + PATH_RESOURCE_TYPE_MEMBER;
     public static final String SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER + URL_PATH_SEPARATOR + PATH_ACTION_PUT;
     public static final String SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_DELETE = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER + URL_PATH_SEPARATOR
             + "{" + PATH_PARAM_ENC_MEMBER_ID + "}" + URL_PATH_SEPARATOR +  PATH_ACTION_DELETE;
-
-    // domain edit data
+    // domain resource definition
     public static final String SUB_CONTEXT_PATH_EDIT_DOMAIN_RESOURCE_DEF = SUB_CONTEXT_PATH_EDIT_DOMAIN_ADMIN + URL_PATH_SEPARATOR + PATH_RESOURCE_TYPE_RESOURCE_DEFINITION;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOMAIN_PROPERTIES= SUB_CONTEXT_PATH_EDIT_DOMAIN_ADMIN + URL_PATH_SEPARATOR + PATH_RESOURCE_TYPE_PROPERTY;
+    public static final String SUB_CONTEXT_PATH_EDIT_DOMAIN_PROPERTIES_VALIDATE= SUB_CONTEXT_PATH_EDIT_DOMAIN_PROPERTIES + URL_PATH_SEPARATOR + PATH_ACTION_VALIDATE;
+
     // ------------------------------------------
     // group management
     public static final String CONTEXT_PATH_EDIT_GROUP = CONTEXT_PATH_EDIT_DOMAIN + URL_PATH_SEPARATOR +  SUB_CONTEXT_PATH_EDIT_DOMAIN_ADMIN
@@ -141,16 +151,26 @@ public class ResourceConstants {
     public static final String CONTEXT_PATH_PUBLIC_SECURITY = CONTEXT_PATH_PUBLIC + "security";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_AUTHENTICATION = CONTEXT_PATH_PUBLIC_SECURITY + "/authentication";
     public static final String CONTEXT_PATH_PUBLIC_SECURITY_USER = CONTEXT_PATH_PUBLIC_SECURITY + "/user";
-
+    // --------------------------------------
     //internal
+    public static final String CONTEXT_PATH_INTERNAL_DOMAIN = CONTEXT_PATH_INTERNAL_USERID + PATH_RESOURCE_TYPE_DOMAIN;
     public static final String CONTEXT_PATH_INTERNAL_ALERT = CONTEXT_PATH_INTERNAL + "alert";
-    public static final String CONTEXT_PATH_INTERNAL_DOMAIN = CONTEXT_PATH_INTERNAL + PATH_RESOURCE_TYPE_DOMAIN;
     public static final String CONTEXT_PATH_INTERNAL_PROPERTY = CONTEXT_PATH_INTERNAL + PATH_RESOURCE_TYPE_PROPERTY;
     public static final String CONTEXT_PATH_INTERNAL_APPLICATION = CONTEXT_PATH_INTERNAL + "application";
     public static final String CONTEXT_PATH_INTERNAL_USER = CONTEXT_PATH_INTERNAL + "user";
     public static final String CONTEXT_PATH_INTERNAL_EXTENSION = CONTEXT_PATH_INTERNAL + "extension";
     public static final String CONTEXT_PATH_INTERNAL_KEYSTORE = CONTEXT_PATH_INTERNAL + "keystore";
     public static final String CONTEXT_PATH_INTERNAL_TRUSTSTORE = CONTEXT_PATH_INTERNAL + "truststore";
+
+    // internal domain paths
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_RESOURCE_TYPE_PROPERTY;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_CREATE=  "/"+PATH_ACTION_CREATE;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_DELETE=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_DELETE;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_UPDATE;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_RESOURCE_TYPES=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_UPDATE_RESOURCE_TYPES;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_DATA=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_UPDATE_SML_DATA;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_REGISTER=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_SML_REGISTER;
+    public static final String SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_UNREGISTER=  "/{" + PATH_PARAM_ENC_DOMAIN_ID + "}/" + PATH_ACTION_SML_UNREGISTER;
 
     // --------------------------------------
     // parameters

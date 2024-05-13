@@ -32,11 +32,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ContextConfiguration(classes = UIDomainPublicService.class)
+@ContextConfiguration(classes = UIDomainEditService.class)
 class UIDomainPublicServiceTest   extends AbstractJunit5BaseDao {
 
     @Autowired
-    UIDomainPublicService testInstance;
+    UIDomainEditService testInstance;
 
     @BeforeEach
     public void prepareDatabase() {

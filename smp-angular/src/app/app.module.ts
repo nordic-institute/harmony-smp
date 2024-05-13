@@ -136,9 +136,6 @@ import {UserDetailsService} from "./common/services/user-details.service";
 import {UserService} from "./common/services/user.service";
 import {SmlIntegrationService} from "./common/services/sml-integration.service";
 import {PropertyComponent} from "./system-settings/admin-properties/property.component";
-import {
-  PropertyDetailsDialogComponent
-} from "./system-settings/admin-properties/property-details-dialog/property-details-dialog.component";
 import {UserAlertsComponent} from "./user-settings/user-alerts/user-alerts.component";
 import {SmpEditorComponent} from "./common/components/smp-editor/smp-editor.component";
 import {ResetCredentialComponent} from "./security/reset-credential/reset-credential.component";
@@ -147,6 +144,15 @@ import {DnsToolsService} from "./tools/dns-tools/dns-tools.service";
 import {
   DnsQueryPanelComponent
 } from "./tools/dns-tools/dns-query-panel/dns-query-panel.component";
+import {
+  DomainPropertiesPanelComponent
+} from "./system-settings/admin-domain/domain-properties-panel/domain-properties-panel.component";
+import {
+  PropertyController
+} from "./system-settings/admin-properties/property-controller";
+import {
+  PropertyDetailsDialogComponent
+} from "./common/dialogs/property-details-dialog/property-details-dialog.component";
 
 
 @NgModule({
@@ -183,6 +189,7 @@ import {
     DomainPanelComponent,
     DomainResourceTypePanelComponent,
     DomainSelectorComponent,
+    DomainPropertiesPanelComponent,
     DomainSmlIntegrationPanelComponent,
     EditDomainComponent,
     EditGroupComponent,
@@ -285,17 +292,18 @@ import {
     DatePipe,
     DnsToolsService,
     DomainService,
-    MembershipService,
     DownloadService,
     EditDomainService,
     EditGroupService,
     EditResourceController,
     EditResourceService,
-    HttpErrorHandlerService,
     ExtensionService,
     GlobalLookups,
+    HttpErrorHandlerService,
     HttpEventService,
+    MembershipService,
     NavigationService,
+    PropertyController,
     SecurityEventService,
     SecurityService,
     SmlIntegrationService,

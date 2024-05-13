@@ -336,6 +336,11 @@ mat-card {
   background-color: #03A9F4 !important;
 }
 
+/* mat-tab  set multiline table labels. Check the domain configuration */
+.mat-mdc-tab-labels {
+  flex-flow: row wrap;
+}
+
 /*--------------------------------------------------
     [TABLE]
 ----------------------------------------------------*/

@@ -51,6 +51,14 @@
        drop 
        foreign key FK35qm8xmi74kfenugeonijodsg;
 
+    alter table SMP_DOMAIN_CONFIGURATION 
+       drop 
+       foreign key FK4303vstoigqtmeo3t2i034gm3;
+
+    alter table SMP_DOMAIN_CONFIGURATION_AUD 
+       drop 
+       foreign key FKkelcga805bleh5x256hy5e1xb;
+
     alter table SMP_DOMAIN_MEMBER 
        drop 
        foreign key FK1tdwy9oiyrk6tl4mk0fakhkf5;
@@ -194,6 +202,10 @@
     drop table if exists SMP_DOMAIN;
 
     drop table if exists SMP_DOMAIN_AUD;
+
+    drop table if exists SMP_DOMAIN_CONFIGURATION;
+
+    drop table if exists SMP_DOMAIN_CONFIGURATION_AUD;
 
     drop table if exists SMP_DOMAIN_MEMBER;
 

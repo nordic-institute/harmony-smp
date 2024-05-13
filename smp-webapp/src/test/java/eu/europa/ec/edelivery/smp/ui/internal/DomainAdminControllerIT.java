@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -18,8 +18,10 @@
  */
 package eu.europa.ec.edelivery.smp.ui.internal;
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
@@ -34,6 +36,8 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
@@ -44,6 +48,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.test.testutils.MockMvcUtils.*;
+import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -68,7 +73,7 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
 
-        MvcResult result = mvc.perform(get(PATH + "/" + userRO.getUserId())
+        MvcResult result = mvc.perform(get(PATH, userRO.getUserId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json"))
@@ -85,7 +90,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
 
-        MvcResult result = mvc.perform(put(PATH + "/" + userRO.getUserId() + "/create")
+        MvcResult result = mvc.perform(put(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_CREATE,
+                        userRO.getUserId())
                         .session(session)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +111,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         MockHttpSession session = loginWithSystemAdmin(mvc);
         UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
 
-        MvcResult result = mvc.perform(put(PATH + "/" + userRO.getUserId() + "/create")
+        MvcResult result = mvc.perform(put(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_CREATE,
+                        userRO.getUserId())
                         .session(session)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -128,7 +135,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
         assertTrue(domainToUpdate.getResourceDefinitions().isEmpty());
 
-        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "/update-resource-types")
+        MvcResult result = mvc.perform(post(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_RESOURCE_TYPES
+                        , userRO.getUserId(), domainToUpdate.getDomainId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -150,7 +158,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         DomainRO domainToDelete = getDomain(domainCode, userRO, session);
         assertNotNull(domainToDelete);
 
-        MvcResult result = mvc.perform(delete(PATH + "/" + userRO.getUserId() + "/" + domainToDelete.getDomainId() + "/delete")
+        MvcResult result = mvc.perform(delete(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_DELETE
+                        , userRO.getUserId(), domainToDelete.getDomainId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")) // delete domain with id 2
@@ -171,11 +180,13 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         domainToUpdate.setDomainCode("NewCode");
         domainToUpdate.setSignatureKeyAlias("New alias");
 
-        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() +  "/update")
-                        .session(session)
-                        .with(csrf())
-                        .header("Content-Type", " application/json")
-                        .content(entitiToString(domainToUpdate)))
+        MvcResult result = mvc.perform(
+                        post(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE,
+                                userRO.getUserId(), domainToUpdate.getDomainId())
+                                .session(session)
+                                .with(csrf())
+                                .header("Content-Type", " application/json")
+                                .content(entitiToString(domainToUpdate)))
                 .andExpect(status().isOk()).andReturn();
         DomainRO resultObject = parseResponse(result, DomainRO.class);
         //
@@ -194,7 +205,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         domainToUpdate.setSmlSubdomain("NewCode");
         domainToUpdate.setSmlClientKeyAlias("New alias");
 
-        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "/update-sml-integration-data")
+        MvcResult result = mvc.perform(post(PATH + SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_SML_DATA,
+                        userRO.getUserId(), domainToUpdate.getDomainId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -217,7 +229,8 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
         domainToUpdate.getResourceDefinitions().add(resourceDefID);
 
-        MvcResult result = mvc.perform(post(PATH + "/" + userRO.getUserId() + "/" + domainToUpdate.getDomainId() + "/update-resource-types")
+        MvcResult result = mvc.perform(post(PATH  + SUB_CONTEXT_INTERNAL_DOMAIN_UPDATE_RESOURCE_TYPES,
+                         userRO.getUserId(),  domainToUpdate.getDomainId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json")
@@ -230,8 +243,96 @@ class DomainAdminControllerIT extends AbstractControllerTest {
         assertEquals(EntityROStatus.UPDATED.getStatusNumber(), resultObject.getStatus());
     }
 
+    @Test
+    void testGetDomainProperties() throws Exception {
+        // set the webapp_integration_test_data.sql for resourceDefID
+        String domainCode = "domainTwo";
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
+        DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
+
+        MvcResult result = mvc.perform(get(PATH  + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
+                        userRO.getUserId(),  domainToUpdate.getDomainId())
+                        .session(session)
+                        .with(csrf())
+                        .header("Content-Type", " application/json")
+                        .content(entitiToString(domainToUpdate.getResourceDefinitions())))
+                .andExpect(status().isOk()).andReturn();
+        List<DomainPropertyRO> resultObject = parseResponseArray(result, DomainPropertyRO.class);
+        //
+        assertNotNull(resultObject);
+        assertEquals(SMPDomainPropertyEnum.values().length, resultObject.size());
+        // all domains are system default
+        for (DomainPropertyRO domainPropertyRO : resultObject) {
+            assertTrue(domainPropertyRO.isSystemDefault());
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "PARTC_SCH_VALIDATION_REGEXP,^.*$",
+            "PARTC_SCH_REGEXP_MSG,'This is test message'",
+            "PARTC_SCH_MANDATORY,true",
+            "PARTC_SCH_SPLIT_REGEXP,'^(?i)\\s*?(?<scheme>urn:)::?(?<identifier>.+)?\\s*$'",
+            "PARTC_SCH_URN_REGEXP,true",
+            "CS_PARTICIPANTS,sensitive-participant-sc1",
+            "CS_DOCUMENTS,'sensitive-doc-sc1'",
+            })
+    void testUpdateDomainProperty(SMPDomainPropertyEnum property, String value) throws Exception {
+        // set the webapp_integration_test_data.sql for resourceDefID
+        String domainCode = "domainTwo";
+        MockHttpSession session = loginWithSystemAdmin(mvc);
+        UserRO userRO = MockMvcUtils.getLoggedUserData(mvc, session);
+        DomainRO domainToUpdate = getDomain(domainCode, userRO, session);
+
+        MvcResult result = mvc.perform(get(PATH  + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
+                        userRO.getUserId(),  domainToUpdate.getDomainId())
+                        .session(session)
+                        .with(csrf())
+                        .header("Content-Type", " application/json")
+                        .content(entitiToString(domainToUpdate.getResourceDefinitions())))
+                .andExpect(status().isOk()).andReturn();
+        List<DomainPropertyRO> resultObject = parseResponseArray(result, DomainPropertyRO.class);
+        // find property
+        DomainPropertyRO domainPropertyRO = null;
+        for (DomainPropertyRO propertyRO : resultObject) {
+            if (StringUtils.equals(property.getProperty(), propertyRO.getProperty())) {
+                domainPropertyRO = propertyRO;
+                break;
+            }
+        }
+        // check if property is found and set value
+        assertNotNull(domainPropertyRO);
+        assertTrue(domainPropertyRO.isSystemDefault());
+        // update property set domain specific and set new value
+        domainPropertyRO.setSystemDefault(false);
+        domainPropertyRO.setValue(value);
+        // submit updated property
+        MvcResult resultUpdate = mvc.perform(post(PATH  + SUB_CONTEXT_INTERNAL_DOMAIN_PROPERTIES,
+                        userRO.getUserId(),  domainToUpdate.getDomainId())
+                        .session(session)
+                        .with(csrf())
+                        .header("Content-Type", " application/json")
+                        .content(entitiToString(Collections.singletonList(domainPropertyRO))))
+                .andExpect(status().isOk()).andReturn();
+
+
+        List<DomainPropertyRO> resultUpdated = parseResponseArray(resultUpdate, DomainPropertyRO.class);
+
+        assertNotNull(resultUpdated);
+
+        DomainPropertyRO domainPropertyROResult = resultUpdated.stream()
+                .filter(domainProperty -> StringUtils.equals(property.getProperty(), domainProperty.getProperty()))
+                .findFirst().orElse(null);
+
+        assertNotNull(domainPropertyROResult);
+        assertFalse(domainPropertyROResult.isSystemDefault());
+        assertEquals(value, domainPropertyROResult.getValue());
+    }
+
+
     private List<DomainRO> getAllDomains(UserRO userRO, MockHttpSession session) throws Exception {
-        MvcResult result = mvc.perform(get(PATH + "/" + userRO.getUserId())
+        MvcResult result = mvc.perform(get(PATH, userRO.getUserId())
                         .session(session)
                         .with(csrf())
                         .header("Content-Type", " application/json"))

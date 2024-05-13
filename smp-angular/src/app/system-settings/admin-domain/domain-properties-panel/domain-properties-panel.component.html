@@ -1,0 +1,49 @@
+<div id="domain-properties-panel" class="mat-elevation-z2">
+  <h3>Domain properties</h3>
+
+  <table class="mat-elevation-z2" id="admin-domain-properties-table" mat-table
+         [dataSource]="propertyDataSource" matSort>
+    <ng-container matColumnDef="systemDefault">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Sys. Def.</th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox checked="{{row.systemDefault}}" disabled></mat-checkbox>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="property">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Domain property</th>
+      <td mat-cell *matCellDef="let row"
+          [matTooltip]="row.desc">{{ row.property }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="value">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Domain value</th>
+      <td mat-cell *matCellDef="let row">{{ getTableRowValue(row) }}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let odd = odd; let row; columns: displayedColumns;"
+        (click)="propertySelected(row)"
+        (dblclick)="editSelectedRow()"
+        [ngClass]="getRowClass(row, odd)"
+    ></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="2">No Domain properties found</td>
+    </tr>
+  </table>
+
+</div>
+<mat-toolbar class="mat-elevation-z2">
+  <mat-toolbar-row class="smp-toolbar-row">
+    <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()"
+            color="primary"
+            [disabled]="!resetButtonEnabled">
+      <mat-icon>refresh</mat-icon>
+      <span>Reset</span>
+    </button>
+    <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()"
+            color="primary"
+            [disabled]="!submitButtonEnabled">
+      <mat-icon>save</mat-icon>
+      <span>Save</span>
+    </button>
+  </mat-toolbar-row>
+</mat-toolbar>

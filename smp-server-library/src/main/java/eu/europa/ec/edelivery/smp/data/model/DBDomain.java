@@ -146,6 +146,16 @@ public class DBDomain extends BaseEntity {
     )
     private List<DBDomainResourceDef> domainResourceDefs = new ArrayList<>();
 
+
+    @OneToMany(
+            mappedBy = "domain",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DBDomainConfiguration> domainConfigurations = new ArrayList<>();
+
+
     @Override
     public Long getId() {
         return id;
@@ -237,6 +247,10 @@ public class DBDomain extends BaseEntity {
 
     public List<DBDomainResourceDef> getDomainResourceDefs() {
         return domainResourceDefs;
+    }
+
+    public List<DBDomainConfiguration> getDomainConfigurations() {
+        return domainConfigurations;
     }
 
     public VisibilityType getVisibility() {

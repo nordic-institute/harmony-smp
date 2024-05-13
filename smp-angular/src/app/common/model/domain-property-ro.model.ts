@@ -1,15 +1,12 @@
 import {SearchTableEntity} from '../../common/search-table/search-table-entity.model';
 
-export interface PropertyRo extends SearchTableEntity {
+export interface DomainPropertyRo extends SearchTableEntity {
   property: string;
   value: string;
   type: string;
   desc: string;
-  isEncrypted : boolean;
   newValue?: string;
-  updateDate?: Date;
-  mandatory?: boolean;
-  restartNeeded? : boolean;
   valuePattern?:string;
+  systemDefault:boolean;
   systemDefaultValue?:string;
 }

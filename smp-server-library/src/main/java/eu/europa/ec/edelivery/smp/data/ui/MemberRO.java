@@ -18,13 +18,14 @@
  */
 package eu.europa.ec.edelivery.smp.data.ui;
 
+import eu.europa.ec.edelivery.smp.data.enums.MemberOfType;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 
 public class MemberRO {
 
     String memberId;
     String username;
-    String memberOf;
+    MemberOfType memberOf;
     String fullName;
     MembershipRoleType roleType;
 
@@ -44,11 +45,11 @@ public class MemberRO {
         this.username = username;
     }
 
-    public String getMemberOf() {
+    public MemberOfType getMemberOf() {
         return memberOf;
     }
 
-    public void setMemberOf(String memberOf) {
+    public void setMemberOf(MemberOfType memberOf) {
         this.memberOf = memberOf;
     }
 

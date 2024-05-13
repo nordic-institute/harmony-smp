@@ -73,7 +73,6 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {PARTC_SCH_VALIDATION_REGEXP, TEST_REXEXP, "getParticipantIdentifierSchemeRexExp", true},
                 {PARTC_SCH_VALIDATION_REGEXP, TEST_STRING, "getParticipantIdentifierSchemeRexExpPattern", false},
                 {PARTC_SCH_REGEXP_MSG, TEST_STRING, "getParticipantIdentifierSchemeRexExpMessage", true},
-                //{PARTC_EBCOREPARTYID_CONCATENATE, Boolean.FALSE, "getForceConcatenateEBCorePartyId", true},
                 {PARTC_SCH_MANDATORY, Boolean.FALSE, "getParticipantSchemeMandatory", true},
                 {CS_PARTICIPANTS, TEST_STRING_LIST, "getCaseSensitiveParticipantScheme", true},
                 {CS_DOCUMENTS, TEST_STRING_LIST, "getCaseSensitiveDocumentScheme", true},

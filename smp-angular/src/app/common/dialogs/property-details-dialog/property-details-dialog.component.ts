@@ -1,13 +1,19 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
-import {PropertyRo} from "../property-ro.model";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";;
 import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
 import {SmpConstants} from "../../../smp.constants";
-import {PropertyValidationRo} from "../property-validate-ro.model";
 import {HttpClient} from "@angular/common/http";
 import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.service";
+import {
+  PropertyRo
+} from "../../../system-settings/admin-properties/property-ro.model";
+import {
+  PropertyValidationRo
+} from "../../../system-settings/admin-properties/property-validate-ro.model";
+import {PropertyTypeEnum} from "../../enums/property-type.enum";
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'property-details-dialog',
@@ -16,16 +22,17 @@ import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.
 })
 export class PropertyDetailsDialogComponent implements OnInit {
 
-  static readonly NEW_MODE = 'New Property';
-  static readonly EDIT_MODE = 'Property Edit';
+  static readonly NEW_MODE: string = 'New {TYPE} Property';
+  static readonly EDIT_MODE: string  = '{TYPE} Property Edit';
 
 
   editMode: boolean;
   formTitle: string;
-  current: PropertyRo & { confirmation?: string };
+  current: PropertyRo & { confirmation?: string, systemDefault?: boolean };
   propertyForm: UntypedFormGroup;
   disabled: true;
   showSpinner: boolean = false;
+  propertyType: PropertyTypeEnum = PropertyTypeEnum.SYSTEM;
 
 
   constructor(
@@ -38,10 +45,14 @@ export class PropertyDetailsDialogComponent implements OnInit {
     private fb: UntypedFormBuilder) {
 
     this.editMode = data.edit;
-    this.formTitle = this.editMode ? PropertyDetailsDialogComponent.EDIT_MODE : PropertyDetailsDialogComponent.NEW_MODE;
+    this.propertyType = data.propertyType;
+    this.propertyType = !data.propertyType?PropertyTypeEnum.SYSTEM: data.propertyType;
+    this.formTitle = (this.editMode ? PropertyDetailsDialogComponent.EDIT_MODE : PropertyDetailsDialogComponent.NEW_MODE)
+      .replace('{TYPE}', this.capitalize(this.propertyType));
+
     this.current = this.editMode
       ? {
-        ...data.row,
+        ...data.row ,
       }
       : {
         property: '',
@@ -50,6 +61,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
         desc: '',
         readonly: false,
         status: EntityStatus.NEW,
+        systemDefault: false,
       };
 
     this.propertyForm = fb.group({
@@ -59,6 +71,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
       'value': new UntypedFormControl({value: ''}),
       'valuePattern': new UntypedFormControl({value: ''}),
       'errorMessage': new UntypedFormControl({value: ''}),
+      'systemDefault': new UntypedFormControl({value: 'true' }),
 
     });
 
@@ -67,39 +80,57 @@ export class PropertyDetailsDialogComponent implements OnInit {
     this.propertyForm.controls['type'].setValue(this.current.type);
     this.propertyForm.controls['value'].setValue(this.valueFromPropertyStringValue(this.current.value, this.current.type));
     this.propertyForm.controls['valuePattern'].setValue(this.current.valuePattern);
+    this.propertyForm.controls['systemDefault'].setValue(this.current.systemDefault);
 
-    this.propertyForm.controls['errorMessage'].setValue('');
+    this.propertyForm.controls['errorMessage'].setValue('')
+    this.updateValueState()
   }
 
   ngOnInit() {
 
   }
 
-  submitForm() {
+  /**
+   * Methods validates the property with server validator. If property value is ok
+   * it closes the dialog else writes the errorMessage.
+   */
+  async submitForm() {
     this.checkValidity(this.propertyForm);
 
-    let request =  this.getCurrent();
-    //
-    let validationObservable = this.http.post<PropertyValidationRo>(SmpConstants.REST_INTERNAL_PROPERTY_VALIDATE, request);
-    this.showSpinner = true;
-    validationObservable.toPromise().then((res: PropertyValidationRo) => {
-      this.showSpinner = false;
+    let request: PropertyRo =  this.getCurrent();
 
-      if (!res.propertyValid) {
-        this.propertyForm.controls['errorMessage'].setValue(res.errorMessage?res.errorMessage:'Invalid property');
+    // if domain property we do not need to validate
+    if (this.propertyType == PropertyTypeEnum.DOMAIN) {
+      this.propertyForm.controls['errorMessage'].setValue("");
+      // we can close the dialog
+      this.closeDialog();
+      return;
+    }
+    // if system property validate property
+    let validationObservable = this.http
+      .post<PropertyValidationRo>(SmpConstants.REST_INTERNAL_PROPERTY_VALIDATE, request);
+
+
+    this.showSpinner = true;
+
+    try {
+      const result: PropertyValidationRo = await firstValueFrom(validationObservable);
+      this.showSpinner = false;
+      if (!result.propertyValid) {
+        this.propertyForm.controls['errorMessage'].setValue(result.errorMessage?result.errorMessage:'Invalid property');
       } else {
         this.propertyForm.controls['errorMessage'].setValue("");
         // we can close the dialog
         this.closeDialog();
       }
-    }).catch((err) => {
+    } catch(err) {
       if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
         this.closeDialog();
         return;
       }
       this.alertService.error("Error occurred on Validation the property", err)
       console.log("Error occurred on Validation the property: " + err);
-    });
+    }
   }
 
   checkValidity(g: UntypedFormGroup) {
@@ -186,11 +217,43 @@ export class PropertyDetailsDialogComponent implements OnInit {
   }
 
   public getCurrent(): PropertyRo {
+    this.current.status= EntityStatus.UPDATED;
     this.current.value = this.propertyForm.value['value'];
+    this.current.systemDefault = this.propertyForm.value['systemDefault'];
     return this.current;
   }
 
   closeDialog() {
     this.dialogRef.close(true);
+  }
+
+  get isSystemDefault(): boolean {
+    let systemDefault = this.propertyForm.value['systemDefault'];
+    return  systemDefault;
+  }
+
+  /**
+   * Method updates the state of the value field based on the system default checkbox.
+   */
+  updateValueState(): void {
+    if (!this.isDomainProperty ||  !this.isSystemDefault) {
+      this.propertyForm.controls['value'].enable();
+      this.propertyForm.controls['value'].setValue(this.current.value);
+    } else {
+      this.propertyForm.controls['value'].setValue(this.current.systemDefaultValue);
+      this.propertyForm.controls['value'].disable();
+    }
+  }
+
+  get isDomainProperty(): boolean {
+    return this.propertyType == PropertyTypeEnum.DOMAIN;
+  }
+
+  capitalize<T extends string>(str: T):string{
+    return (str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()) as Capitalize<T>;
+  }
+
+  get isDirty(): boolean {
+    return this.propertyForm.dirty;
   }
 }

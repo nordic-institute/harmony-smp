@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
@@ -396,6 +397,12 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SML_CUSTOM_NAPTR_SERVICE_PARAMS);
     }
 
+    public int getManageMaxSMLRecordCount() {
+        Integer intVal = configurationDAO.getCachedPropertyValue(SML_MANAMGE_MAX_COUNT);
+        return intVal == null ? 10000 : intVal;
+    }
+
+
     public List<String> getCasURLTokenValidationGroups() {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_GROUPS);
     }
@@ -596,6 +603,10 @@ public class ConfigurationService {
 
     public String getAlertEmailFrom() {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_MAIL_FROM);
+    }
+
+    public String getDefaultDomainConfiguration(SMPDomainPropertyEnum property) {
+        return configurationDAO.getCachedProperty(property.getPropertyEnum());
     }
 
 

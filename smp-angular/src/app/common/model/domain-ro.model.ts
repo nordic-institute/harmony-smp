@@ -1,5 +1,8 @@
 import {SearchTableEntity} from '../search-table/search-table-entity.model';
 import {VisibilityEnum} from "../enums/visibility.enum";
+import {
+  PropertyRo
+} from "../../system-settings/admin-properties/property-ro.model";
 
 export interface DomainRo extends SearchTableEntity {
   domainId?: string;
@@ -15,5 +18,6 @@ export interface DomainRo extends SearchTableEntity {
   defaultResourceTypeIdentifier?:string;
   resourceDefinitions?: string[]
   adminMemberCount?: number;
+  properties?: PropertyRo[];
 }
 

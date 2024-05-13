@@ -3,17 +3,13 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
-  OnInit,
   TemplateRef,
   ViewChild
 } from '@angular/core';
 import {ColumnPicker} from '../../common/column-picker/column-picker.model';
-import {MatDialog} from '@angular/material/dialog';
 import {AlertMessageService} from '../../common/alert-message/alert-message.service';
 import {PropertyController} from './property-controller';
-import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../../smp.constants";
-import {GlobalLookups} from "../../common/global-lookups";
 import {SearchTableComponent} from "../../common/search-table/search-table.component";
 import {SecurityService} from "../../security/security.service";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
@@ -23,33 +19,22 @@ import {EntityStatus} from "../../common/enums/entity-status.enum";
   templateUrl: './property.component.html',
   styleUrls: ['./property.component.css']
 })
-export class PropertyComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class PropertyComponent implements AfterViewInit, AfterViewChecked {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
   @ViewChild('propertyColumnTemplate') propertyColumnTemplate: TemplateRef<any>;
   @ViewChild('propertyValueTemplate') propertyValueTemplate: TemplateRef<any>;
 
-  baseUrl = SmpConstants.REST_INTERNAL_PROPERTY_MANAGE;
+  baseUrl: string = SmpConstants.REST_INTERNAL_PROPERTY_MANAGE;
   columnPicker: ColumnPicker = new ColumnPicker();
-  propertyController: PropertyController;
   filter: any = {property: ""};
 
   constructor(public securityService: SecurityService,
-              protected lookups: GlobalLookups,
-              protected http: HttpClient,
+              protected propertyController: PropertyController,
               protected alertService: AlertMessageService,
-              public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef) {
 
-  }
-
-  jsonStringify(val: any): string {
-    return JSON.stringify(val);
-  }
-
-  ngOnInit() {
-    this.propertyController = new PropertyController(this.http, this.lookups, this.dialog);
   }
 
   ngAfterViewChecked() {

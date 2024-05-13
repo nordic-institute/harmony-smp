@@ -73,7 +73,7 @@ public enum SMPPropertyEnum {
     PARTC_SCH_SPLIT_REGEXP("identifiersBehaviour.splitPattern", "^(?i)\\s*?(?<scheme>urn:oasis:names:tc:ebcore:partyid-type:(iso6523:[0-9]{4}|unregistered(:[^:]+)?))::?(?<identifier>.+)?\\s*$",
              "Regular expression with groups <scheme> and <identifier> for splitting the identifiers to scheme and identifier part!",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
     PARTC_SCH_URN_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.urn.concatenate",
-            "", "Regular expression to detect URN party identifiers. If the party identifier schema matches the regexp, then the party identifier is concatenated with a single colon in XML responses. Else it is handled as OASIS SMP party identifier. Example: ^(?i)(urn:)|(mailto:).*$",
+            "^(?i)(urn:)|(mailto:).*$", "Regular expression to detect URN party identifiers. If the party identifier schema matches the regexp, then the party identifier is concatenated with a single colon in XML responses. Else it is handled as OASIS SMP party identifier. Example: ^(?i)(urn:)|(mailto:).*$",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
 
     CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes", "sensitive-participant-sc1|sensitive-participant-sc2", "Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.",
@@ -85,7 +85,8 @@ public enum SMPPropertyEnum {
     // SML integration!
     SML_ENABLED("bdmsl.integration.enabled", "false", "BDMSL (SML) integration ON/OFF switch",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-
+    SML_MANAMGE_MAX_COUNT("bdmsl.participants.manage.max-count", "10000", "Maximum number of participants which can be registered/unregistered in one call of register/unregister domain",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),
     SML_TLS_DISABLE_CN_CHECK("bdmsl.integration.tls.disableCNCheck", "false", "If SML Url is HTTPs - Disable CN check if needed.",
@@ -405,8 +406,10 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
 
     // deprecated properties
+    // property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled
     CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    // No need to concatenate ebCore party id in XML responses. The value is returned as defined in the SMP document at registration time.
     PARTC_EBCOREPARTYID_CONCATENATE("identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate", "false",
             "Concatenate ebCore party id in XML responses <ParticipantIdentifier>urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),

@@ -37,11 +37,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@ContextConfiguration(classes = UIDomainService.class)
+@ContextConfiguration(classes = UIDomainAdminService.class)
 class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Autowired
-    protected UIDomainService testInstance;
+    protected UIDomainAdminService testInstance;
 
     protected void insertDataObjects(int size) {
         for (int i = 0; i < size; i++) {

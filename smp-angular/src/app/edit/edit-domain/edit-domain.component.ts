@@ -137,7 +137,6 @@ export class EditDomainComponent implements OnInit, AfterViewInit, BeforeLeaveGu
     }
   }
 
-
   isCurrentTabDirty(): boolean {
     return false;
   }

@@ -41,6 +41,7 @@ public class DBSubresourceDefToSubresourceDefinitionROConverter implements Conve
 
         SubresourceDefinitionRO target = new SubresourceDefinitionRO();
         try {
+            org.springframework.beans.BeanUtils.copyProperties(source, target);
             BeanUtils.copyProperties(target, source);
         } catch (IllegalAccessException | InvocationTargetException e) {
             LOG.error("Error occurred while converting DBResourceDef", e);
