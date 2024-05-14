@@ -18,8 +18,8 @@ import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {ResourceSearchRo} from "./resource-search-ro.model";
 import {SubresourceSearchRo} from "./subresource-search-ro.model";
-import {ResourceMetadataService} from "../common/services/resource-metadata.service";
-import {ResourceMetadataRo} from "../common/model/resource-metadata-ro.model";
+import {ResourceFilterOptionsService} from "../common/services/resource-filter-options.service";
+import {ResourceFilterOptionsRo} from "../common/model/resource-filter-options-ro.model";
 
 @Component({
   templateUrl: './resource-search.component.html',
@@ -44,16 +44,16 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
               protected alertService: AlertMessageService,
               public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef,
-              private resourceMetadataService: ResourceMetadataService) {
+              private resourceFilterOptionsService: ResourceFilterOptionsService) {
 
     this.baseUrl = SmpConstants.REST_PUBLIC_SEARCH_RESOURCE;
   }
 
   ngOnInit() {
-    this.resourceMetadataService.getResourceMetadata$().subscribe({
-      next: (value: ResourceMetadataRo) => {
-        this.domainList = value.availableDomains || [];
-        this.documentTypeList = value.availableDocumentTypes || [];
+    this.resourceFilterOptionsService.getResourceFilterOptions$().subscribe({
+      next: (value: ResourceFilterOptionsRo) => {
+        this.domainList = [''].concat(value.availableDomains || []);
+        this.documentTypeList = [''].concat(value.availableDocumentTypes || []);
 
         this.resourceSearchController = new ResourceSearchController(this.dialog);
       },
@@ -135,5 +135,9 @@ export class ResourceSearchComponent implements OnInit, AfterViewInit, AfterView
 
   details(row: any) {
     this.resourceSearchController.showDetails(row);
+  }
+
+  clearFilters(): void {
+    this.filter = {};
   }
 }

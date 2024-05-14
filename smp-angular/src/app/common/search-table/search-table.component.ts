@@ -30,6 +30,7 @@ export class SearchTableComponent implements OnInit {
   @ViewChild('rowExpand', {static: true}) rowExpand: TemplateRef<any>;
   @ViewChild('rowIndex', {static: true}) rowIndex: TemplateRef<any>;
   @Input() additionalToolButtons: TemplateRef<any>;
+  @Input() additionalSearchAreaButtons: TemplateRef<any>;
   @Input() additionalRowActionButtons: TemplateRef<any>;
   @Input() searchPanel: TemplateRef<any>;
   @Input() tableRowDetailContainer: TemplateRef<any>;

@@ -118,15 +118,4 @@ public class DocumentDao extends BaseDao<DBDocument> {
         query.setParameter(PARAM_SUBRESOURCE_ID, subresource.getId());
         return query.getResultList();
     }
-
-    /**
-     * Returns document type records from smp_domain table.
-     *
-     * @return the list of document types from smp_domain table
-     */
-    public List<String> getAllDocumentTypes() {
-        TypedQuery<String> query = memEManager.createNamedQuery(QUERY_DOCUMENT_ALL_TYPES, String.class);
-        return query.getResultList();
-    }
-
 }

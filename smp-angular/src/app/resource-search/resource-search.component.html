@@ -1,9 +1,10 @@
-<smp-search-table  #searchTable
+<smp-search-table #searchTable
   page_id='search_id'
   [title]="'Search'"
   [columnPicker]="columnPicker"
   [url]="baseUrl"
   [additionalToolButtons]="additionalToolButtons"
+  [additionalSearchAreaButtons]="additionalSearchAreaButtons"
   [searchPanel]="searchPanel"
   [filter]="filter"
   [searchTableController]="resourceSearchController"
@@ -54,6 +55,13 @@
         </mat-select>
       </mat-form-field>
     </div>
+  </ng-template>
+
+  <ng-template #additionalSearchAreaButtons>
+    <button mat-raised-button color="primary" (click)="clearFilters()" id="clearallbutton_id">
+      <mat-icon>search</mat-icon>
+      <span>Clear All</span>
+    </button>
   </ng-template>
 
   <ng-template #additionalToolButtons>

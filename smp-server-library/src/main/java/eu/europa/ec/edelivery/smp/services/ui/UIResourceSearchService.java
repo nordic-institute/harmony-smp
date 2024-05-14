@@ -20,6 +20,7 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
+import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.ResourceMetadataResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGroupSearchRO> {
@@ -46,15 +48,15 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
 
     private final UserDao userDao;
 
-    private final DocumentDao documentDao;
+    private final ResourceDefDao resourceDefDao;
 
     private final ConversionService conversionService;
 
-    public UIResourceSearchService(DomainDao domainDao, ResourceDao resourceDao, UserDao userDao, DocumentDao documentDao, ConversionService conversionService) {
+    public UIResourceSearchService(DomainDao domainDao, ResourceDao resourceDao, UserDao userDao, ResourceDefDao resourceDefDao, ConversionService conversionService) {
         this.domainDao = domainDao;
         this.resourceDao = resourceDao;
         this.userDao = userDao;
-        this.documentDao = documentDao;
+        this.resourceDefDao = resourceDefDao;
         this.conversionService = conversionService;
     }
 
@@ -135,7 +137,7 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
 
     public ResourceMetadataResult getResourceMetadata() {
         List<String> domainCodes = domainDao.getAllDomainCodes();
-        List<String> documentTypes = documentDao.getAllDocumentTypes();
+        List<String> documentTypes = resourceDefDao.getAllResourceDef().stream().map(DBResourceDef::getName).collect(Collectors.toList());
         return new ResourceMetadataResult(domainCodes, documentTypes);
     }
 }

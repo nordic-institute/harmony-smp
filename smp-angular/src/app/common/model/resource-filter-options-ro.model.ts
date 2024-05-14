@@ -1,4 +1,4 @@
-export interface ResourceMetadataRo {
+export interface ResourceFilterOptionsRo {
 
   availableDomains: string[];
 

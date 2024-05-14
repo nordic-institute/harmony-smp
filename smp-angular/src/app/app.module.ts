@@ -147,7 +147,7 @@ import {DnsToolsService} from "./tools/dns-tools/dns-tools.service";
 import {
   DnsQueryPanelComponent
 } from "./tools/dns-tools/dns-query-panel/dns-query-panel.component";
-import {ResourceMetadataService} from "./common/services/resource-metadata.service";
+import {ResourceFilterOptionsService} from "./common/services/resource-filter-options.service";
 
 
 @NgModule({
@@ -297,7 +297,7 @@ import {ResourceMetadataService} from "./common/services/resource-metadata.servi
     GlobalLookups,
     HttpEventService,
     NavigationService,
-    ResourceMetadataService,
+    ResourceFilterOptionsService,
     SecurityEventService,
     SecurityService,
     SmlIntegrationService,
