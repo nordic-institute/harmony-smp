@@ -30,6 +30,7 @@ public class QueryNames {
 
 
     public static final String QUERY_DOMAIN_ALL = "DBDomain.getAll";
+    public static final String QUERY_DOMAIN_ALL_CODES = "DBDomain.getAllCodes";
     public static final String QUERY_DOMAIN_CODE = "DBDomain.getDomainByCode";
 
     public static final String QUERY_DOMAIN_SMP_SML_ID = "DBDomain.getDomainBySmlSmpId";
@@ -189,6 +190,7 @@ public class QueryNames {
     public static final String PARAM_DOMAIN_IDS = "domain_ids";
 
     public static final String PARAM_DOCUMENT_ID = "document_id";
+    public static final String PARAM_DOCUMENT_TYPE = "document_type";
 
     public static final String PARAM_GROUP_ID = "group_id";
     public static final String PARAM_GROUP_IDS = "group_ids";

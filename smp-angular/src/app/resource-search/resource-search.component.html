@@ -1,9 +1,10 @@
-<smp-search-table  #searchTable
+<smp-search-table #searchTable
   page_id='search_id'
   [title]="'Search'"
   [columnPicker]="columnPicker"
   [url]="baseUrl"
   [additionalToolButtons]="additionalToolButtons"
+  [additionalSearchAreaButtons]="additionalSearchAreaButtons"
   [searchPanel]="searchPanel"
   [filter]="filter"
   [searchTableController]="resourceSearchController"
@@ -15,7 +16,6 @@
     <a target="_blank"
        href="{{contextPath}}{{createResourceURL(row)}}">Open URL</a>
   </ng-template>
-
 
   <ng-template #searchPanel>
     <div style="display: flex;flex-direction: row;width: 100%">
@@ -30,15 +30,44 @@
       <input matInput  name="ResourceScheme" [(ngModel)]="filter.participantScheme"
              #messageId="ngModel" id="ResourceScheme">
     </mat-form-field>
+    <mat-form-field class="smp-data-panel-field">
+      <mat-label>Domain</mat-label>
+      <mat-select class="mat-select" placeholder="Domain"
+                  matTooltip="Domain"
+                  id="Domain"
+                  [(value)]="filter.domainCode">
+        <mat-option *ngFor="let domainCode of domainList"
+                    [value]="domainCode">
+          {{domainCode}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+      <mat-form-field class="smp-data-panel-field">
+        <mat-label>Document Type</mat-label>
+        <mat-select class="mat-select" placeholder="Document type"
+                    matTootip="Document type"
+                    id="DocumentType"
+                    [(value)]="filter.documentType">
+          <mat-option *ngFor="let documentType of documentTypeList"
+                      [value]="documentType">
+            {{documentType}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
   </ng-template>
 
+  <ng-template #additionalSearchAreaButtons>
+    <button mat-raised-button color="primary" (click)="clearFilters()" id="clearallbutton_id">
+      <mat-icon>search</mat-icon>
+      <span>Clear All</span>
+    </button>
+  </ng-template>
 
   <ng-template #additionalToolButtons>
   </ng-template>
 
   <ng-template #tableRowDetailContainer let-row="row">
-
     <div *ngIf="row.serviceMetadata.length===0" style="padding-left:20px;">
       No subresources
     </div>
@@ -64,8 +93,6 @@
             URL</a>
         </ng-template>
       </ngx-datatable>
-
     </div>
   </ng-template>
-
 </smp-search-table>

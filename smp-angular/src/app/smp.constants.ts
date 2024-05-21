@@ -19,6 +19,7 @@ export class SmpConstants {
   public static readonly PATH_ACTION_UPDATE_RESOURCE_TYPES = 'update-resource-types';
   public static readonly PATH_ACTION_UPDATE_SML_INTEGRATION = 'update-sml-integration-data';
   public static readonly PATH_ACTION_GENERATE_DNS_QUERY : string = 'generate-dns-query';
+
   /* URL variables */
   public static readonly PATH_PARAM_ENC_USER_ID = '{user-id}';
   public static readonly PATH_PARAM_ENC_DOMAIN_ID = '{domain-id}';
@@ -46,7 +47,6 @@ export class SmpConstants {
   public static readonly PATH_RESOURCE_TYPE_DOCUMENT = 'document';
   public static readonly PATH_QUERY_FILTER_TYPE = 'type'
 
-
   //------------------------------
   // public endpoints
   public static readonly REST_PUBLIC = 'public/rest/';
@@ -72,6 +72,7 @@ export class SmpConstants {
 
   /* Public services */
   public static readonly REST_PUBLIC_SEARCH_RESOURCE = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH;
+  public static readonly REST_PUBLIC_SEARCH_RESOURCE_METADATA = SmpConstants.REST_PUBLIC + SmpConstants.PATH_ACTION_SEARCH + "/metadata";
   public static readonly REST_PUBLIC_DOMAIN = SmpConstants.REST_PUBLIC + SmpConstants.PATH_RESOURCE_TYPE_DOMAIN;
   public static readonly REST_PUBLIC_DNS_TOOLS = SmpConstants.REST_PUBLIC  + SmpConstants.PATH_DNS_TOOLS;
   public static readonly REST_PUBLIC_DNS_TOOLS_GEN_QUERY: string = SmpConstants.REST_PUBLIC_DNS_TOOLS + '/' + SmpConstants.PATH_ACTION_GENERATE_DNS_QUERY;

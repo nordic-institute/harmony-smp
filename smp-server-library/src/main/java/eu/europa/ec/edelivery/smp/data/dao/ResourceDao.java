@@ -33,9 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.dao.QueryNames.*;
 
@@ -49,6 +51,39 @@ public class ResourceDao extends BaseDao<DBResource> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ResourceDao.class);
 
+    public static final class DBResourceWrapper {
+
+        private final DBResource dbResource;
+
+        private final String domainCode;
+
+        private final String documentType;
+
+        private final String urlSegment;
+
+        public DBResourceWrapper(DBResource dbResource, String domainCode, String documentType, String urlSegment) {
+            this.dbResource = dbResource;
+            this.domainCode = domainCode;
+            this.documentType = documentType;
+            this.urlSegment = urlSegment;
+        }
+
+        public DBResource getDbResource() {
+            return dbResource;
+        }
+
+        public String getDomainCode() {
+            return domainCode;
+        }
+
+        public String getDocumentType() {
+            return documentType;
+        }
+
+        public String getUrlSegment() {
+            return urlSegment;
+        }
+    }
 
     /**
      * The method returns DBResource for the participant identifier, domain, and resource type. If the resource does not exist, it returns an empty Option.
@@ -75,7 +110,6 @@ public class ResourceDao extends BaseDao<DBResource> {
             throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(identifierValue, identifierSchema));
         }
     }
-
 
     public Long getResourcesForFilterCount(DBResourceFilter resourceFilter) {
         LOG.debug("Get resources count for filter [{}]", resourceFilter);
@@ -110,10 +144,10 @@ public class ResourceDao extends BaseDao<DBResource> {
         return query.getResultList();
     }
 
-    public List<DBResource> getPublicResourcesSearch(int iPage, int iPageSize, DBUser user, String schema, String identifier) {
+    public List<DBResourceWrapper> getPublicResourcesSearch(int iPage, int iPageSize, DBUser user, String schema, String identifier, String domainCode, String documentType) {
         LOG.debug("Get resources list for user [{}], search scheme [{}] and search value [{}]", user, schema, identifier);
 
-        TypedQuery<DBResource> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER, DBResource.class);
+        TypedQuery<Tuple> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER, Tuple.class);
         if (iPageSize > -1 && iPage > -1) {
             query.setFirstResult(iPage * iPageSize);
         }
@@ -123,17 +157,28 @@ public class ResourceDao extends BaseDao<DBResource> {
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
         query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema) ? null : StringUtils.wrapIfMissing(schema, "%"));
         query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier) ? null : StringUtils.wrapIfMissing(identifier, "%"));
+        query.setParameter(PARAM_DOMAIN_CODE, StringUtils.defaultIfBlank(domainCode, null));
+        query.setParameter(PARAM_DOCUMENT_TYPE, StringUtils.defaultIfBlank(documentType, null));
+        List<Tuple> resultList = query.getResultList();
 
-        return query.getResultList();
+        return resultList.stream().map(tuple -> {
+            DBResource resource = tuple.get(0, DBResource.class);
+            String domainCodeValue = tuple.get("domainCode").toString();
+            String documentTypeValue = tuple.get("documentType").toString();
+            String urlSegment = tuple.get("urlSegment").toString();
+            return new DBResourceWrapper(resource, domainCodeValue, documentTypeValue, urlSegment);
+        }).collect(Collectors.toList());
     }
 
-    public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier) {
+    public Long getPublicResourcesSearchCount(DBUser user, String schema, String identifier, String domainCode, String documentType) {
         LOG.debug("Get resources count for user [{}], search scheme [{}] and search value [{}]", user, schema, identifier);
         TypedQuery<Long> query = memEManager.createNamedQuery(QUERY_RESOURCE_ALL_FOR_USER_COUNT, Long.class);
 
         query.setParameter(PARAM_USER_ID, user != null ? user.getId() : null);
         query.setParameter(PARAM_RESOURCE_SCHEME, StringUtils.isBlank(schema) ? null : StringUtils.wrapIfMissing(schema, "%"));
         query.setParameter(PARAM_RESOURCE_IDENTIFIER, StringUtils.isBlank(identifier) ? null : StringUtils.wrapIfMissing(identifier, "%"));
+        query.setParameter(PARAM_DOMAIN_CODE, StringUtils.defaultIfBlank(domainCode, null));
+        query.setParameter(PARAM_DOCUMENT_TYPE, StringUtils.defaultIfBlank(documentType, null));
 
         return query.getSingleResult();
     }

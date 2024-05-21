@@ -36,6 +36,7 @@ public class ServiceGroupSearchRO extends BaseRO {
     private Long id;
 
     private String domainCode;
+    private String documentType;
     private String resourceDefUrlSegment;
     private String participantIdentifier;
     private String participantScheme;
@@ -84,5 +85,13 @@ public class ServiceGroupSearchRO extends BaseRO {
 
     public List<ServiceMetadataRO> getServiceMetadata() {
         return lstServiceMetadata;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 }
