@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.ui.external;
 
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.ui.ResourceMetadataResult;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceFilterOptionsResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -88,7 +88,7 @@ public class SearchResource {
     }
 
     @GetMapping(path = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT_METADATA)
-    public ResourceMetadataResult serviceMetadataResultList() {
+    public ResourceFilterOptionsResult serviceMetadataResultList() {
         return uiServiceGroupService.getResourceMetadata();
     }
 

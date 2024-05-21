@@ -22,7 +22,7 @@ import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.ResourceMetadataResult;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceFilterOptionsResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
@@ -135,9 +135,9 @@ public class UIResourceSearchService extends UIServiceBase<DBResource, ServiceGr
         return serviceGroupRo;
     }
 
-    public ResourceMetadataResult getResourceMetadata() {
+    public ResourceFilterOptionsResult getResourceMetadata() {
         List<String> domainCodes = domainDao.getAllDomainCodes();
         List<String> documentTypes = resourceDefDao.getAllResourceDef().stream().map(DBResourceDef::getName).collect(Collectors.toList());
-        return new ResourceMetadataResult(domainCodes, documentTypes);
+        return new ResourceFilterOptionsResult(domainCodes, documentTypes);
     }
 }
