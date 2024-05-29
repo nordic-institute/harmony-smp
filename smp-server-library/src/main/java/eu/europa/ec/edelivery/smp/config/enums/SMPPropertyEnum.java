@@ -154,7 +154,7 @@ public enum SMPPropertyEnum {
             "Password minimum complexity rules!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
 
-    PASSWORD_POLICY_MESSAGE("smp.passwordPolicy.validationMessage", "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character",
+    PASSWORD_POLICY_MESSAGE("smp.passwordPolicy.validationMessage", "Minimum length: 16 characters;Maximum length: 32 characters;At least one letter in lowercase;At least one letter in uppercase;At least one digit;At least one special character;Must not be same as existing password",
             "The error message shown to the user in case the password does not follow the regex put in the domibus.passwordPolicy.pattern property",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
     PASSWORD_POLICY_VALID_DAYS("smp.passwordPolicy.validDays", "90", "Number of days password is valid",
