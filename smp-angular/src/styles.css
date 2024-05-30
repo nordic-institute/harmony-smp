@@ -15,7 +15,6 @@ td , th {
   max-width: 200px;
 }
 
-
 .smp-data-panel-field {
   width: 100% !important;
 }
@@ -361,7 +360,7 @@ mat-card {
 }
 
 .alert-message-warning {
-  background-color: #ff9800;;
+  background-color: #ff9800;
 }
 
 .alert-message-success {

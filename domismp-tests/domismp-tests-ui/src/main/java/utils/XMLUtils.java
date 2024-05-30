@@ -26,6 +26,8 @@ public class XMLUtils {
 
     public XMLUtils(String xmlStr) throws ParserConfigurationException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setValidating(true);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         try {
             doc = dBuilder.parse(new InputSource(new StringReader(xmlStr)));

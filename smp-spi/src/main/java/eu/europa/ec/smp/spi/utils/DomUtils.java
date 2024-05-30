@@ -17,7 +17,7 @@
  * #END_LICENSE#
  */
 
-package eu.europa.ec.smp.spi.converter;
+package eu.europa.ec.smp.spi.utils;
 
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -31,6 +31,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -46,6 +47,8 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.INVALI
  * @since 3.0.0
  */
 public final class DomUtils {
+
+    public static final String DISALLOW_DOCTYPE_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
 
     /**
      * Class has only static members. Is not meant to create instances  - also SONAR warning.
@@ -111,13 +114,48 @@ public final class DomUtils {
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+        dbf.setValidating(true);
         dbf.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
         return dbf.newDocumentBuilder();
     }
 
-    private static Transformer createNewSecureTransformer() throws TransformerConfigurationException {
+    /**
+     * Create new secure transformer with secure processing and disallow doctype declaration,
+     * @return new transformer
+     * @throws TransformerConfigurationException
+     */
+    public static Transformer createNewSecureTransformer() throws TransformerConfigurationException {
         TransformerFactory factory = TransformerFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        // generic secure file processing
+        setConfigurationOption(factory, XMLInputFactory.SUPPORT_DTD, false);
+        setConfigurationOption(factory, XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+        setConfigurationOption(factory, XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        setConfigurationOption(factory, DISALLOW_DOCTYPE_FEATURE, true);
+        setAttributeOption(factory, XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        setAttributeOption(factory, XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         return factory.newTransformer();
+    }
+
+    /**
+     * Set configuration option to the factor. If the feature is not supported by the factory,
+     * the feature is ignored.
+     * @param factory transformer factory
+     * @param feature feature to set
+     * @param value value to set
+     */
+    protected static void setConfigurationOption(TransformerFactory factory, String feature, boolean value) {
+        try {
+            factory.setFeature(feature, value);
+        } catch (TransformerConfigurationException e) {
+            LOG.warn("TransformerFactory initialization error. The feature [{}] is not supported by current factory. The feature is ignored.", feature);
+        }
+    }
+
+    protected static void setAttributeOption(TransformerFactory factory, String feature, Object value) {
+        try {
+            factory.setAttribute(feature, value);
+        } catch (IllegalArgumentException e) {
+            LOG.warn("TransformerFactory initialization error. The attribute [{}] is not supported by current factory. The feature is ignored.", feature);
+        }
     }
 }

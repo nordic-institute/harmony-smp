@@ -28,7 +28,7 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.converter.DomUtils;
+import eu.europa.ec.smp.spi.utils.DomUtils;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
 import eu.europa.ec.smp.spi.validation.Subresource10Validator;
@@ -53,10 +53,6 @@ import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
 public class OasisSMPSubresource10Handler extends AbstractOasisSMPHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(OasisSMPSubresource10Handler.class);
-
-    private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
-    private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\"" + NS + "\"/>";
-    private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
 
     final SmpXmlSignatureApi signatureApi;
     final SmpDataServiceApi smpDataApi;
@@ -187,7 +183,6 @@ public class OasisSMPSubresource10Handler extends AbstractOasisSMPHandler {
 
         ServiceMetadata subresource;
         try {
-
             subresource = (ServiceMetadata) reader.parseNativeAny(new ByteArrayInputStream(bytearray));
         } catch (TechnicalException e) {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);

@@ -182,6 +182,7 @@ public class SignatureUtil {
     public static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+        dbf.setValidating(true);
         return dbf.newDocumentBuilder();
     }
 

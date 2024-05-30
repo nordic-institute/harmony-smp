@@ -192,6 +192,7 @@ public class SignatureValidatorTest {
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+        dbf.setValidating(true);
         dbf.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
         return dbf.newDocumentBuilder();
     }
