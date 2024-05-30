@@ -251,6 +251,24 @@ class UIUserServiceIntegrationTest extends AbstractJunit5BaseDao {
     }
 
     @Test
+    void testUpdateUserPasswordFaileSame() {
+        DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
+        DBCredential credential = TestDBUtils.createDBCredentialForUser(user, null, null, null);
+        credential.setValue(BCrypt.hashpw("TTTTtttt1111$$$$$", BCrypt.gensalt()));
+        userDao.persistFlushDetach(user);
+        credentialDao.persistFlushDetach(credential);
+
+        long authorizedUserId = user.getId();
+        long userToUpdateId = user.getId();
+        String authorizedPassword = "TTTTtttt1111$$$$$";
+        String newPassword = "TTTTtttt1111$$$$$";
+
+        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+                () -> testInstance.updateUserPassword(authorizedUserId, userToUpdateId, authorizedPassword, newPassword));
+        MatcherAssert.assertThat(result.getMessage(), CoreMatchers.containsString("Must not be same as existing password"));
+    }
+
+    @Test
     void testUpdateUserPasswordByAdminUserNotExists() {
         // system admin
         DBUser user = TestDBUtils.createDBUserByUsername(UUID.randomUUID().toString());
