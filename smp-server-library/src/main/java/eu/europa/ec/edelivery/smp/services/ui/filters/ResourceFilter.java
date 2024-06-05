@@ -27,6 +27,7 @@ public class ResourceFilter {
 
     private DBUser owner;
     private DBDomain domain;
+    private String documentType;
 
     public String getIdentifierValueLike() {
         return identifierValue;
@@ -58,5 +59,20 @@ public class ResourceFilter {
 
     public void setDomain(DBDomain domain) {
         this.domain = domain;
+    }
+
+    public String getDomainCode() {
+        if (domain == null) {
+            return null;
+        }
+        return domain.getDomainCode();
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 }

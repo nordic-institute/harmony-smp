@@ -7,10 +7,13 @@
           <form name="filterForm" #filterForm="ngForm" (ngSubmit)="search()">
             <ng-container *ngTemplateOutlet="searchPanel"></ng-container>
             <div class="searchArea">
-              <button mat-raised-button color="primary" [disabled]="!filterForm.form.valid" id="searchbutton_id">
-                <mat-icon>search</mat-icon>
-                <span>Search</span>
-              </button>
+              <mat-toolbar-row class="smp-toolbar-row">
+                <button mat-raised-button color="primary" [disabled]="!filterForm.form.valid" id="searchbutton_id">
+                  <mat-icon>search</mat-icon>
+                  <span>Search</span>
+                </button>
+                <ng-container *ngTemplateOutlet="additionalSearchAreaButtons"></ng-container>
+              </mat-toolbar-row>
             </div>
           </form>
         </div>

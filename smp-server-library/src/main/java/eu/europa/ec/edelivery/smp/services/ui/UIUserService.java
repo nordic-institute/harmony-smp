@@ -246,6 +246,15 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 CredentialType.USERNAME_PASSWORD,
                 CredentialTargetType.UI));
 
+        // check if new password is the same as the old one
+        // but allow admin to overwrite it
+        if (!adminUpdate
+                && StringUtils.isNotBlank(dbCredential.getValue())
+                && BCrypt.checkpw(password, dbCredential.getValue())) {
+            LOG.info(SMPLogger.SECURITY_MARKER, "Change/set password failed because 'new' password match the old password for user: [{}]", userID);
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "PasswordChange", configurationService.getPasswordPolicyValidationMessage());
+        }
+
         dbCredential.setValue(BCryptPasswordHash.hashPassword(password));
         OffsetDateTime currentTime = OffsetDateTime.now();
         dbCredential.setChangedOn(currentTime);

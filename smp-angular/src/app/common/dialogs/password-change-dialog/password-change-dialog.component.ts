@@ -47,7 +47,7 @@ export class PasswordChangeDialogComponent {
     let currentPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
       this.securityService.getCurrentUser().casAuthenticated && this.adminUser ? null : [Validators.required]);
     let newPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
-      [Validators.required, Validators.pattern(this.passwordValidationRegExp), equal(currentPasswdFormControl, false)]);
+      [Validators.required, Validators.pattern(this.passwordValidationRegExp)]);
     let confirmNewPasswdFormControl: UntypedFormControl = new UntypedFormControl({value: null, readonly: false},
       [Validators.required, equal(newPasswdFormControl, true)]);
 

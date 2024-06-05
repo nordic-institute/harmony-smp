@@ -22,6 +22,7 @@ package eu.europa.ec.smp.spi.converter;
 import eu.europa.ec.dynamicdiscovery.core.extension.impl.oasis10.OasisSMP10ServiceMetadataReader;
 import eu.europa.ec.dynamicdiscovery.exception.BindException;
 import eu.europa.ec.smp.spi.testutils.XmlTestUtils;
+import eu.europa.ec.smp.spi.utils.DomUtils;
 import gen.eu.europa.ec.ddc.api.smp10.RedirectType;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceEndpointList;
 import gen.eu.europa.ec.ddc.api.smp10.ServiceInformationType;
@@ -147,7 +148,5 @@ class SubresourceConverterTest {
         //when then
         BindException result = assertThrows(BindException.class, () -> testInstance.parseNative(new ByteArrayInputStream(inputDoc)));
         MatcherAssert.assertThat(result.getCause().getMessage(), CoreMatchers.containsString("DOCTYPE is disallowed"));
-
     }
-
 }

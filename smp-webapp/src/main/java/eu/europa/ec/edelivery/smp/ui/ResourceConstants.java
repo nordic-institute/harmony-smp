@@ -142,6 +142,7 @@ public class ResourceConstants {
     public static final String SUB_CONTEXT_PATH_EDIT_DOCUMENT_SUBRESOURCE_GENERATE =  SUB_CONTEXT_PATH_EDIT_DOCUMENT_GET_SUBRESOURCE +  URL_PATH_SEPARATOR + PATH_ACTION_GENERATE;
     // public
     public static final String CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT = CONTEXT_PATH_PUBLIC + PATH_ACTION_SEARCH;
+    public static final String CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT_METADATA = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT + "/metadata";
     public static final String CONTEXT_PATH_PUBLIC_DOMAIN = CONTEXT_PATH_PUBLIC + PATH_RESOURCE_TYPE_DOMAIN;
     public static final String CONTEXT_PATH_PUBLIC_APPLICATION = CONTEXT_PATH_PUBLIC + "application";
     public static final String CONTEXT_PATH_PUBLIC_USER = CONTEXT_PATH_PUBLIC + "user";
@@ -187,6 +188,7 @@ public class ResourceConstants {
     public static final String PARAM_QUERY_DOMAIN_CODE = "domainCode";
     public static final String PARAM_QUERY_USER = "user";
     public static final String PARAM_QUERY_PROPERTY = "property";
+    public static final String PARAM_QUERY_DOCUMENT_TYPE = "documentType";
 
     private ResourceConstants() {
     }

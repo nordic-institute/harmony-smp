@@ -78,6 +78,7 @@ export class SmpEditorComponent
       initExtensions.push(this.themeConfig.of(oneDark));
     }
     this.codeMirror = new EditorView({
+      doc: '',
       extensions: initExtensions,
       parent: this.ref.nativeElement
     })
@@ -129,7 +130,7 @@ export class SmpEditorComponent
   ngOnDestroy() {
     // is there a lighter-weight way to remove the cm instance?
     if (this.codeMirror) {
-      //this.codeMirror.toTextArea();
+      this.codeMirror.destroy();
     }
   }
 

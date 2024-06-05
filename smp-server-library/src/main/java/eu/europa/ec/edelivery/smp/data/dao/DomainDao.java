@@ -81,6 +81,16 @@ public class DomainDao extends BaseDao<DBDomain> {
         return query.getResultList();
     }
 
+    /**
+     * Returns domain code records from smp_domain table.
+     *
+     * @return the list of domain codes from smp_domain table
+     */
+    public List<String> getAllDomainCodes() {
+        TypedQuery<String> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL_CODES, String.class);
+        return query.getResultList();
+    }
+
 
     public Optional<DBDomain> getFirstDomain() {
         TypedQuery<DBDomain> query = memEManager.createNamedQuery(QUERY_DOMAIN_ALL, DBDomain.class);

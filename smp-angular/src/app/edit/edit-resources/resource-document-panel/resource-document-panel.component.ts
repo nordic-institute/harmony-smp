@@ -19,7 +19,7 @@ import {SmpEditorComponent} from "../../../common/components/smp-editor/smp-edit
   styleUrls: ['./resource-document-panel.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeaveGuard {
+export class ResourceDocumentPanelComponent implements BeforeLeaveGuard {
   title: string = "Resources";
   private _resource: ResourceRo;
 
@@ -58,10 +58,6 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     this.documentForm.controls['payload'].setValue("")
   }
 
-  ngAfterViewInit(): void {
-    // this.codemirror.codeMirror.setSize('100%', '100%');
-  }
-
   get resource(): ResourceRo {
     let resource = {...this._resource};
     resource.identifierScheme = this.resourceForm.get('identifierScheme').value;
@@ -98,13 +94,14 @@ export class ResourceDocumentPanelComponent implements AfterViewInit, BeforeLeav
     this._document = value;
     this.documentForm.disable();
     if (!!value) {
+      console.log("Document: " + value.payload)
       this.documentEditor.mimeType = value.mimeType;
       this.documentForm.controls['mimeType'].setValue(value.mimeType);
       this.documentForm.controls['name'].setValue(value.name);
       this.documentForm.controls['currentResourceVersion'].setValue(value.currentResourceVersion);
       this.documentForm.controls['payloadVersion'].setValue(value.payloadVersion);
       this.documentForm.controls['payloadCreatedOn'].setValue(value.payloadCreatedOn);
-      this.documentForm.controls['payload'].setValue(!value.payload ? "" : value.payload);
+      this.documentForm.controls['payload'].setValue(value.payload);
       this.documentForm.controls['payload'].enable();
       // the method documentVersionsExists already uses the current value to check if versions exists
       if (!this.documentVersionsExists) {

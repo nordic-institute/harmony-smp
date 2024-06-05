@@ -153,6 +153,7 @@ import {
 import {
   PropertyDetailsDialogComponent
 } from "./common/dialogs/property-details-dialog/property-details-dialog.component";
+import {ResourceFilterOptionsService} from "./common/services/resource-filter-options.service";
 
 
 @NgModule({
@@ -304,6 +305,7 @@ import {
     MembershipService,
     NavigationService,
     PropertyController,
+    ResourceFilterOptionsService,
     SecurityEventService,
     SecurityService,
     SmlIntegrationService,

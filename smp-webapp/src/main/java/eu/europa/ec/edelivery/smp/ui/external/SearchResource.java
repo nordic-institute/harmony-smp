@@ -18,8 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.ui.external;
 
-
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.ui.ResourceFilterOptionsResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -45,7 +45,7 @@ import static eu.europa.ec.edelivery.smp.ui.ResourceConstants.*;
  * @since 4.1
  */
 @RestController
-@RequestMapping(path = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)
+@RequestMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 public class SearchResource {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SearchResource.class);
@@ -58,7 +58,7 @@ public class SearchResource {
         this.domainDao = domainDao;
     }
 
-    @GetMapping(produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @GetMapping(path = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT)
     public ServiceResult<ServiceGroupSearchRO> getServiceGroupList(
             @RequestParam(value = PARAM_PAGINATION_PAGE, defaultValue = "0") int page,
             @RequestParam(value = PARAM_PAGINATION_PAGE_SIZE, defaultValue = "10") int pageSize,
@@ -66,22 +66,30 @@ public class SearchResource {
             @RequestParam(value = PARAM_PAGINATION_ORDER_TYPE, defaultValue = "asc", required = false) String orderType,
             @RequestParam(value = PARAM_QUERY_PARTC_ID, required = false) String participantIdentifier,
             @RequestParam(value = PARAM_QUERY_PARTC_SCHEME, required = false) String participantScheme,
-            @RequestParam(value = PARAM_QUERY_DOMAIN_CODE, required = false) String domainCode) {
+            @RequestParam(value = PARAM_QUERY_DOMAIN_CODE, required = false) String domainCode,
+            @RequestParam(value = PARAM_QUERY_DOCUMENT_TYPE, required = false) String documentType) {
 
         String participantIdentifierDecoded = decodeUrlToUTF8(participantIdentifier);
         String participantSchemeDecoded = decodeUrlToUTF8(participantScheme);
         String domainCodeDecoded = decodeUrlToUTF8(domainCode);
+        String documentTypeDecoded = decodeUrlToUTF8(documentType);
 
-        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain {}", page, pageSize, participantIdentifierDecoded,
-                participantSchemeDecoded, domainCodeDecoded);
+        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain: {}, document type: {}", page, pageSize, participantIdentifierDecoded,
+                participantSchemeDecoded, domainCodeDecoded, documentTypeDecoded);
 
         ResourceFilter sgf = new ResourceFilter();
         sgf.setIdentifierValueLike(participantIdentifierDecoded);
         sgf.setIdentifierSchemeLike(participantSchemeDecoded);
         // add domain search parameter
         sgf.setDomain(domainDao.validateDomainCode(domainCodeDecoded));
+        sgf.setDocumentType(documentTypeDecoded);
 
         return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, sgf);
+    }
+
+    @GetMapping(path = CONTEXT_PATH_PUBLIC_SEARCH_PARTICIPANT_METADATA)
+    public ResourceFilterOptionsResult serviceMetadataResultList() {
+        return uiServiceGroupService.getResourceMetadata();
     }
 
     private String decodeUrlToUTF8(String value) {
