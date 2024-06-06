@@ -1,0 +1,6 @@
+<h2 mat-dialog-title>Extend session</h2>
+<mat-dialog-content>Your session is about to expire in <b>{{data.timeLeft}}</b> seconds!<br />Would you like to logout now or extend it for another <b>{{data.timeout}}</b> seconds?</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close (click)="onLogoutClicked()" tabindex="-1">Logout</button>
+  <button mat-button mat-dialog-close (click)="onExtendSessionClicked()">Extend</button>
+</mat-dialog-actions>

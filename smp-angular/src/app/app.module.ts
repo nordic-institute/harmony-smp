@@ -149,6 +149,9 @@ import {
 } from "./tools/dns-tools/dns-query-panel/dns-query-panel.component";
 import {ResourceFilterOptionsService} from "./common/services/resource-filter-options.service";
 import {HttpSessionInterceptor} from "./http/http-session-interceptor";
+import {
+  SessionExpirationDialogComponent
+} from "./common/dialogs/session-expiration-dialog/session-expiration-dialog.component";
 
 
 @NgModule({
@@ -235,6 +238,7 @@ import {HttpSessionInterceptor} from "./http/http-session-interceptor";
     UserCertificatesComponent,
     UserProfileComponent,
     UserProfilePanelComponent,
+    SessionExpirationDialogComponent,
   ],
   imports: [
     BrowserAnimationsModule,
