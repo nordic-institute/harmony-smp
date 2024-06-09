@@ -216,7 +216,9 @@ public class OasisCppa3CppHandler extends AbstractHandler {
         boolean hasMatchingPartyId = false;
         final PartyInfoType partyInfo = cppDocument.getPartyInfo();
         for (PartyIdType partyId : partyInfo.getPartyIds()) {
-            ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(partyId.getValue(), partyId.getType());
+            ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(
+                    resourceData.getDomainCode(),
+                    partyId.getValue(), partyId.getType());
             if (xmlResourceIdentifier.equals(identifier)) {
                 hasMatchingPartyId = true;
                 break;

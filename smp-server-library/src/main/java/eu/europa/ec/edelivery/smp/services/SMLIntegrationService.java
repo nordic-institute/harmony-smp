@@ -19,12 +19,10 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.identifiers.Identifier;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
@@ -55,13 +53,11 @@ public class SMLIntegrationService {
     private final ConfigurationService configurationService;
     private final SmlConnector smlConnector;
     private final DomainDao domainDao;
-    private final IdentifierService identifierService;
 
-    public SMLIntegrationService(ConfigurationService configurationService, SmlConnector smlConnector, DomainDao domainDao, IdentifierService identifierService) {
+    public SMLIntegrationService(ConfigurationService configurationService, SmlConnector smlConnector, DomainDao domainDao) {
         this.configurationService = configurationService;
         this.smlConnector = smlConnector;
         this.domainDao = domainDao;
-        this.identifierService = identifierService;
     }
 
     /**
@@ -75,10 +71,7 @@ public class SMLIntegrationService {
         if (!isSMLIntegrationEnabled()) {
             throw new SMPRuntimeException(CONFIGURATION_ERROR, ERROR_MESSAGE_DNS_NOT_ENABLED);
         }
-        Identifier normalizedParticipantId = identifierService
-                .normalizeParticipant(resource.getIdentifierScheme(), resource.getIdentifierValue());
-
-        return smlConnector.participantExists(normalizedParticipantId, domain);
+        return smlConnector.participantExists(resource.getIdentifierScheme(), resource.getIdentifierValue(), domain);
     }
 
     /**
@@ -146,14 +139,12 @@ public class SMLIntegrationService {
                     resource.getIdentifierScheme(), domain.getDomainCode(), ERROR_MESSAGE_DNS_NOT_ENABLED);
             return;
         }
-        Identifier normalizedParticipantId = identifierService
-                .normalizeParticipant(resource.getIdentifierScheme(), resource.getIdentifierValue());
         // register only not registered services
         if (!resource.isSmlRegistered()) {
             // update value
             resource.setSmlRegistered(true);
             String customNaptrService = getNaptrServiceForResource(resource);
-            smlConnector.registerInDns(normalizedParticipantId, domain, customNaptrService);
+            smlConnector.registerInDns(resource.getIdentifierScheme(), resource.getIdentifierValue(), domain, customNaptrService);
             LOG.businessDebug(BUS_SML_REGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
         } else {
             LOG.businessWarn(BUS_SML_REGISTER_SERVICE_GROUP_ALREADY_REGISTERED, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
@@ -221,11 +212,8 @@ public class SMLIntegrationService {
     public boolean unregisterParticipantFromSML(DBResource resource, DBDomain domain) {
         LOG.businessDebug(BUS_SML_UNREGISTER_SERVICE_GROUP, resource.getIdentifierValue(), resource.getIdentifierScheme(), domain.getDomainCode());
 
-        Identifier normalizedParticipantId = identifierService
-                .normalizeParticipant(resource.getIdentifierScheme(), resource.getIdentifierValue());
-
         // unregister only registered participants
-        return smlConnector.unregisterFromDns(normalizedParticipantId, domain);
+        return smlConnector.unregisterFromDns(resource.getIdentifierScheme(), resource.getIdentifierValue(), domain);
 
     }
     public boolean isSMLIntegrationEnabled() {

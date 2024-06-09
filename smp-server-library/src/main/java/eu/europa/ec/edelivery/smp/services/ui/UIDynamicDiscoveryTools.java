@@ -49,7 +49,9 @@ public class UIDynamicDiscoveryTools {
     public List<DNSQueryRO> createDnsQueries(DNSQueryRequestRO dnsQueryRequest) {
 
         String domainPrivate = StringUtils.trimToEmpty(dnsQueryRequest.getTopDnsDomain());
-        ResourceIdentifier identifier = smpIdentifierService.normalizeResourceIdentifier(dnsQueryRequest.getIdentifierValue(),
+        ResourceIdentifier identifier = smpIdentifierService.normalizeResourceIdentifier(
+                dnsQueryRequest.getDomainCode(),
+                dnsQueryRequest.getIdentifierValue(),
                 dnsQueryRequest.getIdentifierScheme());
 
         SMPParticipantIdentifier participantIdentifier

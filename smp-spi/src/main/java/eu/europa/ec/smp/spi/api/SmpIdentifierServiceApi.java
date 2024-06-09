@@ -29,19 +29,18 @@ import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
  */
 public interface SmpIdentifierServiceApi {
 
-    ResourceIdentifier normalizeResourceIdentifier(String value, String  schema);
+    ResourceIdentifier normalizeResourceIdentifier(final String domainCode, String value, String  schema);
 
-    ResourceIdentifier normalizeSubresourceIdentifier(String value, String  schema);
+    ResourceIdentifier normalizeSubresourceIdentifier(final String domainCode, String value, String  schema);
 
-    String formatResourceIdentifier(ResourceIdentifier identifier);
+    String formatResourceIdentifier(final String domainCode, ResourceIdentifier identifier);
 
-    String formatSubresourceIdentifier(ResourceIdentifier identifier);
+    String formatSubresourceIdentifier(final String domainCode, ResourceIdentifier identifier);
 
-    String getURLEncodedResourceIdentifier(ResourceIdentifier identifier);
+    String getURLEncodedResourceIdentifier(final String domainCode, ResourceIdentifier identifier);
 
-    String getURLEncodedSubresourceIdentifier(ResourceIdentifier identifier);
-
-    boolean concatenateResourceIdentifier(ResourceIdentifier identifier);
+    String getURLEncodedSubresourceIdentifier(final String domainCode, ResourceIdentifier identifier);
+    
 }
 
 

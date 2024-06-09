@@ -28,10 +28,10 @@ import eu.europa.ec.smp.spi.api.SmpXmlSignatureApi;
 import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
-import eu.europa.ec.smp.spi.utils.DomUtils;
 import eu.europa.ec.smp.spi.def.OasisSMPSubresource20;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
 import eu.europa.ec.smp.spi.exceptions.SignatureException;
+import eu.europa.ec.smp.spi.utils.DomUtils;
 import gen.eu.europa.ec.ddc.api.smp20.ServiceGroup;
 import gen.eu.europa.ec.ddc.api.smp20.aggregate.ServiceReference;
 import gen.eu.europa.ec.ddc.api.smp20.basic.ID;
@@ -119,7 +119,8 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
             Document doc = reader.objectToDocument(resource);
             signatureApi.createEnvelopedSignature(resourceData, doc.getDocumentElement(), Collections.emptyList());
             DomUtils.serialize(doc, responseData.getOutputStream());
-        } catch (SignatureException | TechnicalException | TransformerException e) {
+        } catch (SignatureException | TechnicalException |
+                 TransformerException e) {
             throw new ResourceException(PROCESS_ERROR, "Error occurred while signing the service group 2.0 message!: ["
                     + identifier + "]. Error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
@@ -219,7 +220,9 @@ public class OasisSMPResource20Handler extends AbstractOasisSMPHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while reading the Oasis SMP 2.0 ServiceGroup with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         final ParticipantID participantId = resource.getParticipantID();
-        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getSchemeID());
+        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(
+                resourceData.getDomainCode(),
+                participantId.getValue(), participantId.getSchemeID());
 
         if (!xmlResourceIdentifier.equals(identifier)) {
             // Business identifier must equal path

@@ -25,6 +25,7 @@ import eu.europa.ec.smp.spi.api.model.RequestData;
 import eu.europa.ec.smp.spi.api.model.ResourceIdentifier;
 import eu.europa.ec.smp.spi.api.model.ResponseData;
 import eu.europa.ec.smp.spi.exceptions.ResourceException;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
@@ -34,6 +35,8 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractHandlerTest {
+
+    private static final String TEST_DOMAIN_CODE = "TestDomainCode";
     protected SmpDataServiceApi mockSmpDataApi = Mockito.mock(SmpDataServiceApi.class);
     protected SmpIdentifierServiceApi mockSmpIdentifierServiceApi = Mockito.mock(SmpIdentifierServiceApi.class);
     protected SmpXmlSignatureApi mockSignatureApi = Mockito.mock(SmpXmlSignatureApi.class);
@@ -52,11 +55,13 @@ abstract class AbstractHandlerTest {
         Mockito.doReturn(baos).when(responseData).getOutputStream();
         Mockito.doReturn(AbstractHandlerTest.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
         Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
+        Mockito.doReturn(TEST_DOMAIN_CODE).when(requestData).getDomainCode();
         if (subresourceIdentifier != null) {
             Mockito.doReturn(subresourceIdentifier).when(requestData).getSubresourceIdentifier();
         }
 
-        Mockito.when(mockSmpIdentifierServiceApi.normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString())).thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[0], (String) i.getArguments()[1]));
+        Mockito.when(mockSmpIdentifierServiceApi.normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[1], (String) i.getArguments()[2]));
         getTestInstance().readResource(requestData, responseData);
 
         assertTrue(baos.size() > 0);
@@ -72,12 +77,17 @@ abstract class AbstractHandlerTest {
         Mockito.doReturn(baos).when(responseData).getOutputStream();
         Mockito.doReturn(AbstractHandlerTest.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
         Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
+        Mockito.doReturn(TEST_DOMAIN_CODE).when(requestData).getDomainCode();
         if (subresourceIdentifier != null) {
             Mockito.doReturn(subresourceIdentifier).when(requestData).getSubresourceIdentifier();
-            Mockito.when(mockSmpIdentifierServiceApi.normalizeSubresourceIdentifier(Mockito.anyString(), Mockito.anyString())).thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[0], (String) i.getArguments()[1]));
+            Mockito.when(mockSmpIdentifierServiceApi.normalizeSubresourceIdentifier(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                    .thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[1], (String) i.getArguments()[2]));
         }
-        Mockito.when(mockSmpIdentifierServiceApi.normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString())).thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[0], (String) i.getArguments()[1]));
-        Mockito.doReturn(resourceIdentifier.getScheme() + "::" + resourceIdentifier.getValue()).when(mockSmpIdentifierServiceApi).formatResourceIdentifier(resourceIdentifier);
+        Mockito.when(mockSmpIdentifierServiceApi.normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[1], (String) i.getArguments()[2]));
+        Mockito.doReturn(resourceIdentifier.getScheme() + "::"
+                        + resourceIdentifier.getValue()).when(mockSmpIdentifierServiceApi)
+                .formatResourceIdentifier(ArgumentMatchers.anyString(), ArgumentMatchers.any(ResourceIdentifier.class));
 
         getTestInstance().storeResource(requestData, responseData);
     }
@@ -90,12 +100,18 @@ abstract class AbstractHandlerTest {
         // validate
         if (subresourceIdentifier != null) {
             Mockito.doReturn(subresourceIdentifier).when(requestData).getSubresourceIdentifier();
-            Mockito.when(mockSmpIdentifierServiceApi.normalizeSubresourceIdentifier(Mockito.anyString(), Mockito.anyString())).thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[0], (String) i.getArguments()[1]));
+            Mockito.when(mockSmpIdentifierServiceApi.normalizeSubresourceIdentifier(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).
+                    thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[1], (String) i.getArguments()[2]));
         }
         Mockito.doReturn(AbstractHandlerTest.class.getResourceAsStream(resourceName)).when(requestData).getResourceInputStream();
         Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
-        Mockito.when(mockSmpIdentifierServiceApi.normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString())).thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[0], (String) i.getArguments()[1]));
-        Mockito.doReturn(resourceIdentifier.getScheme() + "::" + resourceIdentifier.getValue()).when(mockSmpIdentifierServiceApi).formatResourceIdentifier(resourceIdentifier);
+        Mockito.doReturn(TEST_DOMAIN_CODE).when(requestData).getDomainCode();
+
+        Mockito.when(mockSmpIdentifierServiceApi.normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[1], (String) i.getArguments()[2]));
+        Mockito.doReturn(resourceIdentifier.getScheme() + "::"
+                        + resourceIdentifier.getValue()).when(mockSmpIdentifierServiceApi)
+                .formatResourceIdentifier(ArgumentMatchers.anyString(), ArgumentMatchers.any(ResourceIdentifier.class));
 
 
         getTestInstance().validateResource(requestData);
@@ -109,22 +125,26 @@ abstract class AbstractHandlerTest {
     void generateResourceAction(ResourceIdentifier resourceIdentifier, ResourceIdentifier subresourceIdentifier) throws ResourceException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Mockito.doReturn(resourceIdentifier).when(requestData).getResourceIdentifier();
-        Mockito.doReturn(resourceIdentifier.getScheme() + "::" + resourceIdentifier.getValue()).when(mockSmpIdentifierServiceApi).formatResourceIdentifier(resourceIdentifier);
+        Mockito.doReturn(TEST_DOMAIN_CODE).when(requestData).getDomainCode();
+
 
         if (subresourceIdentifier != null) {
             Mockito.doReturn(subresourceIdentifier).when(requestData).getSubresourceIdentifier();
-            Mockito.when(mockSmpIdentifierServiceApi.normalizeSubresourceIdentifier(Mockito.anyString(), Mockito.anyString())).thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[0], (String) i.getArguments()[1]));
+            Mockito.when(mockSmpIdentifierServiceApi.normalizeSubresourceIdentifier(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                    .thenAnswer(i -> new ResourceIdentifier((String) i.getArguments()[1], (String) i.getArguments()[2]));
 
         }
         Mockito.doReturn(baos).when(responseData).getOutputStream();
-
+        Mockito.doReturn(resourceIdentifier.getScheme() + "::"
+                        + resourceIdentifier.getValue()).when(mockSmpIdentifierServiceApi)
+                .formatResourceIdentifier(ArgumentMatchers.anyString(), ArgumentMatchers.any(ResourceIdentifier.class));
         getTestInstance().generateResource(requestData, responseData, Collections.emptyList());
         assertTrue(baos.size() > 0);
 
         // The generated resource should be valid
         ByteArrayInputStream bios = new ByteArrayInputStream(baos.toByteArray());
         Mockito.doReturn(bios).when(requestData).getResourceInputStream();
-        Mockito.doReturn(resourceIdentifier).when(mockSmpIdentifierServiceApi).normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(resourceIdentifier).when(mockSmpIdentifierServiceApi).normalizeResourceIdentifier(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         getTestInstance().validateResource(requestData);
     }
 

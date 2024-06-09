@@ -18,7 +18,8 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.ResourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDao;
 import eu.europa.ec.edelivery.smp.data.dao.SubresourceDefDao;
@@ -110,7 +111,9 @@ public class UISubresourceService {
         if (!optRedef.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_SUBRESOURCE_CREATE, "Subresource definition [" + subResourceRO.getSubresourceTypeIdentifier() + "] does not exist!");
         }
-        Identifier docId = identifierService.normalizeDocument(subResourceRO.getIdentifierScheme(),
+        DBDomain domain = resParent.getDomainResourceDef().getDomain();
+
+        Identifier docId = identifierService.normalizeDocument(domain.getDomainCode(), subResourceRO.getIdentifierScheme(),
                 subResourceRO.getIdentifierValue());
         Optional<DBSubresource> exists= subresourceDao.getSubResourcesForResource(docId, resParent);
         if (exists.isPresent()) {

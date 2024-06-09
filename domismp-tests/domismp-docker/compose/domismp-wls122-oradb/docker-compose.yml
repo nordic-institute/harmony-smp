@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   smp-oracle-db:
     image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}

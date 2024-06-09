@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -55,7 +55,6 @@ import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import static eu.europa.ec.smp.spi.exceptions.ResourceException.ErrorCode.*;
 
@@ -64,7 +63,6 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
 
 
     private static final Logger LOG = LoggerFactory.getLogger(DomiSMPJSONHandlerExample.class);
-
 
 
     final SmpDataServiceApi smpDataApi;
@@ -87,13 +85,15 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
 
 
         try {
-            String identifierString = smpIdentifierApi.formatResourceIdentifier(identifier);
+            String identifierString = smpIdentifierApi.formatResourceIdentifier(
+                    resourceData.getDomainCode(),
+                    identifier);
 
             ExampleEntityRo exampleEntityRo = new ExampleEntityRo();
             exampleEntityRo.setIdentifier(identifierString);
             exampleEntityRo.setUrl("http://example.local/test");
             exampleEntityRo.setEmail("test.address@example.local");
-            X509Certificate cert = createX509Certificate("CN="+identifierString+",O=edelivery,C=EU");
+            X509Certificate cert = createX509Certificate("CN=" + identifierString + ",O=edelivery,C=EU");
             exampleEntityRo.setCertificate(Base64.getEncoder().encodeToString(cert.getEncoded()));
 
             ObjectMapper mapper = new ObjectMapper();
@@ -113,7 +113,8 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
                     key.getPrivate(), false, -1, null,
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
-        } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | IOException |
+        } catch (NoSuchProviderException | NoSuchAlgorithmException |
+                 InvalidAlgorithmParameterException | IOException |
                  CertificateException | OperatorCreationException e) {
             throw new ResourceException(INTERNAL_ERROR, "Error occurred at sample certificate generation!", e);
         }
@@ -160,12 +161,12 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
         try {
             bios = new ByteArrayInputStream(StreamUtils.copyToByteArray(inputStream));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ResourceException(ResourceException.ErrorCode.PROCESS_ERROR, ExceptionUtils.getRootCauseMessage(e), e);
         }
         inputStream.mark(Integer.MAX_VALUE - 2);
 
 
-        validateAndParse(bios, getResourceIdentifier(resourceData));
+        validateAndParse(bios, getResourceIdentifier(resourceData), resourceData.getDomainCode());
         try {
             bios.reset();
             StreamUtils.copy(bios, responseData.getOutputStream());
@@ -187,13 +188,12 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
     public ExampleEntityRo validateAndParse(RequestData resourceData) throws ResourceException {
         // get service group identifier
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
-       return  validateAndParse(resourceData.getResourceInputStream(), identifier);
+        return validateAndParse(resourceData.getResourceInputStream(), identifier, resourceData.getDomainCode());
     }
 
-    public ExampleEntityRo validateAndParse(InputStream inputStream,  ResourceIdentifier identifier ) throws ResourceException {
+    public ExampleEntityRo validateAndParse(InputStream inputStream, ResourceIdentifier identifier, String domainCode) throws ResourceException {
         // get service group identifier
 
-        Properties properties = new Properties();
         // validate by schema
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -204,31 +204,31 @@ public class DomiSMPJSONHandlerExample extends AbstractHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while reading example property document: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(ex), ex);
         }
 
-        if ( StringUtils.isBlank(entityRo.getIdentifier())){
-            throw new ResourceException(INVALID_RESOURCE, "Missing  property [identifier]!" );
+        if (StringUtils.isBlank(entityRo.getIdentifier())) {
+            throw new ResourceException(INVALID_RESOURCE, "Missing  property [identifier]!");
         }
 
-        if ( StringUtils.isBlank(entityRo.getUrl())){
-            throw new ResourceException(INVALID_RESOURCE, "Missing  property [url]!" );
+        if (StringUtils.isBlank(entityRo.getUrl())) {
+            throw new ResourceException(INVALID_RESOURCE, "Missing  property [url]!");
         }
 
-        if ( StringUtils.isBlank(entityRo.getEmail())){
-            throw new ResourceException(INVALID_RESOURCE, "Missing  property [email]!" );
+        if (StringUtils.isBlank(entityRo.getEmail())) {
+            throw new ResourceException(INVALID_RESOURCE, "Missing  property [email]!");
         }
 
-        if ( StringUtils.isBlank(entityRo.getCertificate())){
-            throw new ResourceException(INVALID_RESOURCE, "Missing  property [certificate]" );
+        if (StringUtils.isBlank(entityRo.getCertificate())) {
+            throw new ResourceException(INVALID_RESOURCE, "Missing  property [certificate]");
         }
 
-        String identifierString = smpIdentifierApi.formatResourceIdentifier(identifier);
-        if (!StringUtils.equalsIgnoreCase(entityRo.getIdentifier(),identifierString )){
-            throw new ResourceException(INVALID_RESOURCE, "Property: [identifier] does not match value for the resource ["+identifierString+"]" );
+        String identifierString = smpIdentifierApi.formatResourceIdentifier(domainCode, identifier);
+        if (!StringUtils.equalsIgnoreCase(entityRo.getIdentifier(), identifierString)) {
+            throw new ResourceException(INVALID_RESOURCE, "Property: [identifier] does not match value for the resource [" + identifierString + "]");
         }
 
         try {
             new URL(entityRo.getUrl());
         } catch (MalformedURLException e) {
-            throw new ResourceException(INVALID_RESOURCE, "Bad property value: [url]!. Value ["+entityRo.getUrl()+"]  is not URL" );
+            throw new ResourceException(INVALID_RESOURCE, "Bad property value: [url]!. Value [" + entityRo.getUrl() + "]  is not URL");
         }
         return entityRo;
     }

@@ -270,13 +270,13 @@ class DomainAdminControllerIT extends AbstractControllerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "PARTC_SCH_VALIDATION_REGEXP,^.*$",
-            "PARTC_SCH_REGEXP_MSG,'This is test message'",
-            "PARTC_SCH_MANDATORY,true",
-            "PARTC_SCH_SPLIT_REGEXP,'^(?i)\\s*?(?<scheme>urn:)::?(?<identifier>.+)?\\s*$'",
-            "PARTC_SCH_URN_REGEXP,true",
-            "CS_PARTICIPANTS,sensitive-participant-sc1",
-            "CS_DOCUMENTS,'sensitive-doc-sc1'",
+            "RESOURCE_SCH_VALIDATION_REGEXP,^.*$",
+            "RESOURCE_SCH_REGEXP_MSG,'This is test message'",
+            "RESOURCE_SCH_MANDATORY,true",
+            "RESOURCE_SCH_SPLIT_REGEXP,'^(?i)\\s*?(?<scheme>urn:)::?(?<identifier>.+)?\\s*$'",
+            "RESOURCE_SCH_URN_REGEXP,true",
+            "RESOURCE_CASE_SENSITIVE_SCHEMES,sensitive-participant-sc1",
+            "SUBRESOURCE_CASE_SENSITIVE_SCHEMES,'sensitive-doc-sc1'",
             })
     void testUpdateDomainProperty(SMPDomainPropertyEnum property, String value) throws Exception {
         // set the webapp_integration_test_data.sql for resourceDefID

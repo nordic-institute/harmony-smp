@@ -86,7 +86,7 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
         ResourceIdentifier identifier = getResourceIdentifier(resourceData);
 
         try {
-            String identifierString = smpIdentifierApi.formatResourceIdentifier(identifier);
+            String identifierString = smpIdentifierApi.formatResourceIdentifier(resourceData.getDomainCode(), identifier);
             Properties properties = new Properties();
             properties.setProperty(PROPERTY_IDENTIFIER, identifierString);
             properties.setProperty(PROPERTY_URL, "http://example.local/test");
@@ -201,7 +201,7 @@ public class DomiSMPPropertyHandlerExample extends AbstractHandler {
         if ( !properties.containsKey(PROPERTY_CERTIFICATE)){
             throw new ResourceException(INVALID_RESOURCE, "Missing  property document: [" + PROPERTY_CERTIFICATE + "]" );
         }
-        String identifierString = smpIdentifierApi.formatResourceIdentifier(identifier);
+        String identifierString = smpIdentifierApi.formatResourceIdentifier(resourceData.getDomainCode(), identifier);
         if (!StringUtils.equalsIgnoreCase(properties.getProperty(PROPERTY_IDENTIFIER),identifierString )){
             throw new ResourceException(INVALID_RESOURCE, "Property: [" + PROPERTY_IDENTIFIER + "] does not match value for the resource ["+identifierString+"]" );
         }

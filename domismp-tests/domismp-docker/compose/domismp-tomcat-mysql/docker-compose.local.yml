@@ -1,7 +1,6 @@
 #
 # The intention of the compose file is to override the default configuration of the docker-compose.yml file,
 #  such as the ports to be exposed, to be used in the local development/test environment.
-version: "3.8"
 services:
   domismp-service:
     ports:

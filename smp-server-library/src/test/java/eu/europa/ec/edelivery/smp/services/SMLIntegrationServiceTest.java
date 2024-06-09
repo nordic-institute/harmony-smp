@@ -20,7 +20,6 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.bdmsl.ws.soap.*;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
@@ -68,12 +67,11 @@ class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
     @BeforeEach
     @Transactional
     public void prepareDatabase() {
-        identifierService.configureParticipantIdentifierFormatter(null, false, Pattern.compile(".*"));
+        //identifierService.configureParticipantIdentifierFormatter(null, false, Pattern.compile(".*"));
 
         ReflectionTestUtils.setField(smlConnector, "configurationService", configurationService);
         ReflectionTestUtils.setField(testInstance, "configurationService", configurationService);
         ReflectionTestUtils.setField(testInstance, "smlConnector", smlConnector);
-        ReflectionTestUtils.setField(testInstance, "identifierService", identifierService);
 
         Mockito.reset(smlConnector);
         Mockito.doNothing().when(smlConnector).configureClient(any(), any(), any());
@@ -134,8 +132,10 @@ class SMLIntegrationServiceTest extends AbstractServiceIntegrationTest {
         DBResource resource = testUtilsDao.getResourceD1G1RD1();
         givenSmlIntegrationEnabled(true);
 
-        Identifier identifier = identifierService.normalizeParticipant(resource.getIdentifierScheme(), resource.getIdentifierValue());
-        Mockito.doReturn(true).when(smlConnector).participantExists(identifier, domain);
+        Identifier identifier = identifierService.normalizeParticipant(domain.getDomainCode(),
+                resource.getIdentifierScheme(),
+                resource.getIdentifierValue());
+        Mockito.doReturn(true).when(smlConnector).participantExists(identifier.getScheme(), identifier.getValue(), domain);
 
         // when
         boolean participantExists = testInstance.participantExists(resource, domain);

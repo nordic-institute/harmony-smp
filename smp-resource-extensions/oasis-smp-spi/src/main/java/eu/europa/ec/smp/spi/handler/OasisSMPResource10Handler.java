@@ -107,7 +107,7 @@ public class OasisSMPResource10Handler extends AbstractOasisSMPHandler {
         }
         // get references
         resource.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType());
-        List<ServiceMetadataReferenceType> referenceTypes = buildReferences(identifier);
+        List<ServiceMetadataReferenceType> referenceTypes = buildReferences(resourceData.getDomainCode(), identifier);
         resource.getServiceMetadataReferenceCollection().getServiceMetadataReferences().addAll(referenceTypes);
 
         try {
@@ -118,14 +118,14 @@ public class OasisSMPResource10Handler extends AbstractOasisSMPHandler {
     }
 
 
-    private List<ServiceMetadataReferenceType> buildReferences(ResourceIdentifier resourceIdentifier) throws ResourceException {
+    private List<ServiceMetadataReferenceType> buildReferences(final String domainCode, ResourceIdentifier resourceIdentifier) throws ResourceException {
         LOG.debug("Build build References identifier [{}].", resourceIdentifier);
         // get subresource identifiers for document type
         List<ResourceIdentifier> subResourceIdentifier = smpDataApi.getSubResourceIdentifiers(resourceIdentifier, OasisSMPSubresource10.RESOURCE_IDENTIFIER);
 
         List<ServiceMetadataReferenceType> referenceIds = new ArrayList<>();
         for (ResourceIdentifier subresId : subResourceIdentifier) {
-            URI url = buildSMPURLForParticipantAndDocumentIdentifier(resourceIdentifier, subresId);
+            URI url = buildSMPURLForParticipantAndDocumentIdentifier(domainCode, resourceIdentifier, subresId);
             ServiceMetadataReferenceType referenceType = new ServiceMetadataReferenceType();
             referenceType.setHref(url.toString());
             referenceIds.add(referenceType);
@@ -133,13 +133,13 @@ public class OasisSMPResource10Handler extends AbstractOasisSMPHandler {
         return referenceIds;
     }
 
-    public URI buildSMPURLForParticipantAndDocumentIdentifier(ResourceIdentifier resourceIdentifier, ResourceIdentifier subresourceIdentifier) throws ResourceException {
+    public URI buildSMPURLForParticipantAndDocumentIdentifier(final String domainCode, ResourceIdentifier resourceIdentifier, ResourceIdentifier subresourceIdentifier) throws ResourceException {
         LOG.debug("Build SMP url for participant identifier: [{}] and document identifier [{}].", resourceIdentifier, subresourceIdentifier);
 
         String pathSegment = smpDataApi.getURIPathSegmentForSubresource(OasisSMPSubresource10.RESOURCE_IDENTIFIER);
         String baseUrl = smpDataApi.getResourceUrl();
-        String formattedParticipant = smpIdentifierApi.formatResourceIdentifier(resourceIdentifier);
-        String formattedDocument = smpIdentifierApi.formatSubresourceIdentifier(subresourceIdentifier);
+        String formattedParticipant = smpIdentifierApi.formatResourceIdentifier(domainCode, resourceIdentifier);
+        String formattedDocument = smpIdentifierApi.formatSubresourceIdentifier(domainCode, subresourceIdentifier);
 
         LOG.debug("Build SMP url from base path [{}], participant identifier: [{}] and document identifier [{}].",
                 baseUrl, formattedParticipant, formattedDocument);
@@ -228,11 +228,13 @@ public class OasisSMPResource10Handler extends AbstractOasisSMPHandler {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while parsing Oasis SMP 1.0 ServiceGroup with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
         final ParticipantIdentifierType participantId = resource.getParticipantIdentifier();
-        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getScheme());
+        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(resourceData.getDomainCode(),
+                participantId.getValue(), participantId.getScheme());
 
         if (!xmlResourceIdentifier.equals(identifier)) {
             // Business identifier must equal path
-            throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + identifier + "] and XML body: ['" + xmlResourceIdentifier + "']");
+            throw new ResourceException(INVALID_PARAMETERS,
+                    "Participant identifiers don't match between URL parameter [" + identifier + "] and XML body: ['" + xmlResourceIdentifier + "']");
         }
 
 

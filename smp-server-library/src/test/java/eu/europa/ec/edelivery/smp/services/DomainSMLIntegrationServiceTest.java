@@ -22,7 +22,6 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.AbstractJunit5BaseDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBResource;
@@ -35,7 +34,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,11 +45,8 @@ import static org.mockito.ArgumentMatchers.any;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-
 class DomainSMLIntegrationServiceTest extends AbstractJunit5BaseDao {
 
-    @Autowired
-    private IdentifierService identifierService;
     @Autowired
     private SmlConnector smlConnector;
     @Autowired
@@ -71,9 +66,6 @@ class DomainSMLIntegrationServiceTest extends AbstractJunit5BaseDao {
 
         ReflectionTestUtils.setField(smlIntegrationService, "smlConnector", smlConnector);
         ReflectionTestUtils.setField(testInstance, "smlIntegrationService", smlIntegrationService);
-
-        ReflectionTestUtils.setField(smlIntegrationService, "identifierService", identifierService);
-        identifierService.configureParticipantIdentifierFormatter(null, false, Pattern.compile(".*"));
 
         resetKeystore();
         setDatabaseProperty(SMPPropertyEnum.SML_PHYSICAL_ADDRESS, "0.0.0.0");
@@ -120,5 +112,4 @@ class DomainSMLIntegrationServiceTest extends AbstractJunit5BaseDao {
         dbUpdatedResource = testUtilsDao.find(DBResource.class, dbUpdatedResource.getId());
         assertFalse(dbUpdatedResource.isSmlRegistered());
     }
-
 }

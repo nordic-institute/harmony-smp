@@ -60,15 +60,15 @@ public class ConfigurationService {
 
 
     public Pattern getParticipantIdentifierSchemeRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_VALIDATION_REGEXP);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpPattern() {
-        return configurationDAO.getCachedProperty(PARTC_SCH_VALIDATION_REGEXP);
+        return configurationDAO.getCachedProperty(RESOURCE_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpMessage() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP_MSG);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_REGEXP_MSG);
     }
 
     public Pattern getPasswordPolicyRexExp() {
@@ -159,26 +159,26 @@ public class ConfigurationService {
     }
 
     public List<String> getCaseSensitiveDocumentScheme() {
-        return configurationDAO.getCachedPropertyValue(CS_DOCUMENTS);
+        return configurationDAO.getCachedPropertyValue(SUBRESOURCE_CASE_SENSITIVE_SCHEMES);
     }
 
     public List<String> getCaseSensitiveParticipantScheme() {
-        return configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_CASE_SENSITIVE_SCHEMES);
     }
 
 
     public boolean getParticipantSchemeMandatory() {
         // not mandatory by default
-        Boolean value = configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
+        Boolean value = configurationDAO.getCachedPropertyValue(RESOURCE_SCH_MANDATORY);
         return value != null && value;
     }
 
     public Pattern getParticipantIdentifierSplitRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_SPLIT_REGEXP);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_SPLIT_REGEXP);
     }
 
     public Pattern getParticipantIdentifierUrnValidationRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_URN_REGEXP);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_URN_REGEXP);
     }
 
     public boolean isProxyEnabled() {
@@ -607,6 +607,10 @@ public class ConfigurationService {
 
     public String getDefaultDomainConfiguration(SMPDomainPropertyEnum property) {
         return configurationDAO.getCachedProperty(property.getPropertyEnum());
+    }
+
+    public <T>  T getDefaultDomainConfigurationValue(SMPDomainPropertyEnum property) {
+        return configurationDAO.getCachedPropertyValue(property.getPropertyEnum());
     }
 
 

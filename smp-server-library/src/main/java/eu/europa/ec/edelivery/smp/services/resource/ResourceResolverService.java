@@ -19,7 +19,7 @@
 package eu.europa.ec.edelivery.smp.services.resource;
 
 import eu.europa.ec.edelivery.smp.auth.SMPUserDetails;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.doc.DBDocument;
@@ -123,7 +123,7 @@ public class ResourceResolverService {
             currentParameter = pathParameters.get(iParameterIndex);
         }
 
-        Identifier resourceId = identifierService.normalizeParticipantIdentifier(currentParameter);
+        Identifier resourceId = identifierService.normalizeParticipantIdentifier(domain.getDomainCode(), currentParameter);
         // validate identifier
         validateResourceIdentifier(resourceId);
         DBResource resource = resolveResourceIdentifier(domain, resourceDef, resourceId);
@@ -160,7 +160,9 @@ public class ResourceResolverService {
         String subResourceDefUrl = pathParameters.get(iParameterIndex);
         // test if subresourceDef exists
         DBSubresourceDef subresourceDef = getSubresource(resourceDef, subResourceDefUrl);
-        Identifier subResourceId = identifierService.normalizeDocumentIdentifier(pathParameters.get(++iParameterIndex));
+        Identifier subResourceId = identifierService.normalizeDocumentIdentifier(
+                domain.getDomainCode(),
+                pathParameters.get(++iParameterIndex));
         DBSubresource subresource = resolveSubResourceIdentifier(resource, subResourceDefUrl, subResourceId);
         LOG.debug("Got subresource [{}]", subresource);
         if (subresource == null) {

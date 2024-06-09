@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -53,7 +53,8 @@ public class Subresource10Validator {
         this.smpIdentifierApi = smpIdentifierApi;
     }
 
-    public void validate(ResourceIdentifier participantIdentifierFromUrl,
+    public void validate(String domainCode,
+                         ResourceIdentifier participantIdentifierFromUrl,
                          ResourceIdentifier documentIdentifierFromUrl,
                          ServiceMetadata subresource
     ) throws ResourceException {
@@ -70,30 +71,48 @@ public class Subresource10Validator {
             throw new ResourceException(INVALID_RESOURCE, "Missing element. Add ServiceInformation or Redirect", null);
         }
 
-        validateServiceInformation(participantIdentifierFromUrl, documentIdentifierFromUrl, serviceInformation);
+        validateServiceInformation(domainCode,
+                participantIdentifierFromUrl,
+                documentIdentifierFromUrl,
+                serviceInformation);
 
     }
 
     /**
      * Validate participant identifier in the serviceMetadata
      *
+     * @param domainCode                   domain code
      * @param participantIdentifierFromUrl
      * @param documentIdentifierFromUrl
      * @param serviceInformation
      * @return
      */
-    public ServiceInformationType validateServiceInformation(ResourceIdentifier participantIdentifierFromUrl,
-                                                             ResourceIdentifier documentIdentifierFromUrl,
-                                                             final ServiceInformationType serviceInformation) throws ResourceException {
+    public ServiceInformationType validateServiceInformation(
+            final String domainCode,
+            ResourceIdentifier participantIdentifierFromUrl,
+            ResourceIdentifier documentIdentifierFromUrl,
+            final ServiceInformationType serviceInformation) throws ResourceException {
         LOG.debug("Validate service metadata information for participant [{}], document [{}]", participantIdentifierFromUrl, documentIdentifierFromUrl);
 
         final ParticipantIdentifierType participantId = serviceInformation.getParticipantIdentifier();
         final DocumentIdentifier documentId = serviceInformation.getDocumentIdentifier();
-        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getScheme());
-        ResourceIdentifier xmlSubresourceIdentifier = smpIdentifierApi.normalizeSubresourceIdentifier(documentId.getValue(), documentId.getScheme());
+        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(
+                domainCode,
+                participantId.getValue(),
+                participantId.getScheme());
+        ResourceIdentifier xmlSubresourceIdentifier = smpIdentifierApi.normalizeSubresourceIdentifier(
+                domainCode,
+                documentId.getValue(),
+                documentId.getScheme());
 
-        ResourceIdentifier nrmResIdentifierFromUrl =  smpIdentifierApi.normalizeResourceIdentifier(participantIdentifierFromUrl.getValue(), participantIdentifierFromUrl.getScheme());
-        ResourceIdentifier nrmDocIdentifierFromUrl =  smpIdentifierApi.normalizeSubresourceIdentifier(documentIdentifierFromUrl.getValue(), documentIdentifierFromUrl.getScheme());
+        ResourceIdentifier nrmResIdentifierFromUrl = smpIdentifierApi.normalizeResourceIdentifier(
+                domainCode,
+                participantIdentifierFromUrl.getValue(),
+                participantIdentifierFromUrl.getScheme());
+        ResourceIdentifier nrmDocIdentifierFromUrl = smpIdentifierApi.normalizeSubresourceIdentifier(
+                domainCode,
+                documentIdentifierFromUrl.getValue(),
+                documentIdentifierFromUrl.getScheme());
 
         if (!xmlResourceIdentifier.equals(nrmResIdentifierFromUrl)) {
             // Business identifier must equal path
@@ -111,7 +130,7 @@ public class Subresource10Validator {
     private void validateProcesses(ServiceInformationType serviceInformation) throws ResourceException {
         LOG.debug("Validate service metadata processes!");
         ProcessListType processList = serviceInformation.getProcessList();
-        if (processList == null ||  processList.getProcesses().isEmpty()) {
+        if (processList == null || processList.getProcesses().isEmpty()) {
             LOG.debug("No processes found!");
             return;
         }
@@ -137,7 +156,7 @@ public class Subresource10Validator {
 
             OffsetDateTime activationDate = endpoint.getServiceActivationDate();
             OffsetDateTime expirationDate = endpoint.getServiceExpirationDate();
-            LOG.debug("Validate validity for the process with activation date [{}] and expiration date [{}]!", activationDate,expirationDate );
+            LOG.debug("Validate validity for the process with activation date [{}] and expiration date [{}]!", activationDate, expirationDate);
 
             if (activationDate != null && expirationDate != null && activationDate.isAfter(expirationDate)) {
                 throw new ResourceException(INVALID_PARAMETERS, "[OUT_OF_RANGE] Expiration date is before Activation date");

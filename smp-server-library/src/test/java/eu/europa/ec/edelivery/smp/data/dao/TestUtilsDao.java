@@ -607,8 +607,8 @@ public class TestUtilsDao {
         d.setVisibility(visibility);
         persistFlushDetach(d);
 
-        createDefaultDomainProperties(d, SMPDomainPropertyEnum.CS_PARTICIPANTS);
-        createDefaultDomainProperties(d, SMPDomainPropertyEnum.PARTC_SCH_VALIDATION_REGEXP);
+        createDefaultDomainProperties(d, SMPDomainPropertyEnum.RESOURCE_CASE_SENSITIVE_SCHEMES);
+        createDefaultDomainProperties(d, SMPDomainPropertyEnum.RESOURCE_SCH_VALIDATION_REGEXP);
         return d;
     }
 

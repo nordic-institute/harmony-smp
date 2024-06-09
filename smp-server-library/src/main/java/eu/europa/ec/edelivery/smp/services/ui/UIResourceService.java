@@ -18,7 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -191,7 +191,8 @@ public class UIResourceService {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Group does not exist!");
         }
 
-        if (!Objects.equals(group.getDomain().getId(), domainId)) {
+        DBDomain domain = group.getDomain();
+        if (!Objects.equals(domain.getId(), domainId)) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Group does not belong to the given domain!");
         }
 
@@ -204,7 +205,9 @@ public class UIResourceService {
         if (!optDoredef.isPresent()) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, ACTION_RESOURCE_CREATE, "Resource definition [" + resourceRO.getResourceTypeIdentifier() + "] is not registered for domain!");
         }
-        Identifier resourceIdentifier = identifierService.normalizeParticipant(resourceRO.getIdentifierScheme(),
+        Identifier resourceIdentifier = identifierService.normalizeParticipant(
+                domain.getDomainCode(),
+                resourceRO.getIdentifierScheme(),
                 resourceRO.getIdentifierValue());
 
         Optional<DBResource> existResource = resourceDao.getResource(resourceIdentifier.getValue(),resourceIdentifier.getScheme(), optRedef.get(), group.getDomain());
