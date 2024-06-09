@@ -200,8 +200,8 @@ public class DomainAdminController {
     }
 
     /**
-     * Method returns ALL domain properties for domain for authenticated/authorized user. If the property is not set
-     * default value is returned with isSystemDefault set to true.
+     * Method validates the authorization for the user and update the given domain properties. As a result
+     * it returns ALL domain properties after the update.
      *
      * @param userEncId   encrypted user identifier
      * @param domainEncId the  encrypted domain identifier
@@ -212,7 +212,7 @@ public class DomainAdminController {
     public List<DomainPropertyRO> updateDomainPropertyList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                            @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
                                                            @RequestBody List<DomainPropertyRO> domainProperties) {
-        logAdminAccess("getDomainPropertyList:" + domainEncId);
+        logAdminAccess("updateDomainPropertyList:" + domainEncId);
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         LOG.debug("Update domain properties for domain with id [{}]", domainId);
         return uiDomainService.updateDomainProperties(domainId, domainProperties);

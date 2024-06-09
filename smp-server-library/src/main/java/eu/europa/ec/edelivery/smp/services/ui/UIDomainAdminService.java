@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +59,6 @@ import java.util.stream.Collectors;
 public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainAdminService.class);
-
 
     private final DomainDao domainDao;
     private final DomainMemberDao domainMemberDao;
@@ -262,7 +262,7 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
         }
         // get current domain configuration
         Map<String, DBDomainConfiguration> currentDomainConfiguration = domainDao.getDomainConfiguration(domain)
-                .stream().collect(Collectors.toMap(DBDomainConfiguration::getProperty, dp -> dp));
+                .stream().collect(Collectors.toMap(DBDomainConfiguration::getProperty, Function.identity()));
         Map<String, DomainPropertyRO> newDomainPropertyValues =
                 domainProperties.stream().collect(Collectors.toMap(DomainPropertyRO::getProperty, dp -> dp));
 
@@ -273,7 +273,8 @@ public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
             DBDomainConfiguration domainConfiguration = currentDomainConfiguration.get(domainProp.getProperty());
             DomainPropertyRO domainPropertyRO = newDomainPropertyValues.get(domainProp.getProperty());
             // if property already exists in the database, update value
-            DBDomainConfiguration updatedDomainProp = domainDao.updateDomainProperty(domain, domainProp, domainConfiguration, domainPropertyRO);
+            DBDomainConfiguration updatedDomainProp = domainDao.updateDomainProperty(domain, domainProp,
+                    domainConfiguration, domainPropertyRO);
             listOfDomainConfiguration.add(updatedDomainProp);
             // remove updated property from the map
             currentDomainConfiguration.remove(domainProp.getProperty());

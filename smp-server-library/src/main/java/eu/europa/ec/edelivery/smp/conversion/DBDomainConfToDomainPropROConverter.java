@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 /**
  * Converts a {@link DBDomainConfiguration} to a {@link DomainPropertyRO}.
  *
- * @author Joze Rihtars
+ * @author Joze Rihtarsic
  * @since 5.1
  */
 @Component

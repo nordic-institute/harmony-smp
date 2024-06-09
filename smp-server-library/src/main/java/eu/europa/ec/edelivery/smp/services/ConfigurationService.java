@@ -398,7 +398,7 @@ public class ConfigurationService {
     }
 
     public int getManageMaxSMLRecordCount() {
-        Integer intVal = configurationDAO.getCachedPropertyValue(SML_MANAMGE_MAX_COUNT);
+        Integer intVal = configurationDAO.getCachedPropertyValue(SML_MANAGE_MAX_COUNT);
         return intVal == null ? 10000 : intVal;
     }
 

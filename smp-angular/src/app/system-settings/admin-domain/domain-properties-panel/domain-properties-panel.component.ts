@@ -89,11 +89,11 @@ export class DomainPropertiesPanelComponent implements OnInit, OnDestroy, Before
     return {...this._domain};
   }
 
-  get submitButtonEnabled(): boolean {
+  get saveButtonEnabled(): boolean {
     return this.dataChanged;
   }
 
-  get resetButtonEnabled(): boolean {
+  get cancelButtonEnabled(): boolean {
     return this.dataChanged;
   }
 

@@ -275,13 +275,23 @@ public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO>
             propertyValidationRO.setPropertyValid(false);
             return propertyValidationRO;
         }
+
         SMPDomainPropertyEnum propertyEnum = optPropertyEnum.get();
+        return validateDomainPropertyValue(propertyEnum, propertyValidationRO);
+    }
 
-
+    /**
+     * Method validates domain property value for given property enum.
+     * @param propertyEnum - property enum
+     * @param propertyValidationRO - property validation object with value.
+     * @return property validation object with validation result and error message if validation failed.
+     */
+    private PropertyValidationRO validateDomainPropertyValue(SMPDomainPropertyEnum propertyEnum,
+                                                             PropertyValidationRO propertyValidationRO) {
         // try to parse value
         try {
             File confDir = Paths.get(SMPEnvironmentProperties.getInstance().getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
-            PropertyUtils.parseProperty(propertyEnum.getPropertyEnum(), propertyRO.getValue(), confDir);
+            PropertyUtils.parseProperty(propertyEnum.getPropertyEnum(), propertyValidationRO.getValue(), confDir);
         } catch (SMPRuntimeException ex) {
             propertyValidationRO.setErrorMessage(ex.getMessage());
             propertyValidationRO.setPropertyValid(false);

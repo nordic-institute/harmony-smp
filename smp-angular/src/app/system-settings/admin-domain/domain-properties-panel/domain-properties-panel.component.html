@@ -35,13 +35,13 @@
   <mat-toolbar-row class="smp-toolbar-row">
     <button id="cancelButton" mat-raised-button (click)="onResetButtonClicked()"
             color="primary"
-            [disabled]="!resetButtonEnabled">
+            [disabled]="!cancelButtonEnabled">
       <mat-icon>refresh</mat-icon>
       <span>Reset</span>
     </button>
     <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked()"
             color="primary"
-            [disabled]="!submitButtonEnabled">
+            [disabled]="!saveButtonEnabled">
       <mat-icon>save</mat-icon>
       <span>Save</span>
     </button>

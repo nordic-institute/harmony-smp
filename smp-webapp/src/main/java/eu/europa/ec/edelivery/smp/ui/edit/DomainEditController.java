@@ -168,19 +168,19 @@ public class DomainEditController {
     }
 
     /**
-     * Method returns ALL domain properties for domain for authenticated/authorized user. If the property is not set
-     * default value is returned with isSystemDefault set to true.
+     * Method validates authorization for the users and updates all given properties.
+     * As the result it returns ALL (updated) domain properties.
      *
      * @param userEncId   encrypted user identifier
      * @param domainEncId the  encrypted domain identifier
-     * @return list of domain properties
+     * @return list of domain properties to be updated.
      */
     @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_PROPERTIES, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
     public List<DomainPropertyRO> updateEditDomainPropertyList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
                                                                @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
                                                                @RequestBody List<DomainPropertyRO> domainProperties) {
-        logAdminAccess("getDomainPropertyList:" + domainEncId);
+        logAdminAccess("updateEditDomainPropertyList:" + domainEncId);
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
         LOG.debug("Update domain properties for domain with id [{}]", domainId);
         return uiDomainEditService.updateDomainEditProperties(domainId, domainProperties);

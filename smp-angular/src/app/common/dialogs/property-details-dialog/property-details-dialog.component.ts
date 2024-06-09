@@ -1,11 +1,23 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup} from "@angular/forms";;
-import {AlertMessageService} from "../../../common/alert-message/alert-message.service";
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef
+} from '@angular/material/dialog';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup
+} from "@angular/forms";
+import {
+  AlertMessageService
+} from "../../../common/alert-message/alert-message.service";
 import {EntityStatus} from "../../../common/enums/entity-status.enum";
 import {SmpConstants} from "../../../smp.constants";
 import {HttpClient} from "@angular/common/http";
-import {HttpErrorHandlerService} from "../../../common/error/http-error-handler.service";
+import {
+  HttpErrorHandlerService
+} from "../../../common/error/http-error-handler.service";
 import {
   PropertyRo
 } from "../../../system-settings/admin-properties/property-ro.model";
@@ -23,7 +35,7 @@ import {firstValueFrom} from "rxjs";
 export class PropertyDetailsDialogComponent implements OnInit {
 
   static readonly NEW_MODE: string = 'New {TYPE} Property';
-  static readonly EDIT_MODE: string  = '{TYPE} Property Edit';
+  static readonly EDIT_MODE: string = '{TYPE} Property Edit';
 
 
   editMode: boolean;
@@ -46,13 +58,13 @@ export class PropertyDetailsDialogComponent implements OnInit {
 
     this.editMode = data.edit;
     this.propertyType = data.propertyType;
-    this.propertyType = !data.propertyType?PropertyTypeEnum.SYSTEM: data.propertyType;
+    this.propertyType = !data.propertyType ? PropertyTypeEnum.SYSTEM : data.propertyType;
     this.formTitle = (this.editMode ? PropertyDetailsDialogComponent.EDIT_MODE : PropertyDetailsDialogComponent.NEW_MODE)
       .replace('{TYPE}', this.capitalize(this.propertyType));
 
     this.current = this.editMode
       ? {
-        ...data.row ,
+        ...data.row,
       }
       : {
         property: '',
@@ -71,8 +83,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
       'value': new UntypedFormControl({value: ''}),
       'valuePattern': new UntypedFormControl({value: ''}),
       'errorMessage': new UntypedFormControl({value: ''}),
-      'systemDefault': new UntypedFormControl({value: 'true' }),
-
+      'systemDefault': new UntypedFormControl({value: 'true'}),
     });
 
     this.propertyForm.controls['property'].setValue(this.current.property);
@@ -82,8 +93,8 @@ export class PropertyDetailsDialogComponent implements OnInit {
     this.propertyForm.controls['valuePattern'].setValue(this.current.valuePattern);
     this.propertyForm.controls['systemDefault'].setValue(this.current.systemDefault);
 
-    this.propertyForm.controls['errorMessage'].setValue('')
-    this.updateValueState()
+    this.propertyForm.controls['errorMessage'].setValue('');
+    this.updateValueState();
   }
 
   ngOnInit() {
@@ -97,7 +108,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
   async submitForm() {
     this.checkValidity(this.propertyForm);
 
-    let request: PropertyRo =  this.getCurrent();
+    let request: PropertyRo = this.getCurrent();
 
     // if domain property we do not need to validate
     if (this.propertyType == PropertyTypeEnum.DOMAIN) {
@@ -117,14 +128,14 @@ export class PropertyDetailsDialogComponent implements OnInit {
       const result: PropertyValidationRo = await firstValueFrom(validationObservable);
       this.showSpinner = false;
       if (!result.propertyValid) {
-        this.propertyForm.controls['errorMessage'].setValue(result.errorMessage?result.errorMessage:'Invalid property');
+        this.propertyForm.controls['errorMessage'].setValue(result.errorMessage ? result.errorMessage : 'Invalid property');
       } else {
         this.propertyForm.controls['errorMessage'].setValue("");
         // we can close the dialog
         this.closeDialog();
       }
-    } catch(err) {
-      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)){
+    } catch (err) {
+      if (this.httpErrorHandlerService.logoutOnInvalidSessionError(err)) {
         this.closeDialog();
         return;
       }
@@ -192,6 +203,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
         return 'text';
     }
   }
+
   getInputPatternType(propertyType: string) {
     console.log("Get input pattern for row " + this.current.type)
     switch (propertyType) {
@@ -217,7 +229,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
   }
 
   public getCurrent(): PropertyRo {
-    this.current.status= EntityStatus.UPDATED;
+    this.current.status = EntityStatus.UPDATED;
     this.current.value = this.propertyForm.value['value'];
     this.current.systemDefault = this.propertyForm.value['systemDefault'];
     return this.current;
@@ -229,14 +241,14 @@ export class PropertyDetailsDialogComponent implements OnInit {
 
   get isSystemDefault(): boolean {
     let systemDefault = this.propertyForm.value['systemDefault'];
-    return  systemDefault;
+    return systemDefault;
   }
 
   /**
    * Method updates the state of the value field based on the system default checkbox.
    */
   updateValueState(): void {
-    if (!this.isDomainProperty ||  !this.isSystemDefault) {
+    if (!this.isDomainProperty || !this.isSystemDefault) {
       this.propertyForm.controls['value'].enable();
       this.propertyForm.controls['value'].setValue(this.current.value);
     } else {
@@ -249,7 +261,7 @@ export class PropertyDetailsDialogComponent implements OnInit {
     return this.propertyType == PropertyTypeEnum.DOMAIN;
   }
 
-  capitalize<T extends string>(str: T):string{
+  capitalize<T extends string>(str: T): string {
     return (str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()) as Capitalize<T>;
   }
 

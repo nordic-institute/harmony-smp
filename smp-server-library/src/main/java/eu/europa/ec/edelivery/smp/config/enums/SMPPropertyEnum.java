@@ -85,7 +85,7 @@ public enum SMPPropertyEnum {
     // SML integration!
     SML_ENABLED("bdmsl.integration.enabled", "false", "BDMSL (SML) integration ON/OFF switch",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-    SML_MANAMGE_MAX_COUNT("bdmsl.participants.manage.max-count", "10000", "Maximum number of participants which can be registered/unregistered in one call of register/unregister domain",
+    SML_MANAGE_MAX_COUNT("bdmsl.participants.manage.max-count", "10000", "Maximum number of participants which can be registered/unregistered in one call of register/unregister domain",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),

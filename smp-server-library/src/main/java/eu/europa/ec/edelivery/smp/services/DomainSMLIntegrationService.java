@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SML_MANAMGE_MAX_COUNT;
+import static eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum.SML_MANAGE_MAX_COUNT;
 
 
 /**
@@ -92,7 +92,7 @@ public class DomainSMLIntegrationService {
         if (resourceCnt > maxSMLRecordCount) {
             LOG.warn("Too many resources to register for the domain [{}]. Count: [{}], max. allowed [{}]!" +
                             "For details check the configuration option [{}]!",
-                    dbDomain, resourceCnt, maxSMLRecordCount, SML_MANAMGE_MAX_COUNT.getProperty());
+                    dbDomain, resourceCnt, maxSMLRecordCount, SML_MANAGE_MAX_COUNT.getProperty());
             return;
         }
 
@@ -129,7 +129,7 @@ public class DomainSMLIntegrationService {
         if (resourceCnt > maxSMLRecordCount) {
             LOG.warn("Too many resources to unregister for the domain [{}]. Count: [{}], max. allowed [{}]!" +
                             "For details check the configuration option [{}]!",
-                    dbDomain, resourceCnt, maxSMLRecordCount, SML_MANAMGE_MAX_COUNT.getProperty());
+                    dbDomain, resourceCnt, maxSMLRecordCount, SML_MANAGE_MAX_COUNT.getProperty());
             return;
         }
 
