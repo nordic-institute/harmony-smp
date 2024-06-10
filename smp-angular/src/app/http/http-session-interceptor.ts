@@ -9,7 +9,7 @@ import {
 } from "../common/dialogs/session-expiration-dialog/session-expiration-dialog.component";
 
 /*
- * An custom interceptor that handles session expiration before it happens.
+ * A custom interceptor that handles session expiration before it happens.
  *
  * Users are prompted 60 seconds before their HTTP sessions are about to expire
  * and asked whether they would like to logout or extend the session time again.
