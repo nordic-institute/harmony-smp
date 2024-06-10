@@ -9,9 +9,6 @@ export interface User {
   smpTheme?: string;
   smpLocale?: string;
 
-
-
-
   accessTokenId?: string;
   accessTokenExpireOn?: Date;
   sequentialTokenLoginFailureCount?:number;
@@ -26,6 +23,7 @@ export interface User {
   sequentialLoginFailureCount?:number;
   lastFailedLoginAttempt?:Date;
   suspendedUtil?:Date;
+  sessionMaxIntervalTimeoutInSeconds?: number;
 
   casUserDataUrl?: string;
 }

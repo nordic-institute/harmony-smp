@@ -100,8 +100,7 @@ public class AuthenticationController {
                 loginRO.getPassword());
         SMPUserDetails user = authentication.getUserDetails();
 
-
-        return authorizationService.getUserData(user.getUser());
+        return authorizationService.getUserData(user.getUser(), authentication.getAuthorities());
     }
 
     /**

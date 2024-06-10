@@ -21,18 +21,21 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
+import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertLevelEnum;
 import eu.europa.ec.edelivery.smp.data.ui.enums.AlertSuspensionMomentEnum;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -313,6 +316,16 @@ public class ConfigurationService {
 
     public String getSessionCookiePath() {
         return configurationDAO.getCachedPropertyValue(UI_COOKIE_SESSION_PATH);
+    }
+
+    public int getSessionTimeoutForRoles(Collection<? extends GrantedAuthority> authorities) {
+        boolean hasAdminRole = false;
+        if (authorities != null) {
+            hasAdminRole = authorities.stream().anyMatch(grantedAuthority ->
+                    StringUtils.equalsIgnoreCase(grantedAuthority.getAuthority(), SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN.getAuthority()));
+        }
+        LOG.debug("Has admin role [{}]", hasAdminRole);
+        return hasAdminRole ? getSessionIdleTimeoutForAdmin(): getSessionIdleTimeoutForUser();
     }
 
     public Integer getSessionIdleTimeoutForAdmin() {
@@ -597,6 +610,5 @@ public class ConfigurationService {
     public String getAlertEmailFrom() {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_MAIL_FROM);
     }
-
 
 }

@@ -134,7 +134,7 @@ class SMPAuthorizationServiceTest {
         Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
         Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
 
-        user = testInstance.getUpdatedUserData(user);
+        user = testInstance.getUpdatedUserData(user, null);
 
         assertTrue(user.isShowPasswordExpirationWarning());
         assertFalse(user.isForceChangeExpiredPassword());
@@ -149,7 +149,7 @@ class SMPAuthorizationServiceTest {
         Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
         Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
 
-        user = testInstance.getUpdatedUserData(user);
+        user = testInstance.getUpdatedUserData(user, null);
 
         assertFalse(user.isShowPasswordExpirationWarning());
         assertFalse(user.isForceChangeExpiredPassword());
@@ -164,7 +164,7 @@ class SMPAuthorizationServiceTest {
         Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
         Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
 
-        user = testInstance.getUpdatedUserData(user);
+        user = testInstance.getUpdatedUserData(user, null);
 
         assertTrue(user.isShowPasswordExpirationWarning());
         assertFalse(user.isForceChangeExpiredPassword());
@@ -179,7 +179,7 @@ class SMPAuthorizationServiceTest {
         Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
         Mockito.doReturn(true).when(configurationService).getPasswordPolicyForceChangeIfExpired();
 
-        user = testInstance.getUpdatedUserData(user);
+        user = testInstance.getUpdatedUserData(user, null);
 
         assertTrue(user.isForceChangeExpiredPassword());
         assertTrue(user.isPasswordExpired());
@@ -193,7 +193,7 @@ class SMPAuthorizationServiceTest {
         Mockito.doReturn(10).when(configurationService).getPasswordPolicyUIWarningDaysBeforeExpire();
         Mockito.doReturn(false).when(configurationService).getPasswordPolicyForceChangeIfExpired();
 
-        user = testInstance.getUpdatedUserData(user);
+        user = testInstance.getUpdatedUserData(user, null);
 
         assertFalse(user.isForceChangeExpiredPassword());
         assertTrue(user.isPasswordExpired());
