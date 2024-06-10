@@ -74,15 +74,13 @@ public class QueryNames {
     public static final String QUERY_DOMAIN_RESOURCE_DEF_ALL = "DBDomainResourceDef.getAll";
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ALL = "DBDomainResourceDef.getAllForDomain";
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_CODE_SEGMENT_URL = "DBDomainResourceDef.getByDomainCodeResDefURL";
-
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_ID_RESDEF_IDENTIFIER = "DBDomainResourceDef.getByDomainIdAdResDefIdentifier";
-
     public static final String QUERY_DOMAIN_RESOURCE_DEF_DOMAIN_RES_DEF = "DBDomainResourceDef.getByDomainResDef";
-
     public static final String QUERY_RESOURCE_BY_IDENTIFIER_RESOURCE_DEF_DOMAIN = "DBResource.getResByIdentifierAndResourceDefAndDomain";
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_COUNT = "DBResource.getResByDomainIdCount";
     public static final String QUERY_RESOURCES_BY_DOMAIN_ID_RESOURCE_DEF_ID_COUNT = "DBResource.getResByDomainIdAndResourceDefCount";
 
+    public static final String QUERY_DOMAIN_CONFIGURATION_ALL = "DBDomainConfiguration.getAllForDomain";
 
     public static final String QUERY_RESOURCE_ALL_FOR_USER = "DBResource.getPublicSearch";
 

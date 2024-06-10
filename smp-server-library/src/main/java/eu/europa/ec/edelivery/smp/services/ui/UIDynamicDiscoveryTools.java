@@ -8,7 +8,6 @@ import eu.europa.ec.dynamicdiscovery.exception.TechnicalException;
 import eu.europa.ec.dynamicdiscovery.model.identifiers.SMPParticipantIdentifier;
 import eu.europa.ec.edelivery.smp.data.ui.DNSQueryRO;
 import eu.europa.ec.edelivery.smp.data.ui.DNSQueryRequestRO;
-import eu.europa.ec.edelivery.smp.data.ui.ResourceRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
@@ -50,7 +49,9 @@ public class UIDynamicDiscoveryTools {
     public List<DNSQueryRO> createDnsQueries(DNSQueryRequestRO dnsQueryRequest) {
 
         String domainPrivate = StringUtils.trimToEmpty(dnsQueryRequest.getTopDnsDomain());
-        ResourceIdentifier identifier = smpIdentifierService.normalizeResourceIdentifier(dnsQueryRequest.getIdentifierValue(),
+        ResourceIdentifier identifier = smpIdentifierService.normalizeResourceIdentifier(
+                dnsQueryRequest.getDomainCode(),
+                dnsQueryRequest.getIdentifierValue(),
                 dnsQueryRequest.getIdentifierScheme());
 
         SMPParticipantIdentifier participantIdentifier
@@ -86,7 +87,7 @@ public class UIDynamicDiscoveryTools {
                                       DefaultBDXRLocator bdxrLocator,
                                       DNSLookupType dnsLookupType) {
 
-        String dnsQuery ;
+        String dnsQuery;
         switch (dnsLookupType) {
             case CNAME:
                 dnsQuery = bdxrLocator.buildCNameDNSQuery(resourceIdentifier, domain);
@@ -117,11 +118,12 @@ public class UIDynamicDiscoveryTools {
     /**
      * Method resolve CNAME query and add results to DNS query object or add error message.
      * Method is resolving all CNAMES in chain.
-     * @param dnsQuery the DNS query object to add results or errors
+     *
+     * @param dnsQuery           the DNS query object to add results or errors
      * @param resourceIdentifier the resource identifier for the query. Used for logging.
-     * @param bdxrLocator the bdxr locator tool to resolve DNS queries
+     * @param bdxrLocator        the bdxr locator tool to resolve DNS queries
      */
-    public void resolveCNameQuery(DNSQueryRO dnsQuery, SMPParticipantIdentifier resourceIdentifier, DefaultBDXRLocator bdxrLocator){
+    public void resolveCNameQuery(DNSQueryRO dnsQuery, SMPParticipantIdentifier resourceIdentifier, DefaultBDXRLocator bdxrLocator) {
         IDNSLookup testDNSLookup = bdxrLocator.getDnsLookup();
         try {
             List<Record> result = testDNSLookup.getAllRecordsForType(resourceIdentifier, dnsQuery.getDnsQuery(), DNSLookupType.CNAME);
@@ -149,11 +151,12 @@ public class UIDynamicDiscoveryTools {
 
     /**
      * Method resolve NAPTR query and add results to DNS query object or add error message
-     * @param dnsQuery the DNS query object to add results or errors
+     *
+     * @param dnsQuery           the DNS query object to add results or errors
      * @param resourceIdentifier the resource identifier for the query. Used for logging.
-     * @param bdxrLocator the bdxr locator tool to resolve DNS queries
+     * @param bdxrLocator        the bdxr locator tool to resolve DNS queries
      */
-    public void resolveNaptrQuery(DNSQueryRO dnsQuery, SMPParticipantIdentifier resourceIdentifier, DefaultBDXRLocator bdxrLocator){
+    public void resolveNaptrQuery(DNSQueryRO dnsQuery, SMPParticipantIdentifier resourceIdentifier, DefaultBDXRLocator bdxrLocator) {
         IDNSLookup testDNSLookup = bdxrLocator.getDnsLookup();
         try {
             List<Record> result = testDNSLookup.getAllRecordsForType(resourceIdentifier, dnsQuery.getDnsQuery(), DNSLookupType.NAPTR);

@@ -50,7 +50,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ResourceDaoTest extends AbstractBaseDao {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceDaoTest.class);
     @Autowired
     ResourceDao testInstance;
 

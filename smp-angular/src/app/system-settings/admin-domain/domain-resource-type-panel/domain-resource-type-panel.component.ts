@@ -17,11 +17,6 @@ export class DomainResourceTypePanelComponent implements BeforeLeaveGuard {
   @Input() domiSMPResourceDefinitions: ResourceDefinitionRo[] = [];
   domainForm: FormGroup;
 
-  get domain(): DomainRo {
-    let newDomain = {...this._domain};
-    newDomain.resourceDefinitions = this.domainForm.get('resourceDefinitions').value;
-    return newDomain;
-  }
 
   @Input() set domain(value: DomainRo) {
     this._domain = value;

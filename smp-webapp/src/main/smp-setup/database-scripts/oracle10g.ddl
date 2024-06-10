@@ -7,6 +7,7 @@ create sequence SMP_ALERT_SEQ start with 1 increment by  1;
 create sequence SMP_CREDENTIAL_SEQ start with 1 increment by  1;
 create sequence SMP_DOCUMENT_SEQ start with 1 increment by  1;
 create sequence SMP_DOCUMENT_VERSION_SEQ start with 1 increment by  1;
+create sequence SMP_DOMAIN_CONF_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_MEMBER_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_RESOURCE_DEF_SEQ start with 1 increment by  1;
 create sequence SMP_DOMAIN_SEQ start with 1 increment by  1;
@@ -410,6 +411,50 @@ create sequence SMP_USER_SEQ start with 1 increment by  1;
         primary key (ID, REV)
     );
 
+    create table SMP_DOMAIN_CONFIGURATION (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
+        DESCRIPTION varchar2(4000 char),
+        PROPERTY_NAME varchar2(512 char) not null,
+        USER_SYSTEM_DEFAULT number(1,0) not null,
+        PROPERTY_VALUE varchar2(4000 char),
+        FK_DOMAIN_ID number(19,0) not null,
+        primary key (ID)
+    );
+
+    comment on table SMP_DOMAIN_CONFIGURATION is
+        'SMP domain configuration';
+
+    comment on column SMP_DOMAIN_CONFIGURATION.ID is
+        'Unique domain configuration id';
+
+    comment on column SMP_DOMAIN_CONFIGURATION.DESCRIPTION is
+        'Property description';
+
+    comment on column SMP_DOMAIN_CONFIGURATION.PROPERTY_NAME is
+        'Property name/key';
+
+    comment on column SMP_DOMAIN_CONFIGURATION.USER_SYSTEM_DEFAULT is
+        'Use system default value';
+
+    comment on column SMP_DOMAIN_CONFIGURATION.PROPERTY_VALUE is
+        'Property value';
+
+    create table SMP_DOMAIN_CONFIGURATION_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
+        DESCRIPTION varchar2(4000 char),
+        PROPERTY_NAME varchar2(512 char),
+        USER_SYSTEM_DEFAULT number(1,0),
+        PROPERTY_VALUE varchar2(4000 char),
+        FK_DOMAIN_ID number(19,0),
+        primary key (ID, REV)
+    );
+
     create table SMP_DOMAIN_MEMBER (
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
@@ -788,6 +833,9 @@ create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
     alter table SMP_DOMAIN 
        add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
 
+    alter table SMP_DOMAIN_CONFIGURATION 
+       add constraint SMP_DOMAIN_CONF_IDX unique (ID, PROPERTY_NAME, FK_DOMAIN_ID);
+
     alter table SMP_DOMAIN_MEMBER 
        add constraint SMP_DOM_MEM_IDX unique (FK_DOMAIN_ID, FK_USER_ID);
 
@@ -894,6 +942,16 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
 
     alter table SMP_DOMAIN_AUD 
        add constraint FK35qm8xmi74kfenugeonijodsg 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_DOMAIN_CONFIGURATION 
+       add constraint FK4303vstoigqtmeo3t2i034gm3 
+       foreign key (FK_DOMAIN_ID) 
+       references SMP_DOMAIN;
+
+    alter table SMP_DOMAIN_CONFIGURATION_AUD 
+       add constraint FKkelcga805bleh5x256hy5e1xb 
        foreign key (REV) 
        references SMP_REV_INFO;
 

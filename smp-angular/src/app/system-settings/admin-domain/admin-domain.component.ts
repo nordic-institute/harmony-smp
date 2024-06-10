@@ -1,23 +1,41 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {AdminDomainService} from "./admin-domain.service";
-import {AlertMessageService} from "../../common/alert-message/alert-message.service";
-import {ConfirmationDialogComponent} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
+import {
+  AlertMessageService
+} from "../../common/alert-message/alert-message.service";
+import {
+  ConfirmationDialogComponent
+} from "../../common/dialogs/confirmation-dialog/confirmation-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {EntityStatus} from "../../common/enums/entity-status.enum";
 import {DomainRo} from "../../common/model/domain-ro.model";
 import {AdminKeystoreService} from "../admin-keystore/admin-keystore.service";
 import {BeforeLeaveGuard} from "../../window/sidenav/navigation-on-leave-guard";
-import {ResourceDefinitionRo} from "../admin-extension/resource-definition-ro.model";
+import {
+  ResourceDefinitionRo
+} from "../admin-extension/resource-definition-ro.model";
 import {ExtensionService} from "../admin-extension/extension.service";
 import {ExtensionRo} from "../admin-extension/extension-ro.model";
 import {MatTabGroup} from "@angular/material/tabs";
-import {CancelDialogComponent} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
+import {
+  CancelDialogComponent
+} from "../../common/dialogs/cancel-dialog/cancel-dialog.component";
 import {DomainPanelComponent} from "./domain-panel/domain-panel.component";
-import {DomainResourceTypePanelComponent} from "./domain-resource-type-panel/domain-resource-type-panel.component";
-import {DomainSmlIntegrationPanelComponent} from "./domain-sml-panel/domain-sml-integration-panel.component";
+import {
+  DomainResourceTypePanelComponent
+} from "./domain-resource-type-panel/domain-resource-type-panel.component";
+import {
+  DomainSmlIntegrationPanelComponent
+} from "./domain-sml-panel/domain-sml-integration-panel.component";
 import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {firstValueFrom, Subscription} from "rxjs";
 import {VisibilityEnum} from "../../common/enums/visibility.enum";
@@ -60,15 +78,17 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
 
-    this.domainUpdatedEventSub = domainService.onDomainUpdatedEvent().subscribe(updateDomainList => {
-        this.updateDomainList(updateDomainList);
-      }
-    );
+    this.domainUpdatedEventSub = domainService.onDomainUpdatedEvent()
+      .subscribe((updateDomainList: DomainRo[]): void => {
+          this.updateDomainList(updateDomainList);
+        }
+      );
 
-    this.domainEntryUpdatedEventSub = domainService.onDomainEntryUpdatedEvent().subscribe(updateEntry => {
-        this.updateDomain(updateEntry);
-      }
-    );
+    this.domainEntryUpdatedEventSub = domainService.onDomainEntryUpdatedEvent()
+      .subscribe((updateEntry: DomainRo): void => {
+          this.updateDomain(updateEntry);
+        }
+      );
 
     keystoreService.onKeystoreUpdatedEvent().subscribe(keystoreCertificates => {
         this.keystoreCertificates = keystoreCertificates;
@@ -89,11 +109,9 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     this.domainEntryUpdatedEventSub.unsubscribe();
   }
 
-  updateExtensions(extensions: ExtensionRo[]) {
-
+  updateExtensions(extensions: ExtensionRo[]): void {
     let allResourceDefinition: ResourceDefinitionRo[] = [];
     extensions.forEach(ext => allResourceDefinition.push(...ext.resourceDefinitions))
-
     this.domiSMPResourceDefinitions = allResourceDefinition;
   }
 
@@ -194,7 +212,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       return true;
     }
 
-    let canChangeTab =firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
+    let canChangeTab = firstValueFrom(this.dialog.open(CancelDialogComponent).afterClosed());
     canChangeTab.then((canChange: boolean) => {
       if (canChange) {
         // reset
@@ -229,6 +247,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
       smlClientCertAuth: false,
     }
   }
+
   onSaveEvent(domain: DomainRo) {
     if (this.isNewDomain()) {
       this.domainService.createDomain(domain);
@@ -247,6 +266,11 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
 
   onSaveSmlIntegrationDataEvent(domain: DomainRo) {
     this.domainService.updateDomainSMLIntegrationData(domain);
+
+  }
+
+  onSavePropertiesDataEvent(domain: DomainRo) {
+    this.domainService.updateDomainData(domain);
   }
 
 
@@ -264,7 +288,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   }
 
   deleteDomain(domain: DomainRo) {
-    this.domainService.deleteDomains(domain);
+    this.domainService.deleteDomain(domain);
   }
 
   public domainSelected(domainSelected: DomainRo) {

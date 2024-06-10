@@ -1,0 +1,21 @@
+#domain-properties-panel {
+  padding: 1em;
+}
+
+
+
+.deleted  {
+  text-decoration: line-through !important;
+  font-weight: bold;
+}
+
+.table-row-new {
+  color: darkgreen !important;
+  font-weight: bold;
+}
+.table-row-updated {
+  font-weight: bold;
+}
+.table-row {
+  font-weight: normal;
+}

@@ -23,8 +23,9 @@ import ec.services.wsdl.bdmsl.data._1.ExistsParticipantResponseType;
 import ec.services.wsdl.bdmsl.data._1.ParticipantsType;
 import ec.services.wsdl.bdmsl.data._1.SMPAdvancedServiceForParticipantType;
 import eu.europa.ec.bdmsl.ws.soap.*;
+import eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
@@ -100,11 +101,23 @@ public class SmlConnector implements ApplicationContextAware {
         ctx = applicationContext;
     }
 
-    public boolean registerInDns(Identifier normalizedParticipantId, DBDomain domain, String customNaptrService) {
+    /**
+     * Register a new participant in the SML. If the integration with SML is disabled
+     * or the Domain is not registered, it returns {@code false}.
+     * @param scheme the participant identifier scheme
+     * @param identifier  the participant identifier value
+     * @param domain the domain entity to which the participant must be registered
+     * @param customNaptrService the custom NAPTR service to be used with registration the naptr record
+     * @return {@code true} if the participant is registered; otherwise, {@code false}
+     * @throws SMPRuntimeException if an error occurs during the registration process
+     */
+    public boolean registerInDns(String scheme, String identifier, DBDomain domain, String customNaptrService) {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
-        String normalizedParticipantString = identifierService.formatParticipant(normalizedParticipantId);
+
+        Identifier normalizedParticipantId = identifierService.normalizeParticipant(domain.getDomainCode(), scheme, identifier);
+        String normalizedParticipantString = identifierService.formatParticipant(domain.getDomainCode(), normalizedParticipantId);
         if (!domain.isSmlRegistered()) {
             LOG.info("Participant {} is not registered to SML because domain {} is not registered!",
                     normalizedParticipantString, domain.getDomainCode());
@@ -133,16 +146,25 @@ public class SmlConnector implements ApplicationContextAware {
      * Checks whether the participant identified by the provided ID exists or not. In case the integration with SML is
      * disabled, it returns {@code false}.
      *
-     * @param normalizedParticipantId the participant ID
+     * @param scheme the participant scheme
+     * @param identifier the participant scheme
      * @param domain                  the domain entity
      * @return {@code true} if the participant exists; otherwise, {@code false} (also when SML integration is disabled).
      */
-    public boolean participantExists(Identifier normalizedParticipantId, DBDomain domain) {
+    public boolean participantExists(String scheme, String identifier, DBDomain domain) {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
+        Identifier normalizedParticipantId;
+        String normalizedParticipantString;
+        try {
+            normalizedParticipantId = identifierService.normalizeParticipant(domain.getDomainCode(), scheme, identifier);
+            normalizedParticipantString = identifierService.formatParticipant(domain.getDomainCode(), normalizedParticipantId);
+        } catch (MalformedIdentifierException e) {
+            LOG.error("Invalid participant identifier: [{}].", e.getMessage());
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION, e, ExceptionUtils.getRootCauseMessage(e));
 
-        String normalizedParticipantString = identifierService.formatParticipant(normalizedParticipantId);
+        }
         if (!domain.isSmlRegistered()) {
             LOG.info("Cannot check if Participant {} exists when domain {} is not registered!",
                     normalizedParticipantString, domain.getDomainCode());
@@ -287,11 +309,19 @@ public class SmlConnector implements ApplicationContextAware {
     }
 
 
-    public boolean unregisterFromDns(Identifier normalizedParticipantId, DBDomain domain) {
+    /**
+     * Unregister a participant from the SML. If the integration with SML is disabled or the Domain is not registered, it returns {@code false}.
+     * @param scheme the participant identifier scheme
+     * @param identifier the participant identifier value
+     * @param domain the domain entity from which the participant must be unregistered
+     * @return {@code true} if the participant is unregistered; otherwise, {@code false}
+     */
+    public boolean unregisterFromDns(String scheme, String identifier, DBDomain domain) {
         if (!configurationService.isSMLIntegrationEnabled()) {
             return false;
         }
-        String normalizedParticipantString = identifierService.formatParticipant(normalizedParticipantId);
+        Identifier normalizedParticipantId = identifierService.normalizeParticipant(domain.getDomainCode(), scheme, identifier);
+        String normalizedParticipantString = identifierService.formatParticipant(domain.getDomainCode(), normalizedParticipantId);
         if (!domain.isSmlRegistered()) {
             LOG.info("Participant {} is not unregistered from SML because domain {} is not registered!",
                     normalizedParticipantString, domain.getDomainCode());

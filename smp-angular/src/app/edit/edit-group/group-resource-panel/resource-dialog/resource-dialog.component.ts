@@ -9,7 +9,6 @@ import {DomainRo} from "../../../../common/model/domain-ro.model";
 import {ResourceDefinitionRo} from "../../../../system-settings/admin-extension/resource-definition-ro.model";
 import {EditGroupService} from "../../edit-group.service";
 import {GlobalLookups} from "../../../../common/global-lookups";
-import {EntityStatus} from "../../../../common/enums/entity-status.enum";
 
 
 @Component({

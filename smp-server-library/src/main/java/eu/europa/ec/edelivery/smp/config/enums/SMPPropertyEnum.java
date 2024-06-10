@@ -62,30 +62,31 @@ public enum SMPPropertyEnum {
     HTTP_PROXY_USER("smp.proxy.user", "", "The proxy user",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
 
-    PARTC_SCH_VALIDATION_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$",
+    RESOURCE_SCH_VALIDATION_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.validationRegex", "^$|^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)$|^urn:oasis:names:tc:ebcore:partyid-type:(iso6523|unregistered)(:.+)?$",
             "Regular expression for validating the participant schema!",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
-    PARTC_SCH_REGEXP_MSG("identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
+    RESOURCE_SCH_REGEXP_MSG("identifiersBehaviour.ParticipantIdentifierScheme.validationRegexMessage",
             "Participant scheme must start with:urn:oasis:names:tc:ebcore:partyid-type:(iso6523:|unregistered:) OR must be up to 25 characters long with form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9].", "Error message for UI",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, STRING),
-    PARTC_SCH_MANDATORY("identifiersBehaviour.scheme.mandatory", "true", "Scheme for participant identifier is mandatory",
+    RESOURCE_SCH_MANDATORY("identifiersBehaviour.scheme.mandatory", "true", "Scheme for participant identifier is mandatory",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-    PARTC_SCH_SPLIT_REGEXP("identifiersBehaviour.splitPattern", "^(?i)\\s*?(?<scheme>urn:oasis:names:tc:ebcore:partyid-type:(iso6523:[0-9]{4}|unregistered(:[^:]+)?))::?(?<identifier>.+)?\\s*$",
+    RESOURCE_SCH_SPLIT_REGEXP("identifiersBehaviour.splitPattern", "^(?i)\\s*?(?<scheme>urn:oasis:names:tc:ebcore:partyid-type:(iso6523:[0-9]{4}|unregistered(:[^:]+)?))::?(?<identifier>.+)?\\s*$",
              "Regular expression with groups <scheme> and <identifier> for splitting the identifiers to scheme and identifier part!",  OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
-    PARTC_SCH_URN_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.urn.concatenate",
-            "", "Regular expression to detect URN party identifiers. If the party identifier schema matches the regexp, then the party identifier is concatenated with a single colon in XML responses. Else it is handled as OASIS SMP party identifier. Example: ^(?i)(urn:)|(mailto:).*$",
+    RESOURCE_SCH_URN_REGEXP("identifiersBehaviour.ParticipantIdentifierScheme.urn.concatenate",
+            "^(?i)(urn:)|(mailto:).*$", "Regular expression to detect URN party identifiers. If the party identifier schema matches the regexp, then the party identifier is concatenated with a single colon in XML responses. Else it is handled as OASIS SMP party identifier. Example: ^(?i)(urn:)|(mailto:).*$",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, REGEXP),
 
-    CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes", "sensitive-participant-sc1|sensitive-participant-sc2", "Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.",
+    RESOURCE_CASE_SENSITIVE_SCHEMES("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes", "sensitive-participant-sc1|sensitive-participant-sc2", "Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
-    CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes", "casesensitive-doc-scheme1|casesensitive-doc-scheme2", "Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.",
+    SUBRESOURCE_CASE_SENSITIVE_SCHEMES("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes", "casesensitive-doc-scheme1|casesensitive-doc-scheme2", "Specifies schemes of document identifiers that must be considered CASE-SENSITIVE.",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, LIST_STRING),
 
 
     // SML integration!
     SML_ENABLED("bdmsl.integration.enabled", "false", "BDMSL (SML) integration ON/OFF switch",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
-
+    SML_MANAGE_MAX_COUNT("bdmsl.participants.manage.max-count", "10000", "Maximum number of participants which can be registered/unregistered in one call of register/unregister domain",
+            OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
     SML_URL("bdmsl.integration.url", "http://localhost:8080/edelivery-sml", "BDMSL (SML) endpoint",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, URL),
     SML_TLS_DISABLE_CN_CHECK("bdmsl.integration.tls.disableCNCheck", "false", "If SML Url is HTTPs - Disable CN check if needed.",
@@ -405,8 +406,10 @@ public enum SMPPropertyEnum {
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, INTEGER),
 
     // deprecated properties
+    // property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled
     CLIENT_CERT_HEADER_ENABLED_DEPRECATED("authentication.blueCoat.enabled", "false", "Property was replaced by property: smp.automation.authentication.external.tls.clientCert.enabled",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),
+    // No need to concatenate ebCore party id in XML responses. The value is returned as defined in the SMP document at registration time.
     PARTC_EBCOREPARTYID_CONCATENATE("identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate", "false",
             "Concatenate ebCore party id in XML responses <ParticipantIdentifier>urn:oasis:names:tc:ebcore:partyid-type:unregistered:test-ebcore-id</ParticipantIdentifier>",
             OPTIONAL, NOT_ENCRYPTED, NO_RESTART_NEEDED, BOOLEAN),

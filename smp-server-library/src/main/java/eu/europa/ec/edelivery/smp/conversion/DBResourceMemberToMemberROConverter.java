@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.data.enums.MemberOfType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBResourceMember;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
@@ -34,7 +35,7 @@ public class DBResourceMemberToMemberROConverter implements Converter<DBResource
     @Override
     public MemberRO convert(DBResourceMember source) {
         MemberRO target = new MemberRO();
-        target.setMemberOf("RESOURCE");
+        target.setMemberOf(MemberOfType.RESOURCE);
         target.setUsername(source.getUser().getUsername());
         target.setFullName(source.getUser().getFullName());
         target.setRoleType(source.getRole());

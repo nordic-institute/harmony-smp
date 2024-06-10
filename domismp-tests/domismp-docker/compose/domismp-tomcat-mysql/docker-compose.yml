@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   domismp-service:
     image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_TOMCAT_MYSQL}:${SMP_VERSION}

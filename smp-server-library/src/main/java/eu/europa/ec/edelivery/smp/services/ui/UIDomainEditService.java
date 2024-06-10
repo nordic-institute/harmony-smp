@@ -18,12 +18,16 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.config.SMPEnvironmentProperties;
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
+import eu.europa.ec.edelivery.smp.config.enums.SMPEnvPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.DomainMemberDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBUser;
@@ -34,24 +38,27 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.utils.PropertyUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Service bean provides only public domain entity data for the Domain.
+ * Service bean provides only public/edit domain entity data for the Domain.
+ * To access most of the data user must have Domain administrator permissions.
  *
  * @author Joze Rihtarsic
  * @since 4.2
  */
 @Service
-public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicRO> {
+public class UIDomainEditService extends UIServiceBase<DBDomain, DomainPublicRO> {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainPublicService.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainEditService.class);
     private final DomainDao domainDao;
 
     private final DomainMemberDao domainMemberDao;
@@ -59,7 +66,7 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
     private final ConversionService conversionService;
 
 
-    public UIDomainPublicService(DomainDao domainDao, DomainMemberDao domainMemberDao, ConversionService conversionService, UserDao userDao) {
+    public UIDomainEditService(DomainDao domainDao, DomainMemberDao domainMemberDao, ConversionService conversionService, UserDao userDao) {
         this.domainDao = domainDao;
         this.domainMemberDao = domainMemberDao;
         this.conversionService = conversionService;
@@ -177,4 +184,122 @@ public class UIDomainPublicService extends UIServiceBase<DBDomain, DomainPublicR
         return domainResourceDefs.stream().map(DBDomainResourceDef::getResourceDef).map(resourceDef ->
                 conversionService.convert(resourceDef, ResourceDefinitionRO.class)).collect(Collectors.toList());
     }
+
+    /**
+     * Method returns all Domain properties which are not tagged as system admin only!
+     * @param domainId - domain to get properties
+     * @return list of domain properties
+     */
+    public List<DomainPropertyRO> getDomainEditProperties(Long domainId) {
+        DBDomain domain = domainDao.find(domainId);
+        if (domain == null) {
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+        }
+        List<DBDomainConfiguration> domainConfiguration = domainDao.getDomainConfiguration(domain);
+
+        Map<String, DomainPropertyRO> dbList = domainConfiguration.stream()
+                .map(dc -> conversionService.convert(dc, DomainPropertyRO.class))
+                .collect(Collectors.toMap(DomainPropertyRO::getProperty, dp -> dp));
+        // return only properties that are not system admin only
+        return Arrays.stream(SMPDomainPropertyEnum.values())
+                .filter(SMPDomainPropertyEnum::isNotSystemAdminOnly)
+                .map(enumType -> {
+            if (dbList.containsKey(enumType.getProperty())) {
+                return dbList.get(enumType.getProperty());
+            }
+            return conversionService.convert(enumType, DomainPropertyRO.class);
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    /**
+     * Method updates domain properties which are not system admin only.
+     * @param domainId - domain to update properties
+     * @param domainProperties - list of domain properties
+     * @return list of updated domain properties
+     */
+    @Transactional
+    public List<DomainPropertyRO>  updateDomainEditProperties(Long domainId, List<DomainPropertyRO> domainProperties) {
+        DBDomain domain = domainDao.find(domainId);
+        if (domain == null) {
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+        }
+        // get current domain configuration
+        Map<String, DBDomainConfiguration> currentDomainConfiguration = domainDao.getDomainConfiguration(domain)
+                .stream().collect(Collectors.toMap(DBDomainConfiguration::getProperty, dp -> dp));
+        Map<String, DomainPropertyRO> newDomainPropertyValues =
+                domainProperties.stream().collect(Collectors.toMap(DomainPropertyRO::getProperty, dp -> dp));
+
+        List<DBDomainConfiguration> listOfDomainConfiguration = new ArrayList<>();
+
+        // database domain configuration property list must match SMPDomainPropertyEnum
+        for (SMPDomainPropertyEnum domainProp: SMPDomainPropertyEnum.values()) {
+            if (domainProp.isSystemAdminOnly()) {
+                // skip system admin only properties
+                continue;
+            }
+            DBDomainConfiguration domainConfiguration = currentDomainConfiguration.get(domainProp.getProperty());
+            DomainPropertyRO domainPropertyRO = newDomainPropertyValues.get(domainProp.getProperty());
+            // if property already exists in the database, update value
+            DBDomainConfiguration updatedDomainProp =  domainDao.updateDomainProperty(domain, domainProp, domainConfiguration, domainPropertyRO);
+            listOfDomainConfiguration.add(updatedDomainProp);
+            // remove updated property from the map
+            currentDomainConfiguration.remove(domainProp.getProperty());
+            LOG.debug("Updated domain property [{}]: [{}] for domain [{}]",
+                    domainProp.getProperty(), updatedDomainProp, domain.getDomainCode());
+
+        }
+        // remove properties that are not in the new list
+        currentDomainConfiguration.values().forEach(domainConfiguration -> {
+            domainDao.removeConfiguration(domainConfiguration);
+            LOG.debug("Removed domain property [{}]: [{}] for domain [{}]",
+                    domainConfiguration.getProperty(), domainConfiguration.getValue(),
+                    domain.getDomainCode());
+        });
+
+        // up
+        return listOfDomainConfiguration.stream().map(dc -> conversionService.convert(dc, DomainPropertyRO.class))
+                .collect(Collectors.toList());
+    }
+
+
+    public PropertyValidationRO validateDomainProperty(PropertyRO propertyRO) {
+        LOG.info("Validate property: [{}]", propertyRO.getProperty());
+        PropertyValidationRO propertyValidationRO = new PropertyValidationRO();
+        propertyValidationRO.setProperty(propertyRO.getProperty());
+        propertyValidationRO.setValue(propertyRO.getValue());
+
+        Optional<SMPDomainPropertyEnum> optPropertyEnum = SMPDomainPropertyEnum.getByProperty(propertyRO.getProperty());
+        if (!optPropertyEnum.isPresent()) {
+            LOG.debug("Property: [{}] is not Domain SMP property!", propertyRO.getProperty());
+            propertyValidationRO.setErrorMessage("Property [" + propertyRO.getProperty() + "] is not SMP property!");
+            propertyValidationRO.setPropertyValid(false);
+            return propertyValidationRO;
+        }
+
+        SMPDomainPropertyEnum propertyEnum = optPropertyEnum.get();
+        return validateDomainPropertyValue(propertyEnum, propertyValidationRO);
+    }
+
+    /**
+     * Method validates domain property value for given property enum.
+     * @param propertyEnum - property enum
+     * @param propertyValidationRO - property validation object with value.
+     * @return property validation object with validation result and error message if validation failed.
+     */
+    private PropertyValidationRO validateDomainPropertyValue(SMPDomainPropertyEnum propertyEnum,
+                                                             PropertyValidationRO propertyValidationRO) {
+        // try to parse value
+        try {
+            File confDir = Paths.get(SMPEnvironmentProperties.getInstance().getEnvPropertyValue(SMPEnvPropertyEnum.SECURITY_FOLDER)).toFile();
+            PropertyUtils.parseProperty(propertyEnum.getPropertyEnum(), propertyValidationRO.getValue(), confDir);
+        } catch (SMPRuntimeException ex) {
+            propertyValidationRO.setErrorMessage(ex.getMessage());
+            propertyValidationRO.setPropertyValid(false);
+            return propertyValidationRO;
+        }
+
+        propertyValidationRO.setPropertyValid(true);
+        return propertyValidationRO;
+    }
+
 }

@@ -65,6 +65,7 @@ function initOracleDatabaseConfiguration() {
     if [ -n "$ORACLE_PDB" ]; then
         echo "ALTER SESSION SET CONTAINER=$ORACLE_PDB;"
     fi
+    echo 'alter session set "_oracle_script"=true;'
     # magic with double quotes  - first end " then put '"' and then add variable to "$Var" and repeat the stuff :)
     echo "CREATE USER $1 IDENTIFIED BY "'"'"$2"'"'" DEFAULT TABLESPACE users QUOTA UNLIMITED ON users; "
     echo "GRANT CREATE SESSION TO $1;"

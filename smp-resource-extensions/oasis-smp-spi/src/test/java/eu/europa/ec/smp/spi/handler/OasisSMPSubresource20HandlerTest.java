@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class OasisSMPSubresource20HandlerTest extends AbstractHandlerTest {
 
-
     ResourceIdentifier resourceIdentifier = new ResourceIdentifier( "9915:123456789", "iso6523-actorid-upis");
     ResourceIdentifier subResourceIdentifier = new ResourceIdentifier("urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.difi.no:ehf:faktura:ver2.0::2.1", "bdx-docid-qns");
 

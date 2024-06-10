@@ -239,6 +239,32 @@
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+    create table SMP_DOMAIN_CONFIGURATION (
+       ID bigint not null auto_increment comment 'Unique domain configuration id',
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
+        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property description',
+        PROPERTY_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin not null comment 'Property name/key',
+        USER_SYSTEM_DEFAULT bit not null comment 'Use system default value',
+        PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin comment 'Property value',
+        FK_DOMAIN_ID bigint not null,
+        primary key (ID)
+    ) comment='SMP domain configuration' ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    create table SMP_DOMAIN_CONFIGURATION_AUD (
+       ID bigint not null,
+        REV bigint not null,
+        REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
+        DESCRIPTION varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        PROPERTY_NAME varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        USER_SYSTEM_DEFAULT bit,
+        PROPERTY_VALUE varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        FK_DOMAIN_ID bigint,
+        primary key (ID, REV)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
     create table SMP_DOMAIN_MEMBER (
        ID bigint not null auto_increment,
         CREATED_ON datetime not null,
@@ -542,6 +568,9 @@ create index SMP_DOCVER_DOCUMENT_IDX on SMP_DOCUMENT_VERSION (FK_DOCUMENT_ID);
     alter table SMP_DOMAIN 
        add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
 
+    alter table SMP_DOMAIN_CONFIGURATION 
+       add constraint SMP_DOMAIN_CONF_IDX unique (ID, PROPERTY_NAME, FK_DOMAIN_ID);
+
     alter table SMP_DOMAIN_MEMBER 
        add constraint SMP_DOM_MEM_IDX unique (FK_DOMAIN_ID, FK_USER_ID);
 
@@ -648,6 +677,16 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SUBRESOURCE (IDENTIFIER_SCHEME);
 
     alter table SMP_DOMAIN_AUD 
        add constraint FK35qm8xmi74kfenugeonijodsg 
+       foreign key (REV) 
+       references SMP_REV_INFO (id);
+
+    alter table SMP_DOMAIN_CONFIGURATION 
+       add constraint FK4303vstoigqtmeo3t2i034gm3 
+       foreign key (FK_DOMAIN_ID) 
+       references SMP_DOMAIN (ID);
+
+    alter table SMP_DOMAIN_CONFIGURATION_AUD 
+       add constraint FKkelcga805bleh5x256hy5e1xb 
        foreign key (REV) 
        references SMP_REV_INFO (id);
 

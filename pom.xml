@@ -82,6 +82,7 @@ See the Licence for the specific language governing permissions and limitations 
         <commons-validator.version>1.8.0</commons-validator.version>
         <cxf-xjc-runtime.version>3.3.2</cxf-xjc-runtime.version>
         <cxf.version>3.5.8</cxf.version>
+        <ehcache.version>3.10.8</ehcache.version>
         <h2.version>2.2.224</h2.version>
         <hamcrest.version>2.2</hamcrest.version>
         <hibernate-jpa.version>1.0.2.Final</hibernate-jpa.version>
@@ -216,6 +217,13 @@ See the Licence for the specific language governing permissions and limitations 
                 <artifactId>cxf-rt-frontend-jaxws</artifactId>
                 <version>${cxf.version}</version>
             </dependency>
+            <!-- Ehcache -->
+            <dependency>
+                <groupId>org.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http</artifactId>

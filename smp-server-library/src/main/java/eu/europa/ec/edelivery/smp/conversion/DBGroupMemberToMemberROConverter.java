@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.data.enums.MemberOfType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
@@ -26,7 +27,10 @@ import org.springframework.stereotype.Component;
 
 
 /**
+ * Converter for DBGroupMember to MemberRO
  *
+ * @author Joze Rihtarsic
+ * @since 5.0
  */
 @Component
 public class DBGroupMemberToMemberROConverter implements Converter<DBGroupMember, MemberRO> {
@@ -34,12 +38,11 @@ public class DBGroupMemberToMemberROConverter implements Converter<DBGroupMember
     @Override
     public MemberRO convert(DBGroupMember source) {
         MemberRO target = new MemberRO();
-        target.setMemberOf("GROUP");
+        target.setMemberOf(MemberOfType.GROUP);
         target.setUsername(source.getUser().getUsername());
         target.setFullName(source.getUser().getFullName());
         target.setRoleType(source.getRole());
         target.setMemberId(SessionSecurityUtils.encryptedEntityId(source.getId()));
-
         return target;
     }
 }

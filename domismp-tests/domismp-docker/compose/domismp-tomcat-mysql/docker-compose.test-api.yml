@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   ##
   ## API Tests
@@ -12,5 +11,5 @@ services:
       - test-network
 networks:
   test-network:
-    external:
-      name: ${DOCKER_NETWORK_NAME:-domismp-tomcat-mysql_default}
+    name: ${DOCKER_NETWORK_NAME:-domismp-tomcat-mysql_default}
+    external: true

@@ -22,7 +22,6 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.ServicesBeansConfiguration;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
-import eu.europa.ec.edelivery.smp.conversion.IdentifierService;
 import eu.europa.ec.edelivery.smp.cron.CronTriggerConfig;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
@@ -62,7 +61,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {IdentifierService.class, SmlConnector.class, SmpXmlSignatureService.class, MailService.class,
-        DomainService.class,
+        DomainSMLIntegrationService.class,
         ResourceDao.class, SubresourceDao.class, DomainDao.class, UserDao.class, DBAssertion.class, ConfigurationDao.class, AlertDao.class, CredentialDao.class,
         UITruststoreService.class, UIKeystoreService.class, ConversionTestConfig.class, SMLIntegrationService.class,
         CRLVerifierService.class,

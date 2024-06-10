@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -18,14 +18,17 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.*;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomainResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.DBGroup;
 import eu.europa.ec.edelivery.smp.data.model.ext.DBResourceDef;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.model.user.DBGroupMember;
+import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
@@ -41,21 +44,21 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * Bean provides system admin services. The services must always be accessible via
+ * authenticated UI services allowing only users with System admin to access them.
+ *
  * @author Joze Rihtarsic
  * @since 5.0
  */
-
 @Service
-public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
+public class UIDomainAdminService extends UIServiceBase<DBDomain, DomainRO> {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainService.class);
-
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainAdminService.class);
 
     private final DomainDao domainDao;
     private final DomainMemberDao domainMemberDao;
@@ -67,15 +70,15 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     private final GroupMemberDao groupMemberDao;
     private final SMLIntegrationService smlIntegrationService;
 
-    public UIDomainService(ConversionService conversionService,
-                           DomainDao domainDao,
-                           DomainMemberDao domainMemberDao,
-                           ResourceDao resourceDao,
-                           ResourceDefDao resourceDefDao,
-                           DomainResourceDefDao domainResourceDefDao,
-                           GroupDao groupDao,
-                           GroupMemberDao groupMemberDao,
-                           SMLIntegrationService smlIntegrationService) {
+    public UIDomainAdminService(ConversionService conversionService,
+                                DomainDao domainDao,
+                                DomainMemberDao domainMemberDao,
+                                ResourceDao resourceDao,
+                                ResourceDefDao resourceDefDao,
+                                DomainResourceDefDao domainResourceDefDao,
+                                GroupDao groupDao,
+                                GroupMemberDao groupMemberDao,
+                                SMLIntegrationService smlIntegrationService) {
         this.conversionService = conversionService;
         this.domainDao = domainDao;
         this.resourceDao = resourceDao;
@@ -121,12 +124,12 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
     @Transactional
     public void createDomainData(DomainRO data) {
-        if (StringUtils.isBlank(data.getDomainCode())){
+        if (StringUtils.isBlank(data.getDomainCode())) {
             throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain code must not be empty!");
         }
 
-        if (domainDao.getDomainByCode(data.getDomainCode()).isPresent()){
-            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain with code ["+data.getDomainCode()+"] already exists!");
+        if (domainDao.getDomainByCode(data.getDomainCode()).isPresent()) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_DOMAIN_DATA, "Domain with code [" + data.getDomainCode() + "] already exists!");
         }
         DBDomain domain = new DBDomain();
         domain.setDomainCode(data.getDomainCode());
@@ -148,7 +151,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     public void updateBasicDomainData(Long domainId, DomainRO data) {
         DBDomain domain = domainDao.find(domainId);
         if (domain == null) {
-            LOG.warn("Can not delete domain for ID [{}], because it does not exists!", domainId);
+            LOG.warn("Can not update domain for ID [{}], because it does not exists!", domainId);
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
         }
         domain.setDomainCode(data.getDomainCode());
@@ -180,7 +183,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         domain.setSmlClientCertAuth(data.isSmlClientCertAuth());
 
         // if registered, validate the updated domain to ensure its SML integration certificate is valid
-        if(domain.isSmlRegistered() && !smlIntegrationService.isDomainValid(domain)) {
+        if (domain.isSmlRegistered() && !smlIntegrationService.isDomainValid(domain)) {
             String msg = "The SML-SMP certificate for domain [" + domain.getDomainCode() + "] is not valid!";
             throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, msg);
         }
@@ -224,6 +227,72 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     public DomainRO getDomainDataByDomainCode(String domainCode) {
         DBDomain domain = domainDao.getDomainByCode(domainCode).orElse(null);
         return conversionService.convert(domain, DomainRO.class);
+    }
+
+    /**
+     * Method returns all Domain properties.
+     *
+     * @param domainId - domain to get properties
+     * @return list of domain properties
+     */
+    public List<DomainPropertyRO> getDomainProperties(Long domainId) {
+        DBDomain domain = domainDao.find(domainId);
+        if (domain == null) {
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+        }
+        List<DBDomainConfiguration> domainConfiguration = domainDao.getDomainConfiguration(domain);
+
+        Map<String, DomainPropertyRO> dbList = domainConfiguration.stream()
+                .map(dc -> conversionService.convert(dc, DomainPropertyRO.class))
+                .collect(Collectors.toMap(DomainPropertyRO::getProperty, dp -> dp));
+
+        return Arrays.stream(SMPDomainPropertyEnum.values()).map(enumType -> {
+            if (dbList.containsKey(enumType.getProperty())) {
+                return dbList.get(enumType.getProperty());
+            }
+            return conversionService.convert(enumType, DomainPropertyRO.class);
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<DomainPropertyRO> updateDomainProperties(Long domainId, List<DomainPropertyRO> domainProperties) {
+        DBDomain domain = domainDao.find(domainId);
+        if (domain == null) {
+            throw new BadRequestException(ErrorBusinessCode.NOT_FOUND, "Domain does not exist in database!");
+        }
+        // get current domain configuration
+        Map<String, DBDomainConfiguration> currentDomainConfiguration = domainDao.getDomainConfiguration(domain)
+                .stream().collect(Collectors.toMap(DBDomainConfiguration::getProperty, Function.identity()));
+        Map<String, DomainPropertyRO> newDomainPropertyValues =
+                domainProperties.stream().collect(Collectors.toMap(DomainPropertyRO::getProperty, dp -> dp));
+
+        List<DBDomainConfiguration> listOfDomainConfiguration = new ArrayList<>();
+
+        // database domain configuration property list must match SMPDomainPropertyEnum
+        for (SMPDomainPropertyEnum domainProp : SMPDomainPropertyEnum.values()) {
+            DBDomainConfiguration domainConfiguration = currentDomainConfiguration.get(domainProp.getProperty());
+            DomainPropertyRO domainPropertyRO = newDomainPropertyValues.get(domainProp.getProperty());
+            // if property already exists in the database, update value
+            DBDomainConfiguration updatedDomainProp = domainDao.updateDomainProperty(domain, domainProp,
+                    domainConfiguration, domainPropertyRO);
+            listOfDomainConfiguration.add(updatedDomainProp);
+            // remove updated property from the map
+            currentDomainConfiguration.remove(domainProp.getProperty());
+            LOG.debug("Updated domain property [{}]: [{}] for domain [{}]",
+                    domainProp.getProperty(), updatedDomainProp, domain.getDomainCode());
+
+        }
+        // remove properties that are not in the new list
+        currentDomainConfiguration.values().forEach(domainConfiguration -> {
+            domainDao.removeConfiguration(domainConfiguration);
+            LOG.debug("Removed domain property [{}]: [{}] for domain [{}]",
+                    domainConfiguration.getProperty(), domainConfiguration.getValue(),
+                    domain.getDomainCode());
+        });
+
+        // up
+        return listOfDomainConfiguration.stream().map(dc -> conversionService.convert(dc, DomainPropertyRO.class))
+                .collect(Collectors.toList());
     }
 
     private boolean validateRemoveDomainResourceDef(DBDomain domain, DBResourceDef resourceDef) {

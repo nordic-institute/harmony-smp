@@ -18,9 +18,11 @@
  */
 package eu.europa.ec.edelivery.smp.services.ui;
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.enums.VisibilityType;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.ui.DomainPropertyRO;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.exceptions.BadRequestException;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceTest;
@@ -41,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UIDomainServiceTest extends AbstractServiceTest {
 
     @Autowired
-    private UIDomainService testInstance;
+    private UIDomainAdminService testInstance;
     @Autowired
     private DomainDao domainDao;
 //     @Autowired
@@ -160,6 +162,36 @@ class UIDomainServiceTest extends AbstractServiceTest {
 
         DomainRO result = testInstance.getDomainData(testDomain.getId());
         assertTrue(result.getResourceDefinitions().contains(restDef2));
+    }
+
+    @Test
+    void testGetDomainProperties(){
+        DBDomain domain = testUtilsDao.getD1();
+        List<DomainPropertyRO> domainROList = testInstance.getDomainProperties(domain.getId());
+
+        assertNotNull(domainROList);
+        assertEquals(SMPDomainPropertyEnum.values().length, domainROList.size());
+
+    }
+
+    @Test
+    void testUpdateDomainProperties(){
+        String newValue = "new value";
+        DBDomain domain = testUtilsDao.getD1();
+        List<DomainPropertyRO> domainROList = testInstance.getDomainProperties(domain.getId());
+        assertEquals(SMPDomainPropertyEnum.values().length, domainROList.size());
+        // set new value
+        for (DomainPropertyRO domainPropertyRO : domainROList) {
+            domainPropertyRO.setValue(newValue);
+            domainPropertyRO.setSystemDefault(!domainPropertyRO.isSystemDefault());
+        }
+        List<DomainPropertyRO> domainROListUpdated =  testInstance.updateDomainProperties(domain.getId(), domainROList);
+
+        List<DomainPropertyRO> domainROListUpdated2 = testInstance.getDomainProperties(domain.getId());
+        assertEquals(SMPDomainPropertyEnum.values().length, domainROListUpdated2.size());
+        domainROListUpdated.forEach(dpr -> {
+            assertEquals(newValue, dpr.getValue());
+        });
     }
 
     @Test

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -19,17 +19,15 @@
 package eu.europa.ec.edelivery.smp.ui.edit;
 
 
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.enums.MembershipRoleType;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
-import eu.europa.ec.edelivery.smp.data.ui.ResourceDefinitionRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.filter.Filter;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ui.UIDomainPublicService;
+import eu.europa.ec.edelivery.smp.services.ui.UIDomainEditService;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,11 +50,11 @@ public class DomainEditController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainEditController.class);
 
-    private final UIDomainPublicService uiDomainService;
+    private final UIDomainEditService uiDomainEditService;
 
 
-    public DomainEditController(UIDomainPublicService uiDomainService) {
-        this.uiDomainService = uiDomainService;
+    public DomainEditController(UIDomainEditService uiDomainService) {
+        this.uiDomainEditService = uiDomainService;
 
     }
 
@@ -75,13 +73,13 @@ public class DomainEditController {
         Long userId = SessionSecurityUtils.decryptEntityId(userEncId);
 
         if (StringUtils.equals(forRole, "group-admin")) {
-            return uiDomainService.getAllDomainsForGroupAdminUser(userId);
+            return uiDomainEditService.getAllDomainsForGroupAdminUser(userId);
         }
         if (StringUtils.equals(forRole, "resource-admin")) {
-            return uiDomainService.getAllDomainsForResourceAdminUser(userId);
+            return uiDomainEditService.getAllDomainsForResourceAdminUser(userId);
         }
         if (StringUtils.isBlank(forRole) || StringUtils.equals(forRole, "domain-admin")) {
-            return uiDomainService.getAllDomainsForDomainAdminUser(userId);
+            return uiDomainEditService.getAllDomainsForDomainAdminUser(userId);
         }
         throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "GetDomains", "Unknown parameter type [" + forRole + "]!");
     }
@@ -98,7 +96,7 @@ public class DomainEditController {
         logAdminAccess("getDomainMemberList");
         LOG.info("Search for domain members with filter  [{}], paging: [{}/{}], user: {}", filter, page, pageSize, userEncId);
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
-        return uiDomainService.getDomainMembers(domainId, page, pageSize, filter);
+        return uiDomainEditService.getDomainMembers(domainId, page, pageSize, filter);
     }
 
     @PutMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_PUT, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -116,7 +114,7 @@ public class DomainEditController {
             memberRO.setRoleType(MembershipRoleType.VIEWER);
         }
         // is user domain admin or system admin
-        return uiDomainService.addMemberToDomain(domainId, memberRO, memberId);
+        return uiDomainEditService.addMemberToDomain(domainId, memberRO, memberId);
     }
 
     @DeleteMapping(value = SUB_CONTEXT_PATH_EDIT_DOMAIN_MEMBER_DELETE)
@@ -131,7 +129,7 @@ public class DomainEditController {
         Long memberId = SessionSecurityUtils.decryptEntityId(memberEncId);
 
         // is user domain admin or system admin
-        return uiDomainService.deleteMemberFromDomain(domainId, memberId);
+        return uiDomainEditService.deleteMemberFromDomain(domainId, memberId);
     }
 
 
@@ -148,7 +146,63 @@ public class DomainEditController {
         Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
 
         // is user domain admin or system admin
-        return uiDomainService.getResourceDefDomainList(domainId);
+        return uiDomainEditService.getResourceDefDomainList(domainId);
+    }
+
+
+    /**
+     * Method returns domain properties with access rights for domain administrators.
+     *
+     * @param userEncId   encrypted user identifier
+     * @param domainEncId the  encrypted domain identifier
+     * @return list of domain properties
+     */
+    @GetMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_PROPERTIES, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
+    public List<DomainPropertyRO> getEditDomainPropertyList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                            @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId) {
+        logAdminAccess("getDomainPropertyList:" + domainEncId);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        LOG.debug("Get domain properties for domain with id [{}]", domainId);
+        return uiDomainEditService.getDomainEditProperties(domainId);
+    }
+
+    /**
+     * Method validates authorization for the users and updates all given properties.
+     * As the result it returns ALL (updated) domain properties.
+     *
+     * @param userEncId   encrypted user identifier
+     * @param domainEncId the  encrypted domain identifier
+     * @return list of domain properties to be updated.
+     */
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_PROPERTIES, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
+    public List<DomainPropertyRO> updateEditDomainPropertyList(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                               @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                                               @RequestBody List<DomainPropertyRO> domainProperties) {
+        logAdminAccess("updateEditDomainPropertyList:" + domainEncId);
+        Long domainId = SessionSecurityUtils.decryptEntityId(domainEncId);
+        LOG.debug("Update domain properties for domain with id [{}]", domainId);
+        return uiDomainEditService.updateDomainEditProperties(domainId, domainProperties);
+    }
+
+
+    @PostMapping(path = SUB_CONTEXT_PATH_EDIT_DOMAIN_PROPERTIES_VALIDATE,
+            consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#userEncId) and @smpAuthorizationService.isDomainAdministrator(#domainEncId)")
+    public PropertyValidationRO validateProperty(@PathVariable(PATH_PARAM_ENC_USER_ID) String userEncId,
+                                                 @PathVariable(PATH_PARAM_ENC_DOMAIN_ID) String domainEncId,
+                                                 @RequestBody PropertyRO propertyRO) {
+        LOG.info("Validate Domain property: [{}]", propertyRO);
+
+        if (propertyRO == null || StringUtils.isBlank(propertyRO.getProperty())) {
+            throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "ValidateProperty", "Property name is empty!");
+        }
+        SMPDomainPropertyEnum.getByProperty(propertyRO.getProperty())
+                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST,
+                        "ValidateProperty", "Property [" + propertyRO.getProperty() + "] is not domain property!"));
+
+        return uiDomainEditService.validateDomainProperty(propertyRO);
     }
 
 

@@ -19,15 +19,20 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.dynamicdiscovery.model.identifiers.types.EBCorePartyIdFormatterType;
 import eu.europa.ec.edelivery.smp.identifiers.Identifier;
-import eu.europa.ec.edelivery.smp.services.ConfigurationService;
+import eu.europa.ec.edelivery.smp.identifiers.IdentifierFormatter;
+import eu.europa.ec.edelivery.smp.services.IdentifierFormatterService;
+import eu.europa.ec.edelivery.smp.services.IdentifierService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,26 +55,53 @@ public class IdentifierServiceTests {
         });
     }
 
+    IdentifierFormatterService mockIdentifierFormatterService = Mockito.mock(IdentifierFormatterService.class);
 
-    private final IdentifierService testInstance = new IdentifierService(Mockito.mock(ConfigurationService.class));
+    private final IdentifierService testInstance = new IdentifierService(mockIdentifierFormatterService);
 
     @BeforeEach
     public void init() {
-        testInstance.configureDocumentIdentifierFormatter(asList("case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"));
-        testInstance.configureParticipantIdentifierFormatter(asList("case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"), false, null);
+        IdentifierFormatter resourceIdentifierFormatter = IdentifierFormatter.Builder
+                .create()
+                .addFormatterTypes(new EBCorePartyIdFormatterType())
+                .build();
+        resourceIdentifierFormatter.setCaseSensitiveSchemas(asList("case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"));
+        resourceIdentifierFormatter.setSchemeMandatory(false);
+        resourceIdentifierFormatter.setSchemeValidationPattern(Pattern.compile(".*"));
+
+        IdentifierFormatter subresourceIdentifierFormatter = IdentifierFormatter.Builder
+                .create()
+                .build();
+
+        subresourceIdentifierFormatter.setCaseSensitiveSchemas(asList("case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"));
+
+
+        Mockito.when(mockIdentifierFormatterService.getResourceIdentifierFormatter(ArgumentMatchers.anyString()))
+                .thenReturn(resourceIdentifierFormatter);
+
+
+        Mockito.when(mockIdentifierFormatterService.getSubresourceIdentifierFormatter(ArgumentMatchers.anyString()))
+                .thenReturn(subresourceIdentifierFormatter);
+
+      /*  testInstance.configureDocumentIdentifierFormatter(
+                asList("case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"));
+        testInstance.configureParticipantIdentifierFormatter(
+                asList("case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"), false, null);
+
+       */
     }
 
     @ParameterizedTest
     @MethodSource("testCases")
     void testParticipantIdsCaseNormalization(String inputScheme,
-                                                    String inputValue,
-                                                    String expectedScheme,
-                                                    String expectedValue) {
+                                             String inputValue,
+                                             String expectedScheme,
+                                             String expectedValue) {
         //given
         Identifier inputParticpantId = new Identifier(inputValue, inputScheme);
 
         //when
-        Identifier outputParticipantId = testInstance.normalizeParticipant(inputParticpantId);
+        Identifier outputParticipantId = testInstance.normalizeParticipant("testdomain", inputParticpantId);
 
         //then
         assertEquals(expectedScheme, outputParticipantId.getScheme());
@@ -84,14 +116,14 @@ public class IdentifierServiceTests {
     @ParameterizedTest
     @MethodSource("testCases")
     void testDocumentIdsCaseNormalization(String inputScheme,
-                                                 String inputValue,
-                                                 String expectedScheme,
-                                                 String expectedValue) {
+                                          String inputValue,
+                                          String expectedScheme,
+                                          String expectedValue) {
         //given
         Identifier inputDocId = new Identifier(inputValue, inputScheme);
 
         //when
-        Identifier outputDocId = testInstance.normalizeDocument(inputDocId);
+        Identifier outputDocId = testInstance.normalizeDocument("testdomain", inputDocId);
 
         //then
         assertEquals(expectedScheme, outputDocId.getScheme());

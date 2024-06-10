@@ -11,4 +11,5 @@ export interface PropertyRo extends SearchTableEntity {
   mandatory?: boolean;
   restartNeeded? : boolean;
   valuePattern?:string;
+  systemDefaultValue?:string;
 }

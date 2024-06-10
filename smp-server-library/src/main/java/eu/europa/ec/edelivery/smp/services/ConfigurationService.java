@@ -19,6 +19,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.auth.enums.SMPUserAuthenticationTypes;
+import eu.europa.ec.edelivery.smp.config.enums.SMPDomainPropertyEnum;
 import eu.europa.ec.edelivery.smp.config.enums.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.dao.ConfigurationDao;
 import eu.europa.ec.edelivery.smp.data.ui.auth.SMPAuthority;
@@ -62,15 +63,15 @@ public class ConfigurationService {
 
 
     public Pattern getParticipantIdentifierSchemeRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_VALIDATION_REGEXP);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpPattern() {
-        return configurationDAO.getCachedProperty(PARTC_SCH_VALIDATION_REGEXP);
+        return configurationDAO.getCachedProperty(RESOURCE_SCH_VALIDATION_REGEXP);
     }
 
     public String getParticipantIdentifierSchemeRexExpMessage() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_REGEXP_MSG);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_REGEXP_MSG);
     }
 
     public Pattern getPasswordPolicyRexExp() {
@@ -161,26 +162,26 @@ public class ConfigurationService {
     }
 
     public List<String> getCaseSensitiveDocumentScheme() {
-        return configurationDAO.getCachedPropertyValue(CS_DOCUMENTS);
+        return configurationDAO.getCachedPropertyValue(SUBRESOURCE_CASE_SENSITIVE_SCHEMES);
     }
 
     public List<String> getCaseSensitiveParticipantScheme() {
-        return configurationDAO.getCachedPropertyValue(CS_PARTICIPANTS);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_CASE_SENSITIVE_SCHEMES);
     }
 
 
     public boolean getParticipantSchemeMandatory() {
         // not mandatory by default
-        Boolean value = configurationDAO.getCachedPropertyValue(PARTC_SCH_MANDATORY);
+        Boolean value = configurationDAO.getCachedPropertyValue(RESOURCE_SCH_MANDATORY);
         return value != null && value;
     }
 
     public Pattern getParticipantIdentifierSplitRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_SPLIT_REGEXP);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_SPLIT_REGEXP);
     }
 
     public Pattern getParticipantIdentifierUrnValidationRexExp() {
-        return configurationDAO.getCachedPropertyValue(PARTC_SCH_URN_REGEXP);
+        return configurationDAO.getCachedPropertyValue(RESOURCE_SCH_URN_REGEXP);
     }
 
     public boolean isProxyEnabled() {
@@ -409,6 +410,12 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SML_CUSTOM_NAPTR_SERVICE_PARAMS);
     }
 
+    public int getManageMaxSMLRecordCount() {
+        Integer intVal = configurationDAO.getCachedPropertyValue(SML_MANAGE_MAX_COUNT);
+        return intVal == null ? 10000 : intVal;
+    }
+
+
     public List<String> getCasURLTokenValidationGroups() {
         return configurationDAO.getCachedPropertyValue(SSO_CAS_TOKEN_VALIDATION_GROUPS);
     }
@@ -611,4 +618,11 @@ public class ConfigurationService {
         return configurationDAO.getCachedPropertyValue(SMP_ALERT_MAIL_FROM);
     }
 
+    public String getDefaultDomainConfiguration(SMPDomainPropertyEnum property) {
+        return configurationDAO.getCachedProperty(property.getPropertyEnum());
+    }
+
+    public <T>  T getDefaultDomainConfigurationValue(SMPDomainPropertyEnum property) {
+        return configurationDAO.getCachedPropertyValue(property.getPropertyEnum());
+    }
 }

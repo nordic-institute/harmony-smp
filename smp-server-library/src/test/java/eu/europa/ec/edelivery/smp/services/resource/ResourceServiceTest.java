@@ -69,19 +69,19 @@ class ResourceServiceTest extends AbstractJunit5BaseDao {
 
     @ParameterizedTest
     @CsvSource({
-            ", 'Location vector coordinates must not be null!'",
-            "1/2/3/4/5/6/7, 'More than max. count (5) of Resource Location vector coordinates!'",
-            TestConstants.TEST_DOMAIN_CODE_1 + ", 'Not enough path parameters to locate resource'",
-            TestConstants.TEST_DOMAIN_CODE_1 + "/" + TestConstants.TEST_RESOURCE_DEF_CPP + ", 'Not enough path parameters to locate resource'",
-            "badIdentifier, 'Malformed identifier, scheme and id should be delimited by double colon: badidentifier'",
-            "doc-type/badIdentifier, 'Malformed identifier, scheme and id should be delimited by double colon: doc-type'",
-            "domain/doc-type/badIdentifier, 'Malformed identifier, scheme and id should be delimited by double colon: domain'",
+            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,, 'Location vector coordinates must not be null!'",
+            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,1/2/3/4/5/6/7, 'More than max. count (5) of Resource Location vector coordinates!'",
+            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,"+TestConstants.TEST_DOMAIN_CODE_1 + ", 'Not enough path parameters to locate resource'",
+            "eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException,"+TestConstants.TEST_DOMAIN_CODE_1 + "/" + TestConstants.TEST_RESOURCE_DEF_CPP + ", 'Not enough path parameters to locate resource'",
+            "eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException,badIdentifier, 'Invalid Identifier: [badIdentifier]. Can not detect schema!'",
+            "eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException,doc-type/badIdentifier, 'Invalid Identifier: [doc-type]. Can not detect schema!'",
+            "eu.europa.ec.dynamicdiscovery.exception.MalformedIdentifierException,domain/doc-type/badIdentifier, 'Invalid Identifier: [domain]. Can not detect schema!'",
     })
-    void handleRequestFailBadPath(String path, String errorMessage) {
+    void handleRequestFailBadPath(Class<? extends RuntimeException> clazz, String path, String errorMessage) {
         when(resourceRequest.getUrlPathParameters()).thenReturn(path == null ? null : Arrays.asList(path.split("/")));
         when(resourceRequest.getAuthorizedDomain()).thenReturn(testUtilsDao.getD1());
 
-        SMPRuntimeException result = assertThrows(SMPRuntimeException.class,
+        RuntimeException result = assertThrows(clazz,
                 () -> testInstance.handleRequest(user, resourceRequest, resourceResponse));
 
         assertThat(result.getMessage(), containsString(errorMessage));

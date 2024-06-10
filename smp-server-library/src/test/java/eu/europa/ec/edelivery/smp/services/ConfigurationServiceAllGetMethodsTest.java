@@ -70,13 +70,12 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {HTTP_PROXY_PASSWORD, TEST_STRING, "getProxyCredentialToken", true},
                 {HTTP_PROXY_PORT, 8800, "getHttpProxyPort", true},
                 {HTTP_PROXY_USER, TEST_STRING, "getProxyUsername", true},
-                {PARTC_SCH_VALIDATION_REGEXP, TEST_REXEXP, "getParticipantIdentifierSchemeRexExp", true},
-                {PARTC_SCH_VALIDATION_REGEXP, TEST_STRING, "getParticipantIdentifierSchemeRexExpPattern", false},
-                {PARTC_SCH_REGEXP_MSG, TEST_STRING, "getParticipantIdentifierSchemeRexExpMessage", true},
-                //{PARTC_EBCOREPARTYID_CONCATENATE, Boolean.FALSE, "getForceConcatenateEBCorePartyId", true},
-                {PARTC_SCH_MANDATORY, Boolean.FALSE, "getParticipantSchemeMandatory", true},
-                {CS_PARTICIPANTS, TEST_STRING_LIST, "getCaseSensitiveParticipantScheme", true},
-                {CS_DOCUMENTS, TEST_STRING_LIST, "getCaseSensitiveDocumentScheme", true},
+                {RESOURCE_SCH_VALIDATION_REGEXP, TEST_REXEXP, "getParticipantIdentifierSchemeRexExp", true},
+                {RESOURCE_SCH_VALIDATION_REGEXP, TEST_STRING, "getParticipantIdentifierSchemeRexExpPattern", false},
+                {RESOURCE_SCH_REGEXP_MSG, TEST_STRING, "getParticipantIdentifierSchemeRexExpMessage", true},
+                {RESOURCE_SCH_MANDATORY, Boolean.FALSE, "getParticipantSchemeMandatory", true},
+                {RESOURCE_CASE_SENSITIVE_SCHEMES, TEST_STRING_LIST, "getCaseSensitiveParticipantScheme", true},
+                {SUBRESOURCE_CASE_SENSITIVE_SCHEMES, TEST_STRING_LIST, "getCaseSensitiveDocumentScheme", true},
                 {SML_ENABLED, Boolean.FALSE, "isSMLIntegrationEnabled", true},
                 {SML_URL, TEST_URL, "getSMLIntegrationUrl", true},
                 {SML_TLS_DISABLE_CN_CHECK, Boolean.FALSE, "smlDisableCNCheck", true},
@@ -167,11 +166,8 @@ public class ConfigurationServiceAllGetMethodsTest {
                 {ALERT_ACCESS_TOKEN_EXPIRED_LEVEL, AlertLevelEnum.HIGH, "getAlertExpiredAccessTokenLevel", true},
                 {ALERT_CERTIFICATE_BEFORE_EXPIRATION_LEVEL, AlertLevelEnum.HIGH, "getAlertBeforeExpireCertificateLevel", true},
                 {ALERT_CERTIFICATE_EXPIRED_LEVEL, AlertLevelEnum.HIGH, "getAlertExpiredCertificateLevel", true},
-
-
         });
     }
-
 
     @ParameterizedTest
     @MethodSource("data")

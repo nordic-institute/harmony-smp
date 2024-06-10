@@ -7,13 +7,15 @@
     <ng-template #noDataFound>
       <div class="empty-data-panel">No domain selected.</div>
     </ng-template>
-    <mat-tab-group #domainTabs style="height: 100%" *ngIf="selected;else noDataFound">
+    <mat-tab-group class="domain-configuration-tab"
+                   #domainTabs
+                   *ngIf="selected;else noDataFound"
+    >
       <mat-tab>
-        <ng-template mat-tab-label>
+        <ng-template mat-tab-label style="padding: 0">
           <smp-label icon="domain" label="Domain data"></smp-label>
         </ng-template>
         <domain-panel #domainPanelComponent
-                      [domainList]="domainList"
                       [domain]="selected"
                       [keystoreCertificates]="keystoreCertificates"
                       [domiSMPResourceDefinitions]="domiSMPResourceDefinitions"
@@ -42,6 +44,16 @@
       </mat-tab>
       <mat-tab *ngIf="selected?.domainId;">
         <ng-template mat-tab-label>
+          <smp-label icon="settings" label="Configuration"></smp-label>
+        </ng-template>
+        <domain-properties-panel #domainPropertiesPanelComponent
+                                 [systemAdminService]="true"
+                                 [domain]="selected"
+                                 (onSavePropertiesDataEvent)="onSavePropertiesDataEvent($event)"
+        ></domain-properties-panel>
+      </mat-tab>
+      <mat-tab *ngIf="selected?.domainId;">
+        <ng-template mat-tab-label>
           <smp-label icon="dns" label="SML integration"></smp-label>
         </ng-template>
         <domain-sml-integration-panel #domainSmlIntegrationPanelComponent
@@ -57,7 +69,7 @@
 <ng-template #searchDomainPanel>
   <mat-form-field id="domain-filter">
     <mat-label>Filter by domain code</mat-label>
-    <input matInput (keyup)="applyDomainFilter($event)"  #inputDomainFilter>
+    <input matInput (keyup)="applyDomainFilter($event)" #inputDomainFilter>
   </mat-form-field>
 
   <mat-toolbar class="mat-elevation-z2">
@@ -77,10 +89,13 @@
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-  <table class="mat-elevation-z2" id="admin-domain-table" mat-table [dataSource]="dataSource" matSort>
+  <table class="mat-elevation-z2" id="admin-domain-table" mat-table
+         [dataSource]="dataSource" matSort>
     <ng-container matColumnDef="domainCode">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Domain code</th>
-      <td mat-cell *matCellDef="let row" [matTooltip]="row.domainCode">{{row.domainCode}}</td>
+      <td mat-cell *matCellDef="let row"
+          [matTooltip]="row.domainCode">{{ row.domainCode }}
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -91,8 +106,10 @@
 
 
     <tr class="mat-row" *matNoDataRow>
-      <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell" colspan="2"
-      >No data matching the filter "{{inputDomainFilter.value}}"</td>
+      <td *ngIf="inputDomainFilter.value;else noDataFound" class="mat-cell"
+          colspan="2"
+      >No data matching the filter "{{ inputDomainFilter.value }}"
+      </td>
       <ng-template #noDataFound>
         <td class="mat-cell" colspan="2">No data</td>
       </ng-template>

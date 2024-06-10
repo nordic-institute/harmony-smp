@@ -7,7 +7,12 @@ eDelivery SMP 5.1
     smp.sso.cas.registration.enabled: Enable/Disable automatic user registration from CAS at first login.
     smp.sso.cas.registration.confirmation.mandatory: Enable/Disable user confirmation after registration from CAS at first login.
     smp.sso.cas.registration.mapping: The CAS property mapping to user data. Ex: 'EMAIL:${email}|FULL_NAME:${firstName} ${lastName}'
-    bdmsl.integration.dns.zone: The DNS zone/top domain of the SML server. The DNS zone is used to generate DNS queries.
+    bdmsl.integration.dns.zone: The DNS zone/top domain of the SML server.
+    bdmsl.participants.manage.max-count: The maximum number of participants that can be managed by the SMP.
+- deprecated properties:
+    identifiersBehaviour.ParticipantIdentifierScheme.ebCoreId.concatenate: based on eDelivery SMP 2.0 no need to concatenate ebCore party id in XML responses
+    authentication.blueCoat.enabled - deprecated and replaced with smp.automation.authentication.external.tls.clientCert.enabled
+
 
 eDelivery SMP 5.0
 - removed: bdmsl.participant.multidomain.enabled

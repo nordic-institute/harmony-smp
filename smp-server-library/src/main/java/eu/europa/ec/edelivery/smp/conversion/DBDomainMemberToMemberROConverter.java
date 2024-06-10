@@ -18,6 +18,7 @@
  */
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.data.enums.MemberOfType;
 import eu.europa.ec.edelivery.smp.data.model.user.DBDomainMember;
 import eu.europa.ec.edelivery.smp.data.ui.MemberRO;
 import eu.europa.ec.edelivery.smp.utils.SessionSecurityUtils;
@@ -34,7 +35,7 @@ public class DBDomainMemberToMemberROConverter implements Converter<DBDomainMemb
     @Override
     public MemberRO convert(DBDomainMember source) {
         MemberRO target = new MemberRO();
-        target.setMemberOf("DOMAIN");
+        target.setMemberOf(MemberOfType.DOMAIN);
         target.setUsername(source.getUser().getUsername());
         target.setFullName(source.getUser().getFullName());
         target.setRoleType(source.getRole());

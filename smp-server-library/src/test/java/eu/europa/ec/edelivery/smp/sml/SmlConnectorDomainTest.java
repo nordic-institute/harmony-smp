@@ -64,13 +64,12 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @SpyBean
     private SmlConnector testInstance;
 
-    // Mocks
-    @Mock
-    private DBDomain domain;
-
     @BeforeEach
     public void setup() {
-        // default behaviour
+        // setup initial data!
+        testUtilsDao.clearData();
+        testUtilsDao.createDomains();
+
         Mockito.doNothing().when(testInstance).configureClient(any(), any(), any());
         Mockito.doReturn(true).when(configurationService).isSMLIntegrationEnabled();
 
@@ -80,7 +79,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @Test
     void testRegisterDomainInDns() throws Exception {
         //when
-        boolean result = testInstance.registerDomain(DEFAULT_DOMAIN);
+        boolean result = testInstance.registerDomain(testUtilsDao.getD1());
 
         //then
         assertTrue(result);
@@ -90,10 +89,12 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @Test
     void testRegisterDomainInDnsAlreadyExists() throws Exception {
         //given
-        Mockito.doThrow(new BadRequestFault(ERROR_SMP_ALREADY_EXISTS)).when(iManageServiceMetadataWS).create(any(ServiceMetadataPublisherServiceType.class));
+        DBDomain domain = testUtilsDao.getD1();
+        Mockito.doThrow(new BadRequestFault("[ERR-106] The SMP '" + domain.getSmlSmpId() + "' already exists"))
+                .when(iManageServiceMetadataWS).create(any(ServiceMetadataPublisherServiceType.class));
 
         //when
-        boolean result = testInstance.registerDomain(DEFAULT_DOMAIN);
+        boolean result = testInstance.registerDomain(domain);
 
         //then
         assertTrue(result);
@@ -108,7 +109,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
 
         //when
         SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
-                testInstance.registerDomain(DEFAULT_DOMAIN));
+                testInstance.registerDomain(testUtilsDao.getD1()));
 
         //then
         assertEquals("SML integration error! Error: InternalErrorFault: " + message, smpRuntimeException.getMessage().trim());
@@ -118,8 +119,8 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @Test
     void testRegisterDomainInDnsNewClientIsAlwaysCreated() throws Exception {
         //when
-        testInstance.registerDomain(DEFAULT_DOMAIN);
-        testInstance.registerDomain(DEFAULT_DOMAIN);
+        testInstance.registerDomain(testUtilsDao.getD1());
+        testInstance.registerDomain(testUtilsDao.getD1());
 
         //then
         verify(iManageServiceMetadataWS, times(2)).create(any(ServiceMetadataPublisherServiceType.class));
@@ -128,7 +129,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @Test
     void testDomainUnregisterFromDns() throws Exception {
         //when
-        testInstance.unregisterDomain(DEFAULT_DOMAIN);
+        testInstance.unregisterDomain(testUtilsDao.getD1());
 
         //then
         verify(iManageServiceMetadataWS, times(1)).delete(anyString());
@@ -137,8 +138,8 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @Test
     void testUnregisterDomainFromDnsNewClientIsAlwaysCreated() throws Exception {
         //when
-        testInstance.unregisterDomain(DEFAULT_DOMAIN);
-        testInstance.unregisterDomain(DEFAULT_DOMAIN);
+        testInstance.unregisterDomain(testUtilsDao.getD1());
+        testInstance.unregisterDomain(testUtilsDao.getD1());
 
         //then
         verify(iManageServiceMetadataWS, times(2)).delete(anyString());
@@ -151,7 +152,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
 
         //when
         SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
-                testInstance.unregisterDomain(DEFAULT_DOMAIN));
+                testInstance.unregisterDomain(testUtilsDao.getD1()));
 
         //then
         assertEquals("SML integration error! Error: BadRequestFault: " + ERROR_UNEXPECTED_MESSAGE, smpRuntimeException.getMessage().trim());
@@ -166,7 +167,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
 
         //when
         SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
-                testInstance.unregisterDomain(DEFAULT_DOMAIN));
+                testInstance.unregisterDomain(testUtilsDao.getD1()));
 
         //then
         assertEquals("SML integration error! Error: InternalErrorFault: something unexpected", smpRuntimeException.getMessage().trim());
@@ -176,16 +177,16 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @Test
     void testUnregisterDomainFromDnsNotExists() throws Exception {
         //given
-        Mockito.doThrow(new BadRequestFault(ERROR_SMP_NOT_EXISTS)).when(iManageServiceMetadataWS).delete(anyString());
+        Mockito.doThrow(new BadRequestFault("[ERR-100] The SMP '" +testUtilsDao.getD1().getSmlSmpId()+ "' doesn't exist")).when(iManageServiceMetadataWS).delete(anyString());
 
         //when
-        Assertions.assertDoesNotThrow(() -> testInstance.unregisterDomain(DEFAULT_DOMAIN));
+        Assertions.assertDoesNotThrow(() -> testInstance.unregisterDomain(testUtilsDao.getD1()));
     }
 
     @Test
     void testIsOkMessageForDomainNull() {
         //when
-        boolean suc = testInstance.isOkMessage(DEFAULT_DOMAIN, null);
+        boolean suc = testInstance.isOkMessage(testUtilsDao.getD1(), null);
 
         //then
         assertFalse(suc);
@@ -194,7 +195,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
     @Test
     void testIsOkMessageForDomainFalse() {
         //when
-        boolean suc = testInstance.isOkMessage(DEFAULT_DOMAIN, ERROR_UNEXPECTED_MESSAGE);
+        boolean suc = testInstance.isOkMessage(testUtilsDao.getD1(), ERROR_UNEXPECTED_MESSAGE);
 
         //then
         assertFalse(suc);
@@ -236,7 +237,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
         Mockito.when(iManageServiceMetadataWS.read(any(ServiceMetadataPublisherServiceType.class))).thenReturn(existingDomain);
 
         //when
-        boolean result = testInstance.isDomainValid(domain);
+        boolean result = testInstance.isDomainValid(testUtilsDao.getD1());
 
         //then
         assertTrue(result, "Should have returned true when the participant exists");
@@ -250,7 +251,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
 
         //when
         SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
-                testInstance.isDomainValid(domain));
+                testInstance.isDomainValid(testUtilsDao.getD1()));
 
         //then
         assertThat(smpRuntimeException.getMessage(),
@@ -265,7 +266,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
 
         //when
         SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
-                testInstance.isDomainValid(domain));
+                testInstance.isDomainValid(testUtilsDao.getD1()));
 
         //then
         assertThat(smpRuntimeException.getMessage(),
@@ -281,7 +282,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
 
         //when
         SMPRuntimeException smpRuntimeException = assertThrows(SMPRuntimeException.class, () ->
-                testInstance.isDomainValid(domain));
+                testInstance.isDomainValid(testUtilsDao.getD1()));
 
         //then
         assertThat(smpRuntimeException.getMessage(),
@@ -295,7 +296,7 @@ class SmlConnectorDomainTest extends AbstractServiceTest {
         Mockito.doReturn(false).when(configurationService).isSMLIntegrationEnabled();
 
         //when
-        boolean result = testInstance.isDomainValid(domain);
+        boolean result = testInstance.isDomainValid(testUtilsDao.getD1());
 
         //then
         assertFalse(result, "Should have returned the domain as not valid when the SML integration is not enabled");

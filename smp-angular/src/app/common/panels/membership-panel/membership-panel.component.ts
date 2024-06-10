@@ -51,10 +51,9 @@ export class MembershipPanelComponent implements BeforeLeaveGuard {
     this.loadMembershipData();
   }
 
-  get title() {
+  get title(): string {
     switch (this.membershipType) {
       case MemberTypeEnum.DOMAIN:
-
         return "Direct Domain members" + (!!this._domain ? ": [" + this._domain.domainCode + "]" : "")
       case MemberTypeEnum.GROUP:
         return "Direct Group members" + (!!this._group ? ": [" + this._group.groupName + "]" : "")

@@ -8,9 +8,9 @@
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * [PROJECT_HOME]\license\eupl-1.2\license.txt or https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is
  * distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
@@ -24,18 +24,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import eu.europa.ec.edelivery.smp.filter.FilterHandler;
+import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.jcache.JCacheCacheManager;
+import org.springframework.context.annotation.*;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.util.UrlPathHelper;
 
+import javax.cache.CacheManager;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -76,6 +80,7 @@ import java.util.TimeZone;
  */
 @Configuration
 @EnableWebMvc
+@EnableCaching
 @ComponentScan(basePackages = {
         "eu.europa.ec.edelivery.smp.auth",
         "eu.europa.ec.edelivery.smp.config",
@@ -93,7 +98,8 @@ import java.util.TimeZone;
 @PropertySource(value = "classpath:/application.properties", ignoreResourceNotFound = true)
 public class SMPWebAppConfig implements WebMvcConfigurer {
     private static final Logger LOG = LoggerFactory.getLogger(SMPWebAppConfig.class);
-    private static final int HIGHEST_ORDER= Integer. MAX_VALUE;
+    private static final int HIGHEST_ORDER = Integer.MAX_VALUE;
+    private static final String EHCACHE_CONFIG_LOCATION = "/ehcache-default.xml";
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -148,5 +154,19 @@ public class SMPWebAppConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         LOG.debug("Register FilterHandler");
         registry.addFormatterForFieldAnnotation(new FilterHandler());
+    }
+
+    @Bean
+    public JCacheCacheManager cacheManager() throws URISyntaxException, IOException {
+        EhcacheCachingProvider provider = new EhcacheCachingProvider(); //NOSONAR : if this would be closed here (with try-with-resources or in a finally block), it would crash with IllegalStateException everywhere it'll be used further
+        ClassLoader classLoader = getClass().getClassLoader();
+        //default cache
+        final ClassPathResource classPathResource = new ClassPathResource(EHCACHE_CONFIG_LOCATION);
+
+        CacheManager cacheManager = provider.getCacheManager(
+                classPathResource.getURL().toURI(),
+                classLoader);
+
+        return new JCacheCacheManager(cacheManager);
     }
 }

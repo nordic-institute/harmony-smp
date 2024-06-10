@@ -187,7 +187,9 @@ public class OasisSMPSubresource10Handler extends AbstractOasisSMPHandler {
         } catch (TechnicalException e) {
             throw new ResourceException(INVALID_RESOURCE, "Error occurred while validation Oasis SMP 1.0 ServiceMetadata: [" + identifier + "] with error: " + ExceptionUtils.getRootCauseMessage(e), e);
         }
-        serviceMetadataValidator.validate(identifier, documentIdentifier, subresource);
+        serviceMetadataValidator.validate(
+                resourceData.getDomainCode(),
+                identifier, documentIdentifier, subresource);
     }
 
 }

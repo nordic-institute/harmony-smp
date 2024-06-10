@@ -55,7 +55,8 @@ public class Subresource20Validator {
         this.smpIdentifierApi = smpIdentifierApi;
     }
 
-    public void validate(ResourceIdentifier participantIdentifierFromUrl,
+    public void validate(final String domainCode,
+            ResourceIdentifier participantIdentifierFromUrl,
                          ResourceIdentifier documentIdentifierFromUrl,
                          ServiceMetadata subresource
     ) throws ResourceException {
@@ -63,8 +64,14 @@ public class Subresource20Validator {
 
         final ParticipantID participantId = subresource.getParticipantID();
         final ServiceID documentId = subresource.getServiceID();
-        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(participantId.getValue(), participantId.getSchemeID());
-        ResourceIdentifier xmlSubresourceIdentifier = smpIdentifierApi.normalizeSubresourceIdentifier(documentId.getValue(), documentId.getSchemeID());
+        ResourceIdentifier xmlResourceIdentifier = smpIdentifierApi.normalizeResourceIdentifier(
+                domainCode,
+                participantId.getValue(),
+                participantId.getSchemeID());
+        ResourceIdentifier xmlSubresourceIdentifier = smpIdentifierApi.normalizeSubresourceIdentifier(
+                domainCode,
+                documentId.getValue(),
+                documentId.getSchemeID());
         if (!xmlResourceIdentifier.equals(participantIdentifierFromUrl)) {
             // Business identifier must equal path
             throw new ResourceException(INVALID_PARAMETERS, "Participant identifiers don't match between URL parameter [" + participantIdentifierFromUrl + "] and XML body: [" + xmlResourceIdentifier + "]");
@@ -77,12 +84,6 @@ public class Subresource20Validator {
 
         List<ProcessMetadata> processMetadata = subresource.getProcessMetadatas();
         validateProcesses(processMetadata);
-/*
-        if (serviceInformation == null && subresource.getRedirect() != null) {
-            LOG.debug("Redirect subresource, skip document/participant identifier validation");
-            return;
-        }*/
-
 
     }
 

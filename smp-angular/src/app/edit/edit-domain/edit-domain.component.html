@@ -25,6 +25,15 @@
                             [domain]="selected"
         ></domain-group-panel>
       </mat-tab>
+      <mat-tab *ngIf="selected?.domainId;">
+        <ng-template mat-tab-label>
+          <smp-label icon="settings" label="Configuration"></smp-label>
+        </ng-template>
+        <domain-properties-panel #domainPropertiesPanelComponent
+                                 [systemAdminService]="false"
+                                 [domain]="selected"
+        ></domain-properties-panel>
+      </mat-tab>
     </mat-tab-group>
   </data-panel>
   <ng-template #noUserAdminGroupsDataFound>
