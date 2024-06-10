@@ -45,7 +45,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FooterComponent} from './window/footer/footer.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {GlobalLookups} from './common/global-lookups';
-import {HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {HttpEventService} from './http/http-event.service';
 import {InformationDialogComponent} from "./common/dialogs/information-dialog/information-dialog.component";
 import {IsAuthorized} from './security/is-authorized.directive';
@@ -154,6 +154,10 @@ import {
   PropertyDetailsDialogComponent
 } from "./common/dialogs/property-details-dialog/property-details-dialog.component";
 import {ResourceFilterOptionsService} from "./common/services/resource-filter-options.service";
+import {HttpSessionInterceptor} from "./http/http-session-interceptor";
+import {
+  SessionExpirationDialogComponent
+} from "./common/dialogs/session-expiration-dialog/session-expiration-dialog.component";
 
 
 @NgModule({
@@ -241,6 +245,7 @@ import {ResourceFilterOptionsService} from "./common/services/resource-filter-op
     UserCertificatesComponent,
     UserProfileComponent,
     UserProfilePanelComponent,
+    SessionExpirationDialogComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -323,6 +328,7 @@ import {ResourceFilterOptionsService} from "./common/services/resource-filter-op
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
     {provide: NgxMatDateAdapter, useClass: NgxMatMomentAdapter, deps: [MAT_DATE_LOCALE, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS]},
     {provide: NGX_MAT_DATE_FORMATS, useValue: NGX_MAT_MOMENT_FORMATS},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpSessionInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]
 })

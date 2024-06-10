@@ -57,6 +57,7 @@ public class UserRO extends BaseRO {
     private boolean passwordExpired = false;
     private boolean showPasswordExpirationWarning = false;
     private boolean forceChangeExpiredPassword = false;
+    private int sessionMaxIntervalTimeoutInSeconds;
 
     /**
      * Get DB user hash value. It can be used as unique ID for the user. Use hash value for the webservice/ui and do not
@@ -224,5 +225,13 @@ public class UserRO extends BaseRO {
 
     public void setSuspendedUtil(OffsetDateTime suspendedUtil) {
         this.suspendedUtil = suspendedUtil;
+    }
+
+    public void setSessionMaxIntervalTimeoutInSeconds(int sessionMaxIntervalTimeoutInSeconds) {
+        this.sessionMaxIntervalTimeoutInSeconds = sessionMaxIntervalTimeoutInSeconds;
+    }
+
+    public int getSessionMaxIntervalTimeoutInSeconds() {
+        return sessionMaxIntervalTimeoutInSeconds;
     }
 }

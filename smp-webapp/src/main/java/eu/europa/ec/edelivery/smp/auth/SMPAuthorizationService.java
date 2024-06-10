@@ -37,12 +37,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -211,14 +213,14 @@ public class SMPAuthorizationService {
                     userDetails.getUser().getUsername());
             return null;
         }
-        UserRO userRO = getUserData(dbUser);
+        UserRO userRO = getUserData(dbUser, userDetails.getAuthorities());
         userRO.setCasAuthenticated(userDetails.isCasAuthenticated());
         return userRO;
     }
 
-    public UserRO getUserData(DBUser user) {
+    public UserRO getUserData(DBUser user, Collection<? extends GrantedAuthority> authorities) {
         UserRO userRO = conversionService.convert(user, UserRO.class);
-        return userRO == null ? null : getUpdatedUserData(userRO);
+        return userRO == null ? null : getUpdatedUserData(userRO, authorities);
     }
 
     /**
@@ -228,7 +230,7 @@ public class SMPAuthorizationService {
      * @param userRO
      * @return updated user data according to SMP configuration
      */
-    public UserRO getUpdatedUserData(UserRO userRO) {
+    public UserRO getUpdatedUserData(UserRO userRO, Collection<? extends GrantedAuthority> authorities) {
         userRO.setShowPasswordExpirationWarning(userRO.getPasswordExpireOn() != null &&
                 OffsetDateTime.now().plusDays(configurationService.getPasswordPolicyUIWarningDaysBeforeExpire())
                         .isAfter(userRO.getPasswordExpireOn()));
@@ -239,6 +241,9 @@ public class SMPAuthorizationService {
             URL casUrlData = configurationService.getCasUserDataURL();
             userRO.setCasUserDataUrl(casUrlData != null ? casUrlData.toString() : null);
         }
+
+        int sessionTimeoutForRoles = configurationService.getSessionTimeoutForRoles(authorities);
+        userRO.setSessionMaxIntervalTimeoutInSeconds(sessionTimeoutForRoles);
 
         return sanitize(userRO);
     }
