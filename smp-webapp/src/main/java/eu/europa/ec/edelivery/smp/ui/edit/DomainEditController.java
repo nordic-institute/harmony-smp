@@ -198,10 +198,6 @@ public class DomainEditController {
         if (propertyRO == null || StringUtils.isBlank(propertyRO.getProperty())) {
             throw new SMPRuntimeException(ErrorCode.INVALID_REQUEST, "ValidateProperty", "Property name is empty!");
         }
-        SMPDomainPropertyEnum.getByProperty(propertyRO.getProperty())
-                .orElseThrow(() -> new SMPRuntimeException(ErrorCode.INVALID_REQUEST,
-                        "ValidateProperty", "Property [" + propertyRO.getProperty() + "] is not domain property!"));
-
         return uiDomainEditService.validateDomainProperty(propertyRO);
     }
 

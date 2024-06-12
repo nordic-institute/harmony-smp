@@ -126,10 +126,10 @@ public final class DomUtils {
      */
     public static Transformer createNewSecureTransformer() throws TransformerConfigurationException {
         TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         // generic secure file processing
         setConfigurationOption(factory, XMLInputFactory.SUPPORT_DTD, false);
         setConfigurationOption(factory, XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-        setConfigurationOption(factory, XMLConstants.FEATURE_SECURE_PROCESSING, true);
         setConfigurationOption(factory, DISALLOW_DOCTYPE_FEATURE, true);
         setAttributeOption(factory, XMLConstants.ACCESS_EXTERNAL_DTD, "");
         setAttributeOption(factory, XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
