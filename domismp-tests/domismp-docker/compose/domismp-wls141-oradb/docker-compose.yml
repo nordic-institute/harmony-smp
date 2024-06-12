@@ -1,5 +1,6 @@
+services:
   smp-oracle-db:
-   # image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
+    # image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_DB_ORACLE}-${ORA_VERSION}-${ORA_EDITION}:${SMP_VERSION}
     image: container-registry.oracle.com/database/express:21.3.0-xe
     hostname: smp-oracle-db
     shm_size: '1gb'
@@ -12,7 +13,7 @@
     #  - 1821:1521
 
   smp-wls-admin:
-    image:  ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}
+    image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}
     hostname: smp-wls-admin
     depends_on:
       smp-oracle-db:
@@ -25,8 +26,8 @@
     volumes:
       - ./properties/weblogic-init:/u01/init/
       - ./data:/data
-#    ports:
-#      - 7801:7001
+  #    ports:
+  #      - 7801:7001
 
   smp-node-01:
     image: ${IMAGE_TAG:-edeliverytest}/${IMAGE_SMP_WEBLOGIC141}:${SMP_VERSION}
@@ -49,7 +50,7 @@
     depends_on:
       smp-wls-admin:
         condition: service_healthy
-    command: [bash, -c, "/u01/oracle/startServer.sh"]
+    command: [ bash, -c, "/u01/oracle/startServer.sh" ]
     environment:
       - WL_START_ADMIN=false
       - WL_ADMIN_HOST=smp-wls-admin
@@ -61,12 +62,11 @@
     #      - "18454:8453"
     #      - "18002:8001"
 
-
   smp-httpd:
     image: ${IMAGE_TAG:-edeliverytest}/smp-httpd:${SMP_VERSION}
     depends_on:
-     - smp-node-01
-     - smp-node-02
+      - smp-node-01
+      - smp-node-02
     environment:
       - VHOST_CORNER_HOSTNAME=smp.edelivery.eu
       - NODES_COUNT=2
@@ -76,4 +76,3 @@
     restart: always
     #ports:
     #  - "7880:80"
-
