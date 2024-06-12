@@ -146,7 +146,7 @@ public final class DomUtils {
     protected static void setConfigurationOption(TransformerFactory factory, String feature, boolean value) {
         try {
             factory.setFeature(feature, value);
-        } catch (TransformerConfigurationException e) {
+        } catch (UnsupportedOperationException | TransformerConfigurationException e) {
             LOG.warn("TransformerFactory initialization error. The feature [{}] is not supported by current factory. The feature is ignored.", feature);
         }
     }
