@@ -40,6 +40,7 @@ import {MemberTypeEnum} from "../../common/enums/member-type.enum";
 import {firstValueFrom, Subscription} from "rxjs";
 import {VisibilityEnum} from "../../common/enums/visibility.enum";
 import {CertificateRo} from "../../common/model/certificate-ro.model";
+import {GlobalLookups} from "../../common/global-lookups";
 
 
 @Component({
@@ -75,6 +76,7 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
   constructor(private domainService: AdminDomainService,
               private keystoreService: AdminKeystoreService,
               private extensionService: ExtensionService,
+              protected lookups: GlobalLookups,
               private alertService: AlertMessageService,
               private dialog: MatDialog) {
 
@@ -331,8 +333,15 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     return false;
   }
 
+  /**
+   * Method checks if domain entity is set and domainId does not exists.
+   * @return true if domain is set and domainId does not exists otherwise false
+   */
   isNewDomain(): boolean {
-    return this.selected != null && !this.selected.domainId
+    if (!this.selected) {
+      return false;
+    }
+    return !this.selected.domainId
   }
 
 
@@ -351,8 +360,25 @@ export class AdminDomainComponent implements OnInit, OnDestroy, AfterViewInit, B
     }
   }
 
+  /**
+   * The domain can not be deleted if it is  not selected or it is registered in the SML
+   * or it is new domain
+   */
   get canNotDelete(): boolean {
-    return !this.selected || this.domainSmlIntegrationPanelComponent?.isDomainRegistered || this.isNewDomain()
+    return !this.selected || this.isNewDomain() || this.isSelectedSMPRegister ;
+
+  }
+
+  /**
+   *  Method returns true if the SML integration is enabled and the domain is  registered
+   *
+   */
+  get isSelectedSMPRegister(): boolean {
+    return this.isSMLIntegrationEnabled && this.selected?.smlRegistered;
+  }
+
+  get isSMLIntegrationEnabled() {
+    return !!this.lookups.cachedApplicationConfig?.smlIntegrationOn
   }
 
   get editMode(): boolean {

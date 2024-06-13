@@ -175,12 +175,12 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
       return false;
     }
 
-    // entity must be first persisted in order to be enabled to registering to SML
+    // entity must be first persisted in order to be enabled to register to SML
     return this.isDomainRegistered;
   }
 
   get isDomainRegistered():boolean {
-    return this._domain?.smlRegistered;
+    return !!this._domain?.smlRegistered;
   }
 
 
@@ -270,8 +270,5 @@ export class DomainSmlIntegrationPanelComponent implements BeforeLeaveGuard {
         this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, err);
       }
     )
-
   }
-
-
 }

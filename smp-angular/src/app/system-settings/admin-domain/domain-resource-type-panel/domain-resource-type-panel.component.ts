@@ -39,8 +39,17 @@ export class DomainResourceTypePanelComponent implements BeforeLeaveGuard {
     });
   }
 
+  /**
+   * If domain is not set, the event is ignored
+   * else it updates the resource definitions and emtis
+   * "onSave event"
+   */
   onSaveClicked() {
-    this.onSaveResourceTypesEvent.emit(this.domain);
+    if (!this._domain){
+      return
+    }
+    this._domain.resourceDefinitions = this.domainForm.controls['resourceDefinitions'].value;
+    this.onSaveResourceTypesEvent.emit(this._domain);
   }
 
 

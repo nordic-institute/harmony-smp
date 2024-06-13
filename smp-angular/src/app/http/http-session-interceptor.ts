@@ -22,6 +22,7 @@ export class HttpSessionInterceptor implements HttpInterceptor {
   private readonly TIME_BEFORE_EXPIRATION_IN_SECONDS = 60;
 
   private timerId: number;
+  private timerToLogoutId: number;
 
   constructor(public securityService: SecurityService,
               public alertMessageService: AlertMessageService,
@@ -30,6 +31,7 @@ export class HttpSessionInterceptor implements HttpInterceptor {
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     clearTimeout(this.timerId);
+    clearTimeout(this.timerToLogoutId);
     let user = this.securityService.getCurrentUser();
     if (user && user.sessionMaxIntervalTimeoutInSeconds && user.sessionMaxIntervalTimeoutInSeconds > this.TIME_BEFORE_EXPIRATION_IN_SECONDS) {
       let timeout = (user.sessionMaxIntervalTimeoutInSeconds - this.TIME_BEFORE_EXPIRATION_IN_SECONDS) * 1000;
@@ -39,6 +41,11 @@ export class HttpSessionInterceptor implements HttpInterceptor {
   }
 
   private sessionExpiringSoon(timeout) {
+    // Logout the user after the session expires
+    this.timerToLogoutId = setTimeout(() => {
+      this.securityService.logout();
+    }, this.TIME_BEFORE_EXPIRATION_IN_SECONDS * 1000);
+
     this.dialog.open(SessionExpirationDialogComponent, {
       data: {
         timeLeft: this.TIME_BEFORE_EXPIRATION_IN_SECONDS,

@@ -2,7 +2,7 @@
 import {Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
 import {SecurityEventService} from './security-event.service';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
 import {AlertMessageService} from "../common/alert-message/alert-message.service";
@@ -104,8 +104,13 @@ export class SecurityService {
     this.http.delete(SmpConstants.REST_PUBLIC_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
         this.finalizeLogout(res);
       },
-      (error) => {
-        this.securityEventService.notifyLogoutErrorEvent(error);
+      (err) => {
+        if (err instanceof HttpErrorResponse && err.status === 401) {
+          this.finalizeLogout(err);
+        }
+        else {
+          this.securityEventService.notifyLogoutErrorEvent(err);
+        }
       });
   }
 
@@ -203,5 +208,4 @@ export class SecurityService {
   public clearLocalStorage() {
     localStorage.removeItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
   }
-
 }
