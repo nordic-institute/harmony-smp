@@ -74,7 +74,7 @@ RUN unzip /tmp/artefacts/smp-setup.zip -d /tmp/    \
     && mv /tmp/artefacts/smp-springboot-exec.jar $SMP_HOME/     \
     && chmod u+x /sbin/entrypoint.sh
 
-HEALTHCHECK --interval=20s --timeout=5s \
+HEALTHCHECK --interval=20s --timeout=10s --start-period=60s --retries=5 \
   CMD curl -f http://localhost:${SMP_PORT}/smp/ || exit 1
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
